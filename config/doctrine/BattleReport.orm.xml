@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="BM2\SiteBundle\Entity\BattleReport">
+		<id name="id" type="integer">
+			<generator strategy="IDENTITY"/>
+		</id>
+		<field name="cycle" type="integer"/>
+		<field name="location" type="point"/>
+		<field name="location_name" type="array" nullable="true"/>
+		<field name="assault" type="boolean"/>
+		<field name="sortie" type="boolean"/>
+		<field name="urban" type="boolean" nullable="true"/>
+		<field name="defender_group_id" type="smallint" nullable="true"/>
+
+		<field name="start" type="array"/>
+		<field name="combat" type="array"/>
+		<field name="hunt" type="array"/>
+		<field name="finish" type="array"/>
+		<field name="completed" type="boolean"/>
+		<field name="count" type="integer" nullable="true"/>
+		<field name="epicness" type="smallint" nullable="true"/>
+
+		<field name="debug" type="text"/>
+
+		<many-to-one field="settlement" target-entity="Settlement"/>
+		<many-to-one field="place" target-entity="Place"/>
+		<one-to-many field="participants" target-entity="BattleParticipant" mapped-by="battle_report"/>
+
+		<one-to-many field="groups" target-entity="BattleReportGroup" mapped-by="battle_report">
+			<order-by>
+				<order-by-field name="id" direction="ASC"/>
+			</order-by>
+		</one-to-many>
+		<one-to-one field="primary_attacker" target-entity="BattleReportGroup"/>
+		<one-to-one field="primary_defender" target-entity="BattleReportGroup"/>
+
+		<many-to-many field="defense_buildings" target-entity="BuildingType" />
+		<many-to-one field="war" target-entity="War" inversed-by="related_battle_reports"/>
+		<many-to-one field="siege" target-entity="Siege" inversed-by="related_battle_reports"/>
+		<one-to-many field="observers" target-entity="BattleReportObserver" mapped-by="battle_report"/>
+		<one-to-many field="journals" target-entity="Journal" mapped-by="battle_report"/>
+
+	</entity>
+</doctrine-mapping>
