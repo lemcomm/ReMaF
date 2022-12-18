@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="BM2\SiteBundle\Entity\RealmPosition">
+		<id name="id" type="integer">
+			<generator strategy="IDENTITY"/>
+		</id>
+		<field name="name" type="string"/>
+		<field name="rank" type="integer" nullable="true"/>
+		<field name="description" type="text"/>
+		<many-to-one field="type" target-entity="PositionType" nullable="true"/>
+		<field name="ruler" type="boolean"/>
+		<field name="legislative" type="boolean" nullable="true"/>
+		<field name="elected" type="boolean"/>
+		<field name="electiontype" type="string" nullable="true"/>
+		<field name="inherit" type="boolean"/>
+		<field name="term" type="smallint"/>
+		<field name="year" type="integer" nullable="true"/>
+		<field name="week" type="integer" nullable="true"/>
+		<field name="cycle" type="integer" nullable="true"/>
+		<field name="drop_cycle" type="integer" nullable="true"/>
+		<field name="current_term_ends" type="datetime" nullable="true"/>
+		<field name="retired" type="boolean" nullable="true"/>
+		<field name="keeponslumber" type="boolean" nullable="true"/>
+		<field name="minholders" type="integer" nullable="true"/>
+		<field name="have_vassals" type="boolean" nullable="true"/>
+
+		<many-to-one field="realm" target-entity="Realm" inversed-by="positions"/>
+		<many-to-many field="permissions" target-entity="Permission"/>
+		<one-to-many field="elections" target-entity="Election" mapped-by="position"/>
+
+		<many-to-many field="holders" target-entity="Character" inversed-by="positions">
+			<join-table name="realmpositions_characters">
+				<join-columns>
+					<join-column name="realmposition_id" />
+				</join-columns>
+				<inverse-join-columns>
+					<join-column name="character_id" />
+				</inverse-join-columns>
+			</join-table>
+		</many-to-many>
+
+		<one-to-many field="vassals" target-entity="Character" mapped-by="liege_position"/>
+
+		<one-to-many field="requests" target-entity="GameRequest" mapped-by="from_position"/>
+		<one-to-many field="related_requests" target-entity="GameRequest" mapped-by="to_position"/>
+		<one-to-many field="part_of_requests" target-entity="GameRequest" mapped-by="include_position"/>
+	</entity>
+</doctrine-mapping>

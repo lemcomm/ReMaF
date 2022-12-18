@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="BM2\SiteBundle\Entity\UnitSettings" table="UnitSettings">
+		<id name="id" type="integer">
+			<generator strategy="IDENTITY"/>
+		</id>
+		<one-to-one field="unit" target-entity="Unit" inversed-by="settings"/>
+		<field name="name" type="string"/>
+		<field name="strategy" type="string" nullable="true"/>
+		<field name="tactic" type="string" nullable="true"/>
+		<field name="respect_fort" type="boolean" nullable="true"/>
+		<field name="line" type="smallint" nullable="true"/>
+		<field name="siege_orders" type="string" nullable="true"/>
+		<field name="renamable" type="boolean" nullable="true"/>
+		<field name="retreat_threshold" type="float" nullable="true"/>
+		<field name="reinforcements" type="boolean" nullable="true"/>
+
+	</entity>
+</doctrine-mapping>
