@@ -1,0 +1,182 @@
+# Might & Fealty
+# text strings for the heraldry designer
+# Author: Tom Vogt <tom@mightandfealty.com>
+title:		Heraldry
+intro: >
+  For a few credits, you can design a unique heraldic crest that you can assign to any of your characters. Once created, the crest is
+  yours forever, and you can assign it to as many characters of yours as you want.<br />
+  Once created, a crest is locked and cannot be created by someone else again, so the crest is always unique to you. Like actual crests,
+  it can be used to uniquely identify a family or dynasty.
+
+list:
+ title:		Your Existing Crests
+
+form:
+ choose:		-- Choose --
+design:
+ title:		Heraldry Designer
+ link:		Open the heraldry designer
+ busy:		Updating and validating your design...
+ update:		Update and check design
+ random:		Generate randomly
+ save:		Save design
+ issues:		There are one or more problems with your design:
+ ok:			Your design is valid.
+ saving:		Creating and saving your design, this can take a short moment. This page will automatically refresh when everything is finished.
+ saved:		Your new banner design has been saved.
+ payment:	Saving a crest for use on your account will remove %crestfee% credits from your account.
+ poor:		Unfortunately, you only have %amount% credits left in your account.
+
+warning:
+ needname:	 Please give your design a name.
+ needshield: You must pick a shield design.
+ needshieldcolour: You must pick a shield colour.
+ nopatterncolour: If you have a pattern, you also need to select a pattern colour.
+ nochargecolour: If you have a charge, you also need to select a charge colour.
+ simple:		Your design is too simple. Choose at least either a pattern or a charge, or both.
+ same:		Both of your elemens share the same colour, making it hard to spot. Choose different colours.
+ metals:		According to the law of tincture, metals should not be placed on metals. Change one of your metals to a colour.
+ colours:	According to the law of tincture, colours should not be placed on colours. Change one of your colours to a metal.
+ taken:		This design has already been choosen by someone else.
+
+
+badge: Badge
+french: French
+german: German
+italian: Italian
+polish: Polish
+spanish: Spanish
+swiss: Swiss
+
+base: Base
+bend: Bend
+bend_sinister: Bend sinister
+chevron: Chevron
+chief: Chief
+cross: Cross
+fess: Fess
+flaunches: Flaunches
+gryon: Gryon
+pale: Pale
+per_bend: Per bend
+per_bend_sinister: Per bend sinister
+per_chevron: Per chevron
+per_fess: Per fess
+per_pale: Per pale
+per_saltire: Per saltire
+pile: Pile
+quarterly: Quarterly
+saltire: Saltire
+shakefork: Shakefork
+
+beasts: Beasts
+objects: Objects
+arm_cubit_habited: Arm cubit habited
+arm_cubit_in_armor: Arm cubit in armor
+arm_embowed_in_armor: Arm embowed in armor
+battle_axe: Battle axe
+bear_head_couped: Bear head couped
+bear_head_erased: Bear head erased
+bear_head_muzzled: Bear head muzzled
+bear_passant: Bear passant
+bear_rampant: Bear rampant
+bear_sejant_erect: Bear sejant erect
+bear_statant: Bear statant
+boar_head_couped: Boar head couped
+boar_head_erased: Boar head erased
+boar_passant: Boar passant
+boar_rampant: Boar rampant
+boar_statant: Boar statant
+broad_arrow: Broad arrow
+buck_head_couped: Buck head couped
+caltrap: Caltrap
+catamount_passant_guardant: Catamount passant guardant
+catamount_sejant_guardant: Catamount sejant guardant
+catamount_sejant_guardant_erect: Catamount sejant guardant erect
+chess_rook: Chess rook
+chevalier_on_horseback: Chevalier on horseback
+church_bell: Church bell
+coney: Coney
+crescent: Crescent
+decrescent: Decrescent
+dragon_passant: Dragon passant
+dragon_rampant: Dragon rampant
+dragon_statant: Dragon statant
+eagle_displayed: Eagle displayed
+falcon: Falcon
+fluer_de_lis: Fleur de lis
+fox_mask: Fox mask
+fox_passant: Fox passant
+fox_sejant: Fox sejant
+hind: Hind
+horse_courant: Horse courant
+horse_passant: Horse passant
+horse_rampant: Horse rampant
+javelin: Javelin
+lion_rampant: Lion rampant
+lynx_coward: Lynx coward
+martlet_volant: Martlet volant
+pegasus_passant: Pegasus passant
+reindeer: Reindeer
+scymitar: Scimitar
+serpent_nowed: Serpent nowed
+squirrel_sejant_erect: Squirrel sejant erect
+stag-atgaze: Stag at gaze
+stag-lodged: Stag lodged
+stag-springing: Stag springing
+stag-statant: Stag statant
+stag-trippant: Stag trippant
+stagshead-caboshed: Stag's head caboshed
+stagshead-erased: Stag's head erased
+sun_in_splendor: Sun in splendor
+sword: Sword
+unicorn_rampant: Unicorn rampant
+winged_stag_rampant: Winged stag rampant
+wolf_courant: Wolf courant
+wolf_passant: Wolf passant
+wolf_rampant: Wolf rampant
+wolf_salient: Wolf salient
+wolf_statant: Wolf statant
+
+label:
+ name:		Name
+ shield:		Shield
+ shieldc:	Shield color
+ pattern:	Pattern
+ patternc:	Pattern color
+ charge:		Charge
+ chargec:	Charge color
+ shading:	Shading
+
+metal:			Metals
+colours:			Colors
+argent:			Argent
+or:				Or
+copper:			Copper
+iron:  Iron
+lead:  Lead
+buff:   Buff
+amaranth: Amaranth
+aquamarine: Aquamarine
+azure:			Azure
+blue celeste:	Blue celeste
+brunatre: Brunâtre
+carnation: Carnation
+eisen-farbe: Eisen-farbe
+gules:			Gules
+murrey:			Murrey
+ochre:  Ochre
+purpure:			Purpure
+red ochre: Red Ochre
+sable:			Sable
+sanguine:		Sanguine
+tenne:			Tenne
+vert:				Vert
+white:   White
+cendree:			Cendrée
+
+blazon:
+ and:			and
+ over:		over all
+ a:			a
+ an:			an
