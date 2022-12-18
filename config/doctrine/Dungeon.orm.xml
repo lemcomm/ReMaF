@@ -11,7 +11,7 @@
 
 		<one-to-many field="levels" target-entity="DungeonLevel" mapped-by="dungeon"/>
 		<one-to-one field="party" target-entity="DungeonParty" mapped-by="dungeon"/>
-		<many-to-one field="geo_data" target-entity="BM2\SiteBundle\Entity\GeoData"/>
+		<many-to-one field="geo_data" target-entity="GeoData"/>
 
 	</entity>
 </doctrine-mapping>
