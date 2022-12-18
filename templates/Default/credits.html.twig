@@ -1,0 +1,23 @@
+{% set biglogo = true %}
+{% extends "layout.html.twig" %}
+
+{% block content %}
+<h2>{{ 'menu.credits'|trans|title }}</h2>
+
+<p>Messages and other player-contributed content is &copy; by their respective authors.</p>
+<p>External libraries, plug-ins, etc. are &copy; by their authors, as detailed in their respective headers.</p>
+<p>The equipment images were made by <a href="http://www.christophclasen.de/">Christoph Clasen</a>.</p>
+<p>Some of the map and other icons were made by <a href="http://nicubunu.ro/">Nicu Buculei</a> and released to the public domain.</p>
+<p>Might & Fealty itself was created by <a href="https://notveryprofessional.com/">Tom Vogt</a>.
+<p>Everything else is &copy;2013-2022 by Iungard Systems, LLC.</p>
+
+<hr>
+
+<h2>Hosting & Continued Development Made Possible by...</h2>
+<ul>
+{% for user in patrons %}
+        <li>{{ user.displayName }}</li>
+{% endfor %}
+</u>
+
+{% endblock %}

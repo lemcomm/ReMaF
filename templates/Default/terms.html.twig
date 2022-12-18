@@ -1,0 +1,19 @@
+{% if not app.user %}
+{% set biglogo = true %}
+{% endif %}
+{% extends "layout.html.twig" %}
+
+{% block content %}
+
+<div name="termly-embed" data-id="259c58ae-a404-44f5-af9a-a737350d633a" data-type="iframe"></div>
+{% endblock %}
+
+{% block javascript %}
+(function(d, s, id) {
+  var js, tjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "https://app.termly.io/embed-policy.min.js";
+  tjs.parentNode.insertBefore(js, tjs);
+}(document, 'script', 'termly-jssdk'));
+{% endblock %}
