@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<entity name="BM2\SiteBundle\Entity\UserLimits" table="user_limits">
+	<entity name="App\Entity\UserLimits" table="user_limits">
                 <id name="user" association-key="true"/>
 		<one-to-one field="user" target-entity="User" inversed-by="limits"/>
 
