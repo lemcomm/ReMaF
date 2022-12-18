@@ -1,5 +1,9 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
+    globals:
+            site_name: '%env(SITE_NAME)%'
+            site_short: '%env(SITE_SHORT)%'
+            appstate: '@App\Service\AppState'
 
 when@test:
     twig:
