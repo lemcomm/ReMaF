@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<entity name="BM2\SiteBundle\Entity\Culture" table="types.culture">
+	<entity name="App\Entity\Culture" table="types.culture">
 		<id name="id" type="integer">
 			<generator strategy="IDENTITY"/>
 		</id>

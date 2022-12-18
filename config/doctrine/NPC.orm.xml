@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<mapped-superclass name="BM2\SiteBundle\Entity\NPC">
+	<mapped-superclass name="App\Entity\NPC">
 		<field name="name" type="string"/>
 		<field name="experience" type="smallint"/>
 		<field name="alive" type="boolean"/>
