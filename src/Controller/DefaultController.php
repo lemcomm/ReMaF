@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\AppState;
+use App\Service\PageReader;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -22,9 +25,8 @@ class DefaultController extends AbstractController {
 	}
 
 	#[Route ('/about', name:'maf_about')]
-	public function aboutAction() {
-		$pr = $this->get('pagereader');
-		$locale = $this->getRequest()->getLocale();
+	public function aboutAction(Request $req, PageReader $pr) {
+		$locale = $req->getLocale();
 
 		$intro = $pr->getPage('about', 'introduction', $locale);
 		$concept = $pr->getPage('about', 'concept', $locale);
@@ -42,20 +44,17 @@ class DefaultController extends AbstractController {
 		]);
 	}
 	#[Route ('/manual/{page}', name:'maf_manual')]
-	public function manualAction($page='intro') {
-		$toc = $this->get('pagereader')->getPage('manual', 'toc', $this->getRequest()->getLocale());
-		$pagecontent = $this->get('pagereader')->getPage('manual', $page, $this->getRequest()->getLocale());
-
+	public function manualAction(Request $req, PageReader $pr, $page='intro') {
 		return $this->render('Default/manual.html.twig', [
 			"page" => $page,
-			"toc" => $toc,
-			"content" => $pagecontent
+			"toc" => $pr->getPage('manual', 'toc', $req->getLocale()),
+			"content" => $pr->getPage('manual', $page, $req->getLocale())
 		]);
 	}
 
 	#[Route ('/vips', name:'maf_vips')]
 	public function vipsAction(EntityManagerInterface $em) {
-		$query = $em->createQuery('SELECT u.display_name, u.vip_status FROM BM2SiteBundle:User u WHERE u.vip_status > 0 ORDER BY u.vip_status DESC, u.display_name');
+		$query = $em->createQuery('SELECT u.display_name, u.vip_status FROM App:User u WHERE u.vip_status > 0 ORDER BY u.vip_status DESC, u.display_name');
 		$vips = $query->getResult();
 
 		return $this->render('Default/vips.html.twig', [
@@ -74,7 +73,7 @@ class DefaultController extends AbstractController {
 
   	#[Route ('/credits', name:'maf_credits')]
 	public function creditsAction(EntityManagerInterface $em) {
-		$query = $em->createQuery('SELECT u FROM BM2SiteBundle:User u JOIN u.patronizing p WHERE u.show_patronage = :true ORDER BY u.display_name ASC');
+		$query = $em->createQuery('SELECT u FROM App:User u JOIN u.patronizing p WHERE u.show_patronage = :true ORDER BY u.display_name ASC');
 		$query->setParameters(['true'=>true]);
 
 		return $this->render('Default/credits.html.twig', [
@@ -114,18 +113,16 @@ class DefaultController extends AbstractController {
 	}
 
     	#[Route ('/paymentconcept', name:'maf_about_payment')]
-	public function paymentConceptAction() {
-		$pagecontent = $this->get('pagereader')->getPage('about', 'payment', $this->getRequest()->getLocale());
-
+	public function paymentConceptAction(PageReader $pr) {
 		return $this->render('Default/terms.html.twig', [
 			"simple"=>true,
-			"content"=>$pagecontent,
+			"content"=>$pr->getPage('about', 'payment', $this->getRequest()->getLocale()),
 			"paylevels"=>$this->get('payment_manager')->getPaymentLevels()
 		]);
 	}
 
 
-	public function localeRedirectAction($url) {
+	public function localeRedirectAction(AppState $appstate, $url) {
 		if ($url=="-") $url="";
 		if (preg_match('/^[a-z]{2}\//', $url)===1) {
 			if (substr($url, 0, 2)=='en') {
@@ -143,7 +140,7 @@ class DefaultController extends AbstractController {
 				$locale = substr($this->getRequest()->getPreferredLanguage(),0,2);
 			}
 			if ($locale) {
-				$languages = $this->get('appstate')->availableTranslations();
+				$languages = $appstate->availableTranslations();
 				if (!isset($languages[$locale])) {
 					$locale='en';
 				}
