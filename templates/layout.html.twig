@@ -23,7 +23,7 @@
 	<link rel="apple-touch-icon" type="image/png" sizes="72x72" href="/apple-touch-icon-72.png">
 	<link rel="apple-touch-icon" type="image/png" sizes="57x57" href="/apple-touch-icon-57.png">
 	<link rel="apple-touch-icon" type="image/png" href="/apple-touch-icon.png">
-{#  non-mobile: #}<script type="text/javascript" src="https://app.termly.io/embed.min.js" data-auto-block="on" data-website-uuid="66ba5197-b2e3-42ba-b41b-01f85ed493cf"></script>
+{#  non-mobile: #}
 	{% block includes %}
 		<link rel="stylesheet" href="{{ asset('/css/'~theme~'.css') }}" title="Office Style"/>
 		{% block jqueryuitheme %}
@@ -40,6 +40,7 @@
 		<script src="{{ asset('bundles/bm2site/js/jquery-ui.js') }}"></script>
 #}
 		<script src="{{ asset('bundles/bm2site/js/jquery.hoverintent.js') }}"></script>
+		<script type="text/javascript" src="https://app.termly.io/embed.min.js" data-auto-block="on" data-website-uuid="66ba5197-b2e3-42ba-b41b-01f85ed493cf"></script>
 	{% endblock %}
 {#  mobile:
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -116,17 +117,17 @@
 	<div id="symfony-header" data-role="header">
 		<ul class="navbar">
 			{% if app.user and is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-				<li><a href="{{ path('fos_user_profile_show') }}">{{ 'menu.profile'|trans }}</a></li>
+				<li><a href="{{ path('maf_account') }}">{{ 'menu.profile'|trans }}</a></li>
 				<li><a href="{{ path('maf_characters') }}">{{ 'menu.characters'|trans }}</a></li>
 			{% else %}
-				<li><a href="{{ path('fos_user_registration_register') }}">{{ 'menu.register'|trans }}</a></li>
+				<li><a href="{{ path('maf_account_register') }}">{{ 'menu.register'|trans }}</a></li>
 			{% endif %}
 
 			<li>
 			{% if app.user and is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-				<a href="{{ path('fos_user_security_logout') }}">{{ 'layout.logout'|trans({}, 'FOSUserBundle') }}</a>
+				<a href="{{ path('maf_logout') }}">{{ 'menu.logout'|trans }}</a>
 			{% else %}
-				<a href="{{ path('fos_user_security_login') }}" class="link_login">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a>
+				<a href="{{ path('maf_login') }}" class="link_login">{{ 'menu.login'|trans }}</a>
 			{% endif %}
 			</li>
 			{% if character and not simple %}
