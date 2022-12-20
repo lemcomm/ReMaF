@@ -16,6 +16,8 @@ realtime:
  minute:      "%m% minute (real time)|%m% minutes (real time)"
 
 menu:
+ login:     Login
+ logout:    Logout
  yourstatus:  Your Status
  your:      Your...
  economy:   Economy
