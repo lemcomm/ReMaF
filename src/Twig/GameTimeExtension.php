@@ -41,11 +41,11 @@ class GameTimeExtension extends AbstractExtension {
 		if ($days > 30) {
 			return $this->trans->trans("realtime.forever");
 		} elseif ($days > 1) {
-			return $this->trans->transchoice("realtime.day", $days, array('%d%'=>$days));
+			return $this->trans->trans("realtime.day", array('%d%'=>$days, '%count%'=>$days));
 		} elseif ($hours > 1) {
-			return $this->trans->transchoice("realtime.hour", $hours, array('%h%'=>$hours));
+			return $this->trans->trans("realtime.hour", array('%h%'=>$hours));
 		} else {
-			return $this->trans->transchoice("realtime.minute", $min, array('%m%'=>$min));
+			return $this->trans->trans("realtime.minute", array('%m%'=>$min));
 		}
 	}
 
@@ -70,12 +70,11 @@ class GameTimeExtension extends AbstractExtension {
 		$hours = $next - date("G") - 1;
 		$minutes = 60 - date("i");
 
+		$m_text = $this->trans->trans("minute", ['%count%'=>$minutes]);
 		if ($hours>0) {
-			$h_text = $this->trans->transchoice("hour", $hours);
-			$m_text = $this->trans->transchoice("minute", $minutes);
+			$h_text = $this->trans->trans("hour", ['%count%'=>$hours]);
 			return $this->trans->trans("untilturn", array('%h%'=>$hours, '%hours%'=>$h_text, '%m%'=>$minutes, '%minutes%'=>$m_text));
 		} else {
-			$m_text = $this->trans->transchoice("minute", $minutes);
 			return $this->trans->trans("untilturn2", array('%m%'=>$minutes, '%minutes%'=>$m_text));
 		}
 	}
