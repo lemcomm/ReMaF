@@ -192,5 +192,21 @@ class AppState {
 		return $query->getSingleResult();
 	}
 
+        public function generateAndCheckToken($length, $check = 'User', $against = 'reset_token') {
+                $valid = false;
+                $token = false;
+                $em = $this->em;
+                if ($check == 'User') {
+                        while (!$valid) {
+                                $token = $this->generateToken($length, 'bin2hex');
+                                $result = $em->getRepository(User::class)->findOneBy([$against => $token]);
+                                if (!$result) {
+                                        $valid = true;
+                                }
+                        }
+                }
+                return $token;
+        }
+
 
 }
