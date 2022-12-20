@@ -1,0 +1,15 @@
+<doctrine-mapping>
+        <entity name="App\Entity\UserLog" table="user_log">
+                <id name="id" type="integer">
+                        <generator strategy="AUTO" />
+                </id>
+
+                <field name="timestamp" type="datetime"/>
+                <field name="ip" type="string"/>
+                <field name="route" type="string" nullable="true"/>
+                <field name="referrer" type="text" nullable="true"/>
+                <field name="message" type="text"/>
+
+                <many-to-one field="user" target-entity="App\Entity\User" inversed-by="logs"/>
+        </entity>
+</doctrine-mapping>
