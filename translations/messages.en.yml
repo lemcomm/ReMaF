@@ -628,6 +628,7 @@ character:
  prisoner2: You are currently a captive of %captor%.
  captorinactive: Your captor has not been seen in quite a while. You should <a href="%url%">try to escape</a>.
  full:    View full details
+ journals: "View journals they've written"
  list:
   select:   Move character to:
   submit:   Set new list
@@ -1891,6 +1892,7 @@ journal:
   gamedate:    Game Date
   realdate:    Real World Date
   topic:       Topic
+  nothinghere: "Doesn't seem to be anything here... (they may be marked private or graphic)"
 
 olympus:
  pending:
