@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\AppState;
 use App\Service\PageReader;
+use App\Service\PaymentManager;
+use App\Service\UserManager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +27,7 @@ class DefaultController extends AbstractController {
 	}
 
 	#[Route ('/about', name:'maf_about')]
-	public function aboutAction(Request $req, PageReader $pr) {
+	public function aboutAction(Request $req, PageReader $pr, PaymentManager $pay) {
 		$locale = $req->getLocale();
 
 		$intro = $pr->getPage('about', 'introduction', $locale);
@@ -39,8 +41,8 @@ class DefaultController extends AbstractController {
 			'concept' => $concept,
 			'gameplay' => $gameplay,
 			'tech' => $tech,
-			'levels' => $this->get('payment_manager')->getPaymentLevels(),
-			'concepturl' => $this->generateUrl('bm2_site_default_paymentconcept'),
+			'levels' => $pay->getPaymentLevels(),
+			'concepturl' => $this->generateUrl('maf_about_payment'),
 		]);
 	}
 	#[Route ('/manual/{page}', name:'maf_manual')]
@@ -113,11 +115,11 @@ class DefaultController extends AbstractController {
 	}
 
     	#[Route ('/paymentconcept', name:'maf_about_payment')]
-	public function paymentConceptAction(PageReader $pr) {
-		return $this->render('Default/terms.html.twig', [
+	public function paymentConceptAction(Request $request, PageReader $pr, PaymentManager $pay) {
+		return $this->render('Default/paymentConcept.html.twig', [
 			"simple"=>true,
-			"content"=>$pr->getPage('about', 'payment', $this->getRequest()->getLocale()),
-			"paylevels"=>$this->get('payment_manager')->getPaymentLevels()
+			"content"=>$pr->getPage('about', 'payment', $request->getLocale()),
+			"paylevels"=>$pay->getPaymentLevels()
 		]);
 	}
 
