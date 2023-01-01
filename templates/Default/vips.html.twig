@@ -12,11 +12,11 @@
 			</ul></div>
 		{% endif %}
 		{% if vip.vip_status == 30 %}
-			<div class="vip_column"><img src="{{ asset('bundles/bm2site/images/vip-immortal.png') }}"/>
+			<div class="vip_column"><img src="{{ asset('images/vip-immortal.png') }}"/>
 		{% elseif vip.vip_status == 20 %}
-			<div class="vip_column"><img src="{{ asset('bundles/bm2site/images/vip-legend.png') }}"/>
+			<div class="vip_column"><img src="{{ asset('images/vip-legend.png') }}"/>
 		{% else %}
-			<div class="vip_column"><img src="{{ asset('bundles/bm2site/images/vip-hero.png') }}"/>
+			<div class="vip_column"><img src="{{ asset('images/vip-hero.png') }}"/>
 		{% endif %}
 		<ul>
 		{% set last = vip.vip_status %}
