@@ -17,7 +17,7 @@ class Journal {
         }
 
         public function isGraphic() {
-                if ($this->graphic || $this->GM_graphic) {
+                if (!$this->graphic || $this->GM_graphic) {
                         return true;
                 }
                 return false;
@@ -136,7 +136,7 @@ class Journal {
     /**
      * Get topic
      *
-     * @return string 
+     * @return string
      */
     public function getTopic()
     {
@@ -159,7 +159,7 @@ class Journal {
     /**
      * Get entry
      *
-     * @return string 
+     * @return string
      */
     public function getEntry()
     {
@@ -182,7 +182,7 @@ class Journal {
     /**
      * Get date
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDate()
     {
@@ -205,7 +205,7 @@ class Journal {
     /**
      * Get cycle
      *
-     * @return integer 
+     * @return integer
      */
     public function getCycle()
     {
@@ -228,7 +228,7 @@ class Journal {
     /**
      * Get public
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getPublic()
     {
@@ -251,7 +251,7 @@ class Journal {
     /**
      * Get graphic
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getGraphic()
     {
@@ -274,7 +274,7 @@ class Journal {
     /**
      * Get ooc
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getOoc()
     {
@@ -297,7 +297,7 @@ class Journal {
     /**
      * Get pending_review
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getPendingReview()
     {
@@ -320,7 +320,7 @@ class Journal {
     /**
      * Get GM_reviewed
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getGMReviewed()
     {
@@ -343,7 +343,7 @@ class Journal {
     /**
      * Get GM_private
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getGMPrivate()
     {
@@ -366,7 +366,7 @@ class Journal {
     /**
      * Get GM_graphic
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getGMGraphic()
     {
@@ -389,7 +389,7 @@ class Journal {
     /**
      * Get language
      *
-     * @return string 
+     * @return string
      */
     public function getLanguage()
     {
@@ -399,7 +399,7 @@ class Journal {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -432,7 +432,7 @@ class Journal {
     /**
      * Get reports
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getReports()
     {
@@ -455,7 +455,7 @@ class Journal {
     /**
      * Get character
      *
-     * @return \App\Entity\Character 
+     * @return \App\Entity\Character
      */
     public function getCharacter()
     {
@@ -478,7 +478,7 @@ class Journal {
     /**
      * Get battle_report
      *
-     * @return \App\Entity\BattleReport 
+     * @return \App\Entity\BattleReport
      */
     public function getBattleReport()
     {
@@ -501,45 +501,10 @@ class Journal {
     /**
      * Get activity_report
      *
-     * @return \App\Entity\ActivityReport 
+     * @return \App\Entity\ActivityReport
      */
     public function getActivityReport()
     {
         return $this->activity_report;
-    }
-
-    public function isPublic(): ?bool
-    {
-        return $this->public;
-    }
-
-    public function isGraphic(): ?bool
-    {
-        return $this->graphic;
-    }
-
-    public function isOoc(): ?bool
-    {
-        return $this->ooc;
-    }
-
-    public function isPendingReview(): ?bool
-    {
-        return $this->pending_review;
-    }
-
-    public function isGMReviewed(): ?bool
-    {
-        return $this->GM_reviewed;
-    }
-
-    public function isGMPrivate(): ?bool
-    {
-        return $this->GM_private;
-    }
-
-    public function isGMGraphic(): ?bool
-    {
-        return $this->GM_graphic;
     }
 }
