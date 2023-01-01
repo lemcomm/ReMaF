@@ -23,7 +23,6 @@
 	<link rel="apple-touch-icon" type="image/png" sizes="72x72" href="/apple-touch-icon-72.png">
 	<link rel="apple-touch-icon" type="image/png" sizes="57x57" href="/apple-touch-icon-57.png">
 	<link rel="apple-touch-icon" type="image/png" href="/apple-touch-icon.png">
-{#  non-mobile: #}
 	{% block includes %}
 		<link rel="stylesheet" href="{{ asset('/css/'~theme~'.css') }}" title="Office Style"/>
 		{% block jqueryuitheme %}
@@ -35,18 +34,9 @@
 		{% endblock %}
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-{#
-		<script src="{{ asset('bundles/bm2site/js/jquery-1.11.0.js') }}"></script>
-		<script src="{{ asset('bundles/bm2site/js/jquery-ui.js') }}"></script>
-#}
-		<script src="{{ asset('bundles/bm2site/js/jquery.hoverintent.js') }}"></script>
+		<script src="{{ asset('js/jquery.hoverintent.js') }}"></script>
 		<script type="text/javascript" src="https://app.termly.io/embed.min.js" data-auto-block="on" data-website-uuid="66ba5197-b2e3-42ba-b41b-01f85ed493cf"></script>
 	{% endblock %}
-{#  mobile:
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
-	<script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
-#}
 	{% if character %}
 		<link rel="alternate" type="application/rss+xml" title="New Events" href="http:{{ url('bm2_rss', {'appkey':app.user.appkey, 'user':app.user.id, 'char':character.id}, true) }}">
 	{% endif %}
