@@ -5,7 +5,7 @@
 
 <h1>{{ ('manual.'~page)|trans|title }}</h1>
 
-{{ content|markdown|manuallinks }}
+{{ content|markdown_to_html|manuallinks }}
 
 <div class="clear"></div>
 
