@@ -414,7 +414,7 @@ class LinksExtension extends AbstractExtension {
 		}
 		if ($raw) return $url;
 		$link = '<a ';
-		if ($class) { $link .= 'class="link_'.$class.'" '; }
+		if ($class !== 'report') { $link .= 'class="link_'.$class.'" '; }
 		$link .= 'href="'.$url.'">'.$name.'</a>';
 		return $link;
 	}
