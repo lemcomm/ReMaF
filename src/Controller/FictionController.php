@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Service\PageReader;
+
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -15,9 +18,6 @@ class FictionController extends AbstractController {
 		'geas',
 	);
 
-	/**
-	  * @Route("/{page}", name="bm2_fiction", defaults={"page"="index"})
-	  */
   	#[Route ('/fiction/{page}', name:'maf_fiction')]
 	public function indexAction($page='index') {
 
@@ -26,12 +26,9 @@ class FictionController extends AbstractController {
 		]);
 	}
 
-	/**
-	  * @Route("/fiction/content/{page}", name="maf_fiction_content")
-	  */
-	public function contentAction($page) {
-		$pr = $this->get('pagereader');
-		$locale = $this->getRequest()->getLocale();
+	#[Route ('/fiction/content/{page}', name:'maf_fiction_content')]
+	public function contentAction(PageReader $pr, Request $request, $page) {
+		$locale = $request->getLocale();
 
 		$content = $pr->getPage('fiction', $page, $locale);
 
