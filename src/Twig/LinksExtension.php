@@ -156,7 +156,7 @@ class LinksExtension extends AbstractExtension {
 				default:
 					return "[<em>invalid reference</em>]";
 			}
-			$entity = $this->em->getRepository('BM2SiteBundle:'.$type)->find($id);
+			$entity = $this->em->getRepository('App:'.$type)->find($id);
 			if ($entity) {
 				if ($type == 'Unit') {
 					$url = $this->generator->generate($this->getLink($type), array('unit' => $id));
@@ -205,7 +205,7 @@ class LinksExtension extends AbstractExtension {
 		foreach ($matches as $match) {
 			// FIXME: this makes sure the translation string fits, but it should restore at least first-letter case
 			$page = strtolower(trim($match, "[]"));
-			$url = $this->generator->generate('bm2_manual', array('page' => $page));
+			$url = $this->generator->generate('maf_manual', array('page' => $page));
 			$name = $this->translator->trans("manual.".$page);
 			$link .= '<a href="'.$url.'">'.$name.'</a>';
 		}
