@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% trans_default_domain 'core' %}
+
+{% block title %}{%trans with {'%name%': site_short, '%local%': 'security.account.title'} %}security.account.title{% endtrans %}{% endblock %}
+
+{% block content %}
+
+<div class="content">
+        <h1>{% trans %}security.account.header{% endtrans %}</h1>
+
+        {{ form_start(form) }}
+            {{ form_row(form.username, {'attr': {'id': 'username'}}) }}<br>
+            {{ form_row(form.plainPassword) }}<br>
+            {{ form_row(form.email, {'attr': {'id': 'email'}}) }}<br>
+            {{ form_row(form.display_name) }}<br>
+            {{ form_row(form.submit) }}
+        {{ form_end(form) }}
+
+</div>
+{% endblock %}

@@ -18,7 +18,7 @@ class DefaultController extends AbstractController {
 	#[Route ('/', name:'maf_index')]
 	#[Route ('/', name:'maf_homepage')]
 	public function indexAction(EntityManagerInterface $em) {
-		$query = $em->createQuery('SELECT j from App:Journal j WHERE j.public = true AND j.graphic = false AND j.pending_review = false AND j.GM_private = false AND j.GM_graphic = false ORDER BY j.date DESC')->setMaxResults(3);
+		$query = $em->createQuery('SELECT j, c from App:Journal j JOIN j.character c WHERE j.public = true AND j.graphic = false AND j.pending_review = false AND j.GM_private = false AND j.GM_graphic = false ORDER BY j.date DESC')->setMaxResults(3);
 		$journals = $query->getResult();
 		return $this->render('Default/index.html.twig', [
 			"simple"=>true,

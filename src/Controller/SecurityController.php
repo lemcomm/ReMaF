@@ -15,14 +15,14 @@ use App\Service\MailManager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -63,7 +63,7 @@ class SecurityController extends AbstractController {
         }
 
 	#[Route ('/account', name:'maf_account')]
-        public function account(Request $request, UserPasswordEncoderInterface $passwordEncoder) {
+        public function account(Request $request, UserPasswordHasherInterface $passwordHasher) {
                 $user = $this->getUser();
                 $em = $this->em;
                 $trans = $this->trans;
@@ -80,7 +80,7 @@ class SecurityController extends AbstractController {
                                 $this->addFlash('notice', $trans->trans('security.account.change.username', [], 'core'));
                         }
                         if ($form->get('plainPassword')->getData() != NULL) {
-                                $user->setPassword($passwordEncoder->encodePassword($user, $form->get('plainPassword')->getData()));
+                                $user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
                                 $this->addFlash('notice', $trans->trans('security.account.change.password', [], 'core'));
                         }
                         if ($form->get('email')->getData() != NULL && $form->get('email')->getData() != $user->getEmail()) {
@@ -208,7 +208,7 @@ class SecurityController extends AbstractController {
         }
 
 	#[Route ('/register', name:'maf_account_register')]
-        public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $authenticator): Response {
+        public function register(Request $request, UserPasswordHasherInterface $passwordHasher, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $authenticator): Response {
                 $user = new User();
                 $form = $this->createForm(RegistrationFormType::class, $user);
                 $form->handleRequest($request);
@@ -222,7 +222,7 @@ class SecurityController extends AbstractController {
                                 return new RedirectResponse($this->generateUrl('maf_account_register'));
                         }
                         # Encode plain password in database
-                        $user->setPassword($passwordEncoder->encodePassword($user, $form->get('plainPassword')->getData()));
+                        $user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
                         #Generate activation token
                         $user->setToken($this->appstate->generateAndCheckToken(16, 'User', 'token'));
 

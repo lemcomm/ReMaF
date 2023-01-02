@@ -2,44 +2,76 @@
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
-class User {
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+class User implements UserInterface, PasswordAuthenticatedUserInterface {
 
-	protected $id;
-	// the below are there to make Symphony 2 scripts happy that for some reason check the entity before the code generation is complete
-	protected $display_name;
-	protected $created;
-	protected $new_chars_limit;
-	protected $app_key;
-	protected $language;
-	protected $notifications;
-	protected $newsletter;
-	protected $account_level;
-	protected $vip_status;
-	protected $paid_until;
-	protected $credits;
-	protected $restricted;
-	protected $current_character;
-	protected $payments;
-	protected $credit_history;
-	protected $characters;
-	protected $crests;
-	protected $cultures;
-	protected $ratings_given;
-	protected $rating_votes;
-	protected $listings;
-	protected $genome_set;
-	protected $artifacts;
-	protected $artifacts_limit;
-	protected $token;
-	protected $reset_token;
-	protected $reset_time;
-	protected $email_token;
-	protected $logs;
-	protected $security_logs;
+	private $id;
+	private $display_name;
+	private $created;
+	private $new_chars_limit;
+	private $app_key;
+	private $language;
+	private $notifications;
+	private $newsletter;
+	private $account_level;
+	private $vip_status;
+	private $paid_until;
+	private $credits;
+	private $restricted;
+	private $current_character;
+	private $payments;
+	private $credit_history;
+	private $characters;
+	private $crests;
+	private $cultures;
+	private $ratings_given;
+	private $rating_votes;
+	private $listings;
+	private $genome_set;
+	private $artifacts;
+	private $artifacts_limit;
+	private $token;
+	private $reset_token;
+	private $reset_time;
+	private $email_token;
+	private $logs;
+	private $security_logs;
+	private $ip;
+	private $gm_name;
+	private $public_admin;
+	private $email_opt_out_token;
+	private $email_delay;
+	private $public;
+	private $next_spawn_time;
+	private $show_patronage;
+	private $old_account_level;
+	private $description;
+	private $limits;
+	private $descriptions;
+	private $patronizing;
+	private $reports;
+	private $reports_against;
+	private $added_report_notes;
+	private $mail_entries;
+	private $keys;
+        private ?string $username = null;
+        private ?string $usernameCanonical = null;
+        private ?string $email = null;
+        private ?string $emailCanonical = null;
+        private ?bool $enabled = null;
+        private ?string $salt = null;
+        private ?string $password = null;
+        private ?\DateTimeInterface $lastLogin = null;
+        private ?string $confirmationToken = null;
+        private ?\DateTimeInterface $passwordRequestedAt = null;
+        private array $roles = [];
 
 	public function __construct() {
 		$this->payments = new ArrayCollection();
@@ -159,118 +191,45 @@ class User {
 		return false;
 	}
 
-    /**
-     * @var string
-     */
-    private $ip;
+	public function getUserIdentifier(): string {
+		return (string) $this->username;
+	}
 
-    /**
-     * @var string
-     */
-    private $gm_name;
+        public function getRoles(): array {
+            $roles = $this->roles;
+	    $roles[] = 'ROLE_USER';
+	    return array_unique($roles);
+        }
 
-    /**
-     * @var boolean
-     */
-    private $public_admin;
+        public function setRoles(array $roles): self {
+            $this->roles = $roles;
 
-    /**
-     * @var string
-     */
-    private $email_opt_out_token;
+            return $this;
+        }
 
-    /**
-     * @var string
-     */
-    private $email_delay;
+	public function getPassword(): string {
+		return $this->password;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $public;
+	public function setPassword(string $password): self {
+		$this->password = $password;
+		return $this;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $next_spawn_time;
+        public function getSalt(): ?string {
+            return $this->salt;
+        }
 
-    /**
-     * @var boolean
-     */
-    private $show_patronage;
+        public function setSalt(?string $salt): self {
+            $this->salt = $salt;
 
-    /**
-     * @var integer
-     */
-    private $old_account_level;
+            return $this;
+        }
 
-    /**
-     * @var \App\Entity\Description
-     */
-    private $description;
-
-    /**
-     * @var \App\Entity\UserLimits
-     */
-    private $limits;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $descriptions;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $patronizing;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $reports;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $reports_against;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $added_report_notes;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $mail_entries;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $keys;
-
-    private ?string $username = null;
-
-    private ?string $usernameCanonical = null;
-
-    private ?string $email = null;
-
-    private ?string $emailCanonical = null;
-
-    private ?bool $enabled = null;
-
-    private ?string $salt = null;
-
-    private ?string $password = null;
-
-    private ?\DateTimeInterface $lastLogin = null;
-
-    private ?string $confirmationToken = null;
-
-    private ?\DateTimeInterface $passwordRequestedAt = null;
-
-    private array $roles = [];
-
+	public function eraseCredentials() {
+	// If you store any temporary, sensitive data on the user, clear it here
+	// $this->plainPassword = null;
+	}
 
     /**
      * Set ip
@@ -1410,18 +1369,6 @@ class User {
         return $this;
     }
 
-    public function getUsernameCanonical(): ?string
-    {
-        return $this->usernameCanonical;
-    }
-
-    public function setUsernameCanonical(string $usernameCanonical): self
-    {
-        $this->usernameCanonical = $usernameCanonical;
-
-        return $this;
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
@@ -1434,18 +1381,6 @@ class User {
         return $this;
     }
 
-    public function getEmailCanonical(): ?string
-    {
-        return $this->emailCanonical;
-    }
-
-    public function setEmailCanonical(string $emailCanonical): self
-    {
-        $this->emailCanonical = $emailCanonical;
-
-        return $this;
-    }
-
     public function isEnabled(): ?bool
     {
         return $this->enabled;
@@ -1454,30 +1389,6 @@ class User {
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
-
-        return $this;
-    }
-
-    public function getSalt(): ?string
-    {
-        return $this->salt;
-    }
-
-    public function setSalt(?string $salt): self
-    {
-        $this->salt = $salt;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
 
         return $this;
     }
@@ -1514,18 +1425,6 @@ class User {
     public function setPasswordRequestedAt(?\DateTimeInterface $passwordRequestedAt): self
     {
         $this->passwordRequestedAt = $passwordRequestedAt;
-
-        return $this;
-    }
-
-    public function getRoles(): array
-    {
-        return $this->roles;
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
 
         return $this;
     }

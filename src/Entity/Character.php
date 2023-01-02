@@ -12,6 +12,121 @@ use Doctrine\DBAL\Types\Types;
 
 class Character {
 
+	private $name;
+	private $battling;
+	private $known_as;
+	private $system;
+	private $male;
+	private $alive;
+	private $retired;
+	private $retired_on;
+	private $generation;
+	private $genome;
+	private $magic;
+	private $list;
+	private $created;
+	private $house_join_date;
+	private $last_access;
+	private $slumbering;
+	private $special;
+	private $location;
+	private $travel;
+	private $travel_locked;
+	private $travel_enter;
+	private $travel_at_sea;
+	private $travel_disembark;
+	private $progress;
+	private $speed;
+	private $wounded;
+	private $gold;
+	private $npc;
+	private $spotting_distance;
+	private $visibility;
+	private $auto_read_realms;
+	private $auto_read_assocs;
+	private $auto_read_house;
+	private $non_hetero_options;
+	private $oath_current;
+	private $oath_time;
+	private $id;
+	private $background;
+	private $log;
+	private $dungeoneer;
+	private $head_of_house;
+	private $active_report;
+	private $local_conversation;
+	private $achievements;
+	private $fame;
+	private $journals;
+	private $ratings;
+	private $prisoners;
+	private $readable_logs;
+	private $newspapers_editor;
+	private $newspapers_reader;
+	private $artifacts;
+	private $quests_owned;
+	private $questings;
+	private $actions;
+	private $votes;
+	private $owned_settlements;
+	private $stewarding_settlements;
+	private $settlement_claims;
+	private $occupied_settlements;
+	private $vassals;
+	private $successor_to;
+	private $entourage;
+	private $entourage_given;
+	private $soldiers_old;
+	private $soldiers_given;
+	private $owned_places;
+	private $created_places;
+	private $occupied_places;
+	private $ambassadorships;
+	private $updated_descriptions;
+	private $updated_spawn_descriptions;
+	private $founded_houses;
+	private $successor_to_houses;
+	private $requests;
+	private $related_requests;
+	private $part_of_requests;
+	private $units;
+	private $marshalling_units;
+	private $leading_battlegroup;
+	private $siege_equipment;
+	private $portals;
+	private $conv_permissions;
+	private $messages;
+	private $tagged_messages;
+	private $activity_participation;
+	private $skills;
+	private $styles;
+	private $created_styles;
+	private $founded_associations;
+	private $association_memberships;
+	private $weapon;
+	private $armour;
+	private $equipment;
+	private $mount;
+	private $prisoner_of;
+	private $user;
+	private $crest;
+	private $liege;
+	private $successor;
+	private $inside_settlement;
+	private $inside_place;
+	private $house;
+	private $used_portal;
+	private $realm;
+	private $liege_land;
+	private $liege_place;
+	private $liege_position;
+	private $faith;
+	private $children;
+	private $parents;
+	private $partnerships;
+	private $positions;
+	private $battlegroups;
+
 	protected $ultimate=false;
 	protected $my_realms=null;
 	protected $my_houses=null;
@@ -19,1233 +134,660 @@ class Character {
 	protected $my_rulerships=false;
 	public $full_health = 100;
 
+	public function __construct() {
+		$this->achievements = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->fame = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->journals = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->ratings = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->prisoners = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->readable_logs = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->newspapers_editor = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->newspapers_reader = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->artifacts = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->quests_owned = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->questings = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->actions = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->votes = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->owned_settlements = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->stewarding_settlements = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->settlement_claims = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->occupied_settlements = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->vassals = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->successor_to = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->entourage = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->entourage_given = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->soldiers_old = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->soldiers_given = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->owned_places = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->created_places = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->occupied_places = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->ambassadorships = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->updated_descriptions = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->updated_spawn_descriptions = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->founded_houses = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->successor_to_houses = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->requests = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->related_requests = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->part_of_requests = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->units = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->marshalling_units = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->leading_battlegroup = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->siege_equipment = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->portals = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->conv_permissions = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->messages = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->tagged_messages = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->activity_participation = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->skills = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->styles = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->created_styles = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->founded_associations = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->association_memberships = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->children = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->parents = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->partnerships = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->positions = new \Doctrine\Common\Collections\ArrayCollection();
+		$this->battlegroups = new \Doctrine\Common\Collections\ArrayCollection();
+	}
+
+
 	public function __toString() {
-                                                		return "{$this->id} ({$this->name})";
-                                                	}
+		return "{$this->id} ({$this->name})";
+	}
 
 	public function getPureName() {
-                                                		return $this->name;
-                                                	}
+		return $this->name;
+	}
 
 	public function getName() {
-                                                		// override to incorporate the known-as part
-                                                		if ($this->getKnownAs()==null) {
-                                                			return $this->name;
-                                                		} else {
-                                                			return '<i>'.$this->known_as.'</i>';
-                                                		}
-                                                	}
+		// override to incorporate the known-as part
+		if ($this->getKnownAs()==null) {
+			return $this->name;
+		} else {
+			return '<i>'.$this->known_as.'</i>';
+		}
+	}
 
 	public function getListName() {
-                                                		return $this->getName().' (ID: '.$this->id.')';
-                                                	}
+		return $this->getName().' (ID: '.$this->id.')';
+	}
 
 	public function DaysInGame() {
-                                                		return $this->created->diff(new \DateTime("now"), true)->days;
-                                                	}
+		return $this->created->diff(new \DateTime("now"), true)->days;
+	}
 
 	public function isRuler() {
-                                                		return !$this->findRulerships()->isEmpty();
-                                                	}
+		return !$this->findRulerships()->isEmpty();
+	}
 
 	public function isNPC() {
-                                                		return $this->npc;
-                                                	}
+		return $this->npc;
+	}
 
 	public function isTrial() {
-                                                		if ($this->user) return $this->user->isTrial();
-                                                		return false;
-                                                	}
+		if ($this->user) return $this->user->isTrial();
+		return false;
+	}
 
 	public function isDoingAction($action) {
-                                                		if ($this->getActions()->exists(
-                                                			function($key, $element) use ($action) { return $element->getType() == $action; }
-                                                		)) {
-                                                			return true;
-                                                		} else {
-                                                			return false;
-                                                		}
-                                                	}
+		if ($this->getActions()->exists(
+			function($key, $element) use ($action) { return $element->getType() == $action; }
+		)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public function findRulerships() {
-                                                		if (!$this->my_rulerships) {
-                                                			$this->my_rulerships = new ArrayCollection;
-                                                			foreach ($this->positions as $position) {
-                                                				if ($position->getRuler()) {
-                                                					$this->my_rulerships->add($position->getRealm());
-                                                				}
-                                                			}
-                                                		}
-                                                		return $this->my_rulerships;
-                                                	}
+		if (!$this->my_rulerships) {
+			$this->my_rulerships = new ArrayCollection;
+			foreach ($this->positions as $position) {
+				if ($position->getRuler()) {
+					$this->my_rulerships->add($position->getRealm());
+				}
+			}
+		}
+		return $this->my_rulerships;
+	}
 
 	public function findHighestRulership() {
-                                                		$highest = null;
-                                                		if ($this->findRulerships()) {
-                                                			foreach ($this->findRulerships() as $rulership) {
-                                                				if ($highest == NULL) {
-                                                					$highest = $rulership;
-                                                				}
-                                                				if ($rulership->getType() > $highest->getType()) {
-                                                					$highest = $rulership;
-                                                				}
-                                                			}
-                                                		}
-                                                		return $highest;
-                                                	}
+		$highest = null;
+		if ($this->findRulerships()) {
+			foreach ($this->findRulerships() as $rulership) {
+				if ($highest == NULL) {
+					$highest = $rulership;
+				}
+				if ($rulership->getType() > $highest->getType()) {
+					$highest = $rulership;
+				}
+			}
+		}
+		return $highest;
+	}
 
 	public function isPrisoner() {
-                                                		if ($this->getPrisonerOf()) return true; else return false;
-                                                	}
+		if ($this->getPrisonerOf()) return true; else return false;
+	}
 
 	public function hasVisiblePartners() {
-                                                		foreach ($this->getPartnerships() as $ps) {
-                                                			if ($ps->getActive() && $ps->getPublic()) {
-                                                				return true;
-                                                			}
-                                                		}
-                                                		return false;
-                                                	}
+		foreach ($this->getPartnerships() as $ps) {
+			if ($ps->getActive() && $ps->getPublic()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public function getFather() {
-                                                		return $this->getFatherOrMother(true);
-                                                	}
+		return $this->getFatherOrMother(true);
+	}
 	public function getMother() {
-                                                		return $this->getFatherOrMother(false);
-                                                	}
+		return $this->getFatherOrMother(false);
+	}
 	private function getFatherOrMother($male) {
-                                                		foreach ($this->getParents() as $parent) {
-                                                			if ($parent->getMale() == $male) return $parent;
-                                                		}
-                                                		return null;
-                                                	}
+		foreach ($this->getParents() as $parent) {
+			if ($parent->getMale() == $male) return $parent;
+		}
+		return null;
+	}
 
 	public function findImmediateRelatives() {
-                                                		$relatives = new ArrayCollection;
-                                                		if ($this->getParents()) {
-                                                			foreach ($this->getParents() as $parent) {
-                                                				$relatives[] = $parent;
-                                                				foreach ($parent->getChildren() as $child) {
-                                                					if ($this != $child) {
-                                                						$relatives[] = $child;
-                                                					}
-                                                				}
-                                                			}
-                                                		}
-                                                		if ($this->getChildren()) {
-                                                			foreach ($this->getChildren() as $child) {
-                                                				$relatives[] = $child;
-                                                			}
-                                                		}
-                                                		return $relatives;
-                                                	}
+		$relatives = new ArrayCollection;
+		if ($this->getParents()) {
+			foreach ($this->getParents() as $parent) {
+				$relatives[] = $parent;
+				foreach ($parent->getChildren() as $child) {
+					if ($this != $child) {
+						$relatives[] = $child;
+					}
+				}
+			}
+		}
+		if ($this->getChildren()) {
+			foreach ($this->getChildren() as $child) {
+				$relatives[] = $child;
+			}
+		}
+		return $relatives;
+	}
 
 	public function healthValue() {
-                                                		return max(0.0, ($this->full_health - $this->getWounded())) / $this->full_health;
-                                                	}
+		return max(0.0, ($this->full_health - $this->getWounded())) / $this->full_health;
+	}
 
 	public function healthStatus() {
-                                                		$h = $this->healthValue();
-                                                		if ($h > 0.9) return 'perfect';
-                                                		if ($h > 0.75) return 'lightly';
-                                                		if ($h > 0.5) return 'moderately';
-                                                		if ($h > 0.25) return 'seriously';
-                                                		return 'mortally';
-                                                	}
+		$h = $this->healthValue();
+		if ($h > 0.9) return 'perfect';
+		if ($h > 0.75) return 'lightly';
+		if ($h > 0.5) return 'moderately';
+		if ($h > 0.25) return 'seriously';
+		return 'mortally';
+	}
 
 	public function isActive($include_wounded=false, $include_slumbering=false) {
-                                                		if (!$this->location) return false;
-                                                		if (!$this->alive) return false;
-                                                		if ($this->retired) return false;
-                                                		if ($this->slumbering && !$include_slumbering) return false;
-                                                		// we can take a few wounds before we go inactive
-                                                		if ($this->healthValue() < 0.9 && !$include_wounded) return false;
-                                                		if ($this->isPrisoner()) return false;
-                                                		return true;
-                                                	}
+		if (!$this->location) return false;
+		if (!$this->alive) return false;
+		if ($this->retired) return false;
+		if ($this->slumbering && !$include_slumbering) return false;
+		// we can take a few wounds before we go inactive
+		if ($this->healthValue() < 0.9 && !$include_wounded) return false;
+		if ($this->isPrisoner()) return false;
+		return true;
+	}
 
 	public function isInBattle() {
-                                                		// FIXME: in dispatcher, we simply check if we're in a battlegroup...
-                                                		if ($this->hasAction('military.battle')) return true;
-                                                		if ($this->hasAction('settlement.attack')) return true;
-                                                		return false;
-                                                	}
+		// FIXME: in dispatcher, we simply check if we're in a battlegroup...
+		if ($this->hasAction('military.battle')) return true;
+		if ($this->hasAction('settlement.attack')) return true;
+		return false;
+	}
 
 	public function isLooting() {
-                                                		if ($this->hasAction('settlement.loot')) return true;
-                                                		return false;
-                                                	}
+		if ($this->hasAction('settlement.loot')) return true;
+		return false;
+	}
 
 	public function findForcedBattles() {
-                                                		$engagements = new ArrayCollection;
-                                                		foreach ($this->findActions(array('military.battle', 'settlement.attack')) as $act) {
-                                                			if ($act->getStringValue('forced')) {
-                                                				$engagements->add($act);
-                                                			}
-                                                		}
-                                                		return $engagements;
-                                                	}
+		$engagements = new ArrayCollection;
+		foreach ($this->findActions(array('military.battle', 'settlement.attack')) as $act) {
+			if ($act->getStringValue('forced')) {
+				$engagements->add($act);
+			}
+		}
+		return $engagements;
+	}
 
 	public function getVisualSize() {
-                                                		$size = 5; // the default visual size for nobles, we're not added as a pseudo-soldier like we are in battle groups
-                                                		foreach ($this->units as $unit) {
-                                                			$size += $unit->getVisualSize();
-                                                		}
-                                                		return $size;
-                                                	}
+		$size = 5; // the default visual size for nobles, we're not added as a pseudo-soldier like we are in battle groups
+		foreach ($this->units as $unit) {
+		$size += $unit->getVisualSize();
+		}
+		return $size;
+	}
 
 	public function getEntourageOfType($type, $only_available=false) {
-                                                		if (is_object($type)) {
-                                                			return $this->entourage->filter(
-                                                				function($entry) use ($type, $only_available) {
-                                                					if ($only_available) {
-                                                						return ($entry->getType()==$type && $entry->isAlive() && !$entry->getAction());
-                                                					} else {
-                                                						return ($entry->getType()==$type);
-                                                					}
-                                                				}
-                                                			);
-                                                		} else {
-                                                			$type = strtolower($type);
-                                                			return $this->entourage->filter(
-                                                				function($entry) use ($type, $only_available) {
-                                                					if ($only_available) {
-                                                						return ($entry->getType()->getName()==$type && $entry->isAlive() && !$entry->getAction());
-                                                					} else {
-                                                						return ($entry->getType()->getName()==$type);
-                                                					}
-                                                				}
-                                                			);
-                                                		}
-                                                	}
+		if (is_object($type)) {
+			return $this->entourage->filter(
+				function($entry) use ($type, $only_available) {
+					if ($only_available) {
+						return ($entry->getType()==$type && $entry->isAlive() && !$entry->getAction());
+					} else {
+						return ($entry->getType()==$type);
+					}
+				}
+			);
+		} else {
+			$type = strtolower($type);
+			return $this->entourage->filter(
+				function($entry) use ($type, $only_available) {
+					if ($only_available) {
+						return ($entry->getType()->getName()==$type && $entry->isAlive() && !$entry->getAction());
+					} else {
+						return ($entry->getType()->getName()==$type);
+					}
+				}
+			);
+		}
+	}
 
 	public function getAvailableEntourageOfType($type) {
-                                                		return $this->getEntourageOfType($type, true);
-                                                	}
+		return $this->getEntourageOfType($type, true);
+	}
 
 	public function getLivingEntourage() {
-                                                		return $this->getEntourage()->filter(
-                                                			function($entry) {
-                                                				return ($entry->isAlive());
-                                                			}
-                                                		);
-                                                	}
+		return $this->getEntourage()->filter(
+			function($entry) {
+				return ($entry->isAlive());
+			}
+		);
+	}
 
 	public function getDeadEntourage() {
-                                                		return $this->getEntourage()->filter(
-                                                			function($entry) {
-                                                				return (!$entry->isAlive());
-                                                			}
-                                                		);
-                                                	}
+	return $this->getEntourage()->filter(
+	function($entry) {
+	return (!$entry->isAlive());
+	}
+	);
+	}
 
 	public function getActiveEntourageByType() {
-                                                		return $this->getEntourageByType(true);
-                                                	}
+	return $this->getEntourageByType(true);
+	}
 
 	public function getEntourageByType($active_only=false) {
-                                                		$data = array();
-                                                		if ($active_only) {
-                                                			$npcs = $this->getLivingEntourage();
-                                                		} else {
-                                                			$npcs = $this->getEntourage();
-                                                		}
-                                                		foreach ($npcs as $npc) {
-                                                			$type = $npc->getType()->getName();
-                                                			if (isset($data[$type])) {
-                                                				$data[$type]++;
-                                                			} else {
-                                                				$data[$type] = 1;
-                                                			}
-                                                		}
-                                                		return $data;
-                                                	}
+	$data = array();
+	if ($active_only) {
+	$npcs = $this->getLivingEntourage();
+	} else {
+	$npcs = $this->getEntourage();
+	}
+	foreach ($npcs as $npc) {
+	$type = $npc->getType()->getName();
+	if (isset($data[$type])) {
+	$data[$type]++;
+	} else {
+	$data[$type] = 1;
+	}
+	}
+	return $data;
+	}
 
 	public function getGender() {
-                                                		if ($this->male) return "male"; else return "female";
-                                                	}
+	if ($this->male) return "male"; else return "female";
+	}
 	public function gender($string) {
-                                                		if ($this->male) return "gender.".$string;
-                                                		switch ($string) {
-                                                			case 'he':		return 'gender.she';
-                                                			case 'his':		return 'gender.her';
-                                                			case 'son':		return 'gender.daughter';
-                                                		}
-                                                		return "gender.".$string;
-                                                	}
+	if ($this->male) return "gender.".$string;
+	switch ($string) {
+	case 'he':		return 'gender.she';
+	case 'his':		return 'gender.her';
+	case 'son':		return 'gender.daughter';
+	}
+	return "gender.".$string;
+	}
 
 	public function isAlive() {
-                                                		return $this->getAlive();
-                                                	}
+	return $this->getAlive();
+	}
 
 	public function findUltimate() {
-                                                		if ($this->ultimate!==false) return $this->ultimate;
-                                                		if (!$liege=$this->getLiege()) {
-                                                			$this->ultimate=$this;
-                                                		} else {
-                                                			while ($liege->getLiege()) {
-                                                				$liege=$liege->getLiege();
-                                                			}
-                                                			$this->ultimate=$liege;
-                                                		}
-                                                		return $this->ultimate;
-                                                	}
+	if ($this->ultimate!==false) return $this->ultimate;
+	if (!$liege=$this->getLiege()) {
+	$this->ultimate=$this;
+	} else {
+	while ($liege->getLiege()) {
+	$liege=$liege->getLiege();
+	}
+	$this->ultimate=$liege;
+	}
+	return $this->ultimate;
+	}
 
 	public function isUltimate() {
-                                                		if ($this->findUltimate() == $this) return true;
-                                                		return false;
-                                                	}
+	if ($this->findUltimate() == $this) return true;
+	return false;
+	}
 
 	public function findRealms($check_lord=true) {
-                                                		if ($this->my_realms!=null) return $this->my_realms;
-                                                
-                                                		$realms = new ArrayCollection;
-                                                		foreach ($this->getPositions() as $position) {
-                                                			if (!$realms->contains($position->getRealm())) {
-                                                				$realms->add($position->getRealm());
-                                                			}
-                                                		}
-                                                		foreach ($this->getOwnedSettlements() as $estate) {
-                                                			if ($realm = $estate->getRealm()) {
-                                                				if (!$realms->contains($realm)) {
-                                                					$realms->add($realm);
-                                                				}
-                                                			}
-                                                		}
-                                                		foreach ($this->getOwnedPlaces() as $place) {
-                                                			if ($realm = $place->getRealm()) {
-                                                				if (!$realms->contains($realm)) {
-                                                					$realms->add($realm);
-                                                				}
-                                                			}
-                                                		}
-                                                
-                                                		if ($check_lord && $this->findAllegiance()) {
-                                                			$alg = $this->findAllegiance();
-                                                			if (!($alg instanceof Realm)) {
-                                                				if ($alg->getRealm() != NULL) {
-                                                					if (!$realms->contains($alg->getRealm())) {
-                                                						$realms->add($alg->getRealm());
-                                                					}
-                                                				} elseif ($alg instanceof Character) {
-                                                					foreach ($alg->findRealms() as $realm) {
-                                                						# Backwards compatibility junk. Remove this when we remvoe $this->liege.
-                                                						if (!$realms->contains($realm)) {
-                                                							$realms->add($realm);
-                                                						}
-                                                					}
-                                                				}
-                                                			} else {
-                                                				if ($alg != NULL) {
-                                                					if (!$realms->contains($alg)) {
-                                                						$realms->add($alg);
-                                                					}
-                                                				}
-                                                			}
-                                                		} elseif ($check_lord && $this->getLiege()) {
-                                                			foreach ($this->getLiege()->findRealms(false) as $lordrealm) {
-                                                				if (!$realms->contains($lordrealm)) {
-                                                					$realms->add($lordrealm);
-                                                				}
-                                                			}
-                                                		}
-                                                
-                                                		foreach ($realms as $realm) {
-                                                			foreach ($realm->findAllSuperiors() as $suprealm) {
-                                                				if (!$realms->contains($suprealm)) {
-                                                					$realms->add($suprealm);
-                                                				}
-                                                			}
-                                                		}
-                                                		$this->my_realms = $realms;
-                                                
-                                                		return $realms;
-                                                	}
+	if ($this->my_realms!=null) return $this->my_realms;
+
+	$realms = new ArrayCollection;
+	foreach ($this->getPositions() as $position) {
+	if (!$realms->contains($position->getRealm())) {
+	$realms->add($position->getRealm());
+	}
+	}
+	foreach ($this->getOwnedSettlements() as $estate) {
+	if ($realm = $estate->getRealm()) {
+	if (!$realms->contains($realm)) {
+	$realms->add($realm);
+	}
+	}
+	}
+	foreach ($this->getOwnedPlaces() as $place) {
+	if ($realm = $place->getRealm()) {
+	if (!$realms->contains($realm)) {
+	$realms->add($realm);
+	}
+	}
+	}
+
+	if ($check_lord && $this->findAllegiance()) {
+	$alg = $this->findAllegiance();
+	if (!($alg instanceof Realm)) {
+	if ($alg->getRealm() != NULL) {
+	if (!$realms->contains($alg->getRealm())) {
+	$realms->add($alg->getRealm());
+	}
+	} elseif ($alg instanceof Character) {
+	foreach ($alg->findRealms() as $realm) {
+	# Backwards compatibility junk. Remove this when we remvoe $this->liege.
+	if (!$realms->contains($realm)) {
+	$realms->add($realm);
+	}
+	}
+	}
+	} else {
+	if ($alg != NULL) {
+	if (!$realms->contains($alg)) {
+	$realms->add($alg);
+	}
+	}
+	}
+	} elseif ($check_lord && $this->getLiege()) {
+	foreach ($this->getLiege()->findRealms(false) as $lordrealm) {
+	if (!$realms->contains($lordrealm)) {
+	$realms->add($lordrealm);
+	}
+	}
+	}
+
+	foreach ($realms as $realm) {
+	foreach ($realm->findAllSuperiors() as $suprealm) {
+	if (!$realms->contains($suprealm)) {
+	$realms->add($suprealm);
+	}
+	}
+	}
+	$this->my_realms = $realms;
+
+	return $realms;
+	}
 
 	public function findHouses() {
-                                                		if ($this->my_houses!=null) return $this->my_houses;
-                                                		$houses = new ArrayCollection;
-                                                		if ($this->getHouse()) {
-                                                			$houses[] = $this->getHouse();
-                                                		}
-                                                		foreach ($houses as $house) {
-                                                			foreach ($house->findAllSuperiors() as $suphouse) {
-                                                				if (!$houses->contains($suphouse)) {
-                                                					$houses->add($suphouse);
-                                                				}
-                                                			}
-                                                		}
-                                                		$this->my_houses = $houses;
-                                                		return $houses;
-                                                	}
+	if ($this->my_houses!=null) return $this->my_houses;
+	$houses = new ArrayCollection;
+	if ($this->getHouse()) {
+	$houses[] = $this->getHouse();
+	}
+	foreach ($houses as $house) {
+	foreach ($house->findAllSuperiors() as $suphouse) {
+	if (!$houses->contains($suphouse)) {
+	$houses->add($suphouse);
+	}
+	}
+	}
+	$this->my_houses = $houses;
+	return $houses;
+	}
 
 	public function findAssociations() {
-                                                		if ($this->my_assocs!=null) return $this->my_assocs;
-                                                		$assocs = new ArrayCollection;
-                                                		foreach ($this->getAssociationMemberships() as $mbr) {
-                                                			$assocs->add($mbr->getAssociation());
-                                                		}
-                                                		$this->my_assocs = $assocs;
-                                                		return $assocs;
-                                                	}
+	if ($this->my_assocs!=null) return $this->my_assocs;
+	$assocs = new ArrayCollection;
+	foreach ($this->getAssociationMemberships() as $mbr) {
+	$assocs->add($mbr->getAssociation());
+	}
+	$this->my_assocs = $assocs;
+	return $assocs;
+	}
 
 	public function findSubcreateableAssociations() {
-                                                		$assocs = new ArrayCollection;
-                                                		foreach ($this->getAssociationMemberships() as $mbr) {
-                                                			if ($rank = $mbr->getRank()) {
-                                                				if ($rank->getOwner() || $rank->getCreateAssocs()) {
-                                                					$assocs->add($mbr->getAssociation());
-                                                				}
-                                                			}
-                                                		}
-                                                		return $assocs;
-                                                	}
+	$assocs = new ArrayCollection;
+	foreach ($this->getAssociationMemberships() as $mbr) {
+	if ($rank = $mbr->getRank()) {
+	if ($rank->getOwner() || $rank->getCreateAssocs()) {
+	$assocs->add($mbr->getAssociation());
+	}
+	}
+	}
+	return $assocs;
+	}
 
 	public function hasNewEvents() {
-                                                		foreach ($this->getReadableLogs() as $log) {
-                                                			if ($log->hasNewEvents()) {
-                                                				return true;
-                                                			}
-                                                		}
-                                                		return false;
-                                                	}
+	foreach ($this->getReadableLogs() as $log) {
+	if ($log->hasNewEvents()) {
+	return true;
+	}
+	}
+	return false;
+	}
 
 	public function countNewEvents() {
-                                                		$count=0;
-                                                		foreach ($this->getReadableLogs() as $log) {
-                                                			$count += $log->countNewEvents();
-                                                		}
-                                                		return $count;
-                                                	}
+	$count=0;
+	foreach ($this->getReadableLogs() as $log) {
+	$count += $log->countNewEvents();
+	}
+	return $count;
+	}
 
 	public function hasNewMessages() {
-                                                		$permissions = $this->getConvPermissions()->filter(function($entry) {return $entry->getUnread() > 0;});
-                                                		if ($permissions->count() > 0) {
-                                                			return true;
-                                                		}
-                                                		return false;
-                                                	}
+	$permissions = $this->getConvPermissions()->filter(function($entry) {return $entry->getUnread() > 0;});
+	if ($permissions->count() > 0) {
+	return true;
+	}
+	return false;
+	}
 
 	public function countNewMessages() {
-                                                		$permissions = $this->getConvPermissions()->filter(function($entry) {return $entry->getUnread() > 0;});
-                                                		$total = 0;
-                                                		if ($permissions->count() > 0) {
-                                                			foreach ($permissions as $perm) {
-                                                				$total += $perm->getUnread();
-                                                			}
-                                                			return $total;
-                                                		}
-                                                		return $total;
-                                                	}
+	$permissions = $this->getConvPermissions()->filter(function($entry) {return $entry->getUnread() > 0;});
+	$total = 0;
+	if ($permissions->count() > 0) {
+	foreach ($permissions as $perm) {
+	$total += $perm->getUnread();
+	}
+	return $total;
+	}
+	return $total;
+	}
 
 	public function findActions($key) {
-                                                		return $this->actions->filter(
-                                                			function($entry) use ($key) {
-                                                				if (is_array($key)) {
-                                                					return in_array($entry->getType(), $key);
-                                                				} else {
-                                                					return ($entry->getType()==$key);
-                                                				}
-                                                			}
-                                                		);
-                                                	}
+	return $this->actions->filter(
+	function($entry) use ($key) {
+	if (is_array($key)) {
+	return in_array($entry->getType(), $key);
+	} else {
+	return ($entry->getType()==$key);
+	}
+	}
+	);
+	}
 
 	public function hasAction($key) {
-                                                		return ($this->findActions($key)->count()>0);
-                                                	}
+	return ($this->findActions($key)->count()>0);
+	}
 
 	public function findForeignAffairsRealms() {
-                                                		$realms = new ArrayCollection();
-                                                		foreach ($this->getPositions() as $pos) {
-                                                			if ($pos->getRuler()) {
-                                                				$realms->add($pos->getRealm()->getId());
-                                                			}
-                                                			if ($pos->getType() && $pos->getType()->getName() == 'foreign affairs') {
-                                                				$realms->add($pos->getRealm()->getId());
-                                                			}
-                                                		}
-                                                		if ($realms->isEmpty()) {
-                                                			return null;
-                                                		} else {
-                                                			return $realms;
-                                                		}
-                                                	}
+	$realms = new ArrayCollection();
+	foreach ($this->getPositions() as $pos) {
+	if ($pos->getRuler()) {
+	$realms->add($pos->getRealm()->getId());
+	}
+	if ($pos->getType() && $pos->getType()->getName() == 'foreign affairs') {
+	$realms->add($pos->getRealm()->getId());
+	}
+	}
+	if ($realms->isEmpty()) {
+	return null;
+	} else {
+	return $realms;
+	}
+	}
 
 	public function countSoldiers() {
-                                                		$count = 0;
-                                                		if (!$this->getUnits()->isEmpty()) {
-                                                			foreach ($this->getUnits() as $unit) {
-                                                				$count += $unit->getActiveSoldiers()->count();
-                                                			}
-                                                		}
-                                                		return $count;
-                                                	}
+	$count = 0;
+	if (!$this->getUnits()->isEmpty()) {
+	foreach ($this->getUnits() as $unit) {
+	$count += $unit->getActiveSoldiers()->count();
+	}
+	}
+	return $count;
+	}
 
 	public function hasNoSoldiers() {
-                                                		if ($this->countSoldiers() == 0) {
-                                                			return true;
-                                                		}
-                                                		return false;
-                                                	}
+	if ($this->countSoldiers() == 0) {
+	return true;
+	}
+	return false;
+	}
 
 	public function findAllegiance() {
-                                                		if ($this->realm) {
-                                                			return $this->getRealm();
-                                                		}
-                                                		if ($this->liege_land) {
-                                                			return $this->getLiegeLand();
-                                                		}
-                                                		if ($this->liege_place) {
-                                                			return $this->getLiegePlace();
-                                                		}
-                                                		if ($this->liege_position) {
-                                                			return $this->getLiegePosition();
-                                                		}
-                                                		if ($this->liege) {
-                                                			return $this->getLiege();
-                                                		}
-                                                		return null;
-                                                	}
+	if ($this->realm) {
+	return $this->getRealm();
+	}
+	if ($this->liege_land) {
+	return $this->getLiegeLand();
+	}
+	if ($this->liege_place) {
+	return $this->getLiegePlace();
+	}
+	if ($this->liege_position) {
+	return $this->getLiegePosition();
+	}
+	if ($this->liege) {
+	return $this->getLiege();
+	}
+	return null;
+	}
 
 	public function findVassals() {
-                                                		$vassals = new ArrayCollection();
-                                                		foreach ($this->getPositions() as $key) {
-                                                			if ($key->getRuler()) {
-                                                				foreach ($key->getRealm()->getVassals() as $val) {
-                                                					$vassals->add($val);
-                                                				}
-                                                			}
-                                                			foreach ($key->getVassals() as $val) {
-                                                				$vassals->add($val);
-                                                			}
-                                                		}
-                                                		foreach ($this->getOwnedPlaces() as $key) {
-                                                			if ($key->getType()->getName() != 'embassy') {
-                                                				foreach ($key->getVassals() as $val) {
-                                                					$vassals->add($val);
-                                                				}
-                                                			}
-                                                		}
-                                                		foreach ($this->getOwnedSettlements() as $key) {
-                                                			foreach ($key->getVassals() as $val) {
-                                                				$vassals->add($val);
-                                                			}
-                                                		}
-                                                		foreach ($this->getAmbassadorships() as $key) {
-                                                			foreach ($key->getVassals() as $val) {
-                                                				$vassals->add($val);
-                                                			}
-                                                		}
-                                                		return $vassals;
-                                                	}
+	$vassals = new ArrayCollection();
+	foreach ($this->getPositions() as $key) {
+	if ($key->getRuler()) {
+	foreach ($key->getRealm()->getVassals() as $val) {
+	$vassals->add($val);
+	}
+	}
+	foreach ($key->getVassals() as $val) {
+	$vassals->add($val);
+	}
+	}
+	foreach ($this->getOwnedPlaces() as $key) {
+	if ($key->getType()->getName() != 'embassy') {
+	foreach ($key->getVassals() as $val) {
+	$vassals->add($val);
+	}
+	}
+	}
+	foreach ($this->getOwnedSettlements() as $key) {
+	foreach ($key->getVassals() as $val) {
+	$vassals->add($val);
+	}
+	}
+	foreach ($this->getAmbassadorships() as $key) {
+	foreach ($key->getVassals() as $val) {
+	$vassals->add($val);
+	}
+	}
+	return $vassals;
+	}
 
 	public function findPrimaryRealm() {
-                                                		if ($this->realm) {
-                                                			return $this->getRealm();
-                                                		}
-                                                		if ($this->liege_land) {
-                                                			return $this->getLiegeLand()->getRealm();
-                                                		}
-                                                		if ($this->liege_place) {
-                                                			return $this->getLiegePlace()->getRealm();
-                                                		}
-                                                		if ($this->liege_position) {
-                                                			return $this->getLiegePosition()->getRealm();
-                                                		}
-                                                		return null;
-                                                	}
+	if ($this->realm) {
+	return $this->getRealm();
+	}
+	if ($this->liege_land) {
+	return $this->getLiegeLand()->getRealm();
+	}
+	if ($this->liege_place) {
+	return $this->getLiegePlace()->getRealm();
+	}
+	if ($this->liege_position) {
+	return $this->getLiegePosition()->getRealm();
+	}
+	return null;
+	}
 
 	public function findLiege() {
-                                                		$alleg = $this->findAllegiance();
-                                                		if ($alleg instanceof Character) {
-                                                			return $alleg;
-                                                		}
-                                                		if ($alleg instanceof Realm) {
-                                                			return $alleg->findRulers();
-                                                		}
-                                                		if ($alleg instanceof Settlement) {
-                                                			return $alleg->getOwner();
-                                                		}
-                                                		if ($alleg instanceof Place) {
-                                                			if ($alleg->getType()->getName() != 'embassy') {
-                                                				return $alleg->getOwner();
-                                                			} else {
-                                                				return $alleg->getAmbassador();
-                                                			}
-                                                		}
-                                                		if ($alleg instanceof RealmPosition) {
-                                                			return $alleg->getHolders();
-                                                		}
-                                                		return null;
-                                                	}
+	$alleg = $this->findAllegiance();
+	if ($alleg instanceof Character) {
+	return $alleg;
+	}
+	if ($alleg instanceof Realm) {
+	return $alleg->findRulers();
+	}
+	if ($alleg instanceof Settlement) {
+	return $alleg->getOwner();
+	}
+	if ($alleg instanceof Place) {
+	if ($alleg->getType()->getName() != 'embassy') {
+	return $alleg->getOwner();
+	} else {
+	return $alleg->getAmbassador();
+	}
+	}
+	if ($alleg instanceof RealmPosition) {
+	return $alleg->getHolders();
+	}
+	return null;
+	}
 
 	public function findControlledSettlements() {
-                                                		$all = new ArrayCollection;
-                                                		foreach ($this->getOwnedSettlements() as $each) {
-                                                			$all->add($each);
-                                                		}
-                                                		foreach ($this->getOccupiedSettlements() as $each) {
-                                                			$all->add($each);
-                                                		}
-                                                		foreach ($this->getStewardingSettlements() as $each) {
-                                                			$all->add($each);
-                                                		}
-                                                		return $all;
-                                                	}
+	$all = new ArrayCollection;
+	foreach ($this->getOwnedSettlements() as $each) {
+	$all->add($each);
+	}
+	foreach ($this->getOccupiedSettlements() as $each) {
+	$all->add($each);
+	}
+	foreach ($this->getStewardingSettlements() as $each) {
+	$all->add($each);
+	}
+	return $all;
+	}
 
 	public function findAnswerableDuels() {
-                                                		$all = new ArrayCollection;
-                                                		foreach ($this->getActivityParticipation() as $each) {
-                                                			$act = $each->getActivity();
-                                                			if ($act->isAnswerable($this)) {
-                                                				$all->add($act);
-                                                			}
-                                                		}
-                                                		return $all;
-                                                	}
+	$all = new ArrayCollection;
+	foreach ($this->getActivityParticipation() as $each) {
+	$act = $each->getActivity();
+	if ($act->isAnswerable($this)) {
+	$all->add($act);
+	}
+	}
+	return $all;
+	}
 
 	public function getType() {
-                                                		return 'first one';
-                                                	}
+	return 'first one';
+	}
 
 	public function findSkill(SkillType $skill) {
-                                                		foreach ($this->skills as $each) {
-                                                			if ($each->getType() === $skill) {
-                                                				return $each;
-                                                			}
-                                                		}
-                                                		return false;
-                                                	}
-	
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var boolean
-     */
-    private $battling;
-
-    /**
-     * @var string
-     */
-    private $known_as;
-
-    /**
-     * @var string
-     */
-    private $system;
-
-    /**
-     * @var boolean
-     */
-    private $male;
-
-    /**
-     * @var boolean
-     */
-    private $alive;
-
-    /**
-     * @var boolean
-     */
-    private $retired;
-
-    /**
-     * @var \DateTime
-     */
-    private $retired_on;
-
-    /**
-     * @var integer
-     */
-    private $generation;
-
-    /**
-     * @var string
-     */
-    private $genome;
-
-    /**
-     * @var integer
-     */
-    private $magic;
-
-    /**
-     * @var integer
-     */
-    private $list;
-
-    /**
-     * @var \DateTime
-     */
-    private $created;
-
-    /**
-     * @var \DateTime
-     */
-    private $house_join_date;
-
-    /**
-     * @var \DateTime
-     */
-    private $last_access;
-
-    /**
-     * @var boolean
-     */
-    private $slumbering;
-
-    /**
-     * @var boolean
-     */
-    private $special;
-
-    /**
-     * @var point
-     */
-    private $location;
-
-    /**
-     * @var linestring
-     */
-    private $travel;
-
-    /**
-     * @var boolean
-     */
-    private $travel_locked;
-
-    /**
-     * @var boolean
-     */
-    private $travel_enter;
-
-    /**
-     * @var boolean
-     */
-    private $travel_at_sea;
-
-    /**
-     * @var boolean
-     */
-    private $travel_disembark;
-
-    /**
-     * @var float
-     */
-    private $progress;
-
-    /**
-     * @var float
-     */
-    private $speed;
-
-    /**
-     * @var integer
-     */
-    private $wounded;
-
-    /**
-     * @var integer
-     */
-    private $gold;
-
-    /**
-     * @var boolean
-     */
-    private $npc;
-
-    /**
-     * @var integer
-     */
-    private $spotting_distance;
-
-    /**
-     * @var integer
-     */
-    private $visibility;
-
-    /**
-     * @var boolean
-     */
-    private $auto_read_realms;
-
-    /**
-     * @var boolean
-     */
-    private $auto_read_assocs;
-
-    /**
-     * @var boolean
-     */
-    private $auto_read_house;
-
-    /**
-     * @var boolean
-     */
-    private $non_hetero_options;
-
-    /**
-     * @var boolean
-     */
-    private $oath_current;
-
-    /**
-     * @var \DateTime
-     */
-    private $oath_time;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\CharacterBackground
-     */
-    private $background;
-
-    /**
-     * @var \App\Entity\EventLog
-     */
-    private $log;
-
-    /**
-     * @var \App\Entity\Dungeoneer
-     */
-    private $dungeoneer;
-
-    /**
-     * @var \App\Entity\House
-     */
-    private $head_of_house;
-
-    /**
-     * @var \App\Entity\BattleReportCharacter
-     */
-    private $active_report;
-
-    /**
-     * @var \App\Entity\Conversation
-     */
-    private $local_conversation;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $achievements;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $fame;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $journals;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $ratings;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $prisoners;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $readable_logs;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $newspapers_editor;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $newspapers_reader;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $artifacts;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $quests_owned;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $questings;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $actions;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $votes;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $owned_settlements;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $stewarding_settlements;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $settlement_claims;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $occupied_settlements;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $vassals;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $successor_to;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $entourage;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $entourage_given;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $soldiers_old;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $soldiers_given;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $owned_places;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $created_places;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $occupied_places;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $ambassadorships;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $updated_descriptions;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $updated_spawn_descriptions;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $founded_houses;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $successor_to_houses;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $requests;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $related_requests;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $part_of_requests;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $units;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $marshalling_units;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $leading_battlegroup;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $siege_equipment;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $portals;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $conv_permissions;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $messages;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $tagged_messages;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $activity_participation;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $skills;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $styles;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $created_styles;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $founded_associations;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $association_memberships;
-
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $weapon;
-
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $armour;
-
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $equipment;
-
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $mount;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $prisoner_of;
-
-    /**
-     * @var \App\Entity\User
-     */
-    private $user;
-
-    /**
-     * @var \App\Entity\Heraldry
-     */
-    private $crest;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $liege;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $successor;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $inside_settlement;
-
-    /**
-     * @var \App\Entity\Place
-     */
-    private $inside_place;
-
-    /**
-     * @var \App\Entity\House
-     */
-    private $house;
-
-    /**
-     * @var \App\Entity\Portal
-     */
-    private $used_portal;
-
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $liege_land;
-
-    /**
-     * @var \App\Entity\Place
-     */
-    private $liege_place;
-
-    /**
-     * @var \App\Entity\RealmPosition
-     */
-    private $liege_position;
-
-    /**
-     * @var \App\Entity\Association
-     */
-    private $faith;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $children;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $parents;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $partnerships;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $positions;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $battlegroups;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->achievements = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->fame = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->journals = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->ratings = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->prisoners = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->readable_logs = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->newspapers_editor = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->newspapers_reader = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->artifacts = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->quests_owned = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->questings = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->actions = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->votes = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->owned_settlements = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->stewarding_settlements = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->settlement_claims = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->occupied_settlements = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->vassals = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->successor_to = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->entourage = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->entourage_given = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->soldiers_old = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->soldiers_given = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->owned_places = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->created_places = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->occupied_places = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->ambassadorships = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->updated_descriptions = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->updated_spawn_descriptions = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->founded_houses = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->successor_to_houses = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->requests = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->related_requests = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->part_of_requests = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->units = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->marshalling_units = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->leading_battlegroup = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->siege_equipment = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->portals = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->conv_permissions = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->messages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->tagged_messages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->activity_participation = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->skills = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->styles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->created_styles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->founded_associations = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->association_memberships = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->parents = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->partnerships = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->positions = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->battlegroups = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	foreach ($this->skills as $each) {
+	if ($each->getType() === $skill) {
+	return $each;
+	}
+	}
+	return false;
+	}
 
     /**
      * Set name
@@ -1276,7 +818,7 @@ class Character {
     /**
      * Get battling
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getBattling()
     {
@@ -1299,7 +841,7 @@ class Character {
     /**
      * Get known_as
      *
-     * @return string 
+     * @return string
      */
     public function getKnownAs()
     {
@@ -1322,7 +864,7 @@ class Character {
     /**
      * Get system
      *
-     * @return string 
+     * @return string
      */
     public function getSystem()
     {
@@ -1345,7 +887,7 @@ class Character {
     /**
      * Get male
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getMale()
     {
@@ -1368,7 +910,7 @@ class Character {
     /**
      * Get alive
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAlive()
     {
@@ -1391,7 +933,7 @@ class Character {
     /**
      * Get retired
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getRetired()
     {
@@ -1414,7 +956,7 @@ class Character {
     /**
      * Get retired_on
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getRetiredOn()
     {
@@ -1437,7 +979,7 @@ class Character {
     /**
      * Get generation
      *
-     * @return integer 
+     * @return integer
      */
     public function getGeneration()
     {
@@ -1460,7 +1002,7 @@ class Character {
     /**
      * Get genome
      *
-     * @return string 
+     * @return string
      */
     public function getGenome()
     {
@@ -1483,7 +1025,7 @@ class Character {
     /**
      * Get magic
      *
-     * @return integer 
+     * @return integer
      */
     public function getMagic()
     {
@@ -1506,7 +1048,7 @@ class Character {
     /**
      * Get list
      *
-     * @return integer 
+     * @return integer
      */
     public function getList()
     {
@@ -1529,7 +1071,7 @@ class Character {
     /**
      * Get created
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -1552,7 +1094,7 @@ class Character {
     /**
      * Get house_join_date
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getHouseJoinDate()
     {
@@ -1575,7 +1117,7 @@ class Character {
     /**
      * Get last_access
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLastAccess()
     {
@@ -1598,7 +1140,7 @@ class Character {
     /**
      * Get slumbering
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getSlumbering()
     {
@@ -1621,7 +1163,7 @@ class Character {
     /**
      * Get special
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getSpecial()
     {
@@ -1644,7 +1186,7 @@ class Character {
     /**
      * Get location
      *
-     * @return point 
+     * @return point
      */
     public function getLocation()
     {
@@ -1667,7 +1209,7 @@ class Character {
     /**
      * Get travel
      *
-     * @return linestring 
+     * @return linestring
      */
     public function getTravel()
     {
@@ -1690,7 +1232,7 @@ class Character {
     /**
      * Get travel_locked
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getTravelLocked()
     {
@@ -1713,7 +1255,7 @@ class Character {
     /**
      * Get travel_enter
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getTravelEnter()
     {
@@ -1736,7 +1278,7 @@ class Character {
     /**
      * Get travel_at_sea
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getTravelAtSea()
     {
@@ -1759,7 +1301,7 @@ class Character {
     /**
      * Get travel_disembark
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getTravelDisembark()
     {
@@ -1782,7 +1324,7 @@ class Character {
     /**
      * Get progress
      *
-     * @return float 
+     * @return float
      */
     public function getProgress()
     {
@@ -1805,7 +1347,7 @@ class Character {
     /**
      * Get speed
      *
-     * @return float 
+     * @return float
      */
     public function getSpeed()
     {
@@ -1828,7 +1370,7 @@ class Character {
     /**
      * Get wounded
      *
-     * @return integer 
+     * @return integer
      */
     public function getWounded()
     {
@@ -1851,7 +1393,7 @@ class Character {
     /**
      * Get gold
      *
-     * @return integer 
+     * @return integer
      */
     public function getGold()
     {
@@ -1874,7 +1416,7 @@ class Character {
     /**
      * Get npc
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getNpc()
     {
@@ -1897,7 +1439,7 @@ class Character {
     /**
      * Get spotting_distance
      *
-     * @return integer 
+     * @return integer
      */
     public function getSpottingDistance()
     {
@@ -1920,7 +1462,7 @@ class Character {
     /**
      * Get visibility
      *
-     * @return integer 
+     * @return integer
      */
     public function getVisibility()
     {
@@ -1943,7 +1485,7 @@ class Character {
     /**
      * Get auto_read_realms
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAutoReadRealms()
     {
@@ -1966,7 +1508,7 @@ class Character {
     /**
      * Get auto_read_assocs
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAutoReadAssocs()
     {
@@ -1989,7 +1531,7 @@ class Character {
     /**
      * Get auto_read_house
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAutoReadHouse()
     {
@@ -2012,7 +1554,7 @@ class Character {
     /**
      * Get non_hetero_options
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getNonHeteroOptions()
     {
@@ -2035,7 +1577,7 @@ class Character {
     /**
      * Get oath_current
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getOathCurrent()
     {
@@ -2058,7 +1600,7 @@ class Character {
     /**
      * Get oath_time
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getOathTime()
     {
@@ -2068,7 +1610,7 @@ class Character {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -2091,7 +1633,7 @@ class Character {
     /**
      * Get background
      *
-     * @return \App\Entity\CharacterBackground 
+     * @return \App\Entity\CharacterBackground
      */
     public function getBackground()
     {
@@ -2114,7 +1656,7 @@ class Character {
     /**
      * Get log
      *
-     * @return \App\Entity\EventLog 
+     * @return \App\Entity\EventLog
      */
     public function getLog()
     {
@@ -2137,7 +1679,7 @@ class Character {
     /**
      * Get dungeoneer
      *
-     * @return \App\Entity\Dungeoneer 
+     * @return \App\Entity\Dungeoneer
      */
     public function getDungeoneer()
     {
@@ -2160,7 +1702,7 @@ class Character {
     /**
      * Get head_of_house
      *
-     * @return \App\Entity\House 
+     * @return \App\Entity\House
      */
     public function getHeadOfHouse()
     {
@@ -2183,7 +1725,7 @@ class Character {
     /**
      * Get active_report
      *
-     * @return \App\Entity\BattleReportCharacter 
+     * @return \App\Entity\BattleReportCharacter
      */
     public function getActiveReport()
     {
@@ -2206,7 +1748,7 @@ class Character {
     /**
      * Get local_conversation
      *
-     * @return \App\Entity\Conversation 
+     * @return \App\Entity\Conversation
      */
     public function getLocalConversation()
     {
@@ -2239,7 +1781,7 @@ class Character {
     /**
      * Get achievements
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getAchievements()
     {
@@ -2272,7 +1814,7 @@ class Character {
     /**
      * Get fame
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getFame()
     {
@@ -2305,7 +1847,7 @@ class Character {
     /**
      * Get journals
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getJournals()
     {
@@ -2338,7 +1880,7 @@ class Character {
     /**
      * Get ratings
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getRatings()
     {
@@ -2371,7 +1913,7 @@ class Character {
     /**
      * Get prisoners
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getPrisoners()
     {
@@ -2404,7 +1946,7 @@ class Character {
     /**
      * Get readable_logs
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getReadableLogs()
     {
@@ -2437,7 +1979,7 @@ class Character {
     /**
      * Get newspapers_editor
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getNewspapersEditor()
     {
@@ -2470,7 +2012,7 @@ class Character {
     /**
      * Get newspapers_reader
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getNewspapersReader()
     {
@@ -2503,7 +2045,7 @@ class Character {
     /**
      * Get artifacts
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getArtifacts()
     {
@@ -2536,7 +2078,7 @@ class Character {
     /**
      * Get quests_owned
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getQuestsOwned()
     {
@@ -2569,7 +2111,7 @@ class Character {
     /**
      * Get questings
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getQuestings()
     {
@@ -2602,7 +2144,7 @@ class Character {
     /**
      * Get actions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getActions()
     {
@@ -2635,7 +2177,7 @@ class Character {
     /**
      * Get votes
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getVotes()
     {
@@ -2668,7 +2210,7 @@ class Character {
     /**
      * Get owned_settlements
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getOwnedSettlements()
     {
@@ -2701,7 +2243,7 @@ class Character {
     /**
      * Get stewarding_settlements
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getStewardingSettlements()
     {
@@ -2734,7 +2276,7 @@ class Character {
     /**
      * Get settlement_claims
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSettlementClaims()
     {
@@ -2767,7 +2309,7 @@ class Character {
     /**
      * Get occupied_settlements
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getOccupiedSettlements()
     {
@@ -2800,7 +2342,7 @@ class Character {
     /**
      * Get vassals
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getVassals()
     {
@@ -2833,7 +2375,7 @@ class Character {
     /**
      * Get successor_to
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSuccessorTo()
     {
@@ -2866,7 +2408,7 @@ class Character {
     /**
      * Get entourage
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getEntourage()
     {
@@ -2899,7 +2441,7 @@ class Character {
     /**
      * Get entourage_given
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getEntourageGiven()
     {
@@ -2932,7 +2474,7 @@ class Character {
     /**
      * Get soldiers_old
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSoldiersOld()
     {
@@ -2965,7 +2507,7 @@ class Character {
     /**
      * Get soldiers_given
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSoldiersGiven()
     {
@@ -2998,7 +2540,7 @@ class Character {
     /**
      * Get owned_places
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getOwnedPlaces()
     {
@@ -3031,7 +2573,7 @@ class Character {
     /**
      * Get created_places
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getCreatedPlaces()
     {
@@ -3064,7 +2606,7 @@ class Character {
     /**
      * Get occupied_places
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getOccupiedPlaces()
     {
@@ -3097,7 +2639,7 @@ class Character {
     /**
      * Get ambassadorships
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getAmbassadorships()
     {
@@ -3130,7 +2672,7 @@ class Character {
     /**
      * Get updated_descriptions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getUpdatedDescriptions()
     {
@@ -3163,7 +2705,7 @@ class Character {
     /**
      * Get updated_spawn_descriptions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getUpdatedSpawnDescriptions()
     {
@@ -3196,7 +2738,7 @@ class Character {
     /**
      * Get founded_houses
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getFoundedHouses()
     {
@@ -3229,7 +2771,7 @@ class Character {
     /**
      * Get successor_to_houses
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSuccessorToHouses()
     {
@@ -3262,7 +2804,7 @@ class Character {
     /**
      * Get requests
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getRequests()
     {
@@ -3295,7 +2837,7 @@ class Character {
     /**
      * Get related_requests
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getRelatedRequests()
     {
@@ -3328,7 +2870,7 @@ class Character {
     /**
      * Get part_of_requests
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getPartOfRequests()
     {
@@ -3361,7 +2903,7 @@ class Character {
     /**
      * Get units
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getUnits()
     {
@@ -3394,7 +2936,7 @@ class Character {
     /**
      * Get marshalling_units
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getMarshallingUnits()
     {
@@ -3427,7 +2969,7 @@ class Character {
     /**
      * Get leading_battlegroup
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getLeadingBattlegroup()
     {
@@ -3460,7 +3002,7 @@ class Character {
     /**
      * Get siege_equipment
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSiegeEquipment()
     {
@@ -3493,7 +3035,7 @@ class Character {
     /**
      * Get portals
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getPortals()
     {
@@ -3526,7 +3068,7 @@ class Character {
     /**
      * Get conv_permissions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getConvPermissions()
     {
@@ -3559,7 +3101,7 @@ class Character {
     /**
      * Get messages
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getMessages()
     {
@@ -3592,7 +3134,7 @@ class Character {
     /**
      * Get tagged_messages
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getTaggedMessages()
     {
@@ -3625,7 +3167,7 @@ class Character {
     /**
      * Get activity_participation
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getActivityParticipation()
     {
@@ -3658,7 +3200,7 @@ class Character {
     /**
      * Get skills
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getSkills()
     {
@@ -3691,7 +3233,7 @@ class Character {
     /**
      * Get styles
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getStyles()
     {
@@ -3724,7 +3266,7 @@ class Character {
     /**
      * Get created_styles
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getCreatedStyles()
     {
@@ -3757,7 +3299,7 @@ class Character {
     /**
      * Get founded_associations
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getFoundedAssociations()
     {
@@ -3790,7 +3332,7 @@ class Character {
     /**
      * Get association_memberships
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getAssociationMemberships()
     {
@@ -3813,7 +3355,7 @@ class Character {
     /**
      * Get weapon
      *
-     * @return \App\Entity\EquipmentType 
+     * @return \App\Entity\EquipmentType
      */
     public function getWeapon()
     {
@@ -3836,7 +3378,7 @@ class Character {
     /**
      * Get armour
      *
-     * @return \App\Entity\EquipmentType 
+     * @return \App\Entity\EquipmentType
      */
     public function getArmour()
     {
@@ -3859,7 +3401,7 @@ class Character {
     /**
      * Get equipment
      *
-     * @return \App\Entity\EquipmentType 
+     * @return \App\Entity\EquipmentType
      */
     public function getEquipment()
     {
@@ -3882,7 +3424,7 @@ class Character {
     /**
      * Get mount
      *
-     * @return \App\Entity\EquipmentType 
+     * @return \App\Entity\EquipmentType
      */
     public function getMount()
     {
@@ -3905,7 +3447,7 @@ class Character {
     /**
      * Get prisoner_of
      *
-     * @return \App\Entity\Character 
+     * @return \App\Entity\Character
      */
     public function getPrisonerOf()
     {
@@ -3928,7 +3470,7 @@ class Character {
     /**
      * Get user
      *
-     * @return \App\Entity\User 
+     * @return \App\Entity\User
      */
     public function getUser()
     {
@@ -3951,7 +3493,7 @@ class Character {
     /**
      * Get crest
      *
-     * @return \App\Entity\Heraldry 
+     * @return \App\Entity\Heraldry
      */
     public function getCrest()
     {
@@ -3974,7 +3516,7 @@ class Character {
     /**
      * Get liege
      *
-     * @return \App\Entity\Character 
+     * @return \App\Entity\Character
      */
     public function getLiege()
     {
@@ -3997,7 +3539,7 @@ class Character {
     /**
      * Get successor
      *
-     * @return \App\Entity\Character 
+     * @return \App\Entity\Character
      */
     public function getSuccessor()
     {
@@ -4020,7 +3562,7 @@ class Character {
     /**
      * Get inside_settlement
      *
-     * @return \App\Entity\Settlement 
+     * @return \App\Entity\Settlement
      */
     public function getInsideSettlement()
     {
@@ -4043,7 +3585,7 @@ class Character {
     /**
      * Get inside_place
      *
-     * @return \App\Entity\Place 
+     * @return \App\Entity\Place
      */
     public function getInsidePlace()
     {
@@ -4066,7 +3608,7 @@ class Character {
     /**
      * Get house
      *
-     * @return \App\Entity\House 
+     * @return \App\Entity\House
      */
     public function getHouse()
     {
@@ -4089,7 +3631,7 @@ class Character {
     /**
      * Get used_portal
      *
-     * @return \App\Entity\Portal 
+     * @return \App\Entity\Portal
      */
     public function getUsedPortal()
     {
@@ -4112,7 +3654,7 @@ class Character {
     /**
      * Get realm
      *
-     * @return \App\Entity\Realm 
+     * @return \App\Entity\Realm
      */
     public function getRealm()
     {
@@ -4135,7 +3677,7 @@ class Character {
     /**
      * Get liege_land
      *
-     * @return \App\Entity\Settlement 
+     * @return \App\Entity\Settlement
      */
     public function getLiegeLand()
     {
@@ -4158,7 +3700,7 @@ class Character {
     /**
      * Get liege_place
      *
-     * @return \App\Entity\Place 
+     * @return \App\Entity\Place
      */
     public function getLiegePlace()
     {
@@ -4181,7 +3723,7 @@ class Character {
     /**
      * Get liege_position
      *
-     * @return \App\Entity\RealmPosition 
+     * @return \App\Entity\RealmPosition
      */
     public function getLiegePosition()
     {
@@ -4204,7 +3746,7 @@ class Character {
     /**
      * Get faith
      *
-     * @return \App\Entity\Association 
+     * @return \App\Entity\Association
      */
     public function getFaith()
     {
@@ -4237,7 +3779,7 @@ class Character {
     /**
      * Get children
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getChildren()
     {
@@ -4270,7 +3812,7 @@ class Character {
     /**
      * Get parents
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getParents()
     {
@@ -4303,7 +3845,7 @@ class Character {
     /**
      * Get partnerships
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getPartnerships()
     {
@@ -4336,7 +3878,7 @@ class Character {
     /**
      * Get positions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getPositions()
     {
@@ -4369,7 +3911,7 @@ class Character {
     /**
      * Get battlegroups
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getBattlegroups()
     {

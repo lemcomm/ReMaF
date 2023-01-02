@@ -11,7 +11,7 @@
 	{% for journal in journals %}
 		<div class="subcontent">
 			<h2>{{ journal.topic|title }}</h2>
-			{{ 'journal.view.by'|trans({'%character%':link(journal.character), "%day%":journal.cycle|gametime("short"), "%ts%":journal.date|date}, "messages")|raw }}
+			{{ 'journal.view.by'|trans({'%character%':link(journal.getCharacter), "%day%":journal.getCycle|gametime("short"), "%ts%":journal.getDate|date}, "messages")|raw }}
 			{% set length = journal.length %}
 			{% if length > 500 %}
 				{{ ((journal.entry|slice(0,500))~'...')|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}<a href="{{ path('maf_journal', {"id":journal.id}) }}">Read more...</a></p>
@@ -32,19 +32,19 @@
 		<small>(our trial accounts are not time-limited, and you can even change back to a free account at any time)</small>
 	</p>
 
-	{#{% if app.user and is_granted("IS_AUTHENTICATED_REMEMBERED") %}
-	{% else %}
+{% if app.user and is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+{% else %}
 	<p style="text-align:center;margin-top:3em">
 		<a style="
 		background-color: #0d0;
 		padding: 0.5em 1em;
 		border: 3px solid #0a0;
 		border-radius: 0.5em;"
-		href="{{ path('maf_security_register') }}">
+		href="{{ path('maf_account_register') }}">
 			{{ 'menu.register'|trans }}
 		</a>
 	</p>
-{% endif %}#}
+{% endif %}
 </div>
 
 <br class="clear" />

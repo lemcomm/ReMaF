@@ -128,9 +128,6 @@ class CharacterController extends AbstractController {
 		]);
 	}
 
-	/**
-	  * @Route("/scouting", name="bm2_scouting")
-	  */
       	#[Route ('/char/scouting', name:'maf_char_scouting')]
 	public function scoutingAction() {
 		$character = $this->appstate->getCharacter(true, true, true);
@@ -437,14 +434,14 @@ class CharacterController extends AbstractController {
 						$realm,
 						'event.realm.arrival',
 						array('%link-character%'=>$character->getId(), '%link-place%'=>$place->getId()),
-						History::MEDIUM, true, 15
+						History::MEDIUM, false, 15
 					);
 					if ($realm->getSuperior()) {
 						$this->get('history')->logEvent(
 							$realm->findUltimate(),
 							'event.subrealm.arrival',
 							array('%link-character%'=>$character->getId(), '%link-realm%'=>$realm->getId()),
-							History::MEDIUM, true, 15
+							History::MEDIUM, false, 15
 						);
 					}
 				} else {
@@ -454,7 +451,7 @@ class CharacterController extends AbstractController {
 						$house,
 						'event.house.arrival',
 						array('%link-character%'=>$character->getId(), '%link-place%'=>$place->getId()),
-						History::MEDIUM, true, 15
+						History::MEDIUM, false, 15
 					);
 				}
 			} else {
@@ -497,7 +494,7 @@ class CharacterController extends AbstractController {
 				$place,
 				'event.place.start',
 				array('%link-character%'=>$character->getId()),
-				History::MEDIUM, true, 15
+				History::MEDIUM, false, 15
 			);
 			$this->get('history')->visitLog($place, $character);
 			if ($settlement) {
@@ -505,7 +502,7 @@ class CharacterController extends AbstractController {
 					$settlement,
 					'event.place.charstart',
 					array('%link-character%'=>$character->getId(), '%link-place%'=>$place->getId()),
-					History::MEDIUM, true, 15
+					History::MEDIUM, false, 15
 				);
 				$this->get('history')->visitLog($settlement, $character);
 			}
@@ -539,7 +536,7 @@ class CharacterController extends AbstractController {
 		]);
 	}
 
-      	#[Route ('/view/{id}', name:'maf_char_view', requirements: ['id'=>'\d+'])]
+      	#[Route ('/char/view/{id}', name:'maf_char_view', requirements: ['id'=>'\d+'])]
 	public function viewAction(Character $id) {
 		$char = $id;
 		$character = $this->get('appstate')->getCharacter(FALSE, TRUE, TRUE);

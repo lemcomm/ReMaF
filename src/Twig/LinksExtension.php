@@ -156,7 +156,7 @@ class LinksExtension extends AbstractExtension {
 				default:
 					return "[<em>invalid reference</em>]";
 			}
-			$entity = $this->em->getRepository('App:'.$type)->find($id);
+			$entity = $this->em->getRepository('App\Entity\\'.$type)->find($id);
 			if ($entity) {
 				if ($type == 'Unit') {
 					$url = $this->generator->generate($this->getLink($type), array('unit' => $id));
@@ -216,7 +216,7 @@ class LinksExtension extends AbstractExtension {
 		switch (strtolower($name)) {
 			case 'activity':    	return 'maf_activity';
 			case 'activityreport':  return 'maf_activity_report';
-			case 'character':       return 'bm2_site_character_view';
+			case 'character':       return 'maf_char_view';
 			case 'settlement':      return 'bm2_settlement';
 			case 'battle':    	return 'bm2_battle';
 			case 'battlereport':    return 'bm2_battlereport';
@@ -258,7 +258,9 @@ class LinksExtension extends AbstractExtension {
 			$this->logger->error("request: ".$this->request_stack->getCurrentRequest()->getRequestUri());
 			return "[invalid object]";
 		}
+		$this->logger->alert(get_class($entity));
 		$classname = implode('', array_slice(explode('\\', get_class($entity)), -1));
+		$this->logger->alert($entity->getId());
 		$linktype = null;
 		switch ($classname) {
 			case 'GeoFeature':
@@ -414,7 +416,7 @@ class LinksExtension extends AbstractExtension {
 		}
 		if ($raw) return $url;
 		$link = '<a ';
-		if (in_array($class, ['character', 'building', 'buildingtype', 'equipment', 'equipmenttype', 'weapon', 'armour', 'entouragetype', 'entourage'])) { $link .= 'class="link_'.$class.'" '; }
+		if ($class !== 'report') { $link .= 'class="link_'.$class.'" '; }
 		$link .= 'href="'.$url.'">'.$name.'</a>';
 		return $link;
 	}

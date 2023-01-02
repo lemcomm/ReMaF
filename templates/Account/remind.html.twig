@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% trans_default_domain 'core' %}
+
+{% block title %}{%trans with {'%name%': site_short, '%local%': 'security.remind.title'} %}security.remind.title{% endtrans %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans %}security.remind.header{% endtrans %}</h1>
+
+    {{ form(form) }}
+{% endblock %}
