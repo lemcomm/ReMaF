@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
@@ -208,7 +208,7 @@ class SecurityController extends AbstractController {
         }
 
 	#[Route ('/register', name:'maf_account_register')]
-        public function register(Request $request, UserPasswordHasherInterface $passwordHasher, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $authenticator): Response {
+        public function register(Request $request, UserPasswordHasherInterface $passwordHasher): Response {
                 $user = new User();
                 $form = $this->createForm(RegistrationFormType::class, $user);
                 $form->handleRequest($request);
@@ -216,7 +216,7 @@ class SecurityController extends AbstractController {
                 if ($form->isSubmitted() && $form->isValid()) {
                         $em = $this->em;
                         $trans = $this->trans;
-                        $check = $em->getRepository(User::class)->findOneByUsername($form->get('username')->getData());
+                        $check = $em->getRepository(User::class)->findOneByUsername($form->get('_username')->getData());
                         if ($check) {
                                 $this->addFlash('error', $trans->trans('security.register.duplicate.username', [], 'core'));
                                 return new RedirectResponse($this->generateUrl('maf_account_register'));

@@ -12,9 +12,9 @@
         {% endif %}
 
         <h1>{% trans %}security.login.header{% endtrans %}</h1>
-        <label for="username">Username</label>
+        <label for="username">Username: </label>
         <input type="text" value="{{ last }}" name="_username" id="username" placeholder="Username" required autofocus>
-        <label for="password" class="sr-only">Password</label>
+        <label for="password" class="sr-only">Password: </label>
         <input type="password" name="_password" id="password" placeholder="Password" required>
 
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">

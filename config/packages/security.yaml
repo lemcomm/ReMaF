@@ -3,31 +3,31 @@ security:
     password_hashers:
         legacy:
             algorithm: sha512
-            #encode_as_base64: true
-            #iterations: 1
-        App\Entity\User: 'auto'
-
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+            encode_as_base64: true
+            iterations: 1
+        App\Entity\User:
+            algorithm: auto
+            migrate_from:
+              - legacy
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        app_user_provider:
+        users:
             entity:
                 class: App\Entity\User
-                property: username
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
-            provider: app_user_provider
+            provider: users
 
             form_login:
                 login_path: maf_login
                 check_path: maf_login
                 enable_csrf: true
-            login_throttling:
-                max_attempts: 5 # per minute
+            #login_throttling:
+                #max_attempts: 5 # per minute
             logout:
                 path: maf_logout
 

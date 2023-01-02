@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -16,7 +17,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface {
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface {
         # This exists for when we need to rehash user passwords, for instance, when changing algorthms.
         # We could also use to implement more complex EntityRepository->findByRandomThings() functions. They'd go here, as public function findByRandomThings().
         public function __construct(ManagerRegistry $registry) {
