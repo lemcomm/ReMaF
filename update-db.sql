@@ -1,0 +1,3 @@
+alter table battlereport_buildingtype rename to battle_report_building_type;
+alter table battle_report_building_type rename column battlereport_id to battle_report_id;
+alter table battle_report_building_type rename column buildingtype_id to building_type_id;
