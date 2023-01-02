@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<entity name="App\Entity\GeoResource">
+	<entity name="App\Entity\GeoResource" table="georesource">
 		<id name="id" type="integer">
 			<generator strategy="IDENTITY"/>
 		</id>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<entity name="App\Entity\UserReportAgainst">
+	<entity name="App\Entity\UserReportAgainst" table="userreportagainst">
 		<id name="id" type="bigint">
 			<generator strategy="AUTO"/>
 		</id>

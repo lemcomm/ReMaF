@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<entity name="App\Entity\ActivityReportObserver">
+	<entity name="App\Entity\ActivityReportObserver" table="activityreportobserver">
 		<id name="id" type="bigint">
 			<generator strategy="IDENTITY"/>
 		</id>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<entity name="App\Entity\MessageTag">
+	<entity name="App\Entity\MessageTag" table="messagetag">
                 <id name="character" association-key="true"/>
                 <id name="message" association-key="true"/>
                 <many-to-one field="character" target-entity="Character" inversed-by="tagged_messages"/>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<entity name="App\Entity\GeoFeature">
+	<entity name="App\Entity\GeoFeature" table="geofeature">
 		<id name="id" type="integer">
 			<generator strategy="IDENTITY"/>
 		</id>
@@ -12,7 +12,7 @@
 
 		<many-to-one field="type" target-entity="FeatureType"/>
 		<many-to-one field="geo_data" target-entity="GeoData" inversed-by="features"/>
-		
+
 		<one-to-one field="settlement" target-entity="Settlement" mapped-by="geo_marker"/>
 		<one-to-one field="place" target-entity="Place" mapped-by="geo_marker"/>
 

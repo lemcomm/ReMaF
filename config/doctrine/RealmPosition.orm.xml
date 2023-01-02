@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<entity name="App\Entity\RealmPosition">
+	<entity name="App\Entity\RealmPosition" table="realmposition">
 		<id name="id" type="integer">
 			<generator strategy="IDENTITY"/>
 		</id>
@@ -25,7 +25,6 @@
 		<field name="have_vassals" type="boolean" nullable="true"/>
 
 		<many-to-one field="realm" target-entity="Realm" inversed-by="positions"/>
-		<many-to-many field="permissions" target-entity="Permission"/>
 		<one-to-many field="elections" target-entity="Election" mapped-by="position"/>
 
 		<many-to-many field="holders" target-entity="Character" inversed-by="positions">
