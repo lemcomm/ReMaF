@@ -18,7 +18,7 @@ use App\Entity\Settlement;
 use App\Service\AppState;
 use App\Service\PermissionManager;
 
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 

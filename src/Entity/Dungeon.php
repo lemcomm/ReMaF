@@ -6,6 +6,7 @@ use BM2\SiteBundle\Entity\GeoData;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class Dungeon {
 
