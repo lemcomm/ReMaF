@@ -10,13 +10,13 @@
 	<li><a href="https://discord.gg/7YpAhEh">{{ 'menu.discord'|trans }}</a></li>
 	{#<li><a href="http://forum.mightandfealty.com">{{ 'menu.community'|trans }}</a></li>
 	<li><a href="http://wiki.maffans.org">{{ 'menu.wiki'|trans }}</a></li>#}
-	{#{% if not simple or biglogo is defined %}
+	{% if not simple or biglogo is defined %}
 		{% if app.user and is_granted("IS_AUTHENTICATED_REMEMBERED") %}
 			<li><a href="{{ path('maf_user_profile') }}">{{ 'menu.profile'|trans }}</a></li>
 			<li><a href="{{ path('maf_characters') }}">{{ 'menu.characters'|trans }}</a></li>
 		{% else %}
-			<li><a href="{{ path('maf_security_login') }}" class="link_login">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a></li>
-			<li><a href="{{ path('maf_security_register') }}">{{ 'menu.register'|trans }}</a></li>
+			<li><a href="{{ path('maf_login') }}" class="link_login">{{ 'menu.login'|trans }}</a></li>
+			<li><a href="{{ path('maf_register') }}">{{ 'menu.register'|trans }}</a></li>
 		{% endif %}
-	{% endif %}#}
+	{% endif %}
 </ul>

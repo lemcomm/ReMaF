@@ -1,0 +1,146 @@
+default:
+
+security:
+ account:
+  title: "%name%: Account Details"
+  header: Account Details
+  email:
+   subject: "%sitename%: Confirm Your Email"
+   text: |
+    Hello,
+
+    In order to confirm your email with your account at %sitename%, please click the link below:
+
+    %link%
+
+    Respectfully,
+    %sitename% Administration
+
+    If you believe you received this email in error, please forward it to %adminemail%.
+  flash:
+   success: Your email has been successfully confirmed.
+   already: Your email does not require confirmation.
+   failed: Confirmation link appears to be invalid. Are you using the most recent link?
+  change:
+   display: Display name updated!
+   email:
+    success: Email updated! Please check your inbox to confirm this new email. Some functionality will be disabled until you do.
+    notunique: Submitted email appears to already be in use.
+   password: Password updated!
+   username:
+    success: Username updated!
+    notunique: Submitted username appears to already be in use. Please submit another.
+
+ activate:
+  route:
+  flash:
+   success: Your account has been activated successfully!
+   already: Your account does not require activation.
+   failed: Activation link is invalid. If you believe you reached this in error, please complete the form below.
+  change:
+   email:
+    success: Email changed succesfully!
+    failed: Submitted email appears to already be in use.
+ login:
+  title: "%name%: Login"
+  header: Login
+  content: Lorem Ipsum
+ register:
+  title: "%name%: Register An Account"
+  header: Register For A New Account
+  content: Lorem Ipsum
+  email:
+   subject: "%sitename%: Account Activation"
+   text1: |
+    Hello %username%, thank you for registering at %sitename%!
+
+    In order to fully activate your account please click the link below. Thank you!
+
+    %link%
+
+    Respectfully,
+    %sitename% Administration
+
+    If you believe you received this email in error, please forward it to %adminemail%.
+   text2: |
+    Hello %username%, someone, hopefully you, requested a new activation token from %sitename%!
+
+    In order to fully activate your account please click the link below. Thank you!
+
+    %link%
+
+    Respectfully,
+    %sitename% Administration
+
+    If you believe you received this email in error, please forward it to %adminemail%.
+  flash: Thank you for registering! If you haven't already, please check your email for your activation link. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
+ remind:
+  header: Forgot Username
+  intro: If you can't remember your username, we can email it to you if you provide us with your email address.
+  email:
+   subject: "%sitename%: Your Username"
+   text: |
+    Hello %username%,
+
+    Someone, hopefully you, requested we send you your username at %sitename%.
+
+    If you remember your password you can log in at: %login%
+
+    Otherwise, you can request a new password at: %reset%.
+
+    Respectfully,
+    %sitename% Administration
+
+    If you believe you received thisemail in error, please forward it to %adminemail%.
+ reset:
+  header: Request A Password Reset
+  intro: If you provide either your email address or username below and click submit, we'll send a link you can use to reset your account password.
+  email:
+   subject: "%sitename%: Password Reset"
+   text: |
+    Hello, someone, hopefully you, requested a password reset email for their account at %sitename%. In order to complete this reset, please click th link below:
+
+    %link%
+
+    Respectfully,
+    %sitename% Administration
+
+    If you believe you received this email in error, please forward it to %adminemail%.
+  flash:
+   requested: If a matching email has been located in our system, an email has been dispatched with new a new activation link. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
+   completed: Your password has been reset!
+ newtoken:
+  title: "%name%: Request New Activation Link"
+  header: Request New Activation Link
+  flash: If a matching username and email has been located in our system, an email has been dispatched with new a new activation link. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
+
+
+form:
+ email:
+  email: Email
+  help: You must supply a valid email address.
+ password:
+  password: Password
+  confirm: Confirm Password
+  nomatch: Passwords do not match.
+  help: Your password should be at least 8 characters long.
+ register:
+  display: Display Name
+  displayhelp: This name is what is displayed to other users when they view your profile. Like your username, it is limited to a-z, A-Z, spaces, hyphens, and/or underscores.
+  email: Email
+  mailhelp: You must supply a valid email address.
+  toslink: Visit our Terms of Service
+  terms: Consent to Terms of Service
+  toshelp: Please review the Terms of Service at the link above and acknowledge if you consent.
+  password: Password
+  repeat: Confirm Password
+  submit: Register
+ reset:
+  password: Password
+  repeat: Confirm Password
+ setup:
+ submit: Submit
+ username:
+  username: Username
+  help: Usernames may only contain a-z, A-Z, spaces, hyphens, and/or underscores.
+ usernameoremail: Email / Username

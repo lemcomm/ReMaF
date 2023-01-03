@@ -14,6 +14,7 @@ security:
         users:
             entity:
                 class: App\Entity\User
+                property: username
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -37,11 +38,58 @@ security:
             # https://symfony.com/doc/current/security/impersonating_user.html
             switch_user: true
 
+    role_hierarchy:
+        ROLE_TESTER:      ROLE USER
+        ROLE_OLYMPUS:     ROLE USER
+        ROLE_ADMIN:       [ROLE_USER, ROLE_TESTER, ROLE_OLYMPUS]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+        ROLE_BANNED:      [ROLE_BANNED_TOS, ROLE_BANNED_MULTI]
+
+
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
+    # All the built ins:
+    # IS_AUTHENTICATED -- All logged in users.
+    # IS_AUTHENTICATED_REMEMBERED -- All logged in users.
+    # IS_AUTHENTICATED_FULLY -- All logged in users who have directly logged in this session (not remembered)
+    # IS_REMEMBERED -- Only logged in users who have been logged in via REMEMBERME cookie.
+    # IS_IMPERSONATOR -- Only users who are being impersonated by another user.
     access_control:
-        - { path: ^/(register|login)?$, roles: PUBLIC_ACCESS }
-        - { path: ^/account$, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/(../)?(register|login)?$, roles: PUBLIC_ACCESS }
+        - { path: ^/(../)?account/endemails, roles: PUBLIC_ACCESS } # This is authenticated with the token provided in the email, so no need to login.
+        - { path: ^/(../)?resetting$, roles: PUBLIC_ACCESS }
+        - { path: ^/(../)?account/data$, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/(../)?admin, roles: ROLE_ADMIN }
+        - { path: ^/(../)?olympus, roles: ROLE_OLYMPUS }
+        - { path: ^/(../)?gamerequest, roles: ROLE_USER } # Without this, users will be locked out of the gamerequest path by the line below. --Andrew
+        - { path: ^/(../)?game, roles: ROLE_ADMIN }
+        - { path: ^/(../)?world, roles: ROLE_ADMIN }
+        - { path: ^/(../)?account, roles: ROLE_USER }
+        - { path: ^/(../)?heraldry, roles: ROLE_USER }
+        - { path: ^/(../)?payment, roles: ROLE_USER }
+        - { path: ^/(../)?publications, roles: ROLE_USER }
+        - { path: ^/(../)?character, roles: ROLE_USER }
+        - { path: ^/(../)?journal/[0-9]+, roles: PUBLIC_ACCESS }
+        - { path: ^/(../)?journal, roles: ROLE_USER }
+        - { path: ^/(../)?actions, roles: ROLE_USER }
+        - { path: ^/(../)?artifacts, roles: ROLE_USER }
+        - { path: ^/(../)?laws, roles: ROLE_USER }
+        - { path: ^/(../)?politics, roles: ROLE_USER }
+        - { path: ^/(../)?messages, roles: ROLE_USER }
+        - { path: ^/(../)?realm/[0-9]+/viewrelations, roles: ROLE_USER }
+        - { path: ^/(../)?realm/[0-9]+/view, roles: PUBLIC_ACCESS }
+        - { path: ^/(../)?realm, roles: ROLE_USER }
+        - { path: ^/(../)?assoc/[0-9]+/view, roles: PUBLIC_ACCESS }
+        - { path: ^/(../)?assoc, roles: ROLE_USER }
+        - { path: ^/(../)?place/[0-9]+, roles: PUBLIC_ACCESS }
+        - { path: ^/(../)?place/[0-9]+/, roles: ROLE_USER }
+        - { path: ^/(../)?house/[0-9]+, roles: PUBLIC_ACCESS }
+        - { path: ^/(../)?house/[0-9]+/, roles: ROLE_USER }
+        - { path: ^/(../)?settlement, roles: ROLE_USER }
+        - { path: ^/(../)?conv, roles: ROLE_USER }
+        - { path: ^/(../)?translator, roles: ROLE_USER }
+        - { path: ^/(../)?unit, roles: ROLE_USER }
+        - { path: ^/(../)?user, roles: ROLE_USER }
 
 when@test:
     security:
