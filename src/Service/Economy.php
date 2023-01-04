@@ -53,7 +53,7 @@ class Economy {
 
 	public function getResources(): array {
 		if (!$this->resources) {
-			$this->resources = $this->em->getRepository('App:ResourceType')->findAll();
+			$this->resources = $this->em->getRepository('App\Entity\ResourceType')->findAll();
 		}
 		return $this->resources;
 	}
@@ -200,7 +200,7 @@ class Economy {
 				if (!$settlement->getGeoData()->getHills() && $settlement->getGeoData()->getBiome()->getName() != 'rock') {
 					return false;
 				}
-				$metal = $this->em->getRepository('App:ResourceType')->findOneByName("metal");
+				$metal = $this->em->getRepository('App\Entity\ResourceType')->findOneByName("metal");
 				$my_metal = $settlement->findResource($metal);
 				if ($my_metal == null || $my_metal->getAmount()<=0) {
 					return false;
@@ -504,7 +504,7 @@ class Economy {
 				);
 
 				// now we have hit starvation, it's time to cancel trades
-				$food_resource = $this->em->getRepository('App:ResourceType')->findOneByName('food');
+				$food_resource = $this->em->getRepository('App\Entity\ResourceType')->findOneByName('food');
 				$trade_shortage = ceil($shortage * $settlement->getFullPopulation() * 0.25);
 				$this->reduceTrade($settlement, $food_resource, $trade_shortage);
 

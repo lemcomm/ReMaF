@@ -633,7 +633,7 @@ class GameRunner {
 		}
 		if ($count) {
 			foreach ($units as $each) {
-				$unit = $this->em->getRepository('App:Unit')->findOneById($each);
+				$unit = $this->em->getRepository('App\Entity\Unit')->findOneById($each);
 				if ($unit && ($character = $unit->getCharacter())) {
 					$this->history->logEvent(
 						$character,

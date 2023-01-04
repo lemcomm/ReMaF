@@ -1299,7 +1299,7 @@ class CharacterManager {
 
 	public function Reputation(Character $char, User $me=null): array {
 		// There are probably nice ways to do all this in SQL
-		$ratings = $this->em->getRepository('App:CharacterRating')->findByCharacter($char);
+		$ratings = $this->em->getRepository('App\Entity\CharacterRating')->findByCharacter($char);
 		$data = array();
 		$respect=array('yes'=>0,'no'=>0);
 		$honor=array('yes'=>0,'no'=>0);

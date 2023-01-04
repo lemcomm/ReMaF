@@ -250,7 +250,7 @@ class ConversationManager {
         }
 
         public function removeOrphanConversations() {
-                $all = $this->em->getRepository('App:Conversation');
+                $all = $this->em->getRepository('App\Entity\Conversation');
                 $count = 0;
                 foreach ($all as $conv) {
                         if ($conv->getPermissions()->count() == 0) {
@@ -321,7 +321,7 @@ class ConversationManager {
                                 $new->setSender($char);
                         }
                         if ($replyTo) {
-                                $target = $this->em->getRepository('App:Message')->findOneById($replyTo);
+                                $target = $this->em->getRepository('App\Entity\Message')->findOneById($replyTo);
                                 if ($target) {
                                         $new->setReplyTo($target);
                                 }
@@ -390,7 +390,7 @@ class ConversationManager {
                 $now = new \DateTime("now");
                 $cycle = $this->appstate->getCycle();
                 if ($replyTo) {
-                        $origTarget = $this->em->getRepository('App:Message')->findOneById($replyTo);
+                        $origTarget = $this->em->getRepository('App\Entity\Message')->findOneById($replyTo);
                         if (!$topic && $origTarget) {
                                 $topic = $origTarget->getTopic();
                         }
@@ -415,7 +415,7 @@ class ConversationManager {
                         $msg->setSent($now);
                         $msg->setContent($text);
                         if ($origTarget) {
-                                $targetMsg = $this->em->getRepository('App:Message')->findOneBy(['conversation'=>$conv, 'sender'=>$origTarget->getSender(), 'content'=>$origTarget->getContent()]);
+                                $targetMsg = $this->em->getRepository('App\Entity\Message')->findOneBy(['conversation'=>$conv, 'sender'=>$origTarget->getSender(), 'content'=>$origTarget->getContent()]);
                                 if ($targetMsg) {
                                         $msg->setReplyTo($targetMsg);
                                 }
@@ -754,28 +754,28 @@ class ConversationManager {
                 $conv = null;
                 $supConv = null;
                 if ($realm && $same) {
-                        $conv = $em->getRepository('App:Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
-                        $general = $em->getRepository('App:Conversation')->findOneBy(['realm'=>$realm, 'system'=>'general']);
+                        $conv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
+                        $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'general']);
                         $this->addParticipant($conv, $char);
                         $this->addParticipant($general, $char);
                         $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                         #$this->newSystemMessage($general, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                 } elseif ($realm && !$same) {
-                        $conv = $em->getRepository('App:Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
-                        $general = $em->getRepository('App:Conversation')->findOneBy(['realm'=>$realm, 'system'=>'general']);
+                        $conv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
+                        $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'general']);
                         $this->addParticipant($conv, $char);
                         $this->addParticipant($general, $char);
                         $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                         #$this->newSystemMessage($general, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
-                        $supConv = $em->getRepository('App:Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'announcements']);
-                        $supGeneral = $em->getRepository('App:Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'general']);
+                        $supConv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'announcements']);
+                        $supGeneral = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'general']);
                         $this->addParticipant($supConv, $char);
                         $this->addParticipant($supGeneral, $char);
                         $this->newSystemMessage($supConv, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
                         #$this->newSystemMessage($supGeneral, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
                 } elseif ($house) {
-                        $conv = $em->getRepository('App:Conversation')->findOneBy(['house'=>$house, 'system'=>'announcements']);
-                        $general = $em->getRepository('App:Conversation')->findOneBy(['house'=>$house, 'system'=>'general']);
+                        $conv = $em->getRepository('App\Entity\Conversation')->findOneBy(['house'=>$house, 'system'=>'announcements']);
+                        $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['house'=>$house, 'system'=>'general']);
                         $this->addParticipant($conv, $char);
                         $this->addParticipant($general, $char);
                         $this->newSystemMessage($conv, 'housenew', null, $char, null, ['where'=>$place->getId()]);
@@ -829,20 +829,20 @@ class ConversationManager {
                         #TODO: Public joins and utilizing the publicJoin var.
                 }
                 if ($realm && $same) {
-                        $conv = $em->getRepository('App:Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
+                        $conv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
                         if ($conv) {
                                 $this->addParticipant($conv, $char);
                                 $em->flush();
                                 $this->newSystemMessage($conv, $string, null, $char, null, $extra);
                         }
                 } elseif ($realm && !$same) {
-                        $conv = $em->getRepository('App:Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
+                        $conv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
                         if ($conv) {
                                 $this->addParticipant($conv, $char);
                                 $em->flush();
                                 $this->newSystemMessage($conv, $string, null, $char, null, $extra);
                         }
-                        $supConv = $em->getRepository('App:Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'announcements']);
+                        $supConv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'announcements']);
                         if ($supConv) {
                                 $this->addParticipant($conv, $char);
                                 $em->flush();
@@ -853,7 +853,7 @@ class ConversationManager {
         }
 
         public function addParticipant(Conversation $conv, Character $char) {
-                $perm = $this->em->getRepository('App:ConversationPermission')->findOneBy(['conversation'=>$conv, 'character'=>$char,'active'=>true]);
+                $perm = $this->em->getRepository('App\Entity\ConversationPermission')->findOneBy(['conversation'=>$conv, 'character'=>$char,'active'=>true]);
                 if (!$perm) {
                         $now = new \DateTime("now");
                         $perm = new ConversationPermission();
@@ -872,7 +872,7 @@ class ConversationManager {
         public function updateSystemConversations($orgType = 'realm', $org) {
                 $sysConvs = ['announcements'=>'Announcements', 'general'=>'General Discussions'];
                 foreach ($sysConvs as $sys=>$name) {
-                        $conv = $this->em->getRepository('App:Conversation')->findOneBy([$orgType=>$org, 'system'=>$sys]);
+                        $conv = $this->em->getRepository('App\Entity\Conversation')->findOneBy([$orgType=>$org, 'system'=>$sys]);
                         $conv->setName($org->getName().' '.$name);
                 }
                 $this->em->flush();

@@ -577,15 +577,15 @@ class BattleRunner {
 			// TODO: might make this actual buy options, instead of hardcoded
 			$weapon = $char->getWeapon();
 			if (!$weapon) {
-				$weapon = $this->em->getRepository('App:EquipmentType')->findOneByName('sword');
+				$weapon = $this->em->getRepository('App\Entity\EquipmentType')->findOneByName('sword');
 			}
 			$armour = $char->getArmour();
 			if (!$armour) {
-				$armour = $this->em->getRepository('App:EquipmentType')->findOneByName('plate armour');
+				$armour = $this->em->getRepository('App\Entity\EquipmentType')->findOneByName('plate armour');
 			}
 			$equipment = $char->getEquipment();
 			if (!$equipment) {
-				$equipemnt = $this->em->getRepository('App:EquipmentType')->findOneByName('war horse');
+				$equipemnt = $this->em->getRepository('App\Entity\EquipmentType')->findOneByName('war horse');
 			}
 
 			$noble = new Soldier();
@@ -1283,7 +1283,7 @@ class BattleRunner {
 			$fleeing_entourage = array();
 			$countEntourage = 0; #All fleeing entourage.
 			$countSoldiers = 0; #All fleeing soldiers.
-			$shield = $this->em->getRepository('App:EquipmentType')->findOneByName('shield');
+			$shield = $this->em->getRepository('App\Entity\EquipmentType')->findOneByName('shield');
 			foreach ($groups as $group) {
 				$huntResult = array();
 				$groupReport = $group->getActiveReport(); # After it's built, the $huntResult array is saved via $groupReport->setHunt($huntResult);

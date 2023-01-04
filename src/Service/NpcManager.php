@@ -34,7 +34,7 @@ class NpcManager {
 
 
 	public function getAvailableNPCs(): array {
-		return $this->em->getRepository('App:Character')->findBy(array('npc'=>true, 'alive'=>true, 'user'=>null));
+		return $this->em->getRepository('App\Entity\Character')->findBy(array('npc'=>true, 'alive'=>true, 'user'=>null));
 	}
 
 	public function createNPC(): Character {
@@ -159,7 +159,7 @@ class NpcManager {
 		// add a random number of scouts and camp followers
 		$scouts = rand(0, 10);
 		if ($scouts>0) {
-			$scout_type = $this->em->getRepository('App:EntourageType')->findOneByName('scout');
+			$scout_type = $this->em->getRepository('App\Entity\EntourageType')->findOneByName('scout');
 			for ($i=0; $i < $scouts; $i++) {
 				$scout = $this->generator->randomEntourageMember($scout_type);
 				$scout->setCharacter($npc);
@@ -170,7 +170,7 @@ class NpcManager {
 
 		$followers = min(rand(0, 6), rand(0,6));
 		if ($followers>0) {
-			$follower_type = $this->em->getRepository('App:EntourageType')->findOneByName('follower');
+			$follower_type = $this->em->getRepository('App\Entity\EntourageType')->findOneByName('follower');
 			for ($i=0; $i < $followers; $i++) {
 				$follower = $this->generator->randomEntourageMember($follower_type);
 				$follower->setCharacter($npc);

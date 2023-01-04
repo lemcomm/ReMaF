@@ -101,13 +101,13 @@ class NewsManager {
 	}
 
 	public function accessPaper(NewsPaper $paper, Character $character) {
-		$result = $this->em->getRepository('App:NewsEditor')->findBy(array('paper'=>$paper, 'character'=>$character));
+		$result = $this->em->getRepository('App\Entity\NewsEditor')->findBy(array('paper'=>$paper, 'character'=>$character));
 		if (!$result || empty($result)) return false;
 		return $result[0];
 	}
 
 	public function readEdition(NewsEdition $edition, Character $character) {
-		$result = $this->em->getRepository('App:NewsReader')->findBy(array('edition'=>$edition, 'character'=>$character));
+		$result = $this->em->getRepository('App\Entity\NewsReader')->findBy(array('edition'=>$edition, 'character'=>$character));
 		if (!$result || empty($result)) {
 			// check if it is locally published
 			if (! $character->getTravelAtSea()) {
@@ -136,7 +136,7 @@ class NewsManager {
 
 	public function canCreatePaper(Character $character): bool {
 		// we need to be lord of at least one estate with a library
-		$library = $this->em->getRepository('App:BuildingType')->findOneByName('Library');
+		$library = $this->em->getRepository('App\Entity\BuildingType')->findOneByName('Library');
 		foreach ($character->getOwnedSettlements() as $settlement) {
 			if ($settlement->hasBuilding($library)) {
 				return true;

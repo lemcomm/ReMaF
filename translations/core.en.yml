@@ -47,7 +47,7 @@ security:
   content: Lorem Ipsum
  register:
   title: "%name%: Register An Account"
-  header: Register For A New Account
+  header: Create Account
   content: Lorem Ipsum
   email:
    subject: "%sitename%: Account Activation"
@@ -94,6 +94,7 @@ security:
     If you believe you received thisemail in error, please forward it to %adminemail%.
  reset:
   header: Request A Password Reset
+  short: Forgot your password?
   intro: If you provide either your email address or username below and click submit, we'll send a link you can use to reset your account password.
   email:
    subject: "%sitename%: Password Reset"
@@ -143,4 +144,20 @@ form:
  username:
   username: Username
   help: Usernames may only contain a-z, A-Z, spaces, hyphens, and/or underscores.
- usernameoremail: Email / Username
+ public:
+  public: Public Profile
+  help: Determines if your profile and character list should be displayed publicly.
+ gmname:
+  gmname: GM Display Name
+  help: Publicly displayed GM name, if you want it different from your display name.
+ publicadmin:
+  publicadmin: Display Admin Status
+  help: Determines if your admin status should be displayed publicly in game.
+ profile: Profile Text (for public display)
+ patronage:
+  patronage: Display your patronage?
+  help: Determines if your name shows up in the game credits or if you get identified in game as a patron.
+ newsletter:
+  newsletter: Receive game related emails?
+  help: If this is enabled you can receive periodic event notifications and newsletters via email.
+

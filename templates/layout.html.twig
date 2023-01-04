@@ -98,7 +98,7 @@
 	} %}{% endif %}
 <ul class="lang-menu">
 	{% for code,lang in supported_languages %}
-		<li><a href="{{ path(route, params|merge({'_locale': code})) }}"><img src="{{ asset('bundles/bm2site/images/flags/'~lang.flag~'.png') }}" alt="{{ code }}" title="{{ lang.name }}" /></a></li>
+		<li><a href="{{ path(route, params|merge({'_locale': code})) }}"><img src="{{ asset('images/flags/'~lang.flag~'.png') }}" alt="{{ code }}" title="{{ lang.name }}" /></a></li>
 	{% endfor %}
 </ul>
 
@@ -108,7 +108,7 @@
 		<ul class="navbar">
 			{% if app.user and is_granted("IS_AUTHENTICATED_REMEMBERED") %}
 				<li><a href="{{ path('maf_account') }}">{{ 'menu.profile'|trans }}</a></li>
-				<li><a href="{{ path('maf_characters') }}">{{ 'menu.characters'|trans }}</a></li>
+				<li><a href="{{ path('maf_chars') }}">{{ 'menu.characters'|trans }}</a></li>
 			{% else %}
 				<li><a href="{{ path('maf_register') }}">{{ 'menu.register'|trans }}</a></li>
 			{% endif %}

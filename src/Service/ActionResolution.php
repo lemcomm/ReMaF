@@ -687,7 +687,7 @@ class ActionResolution {
 			// TODO: clean it up, but during alpha we want it to hang around for debug purposes
 			return;
 		}
-		$meta = $this->em->getRepository('App:EventMetadata')->findOneBy(array('log'=>$log, 'reader'=>$action->getCharacter()));
+		$meta = $this->em->getRepository('App\Entity\EventMetadata')->findOneBy(array('log'=>$log, 'reader'=>$action->getCharacter()));
 
 		if (!$meta) {
 			# Somehow we're looking at a log we don't have our own version of?
@@ -700,7 +700,7 @@ class ActionResolution {
 		$next = $query->getSingleScalarResult();
 		$meta->setAccessFrom($next);
 
-		$allMeta = $this->em->getRepository('App:EventMetadata')->findBy(array('log'=>$log, 'reader'=>$action->getCharacter()));
+		$allMeta = $this->em->getRepository('App\Entity\EventMetadata')->findBy(array('log'=>$log, 'reader'=>$action->getCharacter()));
 		if (count($allMeta) > 1) {
 			# We have multiple, check for possible merges.
 			foreach ($allMeta as $each) {

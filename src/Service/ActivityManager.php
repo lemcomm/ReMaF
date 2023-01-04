@@ -59,7 +59,7 @@ As you might expect, ActivityManager handles Activities.
 	HELPER FUNCTIONS
 	*/
 
-        public function verify(ActivityType $act, Character $char) {
+        public function verify(ActivityType $act, Character $char): bool {
 		$valid = True;
 		$reqs = $act->getRequires();
 		if (!$reqs->isEmpty()) {
@@ -92,7 +92,7 @@ As you might expect, ActivityManager handles Activities.
 		return $valid;
 	}
 
-        public function create(ActivityType $type, ActivitySubType $subType=null, Character $char, Activity $mainAct = null) {
+        public function create(ActivityType $type, ActivitySubType $subType=null, Character $char, Activity $mainAct = null): Activity|false {
 		if (!$type->getEnabled()) {
 			return False;
 		}
@@ -123,7 +123,7 @@ As you might expect, ActivityManager handles Activities.
 		}
         }
 
-	public function createBout(Activity $act, ActivitySubType $type, $same=true, $accepted = true, $round=null) {
+	public function createBout(Activity $act, ActivitySubType $type, $same=true, $accepted = true, $round=null): ActivityBout {
 		$bout = new ActivityBout();
 		$this->em->persist($bout);
 		$bout->setActivity($act);
@@ -131,7 +131,7 @@ As you might expect, ActivityManager handles Activities.
 		return $bout;
 	}
 
-	public function createParticipant(Activity $act, Character $char, Style	$style=null, $weapon=null, $same=false, $organizer=false) {
+	public function createParticipant(Activity $act, Character $char, Style	$style=null, $weapon=null, $same=false, $organizer=false): ActivityParticipant {
 		$part = new ActivityParticipant();
 		$this->em->persist($part);
 		$part->setActivity($act);
@@ -147,7 +147,7 @@ As you might expect, ActivityManager handles Activities.
 		return $part;
 	}
 
-	public function createGroup(Activity $act, $participants) {
+	public function createGroup(Activity $act, $participants): ActivityGroup {
 		# $participants should be an array or arraycollection of ActivityParticipant objects.
 		$group = new ActivityGroup();
 		$this->em->persist($group);
@@ -158,7 +158,7 @@ As you might expect, ActivityManager handles Activities.
 		return $group;
 	}
 
-	public function createBoutParticipant(ActivityBout $bout, ActivityParticipant $part) {
+	public function createBoutParticipant(ActivityBout $bout, ActivityParticipant $part): ActivityBoutParticipant {
 		$boutPart = new ActivityBoutParticipant();
 		$this->em->persist($boutPart);
 		$boutPart->setBout($bout);
@@ -166,7 +166,7 @@ As you might expect, ActivityManager handles Activities.
 		return $boutPart;
 	}
 
-	public function createBoutGroup(ActivityBout $bout, ActivityGroup $group) {
+	public function createBoutGroup(ActivityBout $bout, ActivityGroup $group): ActivityBoutGroup {
 		$boutGroup = new ActivityBoutGroup();
 		$this->em->persist($boutGroup);
 		$boutGroup->setBout($bout);
@@ -174,7 +174,7 @@ As you might expect, ActivityManager handles Activities.
 		return $boutGroup;
 	}
 
-	public function log($level, $text) {
+	public function log($level, $text): void {
 		if ($this->report) {
 			$this->report->setDebug($this->report->getDebug().$text."\n");
 		}
@@ -187,8 +187,8 @@ As you might expect, ActivityManager handles Activities.
 	ACTIVITY CREATE FUNCTIONS
 	*/
 
-	public function createDuel(Character $me, Character $them, $name=null, $level, $same, EquipmentType $weapon, $weaponOnly, Style $meStyle = null, Style $themStyle = null) {
-		$type = $this->em->getRepository('App:ActivityType')->findOneBy(['name'=>'duel']);
+	public function createDuel(Character $me, Character $them, $name=null, $level, $same, EquipmentType $weapon, $weaponOnly, Style $meStyle = null, Style $themStyle = null): Activity|string {
+		$type = $this->em->getRepository('App\Entity\ActivityType')->findOneBy(['name'=>'duel']);
 		# TODO: Verify there isn't alreayd a duel between these individuals!
 		if ($act = $this->create($type, null, $me)) {
 			if (!$name) {
@@ -198,7 +198,7 @@ As you might expect, ActivityManager handles Activities.
 			}
 			$act->setSame($same);
 			$act->setWeaponOnly($weaponOnly);
-			$act->setSubType($this->em->getRepository('App:ActivitySubType')->findOneBy(['name'=>$level]));
+			$act->setSubType($this->em->getRepository('App\Entity\ActivitySubType')->findOneBy(['name'=>$level]));
 
 			$mePart = $this->createParticipant($act, $me, $meStyle, $weapon, $same, true);
 			$themPart = $this->createParticipant($act, $them, $themStyle, $same?$weapon:null, false);
@@ -214,7 +214,7 @@ As you might expect, ActivityManager handles Activities.
 	ACTIVITY DELETE FUNCTIONS
 	*/
 
-	public function cleanupAct(Activity $act) {
+	public function cleanupAct(Activity $act): true {
 		$em = $this->em;
 		foreach ($act->getEvents() as $sub) {
 			$this->cleanupAct($sub);
@@ -236,7 +236,7 @@ As you might expect, ActivityManager handles Activities.
 		return true;
 	}
 
-	public function refuseDuel($act) {
+	public function refuseDuel($act): bool {
 		if ($act->getType()->getName() === 'duel') {
 			$this->cleanupAct($act);
 			return true;
@@ -248,7 +248,7 @@ As you might expect, ActivityManager handles Activities.
 	ACTIVITY RUNNING FUNCTIONS
 	*/
 
-	public function runAll() {
+	public function runAll(): true {
 		$em = $this->em;
                 $now = new \DateTime("now");
 		$query = $em->createQuery('SELECT a FROM App:Activity a WHERE a.ready = true');
@@ -264,7 +264,7 @@ As you might expect, ActivityManager handles Activities.
 		return true;
 	}
 
-	public function run(Activity $act) {
+	public function run(Activity $act): true|string {
 		$type = $act->getType()->getName();
 		if ($type === 'duel') {
 			return $this->runDuel($act);
@@ -272,7 +272,7 @@ As you might expect, ActivityManager handles Activities.
 		return 'typeNotFound';
 	}
 
-	private function runDuel(Activity $act) {
+	private function runDuel(Activity $act): true {
 		$em = $this->em;
 		$me = $act->findChallenger();
 		$them = $act->findChallenged();
@@ -562,7 +562,7 @@ As you might expect, ActivityManager handles Activities.
 		return $result;
 	}
 
-	private function duelApplyResult($result, $ratio) {
+	private function duelApplyResult($result, $ratio): int {
 		# Do nothing for misses.
 		# 10, 40, 70, 100
 		$base = 0;
@@ -602,7 +602,7 @@ As you might expect, ActivityManager handles Activities.
 		return $res;
 	}
 
-	private function createStageReport($group = null, $char = null, $round, $data, $extra = null) {
+	private function createStageReport($group = null, $char = null, $round, $data, $extra = null): false|ActivityReportStage {
 		if ($group !== null || $char !== null) {
 			$rpt = new ActivityReportStage;
 			$this->em->persist($rpt);
@@ -620,7 +620,7 @@ As you might expect, ActivityManager handles Activities.
 		return false;
 	}
 
-	private function duelConclude($me, $meWounds, $meReport, $them, $themWounds, $themReport, $limit, $act, $round) {
+	private function duelConclude($me, $meWounds, $meReport, $them, $themWounds, $themReport, $limit, $act, $round): void {
 		$meData = [];
 		$meC = $me->getCharacter();
 		$themData = [];
@@ -701,14 +701,14 @@ As you might expect, ActivityManager handles Activities.
 		$this->cleanupAct($act);
 	}
 
-	private function applyWounds(Character $me, $wounds) {
+	private function applyWounds(Character $me, $wounds): void {
 		$me->setWounded($me->getWounded() + $wounds); # Character health is out of 100.
 		if ($me->healthValue() > 1) {
 			# TODO: Event for near death! :(
 		}
 	}
 
-	private function skillEval(Character $me, EquipmentType $meW, Character $them, EquipmentType $themW) {
+	private function skillEval(Character $me, EquipmentType $meW, Character $them, EquipmentType $themW): array {
 		if ($meW === $themW) {
 			$threshold = 0.9;
 			$skillAcc = 'high';

@@ -233,7 +233,7 @@ class AssociationManager {
 	}
 
 	public function removeLocation($assoc, $place, $flush=true) {
-		$loc = $this->em->getRepository('App:AssociationPlace')->findOneBy(["association"=>$assoc, "place"=>$place]);
+		$loc = $this->em->getRepository('App\Entity\AssociationPlace')->findOneBy(["association"=>$assoc, "place"=>$place]);
 		if ($loc) {
 			$this->em->remove($loc);
 			if ($flush) {
@@ -244,7 +244,7 @@ class AssociationManager {
 	}
 
 	public function updateMember($assoc, $rank=null, $char, $flush=true) {
-		$member = $this->em->getRepository('App:AssociationMember')->findOneBy(["association"=>$assoc, "character"=>$char]);
+		$member = $this->em->getRepository('App\Entity\AssociationMember')->findOneBy(["association"=>$assoc, "character"=>$char]);
 		if ($member && $rank && $member->getRank() === $rank) {
 			return 'no change';
 		}
@@ -267,7 +267,7 @@ class AssociationManager {
 	}
 
 	public function removeMember(Association $assoc, Character $char) {
-		$member = $this->em->getRepository('App:AssociationMember')->findOneBy(["association"=>$assoc, "character"=>$char]);
+		$member = $this->em->getRepository('App\Entity\AssociationMember')->findOneBy(["association"=>$assoc, "character"=>$char]);
 		if ($member) {
 			$this->em->remove($member);
 			$this->em->flush();
@@ -308,12 +308,12 @@ class AssociationManager {
 	}
 
 	public function findMember(Association $assoc, Character $char) {
-		$member = $this->em->getRepository('App:AssociationMember')->findOneBy(["association"=>$assoc, "character"=>$char]);
+		$member = $this->em->getRepository('App\Entity\AssociationMember')->findOneBy(["association"=>$assoc, "character"=>$char]);
 		return $member;
 	}
 
 	public function findDeity(Association $assoc, Deity $deity) {
-		$result = $this->em->getRepository('App:AssociationDeity')->findOneBy(["association"=>$assoc, "deity"=>$deity]);
+		$result = $this->em->getRepository('App\Entity\AssociationDeity')->findOneBy(["association"=>$assoc, "deity"=>$deity]);
 		return $result;
 	}
 
@@ -388,7 +388,7 @@ class AssociationManager {
 	}
 
 	public function removeDeity(Association $assoc, Deity $deity, Character $char) {
-		$aDeity = $this->em->getRepository('App:AssociationDeity')->findOneBy(['association'=>$assoc, 'deity'=>$deity]);
+		$aDeity = $this->em->getRepository('App\Entity\AssociationDeity')->findOneBy(['association'=>$assoc, 'deity'=>$deity]);
 		$this->em->remove($aDeity);
 		if ($aDeity->getDeity()->getMainRecognizer() === $assoc) {
 			$aDeity->getDeity()->setMainRecognizer(null);

@@ -31,6 +31,10 @@ security:
                 #max_attempts: 5 # per minute
             logout:
                 path: maf_logout
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 7776000
+
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

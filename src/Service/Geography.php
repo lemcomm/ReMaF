@@ -382,8 +382,8 @@ class Geography {
 	public function findCharactersNearMe(Character $character, $maxdistance, $only_outside_settlement=false, $exclude_prisoners=true, $match_battle=false, $exclude_slumbering=false, $only_oustide_place=false) {
 		$qb = $this->em->createQueryBuilder();
 		$qb->select('c as character, ST_Distance(me.location, c.location) AS distance')
-			->from('App:Character', 'me')
-			->from('App:Character', 'c')
+			->from('App\Entity\Character', 'me')
+			->from('App\Entity\Character', 'c')
 			->where('c.alive = true')
 			->andWhere('me = :me')
 			->andWhere('me != c');
@@ -444,7 +444,7 @@ class Geography {
 	public function findCharactersInSettlement(Settlement $settlement, $except=null) {
 		$qb = $this->em->createQueryBuilder();
 		$qb->select('c')
-			->from('App:Character', 'c')
+			->from('App\Entity\Character', 'c')
 			->where('c.alive = true')
 			->andWhere('c.inside_settlement = :here')->setParameter('here', $settlement);
 		if ($except != null) {
@@ -538,7 +538,7 @@ class Geography {
 	public function findDungeonsNearMe(Character $character, $maxdistance) {
 		$qb = $this->em->createQueryBuilder();
 		$qb->select('d as dungeon, ST_Distance(me.location, d.location) AS distance, ST_Azimuth(me.location, d.location) AS direction')
-			->from('App:Character', 'me')
+			->from('App\Entity\Character', 'me')
 			->from('DungeonBundle:Dungeon', 'd')
 			->where('me = :me')
 			->andWhere('ST_Distance(me.location, d.location) < :maxdistance')
@@ -594,9 +594,9 @@ class Geography {
 		if ($character->isActive()) {
 			$qb = $this->em->createQueryBuilder();
 			$qb->select('(:base + SQRT(count(DISTINCT e))*:mod + POW(count(DISTINCT s), 0.3333333))*b.spot as spotdistance')
-				->from('App:GeoData', 'g')
+				->from('App\Entity\GeoData', 'g')
 				->join('g.biome', 'b')
-				->from('App:Character', 'c')
+				->from('App\Entity\Character', 'c')
 				->leftJoin('c.units', 'u')
 				->leftJoin('u.soldiers', 's', 'WITH', 's.alive=true')
 				->leftJoin('c.entourage', 'e', 'WITH', '(e.type = :scout AND e.alive=true)')
@@ -629,7 +629,7 @@ class Geography {
 		$spotBase = $this->appstate->getGlobal('spot.basedistance');
 		$spotScout = $this->appstate->getGlobal('spot.scoutmod');
 
-		$scout = $this->em->getRepository('App:EntourageType')->findOneByName('scout');
+		$scout = $this->em->getRepository('App\Entity\EntourageType')->findOneByName('scout');
 		// database magic below:
 		// spotting distance =
 		//					base distance (what the noble has by himself)
@@ -639,12 +639,12 @@ class Geography {
 		$qb = $this->em->createQueryBuilder();
 		if ($with_biome) {
 			$qb->select(array('c as spotter', '(:base + SQRT(count(DISTINCT e))*:mod + POW(count(DISTINCT s), 0.3333333))*b.spot as spotdistance'))
-				->from('App:GeoData', 'g')
+				->from('App\Entity\GeoData', 'g')
 				->join('g.biome', 'b');
 		} else {
 			$qb->select(array('c as spotter', '(:base + SQRT(count(DISTINCT e))*:mod + POW(count(DISTINCT s), 0.3333333)) as spotdistance'));
 		}
-		$qb->from('App:Character', 'c')
+		$qb->from('App\Entity\Character', 'c')
 			->leftJoin('c.units', 'u')
 			->leftJoin('u.soldiers', 's', 'WITH', 's.alive=true')
 			->leftJoin('c.entourage', 'e', 'WITH', '(e.type = :scout AND e.alive=true)')->setParameter('scout', $scout)

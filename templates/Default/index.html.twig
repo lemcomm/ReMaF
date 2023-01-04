@@ -20,7 +20,7 @@
 			{% endif %}
 		</div>
 	{% endfor %}
-</div>
+	</div>
 </div>
 <div style="font-size:1.2em" class="index_maincontent">
 <h1>Create History</h1>
@@ -34,16 +34,33 @@
 
 {% if app.user and is_granted("IS_AUTHENTICATED_REMEMBERED") %}
 {% else %}
-	<p style="text-align:center;margin-top:3em">
-		<a style="
-		background-color: #0d0;
-		padding: 0.5em 1em;
-		border: 3px solid #0a0;
-		border-radius: 0.5em;"
-		href="{{ path('maf_account_register') }}">
-			{{ 'menu.register'|trans }}
-		</a>
-	</p>
+	<div class="index_register">
+		<h2>{{ 'security.register.header'|trans({}, 'core') }}</h2>
+		{{ form(form) }}
+	</div>
+	<div class="index_login"><form action="{{ path('maf_login') }}" method="post">
+		<form action="{{ path('maf_login') }}" method="post">
+			<h2>{{ 'security.login.header'|trans({}, 'core') }}</h2>
+			{#<label for="username">Username: </label>#}
+			<input type="text" name="_username" id="username" placeholder="Username" required autofocus><br>
+			{# <label for="password" class="sr-only">Password: </label>#}
+			<input type="password" name="_password" id="password" placeholder="Password" required>
+
+			<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+			<div class="checkbox mb-3">
+				<label>
+					<input type="checkbox" name="_remember_me" checked/> Keep me logged in
+				</label>
+			</div>
+
+				<input type="hidden" name="_target_path" value="{{ path('maf_chars') }}"/>
+
+			<button class="submit" type="submit">
+				Sign in
+			</button><br>
+			<a href="{{ url("maf_account_reset") }}">{{ 'security.reset.short'|trans({}, 'core')}}</a>
+		</form>
+	</div>
 {% endif %}
 </div>
 

@@ -27,38 +27,38 @@ doctrine:
             numeric_functions:
                 #pow:                BM2\SiteBundle\DQL\Pow
                 #round:              BM2\SiteBundle\DQL\Round
-                st_point:           LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STPoint
-                st_x:               LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STX
-                st_y:               LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STY
-                st_asgeojson:       LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STAsGeoJson
-                st_astext:          LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STAsText
-                st_contains:        LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STContains
-                st_difference:      LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STDifference
-                st_distance:        LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STDistance
-                st_closestpoint:    LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STClosestPoint
-                st_dwithin:         LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STDWithin
-                st_startpoint:      LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STStartPoint
-                st_endpoint:        LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STEndPoint
-                st_boundary:        LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STBoundary
-                st_area:            LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STArea
-                st_length:          LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STLength
-                st_buffer:          LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STBuffer
-                st_geomfromtext:    LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeomFromText
-                st_line_interpolate_point:     LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STLineInterpolatePoint
-                st_line_locate_point:          LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STLineLocatePoint
-                st_line_substring:  LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STLineSubstring
+                st_point:           LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StPoint
+                st_x:               LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StX
+                st_y:               LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StY
+                st_asgeojson:       LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpAsGeoJson
+                st_astext:          LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StAsText
+                st_contains:        LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StContains
+                st_difference:      LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StDifference
+                st_distance:        LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StDistance
+                st_closestpoint:    LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpClosestPoint
+                st_dwithin:         LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpDWithin
+                st_startpoint:      LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StStartPoint
+                st_endpoint:        LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StEndPoint
+                st_boundary:        LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StBoundary
+                st_area:            LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StArea
+                st_length:          LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StLength
+                st_buffer:          LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StBuffer
+                st_geomfromtext:    LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StGeomFromText
+                st_line_interpolate_point:     LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpLineInterpolatePoint
+                st_line_locate_point:          LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpLineLocatePoint
+                st_line_substring:  LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpLineSubstring
                 st_azimuth:         LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STAzimuth
-                st_touches:         LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STTouches
-                st_crosses:         LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STCrosses
-                st_intersects:      LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STIntersects
-                st_intersection:    LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STIntersection
-                st_makebox2d:       LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STMakeBox2D
-                st_makeline:        LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STMakeLine
-                st_extent:          LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STExtent
-                st_scale:           LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STScale
-                st_union:           LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STUnion
-                st_split:           LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STSplit
-                st_geometryn:       LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STGeometryN
+                st_touches:         LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StTouches
+                st_crosses:         LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StCrosses
+                st_intersects:      LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StIntersects
+                st_intersection:    LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StIntersection
+                st_makebox2d:       LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpMakeBox2D
+                st_makeline:        LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpMakeLine
+                st_extent:          App\ORM\Query\AST\Functions\PostgreSql\SpExtent
+                st_scale:           LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpScale
+                st_union:           LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StUnion
+                st_split:           LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpSplit
+                st_geometryn:       LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StGeometryN
 
 when@test:
     doctrine:

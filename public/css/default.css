@@ -579,6 +579,36 @@ th.topspace {
     border-radius:  1em;
     color:          #460702;
 }
+.index_login {
+    background:     rgba(255,250,242,0.4);
+    box-shadow:     0 0 1em rgba(0, 0, 0, 0.75) inset;
+    border:         1px solid #DC8E20; /* http://www.colourlovers.com/color/DC8E20/Dark_Gold_Spice */
+    margin:         1em 1em;
+    padding:        1em 2em;
+    border-radius:  1em;
+    color:          #460702;
+    width:          35%;
+    position:       relative;
+    left:           25%;
+    align-content:  center;
+    text-align:     center;
+    line-height:    2;
+}
+.index_register {
+    background:     rgba(255,250,242,0.4);
+    box-shadow:     0 0 1em rgba(0, 0, 0, 0.75) inset;
+    border:         1px solid #DC8E20; /* http://www.colourlovers.com/color/DC8E20/Dark_Gold_Spice */
+    margin:         1em 1em;
+    padding:        1em 2em;
+    border-radius:  1em;
+    color:          #460702;
+    width:          45%;
+    position:       relative;
+    left:           20%;
+    align-content:  center;
+    text-align:     center;
+    line-height:    2;
+}
 .inline_announcements ul {
     padding-left: 1em;
 }
@@ -666,7 +696,7 @@ h3.subtitle {
     color: #DC8E20;
 }
 
-.symfony-content #mapviewer .ui-widget-content h3, .symfony-content #mapviewer .ui-widget-content h4, {
+.symfony-content #mapviewer .ui-widget-content h3, .symfony-content #mapviewer .ui-widget-content h4 {
     color: #000;
 }
 
@@ -2115,7 +2145,7 @@ ul.cmsg_actions {
     -o-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out;
     text-shadow: 0px 1px 0px #ffe6a5;
-    padding: 0.1em 1em
+    padding: 0.1em 1em;
     border-color: #ebae3e;
     border-width: 1px;
     border-style: solid;
