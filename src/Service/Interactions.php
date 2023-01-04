@@ -19,7 +19,7 @@ class Interactions {
 	private EntityManagerInterface $em;
 	private Geography $geo;
 	private History $history;
-	private PermissionManager $permission_manager;
+	private PermissionManager $pm;
 	private Politics $pol;
 
 	public function __construct(EntityManagerInterface $em, Geography $geo, History $history, PermissionManager $pm, Politics $pol) {

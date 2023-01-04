@@ -28,7 +28,7 @@ class GMController extends AbstractController {
 	#[Route ('/olympus', name:'maf_gm_pending')]
 	public function pendingAction(): Response {
 		# Security is handled by Syfmony Firewall.
-		$query = $this->em->createQuery('SELECT r from BM2SiteBundle:UserReport r WHERE r.actioned = false');
+		$query = $this->em->createQuery('SELECT r from App\Entity\UserReport r WHERE r.actioned = false');
 		$reports = $query->getResult();
 
 		return $this->render('GM/pending.html.twig',  [
@@ -50,7 +50,7 @@ class GMController extends AbstractController {
 
 	public function actionedAction() {
 		# Security is handled by Syfmony Firewall.
-		$query = $this->em->createQuery('SELECT r from BM2SiteBundle:UserReport r WHERE r.actioned = true');
+		$query = $this->em->createQuery('SELECT r from App\Entity\UserReport r WHERE r.actioned = true');
 		$reports = $query->getResult();
 
 		return $this->render('GM/pending.html.twig',  [

@@ -6,21 +6,21 @@ use App\Entity\Character;
 use App\Entity\Setting;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
 class AppState {
 
-	protected $em;
-	protected $tokenStorage;
-	protected $authorizationCheckerInterface;
-	protected $requestStack;
+	private EntityManagerInterface $em;
+	private TokenStorageInterface $tokenStorage;
+	private RequestStack $requestStack;
+	private Security $sec;
 
-	private $languages = array(
+	private array $languages = array(
 		'en' => 'english',
 		'de' => 'deutsch',
 		'es' => 'español',
@@ -28,15 +28,25 @@ class AppState {
 		'it' => 'italiano'
 		);
 
-	public function __construct(EntityManagerInterface $em, TokenStorageInterface $tokenStorage, AuthorizationCheckerInterface $authorizationChecker, RequestStack $requestStack) {
+	public function __construct(EntityManagerInterface $em, TokenStorageInterface $tokenStorage, RequestStack $requestStack, Security $sec) {
 		$this->em = $em;
 		$this->tokenStorage = $tokenStorage;
-		$this->authorizationChecker = $authorizationChecker;
 		$this->requestStack = $requestStack;
+		$this->sec = $sec;
 	}
 
-	public function availableTranslations() {
+	public function availableTranslations(): array {
 		return $this->languages;
+	}
+
+	public function checkBans(): bool|AccessDeniedException {
+		if ($this->sec->isGranted('ROLE_BANNED_MULTI')) {
+			return new AccessDeniedException('error.banned.multi');
+		}
+		if ($this->sec->isGranted('ROLE_BANNED_TOS')) {
+			return new AccessDeniedException('error.banned.tos');
+		}
+		return false;
 	}
 
 	public function getCharacter($required=true, $ok_if_dead=false, $ok_if_notstarted=false) {
@@ -66,8 +76,8 @@ class AppState {
 		}
 
 		# Let the ban checks begin...
-		if ($this->authorizationChecker->isGranted('ROLE_BANNED_MULTI')) {
-			if (!$required) { return null; } else { throw new AccessDeniedException('error.banned.multi'); }
+		if ($bans = $this->checkBans()) {
+			if (!$required) { return null; } else { throw $bans; }
 		}
 
 		# Check if we have a character, if not redirect to character list.
@@ -106,7 +116,7 @@ class AppState {
 		return $character;
 	}
 
-	public function getDate($cycle=null) {
+	public function getDate($cycle=null): array {
 		// our in-game date - 6 days a week, 60 weeks a year = 1 year about 2 months
 		if (null===$cycle) {
 			$cycle = $this->getCycle();
@@ -118,7 +128,7 @@ class AppState {
 		return array('year'=>$year, 'week'=>$week, 'day'=>$day);
 	}
 
-	public function getCycle() {
+	public function getCycle(): int {
 		return (int)($this->getGlobal('cycle', 0));
 	}
 
@@ -127,7 +137,7 @@ class AppState {
 		if (!$setting) return $default;
 		return $setting->getValue();
 	}
-	public function setGlobal($name, $value) {
+	public function setGlobal($name, $value): void {
 		$setting = $this->em->getRepository(Setting::class)->findOneByName($name);
 		if (!$setting) {
 			$setting = new Setting();
@@ -139,7 +149,7 @@ class AppState {
 	}
 
 
-	public function setSessionData(Character $character) {
+	public function setSessionData(Character $character): void {
 		$session = $this->requestStack->getSession();
 		$session->clear();
 		if ($character->isAlive()) {
@@ -166,18 +176,18 @@ class AppState {
 		}
 	}
 
-	public function findEmailOptOutToken(User $user) {
+	public function findEmailOptOutToken(User $user): string {
 		return $user->getEmailOptOutToken()?$user->getEmailOptOutToken():$this->generateEmailOptOutToken($user);
 	}
 
-	public function generateEmailOptOutToken(User $user) {
+	public function generateEmailOptOutToken(User $user): string {
 		$token = $this->generateToken();
 		$user->setEmailOptOutToken($token);
 		$this->em->flush();
 		return $token;
 	}
 
-	public function generateToken($length = 128, $method = 'trimbase64') {
+	public function generateToken($length = 128, $method = 'trimbase64'): string {
 		if ($method = 'trimbase64') {
 			$token = rtrim(strtr(base64_encode(random_bytes($length)), '+/', '-_'), '=');
 		}
@@ -192,7 +202,7 @@ class AppState {
 		return $query->getSingleResult();
 	}
 
-        public function generateAndCheckToken($length, $check = 'User', $against = 'reset_token') {
+        public function generateAndCheckToken($length, $check = 'User', $against = 'reset_token'): bool|string {
                 $valid = false;
                 $token = false;
                 $em = $this->em;

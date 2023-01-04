@@ -26,6 +26,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 class Geography {
 
 	private $em;
+	private $pm;
 	private $appstate;
 	private $biomes_water=false;
 	private $biomes_invalid=false;

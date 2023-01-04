@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Event;
 use App\Entity\MailEntry;
 use App\Entity\User;
+use App\Service\AppState;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -13,12 +14,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MailManager {
 
-	protected $em;
-	protected $appstate;
-	protected $trans;
-	protected $mail_from;
-	protected $mail_reply_to;
-	protected $optOut;
+	protected EntityManagerInterface $em;
+	protected AppState $appstate;
+	protected TranslatorInterface $trans;
+	protected Address $mail_from;
+	protected mixed $mail_reply_to;
+	protected mixed $optOut;
 
 	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, MailerInterface $mailer, AppState $appstate) {
 		$this->em = $em;
@@ -30,7 +31,7 @@ class MailManager {
 		$this->optOut = $_ENV['MAIL_OPT_OUT_URL'];
 	}
 
-	public function spoolEvent(Event $event, User $user, $text) {
+	public function spoolEvent(Event $event, User $user, $text): void {
 		$entry = new MailEntry();
 		$this->em->persist($entry);
 		$entry->setEvent($event);
@@ -41,7 +42,7 @@ class MailManager {
 		$entry->setContent($text);
 	}
 
-	public function calculateWhen($delay) {
+	public function calculateWhen($delay): \DateTime {
 		switch ($delay) {
 			case 'now':
 				return new \DateTime('now');
@@ -87,7 +88,7 @@ class MailManager {
 		}
 	}
 
-	public function sendEventEmails() {
+	public function sendEventEmails(): void {
 		$now = new \DateTime("now");
 		$em = $this->em;
 		$query = $em->createQuery("SELECT u FROM BM2SiteBundle:User u JOIN u.mail_entries m WHERE m.type = :type");

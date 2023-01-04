@@ -54,6 +54,7 @@ class AccountController extends AbstractController {
 	private PaymentManager $pay;
 	private TranslatorInterface $trans;
 	private UserManager $userMan;
+	private Mailmanager $mail;
 
 	public function __construct(AppState $appstate, EntityManagerInterface $em, MailManager $mail, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan, Security $sec) {
 		$this->app = $appstate;

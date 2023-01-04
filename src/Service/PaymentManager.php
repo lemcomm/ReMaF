@@ -19,17 +19,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaymentManager {
 
-	protected $em;
-	protected $usermanager;
-	protected $mailer;
-	protected $translator;
-	protected $logger;
-	private $mailman;
-	private $ruleset;
-	private $stripeSecret;
-	private $stripePrices;
-	private $env;
-	private $patreonAlikes = ['patreon'];
+	protected EntityManagerInterface $em;
+	protected \App\Service\UserManager $usermanager;
+	protected \App\Service\MailManager $mailer;
+	protected TranslatorInterface $translator;
+	protected LoggerInterface $logger;
+	private \App\Service\MailManager $mailman;
+	private mixed $ruleset;
+	private mixed $stripeSecret;
+	private array $stripePrices;
+	private string $env;
+	private array $patreonAlikes = ['patreon'];
 
 
 	// FIXME: type hinting for $translator removed because the addition of LoggingTranslator is breaking it
@@ -611,7 +611,6 @@ class PaymentManager {
 		}
 
 		// TODO: this is not quite complete, what about people going into negative credits?
-		$this->usermanager->updateUser($user, false);
 		$this->em->flush();
 		return true;
 	}
@@ -653,7 +652,6 @@ class PaymentManager {
 			$user->setVipStatus($code->getVipStatus());
 		}
 		// TODO: unlock characters, also check if we were due a payment - how ?
-		$this->usermanager->updateUser($user, false);
 
 		$code->setUsed(true);
 		$code->setUsedOn(new \DateTime("now"));
@@ -706,7 +704,6 @@ class PaymentManager {
 			$paid->modify('+1 month');
 			$user->setPaidUntil($paid);
 		}
-		$this->usermanager->updateUser($user, false);
 		$this->em->flush();
 		$this->logger->info("Payment: User ".$user->getId().", $type, $credits credits");
 		return true;

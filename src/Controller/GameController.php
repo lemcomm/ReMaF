@@ -2,20 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\GeoData;
 use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Libraries\MovingAverage;
-use App\Libraries\Perlin;
-use App\Service\AppState;
 use App\Service\GameRunner;
 use Doctrine\ORM\EntityManagerInterface;
-use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
-use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
-use LongitudeOne\Spatial\PHP\Types\Geometry\Polygon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -67,7 +60,7 @@ class GameController extends AbstractController {
 	#[Route ('/game/users', name:'maf_game_users')]
 	public function usersAction(): Response {
 
-		$query = $this->em->createQuery('SELECT u FROM App:User u WHERE u.account_level > 0 ORDER BY u.username ASC');
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\User u WHERE u.account_level > 0 ORDER BY u.username ASC');
 		$users = array();
 		foreach ($query->getResult() as $user) {
 			if ($user->getActiveCharacters()->count()>0 OR $user->getRetiredCharacters()->count()>0) {
@@ -134,7 +127,7 @@ class GameController extends AbstractController {
 		$current = null; $total = 0;
 		$battles_avg = new MovingAverage($this->low_moving_average_cycles);
 		$battles_avg2 = new MovingAverage($this->high_moving_average_cycles);
-		$query = $this->em->createQuery('SELECT s FROM App:StatisticGlobal s WHERE s.cycle >= :start ORDER BY s.cycle ASC');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s WHERE s.cycle >= :start ORDER BY s.cycle ASC');
 		$query->setParameter('start', $start);
 		foreach ($query->getResult() as $row) {
 			$current = $row;
@@ -189,18 +182,18 @@ class GameController extends AbstractController {
 
 		switch ($what) {
 			case 'area':
-				$query = $this->em->createQuery('SELECT AVG(s.area) FROM App:StatisticRealm s');
+				$query = $this->em->createQuery('SELECT AVG(s.area) FROM App\Entity\StatisticRealm s');
 				$avg = round($query->getSingleScalarResult()/2);
 				$q = 's.area > :avg';
 				break;
 			case 'soldiers':
-				$query = $this->em->createQuery('SELECT AVG(s.soldiers) FROM App:StatisticRealm s');
+				$query = $this->em->createQuery('SELECT AVG(s.soldiers) FROM App\Entity\StatisticRealm s');
 				$avg = round($query->getSingleScalarResult()/2);
 				$q = 's.soldiers > :avg';
 				break;
 		}
 
-		$query = $this->em->createQuery('SELECT s FROM App:StatisticRealm s WHERE s.cycle >= :start AND s.superior IS NULL AND '.$q.' ORDER BY s.cycle ASC');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\StatisticRealm s WHERE s.cycle >= :start AND s.superior IS NULL AND '.$q.' ORDER BY s.cycle ASC');
 		$query->setParameters(array('avg'=>$avg, 'start'=>$this->start_cycle));
 		foreach ($query->getResult() as $row) {
 			$cycle = $row->getCycle();
@@ -238,7 +231,7 @@ class GameController extends AbstractController {
 			"characters"	=> array("label" => "characters", "data" => array()),
 			"players"		=> array("label" => "players", "data" => array()),
 		);
-		$query = $this->em->createQuery('SELECT s FROM App:StatisticRealm s WHERE s.cycle >= :start AND s.realm = :me ORDER BY s.cycle ASC');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\StatisticRealm s WHERE s.cycle >= :start AND s.realm = :me ORDER BY s.cycle ASC');
 		$query->setParameters(array('me'=>$realm, 'start'=>$this->start_cycle));
 		foreach ($query->getResult() as $row) {
 			$cycle = $row->getCycle();
@@ -267,7 +260,7 @@ class GameController extends AbstractController {
 			"starvation"	=> array("label" => "starvation", "data" => array()),
 			"war_fatigue"	=> array("label" => "war_fatigue", "data" => array()),
 		);
-		$query = $this->em->createQuery('SELECT s FROM App:StatisticSettlement s WHERE s.cycle >= :start AND s.settlement = :me ORDER BY s.cycle ASC');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\StatisticSettlement s WHERE s.cycle >= :start AND s.settlement = :me ORDER BY s.cycle ASC');
 		$query->setParameters(array('me'=>$settlement, 'start'=>$this->start_cycle));
 		foreach ($query->getResult() as $row) {
 			$cycle = $row->getCycle();
@@ -287,7 +280,7 @@ class GameController extends AbstractController {
 	#[Route ('/game/stats/realms', name:'maf_game_stats_realms')]
 	public function realmstatisticsAction(): Response {
 		$realms=new ArrayCollection();
-		$query = $this->em->createQuery('SELECT s, r FROM App:StatisticRealm s JOIN s.realm r WHERE s.cycle >= :start AND r.superior IS NULL AND r.active = true AND s.cycle = (select MAX(x.cycle) FROM App:StatisticRealm x)');
+		$query = $this->em->createQuery('SELECT s, r FROM App\Entity\StatisticRealm s JOIN s.realm r WHERE s.cycle >= :start AND r.superior IS NULL AND r.active = true AND s.cycle = (select MAX(x.cycle) FROM App\Entity\StatisticRealm x)');
 		$query->setParameter('start', $this->start_cycle);
 		foreach ($query->getResult() as $result) {
 			$data = array(
@@ -329,7 +322,7 @@ class GameController extends AbstractController {
 			foreach ($data as $key=>$d) {
 				$soldiers[$key] = 0;
 			}
-			$reports = $this->em->getRepository('App:BattleReport')->findByCycle($i);
+			$reports = $this->em->getRepository('App\Entity\BattleReport')->findByCycle($i);
 			$battles["data"][] = array($i, count($reports));
 			foreach ($reports as $report) {
 				foreach ($report->getStart() as $group) {
@@ -367,7 +360,7 @@ class GameController extends AbstractController {
 
 		$qb = $this->em->createQueryBuilder()
 			->select(array('count(s) as number', 'w.name as weapon', 'a.name as armour', 'e.name as equipment', 'a.defense as adef', 'e.defense as edef'))
-			->from('App:Soldier', 's')
+			->from('App\Entity\Soldier', 's')
 			->leftJoin('s.weapon', 'w')
 			->leftJoin('s.armour', 'a')
 			->leftJoin('s.equipment', 'e')
@@ -420,7 +413,7 @@ class GameController extends AbstractController {
 	#[Route ('/game/stats/roads', name:'maf_game_stats_roads')]
 	public function roadsstatisticsAction(TranslatorInterface $trans): Response {
 		$data = array();
-		$query = $this->em->createQuery('SELECT r.quality as quality, count(r) as amount FROM App:Road r GROUP BY r.quality ORDER BY r.quality ASC');
+		$query = $this->em->createQuery('SELECT r.quality as quality, count(r) as amount FROM App\Entity\Road r GROUP BY r.quality ORDER BY r.quality ASC');
 		foreach ($query->getResult() as $row) {
 			$level = $trans->trans('road.quality.'.$row['quality']);
 			$amount = $row['amount'];
@@ -435,7 +428,7 @@ class GameController extends AbstractController {
 	#[Route ('/game/stats/resources', name:'maf_game_stats_resources')]
 	public function resourcesdataAction(): Response {
 		$data = array();
-		$resources = $this->em->getRepository('App:ResourceType')->findAll();
+		$resources = $this->em->getRepository('App\Entity\ResourceType')->findAll();
 		foreach ($resources as $resource) {
 			$data[$resource->getName()] = array(
 				"supply"=>array("label"=>$resource->getName()." supply", "data"=>array()),
@@ -443,7 +436,7 @@ class GameController extends AbstractController {
 				"trade"=>array("label"=>$resource->getName()." trade", "data"=>array(), "yaxis"=>2)
 			);
 		}
-		$query = $this->em->createQuery('SELECT s FROM App:StatisticResources s WHERE s.cycle >= :start ORDER BY s.cycle ASC');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\StatisticResources s WHERE s.cycle >= :start ORDER BY s.cycle ASC');
 		$query->setParameters(array('start'=>$this->start_cycle));
 		foreach ($query->getResult() as $row) {
 			$cycle = $row->getCycle();
@@ -460,8 +453,8 @@ class GameController extends AbstractController {
 	
 	#[Route ('/game/settlements', name:'maf_game_settlements')]
 	public function settlementsAction(Economy $econ): Response {
-		$settlements = $this->em->getRepository('App:Settlement')->findAll();
-		$rt = $this->em->getRepository('App:ResourceType')->findAll();
+		$settlements = $this->em->getRepository('App\Entity\Settlement')->findAll();
+		$rt = $this->em->getRepository('App\Entity\ResourceType')->findAll();
 
 		return $this->render('Game/settlements.html.twig', [
 			'settlements' => $settlements,
@@ -472,7 +465,7 @@ class GameController extends AbstractController {
 
 	#[Route ('/game/herladry', name:'maf_game_heraldry')]
 	public function heraldryAction(): Response {
-		$crests = $this->em->getRepository('App:Heraldry')->findAll();
+		$crests = $this->em->getRepository('App\Entity\Heraldry')->findAll();
 
 		return $this->render('Game/heraldry.html.twig', [
 			'crests' => $crests,
@@ -481,13 +474,13 @@ class GameController extends AbstractController {
 	
 	#[Route ('/game/techtree', name:'maf_game_techtree')]
 	public function techtreeAction(): Response {
-		$query = $this->em->createQuery('SELECT e from App:EquipmentType e');
+		$query = $this->em->createQuery('SELECT e from App\Entity\EquipmentType e');
 		$equipment = $query->getResult();
 
-		$query = $this->em->createQuery('SELECT e from App:EntourageType e');
+		$query = $this->em->createQuery('SELECT e from App\Entity\EntourageType e');
 		$entourage = $query->getResult();
 
-		$query = $this->em->createQuery('SELECT b from App:BuildingType b');
+		$query = $this->em->createQuery('SELECT b from App\Entity\BuildingType b');
 		$buildings = $query->getResult();
 
 		$descriptorspec = array(
@@ -522,11 +515,11 @@ class GameController extends AbstractController {
 
 	#[Route ('/game/diplomacy', name:'maf_game_diplomacy')]
 	public function diplomacyAction(): Response {
-		$query = $this->em->createQuery('SELECT r FROM App:Realm r WHERE r.superior IS NULL AND r.active = true');
+		$query = $this->em->createQuery('SELECT r FROM App\Entity\Realm r WHERE r.superior IS NULL AND r.active = true');
 		$realms = $query->getResult();
 
 		$data = array();
-		$query = $this->em->createQuery('SELECT r FROM App:RealmRelation r WHERE r.source_realm IN (:realms) AND r.target_realm IN (:realms)');
+		$query = $this->em->createQuery('SELECT r FROM App\Entity\RealmRelation r WHERE r.source_realm IN (:realms) AND r.target_realm IN (:realms)');
 		$query->setParameter('realms', $realms);
 		foreach ($query->getResult() as $row) {
 			$data[$row->getSourceRealm()->getId()][$row->getTargetRealm()->getId()] = $row->getStatus();
@@ -540,8 +533,8 @@ class GameController extends AbstractController {
 	#[Route ('/game/buildings', name:'maf_game_buildings')]
 	public function buildingsAction() {
 		return $this->render('Game/buildings.html.twig', [
-			'buildings'	=> $this->em->getRepository('App:BuildingType')->findAll(),
-			'resources'	=> $this->em->getRepository('App:ResourceType')->findAll()
+			'buildings'	=> $this->em->getRepository('App\Entity\BuildingType')->findAll(),
+			'resources'	=> $this->em->getRepository('App\Entity\ResourceType')->findAll()
 		]);
 	}
 }

@@ -93,7 +93,7 @@ class HeraldryController extends AbstractController {
 
 
 	private function createSVG($banner): bool|string {
-		$basedir = __DIR__."/../Resources/public/heraldry-svg/";
+		$basedir = __DIR__."/../../public/heraldry-svg/";
 
 		$xml = new \DOMDocument('1.0', 'UTF-8');
 		$svg = $xml->appendChild(new \DOMElement("svg"));
@@ -146,7 +146,7 @@ class HeraldryController extends AbstractController {
 				throw new \Exception("svg file charges/".$banner->getCharge()." does not exit");
 			}
 			$doc = new \DOMDocument();
-			$doc->validateOnParse = true;
+			#$doc->validateOnParse = true; #SVG fails to validate. TODO: Research the heck out of this.
 			$doc->load($file);
 
 			$paths = $doc->getElementsByTagName("path");
