@@ -592,7 +592,7 @@ class Economy {
 				foreach ($unit->getSupplies() as $supply) {
 					if ($supply->getType() === 'food') {
 						$found = true;
-						$supply->setQuantity($supply->getQuantity()+$supply->getQuantity());
+						$supply->setQuantity($supply->getQuantity()+ceil($qty));
 						break;
 					}
 				}
