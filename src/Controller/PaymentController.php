@@ -6,26 +6,42 @@ use App\Entity\Patron;
 use App\Form\CultureType;
 use App\Form\GiftType;
 use App\Form\SubscriptionType;
+use App\Service\AppState;
+use App\Service\MailManager;
+use App\Service\PaymentManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Patreon\OAuth as POA;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaymentController extends AbstractController {
 
-	private array $giftchoices = array(100, 200, 300, 400, 500, 600, 800, 1000, 1200, 1500, 2000, 2500);
+	private array $giftchoices = array(100=>100, 200=>200, 300=>300, 400=>400, 500=>500, 600=>600, 800=>800, 1000=>1000, 1200=>1200, 1500=>1500, 2000=>2000, 2500=>2500);
 	private EntityManagerInterface $em;
 	private Security $sec;
+	private MailManager $mail;
+	private PaymentManager $pay;
+	private TranslatorInterface $trans;
+	private LoggerInterface $logger;
 
-	public function __construct(EntityManagerInterface $em, Security $sec) {
+	public function __construct(AppState $app, EntityManagerInterface $em, LoggerInterface $logger, MailManager $mail, PaymentManager $pay, Security $sec, TranslatorInterface $trans) {
+		$this->app = $app;
 		$this->em = $em;
+		$this->logger = $logger;
+		$this->mail = $mail;
+		$this->pay = $pay;
 		$this->sec = $sec;
+		$this->trans = $trans;
 	}
 
 	private function fetchPatreon($creator = null) {
@@ -49,25 +65,25 @@ class PaymentController extends AbstractController {
 		$user = $this->getUser();
 
 		$form = $this->createFormBuilder()
-			->add('hash', 'text', array(
+			->add('hash', TextType::class, [
 				'required' => true,
 				'label' => 'account.code.label',
-			))
-			->add('submit', 'submit', array('label'=>'account.code.submit'))
+			])
+			->add('submit', SubmitType::class, array('label'=>'account.code.submit'))
 			->getForm();
 
 		$redeemed = false;
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
-			list($code, $result) = $this->get('payment_manager')->redeemHash($user, $data['hash']);
+			list($code, $result) = $this->pay->redeemHash($user, $data['hash']);
 
 			if ($result === true) {
 				$redeemed = $code;
 			} else {
-				$form->addError(new FormError($this->get('translator')->trans($result)));
+				$form->addError(new FormError($this->trans->trans($result)));
 			}
 		}
 
@@ -86,11 +102,11 @@ class PaymentController extends AbstractController {
 		$user = $this->getUser();
 
 		$success = $this->generateUrl('maf_stripe_success', [], true);
-		$cancel = $this->generateUrl('bm2_payment', [], true);
-		$checkout = $this->get('payment_manager')->buildStripeIntent($currency, $amount, $user, $success, $cancel);
+		$cancel = $this->generateUrl('maf_payment', [], true);
+		$checkout = $this->pay->buildStripeIntent($currency, $amount, $user, $success, $cancel);
 		if ($checkout === 'notfound') {
 			$this->addFlash('error', "Unable to locate the requested product.");
-			return $this->redirectToRoute('bm2_payment');
+			return $this->redirectToRoute('maf_payment');
 		} else {
 			return $this->redirect($checkout->url);
 		}
@@ -101,10 +117,10 @@ class PaymentController extends AbstractController {
 		$user = $this->getUser();
 		$user_id = $user->getId();
 		try {
-			list($result, $items) = $this->get('payment_manager')->retrieveStripe($request->query->get('session_id'));
+			list($result, $items) = $this->pay->retrieveStripe($request->query->get('session_id'));
 		} catch (Exception $e) {
 			$this->addFlash('error', "Stripe Payment Failed. If you've received this it's because we weren't able to complete the transaction for some reason. Please let an administrator know about this in a direct message either on Discord or via email to andrew@iungard.com.");
-			return $this->redirectToRoute('bm2_payment');
+			return $this->redirectToRoute('maf_payment');
 		}
 
 		$total = $result->amount_subtotal/100;
@@ -115,21 +131,21 @@ class PaymentController extends AbstractController {
 
 		if ($status === 'paid' || $status == 'no_payment_required') {
 			$txt = "Stripe Payment calback: $total $currency // for user ID $user_id // tx id $txid";
-			$this->get('payment_manager')->log_info($txt);
-			$this->get('payment_manager')->account($user, 'Stripe Payment', $pid, $txid);
+			$this->pay->log_info($txt);
+			$this->pay->account($user, 'Stripe Payment', $pid, $txid);
 			$this->get('notification_manager')->spoolPayment('M&F '.$txt);
 			$this->addFlash('notice', 'Payment Successful! Thank you!');
-			return $this->redirectToRoute('bm2_payment');
+			return $this->redirectToRoute('maf_payment');
 		} else {
 			$this->addFlash('error', "Stripe Payment Incomplete. If you believe you reached this incorrectly, please contact an Adminsitrator. Having your M&F username and transaction time handy will make this easier to look into. Transactions that aren't immediate will require manual processing at this time.");
-			return $this->redirectToRoute('bm2_payment');
+			return $this->redirectToRoute('maf_payment');
 		}
 	}
 
 	#[Route ('/payment/stripe_cancel', name:'maf_stripe_cancel')]
 	public function stripeCancelAction(Request $request): RedirectResponse {
 		$this->addFlash('warning', "You appear to have cancelled your payment. Transaction has ended.");
-		return $this->redirectToRoute('bm2_payment');
+		return $this->redirectToRoute('maf_payment');
 	}
 
 	#[Route ('/payment/credits', name:'maf_payment_credits')]
@@ -141,8 +157,8 @@ class PaymentController extends AbstractController {
 		$user = $this->getUser();
 
 		return $this->render('Payment/credits.html.twig', [
-			'myfee' => $this->get('payment_manager')->calculateUserFee($user),
-			'concepturl' => $this->generateUrl('bm2_site_default_paymentconcept')
+			'myfee' => $this->pay->calculateUserFee($user),
+			'concepturl' => $this->generateUrl('maf_about_payment')
 		]);
 	}
 
@@ -153,7 +169,7 @@ class PaymentController extends AbstractController {
 			throw $banned;
 		}
 		$user = $this->getUser();
-		$levels = $this->get('payment_manager')->getPaymentLevels();
+		$levels = $this->pay->getPaymentLevels();
 
 		$sublevel = [];
 		foreach ($user->getPatronizing() as $patron) {
@@ -162,27 +178,27 @@ class PaymentController extends AbstractController {
 			}
 		}
 
-		$form = $this->createForm(new SubscriptionType($levels, $user->getAccountLevel()));
+		$form = $this->createForm(SubscriptionType::class, null, ['all_levels'=>$levels, 'old_level'=>$user->getAccountLevel()]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			// TODO: this should require an e-mail confirmation
 			// TODO: should not allow lowering while above (new) character limit
 
-			$check = $this->get('payment_manager')->changeSubscription($user, $data['level']);
+			$check = $this->pay->changeSubscription($user, $data['level']);
 			if ($check) {
 				$this->addFlash('notice', 'account.sub.changed');
-				return $this->redirectToRoute('bm2_site_payment_credits');
+				return $this->redirectToRoute('maf_payment_credits');
 			}
 		}
 
 		return $this->render('Payment/subscription.html.twig', [
-			'myfee' => $this->get('payment_manager')->calculateUserFee($user),
-			'refund' => $this->get('payment_manager')->calculateRefund($user),
+			'myfee' => $this->pay->calculateUserFee($user),
+			'refund' => $this->pay->calculateRefund($user),
 			'levels' => $levels,
 			'sublevel' => $sublevel,
-			'concepturl' => $this->generateUrl('bm2_site_default_paymentconcept'),
+			'concepturl' => $this->generateUrl('maf_about_payment'),
 			'creators' => $this->fetchPatreon(),
 			'form'=> $form->createView()
 		]);
@@ -195,9 +211,8 @@ class PaymentController extends AbstractController {
 			throw $banned;
 		}
 		$user = $this->getUser();
-		$em = $this->getDoctrine()->getManager();
 		$patreons = $user->getPatronizing();
-		$pm = $this->get('payment_manager');
+		$pm = $this->pay;
 
 		$now = new \DateTime('now');
 		$amount = 0;
@@ -220,9 +235,9 @@ class PaymentController extends AbstractController {
 		if ($amount > 0) {
 			$amount = $amount/100;
 		}
-		$em->flush();
-		$this->addFlash('notice', $this->get('translator')->trans('account.patronizing', ['%entitlement%'=>$amount]));
-		return $this->redirectToRoute('bm2_account');
+		$this->em->flush();
+		$this->addFlash('notice', $this->trans->trans('account.patronizing', ['%entitlement%'=>$amount]));
+		return $this->redirectToRoute('maf_account');
 	}
 
 	#[Route ('/payment/patreon/{creator}', name:'maf_patreon', requirements:['creator'=>'[A-Za-z]+'])]
@@ -232,15 +247,14 @@ class PaymentController extends AbstractController {
 			throw $banned;
 		}
 		$user = $this->getUser();
-		$em = $this->getDoctrine()->getManager();
 
 		$code = $request->query->get('code');
 		$creator = $this->fetchPatreon($creator);
 		if (isset($code) && !empty($code)) {
-			$pm = $this->get('payment_manager');
+			$pm = $this->pay;
 			$auth = new POA($creator->getClientId(), $creator->getClientSecret());
 			$tokens = $auth->get_tokens($code, $creator->getReturnUri());
-			$patron = $em->getRepository('App:Patron')->findOneBy(["user"=>$user, "creator"=>$creator]);
+			$patron = $this->em->getRepository('App:Patron')->findOneBy(["user"=>$user, "creator"=>$creator]);
 			if (!$patron) {
 				$patron = new Patron();
 				$em->persist($patron);
@@ -253,15 +267,15 @@ class PaymentController extends AbstractController {
 			list($status, $entitlement) = $pm->refreshPatreonPledge($patron);
 			if ($status === false) {
 				#This only returns false if the API spits garbage at us.
-				$this->addFlash('error', $this->get('translator')->trans('account.patreonapifailure'));
-				return $this->redirectToRoute('bm2_account');
+				$this->addFlash('error', $this->trans->trans('account.patreonapifailure'));
+				return $this->redirectToRoute('maf_account');
 			}
-			$em->flush();
-			$this->addFlash('notice', $this->get('translator')->trans('account.patronizing', ['%entitlement%'=>$entitlement/100]));
-			return $this->redirectToRoute('bm2_account');
+			$this->em->flush();
+			$this->addFlash('notice', $this->trans->trans('account.patronizing', ['%entitlement%'=>$entitlement/100]));
+			return $this->redirectToRoute('maf_account');
 		} else {
-			$this->addFlash('notice', $this->get('translator')->trans('account.patronfailure'));
-			return $this->redirectToRoute('bm2_site_payment_subscription');
+			$this->addFlash('notice', $this->trans->trans('account.patronfailure'));
+			return $this->redirectToRoute('maf_payment_subscription');
 		}
 	}
 
@@ -271,17 +285,16 @@ class PaymentController extends AbstractController {
 		if ($banned instanceof AccessDeniedException) {
 			throw $banned;
 		}
-		$em = $this->getDoctrine()->getManager();
-		$allcultures = $em->createQuery('SELECT c FROM App:Culture c INDEX BY c.id')->getResult();
-		$nc = $em->createQuery('SELECT c.id as id, count(n.id) as amount FROM App:NameList n JOIN n.culture c GROUP BY c.id')->getResult();
+		$allcultures = $this->em->createQuery('SELECT c FROM App:Culture c INDEX BY c.id')->getResult();
+		$nc = $this->em->createQuery('SELECT c.id as id, count(n.id) as amount FROM App:NameList n JOIN n.culture c GROUP BY c.id')->getResult();
 		$namescount = array();
 		foreach ($nc as $ncx) {
 			$namescount[$ncx['id']] = $ncx['amount'];
 		}
 
-		$form = $this->createForm(new CultureType($this->getUser(), false));
+		$form = $this->createForm(CultureType::class, null, ['user'=>$this->getUser(), 'available'=>false]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$buying = $data['culture'];
@@ -290,11 +303,11 @@ class PaymentController extends AbstractController {
 				$total += $buy->getCost();
 			}
 			if ($total > $this->getUser()->getCredits()) {
-				$form->addError(new FormError($this->get('translator')->trans("account.culture.notenoughcredits")));
+				$form->addError(new FormError($this->trans->trans("account.culture.notenoughcredits")));
 			} else {
 				foreach ($buying as $buy) {
 					// TODO: error handling here?
-					$this->get('payment_manager')->spend($this->getUser(), "culture pack", $buy->getCost());
+					$this->pay->spend($this->getUser(), "culture pack", $buy->getCost());
 					$this->getUser()->getCultures()->add($buy);
 				}
 				$em->flush();
@@ -320,15 +333,16 @@ class PaymentController extends AbstractController {
 			throw $banned;
 		}
 		$user = $this->getUser();
-
-		$form = $this->createForm(new GiftType($this->giftchoices, false));
+		$form = $this->createForm(GiftType::class, null, [
+			'credits' => $this->giftchoices,
+			'invite' => false
+		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$value = $this->giftchoices[$data['credits']];
 
-			$em = $this->getDoctrine()->getManager();
-			$target = $em->getRepository('App:User')->findOneByEmail($data['email']);
+			$target = $this->em->getRepository('App:User')->findOneByEmail($data['email']);
 			if (!$target) {
 				sleep(1); // to make brute-forcing e-mail addresses a bit slower
 				return array('error'=>'notarget');
@@ -337,22 +351,19 @@ class PaymentController extends AbstractController {
 				return array('error'=>'self');
 			}
 
-			$code = $this->get('payment_manager')->createCode($value, 0, $data['email'], $user);
-			$this->get('payment_manager')->spend($user, "gift", $value);
+			$code = $this->pay->createCode($value, 0, $data['email'], $user);
+			$this->pay->spend($user, "gift", $value);
 
 			$em->flush();
 
-			$text = $this->get('translator')->trans('account.gift.mail.body', array("%credits%"=>$value, "%code%"=>$code->getCode(), "%message%"=>strip_tags($data['message'])));
-			$message = \Swift_Message::newInstance()
-				->setSubject($this->get('translator')->trans('account.gift.mail.subject', array()))
-				->setFrom(array('mafserver@lemuriacommunity.org' => $this->get('translator')->trans('mail.sender', array(), "communication")))
-				->setTo($data['email'])
-				->setCc($user->getEmail())
-				->setBody($text, 'text/html')
-				->setMaxLineLength(1000)
-			;
-			$numSent = $this->get('mailer')->send($message);
-			$this->get('logger')->info("sent gift: ($numSent) from ".$user->getId()." to ".$data['email']." for $value credits");
+			$text = $this->trans->trans('account.gift.mail.body', array("%credits%"=>$value, "%code%"=>$code->getCode(), "%message%"=>strip_tags($data['message'])));
+			$this->mail->sendEmail(
+				$data['email'],
+				$this->trans->trans('account.gift.mail.subject', array()),
+				$text,
+				$user->getEmail()
+			);
+			$this->logger->info("sent gift from ".$user->getId()." to ".$data['email']." for $value credits");
 
 			return $this->render('Payment/gift.html.twig', [
 				'success'=>true, 'credits'=>$value
@@ -373,29 +384,28 @@ class PaymentController extends AbstractController {
 		}
 		$user = $this->getUser();
 
-
-		$form = $this->createForm(new GiftType($this->giftchoices, true));
+		$form = $this->createForm(GiftType::class, null, [
+			'credits' => $this->giftchoices,
+			'invite' => true
+		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$value = $this->giftchoices[$data['credits']];
 
-			$code = $this->get('payment_manager')->createCode($value, 0, $data['email'], $user);
-			$this->get('payment_manager')->spend($user, "gift", $value);
+			$code = $this->pay->createCode($value, 0, $data['email'], $user);
+			$this->pay->spend($user, "gift", $value);
 
-			$this->getDoctrine()->getManager()->flush();
+			$this->em->flush();
 
-			$text = $this->get('translator')->trans('account.invite.mail.body', array("%credits%"=>$value, "%code%"=>$code->getCode(), "%message%"=>strip_tags($data['message'])));
-			$message = \Swift_Message::newInstance()
-				->setSubject($this->get('translator')->trans('account.invite.mail.subject', array()))
-				->setFrom(array('mafserver@lemuriacommunity.org' => $this->get('translator')->trans('mail.sender', array(), "communication")))
-				->setTo($data['email'])
-				->setCc($user->getEmail())
-				->setBody($text, 'text/html')
-				->setMaxLineLength(1000)
-			;
-			$numSent = $this->get('mailer')->send($message);
-			$this->get('logger')->info("sent friend invite: ($numSent) from ".$user->getId()." to ".$data['email']." for $value credits");
+			$text = $this->trans->trans('account.invite.mail.body', array("%credits%"=>$value, "%code%"=>$code->getCode(), "%message%"=>strip_tags($data['message'])));
+			$this->mail->sendEmail(
+				$data['email'],
+				$this->trans->trans('account.invite.mail.subject', array()),
+				$text,
+				$user->getEmail()
+			);
+			$this->logger->info("sent friend invite from ".$user->getId()." to ".$data['email']." for $value credits");
 
 			return $this->render('Payment/invite.html.twig', [
 				'success'=>true, 'credits'=>$value

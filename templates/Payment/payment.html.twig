@@ -1,0 +1,102 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+<h2>{{ 'account.payment.title'|trans|title }}</h2>
+{% if redeemed %}
+	<div class="success">
+		{% if redeemed.vipstatus > 0 %}
+			{{ 'account.code.redeemed4'|trans({"%credits%":redeemed.credits, "%vip%":('vip.status.'~redeemed.vipstatus)|trans}) }}
+		{% else %}
+			{{ 'account.code.redeemed3'|trans({"%credits%":redeemed.credits}) }}
+		{% endif %}
+	</div>
+{% endif %}
+
+<p>{{ 'account.payment.credits'|trans({'%amount%':app.user.credits}) }}
+<a href="{{ path("maf_payment_credits") }}">{{ 'account.credits.link'|trans|title }}</a>
+
+<h3>{{ 'account.code.title'|trans|title }}</h3>
+<p>{{ 'account.code.intro'|trans }}</p>
+{{ form(form) }}
+<h3>{{ 'account.payment.shop'|trans|title }}</h3>
+<p>{{ 'account.payment.intro'|trans|raw }}</p>
+
+<div id="callbackresult"></div>
+
+<table>
+	<thead>
+		<tr class="big">
+			<th></th>
+			<th>{{ 'account.credits.sum'|trans({"%amount%":200}) }}</th>
+			<th>{{ 'account.credits.sum1'|trans({"%amount%":500, "%per%": 10, "%total%": 550})|raw }}</th>
+			<th>{{ 'account.credits.sum1'|trans({"%amount%":1000, "%per%": 20, "%total%": 1200})|raw }}</th>
+			<th>{{ 'account.credits.sum1'|trans({"%amount%":2000, "%per%": 30, "%total%": 2600})|raw }}</th>
+			<th>{{ 'account.credits.sum1'|trans({"%amount%":5000, "%per%": 40, "%total%": 7000})|raw }}</th>
+			<th>{{ 'account.credits.sum1'|trans({"%amount%":10000, "%per%": 50, "%total%": 15000})|raw }}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="center">
+			<td rowspan="2"><img src="https://images.ctfassets.net/fzn2n1nzq965/6XFEUA9FzMBMphYdcUab19/37a1e07201366a351f7956560ccac09d/Stripe_wordmark_-_slate.svg" height="120" alt="Stripe" /></th>
+			<td><a href="{{ path("maf_stripe", {"currency":"USD", "amount":2}) }}"><button>$2 (USD)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"USD", "amount":5}) }}"><button>$5 (USD)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"USD", "amount":10}) }}"><button>$10 (USD)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"USD", "amount":20}) }}"><button>$20 (USD)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"USD", "amount":50}) }}"><button>$50 (USD)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"USD", "amount":100}) }}"><button>$100 (USD)</button></a></td>
+		</tr>
+		<tr class="center">
+			<td><a href="{{ path("maf_stripe", {"currency":"EUR", "amount":2}) }}"><button>€2 (EUR)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"EUR", "amount":5}) }}"><button>€5 (EUR)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"EUR", "amount":10}) }}"><button>€10 (EUR)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"EUR", "amount":20}) }}"><button>€20 (EUR)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"EUR", "amount":50}) }}"><button>€50 (EUR)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"EUR", "amount":100}) }}"><button>€100 (EUR)</button></a></td>
+		</tr>
+	</tbody>
+</table>
+{#
+{% endif %}
+#}
+<hr class="spacer"/>
+
+<h3>{{ 'account.payment.history'|trans|title }}</h3>
+<table>
+	<thead><tr>
+		<th>{{ 'account.payment.type'|trans }}</th>
+		<th>{{ 'account.payment.date'|trans }}</th>
+		<th>{{ 'account.payment.amount'|trans }}</th>
+		<th>{{ 'account.payment.currency'|trans }}</th>
+		<th>{{ 'account.credits.name'|trans }}</th>
+		<th>{{ 'account.credits.bonus'|trans }}</th>
+		<th>{{ 'account.payment.code'|trans }}</th>
+	</tr></thead>
+	<tbody>
+	{% for payment in app.user.payments %}
+		<tr>
+			<td>{{ payment.type }}</td>
+			<td>{{ payment.ts|date }}</td>
+			<td align="right">{{ payment.amount }}</td>
+			<td>{{ payment.currency }}</td>
+			<td align="right">{{ payment.credits }}</td>
+			<td align="right">{%if payment.bonus > 0 %}{{ payment.bonus }}{% endif %}</td>
+			<td>{{ payment.transactioncode }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+{% endblock %}
+
+
+{% block javascript %}
+//Success handler
+var successHandler = function(purchaseAction){
+	$("#callbackresult").html('{{ 'account.payment.success'|trans }}');
+}
+
+//Failure handler
+var failureHandler = function(purchaseActionError){
+	$("#callbackresult").html('{{ 'account.payment.fail'|trans }}');
+}
+{% endblock %}

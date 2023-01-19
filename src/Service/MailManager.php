@@ -130,16 +130,24 @@ class MailManager {
 		}
 	}
 
-	public function sendEmail($to, $subject, $text) {
+	public function sendEmail($to, $subject, $text, $cc = null, $from = null, $replyTo = null): void {
+		if (!$from) {
+			$from = $this->mail_from;
+		}
+		if (!$replyTo) {
+			$replyTo = $this->mail_reply_to;
+		}
 		$message = new Email;
-		$message->setSubject($subject);
-		$message->setFrom($this->mail_from);
-		$message->setReplyTo($this->mail_reply_to);
-		$message->setTo($to);
-		$message->setBody(strip_tags($text));
-		$message->addPart($text, 'text/html');
-		$sent = $this->mailer->send($message);
-		return $sent;
+		$message->subject($subject);
+		$message->from($from);
+		$message->replyTo($replyTo);
+		$message->to($to);
+		if ($cc) {
+			$message->cc($cc);
+		}
+		$message->text(strip_tags($text));
+		$message->html($text, 'text/html');
+		$this->mailer->send($message);
 	}
 
 }

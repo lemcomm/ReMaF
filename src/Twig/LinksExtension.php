@@ -217,26 +217,26 @@ class LinksExtension extends AbstractExtension {
 			case 'activity':    	return 'maf_activity';
 			case 'activityreport':  return 'maf_activity_report';
 			case 'character':       return 'maf_char_view';
-			case 'settlement':      return 'bm2_settlement';
-			case 'battle':    	return 'bm2_battle';
-			case 'battlereport':    return 'bm2_battlereport';
-			case 'realm':           return 'bm2_realm';
-			case 'realmposition':   return 'bm2_position';
-			case 'eventlog':        return 'bm2_eventlog';
+			case 'settlement':      return 'maf_settlement';
+			case 'battle':    	return 'maf_battle';
+			case 'battlereport':    return 'maf_battlereport';
+			case 'realm':           return 'maf_realm';
+			case 'realmposition':   return 'maf_position';
+			case 'eventlog':        return 'maf_eventlog';
 			case 'feature':
-			case 'featuretype':     return 'bm2_site_info_featuretype';
+			case 'featuretype':     return 'maf_info_featuretype';
 			case 'building':
-			case 'buildingtype':    return 'bm2_site_info_buildingtype';
+			case 'buildingtype':    return 'maf_info_buildingtype';
 			case 'entourage':
 			case 'entouragetype':   return 'bm2_site_info_entouragetype';
 			case 'equipmenttype':   return 'bm2_site_info_equipmenttype';
-			case 'action':		return 'bm2_actiondetails';
-			case 'election':	return 'bm2_site_realm_vote';
-			case 'mercenaries':	return 'bm2_mercenaries';
-			case 'quest':		return 'bm2_site_quests_details';
-			case 'artifact':	return 'bm2_site_artifacts_details';
-			case 'war':		return 'bm2_site_war_view';
-			case 'newsedition':	return 'bm2_site_news_read';
+			case 'action':		return 'maf_action_details';
+			case 'election':	return 'maf_realm_vote';
+			case 'mercenaries':	return 'maf_mercenaries';
+			case 'quest':		return 'maf_quests_details';
+			case 'artifact':	return 'maf_artifact_details';
+			case 'war':		return 'maf_war_view';
+			case 'newsedition':	return 'maf_news_read';
 			case 'house':		return 'maf_house';
 			case 'place':		return 'maf_place';
 			case 'unit':		return 'maf_units_info';
@@ -258,9 +258,7 @@ class LinksExtension extends AbstractExtension {
 			$this->logger->error("request: ".$this->request_stack->getCurrentRequest()->getRequestUri());
 			return "[invalid object]";
 		}
-		$this->logger->alert(get_class($entity));
 		$classname = implode('', array_slice(explode('\\', get_class($entity)), -1));
-		$this->logger->alert($entity->getId());
 		$linktype = null;
 		switch ($classname) {
 			case 'GeoFeature':
