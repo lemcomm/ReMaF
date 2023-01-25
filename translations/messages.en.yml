@@ -142,11 +142,6 @@ registration:
     To start playing, <a href="%charpage%">create a character</a> on the character page, also accessible in the navigation menu.<br />
     <br />
     We also strongly recommend the <a href="https://www.youtube.com/watch?v=YWC6n9CnB3U">tutorial video</a> and the rest of the manual.
- help:
-  username:   A name of your choice to use to log in. Will not be revealed to anyone unless you choose so.
-  email:      Your e-mail address for password resets and notifications. Will not be revealed to anyone unless you choose so.
-  password:   Choose a password to log in. Can be any length. Your responsibility to choose a good one.
-  repeat:     Repeat the password to make sure you did not make any typos.
 login:
  intro: Provide the username or e-mail you used to register below to log in:
 
@@ -756,6 +751,7 @@ form:
  publicadmin: Display Admin Status
  public:      Public User Profile
  profile:     Public User Comments
+ patronage:   Display Patronage
  help:
   displayname:  The name shown in public lists such as the VIP players list
   username: This is used to log into Might & Fealty and won't display anywhere in game.
@@ -764,6 +760,7 @@ form:
   publicadmin: Publicly display your admin status.
   public: Opt to have your your public name, join date, user comments, and character list be public. Or not.
   profile: These are your user comments. You can put anything here and you can link to other in-game things if you like.
+  patronage: "Enabling this, if you're a patron, will display your support of the game in various places, like the credits page. If this requires a name to display, it'll use your display name, if it is set."
 
 settlement:
  name:  Settlement
