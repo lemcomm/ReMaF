@@ -848,7 +848,6 @@ class BattleRunner {
 			$chargeFail =0;
 			$missed = 0;
 			$crowded = 0;
-			$notarget = 0;
 			$staredDeath = 0;
 			$noTargets = 0;
 			#$attSlain = $this->attSlain; # For Sieges.
@@ -1024,7 +1023,6 @@ class BattleRunner {
 						$target = $this->getRandomSoldier($enemyCollection);
 						if ($target) {
 							$strikes++;
-							$noTargets = 0;
 							list($result, $logs) = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
 							foreach ($logs as $each) {
 								$this->log(10, $each);
@@ -1042,7 +1040,6 @@ class BattleRunner {
 						$target = $this->getRandomSoldier($enemyCollection);
 						if ($target) {
 							$shots++;
-							$noTargets = 0;
 							$rPower = $this->combat->RangedPower($soldier, true);
 							if ($this->combat->RangedRoll($defBonus, $rangedPenalty, $bonus)) {
 								$rangedHits++;
@@ -1065,9 +1062,8 @@ class BattleRunner {
 						$target = $this->getRandomSoldier($enemyCollection);
 						if ($target) {
 							$strikes++;
-							$noTargets = 0;
 							$mPower = $this->combat->MeleePower($soldier, true);
-							list($innerResult, $logs) = $this->combat->MeleeAttack($soldier, $target, $mPower, false, true, $this->xpMod, $this->defenseBonus); // Basically, an attack of opportunity.
+							list($result, $logs) = $this->combat->MeleeAttack($soldier, $target, $mPower, false, true, $this->xpMod, $this->defenseBonus); // Basically, an attack of opportunity.
 							foreach ($logs as $each) {
 								$this->log(10, $each);
 							}
@@ -1126,12 +1122,12 @@ class BattleRunner {
 							$extras[] = $extra;
 						}
 					} else {
-						$notarget++;
+						$noTargets++;
 						/*
 						if ($battle->getType() == 'siegeassault' && $usedContacts >= $currentContacts) {
 							$crowded++; #Frontline is too crowded in the siege.
 						} else {
-							$notarget++; #Just couldn't hit the target :(
+							$noTargets++; #Just couldn't hit the target :(
 						}
 						*/
 					}
