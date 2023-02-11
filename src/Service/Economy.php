@@ -561,21 +561,23 @@ class Economy {
 		return ($days*1.33)-1; #Average travel speed of all region types.
 	}
 
-	public function supplySoldiers(Unit $unit, $shortage, Settlement $settlement) {
-		$count = $unit->getLivingSoldiers()->count();
-		if($shortage > 0) {
+	public function supplySoldiers(Unit $unit, $shortage, Settlement $settlement): void {
+		$this->logger('info', "Handling shortage of $shortage for ".$unit->getId());
+		$shortage = round($shortage, 2);
+		if ($shortage >= 1) {
+			# No food to send.
+			return;
+		} elseif($shortage > 0) {
+			$count = $unit->getLivingSoldiers()->count();
 			$deduct = $count*$shortage;
 		} else {
-			$deduct = 0;
+			$count = $unit->getLivingSoldiers()->count();
+			$deduct = 0; #No negative shortages.
 		}
 
 		$qty = $count - $deduct;
 		$here = false;
-		if (
-			!$unit->getCharacter() ||
-			($unit->getCharacter() && $unit->getCharacter()->getInsideSettlement() == $settlement) ||
-			($unit->getPlace() && $unit->getPlace()->getSettlement() == $settlement)
-		) {
+		if (!$unit->getCharacter() || ($unit->getCharacter() && $unit->getCharacter()->getInsideSettlement() == $settlement) || ($unit->getPlace() && $unit->getPlace()->getInsideSettlement() == $settlement)) {
 			$here = true;
 		}
 		if ($qty > 0 && !$here) {
@@ -585,7 +587,7 @@ class Economy {
 			$supply->setUnit($unit);
 			$supply->setType('food');
 			$supply->setQuantity(ceil($qty));
-			$supply->setTravelDays($this->getSupplyTravelTime($settlement, $unit));
+			$supply->setTravelDays(round($this->getSupplyTravelTime($settlement, $unit)));
 		} elseif ($qty > 0 && $here) {
 			$found = false;
 			if ($unit->getSupplies()) {
@@ -605,6 +607,7 @@ class Economy {
 				$supply->setQuantity(ceil($qty));
 			}
 		}
+		return;
 	}
 
 	public function ResourceProduction(Settlement $settlement, ResourceType $resource, $ignore_buildings=false, $force_recalc=false) {
@@ -729,7 +732,7 @@ class Economy {
 					$suppliedNPCs += $unit->getLivingSoldiers()->count();
 				}
 				if ($suppliedNPCs > 0) {
-					$suppliedNPCs = ceil($suppliedNPCs/10); #TODO: as funny as full effect would be :)
+					$suppliedNPCs = ceil($suppliedNPCs/5); #TODO: as funny as full effect would be :)
 				}
 				#$suppliedNPCs += $unit->getLivingEntourage()->count(); // TODO: Determine if we want to feed entourage or just pay them.
 				$need = $settlement->getPopulation() + $settlement->getThralls()*0.75 + $suppliedNPCs;
@@ -770,8 +773,12 @@ class Economy {
 		$amount = 0;
 		foreach ($query->getResult() as $result) {
 			$res = $result[0];
-			$focus = $result['focus'];
-			$amount += $res->getRequiresOperation() * pow(2, $focus);
+			if ($resource->getName() === 'food' && in_array(strtolower($res->getBuildingType()->getName()), ['stables', 'royal mews']) && in_array(strtolower($settlement->getGeoData()->getBiome()->getName()), ['scrub', 'thin scrub'])) {
+				return 0;
+			} else {
+				$focus = $result['focus'];
+				$amount += $res->getRequiresOperation() * pow(2, $focus);
+			}
 		}
 
 		// population size scaling
