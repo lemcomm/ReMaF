@@ -288,6 +288,11 @@ event:
   returned2:    "%unit% has been returned to %settlement%."
   rebased:      Unit has been rebased from %settlement-1% to %settlement-2%.
   disbanded:    Unit has been retired.
+  starvation:
+   light:       Light starvation is effecting %unit%.
+   medium:      Moderate starvation is effecting %unit%.
+   high:        Significant starvation is effecting %unit%.
+   death:       Due to starvation, %i% soldiers from %unit% have died.
  unit:
   assigned:     "%character% has given you command of %unit%."
   appointed:    "%character% has appointed you marshal of %unit%."
@@ -297,6 +302,11 @@ event:
   defenselost:  The defense of %settlement% has failed, so the unit has returned home.
   defenselost2:  The defense of %place% has failed, so the unit has returned home.
   recalled:     "%character% has recalled %unit% from your command."
+  starvation:
+   light:       Suffers from light starvation.
+   medium:      Suffers from moderate starvation.
+   high:        Suffers from significant starvation.
+   death:       Due to starvation, %i% soldiers have died.
  quest:
   created:      Quest created.
   started:      "%character% has begun the quest."
