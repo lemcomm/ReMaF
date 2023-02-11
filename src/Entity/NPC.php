@@ -42,6 +42,17 @@ class NPC {
    		}
    	}
 
+	public function hungerMod() {
+		$lvl = $this->hungry;
+		if ($lvl == 0) {
+			return 1;
+		} elseif ($lvl > 140) {
+			return 0;
+		} else {
+			return 1-($lvl/140);
+		}
+	}
+
 
 	public function isHungry() {
    		return ($this->hungry > 0);
