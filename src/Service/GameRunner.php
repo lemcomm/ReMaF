@@ -695,8 +695,15 @@ class GameRunner {
 
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date --   Checking if units have gotten supplies...");
-		$query = $this->em->createQuery('SELECT r FROM App:Resupply r WHERE r.travel_days <= 1');
-		foreach ($query->getResult() as $resupply) {
+		$iterableResult = $query->iterate();
+		while (!$done) {
+			$this->em->clear();
+			$row = $iterableResult->next();
+			if ($row===false) {
+				$done=true;
+				break;
+			}
+			$resupply = $row[0];
 			$unit = $resupply->getUnit();
 			$found = false;
 			$orig = 0;
@@ -722,8 +729,8 @@ class GameRunner {
 				$supply->setQuantity($resupply->getQuantity());
 			}
 			$this->em->remove($resupply);
+			$this->em->flush();
 		}
-		$this->em->flush();
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date --   Checking if units have food to eat...");
 		$query = $this->em->createQuery('SELECT u FROM App:Unit u WHERE u.id > 0');
@@ -740,23 +747,26 @@ class GameRunner {
 				break;
 			}
 			$unit = $row[0];
+			$living = $unit->getLivingSoldiers();
+			$count = $living->count();
+			if ($count < 1) {
+				# No soldiers to feed. Skip!
+				continue;
+			}
+			$char = $unit->getCharacter();
 			$food = 0;
-			$fsupply = 0;
-			foreach ($unit->getSupplies() as $supply) {
+			$fsupply = null;
+			foreach ($unit->getSupplies() as $fsupply) {
 				if ($supply->getType() === 'food') {
-					$fsupply = $supply;
 					$food = $supply->getQuantity();
 					break;
 				}
 			}
-			$living = $unit->getLivingSoldiers();
-			$count = $living->count();
-			$char = $unit->getCharacter();
 			if ($count <= $food) {
-				$origNeed = $need;
 				$short = 0;
 			} else {
 				$need = $count - $food;
+				$origNeed = $need;
 				if ($char) {
 					$food_followers = $char->getEntourage()->filter(function($entry) {
 						return ($entry->getType()->getName()=='follower' && $entry->isAlive() && !$entry->getEquipment() && $entry->getSupply()>0);
@@ -787,6 +797,9 @@ class GameRunner {
 			} else {
 				$var = 1;
 			}
+			$myfed = 0;
+			$dead = 0;
+			$mystarved = 0;
 			if ($var > 0.1) {
 				if ($unit->getCharacter()) {
 					$severity = min(ceil($var)*6, 6); # Soldiers starve at a rate of 6 hunger per day max. No food? Starve in 15 days.
@@ -815,9 +828,6 @@ class GameRunner {
 						History::MEDIUM, false, 30
 					);
 				}
-				$dead = 0;
-				$myfed = 0;
-				$mystarved = 0;
 				foreach ($living as $soldier) {
 					$soldier->makeHungry($severity);
 					// soldiers can take several days of starvation without danger of death, but slightly less than militia (because they move around, etc.)
