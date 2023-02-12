@@ -741,8 +741,10 @@ class GameRunner {
 			}
 			$unit = $row[0];
 			$food = 0;
+			$fsupply = 0;
 			foreach ($unit->getSupplies() as $supply) {
 				if ($supply->getType() === 'food') {
+					$fsupply = $supply;
 					$food = $supply->getQuantity();
 					break;
 				}
@@ -751,6 +753,7 @@ class GameRunner {
 			$count = $living->count();
 			$char = $unit->getCharacter();
 			if ($count <= $food) {
+				$origNeed = $need;
 				$short = 0;
 			} else {
 				$need = $count - $food;
@@ -851,10 +854,12 @@ class GameRunner {
 					$myfed++;
 				}
 			}
+			$left = $food-$count;
+			$fsupply->setQuantity($left);
 			$this->em->flush();
 			$date = date("Y-m-d H:i:s");
 			$id = $unit->getId();
-			$this->logger->info("$date --     Unit $id - Fed $myfed - Starved $mystarved - Killed $dead");
+			$this->logger->info("$date --     Unit $id - Soldiers $count - Var $var - Food $food - Fed $myfed - Starved $mystarved - Killed $dead");
 		}
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date --     Fed $fed - Starved $starved - Killed $killed");
