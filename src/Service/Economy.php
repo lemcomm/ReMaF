@@ -562,7 +562,7 @@ class Economy {
 	}
 
 	public function supplySoldiers(Unit $unit, $shortage, Settlement $settlement): void {
-		$this->logger('info', "Handling shortage of $shortage for ".$unit->getId());
+		$this->logger->info('info', "Handling shortage of $shortage for ".$unit->getId());
 		$shortage = round($shortage, 2);
 		if ($shortage >= 1) {
 			# No food to send.
