@@ -1023,6 +1023,7 @@ class BattleRunner {
 						$target = $this->getRandomSoldier($enemyCollection);
 						if ($target) {
 							$strikes++;
+							$noTargets = 0;
 							list($result, $logs) = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
 							foreach ($logs as $each) {
 								$this->log(10, $each);
@@ -1040,6 +1041,7 @@ class BattleRunner {
 						$target = $this->getRandomSoldier($enemyCollection);
 						if ($target) {
 							$shots++;
+							$noTargets = 0;
 							$rPower = $this->combat->RangedPower($soldier, true);
 							if ($this->combat->RangedRoll($defBonus, $rangedPenalty, $bonus)) {
 								$rangedHits++;
@@ -1053,7 +1055,7 @@ class BattleRunner {
 							}
 						} else {
 							// no more targets
-							$this->log(10, "no more targets\n");
+							$this->log(10, "but finds no target\n");
 							$noTargets++;
 						}
 					} else {
@@ -1062,6 +1064,7 @@ class BattleRunner {
 						$target = $this->getRandomSoldier($enemyCollection);
 						if ($target) {
 							$strikes++;
+							$noTargets = 0;
 							$mPower = $this->combat->MeleePower($soldier, true);
 							list($result, $logs) = $this->combat->MeleeAttack($soldier, $target, $mPower, false, true, $this->xpMod, $this->defenseBonus); // Basically, an attack of opportunity.
 							foreach ($logs as $each) {
@@ -1145,7 +1148,7 @@ class BattleRunner {
 						break;
 					}
 				}
-				$stageResult = array('alive'=>$attackers, 'shots'=>$shots, 'rangedHits'=>$rangedHits, 'strikes'=>$strikes, 'misses'=>$missed, 'notarget'=>$notarget, 'crowded'=>$crowded, 'fail'=>$fail, 'wound'=>$wound, 'capture'=>$capture, 'kill'=>$kill, 'chargefail' => $chargeFail, 'chargewound'=>$chargeWound, 'chargecapture'=>$chargeCapture, 'chargekill'=>$chargeKill);
+				$stageResult = array('alive'=>$attackers, 'shots'=>$shots, 'rangedHits'=>$rangedHits, 'strikes'=>$strikes, 'misses'=>$missed, 'notarget'=>$noTargets, 'crowded'=>$crowded, 'fail'=>$fail, 'wound'=>$wound, 'capture'=>$capture, 'kill'=>$kill, 'chargefail' => $chargeFail, 'chargewound'=>$chargeWound, 'chargecapture'=>$chargeCapture, 'chargekill'=>$chargeKill);
 			}
 			if ($type != 'hunt') { # Check that we're in either Ranged or Melee Phase
 				$stageReport->setData($stageResult); # Commit this stage's results to the combat report.
