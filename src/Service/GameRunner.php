@@ -771,8 +771,8 @@ class GameRunner {
 			$food = 0;
 			$fsupply = null;
 			foreach ($unit->getSupplies() as $fsupply) {
-				if ($supply->getType() === 'food') {
-					$food = $supply->getQuantity();
+				if ($fsupply->getType() === 'food') {
+					$food = $fsupply->getQuantity();
 					break;
 				}
 			}
