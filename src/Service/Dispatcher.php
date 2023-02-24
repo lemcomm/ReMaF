@@ -316,6 +316,7 @@ class Dispatcher {
 			$actions[] = $this->controlRenameTest(true);
 			$actions[] = $this->controlCultureTest(true);
 			$actions[] = $this->controlStewardTest(true);
+			$actions[] = $this->controlSuppliedTest(true, $settlement);
 			$actions[] = $this->controlPermissionsTest(null, $settlement);
 			$actions[] = $this->controlQuestsTest(null, $settlement);
 		}
@@ -1198,7 +1199,7 @@ class Dispatcher {
 				!$settlement->getOccupier() && !$settlement->getOccupant() && ($settlement->getOwner() !== $char && $settlement->getSteward() !== $char)))  {
 			return array("name"=>"control.supplied.name", "description"=>"unavailable.notyours2");
 		}
-		return $this->action("control.supplied", "maf_settlement_supplied");
+		return $this->action("control.supplied", "maf_settlement_supplied", false, array('id'=>$settlement->getId()));
 	}
 
 	public function controlChangeOccupantTest($check_duplicate=false) {
