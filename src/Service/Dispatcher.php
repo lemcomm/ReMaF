@@ -1186,6 +1186,21 @@ class Dispatcher {
 		return $this->action("control.abandon", "maf_settlement_abandon");
 	}
 
+	public function controlSuppliedTest($check_duplicate=false, $settlement) {
+		if (($check = $this->veryGenericTests()) !== true) {
+			return array("name"=>"control.supplied.name", "description"=>"unavailable.$check");
+		}
+		$char = $this->getCharacter();
+		if (
+			(
+				($settlement->getOccupier() || $settlement->getOccupant()) && $settlement->getOccupant() != $char
+			) || (
+				!$settlement->getOccupier() && !$settlement->getOccupant() && ($settlement->getOwner() !== $char && $settlement->getSteward() !== $char)))  {
+			return array("name"=>"control.supplied.name", "description"=>"unavailable.notyours2");
+		}
+		return $this->action("control.supplied", "maf_settlement_supplied");
+	}
+
 	public function controlChangeOccupantTest($check_duplicate=false) {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.changeoccupant.name", "description"=>"unavailable.$check");
