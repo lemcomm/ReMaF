@@ -50,18 +50,21 @@ class Siege {
       	}
 
 	public function updateEncirclement() {
-      		$chars = $this->getCharacters();
-      		$count = 0;
-      		foreach ($this->attacker->getCharacters() as $char) {
-      			foreach ($char->getUnits() as $unit) {
-      				$count += $unit->getActiveSoldiers()->count();
-      			}
-      		}
-      		if ($count >= $this->encirclement) {
-      			$this->encirlced = TRUE;
-      		}
-      		return TRUE;
-      	}
+		$chars = $this->attacker->getCharacters();
+		$count = 0;
+		foreach ($chars as $char) {
+			foreach ($char->getUnits() as $unit) {
+				$count += $unit->getActiveSoldiers()->count();
+			}
+		}
+		if ($count >= $this->encirclement) {
+			$this->setEncirclement(true);
+			return $this;
+		} else {
+			$this->setEncirclement(false);
+			return $this;
+		}
+	}
 	
     /**
      * @var integer
