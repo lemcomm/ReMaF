@@ -36,7 +36,6 @@ class GameRunner {
 
 	private $batchsize=200;
 	private $maxtime=2400;
-
 	private $em;
 	private $appstate;
 	private $logger;
@@ -62,7 +61,6 @@ class GameRunner {
 
 	private $bandits_ok_distance = 50000;
 	private $seen;
-
 	public function __construct(EntityManagerInterface $em, AppState $appstate, LoggerInterface $logger, ActionResolution $resolver, Economy $economy, Politics $politics, History $history, MilitaryManager $milman, BattleRunner $battlerunner, Interactions $interactions, Geography $geography, Generator $generator, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm) {
 		$this->em = $em;
 		$this->appstate = $appstate;

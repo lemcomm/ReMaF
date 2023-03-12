@@ -121,7 +121,7 @@ class MailManager {
 			$intro = "Hello ".$user->getUsername().",<br><br>\n\n";
 			$msg = $intro.$header.$text.$footer;
 
-			$sent = $this->sendEmail($user->getEmail(), $this->trans->trans('mail.event.subject', array(), "communication"), $msg);
+			$this->sendEmail($user->getEmail(), $this->trans->trans('mail.event.subject', array(), "communication"), $msg);
 
 			foreach ($remove as $each) {
 				$em->remove($each);

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Libraries\MovingAverage;
+use App\Service\Economy;
 use App\Service\GameRunner;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -254,9 +255,9 @@ class GameController extends AbstractController {
 	public function settlementdataAction(Settlement $settlement): Response {
 		$data = array(
 			"population"	=> array("label" => "population", "data" => array()),
-			"peasants"		=> array("label" => "peasants", "data" => array()),
-			"thralls"		=> array("label" => "thralls", "data" => array()),
-			"militia"		=> array("label" => "militia", "data" => array()),
+			"peasants"	=> array("label" => "peasants", "data" => array()),
+			"thralls"	=> array("label" => "thralls", "data" => array()),
+			"militia"	=> array("label" => "militia", "data" => array()),
 			"starvation"	=> array("label" => "starvation", "data" => array()),
 			"war_fatigue"	=> array("label" => "war_fatigue", "data" => array()),
 		);
@@ -265,8 +266,8 @@ class GameController extends AbstractController {
 		foreach ($query->getResult() as $row) {
 			$cycle = $row->getCycle();
 
-			$data["population"]["data"][] = array($cycle, $row->getPopulation()+$row->getThralls()+$row->getMilitia());
-			$data["peasants"]["data"][] = array($cycle, $row->getPopulation());
+			$data["population"]["data"][]	= array($cycle, $row->getPopulation()+$row->getThralls()+$row->getMilitia());
+			$data["peasants"]["data"][]	= array($cycle, $row->getPopulation());
 			$data["thralls"]["data"][] 	= array($cycle, $row->getThralls());
 			$data["militia"]["data"][] 	= array($cycle, $row->getMilitia());
 			$data["war_fatigue"]["data"][] 	= array($cycle, $row->getWarFatigue());
@@ -284,13 +285,13 @@ class GameController extends AbstractController {
 		$query->setParameter('start', $this->start_cycle);
 		foreach ($query->getResult() as $result) {
 			$data = array(
-				'realm' =>		$result->getRealm(),
-				'settlements' =>	$result->getEstates(), #TODO: Change this to getSettlements.
+				'realm' =>	$result->getRealm(),
+				'settlements'=>	$result->getEstates(), #TODO: Change this to getSettlements.
 				'population'=>	$result->getPopulation(),
 				'soldiers'=>	$result->getSoldiers(),
-				'militia'=>		$result->getMilitia(),
-				'area' =>		$result->getArea(),
-				'nobles' =>		$result->getCharacters(),
+				'militia'=>	$result->getMilitia(),
+				'area' =>	$result->getArea(),
+				'nobles' =>	$result->getCharacters(),
 				'players' => 	$result->getPlayers(),
 			);
 			$realms->add($data);
@@ -305,14 +306,14 @@ class GameController extends AbstractController {
 	public function battlestatisticsAction(): Response {
 		$cycle = $this->gr->getCycle();
 		$data = array(
-			"rabble"					=> array("label" => "rabble", "data" => array()),
-			"light infantry"		=> array("label" => "light infantry", "data" => array()),
-			"medium infantry"		=> array("label" => "medium infantry", "data" => array()),
-			"heavy infantry"		=> array("label" => "heavy infantry", "data" => array()),
-			"archer"					=> array("label" => "archers", "data" => array()),
-			"mounted archer"		=> array("label" => "mounted archers", "data" => array()),
-			"cavalry"				=> array("label" => "cavalry", "data" => array()),
-			"noble"					=> array("label" => "nobles", "data" => array()),
+			"rabble"		=> array("label" => "rabble", "data" => array()),
+			"light infantry"	=> array("label" => "light infantry", "data" => array()),
+			"medium infantry"	=> array("label" => "medium infantry", "data" => array()),
+			"heavy infantry"	=> array("label" => "heavy infantry", "data" => array()),
+			"archer"		=> array("label" => "archers", "data" => array()),
+			"mounted archer"	=> array("label" => "mounted archers", "data" => array()),
+			"cavalry"		=> array("label" => "cavalry", "data" => array()),
+			"noble"			=> array("label" => "nobles", "data" => array()),
 		);
 
 		$battles = array("label"=>"no. of battles", "data"=>array());
@@ -347,13 +348,13 @@ class GameController extends AbstractController {
 	#[Route ('/game/stats/troops', name:'maf_game_stats_troops')]
 	public function troopsstatisticsAction(): Response {
 		$data = array(
-			"rabble"					=> array("label" => "rabble", "data" => 0),
-			"light infantry"		=> array("label" => "light infantry", "data" => 0),
-			"medium infantry"		=> array("label" => "medium infantry", "data" => 0),
-			"heavy infantry"		=> array("label" => "heavy infantry", "data" => 0),
-			"archer"					=> array("label" => "archers", "data" => 0),
-			"armoured archer"		=> array("label" => "armoured archers", "data" => 0),
-			"mounted archer"		=> array("label" => "mounted archers", "data" => 0),
+			"rabble"		=> array("label" => "rabble", "data" => 0),
+			"light infantry"	=> array("label" => "light infantry", "data" => 0),
+			"medium infantry"	=> array("label" => "medium infantry", "data" => 0),
+			"heavy infantry"	=> array("label" => "heavy infantry", "data" => 0),
+			"archer"		=> array("label" => "archers", "data" => 0),
+			"armoured archer"	=> array("label" => "armoured archers", "data" => 0),
+			"mounted archer"	=> array("label" => "mounted archers", "data" => 0),
 			"light cavalry"		=> array("label" => "light cavalry", "data" => 0),
 			"heavy cavalry"		=> array("label" => "heavy cavalry", "data" => 0),
 		);
@@ -436,7 +437,7 @@ class GameController extends AbstractController {
 				"trade"=>array("label"=>$resource->getName()." trade", "data"=>array(), "yaxis"=>2)
 			);
 		}
-		$query = $this->em->createQuery('SELECT s FROM App\Entity\StatisticResources s WHERE s.cycle >= :start ORDER BY s.cycle ASC');
+		$query = $this->em->createQuery('SELECT s FROM App:StatisticResources s WHERE s.cycle >= :start ORDER BY s.cycle ASC');
 		$query->setParameters(array('start'=>$this->start_cycle));
 		foreach ($query->getResult() as $row) {
 			$cycle = $row->getCycle();
@@ -474,13 +475,13 @@ class GameController extends AbstractController {
 	
 	#[Route ('/game/techtree', name:'maf_game_techtree')]
 	public function techtreeAction(): Response {
-		$query = $this->em->createQuery('SELECT e from App\Entity\EquipmentType e');
+		$query = $this->em->createQuery('SELECT e from App:EquipmentType e');
 		$equipment = $query->getResult();
 
-		$query = $this->em->createQuery('SELECT e from App\Entity\EntourageType e');
+		$query = $this->em->createQuery('SELECT e from App:EntourageType e');
 		$entourage = $query->getResult();
 
-		$query = $this->em->createQuery('SELECT b from App\Entity\BuildingType b');
+		$query = $this->em->createQuery('SELECT b from App:BuildingType b');
 		$buildings = $query->getResult();
 
 		$descriptorspec = array(

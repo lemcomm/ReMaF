@@ -8,23 +8,15 @@ use App\Entity\Code;
 use App\Entity\User;
 
 use App\Form\CharacterCreationType;
-use App\Form\ForgotUsernameFormType;
 use App\Form\ListSelectType;
-use App\Form\NewTokenFormType;
 use App\Form\NpcSelectType;
-use App\Form\RegistrationFormType;
-use App\Form\RequestResetFormType;
-use App\Form\ResetPasswordFormType;
 use App\Form\SettingsType;
-use App\Form\UserDataType;
 
 use App\Service\ActionResolution;
 use App\Service\AppState;
 use App\Service\CharacterManager;
-use App\Service\DescriptionManager;
 use App\Service\GameRequestManager;
 use App\Service\Geography;
-use App\Service\MailManager;
 use App\Service\NpcManager;
 use App\Service\PaymentManager;
 use App\Service\UserManager;
@@ -49,21 +41,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class AccountController extends AbstractController {
 
 	private AppState $app;
-	private Security $sec;
 	private EntityManagerInterface $em;
 	private PaymentManager $pay;
 	private TranslatorInterface $trans;
 	private UserManager $userMan;
-	private Mailmanager $mail;
+	private Geography $geo;
 
-	public function __construct(AppState $appstate, EntityManagerInterface $em, MailManager $mail, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan, Security $sec) {
+	public function __construct(AppState $appstate, EntityManagerInterface $em, Geography $geo, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan) {
 		$this->app = $appstate;
 		$this->em = $em;
-		$this->mail = $mail;
+		$this->geo = $geo;
 		$this->pay = $pay;
 		$this->trans = $trans;
 		$this->userMan = $userMan;
-		$this->sec = $sec;
 	}
 
 	private function notifications(): array {
@@ -83,188 +73,12 @@ class AccountController extends AbstractController {
 		return array($announcements, $notices);
 	}
 
-	#[Route ('/login', name:'maf_login')]
-	public function login(AuthenticationUtils $authenticationUtils): Response {
-		# Fetch the previous error, if there is one.
-		$error = $authenticationUtils->getLastAuthenticationError();
-
-		#Fetch last username entered by the user.
-		$last = $authenticationUtils->getLastUsername();
-
-		return $this->render('Account/login.html.twig', [
-			'last' => $last,
-			'error' => $error
-		]);
-	}
-
-	#[Route ('/logout', name:'maf_logout')]
-	public function logout() {
-		# This page works like magic and requires NOTHING!
-		# It only exists here so we can remember it exists and give it proper naming.
-	}
-
-
-	#[Route ('/register', name:'maf_register')]
-	public function register(Request $request, UserPasswordHasherInterface $passwordHasher): Response {
-		$user = new User();
-		$form = $this->createForm(RegistrationFormType::class, $user);
-		$form->handleRequest($request);
-
-		if ($form->isSubmitted() && $form->isValid()) {
-			$em = $this->em;
-			$trans = $this->trans;
-			$check = $em->getRepository(User::class)->findOneByUsername($form->get('_username')->getData());
-			if ($check) {
-				$this->addFlash('error', $trans->trans('security.register.duplicate.username', [], 'core'));
-				return new RedirectResponse($this->generateUrl('maf_account_register'));
-			}
-			$user->setUsername($form->get('_username')->getData());
-			# Encode plain password in database
-			$user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
-			#Generate activation token
-			$user->setToken($this->app->generateAndCheckToken(16, 'User', 'token'));
-
-			#Log user creation time and set user to inactive.
-			$user->setCreated(new \DateTime("now"));
-			$method = $_ENV['ACTIVATION'];
-			if ($method == 'email' || $method == 'manual') {
-				$user->setActive(false);
-			} else {
-				$user->setActive(true);
-			}
-			$user->setConfirmed(false);
-
-			$em->persist($user);
-			$em->flush();
-
-			if ($method == 'email') {
-				# Generate Activation Email
-				$link = $this->generateUrl('maf_account_activate', ['username' => $user->getUsername(), 'email' => $user->getEmail(), 'token' => $user->getToken()], UrlGeneratorInterface::ABSOLUTE_URL);
-				$text = $trans->trans(
-					'security.register.email.text1', [
-					'%username%' => $user->getUsername(),
-					'%sitename%' => $_ENV['SITE_NAME'],
-					'%link%' => $link,
-					'%adminemail%' => $_ENV['ADMIN_EMAIL']
-				], 'core');
-				$subject = $trans->trans('security.register.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
-
-				$this->mail->createMail(null, $user->getEmail(), null, null, $subject, $text, null);
-			}
-
-			$this->addFlash('notice', $trans->trans('security.register.flash', [], 'core'));
-
-			return $guardHandler->authenticateUserAndHandleSuccess(
-				$user,
-				$request,
-				$authenticator,
-				'main' // firewall name in security.yaml
-			);
-		}
-
-		return $this->render('Account/register.html.twig', [
-			'registrationForm' => $form->createView(),
-		]);
-	}
-
-	#[Route ('/account/data', name:'maf_account_data')]
-	public function account(Request $request, UserPasswordHasherInterface $passwordHasher, DescriptionManager $descman) {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
-		$user = $this->getUser();
-		$admin = false;
-		$gm = false;
-		$gm_name = null;
-		$public_admin = null;
-		if ($this->sec->isGranted('ROLE_OLYMPUS')) {
-			$gm = true;
-			$gm_name = $user->getGmName();
-			if ($this->sec->isGranted('ROLE_ADMIN')) {
-				$admin = true;
-				$public_admin = $user->getPublicAdmin();
-			}
-		}
-		$text = $user->getDescription()->getText();
-		$opts = [
-			'username' => $user->getUsername(),
-			'email' => $user->getEmail(),
-			'display_name' => $user->getDisplayname(),
-			'public' => $user->getPublic(),
-			'show_patronage'=> $user->getShowPatronage(),
-			'gm' => $gm,
-			'gm_name' => $gm_name,
-			'admin' => $admin,
-			'public_admin' => $public_admin,
-			'text' => $text,
-		];
-
-		$form = $this->createForm(UserDataType::class, null, $opts);
-		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
-			$username = $form->get('username')->getData();
-			if ($username !== NULL && $username !== $user->getUsername()) {
-				$query = $this->em->createQuery('SELECT COUNT(u.id) FROM App:User u WHERE u.username LIKE :new')->setParameters(['new'=>$username]);
-				if ($query->getSingleScalarResult() > 0) {
-					$this->addFlash('error', $this->trans->trans('security.account.change.username.notunique', [], 'core'));
-					return new RedirectResponse($this->generateUrl('maf_account_data'));
-				}
-				$user->setUsername($username);
-				$this->addFlash('notice', $this->trans->trans('security.account.change.username.success', [], 'core'));
-			}
-			$password = $form->get('plainPassword')->getData();
-			if ($password !== NULL) {
-				$user->setPassword($passwordHasher->hashPassword($user, $password));
-				$this->addFlash('notice', $this->trans->trans('security.account.change.password', [], 'core'));
-			}
-			$email = $form->get('email')->getData();
-			if ($email !== NULL && $email !== $user->getEmail()) {
-				$query = $this->em->createQuery('SELECT COUNT(u.id) FROM App:User u WHERE u.email LIKE :new')->setParameters(['new'=>$email]);
-				if ($query->getSingleScalarResult() > 0) {
-					$this->addFlash('error', $this->trans->trans('security.account.change.email.notunique', [], 'core'));
-					return new RedirectResponse($this->generateUrl('maf_account_data'));
-				}
-				$user->setEmailToken($this->app->generateAndCheckToken(16, 'User', 'email_token'));
-				$user->setEmail($email);
-				$user->setConfirmed(false);
-
-				$link = $this->generateUrl('maf_account_confirm', ['token' => $user->getEmailToken(), 'email' => $form->get('email')->getData()], UrlGeneratorInterface::ABSOLUTE_URL);
-				$text = $this->trans->trans(
-					'security.account.email.text', [
-					'%sitename%' => $_ENV['SITE_NAME'],
-					'%link%' => $link,
-					'%adminemail%' => $_ENV['ADMIN_EMAIL']
-				], 'core');
-				$subject = $this->trans->trans('security.account.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
-				$this->mail->sendEmail($user->getEmail(), $subject, $text);
-				$this->addFlash('notice', $this->trans->trans('security.account.change.email.success', [], 'core'));
-			}
-			$display = $form->get('display_name')->getData();
-			if ($display !== NULL && $display != $user->getDisplayName()) {
-				$user->setDisplayName($display);
-				$this->addFlash('notice', $this->trans->trans('security.account.change.display', [], 'core'));
-			}
-			$desc = $form->get('text')->getData();
-			if ($desc !== null && $desc !== $text) {
-				$descman->newDescription($user, $desc);
-				$this->addFlash('notice', $this->trans->trans('security.account.change.text', [], 'core'));
-			}
-			$this->em->flush();
-			return new RedirectResponse($this->generateUrl('maf_index'));
-		}
-		return $this->render('Account/data.html.twig', [
-			'form' => $form->createView()
-		]);
-	}
-
 	#[Route ('/account', name:'maf_account')]
 	public function indexAction(): Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 
 		// clean out character id so we have a clear slate (especially for the template)
 		$user->setCurrentCharacter(null);
@@ -281,10 +95,10 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/chars', name:'maf_chars')]
-	public function charactersAction(Geography $geo, GameRequestManager $grm, NpcManager $npcm) {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
+	public function charactersAction(Geography $geo, GameRequestManager $grm, NpcManager $npcm): Response {
+		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
 		}
 		$user = $this->getUser();
 
@@ -296,8 +110,9 @@ class AccountController extends AbstractController {
 			$this->userMan->createLimits($user);
 		}
 		$this->em->flush();
+		$trans = $this->trans;
 		if (!$canSpawn) {
-			$this->addFlash('error', $this->trans>trans('newcharacter.overspawn2', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
+			$this->addFlash('error', $trans->trans('newcharacter.overspawn2', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
 		}
 
 
@@ -439,7 +254,7 @@ class AccountController extends AbstractController {
 		if (count($npcs)==0) {
 			$free_npcs = $npcm->getAvailableNPCs();
 			if (count($free_npcs) > 0) {
-				$npcs_form = $this->createForm(new NpcSelectType($free_npcs))->createView();
+				$npcs_form = $this->createForm(new NpcSelectType::class, null, ['freeNPCs'=>$free_npcs])->createView();
 			} else {
 				$npcs_form = null;
 			}
@@ -509,12 +324,10 @@ class AccountController extends AbstractController {
 
 	#[Route ('/account/overview', name:'maf_account_overview')]
 	public function overviewAction(): Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
-
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 		$characters = array();
 		$settlements = new ArrayCollection;
 		$claims = new ArrayCollection;
@@ -544,12 +357,11 @@ class AccountController extends AbstractController {
 
 	#[Route ('/account/newchar', name:'maf_char_new')]
 	public function newcharAction(Request $request, CharacterManager $charMan): Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
-		$form = $this->createForm(new CharacterCreationType($user, $user->getNewCharsLimit()>0));
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
+		$form = $this->createForm(new CharacterCreationType::class, null, ['user'=>$user, 'slotsavailable'=>$user->getNewCharsLimit()>0]);
 
 		list($make_more, $characters_active, $characters_allowed) = $this->checkCharacterLimit($user);
 		if (!$make_more) {
@@ -593,7 +405,7 @@ class AccountController extends AbstractController {
 					$form->addError(new FormError("character.burst"));
 					$works = false;
 				}
-				if (preg_match('/[01234567890\!\@\#\$\%\^\&\*\(\)_\+\-\=\[\]\{\}\:\;\<\>\.\?\/\\\|\~\"]/', $data['name'])) {
+				if (preg_match('/[0123456789!@#$%^&*()_+\-=\[\]{}:;<>.?\/\\\|~\"]/', $data['name'])) {
 					$form->addError(new FormError("character.illegaltext"));
 					$works = false;
 				}
@@ -699,7 +511,7 @@ class AccountController extends AbstractController {
 		if ($characters_active > $characters_allowed) {
 			if (!$user->getRestricted()) {
 				$user->setRestricted(true);
-				$this->getDoctrine()->getManager()->flush();
+				$this->em->flush();
 			}
 			$make_more = false;
 		} else {
@@ -713,24 +525,23 @@ class AccountController extends AbstractController {
 
 	#[Route ('/account/settings', name:'maf_account_settings')]
 	public function settingsAction(Request $request, AppState $app): Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 		$languages = $app->availableTranslations();
-		$form = $this->createForm(new SettingsType($user, $languages));
+		$form = $this->createForm(new SettingsType::class, null, ['user'=>$user, 'languages'=>$languages]);
 
 		if ($request->isMethod('POST') && $request->request->has("settings")) {
 			$form->handleRequest($request);
-			if ($form->isValid()) {
-   			$data = $form->getData();
+			if ($form->isValid() && $form->isSubmitted()) {
+				$data = $form->getData();
 
-   			$user->setLanguage($data['language']);
-   			$user->setNotifications($data['notifications']);
-			$user->setEmailDelay($data['emailDelay']);
-   			$user->setNewsletter($data['newsletter']);
-   			$this->userMan->updateUser($user);
+				$user->setLanguage($data['language']);
+				$user->setNotifications($data['notifications']);
+				$user->setEmailDelay($data['emailDelay']);
+				$user->setNewsletter($data['newsletter']);
+				$this->em->flush();
 				$this->addFlash('notice', $this->trans->trans('account.settings.saved'));
 				return $this->redirectToRoute('maf_account');
 			}
@@ -746,12 +557,12 @@ class AccountController extends AbstractController {
 	public function endEmailsAction(User $user, $token=null): RedirectResponse {
 		if ($user && $user->getEmailOptOutToken() === $token) {
 			$user->setNotifications(false);
-			$this->getDoctrine()->getManager()->flush();
+			$this->em->flush();
 			$this->addFlash('notice', $this->trans->trans('mail.optout.success', [], "communication"));
-			return $this->redirectToRoute('bm2_homepage');
+			return $this->redirectToRoute('maf_index');
 		} else {
 			$this->addFlash('notice', $this->trans->trans('mail.optout.failure', [], "communication"));
-			return $this->redirectToRoute('bm2_homepage');
+			return $this->redirectToRoute('maf_index');
 		}
 	}
 
@@ -769,7 +580,7 @@ class AccountController extends AbstractController {
 	#[Route ('/account/listset', name:'maf_chars_set')]
 	public function listsetAction(Request $request): Response {
 		$user = $this->getUser();
-		$list_form = $this->createForm(new ListSelectType);
+		$list_form = $this->createForm(new ListSelectType::class);
 		$list_form->handleRequest($request);
 		if ($list_form->isValid()) {
 			$data = $list_form->getData();
@@ -815,11 +626,10 @@ class AccountController extends AbstractController {
 
 	#[Route ('/account/play/{id}', name:'maf_play', requirements: ['character'=>'\d+'])]
 	public function playAction(Request $request, AppState $app, CharacterManager $charMan, ActionResolution $ar, Character $character): RedirectResponse {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 		$this->checkCharacterLimit($user);
 
 		if ($character->getUser() !== $user) {
@@ -896,7 +706,6 @@ class AccountController extends AbstractController {
 				return $this->redirectToRoute('maf_char_start', array('logic'=>'retired'));
 			default:
 				throw new AccessDeniedHttpException('error.notfound.playlogic');
-				return $this->redirectToRoute('maf_chars');
 		}
 	}
 
@@ -964,115 +773,6 @@ class AccountController extends AbstractController {
 			$index++;
 		}
 		return false;
-	}
-
-	#[Route ('/account/keys', name:'maf_account_keys')]
-	public function keysAction(): Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
-		$user = $this->getUser();
-		if ($user->getKeys()->count() === 0) {
-			$valid = false;
-			$i = 0;
-			while (!$valid && $i < 10) {
-                                $token = bin2hex(random_bytes(32));
-                                $result = $this->em->getRepository(User::class)->findOneBy(['user'=>$user->getId(), 'token' => $token]);
-                                if (!$result) {
-                                        $valid = true;
-                                } else {
-					$i++;
-				}
-                        }
-			$key = new AppKey;
-			$this->em->persist($key);
-			$key->setUser($user);
-			$key->setToken($token);
-			$this->em->flush();
-		}
-
-		return $this->render('Account/keys.html.twig', [
-			'keys' => $user->getKeys(),
-		]);
-	}
-
-	#[Route ('/account/keys/reset/{key}', name:'maf_account_keys_reset', requirements:['key'=>'\d+'])]
-	public function keyResetAction(AppKey $key): RedirectResponse {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
-		$user = $this->getUser();
-		if ($user->getKeys()->containes($key)) {
-			$valid = false;
-			while (!$valid) {
-                                $token = bin2hex(random_bytes(32));
-                                $result = $this->em->getRepository(User::class)->findOneBy(['user'=>$user->getId(), 'token' => $token]);
-                                if (!$result) {
-                                        $valid = true;
-                                }
-			}
-			$key->setToken($token);
-			$this->em->flush();
-			$this->addFlash('notice', $this->trans->trans('account.key.reset.success', [], "communication"));
-		} else {
-			$this->addFlash('notice', $this->trans->trans('account.key.unauthorized', [], "communication"));
-		}
-		return $this->redirectToRoute('maf_account_keys');
-	}
-
-	/**
-	  * @Route("/key/{key}/delete", name="maf_key_delete", requirements={"key"="\d+"})
-	  */
-	public function keyDeleteAction(AppKey $key): RedirectResponse {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
-		$user = $this->getUser();
-		if ($user->getKeys()->containes($key)) {
-			$this->em->remove($key);
-			$this->em->flush();
-			$this->addFlash('notice', $this->trans->trans('account.key.delete.success', [], "communication"));
-		} else {
-			$this->addFlash('notice', $this->trans->trans('account.key.unauthorized', [], "communication"));
-		}
-		return $this->redirectToRoute('maf_account_keys');
-	}
-	#[Route ('/account/keys/new', name:'maf_account_keys_new')]
-	public function keyNewAction(): RedirectResponse {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
-		$user = $this->getUser();
-		$valid = false;
-		$i = 0;
-		if ($user->getKeys()->contains() > 10) {
-			$this->addFlash('notice', $this->trans->trans('account.key.toomany', [], "communication"));
-		} else {
-			while (!$valid && $i < 10) {
-	                        $token = bin2hex(random_bytes(32));
-	                        $result = $this->em->getRepository(User::class)->findOneBy(['user'=>$user->getId(), 'token' => $token]);
-				if (!$result) {
-					$valid = true;
-				} else {
-					$i++;
-				}
-	                }
-			if ($valid) {
-				$key = new AppKey;
-				$this->em->persist($key);
-				$key->setUser($user);
-				$key->setToken($token);
-				$this->em->flush();
-				$this->addFlash('notice', $this->trans->trans('account.key.reset.success', [], "communication"));
-			} else {
-				$this->addFlash('notice', $this->trans->trans('account.key.reset.fail', [], "communication"));
-			}
-		}
-		return $this->redirectToRoute('maf_account_keys');
 	}
 
 }

@@ -30,6 +30,7 @@ security:
    username:
     success: Username updated!
     notunique: Submitted username appears to already be in use. Please submit another.
+   text: Profile text updated successfully!
 
  activate:
   route:
@@ -37,6 +38,7 @@ security:
    success: Your account has been activated successfully!
    already: Your account does not require activation.
    failed: Activation link is invalid. If you believe you reached this in error, please complete the form below.
+   needed: "Your account has not been activated yet. If you have not received, or have lost, your activation link, you can request a new one here: %here%"
   change:
    email:
     success: Email changed succesfully!
@@ -92,6 +94,7 @@ security:
     %sitename% Administration
 
     If you believe you received thisemail in error, please forward it to %adminemail%.
+  flash: If a matching email has been located in our system, a reminder with your username has been sent. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
  reset:
   header: Request A Password Reset
   short: Forgot your password?
@@ -114,7 +117,11 @@ security:
   title: "%name%: Request New Activation Link"
   header: Request New Activation Link
   flash: If a matching username and email has been located in our system, an email has been dispatched with new a new activation link. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
-
+ confirm:
+  flash:
+   failed: Unable to confirm email with a registered user. Bad combination passed.
+   already: No confirmation needed. Disregarding request.
+   success: Email successfully confirmed!
 
 form:
  email:
@@ -128,6 +135,7 @@ form:
  register:
   display: Display Name
   displayhelp: This name is what is displayed to other users when they view your profile. Like your username, it is limited to a-z, A-Z, spaces, hyphens, and/or underscores.
+  duplicate: The requested username is already in use.
   email: Email
   mailhelp: You must supply a valid email address.
   toslink: Visit our Terms of Service

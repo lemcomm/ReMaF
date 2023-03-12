@@ -406,389 +406,390 @@ class Character {
 	}
 
 	public function getDeadEntourage() {
-	return $this->getEntourage()->filter(
-	function($entry) {
-	return (!$entry->isAlive());
-	}
-	);
+		return $this->getEntourage()->filter(
+			function($entry) {
+				return (!$entry->isAlive());
+			}
+		);
 	}
 
 	public function getActiveEntourageByType() {
-	return $this->getEntourageByType(true);
+		return $this->getEntourageByType(true);
 	}
 
 	public function getEntourageByType($active_only=false) {
-	$data = array();
-	if ($active_only) {
-	$npcs = $this->getLivingEntourage();
-	} else {
-	$npcs = $this->getEntourage();
-	}
-	foreach ($npcs as $npc) {
-	$type = $npc->getType()->getName();
-	if (isset($data[$type])) {
-	$data[$type]++;
-	} else {
-	$data[$type] = 1;
-	}
-	}
-	return $data;
+		$data = array();
+		if ($active_only) {
+			$npcs = $this->getLivingEntourage();
+		} else {
+			$npcs = $this->getEntourage();
+		}
+		foreach ($npcs as $npc) {
+			$type = $npc->getType()->getName();
+			if (isset($data[$type])) {
+				$data[$type]++;
+			} else {
+				$data[$type] = 1;
+			}
+		}
+		return $data;
 	}
 
 	public function getGender() {
-	if ($this->male) return "male"; else return "female";
+		if ($this->male) return "male"; else return "female";
 	}
 	public function gender($string) {
-	if ($this->male) return "gender.".$string;
-	switch ($string) {
-	case 'he':		return 'gender.she';
-	case 'his':		return 'gender.her';
-	case 'son':		return 'gender.daughter';
-	}
-	return "gender.".$string;
+		if ($this->male) return "gender.".$string;
+		switch ($string) {
+			case 'he':		return 'gender.she';
+			case 'his':		return 'gender.her';
+			case 'son':		return 'gender.daughter';
+		}
+		return "gender.".$string;
 	}
 
 	public function isAlive() {
-	return $this->getAlive();
+		return $this->getAlive();
 	}
 
 	public function findUltimate() {
-	if ($this->ultimate!==false) return $this->ultimate;
-	if (!$liege=$this->getLiege()) {
-	$this->ultimate=$this;
-	} else {
-	while ($liege->getLiege()) {
-	$liege=$liege->getLiege();
-	}
-	$this->ultimate=$liege;
-	}
-	return $this->ultimate;
+		if ($this->ultimate!==false) return $this->ultimate;
+		if (!$liege=$this->getLiege()) {
+			$this->ultimate=$this;
+		} else {
+			while ($liege->getLiege()) {
+				# This will return the topmost character
+				# getLiege returns character or null. Null == false.
+				$liege=$liege->getLiege();
+			}
+		$this->ultimate=$liege;
+		}
+		return $this->ultimate;
 	}
 
 	public function isUltimate() {
-	if ($this->findUltimate() == $this) return true;
-	return false;
+		if ($this->findUltimate() == $this) return true;
+		return false;
 	}
 
 	public function findRealms($check_lord=true) {
-	if ($this->my_realms!=null) return $this->my_realms;
+		if ($this->my_realms!=null) return $this->my_realms;
 
-	$realms = new ArrayCollection;
-	foreach ($this->getPositions() as $position) {
-	if (!$realms->contains($position->getRealm())) {
-	$realms->add($position->getRealm());
-	}
-	}
-	foreach ($this->getOwnedSettlements() as $estate) {
-	if ($realm = $estate->getRealm()) {
-	if (!$realms->contains($realm)) {
-	$realms->add($realm);
-	}
-	}
-	}
-	foreach ($this->getOwnedPlaces() as $place) {
-	if ($realm = $place->getRealm()) {
-	if (!$realms->contains($realm)) {
-	$realms->add($realm);
-	}
-	}
-	}
+		$realms = new ArrayCollection;
+		foreach ($this->getPositions() as $position) {
+			if (!$realms->contains($position->getRealm())) {
+				$realms->add($position->getRealm());
+			}
+		}
+		foreach ($this->getOwnedSettlements() as $estate) {
+			if ($realm = $estate->getRealm()) {
+				if (!$realms->contains($realm)) {
+					$realms->add($realm);
+				}
+			}
+		}
+		foreach ($this->getOwnedPlaces() as $place) {
+			if ($realm = $place->getRealm()) {
+				if (!$realms->contains($realm)) {
+					$realms->add($realm);
+				}
+			}
+		}
 
-	if ($check_lord && $this->findAllegiance()) {
-	$alg = $this->findAllegiance();
-	if (!($alg instanceof Realm)) {
-	if ($alg->getRealm() != NULL) {
-	if (!$realms->contains($alg->getRealm())) {
-	$realms->add($alg->getRealm());
-	}
-	} elseif ($alg instanceof Character) {
-	foreach ($alg->findRealms() as $realm) {
-	# Backwards compatibility junk. Remove this when we remvoe $this->liege.
-	if (!$realms->contains($realm)) {
-	$realms->add($realm);
-	}
-	}
-	}
-	} else {
-	if ($alg != NULL) {
-	if (!$realms->contains($alg)) {
-	$realms->add($alg);
-	}
-	}
-	}
-	} elseif ($check_lord && $this->getLiege()) {
-	foreach ($this->getLiege()->findRealms(false) as $lordrealm) {
-	if (!$realms->contains($lordrealm)) {
-	$realms->add($lordrealm);
-	}
-	}
-	}
+		if ($check_lord && $this->findAllegiance()) {
+			$alg = $this->findAllegiance();
+			if (!($alg instanceof Realm)) {
+				if ($alg->getRealm() != NULL) {
+					if (!$realms->contains($alg->getRealm())) {
+						$realms->add($alg->getRealm());
+					}
+				} elseif ($alg instanceof Character) {
+					foreach ($alg->findRealms() as $realm) {
+						# Backwards compatibility junk. Remove this when we remvoe $this->liege.
+						if (!$realms->contains($realm)) {
+						$realms->add($realm);
+						}
+					}
+				}
+			} else {
+				if ($alg != NULL) {
+					if (!$realms->contains($alg)) {
+						$realms->add($alg);
+					}
+				}
+			}
+		} elseif ($check_lord && $this->getLiege()) {
+			foreach ($this->getLiege()->findRealms(false) as $lordrealm) {
+				if (!$realms->contains($lordrealm)) {
+					$realms->add($lordrealm);
+				}
+			}
+		}
 
-	foreach ($realms as $realm) {
-	foreach ($realm->findAllSuperiors() as $suprealm) {
-	if (!$realms->contains($suprealm)) {
-	$realms->add($suprealm);
-	}
-	}
-	}
-	$this->my_realms = $realms;
+		foreach ($realms as $realm) {
+			foreach ($realm->findAllSuperiors() as $suprealm) {
+				if (!$realms->contains($suprealm)) {
+					$realms->add($suprealm);
+				}
+			}
+		}
+		$this->my_realms = $realms;
 
-	return $realms;
+		return $realms;
 	}
 
 	public function findHouses() {
-	if ($this->my_houses!=null) return $this->my_houses;
-	$houses = new ArrayCollection;
-	if ($this->getHouse()) {
-	$houses[] = $this->getHouse();
-	}
-	foreach ($houses as $house) {
-	foreach ($house->findAllSuperiors() as $suphouse) {
-	if (!$houses->contains($suphouse)) {
-	$houses->add($suphouse);
-	}
-	}
-	}
-	$this->my_houses = $houses;
-	return $houses;
+		if ($this->my_houses!=null) return $this->my_houses;
+		$houses = new ArrayCollection;
+		if ($this->getHouse()) {
+			$houses[] = $this->getHouse();
+		}
+		foreach ($houses as $house) {
+			foreach ($house->findAllSuperiors() as $suphouse) {
+				if (!$houses->contains($suphouse)) {
+					$houses->add($suphouse);
+				}
+			}
+		}
+		$this->my_houses = $houses;
+		return $houses;
 	}
 
 	public function findAssociations() {
-	if ($this->my_assocs!=null) return $this->my_assocs;
-	$assocs = new ArrayCollection;
-	foreach ($this->getAssociationMemberships() as $mbr) {
-	$assocs->add($mbr->getAssociation());
-	}
-	$this->my_assocs = $assocs;
-	return $assocs;
+		if ($this->my_assocs!=null) return $this->my_assocs;
+		$assocs = new ArrayCollection;
+		foreach ($this->getAssociationMemberships() as $mbr) {
+			$assocs->add($mbr->getAssociation());
+		}
+		$this->my_assocs = $assocs;
+		return $assocs;
 	}
 
 	public function findSubcreateableAssociations() {
-	$assocs = new ArrayCollection;
-	foreach ($this->getAssociationMemberships() as $mbr) {
-	if ($rank = $mbr->getRank()) {
-	if ($rank->getOwner() || $rank->getCreateAssocs()) {
-	$assocs->add($mbr->getAssociation());
-	}
-	}
-	}
-	return $assocs;
+		$assocs = new ArrayCollection;
+		foreach ($this->getAssociationMemberships() as $mbr) {
+			$rank = $mbr->getRank();
+			if ($rank->getOwner() || $rank->getCreateAssocs()) {
+				$assocs->add($mbr->getAssociation());
+			}
+		}
+		return $assocs;
 	}
 
 	public function hasNewEvents() {
-	foreach ($this->getReadableLogs() as $log) {
-	if ($log->hasNewEvents()) {
-	return true;
-	}
-	}
-	return false;
+		foreach ($this->getReadableLogs() as $log) {
+			if ($log->hasNewEvents()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function countNewEvents() {
-	$count=0;
-	foreach ($this->getReadableLogs() as $log) {
-	$count += $log->countNewEvents();
-	}
-	return $count;
+		$count=0;
+		foreach ($this->getReadableLogs() as $log) {
+			$count += $log->countNewEvents();
+		}
+		return $count;
 	}
 
 	public function hasNewMessages() {
-	$permissions = $this->getConvPermissions()->filter(function($entry) {return $entry->getUnread() > 0;});
-	if ($permissions->count() > 0) {
-	return true;
-	}
-	return false;
+		$permissions = $this->getConvPermissions()->filter(function($entry) {return $entry->getUnread() > 0;});
+		if ($permissions->count() > 0) {
+			return true;
+		}
+		return false;
 	}
 
 	public function countNewMessages() {
-	$permissions = $this->getConvPermissions()->filter(function($entry) {return $entry->getUnread() > 0;});
-	$total = 0;
-	if ($permissions->count() > 0) {
-	foreach ($permissions as $perm) {
-	$total += $perm->getUnread();
-	}
-	return $total;
-	}
-	return $total;
+		$permissions = $this->getConvPermissions()->filter(function($entry) {return $entry->getUnread() > 0;});
+		$total = 0;
+		if ($permissions->count() > 0) {
+			foreach ($permissions as $perm) {
+				$total += $perm->getUnread();
+			}
+			return $total;
+		}
+		return $total;
 	}
 
 	public function findActions($key) {
-	return $this->actions->filter(
-	function($entry) use ($key) {
-	if (is_array($key)) {
-	return in_array($entry->getType(), $key);
-	} else {
-	return ($entry->getType()==$key);
-	}
-	}
-	);
+		return $this->actions->filter(
+			function($entry) use ($key) {
+				if (is_array($key)) {
+					return in_array($entry->getType(), $key);
+				} else {
+					return ($entry->getType()==$key);
+				}
+			}
+		);
 	}
 
 	public function hasAction($key) {
-	return ($this->findActions($key)->count()>0);
+		return ($this->findActions($key)->count()>0);
 	}
 
 	public function findForeignAffairsRealms() {
-	$realms = new ArrayCollection();
-	foreach ($this->getPositions() as $pos) {
-	if ($pos->getRuler()) {
-	$realms->add($pos->getRealm()->getId());
-	}
-	if ($pos->getType() && $pos->getType()->getName() == 'foreign affairs') {
-	$realms->add($pos->getRealm()->getId());
-	}
-	}
-	if ($realms->isEmpty()) {
-	return null;
-	} else {
-	return $realms;
-	}
+		$realms = new ArrayCollection();
+		foreach ($this->getPositions() as $pos) {
+			if ($pos->getRuler()) {
+				$realms->add($pos->getRealm()->getId());
+			}
+			if ($pos->getType() && $pos->getType()->getName() == 'foreign affairs') {
+				$realms->add($pos->getRealm()->getId());
+			}
+		}
+		if ($realms->isEmpty()) {
+			return null;
+		} else {
+			return $realms;
+		}
 	}
 
 	public function countSoldiers() {
-	$count = 0;
-	if (!$this->getUnits()->isEmpty()) {
-	foreach ($this->getUnits() as $unit) {
-	$count += $unit->getActiveSoldiers()->count();
-	}
-	}
-	return $count;
+		$count = 0;
+		if (!$this->getUnits()->isEmpty()) {
+			foreach ($this->getUnits() as $unit) {
+				$count += $unit->getActiveSoldiers()->count();
+			}
+		}
+		return $count;
 	}
 
 	public function hasNoSoldiers() {
-	if ($this->countSoldiers() == 0) {
-	return true;
-	}
-	return false;
+		if ($this->countSoldiers() == 0) {
+			return true;
+		}
+		return false;
 	}
 
 	public function findAllegiance() {
-	if ($this->realm) {
-	return $this->getRealm();
-	}
-	if ($this->liege_land) {
-	return $this->getLiegeLand();
-	}
-	if ($this->liege_place) {
-	return $this->getLiegePlace();
-	}
-	if ($this->liege_position) {
-	return $this->getLiegePosition();
-	}
-	if ($this->liege) {
-	return $this->getLiege();
-	}
-	return null;
+		if ($this->realm) {
+			return $this->getRealm();
+		}
+		if ($this->liege_land) {
+			return $this->getLiegeLand();
+		}
+		if ($this->liege_place) {
+			return $this->getLiegePlace();
+		}
+		if ($this->liege_position) {
+			return $this->getLiegePosition();
+		}
+		if ($this->liege) {
+			return $this->getLiege();
+		}
+		return null;
 	}
 
 	public function findVassals() {
-	$vassals = new ArrayCollection();
-	foreach ($this->getPositions() as $key) {
-	if ($key->getRuler()) {
-	foreach ($key->getRealm()->getVassals() as $val) {
-	$vassals->add($val);
-	}
-	}
-	foreach ($key->getVassals() as $val) {
-	$vassals->add($val);
-	}
-	}
-	foreach ($this->getOwnedPlaces() as $key) {
-	if ($key->getType()->getName() != 'embassy') {
-	foreach ($key->getVassals() as $val) {
-	$vassals->add($val);
-	}
-	}
-	}
-	foreach ($this->getOwnedSettlements() as $key) {
-	foreach ($key->getVassals() as $val) {
-	$vassals->add($val);
-	}
-	}
-	foreach ($this->getAmbassadorships() as $key) {
-	foreach ($key->getVassals() as $val) {
-	$vassals->add($val);
-	}
-	}
-	return $vassals;
+		$vassals = new ArrayCollection();
+		foreach ($this->getPositions() as $key) {
+			if ($key->getRuler()) {
+				foreach ($key->getRealm()->getVassals() as $val) {
+					$vassals->add($val);
+				}
+			}
+			foreach ($key->getVassals() as $val) {
+				$vassals->add($val);
+			}
+		}
+		foreach ($this->getOwnedPlaces() as $key) {
+			if ($key->getType()->getName() != 'embassy') {
+				foreach ($key->getVassals() as $val) {
+					$vassals->add($val);
+				}
+			}
+		}
+		foreach ($this->getOwnedSettlements() as $key) {
+			foreach ($key->getVassals() as $val) {
+				$vassals->add($val);
+			}
+		}
+		foreach ($this->getAmbassadorships() as $key) {
+			foreach ($key->getVassals() as $val) {
+				$vassals->add($val);
+			}
+		}
+		return $vassals;
 	}
 
 	public function findPrimaryRealm() {
-	if ($this->realm) {
-	return $this->getRealm();
-	}
-	if ($this->liege_land) {
-	return $this->getLiegeLand()->getRealm();
-	}
-	if ($this->liege_place) {
-	return $this->getLiegePlace()->getRealm();
-	}
-	if ($this->liege_position) {
-	return $this->getLiegePosition()->getRealm();
-	}
-	return null;
+		if ($this->realm) {
+			return $this->getRealm();
+		}
+		if ($this->liege_land) {
+			return $this->getLiegeLand()->getRealm();
+		}
+		if ($this->liege_place) {
+			return $this->getLiegePlace()->getRealm();
+		}
+		if ($this->liege_position) {
+			return $this->getLiegePosition()->getRealm();
+		}
+		return null;
 	}
 
 	public function findLiege() {
-	$alleg = $this->findAllegiance();
-	if ($alleg instanceof Character) {
-	return $alleg;
-	}
-	if ($alleg instanceof Realm) {
-	return $alleg->findRulers();
-	}
-	if ($alleg instanceof Settlement) {
-	return $alleg->getOwner();
-	}
-	if ($alleg instanceof Place) {
-	if ($alleg->getType()->getName() != 'embassy') {
-	return $alleg->getOwner();
-	} else {
-	return $alleg->getAmbassador();
-	}
-	}
-	if ($alleg instanceof RealmPosition) {
-	return $alleg->getHolders();
-	}
-	return null;
+		$alleg = $this->findAllegiance();
+		if ($alleg instanceof Character) {
+			return $alleg;
+		}
+		if ($alleg instanceof Realm) {
+			return $alleg->findRulers();
+		}
+		if ($alleg instanceof Settlement) {
+			return $alleg->getOwner();
+		}
+		if ($alleg instanceof Place) {
+			if ($alleg->getType()->getName() != 'embassy') {
+				return $alleg->getOwner();
+			} else {
+				return $alleg->getAmbassador();
+			}
+		}
+		if ($alleg instanceof RealmPosition) {
+			return $alleg->getHolders();
+		}
+		return null;
 	}
 
 	public function findControlledSettlements() {
-	$all = new ArrayCollection;
-	foreach ($this->getOwnedSettlements() as $each) {
-	$all->add($each);
-	}
-	foreach ($this->getOccupiedSettlements() as $each) {
-	$all->add($each);
-	}
-	foreach ($this->getStewardingSettlements() as $each) {
-	$all->add($each);
-	}
-	return $all;
+		$all = new ArrayCollection;
+		foreach ($this->getOwnedSettlements() as $each) {
+			$all->add($each);
+		}
+		foreach ($this->getOccupiedSettlements() as $each) {
+			$all->add($each);
+		}
+		foreach ($this->getStewardingSettlements() as $each) {
+			$all->add($each);
+		}
+		return $all;
 	}
 
 	public function findAnswerableDuels() {
-	$all = new ArrayCollection;
-	foreach ($this->getActivityParticipation() as $each) {
-	$act = $each->getActivity();
-	if ($act->isAnswerable($this)) {
-	$all->add($act);
-	}
-	}
-	return $all;
+		$all = new ArrayCollection;
+		foreach ($this->getActivityParticipation() as $each) {
+			$act = $each->getActivity();
+			if ($act->isAnswerable($this)) {
+				$all->add($act);
+			}
+		}
+		return $all;
 	}
 
 	public function getType() {
-	return 'first one';
+		return 'first one';
 	}
 
 	public function findSkill(SkillType $skill) {
-	foreach ($this->skills as $each) {
-	if ($each->getType() === $skill) {
-	return $each;
-	}
-	}
-	return false;
+		foreach ($this->skills as $each) {
+			if ($each->getType() === $skill) {
+				return $each;
+			}
+		}
+		return false;
 	}
 
     /**
@@ -1195,13 +1196,13 @@ class Character {
         return $this->location;
     }
 
-    /**
-     * Set travel
-     *
-     * @param linestring $travel
-     * @return Character
-     */
-    public function setTravel($travel)
+	/**
+	 * Set travel
+	 *
+	 * @param LineString|null $travel
+	 * @return Character
+	 */
+    public function setTravel(?linestring $travel)
     {
         $this->travel = $travel;
 
@@ -1211,10 +1212,9 @@ class Character {
     /**
      * Get travel
      *
-     * @return linestring
+     * @return linestring|null
      */
-    public function getTravel()
-    {
+    public function getTravel(): ?LineString {
         return $this->travel;
     }
 

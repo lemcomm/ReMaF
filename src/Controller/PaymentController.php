@@ -8,8 +8,10 @@ use App\Form\GiftType;
 use App\Form\SubscriptionType;
 use App\Service\AppState;
 use App\Service\MailManager;
+use App\Service\NotificationManager;
 use App\Service\PaymentManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Patreon\OAuth as POA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,19 +30,16 @@ class PaymentController extends AbstractController {
 
 	private array $giftchoices = array(100=>100, 200=>200, 300=>300, 400=>400, 500=>500, 600=>600, 800=>800, 1000=>1000, 1200=>1200, 1500=>1500, 2000=>2000, 2500=>2500);
 	private EntityManagerInterface $em;
-	private Security $sec;
 	private MailManager $mail;
 	private PaymentManager $pay;
 	private TranslatorInterface $trans;
 	private LoggerInterface $logger;
 
-	public function __construct(AppState $app, EntityManagerInterface $em, LoggerInterface $logger, MailManager $mail, PaymentManager $pay, Security $sec, TranslatorInterface $trans) {
-		$this->app = $app;
+	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, MailManager $mail, PaymentManager $pay, TranslatorInterface $trans) {
 		$this->em = $em;
 		$this->logger = $logger;
 		$this->mail = $mail;
 		$this->pay = $pay;
-		$this->sec = $sec;
 		$this->trans = $trans;
 	}
 
@@ -58,11 +57,10 @@ class PaymentController extends AbstractController {
 
 	#[Route ('/payment', name:'maf_payment')]
 	public function paymentAction(Request $request): Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 
 		$form = $this->createFormBuilder()
 			->add('hash', TextType::class, [
@@ -95,11 +93,10 @@ class PaymentController extends AbstractController {
 
 	#[Route ('/payment/stripe/{currency}/{amount}', name:'maf_stripe', requirements:['currency'=>'[A-Z]+', 'amount'=>'\d+'])]
 	public function stripeAction($currency, $amount, Request $request): RedirectResponse {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 
 		$success = $this->generateUrl('maf_stripe_success', [], true);
 		$cancel = $this->generateUrl('maf_payment', [], true);
@@ -113,7 +110,7 @@ class PaymentController extends AbstractController {
 	}
 
 	#[Route ('/payment/stripe_success}', name:'maf_stripe_success')]
-	public function stripeSuccessAction(Request $request): RedirectResponse {
+	public function stripeSuccessAction(NotificationManager $noteman, Request $request): RedirectResponse {
 		$user = $this->getUser();
 		$user_id = $user->getId();
 		try {
@@ -133,7 +130,7 @@ class PaymentController extends AbstractController {
 			$txt = "Stripe Payment calback: $total $currency // for user ID $user_id // tx id $txid";
 			$this->pay->log_info($txt);
 			$this->pay->account($user, 'Stripe Payment', $pid, $txid);
-			$this->get('notification_manager')->spoolPayment('M&F '.$txt);
+			$noteman->spoolPayment('M&F '.$txt);
 			$this->addFlash('notice', 'Payment Successful! Thank you!');
 			return $this->redirectToRoute('maf_payment');
 		} else {
@@ -150,11 +147,10 @@ class PaymentController extends AbstractController {
 
 	#[Route ('/payment/credits', name:'maf_payment_credits')]
 	public function creditsAction(): Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 
 		return $this->render('Payment/credits.html.twig', [
 			'myfee' => $this->pay->calculateUserFee($user),
@@ -164,11 +160,10 @@ class PaymentController extends AbstractController {
 
 	#[Route ('/payment/subscription', name:'maf_payment_subscription')]
 	public function subscriptionAction(Request $request): RedirectResponse|Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 		$levels = $this->pay->getPaymentLevels();
 
 		$sublevel = [];
@@ -206,11 +201,10 @@ class PaymentController extends AbstractController {
 
 	#[Route ('/payment/patreon/update', name:'maf_patreon_update')]
 	public function patreonUpdateAction(Request $request): RedirectResponse {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 		$patreons = $user->getPatronizing();
 		$pm = $this->pay;
 
@@ -242,11 +236,10 @@ class PaymentController extends AbstractController {
 
 	#[Route ('/payment/patreon/{creator}', name:'maf_patreon', requirements:['creator'=>'[A-Za-z]+'])]
 	public function patreonAction(Request $request, $creator): RedirectResponse {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 
 		$code = $request->query->get('code');
 		$creator = $this->fetchPatreon($creator);
@@ -257,7 +250,7 @@ class PaymentController extends AbstractController {
 			$patron = $this->em->getRepository('App:Patron')->findOneBy(["user"=>$user, "creator"=>$creator]);
 			if (!$patron) {
 				$patron = new Patron();
-				$em->persist($patron);
+				$this->em->persist($patron);
 				$patron->setUser($user);
 				$patron->setCreator($creator);
 			}
@@ -281,9 +274,9 @@ class PaymentController extends AbstractController {
 
 	#[Route ('/payment/culture', name:'maf_payment_culture')]
 	public function cultureAction(Request $request): Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
+		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
 		}
 		$allcultures = $this->em->createQuery('SELECT c FROM App:Culture c INDEX BY c.id')->getResult();
 		$nc = $this->em->createQuery('SELECT c.id as id, count(n.id) as amount FROM App:NameList n JOIN n.culture c GROUP BY c.id')->getResult();
@@ -292,7 +285,7 @@ class PaymentController extends AbstractController {
 			$namescount[$ncx['id']] = $ncx['amount'];
 		}
 
-		$form = $this->createForm(CultureType::class, null, ['user'=>$this->getUser(), 'available'=>false]);
+		$form = $this->createForm(CultureType::class, null, ['user'=>$user, 'available'=>false]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
@@ -302,15 +295,15 @@ class PaymentController extends AbstractController {
 			foreach ($buying as $buy) {
 				$total += $buy->getCost();
 			}
-			if ($total > $this->getUser()->getCredits()) {
+			if ($total > $user->getCredits()) {
 				$form->addError(new FormError($this->trans->trans("account.culture.notenoughcredits")));
 			} else {
 				foreach ($buying as $buy) {
 					// TODO: error handling here?
 					$this->pay->spend($this->getUser(), "culture pack", $buy->getCost());
-					$this->getUser()->getCultures()->add($buy);
+					$user->getCultures()->add($buy);
 				}
-				$em->flush();
+				$this->em->flush();
 
 				return $this->render('Payment/culture.html.twig', [
 					'bought'=>$buying,
@@ -328,11 +321,10 @@ class PaymentController extends AbstractController {
 
 	#[Route ('/payment/gift', name:'maf_payment_gift')]
 	public function giftAction(Request $request): array|Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 		$form = $this->createForm(GiftType::class, null, [
 			'credits' => $this->giftchoices,
 			'invite' => false
@@ -354,7 +346,7 @@ class PaymentController extends AbstractController {
 			$code = $this->pay->createCode($value, 0, $data['email'], $user);
 			$this->pay->spend($user, "gift", $value);
 
-			$em->flush();
+			$this->em->flush();
 
 			$text = $this->trans->trans('account.gift.mail.body', array("%credits%"=>$value, "%code%"=>$code->getCode(), "%message%"=>strip_tags($data['message'])));
 			$this->mail->sendEmail(
@@ -378,11 +370,10 @@ class PaymentController extends AbstractController {
 
 	#[Route ('/payment/invite', name:'maf_payment_invite')]
 	public function inviteAction(Request $request): Response {
-		$banned = $this->app->checkbans();
-		if ($banned instanceof AccessDeniedException) {
-			throw $banned;
-		}
 		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
 
 		$form = $this->createForm(GiftType::class, null, [
 			'credits' => $this->giftchoices,

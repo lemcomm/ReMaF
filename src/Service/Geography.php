@@ -16,6 +16,7 @@ use App\Entity\Ship;
 use App\Entity\Settlement;
 
 use App\Service\AppState;
+use App\Service\CommonService;
 use App\Service\PermissionManager;
 
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
@@ -25,34 +26,36 @@ use Doctrine\ORM\Query\ResultSetMapping;
 
 class Geography {
 
-	private $em;
-	private $pm;
-	private $appstate;
-	private $biomes_water=false;
-	private $biomes_invalid=false;
+	private CommonService $common;
+	private EntityManagerInterface $em;
+	private PermissionManager $pm;
+	private AppState $appstate;
+	private bool $biomes_water=false;
+	private bool $biomes_invalid=false;
 
-	private $embark_distance = 200;
-	private $road_buffer = 200;
-	private $place_separation = 500;
+	private int $embark_distance = 200;
+	private int $road_buffer = 200;
+	private int $place_separation = 500;
 
-	private $base_speed = 12000; // 12km a day base speed
-	private $spotBase = -1;
-	private $spotScout = -1;
-	private $scout = null;
+	private int $base_speed = 12000; // 12km a day base speed
+	private int $spotBase = -1;
+	private int $spotScout = -1;
+	private ?EntourageType $scout = null;
 
 	const DISTANCE_BATTLE = 20000;
 	const DISTANCE_FEATURE = 20000;
 	const DISTANCE_DUNGEON = 50000;
 	const DISTANCE_MERCENARIES = 120000;
 
-	public $world = array(
+	public array $world = array(
 		'x_min' => 0,
 		'x_max' => 512000,
 		'y_min' => 0,
 		'y_max' => 512000,
 	);
 
-	public function __construct(EntityManagerInterface $em, PermissionManager $pm, AppState $appstate) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, PermissionManager $pm, AppState $appstate) {
+		$this->common = $common;
 		$this->em = $em;
 		$this->pm = $pm;
 		$this->appstate = $appstate;
@@ -291,10 +294,8 @@ class Geography {
 	}
 
 	public function findNearestSettlement(Character $character) {
-		$query = $this->em->createQuery('SELECT s, ST_Distance(g.center, c.location) AS distance FROM App:Settlement s JOIN s.geo_data g, App:Character c WHERE c = :char ORDER BY distance ASC');
-		$query->setParameter('char', $character);
-		$query->setMaxResults(1);
-		return $query->getSingleResult();
+		return $this->common->findNearestSettlement($character);
+		# Moved so we can also have AppState use this code.
 	}
 
 	public function findNearestPlace(Character $character) {

@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -13,188 +12,187 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 
-	private $id;
-	private $display_name;
-	private $created;
-	private $new_chars_limit;
-	private $app_key;
-	private $language;
-	private $notifications;
-	private $newsletter;
-	private $account_level;
-	private $vip_status;
-	private $paid_until;
-	private $credits;
-	private $restricted;
-	private $current_character;
-	private $payments;
-	private $credit_history;
-	private $characters;
-	private $crests;
-	private $cultures;
-	private $ratings_given;
-	private $rating_votes;
-	private $listings;
-	private $genome_set;
-	private $artifacts;
-	private $artifacts_limit;
-	private $token;
-	private $reset_token;
-	private $reset_time;
-	private $email_token;
-	private $logs;
-	private $security_logs;
-	private $ip;
-	private $gm_name;
-	private $public_admin;
-	private $email_opt_out_token;
-	private $email_delay;
-	private $public;
-	private $next_spawn_time;
-	private $show_patronage;
-	private $old_account_level;
-	private $description;
-	private $limits;
-	private $descriptions;
-	private $patronizing;
-	private $reports;
-	private $reports_against;
-	private $added_report_notes;
-	private $mail_entries;
-	private $keys;
+	private ?int $id;
+	private string $display_name;
+	private \DateTime $created;
+	private int $new_chars_limit;
+	private string $app_key;
+	private string $language;
+	private bool $notifications;
+	private bool $newsletter;
+	private int $account_level;
+	private int $vip_status;
+	private \DateTime $paid_until;
+	private int $credits;
+	private bool $restricted;
+	private Character $current_character;
+	private ArrayCollection $payments;
+	private ArrayCollection $credit_history;
+	private ArrayCollection $characters;
+	private ArrayCollection $crests;
+	private ArrayCollection $cultures;
+	private ArrayCollection $ratings_given;
+	private ArrayCollection $rating_votes;
+	private ArrayCollection $listings;
+	private string $genome_set;
+	private ArrayCollection $artifacts;
+	private int $artifacts_limit;
+	private ?string $token;
+	private ?string $reset_token;
+	private ?\DateTimeInterface $reset_time;
+	private ?string $email_token;
+	private ArrayCollection $logs;
+	private ArrayCollection $security_logs;
+	private string $ip;
+	private string $gm_name;
+	private bool $public_admin;
+	private string $email_opt_out_token;
+	private string $email_delay;
+	private bool $public;
+	private \DateTime $next_spawn_time;
+	private bool $show_patronage;
+	private int $old_account_level;
+	private Description $description;
+	private UserLimits $limits;
+	private ArrayCollection $descriptions;
+	private ArrayCollection $patronizing;
+	private ArrayCollection $reports;
+	private ArrayCollection $reports_against;
+	private ArrayCollection $added_report_notes;
+	private ArrayCollection $mail_entries;
+	private ArrayCollection $keys;
         private ?string $username = null;
-        private ?string $usernameCanonical = null;
         private ?string $email = null;
-        private ?string $emailCanonical = null;
         private ?bool $enabled = null;
         private ?string $salt = null;
         private ?string $password = null;
-        private ?\DateTimeInterface $lastLogin = null;
+        private ?\DateTime $lastLogin = null;
         private ?string $confirmationToken = null;
-        private ?\DateTimeInterface $passwordRequestedAt = null;
+        private ?\DateTime $passwordRequestedAt = null;
         private array $roles = [];
 
 	public function __construct() {
-		$this->payments = new ArrayCollection();
-		$this->credit_history = new ArrayCollection();
-		$this->characters = new ArrayCollection();
-		$this->crests = new ArrayCollection();
-		$this->cultures = new ArrayCollection();
-		$this->artifacts = new ArrayCollection();
-		$this->descriptions = new ArrayCollection();
-		$this->ratings_given = new ArrayCollection();
-		$this->rating_votes = new ArrayCollection();
-		$this->listings = new ArrayCollection();
-		$this->patronizing = new ArrayCollection();
-		$this->reports = new ArrayCollection();
-		$this->reports_against = new ArrayCollection();
-		$this->added_report_notes = new ArrayCollection();
-		$this->mail_entries = new ArrayCollection();
-		$this->keys = new ArrayCollection();
-		$this->logs = new ArrayCollection();
-		$this->security_logs = new ArrayCollection();
-	}
+               		$this->payments = new ArrayCollection();
+               		$this->credit_history = new ArrayCollection();
+               		$this->characters = new ArrayCollection();
+               		$this->crests = new ArrayCollection();
+               		$this->cultures = new ArrayCollection();
+               		$this->artifacts = new ArrayCollection();
+               		$this->descriptions = new ArrayCollection();
+               		$this->ratings_given = new ArrayCollection();
+               		$this->rating_votes = new ArrayCollection();
+               		$this->listings = new ArrayCollection();
+               		$this->patronizing = new ArrayCollection();
+               		$this->reports = new ArrayCollection();
+               		$this->reports_against = new ArrayCollection();
+               		$this->added_report_notes = new ArrayCollection();
+               		$this->mail_entries = new ArrayCollection();
+               		$this->keys = new ArrayCollection();
+               		$this->logs = new ArrayCollection();
+               		$this->security_logs = new ArrayCollection();
+               	}
 
 
 	public function getLivingCharacters() {
-		return $this->getCharacters()->filter(
-			function($entry) {
-				return ($entry->isAlive()==true && $entry->isNPC()==false);
-			}
-		);
-	}
+               		return $this->getCharacters()->filter(
+               			function($entry) {
+               				return ($entry->isAlive()==true && $entry->isNPC()==false);
+               			}
+               		);
+               	}
 
 	public function getActiveCharacters() {
-		return $this->getCharacters()->filter(
-			function($entry) {
-				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==false);
-			}
-		);
-	}
+               		return $this->getCharacters()->filter(
+               			function($entry) {
+               				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==false);
+               			}
+               		);
+               	}
 
 	public function getRetiredCharacters() {
-		return $this->getCharacters()->filter(
-			function($entry) {
-				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==true);
-			}
-		);
-	}
+               		return $this->getCharacters()->filter(
+               			function($entry) {
+               				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==true);
+               			}
+               		);
+               	}
 
 	public function getDeadCharacters() {
-		return $this->getCharacters()->filter(
-			function($entry) {
-				return ($entry->isAlive()==false && $entry->isNPC()==false);
-			}
-		);
-	}
+               		return $this->getCharacters()->filter(
+               			function($entry) {
+               				return ($entry->isAlive()==false && $entry->isNPC()==false);
+               			}
+               		);
+               	}
 
 
 	public function getNonNPCCharacters() {
-		return $this->getCharacters()->filter(
-			function($entry) {
-				return ($entry->isNPC()==false);
-			}
-		);
-	}
+               		return $this->getCharacters()->filter(
+               			function($entry) {
+               				return ($entry->isNPC()==false);
+               			}
+               		);
+               	}
 
 	public function isTrial() {
-		// trial/free accounts cannot do some things
-		if ($this->account_level <= 10) return true; else return false;
-	}
+               		// trial/free accounts cannot do some things
+               		if ($this->account_level <= 10) return true; else return false;
+               	}
 
 	public function isNewPlayer() {
-		$days = $this->getCreated()->diff(new \DateTime("now"), true)->days;
-		if ($days < 30) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+               		$days = $this->getCreated()->diff(new \DateTime("now"), true)->days;
+               		if ($days < 30) {
+               			return true;
+               		} else {
+               			return false;
+               		}
+               	}
 
 	public function isVeryNewPlayer() {
-		$days = $this->getCreated()->diff(new \DateTime("now"), true)->days;
-		if ($days < 7) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+               		$days = $this->getCreated()->diff(new \DateTime("now"), true)->days;
+               		if ($days < 7) {
+               			return true;
+               		} else {
+               			return false;
+               		}
+               	}
 
 	public function getFreePlaces() {
-		$limit = $this->getLimits()->getPlaces();
-		$count = 0;
-		foreach ($this->getCharacters() as $character) {
-			foreach ($character->getCreatedPlaces() as $place) {
-				if (!$place->getDestroyed()) {
-					$count++;
-				}
-			}
-		}
-		return $limit - $count;
-	}
+               		$limit = $this->getLimits()->getPlaces();
+               		$count = 0;
+               		foreach ($this->getCharacters() as $character) {
+               			foreach ($character->getCreatedPlaces() as $place) {
+               				if (!$place->getDestroyed()) {
+               					$count++;
+               				}
+               			}
+               		}
+               		return $limit - $count;
+               	}
 
 	public function getFreeArtifacts() {
-		$limit = $this->getLimits()->getArtifacts();
-		$count = 0;
-		foreach ($this->getArtifacts() as $art) {
-			$count++;
-		}
-		return $limit - $count;
-	}
+               		$limit = $this->getLimits()->getArtifacts();
+               		$count = 0;
+               		foreach ($this->getArtifacts() as $art) {
+               			$count++;
+               		}
+               		return $limit - $count;
+               	}
 
-	public function isBanned() {
-		if ($this->hasRole('ROLE_BANNED_MULTI')) {
-			return 'multi';
+	public function isBanned(): bool {
+		$roles = $this->getRoles();
+		if (in_array(['ROLE_BANNED_TOS'], $roles)) {
+			return 'error.banned.tos';
 		}
-		if ($this->hasRole('ROLE_BANNED_TOS')) {
-			return 'tos';
+		if (in_array(['ROLE_BANNED_MULTI'], $roles)) {
+			return 'error.banned.multi';
 		}
 		return false;
 	}
 
 	public function getUserIdentifier(): string {
-		return (string) strtolower($this->username);
-	}
+               		return (string) strtolower($this->username);
+               	}
 
         public function getRoles(): array {
             $roles = $this->roles;
@@ -209,13 +207,13 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         }
 
 	public function getPassword(): string {
-		return $this->password;
-	}
+               		return $this->password;
+               	}
 
 	public function setPassword(string $password): self {
-		$this->password = $password;
-		return $this;
-	}
+               		$this->password = $password;
+               		return $this;
+               	}
 
         public function getSalt(): ?string {
             return $this->salt;
@@ -228,9 +226,9 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         }
 
 	public function eraseCredentials() {
-	// If you store any temporary, sensitive data on the user, clear it here
-	// $this->plainPassword = null;
-	}
+               	// If you store any temporary, sensitive data on the user, clear it here
+               	// $this->plainPassword = null;
+               	}
 
     /**
      * Set ip

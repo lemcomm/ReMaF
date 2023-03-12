@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Character;
+use App\Entity\SecurityLog;
 use App\Entity\Setting;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,7 +29,8 @@ class AppState {
 		'it' => 'italiano'
 		);
 
-	public function __construct(EntityManagerInterface $em, TokenStorageInterface $tokenStorage, RequestStack $requestStack, Security $sec) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, TokenStorageInterface $tokenStorage, RequestStack $requestStack, Security $sec) {
+		$this->common = $common;
 		$this->em = $em;
 		$this->tokenStorage = $tokenStorage;
 		$this->requestStack = $requestStack;
@@ -37,16 +39,6 @@ class AppState {
 
 	public function availableTranslations(): array {
 		return $this->languages;
-	}
-
-	public function checkBans(): bool|AccessDeniedException {
-		if ($this->sec->isGranted('ROLE_BANNED_MULTI')) {
-			return new AccessDeniedException('error.banned.multi');
-		}
-		if ($this->sec->isGranted('ROLE_BANNED_TOS')) {
-			return new AccessDeniedException('error.banned.tos');
-		}
-		return false;
 	}
 
 	public function getCharacter($required=true, $ok_if_dead=false, $ok_if_notstarted=false) {
@@ -63,7 +55,7 @@ class AppState {
 			if (!$required) {
 				return null;
 			} else {
-				return 'fos_user_security_login';
+				return 'maf_login';
 			}
 		}
 		$user = $token->getUser();
@@ -71,13 +63,13 @@ class AppState {
 			if (!$required) {
 				return null;
 			} else {
-				return 'fos_user_security_login';
+				return 'maf_login';
 			}
 		}
 
 		# Let the ban checks begin...
-		if ($bans = $this->checkBans()) {
-			if (!$required) { return null; } else { throw $bans; }
+		if ($user->isBanned()) {
+			if (!$required) { return null; } else { throw new AccessDeniedException($user->isBanned()); }
 		}
 
 		# Check if we have a character, if not redirect to character list.
@@ -88,7 +80,7 @@ class AppState {
 				return null;
 			} else {
 				$session->getFlashBag()->add('error', 'error.missing.character');
-				return 'bm2_characters';
+				return 'maf_chars';
 			}
 		}
 		# Check if it's okay that the character is dead. If not, then character list they go.
@@ -97,7 +89,7 @@ class AppState {
 				return null;
 			} else {
 				$session->getFlashBag()->add('error', 'error.missing.soul');
-				return 'bm2_characters';
+				return 'maf_chars';
 			}
 		}
 		# Check if it's okay that the character is not started. If not, then character list they go.
@@ -106,7 +98,7 @@ class AppState {
 				return null;
 			} else {
 				$session->getFlashBag()->add('error', 'error.missing.location');
-				return 'bm2_characters';
+				return 'maf_chars';
 			}
 		}
 
@@ -156,7 +148,7 @@ class AppState {
 			if ($character->getInsideSettlement()) {
 				$session->set('nearest_settlement', $character->getInsideSettlement());
 			} elseif ($character->getLocation()) {
-				$near = $this->findNearestSettlement($character);
+				$near = $this->common->findNearestSettlement($character);
 				$session->set('nearest_settlement', $near[0]);
 			}
 			#$this->session->set('soldiers', $character->getLivingSoldiers()->count());
@@ -194,14 +186,6 @@ class AppState {
 		return $token;
 	}
 
-	// FIXME: this is duplicate code from Geography.php but I can't inject the geography service because it would create a circular injection (as it depends on appstate)
-	private function findNearestSettlement(Character $character) {
-		$query = $this->em->createQuery('SELECT s, ST_Distance(g.center, c.location) AS distance FROM App:Settlement s JOIN s.geo_data g, BM2SiteBundle:Character c WHERE c = :char ORDER BY distance ASC');
-		$query->setParameter('char', $character);
-		$query->setMaxResults(1);
-		return $query->getSingleResult();
-	}
-
         public function generateAndCheckToken($length, $check = 'User', $against = 'reset_token'): bool|string {
                 $valid = false;
                 $token = false;
@@ -217,6 +201,19 @@ class AppState {
                 }
                 return $token;
         }
+
+	public function logSecurityViolation($ip, $route, $user, $type): void {
+		$em = $this->em;
+		$datetime = new \DateTime();
+		$log = new SecurityLog;
+		$em->persist($log);
+		$log->setUser($user);
+		$log->setType($type);
+		$log->setTimestamp($datetime);
+		$log->setRoute($route);
+		$log->setIp($ip);
+		$em->flush();
+	}
 
 
 }

@@ -53,16 +53,19 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     # All the built ins:
-    # IS_AUTHENTICATED -- All logged in users.
-    # IS_AUTHENTICATED_REMEMBERED -- All logged in users.
-    # IS_AUTHENTICATED_FULLY -- All logged in users who have directly logged in this session (not remembered)
-    # IS_REMEMBERED -- Only logged in users who have been logged in via REMEMBERME cookie.
+    # IS_AUTHENTICATED -- All logged-in users.
+    # IS_AUTHENTICATED_REMEMBERED -- All logged-in users.
+    # IS_AUTHENTICATED_FULLY -- All logged-in users who have directly logged in this session (not remembered)
+    # IS_REMEMBERED -- Only logged-in users who have been logged in via REMEMBERME cookie.
     # IS_IMPERSONATOR -- Only users who are being impersonated by another user.
+    # PUBLIC_ACCESS -- Anyone, logged-in or not.
     access_control:
         - { path: ^/(../)?(register|login)?$, roles: PUBLIC_ACCESS }
         - { path: ^/(../)?account/endemails, roles: PUBLIC_ACCESS } # This is authenticated with the token provided in the email, so no need to login.
         - { path: ^/(../)?resetting$, roles: PUBLIC_ACCESS }
-        - { path: ^/(../)?account/data$, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/(../)?security/data$, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/(../)?security/keys$, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/(../)?security, roles: PUBLIC_ACCESS }
         - { path: ^/(../)?admin, roles: ROLE_ADMIN }
         - { path: ^/(../)?olympus, roles: ROLE_OLYMPUS }
         - { path: ^/(../)?gamerequest, roles: ROLE_USER } # Without this, users will be locked out of the gamerequest path by the line below. --Andrew

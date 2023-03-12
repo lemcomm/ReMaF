@@ -3,56 +3,83 @@
 namespace App\Controller;
 
 use App\Entity\Action;
+use App\Entity\BattleReport;
 use App\Entity\Character;
 use App\Entity\CharacterRating;
 use App\Entity\CharacterRatingVote;
+use App\Entity\Conversation;
+use App\Entity\Heraldry;
 use App\Entity\House;
 use App\Entity\Realm;
 use App\Entity\Spawn;
-use App\Entity\Unit;
-use App\Entity\UnitSettings;
 
 use App\Form\AssocSelectType;
 use App\Form\CharacterBackgroundType;
 use App\Form\CharacterLoadoutType;
-use App\Form\CharacterPlacementType;
 use App\Form\CharacterRatingType;
 use App\Form\CharacterSettingsType;
 use App\Form\EntourageManageType;
 use App\Form\InteractionType;
-use App\Form\UnitSettingsType;
 
+use App\Service\ActionManager;
 use App\Service\AppState;
 use App\Service\CharacterManager;
+use App\Service\ConversationManager;
+use App\Service\Dispatcher;
+use App\Service\GameRequestManager;
 use App\Service\Geography;
 use App\Service\History;
 
-use CrEOF\Spatial\PHP\Types\Geometry\LineString;
-use CrEOF\Spatial\PHP\Types\Geometry\Point;
+use App\Service\Interactions;
+use App\Service\MilitaryManager;
+use App\Service\PermissionManager;
+use App\Service\UserManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Entity;
+use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CharacterController extends AbstractController {
 
-	private $em;
-	private $appstate;
-	private $geo;
+	private AppState $appstate;
+	private CharacterManager $charman;
+	private ConversationManager $conv;
+	private Dispatcher $dispatcher;
+	private EntityManagerInterface $em;
+	private Geography $geo;
+	private History $history;
+	private TranslatorInterface $trans;
+	private UserManager $userman;
 
-	public function __construct(EntityManagerInterface $em, AppState $appstate, Geography $geo) {
-		$this->em = $em;
+	public function __construct(AppState $appstate, CharacterManager $charman, ConversationManager $conv, Dispatcher $dispatcher, EntityManagerInterface $em, Geography $geo, History $history, TranslatorInterface $trans, UserManager $userman) {
 		$this->appstate = $appstate;
+		$this->charman = $charman;
+		$this->conv = $conv;
+		$this->dispatcher = $dispatcher;
+		$this->em = $em;
 		$this->geo = $geo;
+		$this->history = $history;
+		$this->trans = $trans;
+		$this->userman = $userman;
 	}
 
-	private function getSpottings(Character $character) {
-		$query = $this->em->createQuery('SELECT e FROM BM2SiteBundle:SpotEvent e JOIN e.target c LEFT JOIN e.tower t LEFT JOIN t.geo_data g LEFT JOIN g.settlement s WHERE e.current = true AND (e.spotter = :me OR (e.spotter IS NULL AND s.owner = :me)) ORDER BY c.id,e.id,s.id');
+	private function getSpottings(Character $character): array {
+		$query = $this->em->createQuery('SELECT e FROM App:SpotEvent e JOIN e.target c LEFT JOIN e.tower t LEFT JOIN t.geo_data g LEFT JOIN g.settlement s WHERE e.current = true AND (e.spotter = :me OR (e.spotter IS NULL AND s.owner = :me)) ORDER BY c.id,e.id,s.id');
 		$query->setParameter('me', $character);
 		$spottings = array();
 		foreach ($query->getResult() as $spotevent) {
@@ -69,7 +96,7 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/', name:'maf_char')]
-	public function indexAction(AppState $appstate) {
+	public function indexAction(AppState $appstate): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -80,13 +107,13 @@ class CharacterController extends AbstractController {
 			$settlement=array_shift($nearest);
 			$location = $settlement->getGeoData();
 		} else {
-			return $this->redirectToRoute('maf_character_start');
+			return $this->redirectToRoute('maf_char_start');
 		}
 		return $this->render('Character/character.html.twig', [
 			'location' => $location,
-			'familiarity' => $geo->findRegionFamiliarityLevel($character, $location),
-			'spot' => $geo->calculateSpottingDistance($character),
-			'act' => $geo->calculateInteractionDistance($character),
+			'familiarity' => $this->geo->findRegionFamiliarityLevel($character, $location),
+			'spot' => $this->geo->calculateSpottingDistance($character),
+			'act' => $this->geo->calculateInteractionDistance($character),
 			'settlement' => $settlement,
 			'nearest' => $nearest,
 			'others' => $this->geo->findCharactersInSpotRange($character),
@@ -99,13 +126,13 @@ class CharacterController extends AbstractController {
 	}
 
     	#[Route ('/char/summary', name:'maf_char_recent')]
-	public function summaryAction() {
+	public function summaryAction(GameRequestManager $grm): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 		if (!$character->getLocation()) {
-			return $this->redirectToRoute('maf_character_start');
+			return $this->redirectToRoute('maf_char_start');
 		}
 		# TODO: This should really be somewhere else, like at the end of battles.
 		foreach ($character->getUnits() as $unit) {
@@ -115,21 +142,21 @@ class CharacterController extends AbstractController {
 		}
 		$this->em->flush();
 		return $this->render('Character/summary.html.twig', [
-			'events' => $this->get('character_manager')->findEvents($character),
-			'unread' => $this->get('conversation_manager')->getUnreadConvPermissions($character),
-			'others' => $this->get('geography')->findCharactersInSpotRange($character),
+			'events' => $this->charman->findEvents($character),
+			'unread' => $this->conv->getUnreadConvPermissions($character),
+			'others' => $this->geo->findCharactersInSpotRange($character),
 			'spottings' => $this->getSpottings($character),
-			'battles' => $this->get('geography')->findBattlesNearMe($character, Geography::DISTANCE_BATTLE),
-			'dungeons' => $this->get('geography')->findDungeonsNearMe($character, Geography::DISTANCE_DUNGEON),
-			'spotrange' => $this->get('geography')->calculateSpottingDistance($character),
-			'actrange' => $this->get('geography')->calculateInteractionDistance($character),
-			'requests' => $this->get('game_request_manager')->findAllManageableRequests($character),
+			'battles' => $this->geo->findBattlesNearMe($character, Geography::DISTANCE_BATTLE),
+			'dungeons' => $this->geo->findDungeonsNearMe($character, Geography::DISTANCE_DUNGEON),
+			'spotrange' => $this->geo->calculateSpottingDistance($character),
+			'actrange' => $this->geo->calculateInteractionDistance($character),
+			'requests' => $grm->findAllManageableRequests($character),
 			'duels' => $character->findAnswerableDuels()
 		]);
 	}
 
       	#[Route ('/char/scouting', name:'maf_char_scouting')]
-	public function scoutingAction() {
+	public function scoutingAction(): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -171,17 +198,17 @@ class CharacterController extends AbstractController {
 	}
 
       	#[Route ('/char/estates', name:'maf_char_estates')]
-	public function estatesAction() {
-		$character = $this->get('appstate')->getCharacter(true, true, true);
+	public function estatesAction(): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$em = $this->getDoctrine()->getManager();
+		$em = $this->em;
 
 		$settlements = array();
 		foreach ($character->findControlledSettlements() as $settlement) {
 			// FIXME: better: some trend analysis
-			$query = $em->createQuery('SELECT s.population as pop FROM BM2SiteBundle:StatisticSettlement s WHERE s.settlement = :here ORDER BY s.cycle DESC');
+			$query = $em->createQuery('SELECT s.population as pop FROM App:StatisticSettlement s WHERE s.settlement = :here ORDER BY s.cycle DESC');
 			$query->setParameter('here', $settlement);
 			$query->setMaxResults(3);
 			$data = $query->getArrayResult();
@@ -248,7 +275,7 @@ class CharacterController extends AbstractController {
 			);
 		}
 
-		$poly = $this->get('geography')->findRegionsPolygon($character->getOwnedSettlements());
+		$poly = $this->geo->findRegionsPolygon($character->getOwnedSettlements());
 		return $this->render('Character/estates.html.twig', [
 	   		'settlements'=>$settlements,
 			'poly'=>$poly
@@ -256,23 +283,23 @@ class CharacterController extends AbstractController {
 	}
 
       	#[Route ('/char/start', name:'maf_char_start')]
-	public function startAction(Request $request) {
-		$character = $this->get('appstate')->getCharacter(true, false, true);
+	public function startAction(Request $request): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter(true, false, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
 		$now = new \DateTime('now');
 		$user = $character->getUser();
-		$em = $this->getDoctrine()->getManager();
-		$canSpawn = $this->get('user_manager')->checkIfUserCanSpawnCharacters($user, true);
+		$em = $this->em;
+		$canSpawn = $this->userman->checkIfUserCanSpawnCharacters($user, true);
 		$em->flush();
 		if (!$canSpawn) {
-			$this->addFlash('error', $this->get('translator')->trans('newcharacter.overspawn', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
-			return $this->redirectToRoute('bm2_characters');
+			$this->addFlash('error', $this->trans->trans('newcharacter.overspawn', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
+			return $this->redirectToRoute('maf_chars');
 		}
 		if ($character->getLocation()) {
-			return $this->redirectToRoute('bm2_character');
+			return $this->redirectToRoute('maf_char');
 		}
 		if ($request->query->get('logic') == 'retired') {
 			$retiree = true;
@@ -280,32 +307,32 @@ class CharacterController extends AbstractController {
 			$retiree = false;
 		}
 		# Make sure this character can return from retirement. This function will throw an exception if the given character has not been retired for a week.
-		$this->get('character_manager')->checkReturnability($character);
+		$this->charman->checkReturnability($character);
 
 		switch(rand(0,7)) {
 			case 0:
-				$query = $em->createQuery('SELECT s, r FROM BM2SiteBundle:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.id DESC');
+				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.id DESC');
 				break;
 			case 1:
-				$query = $em->createQuery('SELECT s, r FROM BM2SiteBundle:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.id ASC');
+				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.id ASC');
 				break;
 			case 2:
-				$query = $em->createQuery('SELECT s, r FROM BM2SiteBundle:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.name DESC');
+				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.name DESC');
 				break;
 			case 3:
-				$query = $em->createQuery('SELECT s, r FROM BM2SiteBundle:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.name ASC');
+				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.name ASC');
 				break;
 			case 4:
-				$query = $em->createQuery('SELECT s, r FROM BM2SiteBundle:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.formal_name DESC');
+				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.formal_name DESC');
 				break;
 			case 5:
-				$query = $em->createQuery('SELECT s, r FROM BM2SiteBundle:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.formal_name ASC');
+				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.formal_name ASC');
 				break;
 			case 6:
-				$query = $em->createQuery('SELECT s, r FROM BM2SiteBundle:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.superior DESC');
+				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.superior DESC');
 				break;
 			case 7:
-				$query = $em->createQuery('SELECT s, r FROM BM2SiteBundle:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.superior ASC');
+				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.superior ASC');
 				break;
 		}
 		$result = $query->getResult();
@@ -324,22 +351,22 @@ class CharacterController extends AbstractController {
 		} else {
 			switch(rand(0,5)) {
 				case 0:
-					$query = $em->createQuery('SELECT s, h FROM BM2SiteBundle:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.id DESC');
+					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.id DESC');
 					break;
 				case 1:
-					$query = $em->createQuery('SELECT s, h FROM BM2SiteBundle:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.id ASC');
+					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.id ASC');
 					break;
 				case 2:
-					$query = $em->createQuery('SELECT s, h FROM BM2SiteBundle:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.name DESC');
+					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.name DESC');
 					break;
 				case 3:
-					$query = $em->createQuery('SELECT s, h FROM BM2SiteBundle:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.name ASC');
+					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.name ASC');
 					break;
 				case 4:
-					$query = $em->createQuery('SELECT s, h FROM BM2SiteBundle:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.superior DESC');
+					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.superior DESC');
 					break;
 				case 5:
-					$query = $em->createQuery('SELECT s, h FROM BM2SiteBundle:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.superior ASC');
+					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.superior ASC');
 					break;
 			}
 			$result = $query->getResult();
@@ -361,21 +388,21 @@ class CharacterController extends AbstractController {
       	#[Route ('/char/spawn/r{realm}', name:'maf_char_spawn_realm', requirements: ['realm'=>'\d+'])]
     	#[Route ('/char/spawn/h{house}', name:'maf_char_spawn_house', requirements: ['house'=>'\d+'])]
     	#[Route ('/char/spawn/myhouse', name:'maf_char_spawn_myhouse')]
-	  public function spawnAction(Realm $realm = null, House $house = null) {
-		$character = $this->get('appstate')->getCharacter(true, false, true);
+	  public function spawnAction(Realm $realm = null, House $house = null): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter(true, false, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 		if ($character->getLocation()) {
-			return $this->redirectToRoute('bm2_character');
+			return $this->redirectToRoute('maf_char');
 		}
 		$user = $character->getUser();
-		$em = $this->getDoctrine()->getManager();
-		$canSpawn = $this->get('user_manager')->checkIfUserCanSpawnCharacters($user, true);
+		$em = $this->em;
+		$canSpawn = $this->userman->checkIfUserCanSpawnCharacters($user, true);
 		$em->flush();
 		if (!$canSpawn) {
-			$this->addFlash('error', $this->get('translator')->trans('newcharacter.overspawn', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
-			return $this->redirectToRoute('bm2_characters');
+			$this->addFlash('error', $this->trans->trans('newcharacter.overspawn', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
+			return $this->redirectToRoute('maf_chars');
 		}
 
 		$spawns = new ArrayCollection();
@@ -401,13 +428,12 @@ class CharacterController extends AbstractController {
 
       	#[Route ('/char/spawnin/home', name:'maf_spawn_home')]
     	#[Route ('/char/spawnin/s{spawn}', name:'maf_spawn_in', requirements: ['spawn'=>'\d+'])]
-	public function firstAction(Spawn $spawn = null) {
-		$character = $this->get('appstate')->getCharacter(true, true, true);
+	public function firstAction(Spawn $spawn = null): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$convMan = $this->get('conversation_manager');
-		$em = $this->getDoctrine()->getManager();
+		$em = $this->em;
 
 		$house = null;
 		$realm = null;
@@ -415,29 +441,29 @@ class CharacterController extends AbstractController {
 		$supConv = null;
 		if (!$character->getLocation()) {
 			$user = $character->getUser();
-			$canSpawn = $this->get('user_manager')->checkIfUserCanSpawnCharacters($user, true);
+			$canSpawn = $this->userman->checkIfUserCanSpawnCharacters($user, true);
 			$em->flush();
 			if (!$canSpawn) {
-				$this->addFlash('error', $this->get('translator')->trans('newcharacter.overspawn', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
-				return $this->redirectToRoute('bm2_characters');
+				$this->addFlash('error', $this->trans->trans('newcharacter.overspawn', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
+				return $this->redirectToRoute('maf_chars');
 			}
 			if ($spawn) {
 				if (!$spawn->getActive()) {
-					$this->addFlash('error', $this->get('translator')->trans('newcharacter.spawnnotactive', [], 'messages'));
-					return $this->redirectToRoute('bm2_characters');
+					$this->addFlash('error', $this->trans->trans('newcharacter.spawnnotactive', [], 'messages'));
+					return $this->redirectToRoute('maf_chars');
 				}
 				$place = $spawn->getPlace();
 				if ($spawn->getRealm()) {
 					$realm = $spawn->getRealm();
 					$character->setRealm($realm);
-					$this->get('history')->logEvent(
+					$this->history->logEvent(
 						$realm,
 						'event.realm.arrival',
 						array('%link-character%'=>$character->getId(), '%link-place%'=>$place->getId()),
 						History::MEDIUM, false, 15
 					);
 					if ($realm->getSuperior()) {
-						$this->get('history')->logEvent(
+						$this->history->logEvent(
 							$realm->findUltimate(),
 							'event.subrealm.arrival',
 							array('%link-character%'=>$character->getId(), '%link-realm%'=>$realm->getId()),
@@ -447,7 +473,7 @@ class CharacterController extends AbstractController {
 				} else {
 					$house = $spawn->getHouse();
 					$character->setHouse($house);
-					$this->get('history')->logEvent(
+					$this->history->logEvent(
 						$house,
 						'event.house.arrival',
 						array('%link-character%'=>$character->getId(), '%link-place%'=>$place->getId()),
@@ -456,11 +482,11 @@ class CharacterController extends AbstractController {
 				}
 			} else {
 				$house = $character->getHouse();
-				$place = $house->getPlace();
+				$place = $house->getHome();
 				$spawn = $place->getSpawn();
 				if (!$spawn->getActive()) {
-					$this->addFlash('error', $this->get('translator')->trans('newcharacter.spawnnotactive', [], 'messages'));
-					return $this->redirectToRoute('bm2_characters');
+					$this->addFlash('error', $this->trans->trans('newcharacter.spawnnotactive', [], 'messages'));
+					return $this->redirectToRoute('maf_chars');
 				}
 			}
 			# new character spawn in.
@@ -480,54 +506,54 @@ class CharacterController extends AbstractController {
 				# Resets this on formerly retired characters.
 				$character->setList(1);
 			}
-			list($conv, $supConv) = $convMan->sendNewCharacterMsg($realm, $house, $place, $character);
+			list($conv, $supConv) = $this->conv->sendNewCharacterMsg($realm, $house, $place, $character);
 			# $conv should always be a Conversation, while supConv will be if realm is not Ultimate--otherwise null.
 			# Both instances of Converstion.
 
-			$this->get('history')->logEvent(
+			$this->history->logEvent(
 				$character,
 				'event.character.start2',
 				array('%link-place%'=>$place->getId()),
 				History::HIGH,	true
 			);
-			$this->get('history')->logEvent(
+			$this->history->logEvent(
 				$place,
 				'event.place.start',
 				array('%link-character%'=>$character->getId()),
 				History::MEDIUM, false, 15
 			);
-			$this->get('history')->visitLog($place, $character);
+			$this->history->visitLog($place, $character);
 			if ($settlement) {
-				$this->get('history')->logEvent(
+				$this->history->logEvent(
 					$settlement,
 					'event.place.charstart',
 					array('%link-character%'=>$character->getId(), '%link-place%'=>$place->getId()),
 					History::MEDIUM, false, 15
 				);
-				$this->get('history')->visitLog($settlement, $character);
+				$this->history->visitLog($settlement, $character);
 			}
 			$em->flush();
-			$this->get('user_manager')->calculateCharacterSpawnLimit($user, true); #This can return the date but we don't need it.
+			$this->userman->calculateCharacterSpawnLimit($user, true); #This can return the date but we don't need it.
 			$em->flush();
 		} else {
 			$place = $spawn->getPlace();
 			$realm = $character->findPrimaryRealm();
 			if ($realm) {
 				if ($realm->getSuperior()) {
-					$supConv = $em->getRepository('BM2SiteBundle:Conversation')->findOneBy(['realm'=>$realm->getSuperior(), 'system'=>'announcements']);
+					$supConv = $em->getRepository(Conversation::class)->findOneBy(['realm'=>$realm->getSuperior(), 'system'=>'announcements']);
 				} else {
 					$supConv = null;
 				}
-				$conv = $em->getRepository('BM2SiteBundle:Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
+				$conv = $em->getRepository(Conversation::class)->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
 			} elseif ($character->getHouse()) {
 				$house = $character->getHouse();
-				$conv = $em->getRepository('BM2SiteBundle:Conversation')->findOneBy(['house'=>$house, 'system'=>'announcements']);
+				$conv = $em->getRepository(Conversation::class)->findOneBy(['house'=>$house, 'system'=>'announcements']);
 				$supConv = null;
 			}
 		}
 
 		return $this->render('Character/first.html.twig', [
-			'unread' => $this->get('conversation_manager')->getUnreadConvPermissions($character),
+			'unread' => $this->conv->getUnreadConvPermissions($character),
 			'house' => $house,
 			'realm' => $realm,
 			'place' => $place,
@@ -537,12 +563,12 @@ class CharacterController extends AbstractController {
 	}
 
       	#[Route ('/char/view/{id}', name:'maf_char_view', requirements: ['id'=>'\d+'])]
-	public function viewAction(Character $id) {
+	public function viewAction(Interactions $interactions, Character $id): Response {
 		$char = $id;
-		$character = $this->get('appstate')->getCharacter(FALSE, TRUE, TRUE);
+		$character = $this->appstate->getCharacter(FALSE, TRUE, TRUE);
 		$banned = false;
 		if ($character instanceof Character) {
-			$details = $this->get('interactions')->characterViewDetails($character, $char);
+			$details = $interactions->characterViewDetails($character, $char);
 		} else {
 			$details = array('spot' => false, 'spy' => false);
 		}
@@ -562,10 +588,8 @@ class CharacterController extends AbstractController {
 			$entourage = null;
 			$soldiers = null;
 		}
-		if ($char->getUser()) {
-			if ($char->getUser()->hasRole('ROLE_BANNED_MULTI') || $char->getUser()->hasRole('ROLE_BANNED_TOS')) {
-				$banned = true;
-			}
+		if ($char->getUser() && $char->getUser()->isBanned()) {
+			$banned = true;
 		}
 		$relationship = false;
 		if ($character instanceof Character && $character->getPartnerships() && $char->getPartnerships()) {
@@ -586,14 +610,14 @@ class CharacterController extends AbstractController {
 	}
 
 	#[Route ('/char/reputation/{id}', name:'maf_char_rep', requirements: ['id'=>'\d+'])]
-	public function reputationAction($id) {
-		$em = $this->getDoctrine()->getManager();
-		$char = $em->getRepository('BM2SiteBundle:Character')->find($id);
+	public function reputationAction($id): Response {
+		$em = $this->em;
+		$char = $em->getRepository(Character::class)->find($id);
 		if (!$char) {
 			throw $this->createNotFoundException('error.notfound.character');
 		}
 
-		list($respect, $honor, $trust, $data) = $this->get('character_manager')->Reputation($char, $this->getUser());
+		list($respect, $honor, $trust, $data) = $this->charman->Reputation($char, $this->getUser());
 
 		usort($data, function($a, $b){
 			if ($a['value'] < $b['value']) return 1;
@@ -601,11 +625,11 @@ class CharacterController extends AbstractController {
 			return 0;
 		});
 
-		if (! $my_rating = $em->getRepository('BM2SiteBundle:CharacterRating')->findOneBy(array('character'=>$char, 'given_by_user'=>$this->getUser()))) {
+		if (! $my_rating = $em->getRepository(CharacterRating::class)->findOneBy(array('character'=>$char, 'given_by_user'=>$this->getUser()))) {
 			$my_rating = new CharacterRating;
 			$my_rating->setCharacter($char);
 		}
-		$form = $this->createForm(new CharacterRatingType, $my_rating);
+		$form = $this->createForm(new CharacterRatingType::class, $my_rating);
 		return $this->render('Character/reputation.html.twig', [
 			'char'		=> $char,
 			'ratings'	=> $data,
@@ -617,14 +641,14 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/rate', name:'maf_char_rate')]
-	public function rateAction(Request $request) {
-		$form = $this->createForm(new CharacterRatingType);
+	public function rateAction(Request $request): RedirectResponse {
+		$form = $this->createForm(new CharacterRatingType::class);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$id = $data->getCharacter()->getId();
-			$em = $this->getDoctrine()->getManager();
-			$my_rating = $em->getRepository('BM2SiteBundle:CharacterRating')->findOneBy(array('character'=>$data->getCharacter(), 'given_by_user'=>$this->getUser()));
+			$em = $this->em;
+			$my_rating = $em->getRepository('App:CharacterRating')->findOneBy(array('character'=>$data->getCharacter(), 'given_by_user'=>$this->getUser()));
 			if ($my_rating) {
 				// TODO: if we've changed it substantially, we should clear out the votes!
 				// FIXME: This is a bit ugly. Can we not use the existing $data object?
@@ -644,21 +668,21 @@ class CharacterController extends AbstractController {
 		}
 
 		if ($id) {
-			return $this->redirectToRoute('bm2_site_character_view', array('id'=>$id));
+			return $this->redirectToRoute('maf_char_view', array('id'=>$id));
 		} else {
-			return $this->redirectToRoute('bm2_recent');
+			return $this->redirectToRoute('maf_char_recent');
 		}
 	}
 
   	#[Route ('/char/vote', name:'maf_char_rep_vote', methods: ['POST'])]
-	public function voteAction(Request $request) {
+	public function voteAction(Request $request): Response {
 		if ($request->request->has("id") &&  $request->request->has("vote")) {
-			$em = $this->getDoctrine()->getManager();
-			$rating = $em->getRepository('BM2SiteBundle:CharacterRating')->find($request->request->get("id"));
+			$em = $this->em;
+			$rating = $em->getRepository('App:CharacterRating')->find($request->request->get("id"));
 			if (!$rating) return new Response("rating not found");
-			$char = $em->getRepository('BM2SiteBundle:Character')->find($rating->getCharacter());
+			$char = $em->getRepository('App:Character')->find($rating->getCharacter());
 			if ($char->getUser() == $this->getUser()) return new Response("can't vote on ratings for your own characters");
-			$my_vote = $em->getRepository('BM2SiteBundle:CharacterRatingVote')->findOneBy(array('rating'=>$rating, 'user'=>$this->getUser()));
+			$my_vote = $em->getRepository('App:CharacterRatingVote')->findOneBy(array('rating'=>$rating, 'user'=>$this->getUser()));
 			if (!$my_vote) {
 				$my_vote = new CharacterRatingVote;
 				$my_vote->setRating($rating);
@@ -678,9 +702,9 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/family/{id}', name:'maf_char_family', requirements: ['id'=>'\d+'])]
-	public function familyAction($id) {
-		$em = $this->getDoctrine()->getManager();
-		$char = $em->getRepository('BM2SiteBundle:Character')->find($id);
+	public function familyAction($id): Response {
+		$em = $this->em;
+		$char = $em->getRepository('App:Character')->find($id);
 
 		$characters = array($id=>$char);
 		$characters = $this->addRelatives($characters, $char);
@@ -710,7 +734,7 @@ class CharacterController extends AbstractController {
 		]);
 	}
 
-	private function addRelatives($characters, Character $char) {
+	private function addRelatives($characters, Character $char): array {
 		foreach ($char->getParents() as $parent) {
 			if (!isset($characters[$parent->getId()])) {
 				$characters[$parent->getId()] = $parent;
@@ -737,13 +761,13 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/background', name:'maf_char_background')]
-	public function backgroundAction(Request $request) {
-		$character = $this->get('appstate')->getCharacter(true, true, true);
+	public function backgroundAction(Request $request): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
-		$em = $this->getDoctrine()->getManager();
+		$em = $this->em;
 		if ($request->query->get('starting')) {
 			$starting = true;
 		} else {
@@ -752,28 +776,24 @@ class CharacterController extends AbstractController {
 
 		// dynamically create when needed
 		if (!$character->getBackground()) {
-			$this->get('character_manager')->newBackground($character);
+			$this->charman->newBackground($character);
 		}
-		$form = $this->createForm(new CharacterBackgroundType($character->getAlive()), $character->getBackground());
+		$form = $this->createForm(new CharacterBackgroundType::class, $character->getBackground(), ['alive' =>$character->getAlive()]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
-			// FIXME: this causes the (valid markdown) like "> and &" to be converted - maybe strip-tags is better?;
-			// FIXME: need to apply this here - maybe data transformers or something?
-			// htmlspecialchars($data['subject'], ENT_NOQUOTES);
-
+		if ($form->isSubmitted() && $form->isValid()) {
 			$em->flush();
 			if ($starting) {
 				if ($character->isAlive()) {
 					if ($character->getLocation()) {
-						return $this->redirectToRoute('bm2_play', array('id'=>$character->getId()));
+						return $this->redirectToRoute('maf_play', array('id'=>$character->getId()));
 					} else {
-						return $this->redirectToRoute('maf_character_start');
+						return $this->redirectToRoute('maf_char_start');
 					}
 				} else {
-					return $this->redirectToRoute('bm2_characters');
+					return $this->redirectToRoute('maf_chars');
 				}
 			} else {
-				$this->addFlash('notice', $this->get('translator')->trans('meta.background.updated', array(), 'actions'));
+				$this->addFlash('notice', $this->trans->trans('meta.background.updated', array(), 'actions'));
 			}
 		}
 
@@ -784,20 +804,20 @@ class CharacterController extends AbstractController {
 	}
 
 	#[Route ('/char/rename', name:'maf_char_rename')]
-	public function renameAction(Request $request) {
-		$character = $this->get('appstate')->getCharacter();
+	public function renameAction(Request $request): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
 		$form = $this->createFormBuilder()
-			->add('name', 'text', array(
+			->add('name', TextType::class, array(
 				'required'=>true,
 				'label'=>'meta.rename.newname',
 				'translation_domain' => 'actions',
 				'data' => $character->getPureName()
 				))
-			->add('knownas', 'text', array(
+			->add('knownas', TextType::class, array(
 				'required'=>false,
 				'label'=>'meta.rename.knownas',
 				'translation_domain' => 'actions',
@@ -805,7 +825,7 @@ class CharacterController extends AbstractController {
 				))
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			// TODO: validation ?
 			$data = $form->getData();
 			$newname=$data['name'];
@@ -813,7 +833,7 @@ class CharacterController extends AbstractController {
 
 			if ($newname != $oldname) {
 				$character->setName($newname);
-				$this->get('history')->logEvent(
+				$this->history->logEvent(
 					$character,
 					'event.character.renamed',
 					array('%oldname%'=>$oldname, '%newname%'=>$newname),
@@ -827,7 +847,7 @@ class CharacterController extends AbstractController {
 			if ($new_knownas != $old_knownas) {
 				$character->setKnownAs($new_knownas);
 				if ($new_knownas) {
-					$this->get('history')->logEvent(
+					$this->history->logEvent(
 						$character,
 						'event.character.knownas1',
 						array('%newname%'=>$new_knownas),
@@ -835,7 +855,7 @@ class CharacterController extends AbstractController {
 						true
 					);
 				} else {
-					$this->get('history')->logEvent(
+					$this->history->logEvent(
 						$character,
 						'event.character.knownas2',
 						array('%oldname%'=>$old_knownas),
@@ -845,15 +865,12 @@ class CharacterController extends AbstractController {
 				}
 			}
 
-			$em = $this->getDoctrine()->getManager();
-			$em->flush();
+			$this->em->flush();
 
 			return $this->render('Character/rename.html.twig', [
 				'result'=>array('success'=>true),
 				'newname'=>$newname
 			]);
-
-			return array();
 		}
 
 		return $this->render('Character/rename.html.twig', [
@@ -862,24 +879,20 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/settings', name:'maf_char_settings')]
-	public function settingsAction(Request $request) {
-		$character = $this->get('appstate')->getCharacter();
+	public function settingsAction(Request $request): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$em = $this->getDoctrine()->getManager();
+		$em = $this->em;
 
-		$form = $this->createForm(new CharacterSettingsType(), $character);
+		$form = $this->createForm(new CharacterSettingsType::class, $character);
 		$form->handleRequest($request);
 
-		if ($form->isValid()) {
-			$data = $form->getData();
+		if ($form->isSubmitted() && $form->isValid()) {
 			$em->flush();
-
-
-			$this->addFlash('notice', $this->get('translator')->trans('update.success', array(), 'settings'));
-
-			return $this->redirectToRoute('bm2_recent');
+			$this->addFlash('notice', $this->trans->trans('update.success', array(), 'settings'));
+			return $this->redirectToRoute('maf_char_recent');
 		}
 
 
@@ -889,28 +902,29 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/loadout', name:'maf_char_loadout')]
-	public function loadoutAction(Request $request) {
-		$character = $this->get('appstate')->getCharacter();
+	public function loadoutAction(Request $request): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$em = $this->getDoctrine()->getManager();
-		$opt['wpns'] = $em->getRepository('BM2SiteBundle:EquipmentType')->findBy(['type'=>'weapon']);
-		$opt['arms'] = $em->getRepository('BM2SiteBundle:EquipmentType')->findBy(['type'=>'armour']);
-		$opt['othr'] = $em->getRepository('BM2SiteBundle:EquipmentType')->findBy(['type'=>'equipment']);
-		$opt['mnts'] = $em->getRepository('BM2SiteBundle:EquipmentType')->findBy(['type'=>'mount']);
+		$em = $this->em;
+		$opts = [];
+		$opt['wpns'] = $em->getRepository('App:EquipmentType')->findBy(['type'=>'weapon']);
+		$opt['arms'] = $em->getRepository('App:EquipmentType')->findBy(['type'=>'armour']);
+		$opt['othr'] = $em->getRepository('App:EquipmentType')->findBy(['type'=>'equipment']);
+		$opt['mnts'] = $em->getRepository('App:EquipmentType')->findBy(['type'=>'mount']);
 
-		$form = $this->createForm(new CharacterLoadoutType($opt), $character);
+		$form = $this->createForm(new CharacterLoadoutType::class, $character, $opts);
 		$form->handleRequest($request);
 
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$em->flush();
 
 
-			$this->addFlash('notice', $this->get('translator')->trans('loadout.success', array(), 'settings'));
+			$this->addFlash('notice', $this->trans->trans('loadout.success', array(), 'settings'));
 
-			return $this->redirectToRoute('bm2_recent');
+			return $this->redirectToRoute('maf_char_recent');
 		}
 
 		return $this->render('Character/loadout.html.twig', [
@@ -919,8 +933,8 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/faith', name:'maf_char_faith')]
-	public function faithAction(Request $request) {
-		$character = $this->get('appstate')->getCharacter();
+	public function faithAction(Request $request): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -931,20 +945,20 @@ class CharacterController extends AbstractController {
 			}
 		}
 
-		$form = $this->createForm(new AssocSelectType($opts, 'faith', $character));
+		$form = $this->createForm(new AssocSelectType::class, null, ['assocs' => $opts, 'type' => 'faith', 'me' =>$character]);
 		$form->handleRequest($request);
 
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$character->setFaith($data['target']);
-			$this->getDoctrine()->getManager()->flush();
+			$this->em->flush();
 			if ($data['target']) {
-				$this->addFlash('notice', $this->get('translator')->trans('assoc.route.faith.success', array("%faith%"=>$data['target']->getFaithName()), 'orgs'));
+				$this->addFlash('notice', $this->trans->trans('assoc.route.faith.success', array("%faith%"=>$data['target']->getFaithName()), 'orgs'));
 			} else {
-				$this->addFlash('notice', $this->get('translator')->trans('assoc.route.faith.success2', array(), 'orgs'));
+				$this->addFlash('notice', $this->trans->trans('assoc.route.faith.success2', array(), 'orgs'));
 			}
 
-			return $this->redirectToRoute('bm2_recent');
+			return $this->redirectToRoute('maf_char_recent');
 		}
 
 		return $this->render('Character/faith.html.twig', [
@@ -953,61 +967,51 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/kill', name:'maf_char_kill')]
-	public function killAction(Request $request) {
-		$character = $this->get('dispatcher')->gateway('metaKillTest');
+	public function killAction(MilitaryManager $milman, Request $request): RedirectResponse|Response {
+		$character = $this->dispatcher->gateway('metaKillTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 		$form = $this->createFormBuilder()
-			->add('death', 'textarea', array(
+			->add('death', TextareaType::class, array(
 				'required'=>false,
 				'label'=>'meta.background.death.desc',
 				'translation_domain'=>'actions'
 				))
-			->add('sure', 'checkbox', array(
+			->add('sure', CheckboxType::class, array(
 				'required'=>true,
 				'label'=>'meta.kill.sure',
 				'translation_domain' => 'actions'
 				))
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$fail = false;
 			$id = $character->getId();
 			$data = $form->getData();
-			$mm = $this->get('military_manager');
-			$em = $this->getDoctrine()->getManager();
-			if ($data['sure'] != true) {
+			$em = $this->em;
+			if (!$data['sure']) {
 				$fail = true;
 			}
 			if (!$fail) {
 				// TODO: if killed while prisoner of someone, some consequences? we might simply have that one count as the killer here (for killers rights)
 				// TODO: we should somehow store that it was a suicide, to catch various exploits
-				$reclaimed = array();
 				foreach ($character->getUnits() as $unit) {
-					$mm->returnUnitHome($unit, 'suicide', $character);
+					$milman->returnUnitHome($unit, 'suicide', $character);
 				}
 				$em->flush();
 				if ($data['death']) {
 					// dynamically create when needed
 					if (!$character->getBackground()) {
-						$this->get('character_manager')->newBackground($character);
+						$this->charman->newBackground($character);
 					}
 					$character->getBackground()->setDeath($data['death']);
 					$em->flush();
 				}
-				$this->get('character_manager')->kill($character);
-				foreach ($reclaimed as $rec) {
-					$this->get('history')->logEvent(
-						$rec['liege'],
-						'event.character.deathreclaim',
-						array('%link-character%'=>$character->getId(), '%amount%'=>$rec['number']),
-						History::MEDIUM
-					);
-				}
+				$this->charman->kill($character);
 				$em->flush();
-				$this->addFlash('notice', $this->get('translator')->trans('meta.kill.success', array(), 'actions'));
-				return $this->redirectToRoute('bm2_characters');
+				$this->addFlash('notice', $this->trans->trans('meta.kill.success', array(), 'actions'));
+				return $this->redirectToRoute('maf_chars');
 			}
 		}
 
@@ -1017,45 +1021,44 @@ class CharacterController extends AbstractController {
 	}
 
      	#[Route ('/char/retire', name:'maf_char_retire')]
-	public function retireAction(Request $request) {
-		$character = $this->get('dispatcher')->gateway('metaRetireTest');
+	public function retireAction(Request $request): RedirectResponse|Response {
+		$character = $this->dispatcher->gateway('metaRetireTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 		$form = $this->createFormBuilder()
-			->add('retirement', 'textarea', array(
+			->add('retirement', TextareaType::class, array(
 				'required'=>false,
 				'label'=>'meta.background.retirement.desc',
 				'translation_domain'=>'actions'
 				))
-			->add('sure', 'checkbox', array(
+			->add('sure', CheckboxType::class, array(
 				'required'=>true,
 				'label'=>'meta.retire.sure',
 				'translation_domain' => 'actions'
 				))
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$fail = false;
 			$id = $character->getId();
 			$data = $form->getData();
-			$em = $this->getDoctrine()->getManager();
-			$mm = $this->get('military_manager');
-			if ($data['sure'] != true) {
+			$em = $this->em;
+			if (!$data['sure']) {
 				$fail = true;
 			}
 			if (!$fail) {
 				if ($data['retirement']) {
 					// dynamically create when needed
 					if (!$character->getBackground()) {
-						$this->get('character_manager')->newBackground($character);
+						$this->charman->newBackground($character);
 					}
 					$character->getBackground()->setRetirement($data['retirement']);
 					$em->flush();
 				}
-				$this->get('character_manager')->retire($character);
-				$this->addFlash('notice', $this->get('translator')->trans('meta.retire.success', array(), 'actions'));
-				return $this->redirectToRoute('bm2_characters');
+				$this->charman->retire($character);
+				$this->addFlash('notice', $this->trans->trans('meta.retire.success', array(), 'actions'));
+				return $this->redirectToRoute('maf_chars');
 			}
 		}
 
@@ -1066,26 +1069,30 @@ class CharacterController extends AbstractController {
 
   	#[Route ('/char/surrender', name:'maf_char_surrender')]
 	public function surrenderAction(Request $request) {
-		$character = $this->get('dispatcher')->gateway('personalSurrenderTest');
+		$character = $this->dispatcher->gateway('personalSurrenderTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new InteractionType('surrender', $this->get('geography')->calculateInteractionDistance($character), $character));
+		$form = $this->createForm(new InteractionType::class, null, [
+			'action'=>'surrender',
+			'maxdistance' => $this->geo->calculateInteractionDistance($character),
+			'me' => $character
+		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
-			$em = $this->getDoctrine()->getManager();
+			$em = $this->em;
 
-			$this->get('character_manager')->imprison($character, $data['target']);
+			$this->charman->imprison($character, $data['target']);
 
-			$this->get('history')->logEvent(
+			$this->history->logEvent(
 				$character,
 				'event.character.surrenderto',
 				array('%link-character%'=>$data['target']->getId()),
 				History::HIGH, true
 			);
-			$this->get('history')->logEvent(
+			$this->history->logEvent(
 				$data['target'],
 				'event.character.surrender',
 				array('%link-character%'=>$character->getId()),
@@ -1102,23 +1109,23 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/escape', name:'maf_char_escape')]
-	public function escapeAction(Request $request) {
-		$character = $this->get('dispatcher')->gateway('personalEscapeTest');
+	public function escapeAction(ActionManager $actman, Request $request): RedirectResponse|Response {
+		$character = $this->dispatcher->gateway('personalEscapeTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
-		if ($character->getPrisonerOf()->getSlumbering() == false && $character->getPrisonerOf()->isAlive() == true) {
+		if (!$character->getPrisonerOf()->getSlumbering() && $character->getPrisonerOf()->isAlive()) {
 			$captor_active = true;
 		} else {
 			$captor_active = false;
 		}
 
 		$form = $this->createFormBuilder()
-			->add('submit', 'submit', array('label'=>'escape.submit', 'translation_domain' => 'actions'))
+			->add('submit', SubmitType::class, array('label'=>'escape.submit', 'translation_domain' => 'actions'))
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 
 			if ($captor_active) { $hours = 16; } else { $hours = 4; }
 
@@ -1128,7 +1135,7 @@ class CharacterController extends AbstractController {
 			$complete->add(new \DateInterval("PT".$hours."H"));
 			$act->setComplete($complete);
 			$act->setBlockTravel(false);
-			$result = $this->get('action_manager')->queue($act);
+			$actman->queue($act);
 
 			return $this->render('Character/escape.html.twig', [
 				'queued'=>true,
@@ -1143,8 +1150,8 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/crest', name:'maf_char_crest')]
-	public function heraldryAction(Request $request) {
-		$character = $this->get('dispatcher')->gateway('metaHeraldryTest');
+	public function heraldryAction(Request $request): RedirectResponse|Response {
+		$character = $this->dispatcher->gateway('metaHeraldryTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1168,7 +1175,7 @@ class CharacterController extends AbstractController {
 
                 # Check for partners having different crests.
                 foreach ($character->getPartnerships() as $partnership) {
-                        if ($partnership->getPartnerMayUseCrest()==TRUE) {
+                        if ($partnership->getPartnerMayUseCrest()) {
                                 foreach ($partnership->getPartners() as $partners) {
                                         if ($partners->getCrest()) {
                                                 $partnercrest = $partners->getCrest()->getId();
@@ -1186,21 +1193,21 @@ class CharacterController extends AbstractController {
 			]);
 		}
 		$form = $this->createFormBuilder()
-			->add('crest', 'entity', array(
+			->add('crest', EntityType::class, array(
 				'required' => false,
 				'empty_value'=>'form.choose',
-				'class'=>'BM2SiteBundle:Heraldry', 'property'=>'id', 'query_builder'=>function(EntityRepository $er) use ($available) {
+				'class'=>Heraldry::class, 'property'=>'id', 'query_builder'=>function(EntityRepository $er) use ($available) {
 					return $er->createQueryBuilder('c')->where('c.id IN (:avail)')->setParameter('avail', $available);
 				}
 			))->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$crest = $data['crest'];
 			$character->setCrest($crest);
-			$em = $this->getDoctrine()->getManager();
+			$em = $this->em;
 			$em->flush();
-			return $this->redirectToRoute('bm2_character');
+			return $this->redirectToRoute('maf_char');
 		}
 
 		return $this->render('Character/heraldry.html.twig', [
@@ -1209,25 +1216,24 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/entourage', name:'maf_char_entourage')]
-	public function entourageAction(Request $request) {
-		# TODO: We call AppState and Dispatcher? Can't we combine this into a single call and return it as a list somehow? -- Andrew 20181210
-		$character = $this->get('appstate')->getCharacter();
+	public function entourageAction(MilitaryManager $milman, PermissionManager $pm, Request $request): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$others = $this->get('dispatcher')->getActionableCharacters();
-		$em = $this->getDoctrine()->getManager();
+		$others = $this->dispatcher->getActionableCharacters();
+		$em = $this->em;
 
-		$form = $this->createForm(new EntourageManageType($character->getEntourage(), $others));
+		$form = $this->createForm(new EntourageManageType::class, null, ['entourage'=>$character->getEntourage(), 'others'=>$others]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
-			$settlement = $this->get('dispatcher')->getActionableSettlement();
-			$this->get('military_manager')->manageEntourage($character->getEntourage(), $data, $settlement, $character);
+			$settlement = $this->dispatcher->getActionableSettlement();
+			$milman->manageEntourage($character->getEntourage(), $data, $settlement, $character);
 
 			$em->flush();
-			$this->get('appstate')->setSessionData($character); // update, because maybe we changed our entourage count
+			$this->appstate->setSessionData($character); // update, because maybe we changed our entourage count
 			return $this->redirect($request->getUri());
 		}
 
@@ -1246,7 +1252,7 @@ class CharacterController extends AbstractController {
 			}
 		}
 
-		$soldiers = $em->createQuery('SELECT count(s) FROM BM2SiteBundle:Soldier s WHERE s.character = :me and s.alive = true')->setParameter('me', $character)->getSingleScalarResult();
+		$soldiers = $character->countSoldiers();
 		$entourage = $character->getEntourage()->count();
 		$men = $soldiers + $entourage;
 		if ($men > 0) {
@@ -1259,15 +1265,15 @@ class CharacterController extends AbstractController {
 			'entourage' => $character->getEntourage(),
 			'form' => $form->createView(),
 			'food_days' => $food_days,
-			'can_resupply' => $character->getInsideSettlement()?$this->get('permission_manager')->checkSettlementPermission($character->getInsideSettlement(), $character, 'resupply'):false,
+			'can_resupply' => $character->getInsideSettlement()?$pm->checkSettlementPermission($character->getInsideSettlement(), $character, 'resupply'):false,
 			'resupply' => $resupply
 		]);
 	}
 
      	#[Route ('/char/set_travel', name:'maf_char_travel_set')]
-	public function setTravelAction(Request $request) {
+	public function setTravelAction(Request $request): RedirectResponse|JsonResponse {
 		if ($request->isMethod('POST') && $request->request->has("route")) {
-			$character = $this->get('appstate')->getCharacter();
+			$character = $this->appstate->getCharacter();
 			if (! $character instanceof Character) {
 				return $this->redirectToRoute($character);
 			}
@@ -1282,14 +1288,15 @@ class CharacterController extends AbstractController {
 				$resp->setData(array('turns'=>0, 'restricted'=>true));
 				return $resp;
 			}
-			$em = $this->getDoctrine()->getManager();
+			$em = $this->em;
 			$points = $request->request->get('route');
 			$enter = $request->request->get('enter');
-			if ($enter===true or $enter == "true") { $enter = true; } else { $enter = false; }
+			if ($enter===true or $enter == "true") {
+				$enter = true;
+			} else {
+				$enter = false;
+			}
 
-            /* FIXME: not used - what did I intend it for?
-			$travel = $this->get('geography')->jsonTravelSegments($character);
-            */
 			if ($character->getTravel()) {
 				$old = array(
 					'route' => $character->getTravel(),
@@ -1306,7 +1313,7 @@ class CharacterController extends AbstractController {
 			if ( abs($start->getX() - floatval($points[0][0])) > 0.00001 || abs($start->getY() - floatval($points[0][1])) > 0.00001 ) { // sadly, can't use a simple compare here because we would be comparing strings with floats
 				array_unshift($points, array($start->getX(), $start->getY()));
 			}
-			$world = $this->get('geography')->world;
+			$world = $this->geo->world;
 			foreach ($points as $point) {
 				if ( $point[0] < $world['x_min']
 					|| $point[0] > $world['x_max']
@@ -1327,9 +1334,8 @@ class CharacterController extends AbstractController {
 			}
 
 			$route = new LineString($points);
-//			$route->setSrid(4326);
 			$character->setTravel($route)->setProgress(0)->setTravelEnter($enter);
-			$em->flush($character); // I think DQL operates on the database directly, so we need to flush first
+			$em->flush($character);
 
 			$can_travel = true;
 			$invalid=array();
@@ -1339,15 +1345,15 @@ class CharacterController extends AbstractController {
 
 			if ($character->getTravelAtSea()) {
 				// sea travel - disembark when we hit land
-				list($invalid, $disembark) = $this->get('geography')->checkTravelSea($character, $invalid);
+				list($invalid, $disembark) = $this->geo->checkTravelSea($character, $invalid);
 			} else {
 				// land travel - may not cross water, oceans, impassable mountains
-				$invalid = $this->get('geography')->checkTravelLand($character, $invalid);
+				$invalid = $this->geo->checkTravelLand($character, $invalid);
 
-				list($invalid, $bridges) = $this->get('geography')->checkTravelRivers($character, $invalid);
-				$invalid = $this->get('geography')->checkTravelCliffs($character, $invalid);
+				list($invalid, $bridges) = $this->geo->checkTravelRivers($character, $invalid);
+				$invalid = $this->geo->checkTravelCliffs($character, $invalid);
 
-				$roads = $this->get('geography')->checkTravelRoads($character);
+				$roads = $this->geo->checkTravelRoads($character);
 
 				if (!empty($invalid)) {
 					$can_travel = false;
@@ -1356,7 +1362,7 @@ class CharacterController extends AbstractController {
 
 			$turns=0;
 			if ($can_travel) {
-				if ($this->get('geography')->updateTravelSpeed($character)) {
+				if ($this->geo->updateTravelSpeed($character)) {
 					$turns = 1/$character->getSpeed();
 					if ($character->getTravelAtSea()) {
 						$character->setTravelDisembark($disembark);
@@ -1376,8 +1382,8 @@ class CharacterController extends AbstractController {
 					$character->setSpeed($old['speed']);
 				} else {
 					$character->setTravel(null);
-					$character->setProgress(null);
-					$character->setSpeed(null);
+					$character->setProgress(0);
+					$character->setSpeed(0);
 				}
 			}
 			$em->flush();
@@ -1395,38 +1401,42 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/clear_travel', name:'maf_char_travel_clear')]
-	public function clearTravelAction() {
-		$character = $this->get('appstate')->getCharacter();
+	public function clearTravelAction(): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$character->setTravel(null)->setProgress(null)->setSpeed(null)->setTravelEnter(false)->setTravelDisembark(false);
-		$this->getDoctrine()->getManager()->flush();
+		$character->setTravel(null)
+			->setProgress(0)
+			->setSpeed(0)
+			->setTravelEnter(false)
+			->setTravelDisembark(false);
+		$this->em->flush();
 		return new Response();
 	}
 
      	#[Route ('/char/battlereport/{id}', name:'maf_char_rename', requirements: ['id'=>'\d+'])]
-	public function viewBattleReportAction($id) {
-		$character = $this->get('appstate')->getCharacter(true,true,true);
+	public function viewBattleReportAction(Security $sec, BattleReport $id): RedirectResponse|Response {
+		$character = $this->appstate->getCharacter(true,true,true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
-		$em = $this->getDoctrine()->getManager();
-		$report = $em->getRepository('BM2SiteBundle:BattleReport')->find($id);
+		$em = $this->em;
+		$report = $em->getRepository('App:BattleReport')->find($id);
 		if (!$report) {
 			throw $this->createNotFoundException('error.notfound.battlereport');
 		}
 
 		$check = false;
-		if (!$this->get('security.authorization_checker')->isGranted('ROLE_ADMIN')) {
+		if (!$sec->isGranted('ROLE_ADMIN')) {
 			$check = $report->checkForObserver($character);
 			if (!$check) {
-				$query = $em->createQuery('SELECT p FROM BM2SiteBundle:BattleParticipant p WHERE p.battle_report = :br AND p.character = :me');
+				$query = $em->createQuery('SELECT p FROM App:BattleParticipant p WHERE p.battle_report = :br AND p.character = :me');
 				$query->setParameters(array('br'=>$report, 'me'=>$character));
 				$check = $query->getOneOrNullResult();
 				if (!$check) {
-					$query = $em->createQuery('SELECT p FROM BM2SiteBundle:BattleReportCharacter p JOIN p.group_report g WHERE p.character = :me AND g.battle_report = :br');
+					$query = $em->createQuery('SELECT p FROM App:BattleReportCharacter p JOIN p.group_report g WHERE p.character = :me AND g.battle_report = :br');
 					$query->setParameters(array('br'=>$report, 'me'=>$character));
 					$check = $query->getOneOrNullResult();
 					if (!$check) {
@@ -1446,9 +1456,9 @@ class CharacterController extends AbstractController {
 
 		if ($loc = $report->getLocationName()) {
 			if ($report->getPlace()) {
-				$location = array('key' => $loc['key'], 'entity'=>$em->getRepository("BM2SiteBundle:Place")->find($loc['id']));
+				$location = array('key' => $loc['key'], 'entity'=>$em->getRepository("App:Place")->find($loc['id']));
 			} else {
-				$location = array('key' => $loc['key'], 'entity'=>$em->getRepository("BM2SiteBundle:Settlement")->find($loc['id']));
+				$location = array('key' => $loc['key'], 'entity'=>$em->getRepository("App:Settlement")->find($loc['id']));
 			}
 		} else {
 			$location = array('key'=>'battle.location.nowhere');
@@ -1479,7 +1489,7 @@ class CharacterController extends AbstractController {
 			foreach ($nobles_data as $i=>$group) {
 				$nobles[$i]=array();
 				foreach ($group as $id=>$fate) {
-					$char = $em->getRepository('BM2SiteBundle:Character')->find($id);
+					$char = $em->getRepository('App:Character')->find($id);
 					$nobles[$i][] = array('character'=>$char, 'fate'=>$fate);
 				}
 			}
