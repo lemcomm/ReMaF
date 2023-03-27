@@ -267,7 +267,7 @@ class MilitaryManager {
 		}
 		$success = true;
 
-		$items = array('Weapon', 'Armour', 'Equipment');
+		$items = array('Weapon', 'Armour', 'Equipment', 'Mount');
 		foreach ($items as $item) {
 			$check = 'getHas'.$item;
 			$trained = 'getTrained'.$item;

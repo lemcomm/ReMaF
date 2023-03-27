@@ -87,6 +87,10 @@ class LinksExtension extends AbstractExtension {
 				case 'f':
 					$type = 'Association';
 					break;
+				case 'act':
+				case 'activity':
+					$type = 'Activity';
+					break;
 				case 'p':
 				case 'poi':
 				case 'place':
