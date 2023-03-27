@@ -1,0 +1,78 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+	<h2>{{ 'place.actionable.name'|trans({},"places") }}</h2>
+	<p>{{ 'place.actionable.intro'|trans({},"places")|raw }}</p>
+	{# For all that is sane, we do an individual if check for specific types or requests against every request. Ideally, we sort these in the order we expect them to happen. #}
+	{% for place in places %}
+		{% set house = place.house %}
+
+		{% if character.insidePlace == place %}
+			{% set inside = true %}
+		{% else %}
+			{% set inside = false %}
+		{% endif %}
+		{% if place.visible or inside or (not place.visible and place.owner == character) %}
+			<hr>
+			<div class="subcontent inline_announcements" style="color:#460702">
+				<h2>{{ place.name|title }}</h2>
+				{% if inside %}
+					<i>{{ 'place.insidenow'|trans({},"places")|raw }}<br><br></i>
+				{% endif %}
+				{% if place.description %}
+					<p>{{ place.description.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}</p>
+				{% endif %}
+				{% if house %}
+					<i>{{ 'place.hosthouse'|trans({}, "places")|raw }}</i>
+					<hr>
+					<h3>{{ house.name }}</h3>
+					{{ 'house.view.head'|trans({}, "politics")|raw }}: {% if house.head %}{{ link(house.head) }}{% else %}<i>{{ 'house.nohead'|trans({}, "politics") }}</i>{% endif %}
+					{% if house.description %}
+						{{ house.description.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+					{% else %}
+						{{ 'house.nodesc'|trans({}, "politics")|raw }}
+					{% endif %}
+					<hr>
+				{% endif %}
+				{% if not place.associations.isEmpty %}
+					{{ 'place.associations.list'|trans({}, "places")|raw }} {% for assoc in place.associations %}{{ link(assoc.association) }}{% if not loop.last %}, {% endif %}{% endfor %}
+					<hr>
+				{% endif %}
+
+				{% set list = dispatcher.placeActions(place) %}
+				{% if list.elements.placeNewPlayerInfoTest.url is defined %}
+					{% set spawnfail = false %}
+					<p>
+					{% if not place.spawn %}
+						{% set spawnfail = true %}
+						<i>{{ 'place.spawnfail.nospawn'|trans({}, "places")|raw }}</i>
+					{% elseif not place.spawnDescription %}
+						{% set spawnfail = true %}
+						<i>{{ 'place.spawnfail.nodesc'|trans({}, "places")|raw }}</i>
+					{% endif %}
+					{% if not spawnfail and place.spawn.house %}
+						{% if not place.spawn.active %}
+							<i>{{ 'place.spawnfail.houseinactive'|trans({}, "places")|raw }}</i>
+						{% elseif not place.house.spawnDescription %}
+							<i>{{ 'place.spawnfail.nohousedesc'|trans({}, "places")|raw }}</i>
+						{% else %}
+							<i>{{ 'place.housespawn'|trans({"%house%":place.house.name}, "places")|raw }}</i>
+						{% endif %}
+					{% elseif not spawnfail and place.spawn.realm %}
+						{% if not place.spawn.active %}
+							<i>{{ 'place.spawnfail.realminactive'|trans({}, "places")|raw }}</i>
+						{% elseif not place.realm.spawnDescription %}
+							<i>{{ 'place.spawnfail.norealmdesc'|trans({}, "places")|raw }}</i>
+						{% else %}
+							<i>{{ 'place.realmspawn'|trans({"%realm%":place.realm.name}, "places")|raw }}</i>
+						{% endif %}
+					{% endif %}
+					</p>
+				{% endif %}
+				<div id="actionlist" class="subcontent linklist">
+				{% include "element/linklist.html.twig" with {"list":list, "domain":'places', "submenu":'h3'} only %}
+				</div>
+			</div>
+		{% endif %}
+	{% endfor %}
+{% endblock %}

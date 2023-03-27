@@ -1,0 +1,45 @@
+{% block content %}
+
+	{% if not archive %}
+		<h2>{{ 'conversation.title'|trans({}, "conversations")|title }}</h2>
+
+		<p align="right">
+			<a href="{{path('maf_conv_print', {"conv":conversation.id}) }}" target="_blank"><button class="cmsg_button" title="{{ 'conversation.export.print'|trans({}, "conversations") }}">{{ 'conversation.export.print'|trans({}, "conversations") }}</button></a>
+		</p>
+	{% endif %}
+
+	<div class="cmsg_conversation">
+		<h3>{{ 'conversation.local.title'|trans({'%name%':conversation.getLocalFor.getName}, "conversations") }}</h3>
+
+		{% if not archive %}
+			<div class="cmsg_general">
+				<button class="topicreply cmsg_button">{{ 'conversation.reply.label'|trans({},"conversations") }}</button>
+			</div>
+		{% endif %}
+
+		{% set in_hidden = false %}
+		{% include 'Conversation/msg_loop.html.twig' with {'messages': messages, 'privacy': false, 'in_hidden': in_hidden} %}
+		{% if in_hidden == true %}
+			</div>
+		{% endif %}
+
+		{% if not archive and messages.count > 5 %}
+			<br/>
+			<div class="cmsg_general">
+				<button class="topicreply cmsg_button">{{ 'conversation.reply.label'|trans({},"conversations") }}</button>
+			</div>
+		{% endif %}
+	</div>
+
+	{% if not archive %}
+		<div id="replydialog" title="{{ 'message.reply.title'|trans({}, "conversations")|title }}">
+			{% include "Conversation/syntax.html.twig" %}
+			{{ render(controller('BM2\\SiteBundle\\Controller\\ConversationController::replyLocalAction')) }}
+		</div>
+
+		<p align="right">
+			<a href="{{path('maf_conv_print', {"conv":conversation.id}) }}" target="_blank"><button class="cmsg_button" title="{{ 'conversation.export.print'|trans({}, "conversations") }}">{{ 'conversation.export.print'|trans({}, "conversations") }}</button></a>
+		</p>
+	{% endif %}
+
+{% endblock %}

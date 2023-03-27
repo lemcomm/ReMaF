@@ -1,0 +1,62 @@
+{% block content %}
+
+	{% if not archive %}
+		<h2>{{ 'conversation.title'|trans({}, "conversations")|title }}</h2>
+
+		<p align="right">
+		<a href="{{path('maf_conv_print', {"conv":conversation.id}) }}" target="_blank"><button class="cmsg_button" title="{{ 'conversation.export.print'|trans({}, "conversations") }}">{{ 'conversation.export.print'|trans({}, "conversations") }}</button></a>
+		</p>
+	{% endif %}
+
+	{% set participants = conversation.findActivePermissions %}
+
+	<div class="cmsg_conversation">
+	{% if conversation.realm %}
+		<h3>{{ conversation.realm.name }}: {{ conversation.topic }}</h3>
+	{% elseif conversation.house %}
+		<h3>{{ conversation.house.name }}: {{ conversation.topic }}</h3>
+	{% else %}
+		<h3>{{ conversation.association.name }}: {{ conversation.topic }}</h3>
+	{% endif %}
+
+	{% if not archive %}
+		<div class="cmsg_general">
+			{% if active %}
+				<button class="topicreply cmsg_button" data-id="{{ conversation.id }}">{{ 'conversation.reply.label'|trans({}, "conversations")|title }}</button> |
+			{% else %}
+	                         <a href="{{path('maf_conv_remove', {"conv":conversation.id}) }}"><button class="convo_remove cmsg_button" title="{{ 'conversation.remove.help'|trans({}, "conversations") }}">{{ 'conversation.remove.label'|trans({}, "conversations") }}</button></a> |
+			{% endif %}
+			<a href="{{ path('maf_conv_participants', {'conv':conversation.id}) }}"{% if participants.count <= 5 %} class="tt" title="{% for p in participants %}{{ p.character.name }}{% if loop.last == false %}, {% endif %}{% endfor %}"{% endif %}><button class="cmsg_button">{{ 'conversation.participants.label'|trans({"%count%":participants.count}, "conversations") }}</button></a>
+		</div>
+	{% endif %}
+
+	{% set in_hidden = false %}
+	{% include 'Conversation/msg_loop.html.twig' with {'messages': messages, 'privacy': privacy, 'known':known, 'in_hidden': in_hidden} %}
+	{% if in_hidden == true %}
+		</div>
+	{% endif %}
+
+	{# FIXME: this only counts top-level messages, for some reason #}
+	{% if not archive and messages.count > 5 %}
+		<div class="cmsg_general">
+			{% if active %}
+				<button class="topicreply cmsg_button" data-id="{{ conversation.id }}">{{ 'conversation.reply.label'|trans({}, "conversations")|title }}</button> |
+			{% else %}
+	                         <a href="{{path('maf_conv_remove', {"conv":conversation.id}) }}"><button class="convo_remove cmsg_button" title="{{ 'conversation.remove.help'|trans({}, "conversations") }}">{{ 'conversation.remove.label'|trans({}, "conversations") }}</button></a>
+			{% endif %}
+			<a href="{{ path('maf_conv_participants', {'conv':conversation.id}) }}"{% if participants.count <= 5 %} class="tt" title="{% for p in participants %}{{ p.character.name }}{% if loop.last == false %}, {% endif %}{% endfor %}"{% endif %}><button class="cmsg_button">{{ 'conversation.participants.label'|trans({"%count%":participants.count}, "conversations") }}</button></a>
+		</div>
+	{% endif %}
+</div>
+{% if not archive %}
+	<div id="replydialog" title="{{ 'message.reply.title'|trans({}, "conversations")|title }}">
+		{% include "Conversation/syntax.html.twig" %}
+		{{ render(controller('BM2\\SiteBundle\\Controller\\ConversationController::replyAction', { 'conv': conversation })) }}
+	</div>
+
+	<p align="right">
+	<a href="{{path('maf_conv_print', {"conv":conversation.id}) }}" target="_blank"><button class="cmsg_button" title="{{ 'conversation.export.print'|trans({}, "conversations") }}">{{ 'conversation.export.print'|trans({}, "conversations") }}</button></a>
+	</p>
+{% endif %}
+
+{% endblock %}
