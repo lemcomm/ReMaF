@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use AllowDynamicProperties;
 use App\Entity\Activity;
 use App\Entity\ActivityType;
 use App\Entity\ActivitySubType;
@@ -16,13 +15,7 @@ use App\Entity\ActivityReportCharacter;
 use App\Entity\ActivityReportStage;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
-use App\Entity\Skill;
-use App\Entity\SkillType;
 use App\Entity\Style;
-use App\Service\Geography;
-use App\Service\HelperService;
-use App\Service\CombatManager;
-use App\Service\CharacterManager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -31,20 +24,23 @@ use Psr\Log\LoggerInterface;
 As you might expect, ActivityManager handles Activities.
 */
 
-#[AllowDynamicProperties] class ActivityManager {
+class ActivityManager {
 
-	private $em;
-	private $geo;
-	private $helper;
-	private $logger;
-	private $combat;
-	private $charMan;
-	private $appState;
-	private $history;
+	private CommonService $common;
+	private EntityManagerInterface $em;
+	private Geography $geo;
+	private HelperService $helper;
+	private LoggerInterface $logger;
+	private CombatManager $combat;
+	private CharacterManager $charMan;
+	private AppState $appState;
+	private History $history;
 
-	private $debug=0;
+	private int $debug=0;
+	private ?ActivityReport $report;
 
-	public function __construct(EntityManagerInterface $em, Geography $geo, HelperService $helper, LoggerInterface $logger, CombatManager $combat, CharacterManager $charMan, AppState $appState, History $history) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, Geography $geo, HelperService $helper, LoggerInterface $logger, CombatManager $combat, CharacterManager $charMan, AppState $appState, History $history) {
+		$this->common = $common;
 		$this->em = $em;
 		$this->geo = $geo;
 		$this->helper = $helper;
@@ -175,9 +171,7 @@ As you might expect, ActivityManager handles Activities.
 	}
 
 	public function log($level, $text): void {
-		if ($this->report) {
-			$this->report->setDebug($this->report->getDebug().$text."\n");
-		}
+		$this->report?->setDebug($this->report->getDebug() . $text . "\n");
 		if ($level <= $this->debug) {
 			$this->logger->info($text);
 		}
@@ -187,7 +181,7 @@ As you might expect, ActivityManager handles Activities.
 	ACTIVITY CREATE FUNCTIONS
 	*/
 
-	public function createDuel(Character $me, Character $them, $name=null, $level, $same, EquipmentType $weapon, $weaponOnly, Style $meStyle = null, Style $themStyle = null): Activity|string {
+	public function createDuel(Character $me, Character $them, $name, $level, $same, EquipmentType $weapon, $weaponOnly, Style $meStyle = null, Style $themStyle = null): Activity|string {
 		$type = $this->em->getRepository('App\Entity\ActivityType')->findOneBy(['name'=>'duel']);
 		# TODO: Verify there isn't alreayd a duel between these individuals!
 		if ($act = $this->create($type, null, $me)) {
@@ -257,8 +251,6 @@ As you might expect, ActivityManager handles Activities.
 			$type = $act->getType()->getName();
 			if ($type === 'duel') {
 				$this->runDuel($act);
-			} else {
-				# Do nothing, for now.
 			}
 		}
 		return true;
@@ -319,19 +311,15 @@ As you might expect, ActivityManager handles Activities.
 		if ($meRanged && !$themRanged) {
 			$meFreeAttack = true;
 			$themFreeAttack = false;
-			$stayRanged = false;
 		} elseif (!$meRanged && $themRanged) {
 			$meFreeAttack = false;
 			$themFreeAttack = true;
-			$stayRanged = false;
 		} elseif ($meRanged && $themRanged) {
 			$meFreeAttack = false;
 			$themFreeAttack = false;
-			$stayRanged = true;
 		} else {
 			$meFreeAttack = false;
 			$themFreeAttack = false;
-			$stayRanged = false;
 		}
 		$wpnOnly = $act->getWeaponOnly();
 		switch ($act->getSubtype()->getName()) {
@@ -531,7 +519,7 @@ As you might expect, ActivityManager handles Activities.
 				$meScore = 25; # Basic to-hit chance.
 			}
 			echo $meChar->getName().' - ';
-			$this->helper->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
+			$this->common->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." fires - ");
 			if ($this->combat->RangedRoll(0, 1, 0, $meScore)) {
 				list($result, $sublogs) = $this->combat->RangedHit($me, $themChar, $meRanged, $act, false, 1, $themScore);
@@ -547,7 +535,7 @@ As you might expect, ActivityManager handles Activities.
 				$meScore = 45; # Basic to-hit chance.
 			}
 			echo $meChar->getName().' - ';
-			$this->helper->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
+			$this->common->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." attacks - ");
 			if ($this->combat->MeleeRoll(0, 1, 0, $meScore)) {
 				list($result, $sublogs) = $this->combat->MeleeAttack($me, $themChar, $meMelee, $act, false, 1, $themScore);
@@ -602,7 +590,7 @@ As you might expect, ActivityManager handles Activities.
 		return $res;
 	}
 
-	private function createStageReport($group = null, $char = null, $round, $data, $extra = null): false|ActivityReportStage {
+	private function createStageReport($group, $char, $round, $data, $extra = null): false|ActivityReportStage {
 		if ($group !== null || $char !== null) {
 			$rpt = new ActivityReportStage;
 			$this->em->persist($rpt);

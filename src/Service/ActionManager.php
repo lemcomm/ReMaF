@@ -13,7 +13,7 @@ This mostly exists to get the queue function out of ActionResolution, in order t
 
 class ActionManager {
 
-	private $em;
+	private EntityManagerInterface $em;
 
 	public function __construct(EntityManagerInterface $em) {
 		$this->em = $em;

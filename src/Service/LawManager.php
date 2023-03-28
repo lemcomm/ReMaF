@@ -9,6 +9,7 @@ use App\Entity\LawType;
 use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Service\AppState;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 class LawManager {
@@ -69,7 +70,7 @@ class LawManager {
 		$this->history = $history;
 	}
 
-	public function updateLaw($org, LawType $type, $setting, $title, $desc = null, Character $character, $mandatory, $cascades, $sol, Settlement $settlement = null, Law $oldLaw=null, $flush=true): array|Law {
+	public function updateLaw($org, LawType $type, $setting, $title, $desc, Character $character, $mandatory, $cascades, $sol, Settlement $settlement = null, Law $oldLaw=null, $flush=true): array|Law {
 		# All laws are kept eternal, new laws are made whenever a law is changed, the old is inactivated.
 
 		if ($org instanceof Association) {
@@ -83,7 +84,7 @@ class LawManager {
 		}
 		$choices = $this->choices;
 		$tName = $type->getName();
-		$freeform = $tName==='freeform'?true:false;
+		$freeform = $tName==='freeform';
 		$taxes = in_array($tName, $this->taxLaws);
 		# Validate that this is a type we can set.
 		if ($freeform || $taxes || $choices[$tName] !== null) {
@@ -113,7 +114,7 @@ class LawManager {
 					$law->setValue($setting);
 					$title = $law->getType()->getName();
 				}
-				$law->setEnacted(new \DateTime("now"));
+				$law->setEnacted(new DateTime("now"));
 				$law->setCycle($this->appstate->getCycle());
 				$law->setEnactedBy($character);
 				if ($settlement) {
@@ -162,13 +163,13 @@ class LawManager {
 		];
 		if (in_array($type, $simpleLaws)) {
 			$old->setInvalidatedBy($law);
-			$old->setInvalidatedOn(new \DateTime("now"));
+			$old->setInvalidatedOn(new DateTime("now"));
 		}
 	}
 
 	public function repealLaw(Law $law, Character $char): void {
 		$law->setRepealedBy($char);
-		$law->setRepealedOn(new \DateTime("now"));
+		$law->setRepealedOn(new DateTime("now"));
 		$this->history->logEvent(
 			$law->getOrg(),
 			'event.law.repeal',

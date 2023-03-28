@@ -32,7 +32,7 @@ class Interactions {
 
 
 	public function characterEnterSettlement(Character $character, Settlement $settlement, $force = false): bool {
-		if ($character->getInsideSettlement() == $settlement) {
+		if ($character->getInsideSettlement() === $settlement) {
 			return true; // we are already inside
 		}
 
@@ -81,7 +81,7 @@ class Interactions {
 		$character->setTravel(null)->setProgress(null)->setSpeed(null);
 
 		// open history log
-		if ($settlement->getOwner() != $character || $settlement->getSteward() != $character) {
+		if ($settlement->getOwner() !== $character || $settlement->getSteward() !== $character) {
 			$this->history->visitLog($settlement, $character);
 		}
 
@@ -124,7 +124,7 @@ class Interactions {
 			$captor->setInsideSettlement($settlement);
 			$captor->setLocation($loc);
 			$settlement->addCharactersPresent($captor);
-			if ($settlement->getOwner() != $captor) {
+			if ($settlement->getOwner() !== $captor) {
 				$this->history->visitLog($settlement, $captor);
 			}
 		}
@@ -152,7 +152,7 @@ class Interactions {
 		$character->setInsideSettlement(null);
 
 		// close history log
-		if ($settlement->getOwner() != $character || $settlement->getSteward() != $character) {
+		if ($settlement->getOwner() !== $character || $settlement->getSteward() !== $character) {
 			$this->history->closeLog($settlement, $character);
 		}
 
@@ -261,7 +261,7 @@ class Interactions {
 	}
 
 	public function characterEnterPlace(Character $character, Place $place, $force = false): bool {
-		if ($character->getInsidePlace() == $place) {
+		if ($character->getInsidePlace() === $place) {
 			return false; // You are already here...
 		} elseif ($character->getInsidePlace()) {
 			$leave = $this->characterLeavePlace($character, $force);
@@ -286,7 +286,7 @@ class Interactions {
 			}
 		}
 
-		if ($place->getSettlement() != $character->getInsideSettlement()) {
+		if ($place->getSettlement() !== $character->getInsideSettlement()) {
 			// Not in the settlement the place is in.
 			return false;
 		}
@@ -322,7 +322,7 @@ class Interactions {
 		$character->setTravel(null)->setProgress(null)->setSpeed(null);
 
 		// open history log
-		if ($place->getOwner() != $character) {
+		if ($place->getOwner() !== $character) {
 			$this->history->visitLog($place, $character);
 		}
 
@@ -367,7 +367,7 @@ class Interactions {
 			$captor->setInsidePlace($place);
 			$captor->setLocation($loc);
 			$place->addCharactersPresent($captor);
-			if ($place->getOwner() != $captor) {
+			if ($place->getOwner() !== $captor) {
 				$this->history->visitLog($place, $captor);
 			}
 		}
@@ -390,7 +390,7 @@ class Interactions {
 		$character->setInsidePlace(null);
 
 		// close history log
-		if ($place->getOwner() != $character) {
+		if ($place->getOwner() !== $character) {
 			$this->history->closeLog($place, $character);
 		}
 

@@ -1176,7 +1176,7 @@ class Character {
     /**
      * Set location
      *
-     * @param point $location
+     * @param point|null $location
      * @return Character
      */
     public function setLocation($location)
@@ -1313,7 +1313,7 @@ class Character {
     /**
      * Set progress
      *
-     * @param float $progress
+     * @param float|null $progress
      * @return Character
      */
     public function setProgress($progress)
@@ -1336,7 +1336,7 @@ class Character {
     /**
      * Set speed
      *
-     * @param float $speed
+     * @param float|null $speed
      * @return Character
      */
     public function setSpeed($speed)
@@ -1359,7 +1359,7 @@ class Character {
     /**
      * Set wounded
      *
-     * @param integer $wounded
+     * @param integer|null $wounded
      * @return Character
      */
     public function setWounded($wounded)
@@ -1382,7 +1382,7 @@ class Character {
     /**
      * Set gold
      *
-     * @param integer $gold
+     * @param integer|null $gold
      * @return Character
      */
     public function setGold($gold)
@@ -1405,7 +1405,7 @@ class Character {
     /**
      * Set npc
      *
-     * @param boolean $npc
+     * @param boolean|null $npc
      * @return Character
      */
     public function setNpc($npc)

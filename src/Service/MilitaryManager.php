@@ -2,9 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Action;
-use App\Entity\Battle;
-use App\Entity\BattleGroup;
 use App\Entity\Character;
 use App\Entity\Entourage;
 use App\Entity\EquipmentType;
@@ -24,17 +21,17 @@ Military exists for management of soldiers, units, and entourage, and for their 
 
 class MilitaryManager {
 
-	private $em;
-	private $history;
-	private $pm;
-	private $appstate;
-	private $geo;
-	private $logger;
+	private EntityManagerInterface $em;
+	private History $history;
+	private PermissionManager $pm;
+	private AppState $appstate;
+	private Geography $geo;
+	private LoggerInterface $logger;
 
-	private $group_assign=0;
-	private $group_militia=0;
-	private $group_soldier=0;
-	private $max_group=25; // a=0 ... z=25
+	private int $group_assign=0;
+	private int $group_militia=0;
+	private int $group_soldier=0;
+	private int $max_group=25; // a=0 ... z=25
 
 	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, History $history, PermissionManager $pm, AppState $appstate, Geography $geo) {
 		$this->em = $em;
@@ -144,8 +141,7 @@ class MilitaryManager {
 		}
 	}
 
-	public function manageUnit($soldiers, $data, Settlement $settlement=null, Character $character=null, $canResupply, $canRecruit, $canReassign): array {
-		$assigned_soldiers = 0;
+	public function manageUnit($soldiers, $data, Settlement $settlement, Character $character, $canResupply, $canRecruit, $canReassign): array {
 		$success=0; $fail=0;
 
 		foreach ($data['npcs'] as $npc=>$action) {
@@ -285,10 +281,8 @@ class MilitaryManager {
 								break 2;
 							}
 						}
-						$success = false;
-					} else {
-						$success = false;
 					}
+					$success = false;
 				} else {
 					// resupply from settlement
 					if ($this->acquireItem($settlement, $soldier->$trained(), false, true, $soldier->getCharacter())) {
@@ -320,7 +314,7 @@ class MilitaryManager {
 		if ($reduce_supply) {
 			$left = $provider->getResupply() - $item->getResupplyCost();
 			if ($character) {
-				list($check, $list, $level, $perm) = $this->pm->checkSettlementPermission($settlement, $character, 'resupply', true);
+				$perm = $this->pm->checkSettlementPermission($settlement, $character, 'resupply', true)[3];
 				if ($perm) {
 					if ($item->getResupplyCost() > $perm->getValueRemaining()) return false;
 					if ($perm->getReserve()!==null && $left < $perm->getReserve()) return false;
@@ -455,9 +449,8 @@ class MilitaryManager {
 				if ($npc->getWeapon()) { $this->salvageItem($npc->getCharacter(), $npc->getWeapon()); }
 				if ($npc->getArmour()) { $this->salvageItem($npc->getCharacter(), $npc->getArmour()); }
 				if ($npc->getEquipment()) { $this->salvageItem($npc->getCharacter(), $npc->getEquipment()); }
-			} else {
-				// TODO: salvage followers to other followers
 			}
+			// TODO: salvage followers to other followers
 		}
 		$this->em->remove($npc);
 	}
@@ -862,7 +855,9 @@ class MilitaryManager {
 						array('%link-unit%'=>$unit->getId(), '%link-settlement%'=>$dest->getId()),
 						History::MEDIUM, false, 30
 					);
-					$this->history->closeLog($unit, $origin);
+					if ($origin) {
+						$this->history->closeLog($unit, $origin);
+					}
 				}
 			} elseif ($reason === 'returned') {
 				$this->history->logEvent(
@@ -879,7 +874,9 @@ class MilitaryManager {
 						History::MEDIUM, false, 30
 					);
 				}
-				$this->history->closeLog($unit, $origin);
+				if ($origin) {
+					$this->history->closeLog($unit, $origin);
+				}
 			}
 		}
 		if (!$bulk) {

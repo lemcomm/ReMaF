@@ -12,6 +12,7 @@ use App\Entity\MapPOI;
 use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\RegionFamiliarity;
+use App\Entity\Setting;
 use App\Entity\Ship;
 use App\Entity\Settlement;
 

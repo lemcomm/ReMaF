@@ -40,7 +40,7 @@ class Economy {
 
 	private ?array $resources = null;
 
-	public function getTimer() {
+	public function getTimer(): array {
 		return $this->timer;
 	}
 
@@ -153,12 +153,16 @@ class Economy {
 					$building->setCondition($building->getCondition()-rand(10,100));
 				}
 			}
-			foreach ($settlement->getGeoData()->getRoads() as $road) {
-				$road->setWorkers(0);
+			$workforce = $settlement->getAvailableWorkforce();
+			if ($workforce < 0) {
+				foreach ($settlement->getGeoData()->getRoads() as $road) {
+					$road->setWorkers(0);
+				}
+				foreach ($settlement->getGeoData()->getFeatures() as $feature) {
+					$feature->setWorkers(0);
+				}
 			}
-			foreach ($settlement->getGeoData()->getFeatures() as $feature) {
-				$feature->setWorkers(0);
-			}
+			$workforce = $settlement->getAvailableWorkforce();
 			if ($workforce < 0) {
 				// still? ok, abandon all buildings now, it's the only thing that can cause this
 				foreach ($settlement->getBuildings() as $building) {
@@ -200,7 +204,7 @@ class Economy {
 				if (!$settlement->getGeoData()->getHills() && $settlement->getGeoData()->getBiome()->getName() != 'rock') {
 					return false;
 				}
-				$metal = $this->em->getRepository('App\Entity\ResourceType')->findOneByName("metal");
+				$metal = $this->em->getRepository('App\Entity\ResourceType')->findOneBy(['name' => "metal"]);
 				$my_metal = $settlement->findResource($metal);
 				if ($my_metal == null || $my_metal->getAmount()<=0) {
 					return false;
@@ -562,7 +566,7 @@ class Economy {
 	}
 
 	public function supplySoldiers(Unit $unit, $shortage, Settlement $settlement): void {
-		$this->logger->info('info', "Handling shortage of $shortage for ".$unit->getId());
+		$this->logger->info("Handling shortage of $shortage for ".$unit->getId());
 		$shortage = round($shortage, 2);
 		if ($shortage >= 1) {
 			# No food to send.
@@ -577,7 +581,7 @@ class Economy {
 
 		$qty = $count - $deduct;
 		$here = false;
-		if (!$unit->getCharacter() || ($unit->getCharacter() && $unit->getCharacter()->getInsideSettlement() == $settlement) || ($unit->getPlace() && $unit->getPlace()->getInsideSettlement() == $settlement)) {
+		if (!$unit->getCharacter() || ($unit->getCharacter() && $unit->getCharacter()->getInsideSettlement() == $settlement) || ($unit->getPlace() && $unit->getPlace()->getSettlement() == $settlement)) {
 			$here = true;
 		}
 		if ($qty > 0 && !$here) {

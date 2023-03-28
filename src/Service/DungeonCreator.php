@@ -7,8 +7,6 @@ use Psr\Log\LoggerInterface;
 
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
-use App\Service\Geography;
-
 use App\Entity\Dungeon;
 use App\Entity\DungeonLevel;
 use App\Entity\DungeonMonster;
@@ -18,7 +16,7 @@ use App\Entity\DungeonParty;
 class DungeonCreator {
 
 	private EntityManagerInterface $em;
-	private \App\Service\Geography $geo;
+	private Geography $geo;
 	private LoggerInterface $logger;
 
 	private int $base_monstermod = 65;

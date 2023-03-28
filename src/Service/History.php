@@ -23,9 +23,9 @@ class History {
 
 	const NOTIFY = 20;
 
-	protected $em;
-	protected $appstate;
-	protected $noteman;
+	protected EntityManagerInterface $em;
+	protected AppState $appstate;
+	protected NotificationManager $noteman;
 
 
 	public function __construct(EntityManagerInterface $em, AppState $appstate, NotificationManager $noteman) {
@@ -35,7 +35,7 @@ class History {
 	}
 
 
-	public function logEvent($entity, $translationKey, $data=null, $priority=History::MEDIUM, $public=false, $limited=null) {
+	public function logEvent($entity, $translationKey, $data=null, $priority=History::MEDIUM, $public=false, $limited=null): ?Event {
 		// so we can call this with null values without checking all the time, for example, if a settlement owner exists
 		if (!$entity) return null;
 
@@ -60,7 +60,7 @@ class History {
 		return $event;
 	}
 
-	public function addToSoldierLog(Soldier $soldier, $translationKey, $data=null) {
+	public function addToSoldierLog(Soldier $soldier, $translationKey, $data=null): Event|SoldierLog|null {
 		if ($soldier->isNoble()) {
 			return $this->logEvent($soldier->getCharacter(), 'soldier.'.$translationKey, $data, HISTORY::MEDIUM, false, 60);
 		} else {
@@ -82,7 +82,7 @@ class History {
 		open and close access to event logs
 		we can theoretically have multiple logs on the same entity open - non-overlapping intervalls
 	*/
-	public function closeLog($entity, Character $reader) {
+	public function closeLog($entity, Character $reader): void {
 		if ($entity instanceof EventLog) {
 			$log = $entity;
 		} else {
@@ -95,7 +95,7 @@ class History {
 		}
 	}
 
-	public function openLog($entity, Character $reader) {
+	public function openLog($entity, Character $reader): EventMetadata|array {
 		$log = $this->findLog($entity);
 		$exists = $this->em->getRepository(EventMetadata::class)->findBy(['log'=>$log, 'reader'=>$reader, 'access_until'=>null]);
 		if (!$exists) {
@@ -111,7 +111,7 @@ class History {
 		return $exists;
 	}
 
-	public function visitLog($entity, Character $reader) {
+	public function visitLog($entity, Character $reader): void {
 		$log = $this->findLog($entity);
 		$metadata = new EventMetadata();
 		$metadata->setAccessFrom($this->appstate->getCycle());
@@ -121,7 +121,7 @@ class History {
 		$this->em->persist($metadata);
 	}
 
-	public function investigateLog($log, Character $reader, $interval) {
+	public function investigateLog($log, Character $reader, $interval): void {
 		// TODO: move your access back in time by spending time, money, whatever on gaining more knowledge
 		// this also requires changes to the above - openLog would be more limited, going back x days -
 		// -- so it would be pretty much just like visitlog. but then this here would also have to merge log
@@ -141,7 +141,7 @@ class History {
 		return $log;
 	}
 
-	public function evaluateBattle(BattleReport $report) {
+	public function evaluateBattle(BattleReport $report): void {
 		$size = $report->getCount();
 		if ($size <100) {
 			$epic = 0;

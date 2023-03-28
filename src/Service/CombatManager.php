@@ -15,13 +15,13 @@ class CombatManager {
 	*/
 
 	protected EntityManagerInterface $em;
-	protected HelperService $helper;
+	protected CommonService $common;
 	protected CharacterManager $charMan;
 	protected History $history;
 
-	public function __construct(EntityManagerInterface $em, HelperService $helper, CharacterManager $charMan, History $history) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, CharacterManager $charMan, History $history) {
 		$this->em = $em;
-		$this->helper = $helper;
+		$this->common = $common;
 		$this->charMan = $charMan;
 		$this->history = $history;
 	}
@@ -29,7 +29,7 @@ class CombatManager {
 	public function ChargeAttack($me, $target, $act=false, $battle=false, $xpMod = 1, $defBonus = null): array {
 		if ($battle) {
 			if ($me->isNoble() && $me->getWeapon()) {
-				$this->helper->trainSkill($me->getCharacter(), $me->getEquipment()->getSkill(), $xpMod);
+				$this->common->trainSkill($me->getCharacter(), $me->getEquipment()->getSkill(), $xpMod);
 			} else {
 				$me->gainExperience(1*$xpMod);
 			}
@@ -56,7 +56,7 @@ class CombatManager {
 			// defense penetrated
 			$result = $this->resolveDamage($me, $target, $attack, $type, 'charge', $antiCav, $xpMod, $defBonus);
 			if ($me->isNoble() && $me->getWeapon()) {
-				$this->helper->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
+				$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
 			} else {
 				$me->gainExperience(($result=='kill'?2:1)*$xpMod);
 			}
@@ -66,7 +66,7 @@ class CombatManager {
 			$result='fail';
 		}
 		$target->addAttack(5);
-		$sublogs = $this->equipmentDamage($me, $target, 'charge', $antiCav);
+		$sublogs = $this->equipmentDamage($me, $target);
 		foreach ($sublogs as $each) {
 			$logs[] = $each;
 		}
@@ -74,7 +74,7 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-	public function ChargePower($me, $sol = false) {
+	public function ChargePower($me, $sol = false): float|int {
 		if ($sol) {
 			if ($me->isNoble()) {
 				return 156;
@@ -218,7 +218,7 @@ class CombatManager {
 	public function MeleeAttack($me, $target, $mPower, $act=false, $battle=false, $xpMod = 1, $defBonus = 0): array {
 		if ($battle) {
 			if ($me->isNoble() && $me->getWeapon()) {
-				$this->helper->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
+				$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
 			} else {
 				$me->gainExperience(1*$xpMod);
 			}
@@ -227,7 +227,6 @@ class CombatManager {
 			$type = 'act';
 		}
 		$logs = [];
-		$result='miss';
 
 		if ($act && $act->getWeaponOnly()) {
 			$defense = $defBonus;
@@ -254,7 +253,7 @@ class CombatManager {
 				$logs[] = $each;
 			}
 			if ((($type === 'battle' && $me->isNoble()) || $type === 'act') && $me->getWeapon()) {
-				$this->helper->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
+				$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
 			} else {
 				$me->gainExperience(($result=='kill'?2:1)*$xpMod);
 			}
@@ -367,10 +366,10 @@ class CombatManager {
 		if ($battle) {
 			if ($me->isNoble() && $me->getWeapon()) {
 				if (in_array($me->getType(), ['armoured archer', 'archer'])) {
-					$this->helper->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
+					$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
 				} else {
 					if ($me->getEquipment()) {
-						$this->helper->trainSkill($me->getCharacter(), $me->getEquipment()->getSkill(), $xpMod);
+						$this->common->trainSkill($me->getCharacter(), $me->getEquipment()->getSkill(), $xpMod);
 					}
 				}
 			} else {
@@ -381,7 +380,6 @@ class CombatManager {
 			$type = $me->getActivity()->getType()->getName();
 		}
 		$logs = [];
-		$result='miss';
 
 		if ($act && $act->getWeaponOnly()) {
 			$defense = $defBonus;
@@ -482,9 +480,7 @@ class CombatManager {
 			return $power;
 		}
 		# If either above the above ifs compare as true we don't get here, so this is technically an else/if regardless.
-		if ($power>0) {
-			$power += $me->ExperienceBonus($power);
-		}
+		$power += $me->ExperienceBonus($power);
 
 		// TODO: heavy armour should reduce this quite a bit
 
@@ -519,21 +515,18 @@ class CombatManager {
 		}
 		if (rand(0,$power) > rand(0,max(1,$this->DefensePower($target, $battle) - $target->getWounded(true)))) {
 			// penetrated again = kill
-			switch ($phase) {
-				case 'charge':  $surrender = 90; break;
-				case 'ranged':	$surrender = 60; break;
-				case 'hunt':	$surrender = 85; break;
-				case 'melee':
-				default:	$surrender = 75; break;
-			}
+			$surrender = match ($phase) {
+				'charge' => 90,
+				'ranged' => 60,
+				'hunt' => 85,
+				default => 75,
+			};
 			// nobles can surrender and be captured instead of dying - if their attacker belongs to a noble
 			if ($battle && (($me->getMount() && $target->getMount() && rand(0,100) < 50) || $me->getMount() && !$target->getMount() && rand(0,100) < 70)) {
-				if ($battle) {
-					$logs[] = "killed mount & wounded\n";
-					$target->wound(rand(max(1, round($power/10)), $power));
-					$target->dropMount();
-					$this->history->addToSoldierLog($target, 'wounded.'.$phase);
-				}
+				$logs[] = "killed mount & wounded\n";
+				$target->wound(rand(max(1, round($power/10)), $power));
+				$target->dropMount();
+				$this->history->addToSoldierLog($target, 'wounded.'.$phase);
 				$result='wound';
 			} elseif ($battle && $target->isNoble() && !$target->getCharacter()->isNPC() && rand(0,100) < $surrender && $me->getCharacter()) {
 				$logs[] = "captured\n";
@@ -572,8 +565,6 @@ class CombatManager {
 				$logs[] = $each;
 			}
 			$result = $result . " " . $innerResult;
-		} else {
-			$innerResult = null;
 		}
 		if ($battle) {
 			$me->addCasualty();

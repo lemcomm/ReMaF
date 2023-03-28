@@ -12,20 +12,17 @@ use App\Entity\Deity;
 use App\Entity\DeityAspect;
 use App\Entity\LawType;
 use App\Entity\Place;
-use App\Service\History;
-use App\Service\DescriptionManager;
-use App\Service\ConversationManager;
-use App\Service\LawManager;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 
 class AssociationManager {
 
-	protected $em;
-	protected $history;
-	protected $descman;
-	protected $convman;
-	protected $lawman;
+	protected EntityManagerInterface $em;
+	protected History $history;
+	protected DescriptionManager $descman;
+	protected ConversationManager $convman;
+	protected LawManager $lawman;
 
 	public function __construct(EntityManagerInterface $em, History $history, DescriptionManager $descman, ConversationManager $convman, LawManager $lawman) {
 		$this->em = $em;
@@ -35,7 +32,7 @@ class AssociationManager {
 		$this->lawman = $lawman;
 	}
 
-	public function create($data, Place $place, Character $founder, $superior = null) {
+	public function create($data, Place $place, Character $founder): Association {
 		$assoc = $this->_create($data['name'], $data['formal_name'], $data['faith_name'], $data['follower_name'], $data['type'], $data['motto'], $data['public'], $data['short_description'], $data['description'], $data['founder'], $place, $founder, $data['superior']);
 
 		$this->history->openLog($assoc, $founder);
@@ -61,7 +58,7 @@ class AssociationManager {
 		return $assoc;
 	}
 
-	private function _create($name, $formal, $faith, $follower, $type, $motto, $public, $short_desc, $full_desc, $founderRank, $place, Character $founder, $superior) {
+	private function _create($name, $formal, $faith, $follower, $type, $motto, $public, $short_desc, $full_desc, $founderRank, $place, Character $founder, $superior): Association {
 		$assoc = new Association;
 		$this->em->persist($assoc);
 		$assoc->setName($name);
@@ -86,16 +83,16 @@ class AssociationManager {
 		# Because I'll never remember this, these are, in order:
 		# Realm/Assocation , Law Name, 'Value', Law Title, Description (fluff), allowed/disallowed, mandatory/guideline, cascades to subs, statute of limitations cycles, db flush;
 		if ($public) {
-			$this->lawman->updateLaw($assoc, $vis, 'assocVisibility.yes', null, null, $founder, null, true, null, null);
-			$this->lawman->updateLaw($assoc, $ranks, 'rankVisibility.all', null, null, $founder, null, true, null, null);
+			$this->lawman->updateLaw($assoc, $vis, 'assocVisibility.yes', null, null, $founder, null, true, null);
+			$this->lawman->updateLaw($assoc, $ranks, 'rankVisibility.all', null, null, $founder, null, true, null);
 		} else {
-			$this->lawman->updateLaw($assoc, $vis, 'assocVisibility.no', null, null, $founder, null, true, null, null);
-			$this->lawman->updateLaw($assoc, $ranks, 'rankVisibility.direct', null, null, $founder, null, true, null, null);
+			$this->lawman->updateLaw($assoc, $vis, 'assocVisibility.no', null, null, $founder, null, true, null);
+			$this->lawman->updateLaw($assoc, $ranks, 'rankVisibility.direct', null, null, $founder, null, true, null);
 		}
 		$rank = $this->newRank($assoc, null, $founderRank, true, 0, 0, true, null, true, true, true, true, true, false);
 		$this->newLocation($assoc, $place, true, false);
 		$this->descman->newDescription($assoc, $full_desc, $founder, TRUE); #Descman includes a flush for the EM.
-		$this->updateMember($assoc, $rank, $founder, true);
+		$this->updateMember($assoc, $rank, $founder);
 
 		return $assoc;
 	}
@@ -138,7 +135,7 @@ class AssociationManager {
 		return $assoc;
 	}
 
-	public function newRank($assoc, AssociationRank $myRank = null, $name, $viewAll, $viewUp, $viewDown, $viewSelf, AssociationRank $superior=null, $build, $createSubs, $manager, $createAssocs, $owner = false, $flush=true) {
+	public function newRank($assoc, ?AssociationRank $myRank, $name, $viewAll, $viewUp, $viewDown, $viewSelf, ?AssociationRank $superior, $build, $createSubs, $manager, $createAssocs, $owner = false, $flush=true): AssociationRank {
 		$rank = new AssociationRank;
 		$this->em->persist($rank);
 		$rank->setAssociation($assoc);
@@ -149,7 +146,7 @@ class AssociationManager {
 		return $rank;
 	}
 
-	public function updateRank(AssociationRank $myRank = null, AssociationRank $rank, $name, $viewAll, $viewUp, $viewDown, $viewSelf, AssociationRank $superior=null, $build, $createSubs, $manager, $createAssocs, $owner = false, $flush=true) {
+	public function updateRank(?AssociationRank $myRank, AssociationRank $rank, $name, $viewAll, $viewUp, $viewDown, $viewSelf, ?AssociationRank $superior, $build, $createSubs, $manager, $createAssocs, $owner = false, $flush=true): false|AssociationRank {
 		$rank->setName($name);
 		if ($myRank) {
 			if ($myRank->getViewAll()) {
@@ -218,7 +215,7 @@ class AssociationManager {
 		return $rank;
 	}
 
-	public function newLocation($assoc, $place, $hq=false, $flush=true) {
+	public function newLocation($assoc, $place, $hq=false, $flush=true): AssociationPlace {
 		$loc = new AssociationPlace;
 		$this->em->persist($loc);
 		$loc->setAssociation($assoc);
@@ -243,12 +240,12 @@ class AssociationManager {
 		return $loc;
 	}
 
-	public function updateMember($assoc, $rank=null, $char, $flush=true) {
-		$member = $this->em->getRepository('App\Entity\AssociationMember')->findOneBy(["association"=>$assoc, "character"=>$char]);
+	public function updateMember($assoc, $rank, $char, $flush=true) {
+		$member = $this->em->getRepository(AssociationMember::class)->findOneBy(["association"=>$assoc, "character"=>$char]);
 		if ($member && $rank && $member->getRank() === $rank) {
 			return 'no change';
 		}
-		$now = new \DateTime("now");
+		$now = new DateTime("now");
 		if (!$member) {
 			$member = new AssociationMember;
 			$this->em->persist($member);
@@ -266,7 +263,7 @@ class AssociationManager {
 		return $member;
 	}
 
-	public function removeMember(Association $assoc, Character $char) {
+	public function removeMember(Association $assoc, Character $char): void {
 		$member = $this->em->getRepository('App\Entity\AssociationMember')->findOneBy(["association"=>$assoc, "character"=>$char]);
 		if ($member) {
 			$this->em->remove($member);
@@ -274,7 +271,7 @@ class AssociationManager {
 			foreach ($assoc->getConversations() as $conv) {
 				if ($perm = $conv->findActiveCharPermission($char)) {
 					$perm->setActive(FALSE);
-					$perm->setEndTime(new \DateTime("now"));
+					$perm->setEndTime(new DateTime("now"));
 				}
 			}
 			if ($assoc->getMembers()->count() == 0) {
@@ -305,16 +302,14 @@ class AssociationManager {
 	}
 
 	public function findMember(Association $assoc, Character $char) {
-		$member = $this->em->getRepository('App\Entity\AssociationMember')->findOneBy(["association"=>$assoc, "character"=>$char]);
-		return $member;
+		return $this->em->getRepository('App\Entity\AssociationMember')->findOneBy(["association"=>$assoc, "character"=>$char]);
 	}
 
 	public function findDeity(Association $assoc, Deity $deity) {
-		$result = $this->em->getRepository('App\Entity\AssociationDeity')->findOneBy(["association"=>$assoc, "deity"=>$deity]);
-		return $result;
+		return $this->em->getRepository('App\Entity\AssociationDeity')->findOneBy(["association"=>$assoc, "deity"=>$deity]);
 	}
 
-	public function newDeity(Association $assoc, Character $char, $data) {
+	public function newDeity(Association $assoc, Character $char, $data): void {
 		$deity = new Deity();
 		$this->em->persist($deity);
 		$deity->setMainRecognizer($assoc);
@@ -329,7 +324,7 @@ class AssociationManager {
 		$this->addDeity($assoc, $deity, $char, $data['words']);
 	}
 
-	public function updateDeity(Deity $deity, Character $char, $data) {
+	public function updateDeity(Deity $deity, Character $char, $data): void {
 		if ($deity->getName() !== $data['name']) {
 			$deity->setName($data['name']);
 		}
@@ -354,7 +349,7 @@ class AssociationManager {
 		$this->em->flush();
 	}
 
-	public function adoptDeity(Association $assoc, Deity $deity, Character $char) {
+	public function adoptDeity(Association $assoc, Deity $deity, Character $char): void {
 		$deity->setMainRecognizer($assoc);
 		$this->history->logEvent(
 			$assoc,
@@ -365,14 +360,14 @@ class AssociationManager {
 		$this->em->flush();
 	}
 
-	public function addDeity(Association $assoc, Deity $deity, Character $char, $words = null) {
+	public function addDeity(Association $assoc, Deity $deity, Character $char, $words = null): void {
 		$aDeity = new AssociationDeity();
 		$this->em->persist($aDeity);
 		$aDeity->setAssociation($assoc);
 		$aDeity->setDeity($deity);
 		if ($words) {
 			$aDeity->setWords($words);
-			$aDeity->setWordsTimestamp(new \DateTime("now"));
+			$aDeity->setWordsTimestamp(new DateTime("now"));
 			$aDeity->setWordsFrom($char);
 		}
 		$this->history->logEvent(
@@ -384,7 +379,7 @@ class AssociationManager {
 		$this->em->flush();
 	}
 
-	public function removeDeity(Association $assoc, Deity $deity, Character $char) {
+	public function removeDeity(Association $assoc, Deity $deity, Character $char): void {
 		$aDeity = $this->em->getRepository('App\Entity\AssociationDeity')->findOneBy(['association'=>$assoc, 'deity'=>$deity]);
 		$this->em->remove($aDeity);
 		if ($aDeity->getDeity()->getMainRecognizer() === $assoc) {

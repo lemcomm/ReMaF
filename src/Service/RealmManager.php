@@ -523,4 +523,5 @@ class RealmManager {
 		}
 		$this->em->flush();
 	}
+
 }

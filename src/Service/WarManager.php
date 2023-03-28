@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\Action;
 use App\Entity\Battle;
 use App\Entity\BattleGroup;
-use App\Entity\BattleReport;
 use App\Entity\Character;
 use App\Entity\Place;
 use App\Entity\Settlement;
@@ -27,17 +26,16 @@ War Manager exists to handle all service duties involved in battles and sieges. 
 
 class WarManager {
 
-	protected $em;
-	protected $history;
-	protected $milman;
-	protected $actman;
-	protected $gametime;
-	protected $interactions;
-	protected $politics;
-	protected $logger;
+	protected EntityManagerInterface $em;
+	protected History $history;
+	protected MilitaryManager $milman;
+	protected ActionManager $actman;
+	protected GameTimeExtension $gametime;
+	protected Interactions $interactions;
+	protected Politics $politics;
+	protected LoggerInterface $logger;
 
-	private $report;
-	private $debug=0;
+	private int $debug=0;
 
 	public function __construct(EntityManagerInterface $em, History $history, MilitaryManager $milman, ActionManager $actman, GameTimeExtension $gametime, Interactions $interactions, Politics $politics, LoggerInterface $logger) {
 		$this->em = $em;
@@ -50,10 +48,9 @@ class WarManager {
 		$this->logger = $logger;
 	}
 
-	public function createBattle(Character $character, Settlement $settlement=null, Place $place=null, $targets=array(), Siege $siege=null, BattleGroup $attackers=null, BattleGroup $defenders=null) {
+	public function createBattle(Character $character, Settlement $settlement=null, Place $place=null, $targets=array(), Siege $siege=null, BattleGroup $attackers=null, BattleGroup $defenders=null): array {
 		/* for future reference, $outside is used to determine whether or not attackers need to leave the settlement in order to attack someone.
 		It's used by attackOthersAction of WarCon. --Andrew */
-		$bothinside = false;
 		$type = 'field';
 
 		$battle = new Battle;
@@ -77,7 +74,7 @@ class WarManager {
 				}
 			}
 			$battle->setSiege($siege);
-			if ($siege->getAttacker() == $attackers) {
+			if ($siege->getAttacker() === $attackers) {
 				# If they are the siege attackers and attacking in this battle, then they're assaulting. If not, they're sallying. It affects defensive bonuses.
 				$battle->setType('siegeassault');
 				$type = 'assault';
@@ -149,7 +146,6 @@ class WarManager {
 			}
 			$foundinside = false;
 			$foundoutside = false;
-			$foundboth = false;
 			/* Because you can only attack a settlement/place during a siege, that means that if we're doing this we must be attacking FROM a settlement/place without a siege.
 			Outside of a siege this is only set if you start a battle
 			So we need to figure out if our targets are inside or outside. If we find a mismatch, we drop the outsiders and only attack those inside. */
@@ -172,7 +168,6 @@ class WarManager {
 			}
 			if ($foundinside && $foundoutside) {
 				# Found people inside and outside, prioritize inside. Battle type is urban.
-				$foundboth = true;
 				$battle->setType('urban');
 				$type = 'skirmish';
 				if ($settlement) {
@@ -258,8 +253,6 @@ class WarManager {
 					);
 					$type = 'skirmish';
 				}
-			} else {
-				# You've somehow broke the laws of space, and appear to exist in neither inside nor outside. Congrats.
 			}
 		} else {
 			$x=0; $y=0; $count=0; $outside = false;
@@ -415,7 +408,7 @@ class WarManager {
 		return array('time'=>$time, 'outside'=>$outside, 'battle'=>$battle);
 	}
 
-	public function joinBattle(Character $character, BattleGroup $group) {
+	public function joinBattle(Character $character, BattleGroup $group): void {
 		$battle = $group->getBattle();
 		$soldiers = 0;
 
@@ -452,7 +445,7 @@ class WarManager {
 		$this->recalculateBattleTimer($battle);
 	}
 
-	public function recalculateBattleTimer(Battle $battle) {
+	public function recalculateBattleTimer(Battle $battle): void {
 		$time = $this->calculatePreparationTime($battle);
 		$complete = clone $battle->getStarted();
 		$complete->add(new \DateInterval("PT".$time."S"));
@@ -462,7 +455,7 @@ class WarManager {
 		}
 	}
 
-	public function calculatePreparationTime(Battle $battle) {
+	public function calculatePreparationTime(Battle $battle): float {
 		// prep time is based on the total number of soldiers, but only 20:1 (attackers) or 10:1 (defenders) actually get ready, i.e.
 		// if your 1000 men army attacks 10 men, it calculates battle time as if only 200 of your men get ready for battle.
 		// if your 1000 men are attacked by 10 men, it calculates battle time as if only 100 of them get ready for battle.
@@ -480,7 +473,7 @@ class WarManager {
 		return $time;
 	}
 
-	public function calculateDisengageTime(Character $character) {
+	public function calculateDisengageTime(Character $character): float|int {
 		$base = 15;
 		$base += sqrt($character->getEntourage()->count()*10);
 
@@ -505,7 +498,7 @@ class WarManager {
 		return $base*60;
 	}
 
-	public function createDisengage(Character $character, BattleGroup $bg, Action $attack) {
+	public function createDisengage(Character $character, BattleGroup $bg, Action $attack): array {
 		$takes = $this->calculateDisengageTime($character);
 		$complete = new \DateTime("now");
 		$complete->add(new \DateInterval("PT".round($takes)."S"));
@@ -524,7 +517,7 @@ class WarManager {
 		return $this->actman->queue($act);
 	}
 
-	public function addRegroupAction($battlesize=100, Character $character) {
+	public function addRegroupAction($battlesize, Character $character): void {
 		/* FIXME: to prevent abuse, this should be lower in very uneven battles
 		FIXME: We should probably find some better logic about calculating the battlesize variable when this is called by sieges, but we can work that out later. */
 		# setup regroup timer and change action
@@ -545,7 +538,7 @@ class WarManager {
 		$this->actman->queue($act, true);
 	}
 
-	public function disbandSiege(Siege $siege, Character $leader = null, $completed = FALSE) {
+	public function disbandSiege(Siege $siege, Character $leader = null, $completed = FALSE): bool {
 		if ($siege->getBattles()->count() > 0) {
 			return false;
 		}
@@ -567,7 +560,7 @@ class WarManager {
 			$siege->setSettlement(NULL);
 		} else {
 			$siege->getPlace()->setSiege(NULL);
-			$siege->getPlace(NULL);
+			$siege->setPlace(NULL);
 		}
 		$this->em->flush();
 
@@ -610,7 +603,7 @@ class WarManager {
 	}
 
 	#TODO: Combine this with disbandSiege so we have less duplication of effort.
-	public function disbandGroup(BattleGroup $group, $battlesize = null) {
+	public function disbandGroup(BattleGroup $group, $battlesize = 100): bool {
 		foreach ($group->getCharacters() as $character) {
 			$this->removeCharacterFromBattlegroup($character, $group);
 			$this->addRegroupAction($battlesize, $character);
@@ -622,7 +615,7 @@ class WarManager {
 		return true;
 	}
 
-	public function removeCharacterFromBattlegroup(Character $character, BattleGroup $bg, $disbandSiege = false, $source = 'battlerunner') {
+	public function removeCharacterFromBattlegroup(Character $character, BattleGroup $bg, $disbandSiege = false, $source = 'battlerunner'): void {
 		$bg->removeCharacter($character);
 		if ($bg->getCharacters()->count()==0) {
 			// there are no more participants in this battlegroup
@@ -679,7 +672,7 @@ class WarManager {
 		}
 	}
 
-	public function leaveSiege($character, $siege) {
+	public function leaveSiege($character, $siege): bool {
 		if ($siege->getBattles()->count() > 0) {
 			return false;
 		}
@@ -705,20 +698,17 @@ class WarManager {
 		return true;
 	}
 
-	public function addJoinAction(Character $character, BattleGroup $group) {
+	public function addJoinAction(Character $character, BattleGroup $group): Battle {
 		$this->joinBattle($character, $group);
 		$this->em->flush();
 		return $group->getBattle();
 	}
 
-	public function buildSiegeTools() {
+	public function buildSiegeTools(): void {
 	#TODO
 	}
 
-	public function log($level, $text) {
-		if ($this->report) {
-			$this->report->setDebug($this->report->getDebug().$text);
-		}
+	public function log($level, $text): void {
 		if ($level <= $this->debug) {
 			$this->logger->info($text);
 		}

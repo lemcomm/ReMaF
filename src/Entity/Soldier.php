@@ -554,7 +554,7 @@ class Soldier extends NPC {
     /**
      * Set assigned_since
      *
-     * @param integer $assignedSince
+     * @param integer|null $assignedSince
      * @return Soldier
      */
     public function setAssignedSince($assignedSince)

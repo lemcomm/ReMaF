@@ -2,31 +2,28 @@
 
 namespace App\Service;
 
-use App\Entity\Achievement;
 use App\Entity\Association;
 use App\Entity\AssociationMember;
 use App\Entity\Character;
 use App\Entity\CharacterBackground;
-use App\Entity\House;
 use App\Entity\Partnership;
 use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Entity\RealmPosition;
 use App\Entity\User;
-use App\Service\AppState;
-use App\Service\AssociationManager;
-use App\Service\ConversationManager;
-use App\Service\DungeonMaster;
+use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class CharacterManager {
 
 	protected EntityManagerInterface $em;
-	protected \App\Service\AppState $appstate;
+	protected AppState $appstate;
+	protected CommonService $common;
 	protected MilitaryManager $milman;
 	protected History $history;
 	protected Politics $politics;
@@ -37,9 +34,12 @@ class CharacterManager {
 	protected AssociationManager $assocman;
 	protected HelperService $helper;
 
-	public function __construct(EntityManagerInterface $em, AppState $appstate, History $history, MilitaryManager $milman, Politics $politics, RealmManager $realmmanager, ConversationManager $convman, DungeonMaster $dm, WarManager $warman, AssociationManager $assocman, HelperService $helper) {
+	private ?ArrayCollection $seen;
+
+	public function __construct(EntityManagerInterface $em, AppState $appstate, CommonService $common, History $history, MilitaryManager $milman, Politics $politics, RealmManager $realmmanager, ConversationManager $convman, DungeonMaster $dm, WarManager $warman, AssociationManager $assocman, HelperService $helper) {
 		$this->em = $em;
 		$this->appstate = $appstate;
+		$this->common = $common;
 		$this->history = $history;
 		$this->milman = $milman;
 		$this->politics = $politics;
@@ -64,8 +64,8 @@ class CharacterManager {
 		}
 		$character->setName($name);
 		$character->setUser($user);
-		$character->setCreated(new \DateTime("now"));
-		$character->setLastAccess(new \DateTime("now"));
+		$character->setCreated(new DateTime("now"));
+		$character->setLastAccess(new DateTime("now"));
 		if ($gender=='f') {
 			$character->setMale(false);
 		} else {
@@ -88,7 +88,7 @@ class CharacterManager {
 				$character->setGeneration($mother->getGeneration() + 1);
 			}
 		}
-		if ($father && $mother && $father->getHouse() && $mother->getHouse() && $father->getHouse() == $mother->getHouse()) {
+		if ($father && $mother && $father->getHouse() && $mother->getHouse() && $father->getHouse() === $mother->getHouse()) {
 			$character->setHouse($father->getHouse());
 			$this->history->logEvent(
 				$father->getHouse(),
@@ -162,7 +162,7 @@ class CharacterManager {
 
 		// FIXME: apparently, sometimes this return an empty string? HOW ?
 		if ($genome == '' || $genome == '  ') {
-			throw new \Exception("Please report this error to mafteam@lemuriacommunity.org: u:".$user->getId()."/f:".($father?$father->getId():'0')."/m:".($mother?$mother->getId():'0')."/g:".$genome."/");
+			throw new Exception("Please report this error to mafteam@lemuriacommunity.org: u:".$user->getId()."/f:".($father?$father->getId():'0')."/m:".($mother?$mother->getId():'0')."/g:".$genome."/");
 		}
 
 		return $genome;
@@ -189,9 +189,7 @@ class CharacterManager {
 		$this->history->logEvent($character, 'event.character.'.$deathmsg, $killer?array('%link-character%'=>$killer->getId()):null, History::ULTRA, true);
 
 		// reset account restriction, so it is recalculated - we do this very early so later failures don't impact it
-		if ($character->getUser()) {
-			$character->getUser()->setRestricted(false);
-		}
+		$character->getUser()?->setRestricted(false);
 
 		// TODO: info/event to parents, children and husband
 
@@ -482,9 +480,7 @@ class CharacterManager {
 		$this->history->logEvent($character, 'event.character.retired', array(), History::HIGH, true);
 
 		// reset account restriction, so it is recalculated - we do this very early so later failures don't impact it
-		if ($character->getUser()) {
-			$character->getUser()->setRestricted(false);
-		}
+		$character->getUser()?->setRestricted(false);
 
 		// TODO: info/event to parents, children and husband
 
@@ -691,7 +687,7 @@ class CharacterManager {
 
 		// clean out dungeon stuff
 		$this->dm->retireDungeoneer($character);
-		$character->setRetiredOn(new \DateTime("now"));
+		$character->setRetiredOn(new DateTime("now"));
 
 		$this->convman->leaveAllConversations($character);
 		$this->em->flush();
@@ -726,14 +722,14 @@ class CharacterManager {
 			$this->em->remove($act);
 		}
 		foreach ($character->getBattlegroups() as $bg) {
-			$this->war_manager->removeCharacterFromBattlegroup($character, $bg);
+			$this->warman->removeCharacterFromBattlegroup($character, $bg);
 		}
 		$captor = $character->getPrisonerOf();
 		$character->setLocation($captor->getLocation());
 		$character->setInsideSettlement($captor->getInsideSettlement());
 	}
 
-	public function locationInheritance($thing, Character $char, $heir, $via) {
+	public function locationInheritance($thing, Character $char, $heir, $via): void {
 		# $heir and $via can be false or Character objects.
 		if ($thing instanceof Settlement) {
 			$type = 'settlement';
@@ -741,7 +737,7 @@ class CharacterManager {
 			$fail = 'failInheritEstate';
 		} else {
 			if ($thing->getType()->getName() == 'home' && $thing->getHouse() && $thing->getOwner() === $thing->getHouse()->getHead()) {
-				return true; # Lineage is respected over law.
+				return; # Lineage is respected over law.
 			}
 			$type = 'place';
 			$bequeath = 'bequeathPlace';
@@ -1193,7 +1189,7 @@ class CharacterManager {
 	}
 
 	public function inheritPosition(RealmPosition $position, Realm $realm, Character $heir, Character $from, Character $via=null, $why='death'): void {
-		$this->realmmanager->makePositionHolder($position, $heir);
+		$position->addHolder($heir);
 		// NOTE: This can add characters to realms they weren't already in!
 		if ($from == $via || $via == null) {
 			$this->history->logEvent(
@@ -1252,56 +1248,23 @@ class CharacterManager {
 
 	/* achievements */
 	public function getAchievement(Character $character, $key) {
-		# The below bypasses the doctrine cache, meaning it will always pull the current value from the database.
-		$query = $this->em->createQuery('SELECT a FROM App:Achievement a WHERE a.character = :me AND a.type = :type ORDER BY a.id ASC')->setParameters(['me'=>$character, 'type'=>$key])->setMaxResults(1);
-		$result = $query->getResult();
-		if ($result) {
-			return $result[0];
-		} else {
-			return false;
-		}
+		return $this->common->getAchievement($character, $key);
 	}
 
 	public function getAchievementValue(Character $character, $key) {
-		if ($a = $this->getAchievement($character, $key)) {
-			return $a->getValue();
-		} else {
-			return null;
-		}
+		return $this->common->getAchievementValue($character, $key);
 	}
 
 	public function setAchievement(Character $character, $key, $value): void {
-		$this->setMaxAchievement($character, $key, $value, false);
+		$this->common->setMaxAchievement($character, $key, $value, false);
 	}
 
 	public function setMaxAchievement(Character $character, $key, $value, $only_raise=true): void {
-		if ($a = $this->getAchievement($character, $key)) {
-			if (!$only_raise || $a->getValue() < $value) {
-				$a->setValue($value);
-			}
-		} else {
-			$a = new Achievement;
-			$a->setType($key);
-			$a->setValue($value);
-			$a->setCharacter($character);
-			$this->em->persist($a);
-			$character->addAchievement($a);
-		}
+		$this->common->setMaxAchievement($character, $key, $value, $only_raise);
 	}
 
 	public function addAchievement(Character $character, $key, $value=1): void {
-		if ($value==0) return; // this way we can call this method without checking and it'll not update if not necessary
-		$value = round($value);
-		if ($a = $this->getAchievement($character, $key)) {
-			$a->setValue($a->getValue() + $value);
-		} else {
-			$a = new Achievement;
-			$a->setType($key);
-			$a->setValue($value);
-			$a->setCharacter($character);
-			$this->em->persist($a);
-			$character->addAchievement($a);
-		}
+		$this->common->addAchievement($character, $key, $value);
 	}
 
 	public function Reputation(Character $char, User $me=null): array {
@@ -1387,7 +1350,7 @@ class CharacterManager {
 	}
 
 	public function checkReturnability(Character $character): void {
-		if (!is_null($character->getRetiredOn()) && $character->getRetiredOn()->diff(new \DateTime("now"))->days < 7) {
+		if (!is_null($character->getRetiredOn()) && $character->getRetiredOn()->diff(new DateTime("now"))->days < 7) {
 			throw new AccessDeniedHttpException('error.noaccess.notreturnable');
 		}
 	}

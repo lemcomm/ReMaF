@@ -13,19 +13,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class Generator {
 
-	protected $em;
-	protected $milman;
+	protected EntityManagerInterface $em;
+	protected MilitaryManager $milman;
 
 	public function __construct(EntityManagerInterface $em, MilitaryManager $milman) {
 		$this->em = $em;
 		$this->milman = $milman;
 	}
 
-	public function randomName(Settlement $home=null, $gender=false) {
-        $culture = null;
-		if ($home) {
-			$culture = $home->getCulture();
-		}
+	public function randomName(Settlement $home=null, $gender=false): string {
+		$culture = $home?->getCulture();
 		$qb = $this->em->createQueryBuilder();
 		$qb->select('count(n.id)')->from('BM2SiteBundle:NameList', 'n');
 		if ($culture) {
@@ -54,7 +51,7 @@ class Generator {
 		return $name->getName();
 	}
 
-	public function randomSoldier(EquipmentType $weapon=null, EquipmentType $armour=null, EquipmentType $equipment=null, EquipmentType $mount=null, Settlement $home=null, $corruption=0, Unit $unit) {
+	public function randomSoldier(EquipmentType $weapon, EquipmentType $armour, EquipmentType $equipment, EquipmentType $mount, Settlement $home, $corruption, Unit $unit): ?Soldier {
 		$soldier = new Soldier;
 		$soldier->setName($this->randomName($home));
 		$soldier->setLocked(false);
@@ -106,7 +103,7 @@ class Generator {
 		return $soldier;
 	}
 
-	public function randomEntourageMember(EntourageType $type, Settlement $home=null) {
+	public function randomEntourageMember(EntourageType $type, Settlement $home=null): Entourage {
 		$servant = new Entourage();
 		$servant->setType($type);
 		$servant->setName($this->randomName($home));

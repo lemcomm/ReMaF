@@ -6,6 +6,7 @@ use App\Entity\Event;
 use App\Entity\MailEntry;
 use App\Entity\User;
 use App\Service\AppState;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
@@ -20,6 +21,7 @@ class MailManager {
 	protected Address $mail_from;
 	protected mixed $mail_reply_to;
 	protected mixed $optOut;
+	private MailerInterface $mailer;
 
 	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, MailerInterface $mailer, AppState $appstate) {
 		$this->em = $em;
@@ -38,63 +40,63 @@ class MailManager {
 		$entry->setUser($user);
 		$entry->setType('event');
 		$entry->setSendTime($this->calculateWhen($user->getEmailDelay()));
-		$entry->setTs(new \DateTime('now'));
+		$entry->setTs(new DateTime('now'));
 		$entry->setContent($text);
 	}
 
-	public function calculateWhen($delay): \DateTime {
+	public function calculateWhen($delay): DateTime {
 		switch ($delay) {
 			case 'now':
-				return new \DateTime('now');
+				return new DateTime('now');
 			case 'hourly':
-				$date = new \DateTime("+1 hour");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				$date = new DateTime("+1 hour");
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			case '6h':
-				$date = new \DateTime("now");
+				$date = new DateTime("now");
 				$next = 6 - (intval($date->format("H")) % 6);
 				$date->modify("+".$next." hours");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			case '12h':
-				$date = new \DateTime("now");
+				$date = new DateTime("now");
 				$next = 12 - (intval($date->format("H")) % 12);
 				$date->modify("+".$next." hours");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			case 'daily':
-				$date = new \DateTime("midnight + 1 day");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				$date = new DateTime("midnight + 1 day");
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			case 'sundays':
-				$date = new \DateTime("next sunday");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				$date = new DateTime("next sunday");
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			case 'mondays':
-				$date = new \DateTime("next monday");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				$date = new DateTime("next monday");
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			case 'tuesdays':
-				$date = new \DateTime("next tuesday");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				$date = new DateTime("next tuesday");
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			case 'wednesdays':
-				$date = new \DateTime("next wednesday");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				$date = new DateTime("next wednesday");
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			case 'thursdays':
-				$date = new \DateTime("next thursday");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				$date = new DateTime("next thursday");
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			case 'fridays':
-				$date = new \DateTime("next friday");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				$date = new DateTime("next friday");
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			case 'saturdays':
-				$date = new \DateTime("next saturday");
-				return new \DateTime($date->format("Y-m-d H:00:00"));
+				$date = new DateTime("next saturday");
+				return new DateTime($date->format("Y-m-d H:00:00"));
 			default:
-				return new \DateTime("now");
+				return new DateTime("now");
 		}
 	}
 
 	public function sendEventEmails(): void {
-		$now = new \DateTime("now");
+		$now = new DateTime("now");
 		$em = $this->em;
 		$query = $em->createQuery("SELECT u FROM BM2SiteBundle:User u JOIN u.mail_entries m WHERE m.type = :type");
 		$query->setParameters(['type'=>'event']);
 		$users = $query->getResult();
-		$twoMonths = new \DateTime("-2 months");
+		$twoMonths = new DateTime("-2 months");
 
 		foreach ($users as $user) {
 			$remove = [];

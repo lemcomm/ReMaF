@@ -6,8 +6,8 @@ use App\Entity\Character;
 use App\Entity\SecurityLog;
 use App\Entity\Setting;
 use App\Entity\User;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -16,10 +16,10 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class AppState {
 
+	private CommonService $common;
 	private EntityManagerInterface $em;
 	private TokenStorageInterface $tokenStorage;
 	private RequestStack $requestStack;
-	private Security $sec;
 
 	private array $languages = array(
 		'en' => 'english',
@@ -29,12 +29,11 @@ class AppState {
 		'it' => 'italiano'
 		);
 
-	public function __construct(CommonService $common, EntityManagerInterface $em, TokenStorageInterface $tokenStorage, RequestStack $requestStack, Security $sec) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, TokenStorageInterface $tokenStorage, RequestStack $requestStack) {
 		$this->common = $common;
 		$this->em = $em;
 		$this->tokenStorage = $tokenStorage;
 		$this->requestStack = $requestStack;
-		$this->sec = $sec;
 	}
 
 	public function availableTranslations(): array {
@@ -59,7 +58,7 @@ class AppState {
 			}
 		}
 		$user = $token->getUser();
-		if (!$user || ! $user instanceof UserInterface) {
+		if (! $user instanceof UserInterface) {
 			if (!$required) {
 				return null;
 			} else {
@@ -103,7 +102,7 @@ class AppState {
 		}
 
 		if ($character->isAlive()) {
-			$character->setLastAccess(new \DateTime('now')); // no flush here, most actions will issue one anyways and we don't need 100% reliability
+			$character->setLastAccess(new DateTime('now')); // no flush here, most actions will issue one anyways and we don't need 100% reliability
 		}
 		return $character;
 	}
@@ -125,12 +124,12 @@ class AppState {
 	}
 
 	public function getGlobal($name, $default=false) {
-		$setting = $this->em->getRepository(Setting::class)->findOneByName($name);
+		$setting = $this->em->getRepository(Setting::class)->findOneBy(['name'=>$name]);
 		if (!$setting) return $default;
 		return $setting->getValue();
 	}
 	public function setGlobal($name, $value): void {
-		$setting = $this->em->getRepository(Setting::class)->findOneByName($name);
+		$setting = $this->em->getRepository(Setting::class)->findOneBy(['name'=>$name]);
 		if (!$setting) {
 			$setting = new Setting();
 			$setting->setName($name);
@@ -169,9 +168,12 @@ class AppState {
 	}
 
 	public function findEmailOptOutToken(User $user): string {
-		return $user->getEmailOptOutToken()?$user->getEmailOptOutToken():$this->generateEmailOptOutToken($user);
+		return $user->getEmailOptOutToken()?:$this->generateEmailOptOutToken($user);
 	}
 
+	/**
+	 * @throws \Exception
+	 */
 	public function generateEmailOptOutToken(User $user): string {
 		$token = $this->generateToken();
 		$user->setEmailOptOutToken($token);
@@ -179,6 +181,9 @@ class AppState {
 		return $token;
 	}
 
+	/**
+	 * @throws \Exception
+	 */
 	public function generateToken($length = 128, $method = 'trimbase64'): string {
 		if ($method = 'trimbase64') {
 			$token = rtrim(strtr(base64_encode(random_bytes($length)), '+/', '-_'), '=');
@@ -204,7 +209,7 @@ class AppState {
 
 	public function logSecurityViolation($ip, $route, $user, $type): void {
 		$em = $this->em;
-		$datetime = new \DateTime();
+		$datetime = new DateTime();
 		$log = new SecurityLog;
 		$em->persist($log);
 		$log->setUser($user);

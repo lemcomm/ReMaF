@@ -34,32 +34,33 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class GameRunner {
 
-	private $batchsize=200;
-	private $maxtime=2400;
-	private $em;
-	private $appstate;
-	private $logger;
-	private $resolver;
-	private $economy;
-	private $politics;
-	private $history;
-	private $milman;
-	private $battlerunner;
-	private $interactions;
-	private $geography;
-	private $generator;
-	private $rm;
-	private $convman;
-	private $pm;
-	private $npc;
-	private $cm;
+	private int $batchsize=200;
+	private int $maxtime=2400;
+	private EntityManagerInterface $em;
+	private AppState $appstate;
+	private LoggerInterface $logger;
+	private ActionResolution $resolver;
+	private Economy $economy;
+	private Politics $politics;
+	private History $history;
+	private MilitaryManager $milman;
+	private BattleRunner $battlerunner;
+	private Interactions $interactions;
+	private Geography $geography;
+	private Generator $generator;
+	private RealmManager $rm;
+	private ConversationManager $convman;
+	private PermissionManager $pm;
+	private NpcManager $npc;
+	private CharacterManager $cm;
 
-	private $cycle=0;
-	private $output=false;
-	private $debug=false;
-	private $limited=false;
+	private int $cycle=0;
+	private bool $output=false;
+	private bool $debug=false;
+	private bool $limited=false;
+	private int $speedmod;
 
-	private $bandits_ok_distance = 50000;
+	private int $bandits_ok_distance = 50000;
 	private $seen;
 	public function __construct(EntityManagerInterface $em, AppState $appstate, LoggerInterface $logger, ActionResolution $resolver, Economy $economy, Politics $politics, History $history, MilitaryManager $milman, BattleRunner $battlerunner, Interactions $interactions, Geography $geography, Generator $generator, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm) {
 		$this->em = $em;
@@ -274,7 +275,7 @@ class GameRunner {
 						} else if ($position->getInherit()) {
 							if ($heir) {
 								$this->logger->info("    ".$heir->getName()." inherits ".$position->getRealm()->getName());
-								$this->cm->inhertPosition($position->getRealm(), $heir, $character, $via, 'death');
+								$this->cm->inheritPosition($position, $position->getRealm(), $heir, $character, $via, 'death');
 							} else {
 								$this->logger->info("    No one inherits ".$position->getName());
 								$this->cm->failInheritPosition($character, $position, 'death');
@@ -327,7 +328,7 @@ class GameRunner {
 							$this->logger->info($position->getName().", ".$position->getId().", is detected as non-ruler, inherited position.");
 							if ($heir) {
 								$this->logger->info("    ".$heir->getName()." inherits ".$position->getName());
-								$this->cm->inheritPosition($position->getRealm(), $heir, $character, $via, 'slumber');
+								$this->cm->inheritPosition($position, $position->getRealm(), $heir, $character, $via, 'slumber');
 							} else {
 								$this->logger->info("    No one inherits ".$position->getName());
 								$this->cm->failInheritPosition($character, $position, 'slumber');

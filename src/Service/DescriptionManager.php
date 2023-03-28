@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Character;
 use App\Entity\Description;
 use App\Entity\SpawnDescription;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DescriptionManager {
@@ -133,7 +134,7 @@ class DescriptionManager {
 		if ($character) {
 			$desc->setUpdater($character);
 		}
-		$desc->setTs(new \DateTime("now"));
+		$desc->setTs(new DateTime("now"));
 		$desc->setCycle($this->appstate->getCycle());
 		if (!$new) {
 			/* No need to tell the people that just made the thing that they updated the descriptions. */
@@ -200,7 +201,7 @@ class DescriptionManager {
 		return $desc;
 	}
 
-	public function newSpawnDescription($entity, $text, Character $character=null, $new=false): SpawnDescription {
+	public function newSpawnDescription($entity, $text, Character $character=null): SpawnDescription {
 		/* First, check to see if there's already one. */
 		$olddesc = NULL;
 		if ($entity->getSpawnDescription()) {
@@ -247,7 +248,7 @@ class DescriptionManager {
 		}
 		$desc->setText($text);
 		$desc->setUpdater($character);
-		$desc->setTs(new \DateTime("now"));
+		$desc->setTs(new DateTime("now"));
 		$desc->setCycle($this->appstate->getCycle());
 		$this->em->flush($desc);
 		return $desc;

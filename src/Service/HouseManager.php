@@ -19,7 +19,7 @@ class HouseManager {
 		$this->descman = $descman;
 	}
 
-	public function create($name, $motto = null, $description = null, $private_description = null, $secret_description = null, $place=null, $settlement=null, $crest = null, Character $founder) {
+	public function create($name, $motto, $description, $private_description, $secret_description, $place, $settlement, $crest, Character $founder): House {
 		# _create(name, description, private description, secret description, superior house, place, settlement, crest, and founder)
 		$house = $this->_create($name, $motto, $description, $private_description, $secret_description, null, $place, $settlement, $crest, $founder);
 
@@ -40,7 +40,7 @@ class HouseManager {
 		return $house;
 	}
 
-	public function subcreate($name, $motto = null, $description = null, $private_description = null, $secret_description = null, $place = null, $settlement = null, $crest = null, $founder, House $id) {
+	public function subcreate($name, $motto, $description, $private_description, $secret_description, $place, $settlement, $crest, $founder, House $id): House {
 		# _create(name, description, private description, secret description, superior house, settlement, crest, and founder)
 		$house = $this->_create($name, $motto, $description, $private_description, $secret_description, $id, $place, $settlement, $crest, $founder);
 
@@ -72,7 +72,7 @@ class HouseManager {
 		return $house;
 	}
 
-	private function _create($name, $motto, $description = null, $private_description = null, $secret_description = null, $superior = null, $place = null, $settlement = null, $crest = null, Character $founder) {
+	private function _create($name, $motto, $description, $private_description, $secret_description, $superior, $place, $settlement, $crest, Character $founder): House {
 		$house = new House;
 		$this->em->persist($house);
 		$house->setName($name);

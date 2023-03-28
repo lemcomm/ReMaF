@@ -14,7 +14,6 @@ use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
-use App\Service\AppState;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -294,7 +293,7 @@ class ConversationManager {
 		return true;
         }
 
-        public function writeMessage(Conversation $conv, $replyTo = null, Character $char = null, $text, $type, $total = null, $flush = true, $antiTickUp = false, $internal = false) {
+        public function writeMessage(Conversation $conv, $replyTo, ?Character $char, $text, $type, $total = null, $flush = true, $antiTickUp = false, $internal = false) {
                 if ($type == 'system' || $internal) {
                         $valid = true;
                 } else {
@@ -373,7 +372,7 @@ class ConversationManager {
                 return $conv;
         }
 
-        public function writeLocalMessage(Character $char, $target, $topic = null, $type, $text, $replyTo = null, $group) {
+        public function writeLocalMessage(Character $char, $target, $topic, $type, $text, $replyTo, $group) {
                 #TODO: Finish reworking this.
                 if ($target == 'place') {
                         $recipients = $char->getInsidePlace()->getCharactersPresent();
@@ -436,7 +435,7 @@ class ConversationManager {
                 return $mine;
         }
 
-        public function newConversation(Character $char=null, $recipients=null, $topic, $type, $content = null, $org = null, $system = null, $local = false) {
+        public function newConversation(?Character $char, $recipients, $topic, $type, $content = null, $org = null, $system = null, $local = false) {
                 if ($recipients === null && $org === null && $local === false) {
                         return 'no recipients';
                 }
@@ -517,8 +516,6 @@ class ConversationManager {
                                         $perm->setUnread(0);
                                 }
                                 $added[] = $recipient;
-                        } else {
-                                #Do nothing, duplicate recipient.
                         }
                 }
                 $this->em->flush();
@@ -869,7 +866,7 @@ class ConversationManager {
                 return $perm;
         }
 
-        public function updateSystemConversations($orgType = 'realm', $org) {
+        public function updateSystemConversations($orgType, $org) {
                 $sysConvs = ['announcements'=>'Announcements', 'general'=>'General Discussions'];
                 foreach ($sysConvs as $sys=>$name) {
                         $conv = $this->em->getRepository('App\Entity\Conversation')->findOneBy([$orgType=>$org, 'system'=>$sys]);

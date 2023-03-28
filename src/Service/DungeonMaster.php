@@ -6,11 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Psr\Log\LoggerInterface;
 
-use App\Entity\Achievement;
 use App\Entity\Character;
-use App\Service\History;
-use App\Service\Geography;
-
 use App\Entity\Dungeon;
 use App\Entity\Dungeoneer;
 use App\Entity\DungeonCard;
@@ -25,6 +21,7 @@ use App\Entity\DungeonParty;
 class DungeonMaster {
 
 	private EntityManagerInterface $em;
+	private CommonService $common;
 	private DungeonCreator $creator;
 	private History $history;
 	private LoggerInterface $logger;
@@ -48,9 +45,10 @@ class DungeonMaster {
 		'basic.fight'		=> 5
 	);
 
-	public function __construct(EntityManagerInterface $em, DungeonCreator $creator, History $history, LoggerInterface $logger, RouterInterface $router) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, DungeonCreator $creator, History $history, LoggerInterface $logger, RouterInterface $router) {
 		$this->em = $em;
 		$this->creator = $creator;
+		$this->common = $common;
 		$this->history = $history;
 		$this->logger = $logger;
 		$this->router = $router;
@@ -119,7 +117,7 @@ class DungeonMaster {
 		$msg = new DungeonMessage;
 		$msg->setTs(new \DateTime("now"));
 		$msg->setSender($sender);
-		$msg->setDungeon($sender->getCurrentDungeon());
+		$msg->setParty($sender->getParty());
 		$msg->setContent($content);
 
 		$this->em->persist($msg);
@@ -638,7 +636,7 @@ In short before a dungeon starts you get a bit longer, but when it's running you
 				$target->setAmount(max(0,$target->getAmount()-1));
 				$wounds-=$target->getType()->getWounds();
 				if ($target->getType()->getName()=='dragon') {
-					$this->addAchievement($dungeoneer->getCharacter(), 'dragons', 1);
+					$this->common->addAchievement($dungeoneer->getCharacter(), 'dragons', 1);
 				}
 			}
 			if ($wounds>0) {
@@ -1002,6 +1000,7 @@ In short before a dungeon starts you get a bit longer, but when it's running you
 			}
 		}
 		$this->logger->error("we should never get here - random card drawing error!");
+		return false;
 	}
 
 
@@ -1029,22 +1028,6 @@ In short before a dungeon starts you get a bit longer, but when it's running you
 			}
 		} else {
 			$this->logger->warning("no current level?");
-		}
-	}
-
-	# Yes, this is dupliocated from CharacterManager, but CharacterManager depends on DungeonMaster, so we can't call ChaacterManager from here.
-	public function addAchievement(Character $character, $key, $value=1): void {
-		if ($value==0) return; // this way we can call this method without checking and it'll not update if not necessary
-		$value = round($value);
-		if ($a = $this->getAchievement($character, $key)) {
-			$a->setValue($a->getValue() + $value);
-		} else {
-			$a = new Achievement;
-			$a->setType($key);
-			$a->setValue($value);
-			$a->setCharacter($character);
-			$this->em->persist($a);
-			$character->addAchievement($a);
 		}
 	}
 

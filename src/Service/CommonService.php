@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Achievement;
 use App\Entity\ActivityReportObserver;
 use App\Entity\BattleReportObserver;
 use App\Entity\Character;
@@ -19,10 +20,8 @@ class CommonService {
 	*/
 
 	protected EntityManagerInterface $em;
-	protected Geography $geo;
-	protected History $history;
 
-	public function __construct(EntityManagerInterface $em, Geography $geo, History $history) {
+	public function __construct(EntityManagerInterface $em) {
 		$this->em = $em;
 	}
 
@@ -92,6 +91,60 @@ class CommonService {
 		$query->setParameter('char', $character);
 		$query->setMaxResults(1);
 		return $query->getSingleResult();
+	}
+
+	/* achievements */
+	public function getAchievement(Character $character, $key) {
+		# The below bypasses the doctrine cache, meaning it will always pull the current value from the database.
+		$query = $this->em->createQuery('SELECT a FROM App:Achievement a WHERE a.character = :me AND a.type = :type ORDER BY a.id ASC')->setParameters(['me'=>$character, 'type'=>$key])->setMaxResults(1);
+		$result = $query->getResult();
+		if ($result) {
+			return $result[0];
+		} else {
+			return false;
+		}
+	}
+
+	public function getAchievementValue(Character $character, $key) {
+		if ($a = $this->getAchievement($character, $key)) {
+			return $a->getValue();
+		} else {
+			return null;
+		}
+	}
+
+	public function setAchievement(Character $character, $key, $value): void {
+		$this->setMaxAchievement($character, $key, $value, false);
+	}
+
+	public function setMaxAchievement(Character $character, $key, $value, $only_raise=true): void {
+		if ($a = $this->getAchievement($character, $key)) {
+			if (!$only_raise || $a->getValue() < $value) {
+				$a->setValue($value);
+			}
+		} else {
+			$a = new Achievement;
+			$a->setType($key);
+			$a->setValue($value);
+			$a->setCharacter($character);
+			$this->em->persist($a);
+			$character->addAchievement($a);
+		}
+	}
+
+	public function addAchievement(Character $character, $key, $value=1): void {
+		if ($value==0) return; // this way we can call this method without checking and it'll not update if not necessary
+		$value = round($value);
+		if ($a = $this->getAchievement($character, $key)) {
+			$a->setValue($a->getValue() + $value);
+		} else {
+			$a = new Achievement;
+			$a->setType($key);
+			$a->setValue($value);
+			$a->setCharacter($character);
+			$this->em->persist($a);
+			$character->addAchievement($a);
+		}
 	}
 
 }

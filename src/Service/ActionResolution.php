@@ -3,36 +3,32 @@
 namespace App\Service;
 
 use App\Entity\Action;
-use App\Service\ActionManager;
-use App\Service\CharacterManager;
-use App\Service\Dispatcher;
-use App\Service\HelperService;
-use App\Service\Interactions;
-use App\Service\WarManager;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ActionResolution {
 
-	private $em;
-	private $history;
-	private $dispatcher;
-	private $geography;
-	private $interactions;
-	private $politics;
-	private $characters;
-	private $permissions;
-	private $warman;
-	private $actman;
-	private $helper;
+	private CharacterManager $charman;
+	private CommonService $common;
+	private EntityManagerInterface $em;
+	private History $history;
+	private Dispatcher $dispatcher;
+	private Geography $geography;
+	private Interactions $interactions;
+	private Politics $politics;
+	private ArrayCollection $characters;
+	private PermissionManager $permissions;
+	private WarManager $warman;
+	private ActionManager $actman;
 
-	private $max_progress = 5; // maximum number of actions to resolve in each background progression call
-	private $debug=100;
+	private int $max_progress = 5; // maximum number of actions to resolve in each background progression call
+	private int $debug=100;
 
 
-	public function __construct(EntityManagerInterface $em, CharacterManager $charman, History $history, Dispatcher $dispatcher, Geography $geography, Interactions $interactions, Politics $politics, PermissionManager $permissions, WarManager $warman, ActionManager $actman, HelperService $helper) {
+	public function __construct(EntityManagerInterface $em, CharacterManager $charman, CommonService $common, History $history, Dispatcher $dispatcher, Geography $geography, Interactions $interactions, Politics $politics, PermissionManager $permissions, WarManager $warman, ActionManager $actman) {
 		$this->em = $em;
+		$this->common = $common;
 		$this->charman = $charman;
 		$this->history = $history;
 		$this->dispatcher = $dispatcher;
@@ -42,11 +38,10 @@ class ActionResolution {
 		$this->permissions = $permissions;
 		$this->warman = $warman;
 		$this->actman = $actman;
-		$this->helper = $helper;
 		$this->characters = new ArrayCollection();
 	}
 
-	public function progress() {
+	public function progress(): void {
 		$query = $this->em->createQuery("SELECT a FROM App:Action a WHERE a.complete IS NOT NULL AND a.complete < :now");
 		$query->setParameter('now', new \DateTime("now"));
 		$query->setMaxResults($this->max_progress);
@@ -55,7 +50,7 @@ class ActionResolution {
 		}
 	}
 
-	public function resolve(Action $action) {
+	public function resolve(Action $action): bool {
 		$type = strtr($action->getType(), '.', '_');
 
 		if (method_exists(__CLASS__, $type)) {
@@ -89,12 +84,12 @@ class ActionResolution {
 	// TODO: messages are mixed, sometimes 2nd person (you have...) and sometimes 3rd (he has...)
 	//      --> see note in MessageTranslateExtension
 
-	private function remove(Action $action) {
+	private function remove(Action $action): void {
 		// this is just a placeholder action marked for removal, so let's do exactly that (it's our workaround to Doctrine's broken cascades)
 		$this->em->remove($action);
 	}
 
-	private function check_settlement_take(Action $action) {
+	private function check_settlement_take(Action $action): bool {
 		$settlement = $action->getTargetSettlement();
 		$this->dispatcher->setCharacter($action->getCharacter());
 		$test = $this->dispatcher->controlTakeTest(false, false);
@@ -143,7 +138,7 @@ class ActionResolution {
 		}
 	}
 
-	private function update_settlement_take(Action $action) {
+	private function update_settlement_take(Action $action): void {
 		// recalculate time
 		if ($this->check_settlement_take($action)) {
 			$now = new \DateTime("now");
@@ -184,7 +179,7 @@ class ActionResolution {
 		$this->em->flush();
 	}
 
-	private function settlement_take(Action $action) {
+	private function settlement_take(Action $action): void {
 		if ($this->check_settlement_take($action)) {
 			// success
 			$settlement = $action->getTargetSettlement();
@@ -210,19 +205,19 @@ class ActionResolution {
 		$this->em->remove($action);
 	}
 
-	private function update_settlement_loot(Action $action) {
+	private function update_settlement_loot(Action $action): void {
 		$now = new \DateTime("now");
 		if ($action->getComplete() <= $now) {
 			$this->em->remove($action);
 		}
 	}
 
-	private function settlement_loot(Action $action) {
+	private function settlement_loot(Action $action): void {
 		// just remove this, damage and all has already been applied, we just needed the action to stop travel
 		$this->em->remove($action);
 	}
 
-	private function update_military_block(Action $action) {
+	private function update_military_block(Action $action): void {
 		if ($action->getCharacter()->isInBattle()) {
 			return; // to avoid double battls
 		}
@@ -244,17 +239,17 @@ class ActionResolution {
 	}
 
 
-	private function military_damage(Action $action) {
+	private function military_damage(Action $action): void {
 		// just remove this, damage and all has already been applied, we just needed the action to stop travel
 		$this->em->remove($action);
 	}
 
-	private function military_hire(Action $action) {
+	private function military_hire(Action $action): void {
 		// just remove this, it is just a timed action to stop rich people from hiring all mercenaries in one go
 		$this->em->remove($action);
 	}
 
-	private function military_regroup(Action $action) {
+	private function military_regroup(Action $action): void {
 		// just remove this, it is just a timed action to stop immediate re-engagements
 		$this->history->logEvent(
 			$action->getCharacter(),
@@ -267,7 +262,7 @@ class ActionResolution {
 	}
 
 	// TODO: this is not actually being used anymore - do we still want to keep it?
-	private function settlement_enter(Action $action) {
+	private function settlement_enter(Action $action): void {
 		$settlement = $action->getTargetSettlement();
 
 		if (!$settlement) {
@@ -297,7 +292,7 @@ class ActionResolution {
 		$this->em->flush();
 	}
 
-	private function settlement_rename(Action $action) {
+	private function settlement_rename(Action $action): void {
 		$settlement = $action->getTargetSettlement();
 		$newname = $action->getStringValue();
 		$oldname = $settlement->getName();
@@ -337,7 +332,7 @@ class ActionResolution {
 		$this->em->flush();
 	}
 
-	private function settlement_grant(Action $action) {
+	private function settlement_grant(Action $action): void {
 		$settlement = $action->getTargetSettlement();
 		$to = $action->getTargetCharacter();
 
@@ -377,7 +372,7 @@ class ActionResolution {
 	}
 
 
-	private function settlement_occupant(Action $action) {
+	private function settlement_occupant(Action $action): void {
 		$settlement = $action->getTargetSettlement();
 		$to = $action->getTargetCharacter();
 
@@ -403,22 +398,22 @@ class ActionResolution {
 		$this->em->flush();
 	}
 
-	private function settlement_attack(Action $action) {
+	private function settlement_attack(Action $action): void {
 		// this is just a convenience alias
 		$this->military_battle($action);
 	}
 
-	private function settlement_assault(Action $action) {
+	private function settlement_assault(Action $action): void {
 		/* Just an alias for now, so we can differentiate these on creation. Later we can add more dynamic logic. */
 		$this->military_battle($action);
 	}
 
-	private function settlement_sortie(Action $action) {
+	private function settlement_sortie(Action $action): void {
 		/* Just an alias for now, so we can differentiate these on creation. Later we can add more dynamic logic. */
 		$this->military_battle($action);
 	}
 
-	private function update_settlement_defend(Action $action) {
+	private function update_settlement_defend(Action $action): void {
 		if (!$action->getCharacter() || !$action->getTargetSettlement()) {
 			$this->log(0, 'invalid action '.$action->getId());
 			// TODO: clean it up, but during alpha we want it to hang around for debug purposes
@@ -440,7 +435,7 @@ class ActionResolution {
 		}
 	}
 
-	private function update_military_aid(Action $action) {
+	private function update_military_aid(Action $action): void {
 		$character = $action->getCharacter();
 		if ($character->isInBattle() || $character->isDoingAction('military.regroup')) {
 			return;
@@ -468,7 +463,7 @@ class ActionResolution {
 		}
 	}
 
-	private function military_aid(Action $action) {
+	private function military_aid(Action $action): void {
 		// support ends
 		$this->history->logEvent(
 			$action->getCharacter(),
@@ -480,11 +475,11 @@ class ActionResolution {
 		$this->em->flush();
 	}
 
-	private function military_battle(Action $action) {
+	private function military_battle(Action $action): void {
 		// battlerunner actually resolves this all
 	}
 
-	private function military_disengage(Action $action) {
+	private function military_disengage(Action $action): void {
 		$char = $action->getCharacter();
 
 		// ideas:
@@ -594,7 +589,7 @@ class ActionResolution {
 		}
 	}
 
-	private function military_intercepted(Action $action) {
+	private function military_intercepted(Action $action): void {
 		// Get our character.
 		$character = $action->getCharacter();
 		// Set battle to false.
@@ -615,12 +610,12 @@ class ActionResolution {
 		}
 	}
 
-	private function personal_prisonassign(Action $action) {
+	private function personal_prisonassign(Action $action): void {
 		// just remove, this is just a blocking action
 		$this->em->remove($action);
 	}
 
-	private function character_escape(Action $action) {
+	private function character_escape(Action $action): void {
 		// just remove, this is just a blocking action
 		$char = $action->getCharacter();
 
@@ -671,7 +666,7 @@ class ActionResolution {
 		$this->em->flush();
 	}
 
-	private function update_task_research(Action $action) {
+	private function update_task_research(Action $action): void {
 		// TODO: shift event journal start max(one day, one task) into the past
 		// easily done: get cycle of next-oldest date and shift to there
 
@@ -729,11 +724,11 @@ class ActionResolution {
 		}
 	}
 
-	private function update_train_skill(Action $action) {
-		$this->helper->trainSkill($action->getcharacter(), $action->getTargetSkill(), 0, 1);
+	private function update_train_skill(Action $action): void {
+		$this->common->trainSkill($action->getcharacter(), $action->getTargetSkill(), 0, 1);
 	}
 
-	public function log($level, $text) {
+	public function log($level, $text): void {
 		if ($level <= $this->debug) {
 			echo $text."\n";
 			flush();

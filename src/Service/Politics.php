@@ -11,36 +11,38 @@ use App\Entity\SettlementClaim;
 use App\Service\History;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Common\Collections\ArrayCollection;
 
 
 class Politics {
 
-	protected $em;
-	protected $history;
+	protected CommonService $common;
+	protected EntityManagerInterface $em;
+	protected \App\Service\History $history;
+	protected MilitaryManager $milman;
 
-	public function __construct(EntityManagerInterface $em, History $history) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, History $history, MilitaryManager $milman) {
+		$this->common = $common;
 		$this->em = $em;
 		$this->history = $history;
+		$this->milman = $milman;
 	}
 
 
-	public function isSuperior(Character $char, Character $lord) {
+	public function isSuperior(Character $char, Character $lord): bool {
 		// test if $lord is anywhere in the hierarchy above $char
 		$next = $char;
 		while ($next = $next->getLiege()) {
-			if ($next == $lord) {
+			if ($next === $lord) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public function breakoath(Character $character, $alleg = null, $to = null, $thing = null) {
+	public function breakoath(Character $character, $alleg = null, $to = null, $thing = null): void {
 		if (!$alleg) {
 			$alleg = $character->findAllegiance();
 		}
-		$same = false;
 		$done = false;
 		if ($to) {
 			if ($thing === 'realm') {
@@ -159,7 +161,7 @@ class Politics {
 		}
 	}
 
-	public function disown(Character $character) {
+	public function disown(Character $character): true {
 		if ($character->getLiege()) {
 			$this->history->logEvent(
 				$character,
@@ -242,10 +244,11 @@ class Politics {
 			$character->setRealm(null);
 			return true;
 		}
+		return true;
 	}
 
 
-	public function changeSettlementOwner(Settlement $settlement, Character $character=null, $reason=false) {
+	public function changeSettlementOwner(Settlement $settlement, Character $character=null, $reason=false): void {
 		$oldowner = $settlement->getOwner();
 		if ($oldowner) {
 			$oldowner->removeOwnedSettlement($settlement);
@@ -268,9 +271,7 @@ class Politics {
 		// clean out claim if we have one
 		if ($character) {
 			if ($this->removeClaim($character, $settlement)) {
-				// FIXME: would love to add achievement here, but politics is injected into
-				//			 charactermanager, so it can't inject CM - circular injections)
-				//$this->character_manager->addAchievement($character, 'claimspressed');
+				$this->common->addAchievement($character, 'claimspressed');
 			}
 		}
 
@@ -525,7 +526,7 @@ class Politics {
 		}
 	}
 
-	public function addClaim(Character $character, Settlement $settlement, $enforceable=false, $priority=false) {
+	public function addClaim(Character $character, Settlement $settlement, $enforceable=false, $priority=false): void {
 		foreach ($settlement->getClaims() as $claim) {
 			if ($claim->getCharacter() == $character) {
 				if ($enforceable) {
@@ -549,7 +550,7 @@ class Politics {
 		$settlement->addClaim($claim);
 	}
 
-	public function removeClaim(Character $character, Settlement $settlement) {
+	public function removeClaim(Character $character, Settlement $settlement): bool {
 		$result = false;
 		foreach ($settlement->getClaims() as $claim) {
 			if ($claim->getCharacter() == $character) {
@@ -562,7 +563,7 @@ class Politics {
 		return $result;
 	}
 
-	public function changeSettlementRealm(Settlement $settlement, Realm $newrealm=null, $reason=false) {
+	public function changeSettlementRealm(Settlement $settlement, Realm $newrealm=null, $reason=false): void {
 		$oldrealm = $settlement->getRealm();
 
 		if ($newrealm) {
@@ -747,7 +748,7 @@ class Politics {
 		$this->updateWarTargets($settlement, $oldrealm, $newrealm);
 	}
 
-	public function changePlaceRealm(Place $place, Realm $newrealm=null, $reason=false) {
+	public function changePlaceRealm(Place $place, Realm $newrealm=null, $reason=false): void {
 		$oldrealm = $place->getRealm();
 
 		if ($newrealm) {
@@ -763,7 +764,7 @@ class Politics {
 			case 'change':	// settlement owner has decided to change
 				if ($newrealm) {
 					$this->history->logEvent(
-						$settlement,
+						$place,
 						'event.place.changed',
 						array('%link-realm%'=>$newrealm->getId()),
 						History::MEDIUM
@@ -802,7 +803,7 @@ class Politics {
 			case 'fail': // my realm has failed
 				if ($newrealm) {
 					$this->history->logEvent(
-						$settlement,
+						$place,
 						'event.place.realmfail2',
 						array("%link-realm-1%"=>$newrealm->getId(), "%link-realm-2%"=>$oldrealm->getId()),
 						History::HIGH, true
@@ -810,7 +811,7 @@ class Politics {
 					// TODO: message for new realm
 				} else {
 					$this->history->logEvent(
-						$settlement,
+						$place,
 						'event.place.realmfail',
 						array("%link-realm%"=>$oldrealm->getId()),
 						History::HIGH, true
@@ -821,7 +822,7 @@ class Politics {
 				$this->history->logEvent(
 					$oldrealm,
 					'event.place.lost',
-					array('%link-settlement%'=>$settlement->getId()),
+					array('%link-place%'=>$place->getId()),
 					History::MEDIUM
 				);
 				break;
@@ -830,7 +831,7 @@ class Politics {
 		} /* end switch */
 	}
 
-	public function changeSettlementOccupier(Character $char = null, Settlement $settlement, Realm $realm = null) {
+	public function changeSettlementOccupier(Character $char = null, Settlement $settlement, Realm $realm = null): void {
 		$new = false;
 		$old = null;
 		if (!$settlement->getOccupier()) {
@@ -946,7 +947,7 @@ class Politics {
 		}
 	}
 
-	public function changePlaceOccupier(Character $char, Place $place, Realm $realm) {
+	public function changePlaceOccupier(Character $char, Place $place, Realm $realm): void {
 		$new = false;
 		$old = null;
 		if (!$place->getOccupier()) {
@@ -973,7 +974,7 @@ class Politics {
 		}
 	}
 
-	public function endOccupation($target, $why = null, $occupantTakeOver = false, Character $char = null) {
+	public function endOccupation($target, $why = null, $occupantTakeOver = false, Character $char = null): void {
 		$occupier = $target->getOccupier();
 		$occupant = $target->getOccupant();
 		$target->setOccupant(null);
@@ -1002,8 +1003,8 @@ class Politics {
 				$this->em->remove($perm);
 			}
 			foreach ($target->getOccupationPermissions() as $perm) {
-				$perm->{set.$type}($perm->{getOccupied.$type}());
-				$perm->{setOccupied.$type}(null);
+				$perm->{'set'.$type}($perm->{'getOccupied'.$type}());
+				$perm->{'setOccupied'.$type}(null);
 			}
 		}
 		if ($occupier) {
@@ -1123,7 +1124,7 @@ class Politics {
 
 	}
 
-	public function updateWarTargets(Settlement $settlement, Realm $oldRealm = null, Realm $newRealm = null) {
+	public function updateWarTargets(Settlement $settlement, Realm $oldRealm = null, Realm $newRealm = null): array {
 		$wars = [];
 		foreach ($settlement->getWarTargets() as $target) {
 			$old = false; $new = false;

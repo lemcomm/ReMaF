@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\User;
 use App\Entity\UserLimits;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
@@ -14,32 +13,18 @@ class UserManager {
 	private $genome_setsize = 15;
 	private $em;
 
-	/**
-	 * @param ObjectManager $om
-	 */
 	public function __construct(EntityManagerInterface $em) {
 		$this->em = $em;
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
 	public function refreshUser( UserInterface $user ) {
-		return $this->findUserBy( array( 'id' => $user->getId() ) );
+		return $this->em->getRepository(User::class)->findOneBy( array( 'id' => $user->getId() ) );
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
 	public function supportsClass( $class ) {
 		return $class instanceof User;
 	}
 
-	/**
-	 * Creates an empty user instance.
-	 *
-	 * @return UserInterface
-	 */
 	public function createUser() {
 		$user = new User;
 		$user->setDisplayName("(anonymous)");

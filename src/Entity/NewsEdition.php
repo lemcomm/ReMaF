@@ -110,7 +110,7 @@ class NewsEdition {
     /**
      * Set published_cycle
      *
-     * @param integer $publishedCycle
+     * @param integer|null $publishedCycle
      * @return NewsEdition
      */
     public function setPublishedCycle($publishedCycle)
@@ -133,7 +133,7 @@ class NewsEdition {
     /**
      * Set published
      *
-     * @param \DateTime $published
+     * @param \DateTime|null $published
      * @return NewsEdition
      */
     public function setPublished($published)

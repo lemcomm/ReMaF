@@ -8,7 +8,9 @@ use App\Entity\BattleReport;
 use App\Entity\Character;
 use App\Entity\House;
 use App\Entity\Event;
+use App\Entity\Journal;
 use App\Entity\Place;
+use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Service\AppState;
 use App\Service\MailManager;
@@ -19,14 +21,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NotificationManager {
 
-	protected $em;
-	protected $appstate;
-	protected $mailman;
-	protected $msgtrans;
-	protected $trans;
-	protected $discord;
-	private $type;
-	private $name;
+	protected EntityManagerInterface $em;
+	protected AppState $appstate;
+	protected MailManager $mailman;
+	protected MessageTranslateExtension $msgtrans;
+	protected TranslatorInterface $trans;
+	protected DiscordIntegrator $discord;
+	private false|string $type;
+	private false|string $name;
 
 	public function __construct(EntityManagerInterface $em, AppState $appstate, MailManager $mailman, MessageTranslateExtension $msgtrans, TranslatorInterface $trans, DiscordIntegrator $discord) {
 		$this->em = $em;
@@ -37,7 +39,7 @@ class NotificationManager {
 		$this->discord = $discord;
 	}
 
-	private function findUser(Event $event) {
+	private function findUser(Event $event): false|array {
 		$log = $event->getLog();
 		$entity = $log->getSubject();
 		$this->name = $log->getName();
@@ -47,28 +49,28 @@ class NotificationManager {
 		}
 		if ($entity instanceof Settlement) {
 			return [
-				$entity->getOwner()?$entity->getOwner()->getUser():null,
-				$entity->getSteward()?$entity->getSteward()->getUser():null,
-				$entity->getOccupant()?$entity->getOccupant()->getUser():null,
+				$entity->getOwner()?->getUser(),
+				$entity->getSteward()?->getUser(),
+				$entity->getOccupant()?->getUser(),
 			];
 		}
 		if ($entity instanceof Realm) {
 			$rulers = [];
 			foreach ($entity->findRulers() as $ruler) {
 				$user = $ruler->getUser();
-				if (!in_array($user, $users)) {
+				if (!in_array($user, $rulers)) {
 					$rulers[] = $ruler->getUser();
 				}
 			}
 			return $rulers;
 		}
 		if ($entity instanceof House) {
-			return [$entity->getHead()?$entity->getHead()->getUser():null];
+			return [$entity->getHead()?->getUser()];
 		}
 		if ($entity instanceof Place) {
 			return [
-				$entity->getOwner()?$entity->getOwner()->getUser():null,
-				$entity->getOccupant()?$entity->getOccupant()->getUser():null,
+				$entity->getOwner()?->getUser(),
+				$entity->getOccupant()?->getUser(),
 			];
 		}
 		if ($entity instanceof Association) {
@@ -87,7 +89,7 @@ class NotificationManager {
 		return false;
 	}
 
-	public function spoolEvent(Event $event) {
+	public function spoolEvent(Event $event): bool {
 		$users = $this->findUser($event);
 
 		$text = $this->msgtrans->eventTranslate($event, true);
@@ -102,9 +104,10 @@ class NotificationManager {
 				$this->mailman->spoolEvent($event, $user, $msg);
 			}
 		}
+		return true;
 	}
 
-	public function spoolBattle(BattleReport $rep, $epic) {
+	public function spoolBattle(BattleReport $rep, $epic): void {
 		$em = $this->em;
 		$entity = false;
 		if ($loc = $rep->getLocationName()) {
@@ -151,29 +154,29 @@ class NotificationManager {
 		}
 		try {
 			$this->discord->pushToGeneral($txt);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			# Nothing.
 		}
 	}
 
-	public function spoolJournal(Journal $journal) {
+	public function spoolJournal(Journal $journal): void {
 		$text = '['.$journal->getCharacter()->getName().'](https://mightandfealty.com/character/view/'.$journal->getCharacter()->getId().') has written ['.$journal->getTopic().'](https://mightandfealty.com/journal/'.$journal->getId().').';
 		try {
 			$this->discord->pushToGeneral($text);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			# Nothing
 		}
 	}
 
-	public function spoolPayment($text) {
+	public function spoolPayment($text): void {
 		try {
 			$this->discord->pushToPayments($text);
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			# Nothing.
 		}
 	}
 
-	public function spoolNewRealm(Character $char, Realm $realm, $sub = false) {
+	public function spoolNewRealm(Character $char, Realm $realm, $sub = false): void {
 		if ($sub) {
 			$txt = $char->getName()." has created the new subrealm of ".$realm->getFormalName().". It includes the settlements of: ";
 		} else {
@@ -195,7 +198,7 @@ class NotificationManager {
 		$this->discord->pushToGeneral($txt);
 	}
 
-	private function dLink($name, $url) {
+	private function dLink($name, $url): string {
 		return "[".$name."](".$url.")";
 	}
 

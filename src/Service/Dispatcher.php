@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Service;
-;
+
 use App\Entity\ActivityReport;
 use App\Entity\Association;
 use App\Entity\AssociationDeity;
 use App\Entity\AssociationMember;
-use App\Entity\AssociationRank;;
+use App\Entity\AssociationRank;
 use App\Entity\BattleReport;
 use App\Entity\Character;
 use App\Entity\Conversation;
@@ -20,20 +20,16 @@ use App\Entity\Settlement;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-
 /*
 TODO:
 refactor to use $this->action() everywhere (with some exceptions where it doesn't work)
 */
 
 class Dispatcher {
-
-	const FREE_ACCOUNT_ESTATE_LIMIT = 3;
-
 	protected mixed $character;
-	protected $realm;
-	protected $house;
-	protected $settlement;
+	protected mixed $realm;
+	protected mixed $house;
+	protected mixed $settlement;
 	protected AppState $appstate;
 	protected PermissionManager $permission_manager;
 	protected Geography $geography;
@@ -42,12 +38,12 @@ class Dispatcher {
 	protected AssociationManager $assocman;
 
 	// test results to store because they are expensive to calculate
-	private bool $actionableSettlement=false;
-	private bool $actionablePlace=false;
-	private bool $actionableRegion=false;
-	private bool $actionableDock=false;
-	private bool $actionableShip=false;
-	private bool $actionableHouses=false;
+	private ?bool $actionableSettlement=false;
+	private ?bool $actionablePlace=false;
+	private ?bool $actionableRegion=false;
+	private ?bool $actionableDock=false;
+	private ?bool $actionableShip=false;
+	private ?bool $actionableHouses=false;
 
 	public function __construct(AppState $appstate, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, AssociationManager $assocman) {
 		$this->appstate = $appstate;
@@ -73,21 +69,21 @@ class Dispatcher {
 		return $result;
 	}
 
-	public function setCharacter(Character $character) {
+	public function setCharacter(Character $character): void {
 		$this->clear();
 		$this->character = $character;
 	}
-	public function setRealm(Realm $realm) {
+	public function setRealm(Realm $realm): void {
 		$this->realm = $realm;
 	}
-	public function setSettlement(Settlement $settlement) {
+	public function setSettlement(Settlement $settlement): void {
 		$this->settlement = $settlement;
 	}
-	public function setHouse(House $house) {
+	public function setHouse(House $house): void {
 		$this->house = $house;
 	}
 
-	public function clear() {
+	public function clear(): void {
 		$this->character=false;
 		$this->realm=false;
 		$this->actionableSettlement=false;
@@ -103,7 +99,7 @@ class Dispatcher {
 	*/
 	public function gateway($test=false, $getSettlement=false, $check_duplicate=true, $getPlace=false, $option=null) {
 		$character = $this->getCharacter();
-		if (!$character || ! $character instanceof Character) {
+		if (! $character instanceof Character) {
 			/* Yes, if it's not a character, we return it. We check this on the other side again, and redirect if it's not a character.
 			Would it make more sense to just redirect here? Probably. Symfony doesn't work that way though.
 			Services, like Dispatcher, do logic, not interaction. Redirection, though, is distinctly interactive.
@@ -119,7 +115,6 @@ class Dispatcher {
 				return $character;
 			}
 		}
-		$settlement = null;
 		$place = null;
 		if ($test) {
 			$test = $this->$test($check_duplicate, $option);
@@ -143,7 +138,7 @@ class Dispatcher {
 		}
 	}
 
-	protected function veryGenericTests() {
+	protected function veryGenericTests(): true|string {
 		if ($this->getCharacter()->getUser()->getRestricted()) {
 			return 'restricted';
 		}
@@ -156,7 +151,7 @@ class Dispatcher {
 
 	/* ========== Local Action Dispatchers ========== */
 
-	public function interActions() {
+	public function interActions(): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"location.title", "elements"=>array(array("name"=>"location.all", "description"=>"unavailable.$check")));
 		}
@@ -165,7 +160,7 @@ class Dispatcher {
 
 		if ($this->getLeaveableSettlement()) {
 			$actions[] = $this->locationLeaveTest(true);
-		} else if ($settlement = $this->getActionableSettlement()) {
+		} else if ($this->getActionableSettlement()) {
 			$actions[] = $this->locationEnterTest(true);
 		} else {
 			$actions[] = array("name"=>"location.enter.name", "description"=>"unavailable.nosettlement");
@@ -225,7 +220,7 @@ class Dispatcher {
 		return array("name"=>"location.title", "elements"=>$actions);
 	}
 
-	protected function interActionsGenericTests() {
+	protected function interActionsGenericTests(): true|string {
 		if ($this->getCharacter()->getUser()->getRestricted()) {
 			return 'restricted';
 		}
@@ -234,7 +229,7 @@ class Dispatcher {
 
 	/* ========== Building Action Dispatchers ========== */
 
-	public function buildingActions() {
+	public function buildingActions(): array {
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"building.title", "elements"=>array(array("name"=>"building.all", "description"=>"unavailable.$check")));
 		}
@@ -268,14 +263,14 @@ class Dispatcher {
 		return array("name"=>"building.title", "elements"=>$actions);
 	}
 
-	public function locationTavernTest() { return $this->locationHasBuildingTest("Tavern"); }
-	public function locationLibraryTest() { return $this->locationHasBuildingTest("Library"); }
-	public function locationTempleTest() { return $this->locationHasBuildingTest("Temple"); }
-	public function locationBarracksTest() { return $this->locationHasBuildingTest("Barracks"); }
-	public function locationArcheryRangeTest() { return $this->locationHasBuildingTest("Archery Range"); }
-	public function locationGarrisonTest() { return $this->locationHasBuildingTest("Garrison"); }
+	public function locationTavernTest(): array { return $this->locationHasBuildingTest("Tavern"); }
+	public function locationLibraryTest(): array { return $this->locationHasBuildingTest("Library"); }
+	public function locationTempleTest(): array { return $this->locationHasBuildingTest("Temple"); }
+	public function locationBarracksTest(): array { return $this->locationHasBuildingTest("Barracks"); }
+	public function locationArcheryRangeTest(): array { return $this->locationHasBuildingTest("Archery Range"); }
+	public function locationGarrisonTest(): array { return $this->locationHasBuildingTest("Garrison"); }
 
-	public function locationHasBuildingTest($name) {
+	public function locationHasBuildingTest($name): array {
 		$lname = strtolower(str_replace(' ', '', $name));
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"building.$lname.name", "description"=>"unavailable.$check");
@@ -291,7 +286,7 @@ class Dispatcher {
 	}
 
 
-	public function controlActions() {
+	public function controlActions(): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.name", "elements"=>array(array("name"=>"control.all", "description"=>"unavailable.$check")));
 		}
@@ -324,15 +319,15 @@ class Dispatcher {
 		return array("name"=>"control.name", "elements"=>$actions);
 	}
 
-	private function controlActionsGenericTests() {
-		if (!$settlement = $this->getActionableSettlement()) {
+	private function controlActionsGenericTests(): true|string {
+		if (!$this->getActionableSettlement()) {
 			return 'notinside';
 		}
 		return $this->veryGenericTests();
 	}
 
 
-	public function militaryActions() {
+	public function militaryActions(): array {
 		$actions=array();
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"military.name", "elements"=>array(array("name"=>"military.all", "description"=>"unavailable.prisoner")));
@@ -374,7 +369,7 @@ class Dispatcher {
 		return array("name"=>"military.name", "elements"=>$actions);
 	}
 
-	public function siegeActions() {
+	public function siegeActions(): array {
 		$actions=array();
 		$char = $this->getCharacter();
 		if ($char->isPrisoner()) {
@@ -427,7 +422,7 @@ class Dispatcher {
 		return array("name"=>"military.siege.name", "elements"=>$actions);
 	}
 
-	public function economyActions() {
+	public function economyActions(): array {
 		$settlement = $this->getCharacter()->getInsideSettlement();
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.name", "elements"=>array(array("name"=>"economy.all", "description"=>"unavailable.$check")));
@@ -448,14 +443,14 @@ class Dispatcher {
 		return array("name"=>"economy.name", "elements"=>$actions);
 	}
 
-	private function economyActionsGenericTests(Settlement $settlement=null) {
+	private function economyActionsGenericTests(Settlement $settlement=null): true|string {
 		if (!$settlement) {
 			return 'notinside';
 		}
 		return $this->veryGenericTests();
 	}
 
-	public function personalActions() {
+	public function personalActions(): array {
 		$actions=array();
 
 		if ($this->getCharacter()->isNPC()) {
@@ -470,13 +465,12 @@ class Dispatcher {
 		return array("name"=>"personal.name", "elements"=>$actions);
 	}
 
-	public function placeActions($place) {
+	public function placeActions($place): array {
 		if (($check = $this->placeActionsGenericTests()) !== true) {
 			$actions[] = array("name"=>"place.all", "description"=>"unavailable.$check");
 			return array("name"=>"place.name", "intro"=>"politics.intro", "elements"=>$actions);
 		}
 		$char = $this->getCharacter();
-		$settlement = $char->getInsideSettlement();
 		$inPlace = $char->getInsidePlace();
 		$actions=[];
 		$type = $place->getType();
@@ -494,7 +488,6 @@ class Dispatcher {
 				$actions['placeChangeOccupantTest'] = $this->placeChangeOccupantTest(true, $place);
 				$actions['placeChangeOccupierTest'] = $this->placeChangeOccupierTest(true, $place);
 			}
-			$canManage = false;
 			if ($tName == 'embassy') {
 				$canManage = $this->placeManageEmbassyTest(null, $place);
 			} elseif ($tName == 'capital') {
@@ -512,7 +505,7 @@ class Dispatcher {
 					$actions['placeSpawnToggleTest'] = $this->placeSpawnToggleTest(null, $place);
 				}
 				if ($type->getAssociations()) {
-					$actions['assocCreateTest'] = $this->assocCreateTest(true);
+					$actions['assocCreateTest'] = $this->assocCreateTest();
 					$actions['placeAddAssocTest'] = $this->placeAddAssocTest(null, $place);
 				}
 			} else {
@@ -543,7 +536,7 @@ class Dispatcher {
 
 	/* ========== Politics Dispatchers ========== */
 
-	public function RelationsActions() {
+	public function RelationsActions(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"relations.name", "intro"=>"relations.intro", "elements"=>array("name"=>"relations.all", "description"=>"unavailable.npc"));
 		}
@@ -562,7 +555,7 @@ class Dispatcher {
 		return array("name"=>"relations.name", "intro"=>"relations.intro", "elements"=>$actions);
 	}
 
-	public function PoliticsActions() {
+	public function PoliticsActions(): array {
 		$actions=array();
 		$actions[] = $this->personalRelationsTest();
 		$actions[] = $this->personalPrisonersTest();
@@ -600,7 +593,7 @@ class Dispatcher {
 		return array("name"=>"politics.name", "intro"=>"politics.intro", "elements"=>$actions);
 	}
 
-	public function politicsRealmsActions() {
+	public function politicsRealmsActions(): array {
 		$actions=array();
 		$actions[] = $this->personalRelationsTest();
 		$actions[] = $this->personalPrisonersTest();
@@ -637,7 +630,7 @@ class Dispatcher {
 		return array("name"=>"politics.name", "intro"=>"politics.intro", "elements"=>$actions);
 	}
 
-	public function politicsAssocsActions() {
+	public function politicsAssocsActions(): array {
 		$actions=array();
 		$actions[] = $this->personalRelationsTest();
 		$actions[] = $this->personalPrisonersTest();
@@ -669,12 +662,12 @@ class Dispatcher {
 	}
 
 
-	private function politicsActionsGenericTests() {
+	private function politicsActionsGenericTests(): true|string {
 		return $this->veryGenericTests();
 	}
 
 
-	public function DiplomacyActions() {
+	public function DiplomacyActions(): array {
 		$actions=array();
 
 		$actions[] = $this->diplomacyRelationsTest();
@@ -686,7 +679,7 @@ class Dispatcher {
 		return array("name"=>"diplomacy", "elements"=>$actions);
 	}
 
-	public function InheritanceActions() {
+	public function InheritanceActions(): array {
 		$actions=array();
 
 		$actions[] = $this->inheritanceSuccessorTest();
@@ -696,7 +689,7 @@ class Dispatcher {
 
 	/* ========== Place Dispatchers ========= */
 
-	public function PlacesActions() {
+	public function PlacesActions(): array {
 		$actions=array();
 		if (($check = $this->placeActionsGenericTests()) !== true) {
 			$actions[] = array("name"=>"place.all", "description"=>"unavailable.$check");
@@ -714,7 +707,7 @@ class Dispatcher {
 		return array("name"=>"place.name", "intro"=>"place.intro", "elements"=>$actions);
 	}
 
-	private function placeActionsGenericTests(Place $place=null) {
+	private function placeActionsGenericTests(): true|string {
 		if ($this->getCharacter()->getUser()->getRestricted()) {
 			return 'restricted';
 		}
@@ -727,7 +720,7 @@ class Dispatcher {
 
 	/* ========== Meta Dispatchers ========== */
 
-	public function metaActions() {
+	public function metaActions(): array {
 		$actions=array();
 
 		if ($this->getCharacter()->isNPC()) {
@@ -751,7 +744,7 @@ class Dispatcher {
 
 	/* ========== Interaction Actions ========== */
 
-	public function locationMarkersTest($check_duplicate=false) {
+	public function locationMarkersTest(): array {
 		$myrealms = $this->getCharacter()->findRealms();
 		if ($myrealms->isEmpty()) {
 			return array("name"=>"location.marker.name", "description"=>"unavailable.norealms");
@@ -759,7 +752,7 @@ class Dispatcher {
 		return $this->action("location.marker", "maf_setmarker");
 	}
 
-	public function locationEnterTest($check_duplicate=false) {
+	public function locationEnterTest($check_duplicate=false): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"location.enter.name", "description"=>"unavailable.$check");
 		}
@@ -799,7 +792,7 @@ class Dispatcher {
 
 	}
 
-	public function locationLeaveTest($check_duplicate=false) {
+	public function locationLeaveTest($check_duplicate=false): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"location.exit.name", "description"=>"unavailable.$check");
 		}
@@ -825,26 +818,24 @@ class Dispatcher {
 		}
 	}
 
-	public function locationQuestsTest() {
+	public function locationQuestsTest(): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"location.quests.name", "description"=>"unavailable.$check");
 		}
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"location.quests.name", "description"=>"unavailable.prisoner");
 		}
-		if (!$geo = $this->getActionableRegion()) {
+		if (!$this->getActionableRegion()) {
 			return array("name"=>"location.quests.name", "description"=>"unavailable.noregion");
 		}
-		$settlement = $geo->getSettlement();
-
 		return array("name"=>"location.quests.name", "url"=>"maf_quests_localquests", "description"=>"location.quests.description", "long"=>"location.quests.longdesc");
 	}
 
-	public function locationEmbarkTest() {
+	public function locationEmbarkTest(): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"location.embark.name", "description"=>"unavailable.$check");
 		}
-		if ($this->getCharacter()->getTravelAtSea() == true) {
+		if ($this->getCharacter()->getTravelAtSea()) {
 			return array("name"=>"location.embark.name", "description"=>"unavailable.atsea");
 		}
 		if ($this->getCharacter()->isPrisoner()) {
@@ -870,7 +861,7 @@ class Dispatcher {
 		}
 	}
 
-	public function locationGiveGoldTest() {
+	public function locationGiveGoldTest(): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"location.givegold.name", "description"=>"unavailable.$check");
 		}
@@ -883,7 +874,7 @@ class Dispatcher {
 		return array("name"=>"location.givegold.name", "url"=>"maf_actions_givegold", "description"=>"location.givegold.description");
 	}
 
-	public function locationGiveArtifactTest() {
+	public function locationGiveArtifactTest(): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"location.giveartifact.name", "description"=>"unavailable.$check");
 		}
@@ -899,7 +890,7 @@ class Dispatcher {
 		return array("name"=>"location.giveartifact.name", "url"=>"maf_artifacts_give", "description"=>"location.giveartifact.description");
 	}
 
-	public function locationGiveShipTest() {
+	public function locationGiveShipTest(): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"location.giveship.name", "description"=>"unavailable.$check");
 		}
@@ -913,7 +904,7 @@ class Dispatcher {
 		return array("name"=>"location.giveship.name", "url"=>"maf_actions_giveship", "description"=>"location.giveship.description", "long"=>"location.giveship.longdesc");
 	}
 
-	public function locationDungeonsTest() {
+	public function locationDungeonsTest(): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"location.dungeons.name", "description"=>"unavailable.$check");
 		}
@@ -939,7 +930,7 @@ class Dispatcher {
 		return $this->action("location.dungeons", "maf_dungeons");
 	}
 
-	public function locationVisitHousesTest() {
+	public function locationVisitHousesTest(): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"location.houses.name", "description"=>"unavailable.$check");
 		}
@@ -953,14 +944,14 @@ class Dispatcher {
 		return array("name"=>"location.houses.name", "url"=>"maf_house_nearby", "description"=>"location.houses.description");
 	}
 
-	public function personalPartyTest() {
+	public function personalPartyTest(): array {
 		if (!$this->getCharacter()->getDungeoneer() || !$this->getCharacter()->getDungeoneer()->getParty()) {
 			return array("name"=>"personal.party.name", "description"=>"unavailable.noparty");
 		}
 		return $this->action("personal.party", "dungeons_party");
 	}
 
-	public function personalDungeoncardsTest() {
+	public function personalDungeoncardsTest(): array {
 		if (!$this->getCharacter()->getDungeoneer()) {
 			return array("name"=>"personal.party.name", "description"=>"unavailable.nocards");
 		}
@@ -968,8 +959,8 @@ class Dispatcher {
 	}
 
 
-	public function nearbySpyTest($check_duplicate=false) {
-		if (!$settlement = $this->getActionableSettlement()) {
+	public function nearbySpyTest(): array {
+		if (!$this->getActionableSettlement()) {
 			return array("name"=>"nearby.spy.name", "description"=>"unavailable.nosettlement");
 		}
 		if ($this->getCharacter()->getAvailableEntourageOfType("spy")->count() <= 0) {
@@ -981,7 +972,7 @@ class Dispatcher {
 
 	/* ========== Control Actions ========== */
 
-	public function controlTakeTest($check_duplicate=false, $check_regroup=true) {
+	public function controlTakeTest($check_duplicate=false, $check_regroup=true): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.take.name", "description"=>"unavailable.$check");
 		}
@@ -1031,7 +1022,7 @@ class Dispatcher {
 		}
 	}
 
-	public function controlOccupationStartTest($check_duplicate=false, $check_regroup=true) {
+	public function controlOccupationStartTest($check_duplicate=false, $check_regroup=true): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.occupationstart.name", "description"=>"unavailable.$check");
 		}
@@ -1056,7 +1047,7 @@ class Dispatcher {
 		return $this->action("control.occupationstart", "maf_settlement_occupation_start");
 	}
 
-	public function controlOccupationEndTest($check_duplicate=false, $check_regroup=true) {
+	public function controlOccupationEndTest($check_duplicate=false, $check_regroup=true): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.occupationend.name", "description"=>"unavailable.$check");
 		}
@@ -1082,7 +1073,7 @@ class Dispatcher {
 		}
 	}
 
-	public function controlChangeRealmTest($check_duplicate=false, $settlement) {
+	public function controlChangeRealmTest($check_duplicate, $settlement): array {
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"control.changerealm.name", "description"=>"unavailable.$check");
 		}
@@ -1103,7 +1094,7 @@ class Dispatcher {
 		return $this->action("control.changerealm", "maf_actions_changerealm", false, array('id'=>$settlement->getId()));
 	}
 
-	public function controlChangeOccupierTest($check_duplicate=false) {
+	public function controlChangeOccupierTest($check_duplicate=false): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.changeoccupier.name", "description"=>"unavailable.$check");
 		}
@@ -1133,7 +1124,7 @@ class Dispatcher {
 		return $this->action("control.changeoccupier", "maf_settlement_occupier", false, array('id'=>$settlement->getId()));
 	}
 
-	public function controlGrantTest($check_duplicate=false) {
+	public function controlGrantTest($check_duplicate=false): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.grant.name", "description"=>"unavailable.$check");
 		}
@@ -1155,7 +1146,7 @@ class Dispatcher {
 		return $this->action("control.grant", "maf_actions_grant");
 	}
 
-	public function controlStewardTest($check_duplicate=false) {
+	public function controlStewardTest($check_duplicate=false): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.steward.name", "description"=>"unavailable.$check");
 		}
@@ -1177,7 +1168,7 @@ class Dispatcher {
 		return $this->action("control.steward", "maf_actions_steward");
 	}
 
-	public function controlAbandonTest($check_duplicate=false, $settlement) {
+	public function controlAbandonTest($check_duplicate, $settlement): array {
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"control.abandon.name", "description"=>"unavailable.$check");
 		}
@@ -1187,7 +1178,7 @@ class Dispatcher {
 		return $this->action("control.abandon", "maf_settlement_abandon");
 	}
 
-	public function controlSuppliedTest($check_duplicate=false, $settlement) {
+	public function controlSuppliedTest($check_duplicate, $settlement): array {
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"control.supplied.name", "description"=>"unavailable.$check");
 		}
@@ -1202,7 +1193,7 @@ class Dispatcher {
 		return $this->action("control.supplied", "maf_settlement_supplied", false, array('id'=>$settlement->getId()));
 	}
 
-	public function controlChangeOccupantTest($check_duplicate=false) {
+	public function controlChangeOccupantTest($check_duplicate=false): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.changeoccupant.name", "description"=>"unavailable.$check");
 		}
@@ -1224,7 +1215,7 @@ class Dispatcher {
 		return $this->action("control.changeoccupant", "maf_settlement_occupant");
 	}
 
-	public function controlRenameTest($check_duplicate=false) {
+	public function controlRenameTest($check_duplicate=false): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.rename.name", "description"=>"unavailable.$check");
 		}
@@ -1243,7 +1234,7 @@ class Dispatcher {
 	}
 
 
-	public function controlSettlementDescriptionTest($check_duplicate=false, $settlement) {
+	public function controlSettlementDescriptionTest($check_duplicate): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.description.settlement.name", "description"=>"unavailable.$check");
 		}
@@ -1261,7 +1252,7 @@ class Dispatcher {
 		}
 	}
 
-	public function controlCultureTest($check_duplicate=false) {
+	public function controlCultureTest($check_duplicate=false): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.culture.name", "description"=>"unavailable.$check");
 		}
@@ -1276,7 +1267,7 @@ class Dispatcher {
 		}
 	}
 
-	public function controlPermissionsTest($ignored, $settlement) {
+	public function controlPermissionsTest($ignored, $settlement): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.permissions.name", "description"=>"unavailable.$check");
 		}
@@ -1297,7 +1288,7 @@ class Dispatcher {
 		}
 	}
 
-	public function controlQuestsTest($ignored, $settlement) {
+	public function controlQuestsTest($ignored, $settlement): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.quests.name", "description"=>"unavailable.$check");
 		}
@@ -1315,7 +1306,7 @@ class Dispatcher {
 
 	/* ========== Military Actions ========== */
 
-	public function militaryDisengageTest($check_duplicate=false) {
+	public function militaryDisengageTest($check_duplicate=false): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"military.disengage.name", "description"=>"unavailable.npc");
 		}
@@ -1337,7 +1328,7 @@ class Dispatcher {
 		return $this->action("military.disengage", "maf_war_disengage", true);
 	}
 
-	public function militaryEvadeTest($check_duplicate=false) {
+	public function militaryEvadeTest($check_duplicate=false): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"military.evade.name", "description"=>"unavailable.npc");
 		}
@@ -1360,7 +1351,7 @@ class Dispatcher {
 	}
 
 
-	public function militaryBlockTest($check_duplicate=false) {
+	public function militaryBlockTest($check_duplicate=false): array {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"military.block.name", "description"=>"unavailable.prisoner");
 		}
@@ -1471,7 +1462,7 @@ class Dispatcher {
 		return $this->action("military.place.attack", "maf_war_attacksettlement");
 	}*/
 
-	public function militaryDefendSettlementTest($check_duplicate=false) {
+	public function militaryDefendSettlementTest($check_duplicate=false): array {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"military.settlement.defend.name", "description"=>"unavailable.prisoner");
 		}
@@ -1496,7 +1487,7 @@ class Dispatcher {
 		return $this->action("military.settlement.defend", "maf_war_defendsettlement");
 	}
 
-	public function militaryDefendPlaceTest($check_duplicate=false) {
+	public function militaryDefendPlaceTest($check_duplicate=false): array {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"military.place.defend.name", "description"=>"unavailable.prisoner");
 		}
@@ -1521,7 +1512,7 @@ class Dispatcher {
 		return $this->action("military.place.defend", "maf_war_defendplace");
 	}
 
-	public function militarySiegeSettlementTest() {
+	public function militarySiegeSettlementTest(): array {
 		# Grants you access to the page in which you can start a siege.
 		$settlement = $this->getActionableSettlement();
 		$char = $this->getCharacter();
@@ -1568,7 +1559,7 @@ class Dispatcher {
 		return $this->action("military.siege.start", "maf_war_siege", false, array('action'=>'start'), null, ['domain'=>'actions']);
 	}
 
-	public function militarySiegePlaceTest($ignored, $place) {
+	public function militarySiegePlaceTest($ignored, $place): array {
 		# Grants you access to the page in which you can start a siege.
 		$char = $this->getCharacter();
 		if ($char->isPrisoner()) {
@@ -1614,7 +1605,7 @@ class Dispatcher {
 		return $this->action("military.siege.start", "maf_war_siege_place", false, array('place'=>$place->getId(), 'action'=>'start'));
 	}
 
-	public function militarySiegeLeadershipTest($check_duplicate=false, $siege) {
+	public function militarySiegeLeadershipTest($check_duplicate, $siege): array {
 		# Controls access to siege change of leadership page.
 		if (!$siege) {
 			# No siege.
@@ -1675,7 +1666,7 @@ class Dispatcher {
 		return $this->action("military.siege.leadership", "maf_war_siege", false, array('action'=>'leadership'));
 	}
 
-	public function militarySiegeAssumeTest($check_duplicate=false, $siege) {
+	public function militarySiegeAssumeTest($check_duplicate, $siege): array {
 		# Controls access to siege assume leadership page.
 		# Normally, only defenders will have this issue, but just in case, we let attackers assume command as well if the opportunity presents itself.
 		if (!$siege) {
@@ -1740,7 +1731,7 @@ class Dispatcher {
 		return $this->action("military.siege.assume", "maf_war_siege", false, array('action'=>'assume'));
 	}
 
-	public function militarySiegeBuildTest($check_duplicate=false) {
+	public function militarySiegeBuildTest($check_duplicate=false): array {
 		# Controls access to page for building siege equipment.
 		# TODO: Implement this.
 		return array("name"=>"military.siege.build.name", "description"=>"unavailable.notimplemented");
@@ -1792,7 +1783,7 @@ class Dispatcher {
 		return $this->action("military.settlement.siege", "maf_war_siege", false, array('action'=>'build'));*/
 	}
 
-	public function militarySiegeAssaultTest($check_duplicate=false, $siege) {
+	public function militarySiegeAssaultTest($check_duplicate, $siege): array {
 		# Controls access to the siege page for calling assaults and sorties.
 		if (!$siege) {
 			# No siege.
@@ -1845,7 +1836,7 @@ class Dispatcher {
 		return $this->action("military.siege.assault", "maf_war_siege", false, array('action'=>'assault'));
 	}
 
-	public function militarySiegeDisbandTest($check_duplicate=false, $siege) {
+	public function militarySiegeDisbandTest($check_duplicate, $siege): array {
 		if (!$siege) {
 			# No siege.
 			return array("name"=>"military.siege.disband.name", "description"=>"unavailable.nosiege");
@@ -1881,7 +1872,7 @@ class Dispatcher {
 		return $this->action("military.siege.disband", "maf_war_siege", false, array('action'=>'disband'));
 	}
 
-	public function militarySiegeLeaveTest($check_duplicate=false, $siege) {
+	public function militarySiegeLeaveTest($check_duplicate, $siege): array {
 		# Controls access to the leave siege menu.
 		if (!$siege) {
 			# No siege.
@@ -1907,7 +1898,7 @@ class Dispatcher {
 		return $this->action("military.siege.leave", "maf_war_siege", false, array('action'=>'leave'));
 	}
 
-	public function militarySiegeGeneralTest($check_duplicate=false, $siege) {
+	public function militarySiegeGeneralTest($check_duplicate, $siege): array {
 		# Controls access to the siege action selection menu.
 		if (!$siege) {
 			# No siege.
@@ -2039,7 +2030,7 @@ class Dispatcher {
 	}
 	*/
 
-	public function militarySiegeJoinSiegeTest($check_duplicate=false, $siege = null) {
+	public function militarySiegeJoinSiegeTest($check_duplicate=false, $siege = null): array {
 		# This is the one route for the siege menu that needs to be accessible outside of a siege. And this is the easiest way to do that.
 		if ($siege === null) {
 			$settlement = $this->getActionableSettlement();
@@ -2082,7 +2073,7 @@ class Dispatcher {
 		return $this->action("military.siege.join", "maf_war_siege", false, array('action'=>'joinsiege'));
 	}
 
-	public function militaryDamageFeatureTest($check_duplicate=false) {
+	public function militaryDamageFeatureTest($check_duplicate=false): array {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"military.damage.name", "description"=>"unavailable.prisoner");
 		}
@@ -2107,7 +2098,7 @@ class Dispatcher {
 		return $this->action("military.damage", "maf_war_damage", true);
 	}
 
-	public function militaryLootSettlementTest($check_duplicate=false) {
+	public function militaryLootSettlementTest($check_duplicate=false): array {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"military.settlement.loot.name", "description"=>"unavailable.prisoner");
 		}
@@ -2138,7 +2129,7 @@ class Dispatcher {
 		return $this->action("military.settlement.loot", "maf_war_lootsettlement");
 	}
 
-	public function militaryAttackNoblesTest($check_duplicate=false) {
+	public function militaryAttackNoblesTest($check_duplicate=false): array {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"military.battles.initiate.name", "description"=>"unavailable.prisoner");
 		}
@@ -2163,7 +2154,7 @@ class Dispatcher {
 		return $this->action("military.battles.initiate", "maf_war_attackothers");
 	}
 
-	public function militaryAidTest() {
+	public function militaryAidTest(): array {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"military.aid.name", "description"=>"unavailable.prisoner");
 		}
@@ -2176,7 +2167,7 @@ class Dispatcher {
 		return $this->action("military.aid", "maf_war_aid");
 	}
 
-	public function militaryJoinBattleTest() {
+	public function militaryJoinBattleTest(): array {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"military.battles.join.name", "description"=>"unavailable.prisoner");
 		}
@@ -2197,7 +2188,7 @@ class Dispatcher {
 
 	/* ========== Personal Actions ========== */
 
-	public function personalRelationsTest() {
+	public function personalRelationsTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"relations", "description"=>"unavailable.npc");
 		}
@@ -2205,7 +2196,7 @@ class Dispatcher {
 		return $this->action("relations", "maf_relations");
 
 	}
-	public function personalPrisonersTest() {
+	public function personalPrisonersTest(): array {
 		if ( $this->getCharacter()->getPrisoners()->count() == 0) {
 			return array("name"=>"diplomacy.prisoners.name", "description"=>"unavailable.noprisoners");
 		}
@@ -2213,7 +2204,7 @@ class Dispatcher {
 		return $this->action("diplomacy.prisoners", "maf_politics_prisoners");
 
 	}
-	public function personalClaimsTest() {
+	public function personalClaimsTest(): array {
 		if ( $this->getCharacter()->getSettlementClaims()->count() == 0) {
 			return array("name"=>"diplomacy.claims.name", "description"=>"unavailable.noclaims");
 		}
@@ -2223,7 +2214,7 @@ class Dispatcher {
 	}
 
 
-	public function personalSurrenderTest() {
+	public function personalSurrenderTest(): array {
 		if ($this->getCharacter()->getPrisonerOf()) {
 			return array("name"=>"surrender.name", "description"=>"unavailable.prisoner");
 		}
@@ -2236,7 +2227,7 @@ class Dispatcher {
 		return $this->action("surrender", "maf_character_surrender");
 	}
 
-	public function personalEscapeTest() {
+	public function personalEscapeTest(): array {
 		if ( $this->getCharacter()->getPrisonerOf() == false) {
 			return array("name"=>"escape.name", "description"=>"unavailable.notprisoner");
 		}
@@ -2247,7 +2238,7 @@ class Dispatcher {
 		return $this->action("escape", "maf_character_escape");
 	}
 
-	public function personalRequestsManageTest() {
+	public function personalRequestsManageTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"personal.requests.name", "description"=>"unavailable.npc");
 		}
@@ -2255,7 +2246,7 @@ class Dispatcher {
 		return $this->action("personal.requests", "maf_gamerequest_manage");
 	}
 
-	public function personalRequestSoldierFoodTest() {
+	public function personalRequestSoldierFoodTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"personal.soldierfood.name", "description"=>"unavailable.npc");
 		}
@@ -2265,7 +2256,7 @@ class Dispatcher {
 	}
 	/* ========== Economy Actions ========== */
 
-	public function economyTradeTest() {
+	public function economyTradeTest(): array {
 		$settlement = $this->getCharacter()->getInsideSettlement();
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.trade.name", "description"=>"unavailable.$check");
@@ -2282,7 +2273,7 @@ class Dispatcher {
 		}
 	}
 
-	public function economyRoadsTest() {
+	public function economyRoadsTest(): array {
 		$settlement = $this->getCharacter()->getInsideSettlement();
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.roads.name", "description"=>"unavailable.$check");
@@ -2294,7 +2285,7 @@ class Dispatcher {
 		return $this->action("economy.roads", "maf_construction_roads");
 	}
 
-	public function economyFeaturesTest() {
+	public function economyFeaturesTest(): array {
 		$settlement = $this->getCharacter()->getInsideSettlement();
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.features.name", "description"=>"unavailable.$check");
@@ -2306,7 +2297,7 @@ class Dispatcher {
 		return array("name"=>"economy.features.name", "url"=>"maf_construction_features", "description"=>"economy.features.description");
 	}
 
-	public function economyBuildingsTest() {
+	public function economyBuildingsTest(): array {
 		$settlement = $this->getCharacter()->getInsideSettlement();
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.build.name", "description"=>"unavailable.$check");
@@ -2320,7 +2311,7 @@ class Dispatcher {
 
 	/* ========== Place Actions ============== */
 
-	public function placeListTest() {
+	public function placeListTest(): array {
 		if ($this->getCharacter() && $this->geography->findPlacesInActionRange($this->getCharacter())) {
 			return $this->action("place.list", "maf_place_actionable");
 		} else {
@@ -2328,7 +2319,7 @@ class Dispatcher {
 		}
 	}
 
-	public function placeCreateTest() {
+	public function placeCreateTest(): array {
 		$character = $this->getCharacter();
 		if ($check = $this->placeActionsGenericTests() !== true) {
 			return array("name"=>"place.new.name", "description"=>'unavailable.'.$check);
@@ -2375,7 +2366,7 @@ class Dispatcher {
 		}
 	}
 
-	public function placeAddAssocTest($ignored, Place $place) {
+	public function placeAddAssocTest($ignored, Place $place): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"place.addAssoc.name", "description"=>"unavailable.$check");
 		}
@@ -2414,7 +2405,7 @@ class Dispatcher {
 		}
 	}
 
-	public function placeEvictAssocTest($ignored, $vars) {
+	public function placeEvictAssocTest($ignored, $vars): array {
 		if (($check = $this->placeActionsGenericTests()) !== true) {
 			return array("name"=>"place.evictAssoc.name", "description"=>"unavailable.$check");
 		}
@@ -2452,7 +2443,7 @@ class Dispatcher {
 		);
 	}
 
-	public function placeManageTest($ignored, Place $place, $perm = true) {
+	public function placeManageTest($ignored, Place $place, $perm = true): array {
 		if (($check = $this->placeActionsGenericTests()) !== true) {
 			return array("name"=>"place.manage.name", "description"=>"unavailable.$check");
 		}
@@ -2484,7 +2475,7 @@ class Dispatcher {
 		return $this->varCheck($return, 'place.destroy.name', 'maf_place_destroy', 'place.destroy.description', 'place.destroy.longdesc');
 	}
 
-	public function placeTransferTest($ignored, Place $place) {
+	public function placeTransferTest($ignored, Place $place): array {
 		if (($check = $this->placeActionsGenericTests()) !== true) {
 			return array("name"=>"place.transfer.name", "description"=>"unavailable.$check");
 		}
@@ -2500,7 +2491,7 @@ class Dispatcher {
 		);
 	}
 
-	public function placeNewPlayerInfoTest($ignored, $place) {
+	public function placeNewPlayerInfoTest($ignored, $place): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"place.newplayer.name", "description"=>"unavailable.$check");
 		}
@@ -2526,7 +2517,7 @@ class Dispatcher {
 		);
 	}
 
-	public function placeSpawnToggleTest($ignored, $place) {
+	public function placeSpawnToggleTest($ignored, $place): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"place.togglenewplayer.name", "description"=>"unavailable.$check");
 		}
@@ -2553,7 +2544,7 @@ class Dispatcher {
 		);
 	}
 
-	public function placePermissionsTest($ignored, Place $place) {
+	public function placePermissionsTest($ignored, Place $place): array {
 		if (($check = $this->placeActionsGenericTests()) !== true) {
 			return array("name"=>"place.permissions.name", "description"=>"unavailable.$check");
 		}
@@ -2576,7 +2567,7 @@ class Dispatcher {
 		);
 	}
 
-	public function placeManageRulersTest($ignored, Place $place) {
+	public function placeManageRulersTest($ignored, Place $place): array {
 		if (($check = $this->placeActionsGenericTests()) !== true) {
 			return array("name"=>"place.manage.name", "description"=>"unavailable.$check");
 		}
@@ -2601,7 +2592,7 @@ class Dispatcher {
 			);
 	}
 
-	public function placeManageEmbassyTest($ignored, Place $place) {
+	public function placeManageEmbassyTest($ignored, Place $place): array {
 		if (($check = $this->placeActionsGenericTests()) !== true) {
 			return array("name"=>"place.spawn.name", "description"=>"unavailable.$check");
 		}
@@ -2625,7 +2616,7 @@ class Dispatcher {
 		}
 	}
 
-	public function placeEnterTest($check_duplicate=false, Place $place) {
+	public function placeEnterTest($check_duplicate, Place $place): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"place.enter.name", "description"=>"unavailable.$check");
 		}
@@ -2656,7 +2647,7 @@ class Dispatcher {
 		}
 	}
 
-	public function placeLeaveTest($check_duplicate=false) {
+	public function placeLeaveTest($check_duplicate=false): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"place.exit.name",
 				     "description"=>"unavailable.$check"
@@ -2696,7 +2687,7 @@ class Dispatcher {
 		}
 	}
 
-	public function placeOccupationStartTest($check_duplicate=false, $place) {
+	public function placeOccupationStartTest($check_duplicate, $place): array {
 		if (!$place) {
 			return array("name"=>"place.occupationstart.name", "description"=>"unavailable.noplace");
 		}
@@ -2724,7 +2715,7 @@ class Dispatcher {
 		return $this->action("place.occupationstart", "maf_place_occupation_start");
 	}
 
-	public function placeOccupationEndTest($check_duplicate=false, $place) {
+	public function placeOccupationEndTest($check_duplicate, $place): array {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"place.occupationend.name", "description"=>"unavailable.prisoner");
 		}
@@ -2746,7 +2737,7 @@ class Dispatcher {
 		return $this->action("place.occupationend", "maf_settlement_occupation_end");
 	}
 
-	public function placeChangeOccupierTest($check_duplicate=false, $place) {
+	public function placeChangeOccupierTest($check_duplicate, $place): array {
 		if (!$place) {
 			return array("name"=>"place.changeoccupier.name", "description"=>"unavailable.notsettlement");
 		}
@@ -2767,7 +2758,7 @@ class Dispatcher {
 		return $this->action("place.changeoccupier", "maf_settlement_occupier", false, array('id'=>$place->getId()));
 	}
 
-	public function placeChangeOccupantTest($check_duplicate=false, $place) {
+	public function placeChangeOccupantTest($check_duplicate, $place): array {
 		if (!$place = $this->getCharacter()->getInsidePlace()) {
 			return array("name"=>"place.changeoccupant.name", "description"=>"unavailable.nosettlement");
 		}
@@ -2789,7 +2780,7 @@ class Dispatcher {
 
 	/* ========== Political Actions ========== */
 
-	public function hierarchyOathTest() {
+	public function hierarchyOathTest(): array {
 		// swear an oath of fealty - only available if we don't lead a realm (if we do, similar actions are under realm management)
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"oath.name", "include"=>"hierarchy", "description"=>"unavailable.npc");
@@ -2801,7 +2792,7 @@ class Dispatcher {
 		return array("name"=>"oath.name", "url"=>"maf_politics_oath_offer", "include"=>"hierarchy");
 	}
 
-	public function hierarchyOfferOathTest() {
+	public function hierarchyOfferOathTest(): array {
 		// swear an oath of fealty - only available if we don't lead a realm (if we do, similar actions are under realm management)
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"oath.name", "include"=>"hierarchy", "description"=>"unavailable.npc");
@@ -2810,7 +2801,7 @@ class Dispatcher {
 		return array("name"=>"oath.name", "url"=>"maf_politics_oath", "include"=>"hierarchy");
 	}
 
-	public function hierarchyCreateRealmTest() {
+	public function hierarchyCreateRealmTest(): array {
 		if ($check = $this->politicsActionsGenericTests() !== true) {
 			return array("name"=>"realm.new.name", "description"=>'unavailable.'.$check);
 		}
@@ -2831,7 +2822,7 @@ class Dispatcher {
 		return array("name"=>"realm.new.name", "url"=>"maf_realm_new", "description"=>"realm.new.description", "long"=>"realm.new.longdesc");
 	}
 
-	private function checkVassals(Character $char) {
+	private function checkVassals(Character $char): array {
 		$valid = false;
 		$settlements = $char->getOwnedSettlements()->count();
 		foreach ($char->findVassals() as $vassal) {
@@ -2842,7 +2833,7 @@ class Dispatcher {
 		return array($valid, $settlements);
 	}
 
-	public function hierarchyManageRealmTest() {
+	public function hierarchyManageRealmTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"realm.manage.name", "description"=>"unavailable.$check");
 		}
@@ -2856,7 +2847,7 @@ class Dispatcher {
 		}
 	}
 
-	public function hierarchyNewPlayerInfoTest() {
+	public function hierarchyNewPlayerInfoTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"realm.newplayer.name", "description"=>"unavailable.$check");
 		}
@@ -2870,7 +2861,7 @@ class Dispatcher {
 		}
 	}
 
-	public function hierarchyManageDescriptionTest() {
+	public function hierarchyManageDescriptionTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"realm.description.name", "description"=>"unavailable.$check");
 		}
@@ -2884,7 +2875,7 @@ class Dispatcher {
 		}
 	}
 
-	public function hierarchyAbolishRealmTest() {
+	public function hierarchyAbolishRealmTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"realm.abolish.name", "description"=>"unavailable.$check");
 		}
@@ -2898,7 +2889,7 @@ class Dispatcher {
 		}
 	}
 
-	public function hierarchyAbdicateTest() {
+	public function hierarchyAbdicateTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"realm.abdicate.name", "description"=>"unavailable.$check");
 		}
@@ -2912,7 +2903,7 @@ class Dispatcher {
 		}
 	}
 
-	public function hierarchyRealmLawsTest($ignored, Realm $realm) {
+	public function hierarchyRealmLawsTest($ignored, Realm $realm): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"realm.laws.name", "description"=>"unavailable.$check");
 		}
@@ -2926,7 +2917,7 @@ class Dispatcher {
 		}
 	}
 
-	public function hierarchyRealmLawNewTest($ignored, Realm $realm) {
+	public function hierarchyRealmLawNewTest($ignored, Realm $realm): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"realm.law.new.name", "description"=>"unavailable.$check");
 		}
@@ -2963,7 +2954,7 @@ class Dispatcher {
 		return $this->varCheck($return, 'law.repeal.name', 'maf_law_repeal', 'law.repeal.description', 'law.repeal.longdesc', ['law'=>$law->getId()]);
 	}
 
-	public function hierarchyRealmSpawnsTest() {
+	public function hierarchyRealmSpawnsTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"realm.spawns.name", "description"=>"unavailable.$check");
 		}
@@ -2977,7 +2968,7 @@ class Dispatcher {
 		}
 	}
 
-	public function hierarchyRealmPositionsTest() {
+	public function hierarchyRealmPositionsTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"realm.positions.name", "description"=>"unavailable.$check");
 		}
@@ -2991,7 +2982,7 @@ class Dispatcher {
 		}
 	}
 
-	public function hierarchyWarTest() {
+	public function hierarchyWarTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"war.name", "description"=>"unavailable.$check");
 		}
@@ -3005,7 +2996,7 @@ class Dispatcher {
 		}
 	}
 
-	public function hierarchyDiplomacyTest() {
+	public function hierarchyDiplomacyTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.name", "description"=>"unavailable.$check");
 		}
@@ -3019,7 +3010,7 @@ class Dispatcher {
 		}
 	}
 
-	public function hierarchyElectionsTest() {
+	public function hierarchyElectionsTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"elections.name", "description"=>"unavailable.$check");
 		}
@@ -3033,7 +3024,7 @@ class Dispatcher {
 		);
 	}
 
-	public function hierarchySelectCapitalTest() {
+	public function hierarchySelectCapitalTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"realm.capital.name1", "description"=>"unavailable.$check");
 		}
@@ -3047,7 +3038,7 @@ class Dispatcher {
 		);
 	}
 
-	public function hierarchyIndependenceTest() {
+	public function hierarchyIndependenceTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"rogue.name", "description"=>"unavailable.$check");
 		}
@@ -3058,7 +3049,7 @@ class Dispatcher {
 		return $this->action("rogue", "maf_politics_breakoath", true);
 	}
 
-	public function diplomacyRelationsTest() {
+	public function diplomacyRelationsTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.relations", "description"=>"unavailable.$check");
 		}
@@ -3068,7 +3059,7 @@ class Dispatcher {
 		return $this->action("diplomacy.relations", "maf_realm_relations", false, array('realm'=>$this->realm->getId()));
 	}
 
-	public function diplomacyHierarchyTest() {
+	public function diplomacyHierarchyTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.change.name", "description"=>"unavailable.$check");
 		}
@@ -3085,7 +3076,7 @@ class Dispatcher {
 		return array("name"=>$name, "url"=>"maf_realm_join", "parameters"=>array('realm'=>$this->realm->getId()), "description"=>$desc);
 	}
 
-	public function diplomacySubrealmTest() {
+	public function diplomacySubrealmTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.subrealm", "description"=>"unavailable.$check");
 		}
@@ -3101,7 +3092,7 @@ class Dispatcher {
 		return $this->action("diplomacy.subrealm", "maf_realm_subrealm", true, array('realm'=>$this->realm->getId()));
 	}
 
-	public function diplomacyRestoreTest() {
+	public function diplomacyRestoreTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.restore", "description"=>"unavailable.$check");
 		}
@@ -3114,7 +3105,7 @@ class Dispatcher {
 		return $this->action("diplomacy.restore", "maf_realm_restore", true, array('realm'=>$this->realm->getId()));
 	}
 
-	public function diplomacyBreakHierarchyTest() {
+	public function diplomacyBreakHierarchyTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.break", "description"=>"unavailable.$check");
 		}
@@ -3125,14 +3116,14 @@ class Dispatcher {
 	}
 
 
-	public function inheritanceSuccessorTest() {
+	public function inheritanceSuccessorTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"successor.name", "description"=>"unavailable.npc");
 		}
 		return array("name"=>"successor.name", "url"=>"maf_politics_successor", "description"=>"successor.description");
 	}
 
-	public function partnershipsTest() {
+	public function partnershipsTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"partner.name", "description"=>"unavailable.npc");
 		}
@@ -3141,7 +3132,7 @@ class Dispatcher {
 
 	/* ========== House Actions ========== */
 
-	public function houseCreateHouseTest() {
+	public function houseCreateHouseTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.new.name", "description"=>"unavailable.$check");
 		}
@@ -3175,7 +3166,7 @@ class Dispatcher {
 		return array("name"=>"house.new.name", "url"=>"maf_house_create", "description"=>"house.new.description", "long"=>"house.new.longdesc");
 	}
 
-	public function houseManageReviveTest() {
+	public function houseManageReviveTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.manage.revive.name", "description"=>"unavailable.$check");
 		}
@@ -3189,7 +3180,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseManageHouseTest() {
+	public function houseManageHouseTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.manage.house.name", "description"=>"unavailable.$check");
 		}
@@ -3203,7 +3194,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseSubcreateTest() {
+	public function houseSubcreateTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.subcreate.name", "description"=>"unavailable.$check");
 		}
@@ -3217,7 +3208,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseJoinHouseTest() {
+	public function houseJoinHouseTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.join.house.name", "description"=>"unavailable.$check");
 		}
@@ -3238,7 +3229,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseManageRelocateTest() {
+	public function houseManageRelocateTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.manage.relocate.name", "description"=>"unavailable.$check");
 		}
@@ -3269,7 +3260,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseManageApplicantsTest() {
+	public function houseManageApplicantsTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.manage.applicants.name", "description"=>"unavailable.$check");
 		}
@@ -3286,7 +3277,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseManageDisownTest() {
+	public function houseManageDisownTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.manage.disown.name", "description"=>"unavailable.$check");
 		}
@@ -3303,7 +3294,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseManageSuccessorTest() {
+	public function houseManageSuccessorTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.manage.successor.name", "description"=>"unavailable.$check");
 		}
@@ -3320,7 +3311,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseManageCadetTest($ignored, House $target) {
+	public function houseManageCadetTest($ignored, House $target): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.cadet.name", "description"=>"unavailable.$check");
 		}
@@ -3355,7 +3346,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseManageUncadetTest() {
+	public function houseManageUncadetTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.uncadet.name", "description"=>"unavailable.$check");
 		}
@@ -3375,7 +3366,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseNewPlayerInfoTest() {
+	public function houseNewPlayerInfoTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.newplayer.name", "description"=>"unavailable.$check");
 		}
@@ -3395,7 +3386,7 @@ class Dispatcher {
 		}
 	}
 
-	public function houseSpawnToggleTest() {
+	public function houseSpawnToggleTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"house.spawntoggle.name", "description"=>"unavailable.$check");
 		}
@@ -3417,7 +3408,7 @@ class Dispatcher {
 
 	/* ========== Association Actions ========== */
 
-	public function assocCreateTest() {
+	public function assocCreateTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.new.name", "description"=>"unavailable.$check");
 		}
@@ -3437,7 +3428,7 @@ class Dispatcher {
 		return $this->action('assoc.new', 'maf_assoc_create', true);
 	}
 
-	public function assocUpdateTest($ignored, Association $assoc) {
+	public function assocUpdateTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.update.name", "description"=>"unavailable.$check");
 		}
@@ -3457,7 +3448,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocCreateRankTest($ignored, Association $assoc) {
+	public function assocCreateRankTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.create.rank.name", "description"=>"unavailable.$check");
 		}
@@ -3477,7 +3468,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocJoinTest($ignored, Association $assoc) {
+	public function assocJoinTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.$check"];
 		}
@@ -3500,7 +3491,7 @@ class Dispatcher {
 		);
 	}
 
-	public function assocManageRankTest($ignored, AssociationRank $rank) {
+	public function assocManageRankTest($ignored, AssociationRank $rank): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.manage.rank.name", "description"=>"unavailable.$check");
 		}
@@ -3524,7 +3515,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocManageMemberTest($ignored, AssociationMember $mbr) {
+	public function assocManageMemberTest($ignored, AssociationMember $mbr): array {
 		#We need to check both of these, and Dispatcher isn't built for multiple secondary var passes.
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.manage.member.name", "description"=>"unavailable.$check");
@@ -3549,7 +3540,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocEvictMemberTest($ignored, AssociationMember $mbr) {
+	public function assocEvictMemberTest($ignored, AssociationMember $mbr): array {
 		#We need to check both of these, and Dispatcher isn't built for multiple secondary var passes.
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.evict.member.name", "description"=>"unavailable.$check");
@@ -3574,7 +3565,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocLeaveTest($ignored, Association $assoc) {
+	public function assocLeaveTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.leave.name", "description"=>"unavailable.$check");
 		}
@@ -3589,7 +3580,7 @@ class Dispatcher {
 		);
 	}
 
-	public function assocViewRanksTest($ignored, Association $assoc) {
+	public function assocViewRanksTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.viewRanks.name", "description"=>"unavailable.$check");
 		}
@@ -3604,7 +3595,7 @@ class Dispatcher {
 		);
 	}
 
-	public function assocViewMembersTest($ignored, Association $assoc) {
+	public function assocViewMembersTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.viewMembers.name", "description"=>"unavailable.$check");
 		}
@@ -3619,7 +3610,7 @@ class Dispatcher {
 		);
 	}
 
-	public function assocGraphRanksTest($ignored, Association $assoc) {
+	public function assocGraphRanksTest($ignored, Association $assoc): array {
 		# Should be the same as above assocViewRanksTest.
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.graphRanks.name", "description"=>"unavailable.$check");
@@ -3635,7 +3626,7 @@ class Dispatcher {
 		);
 	}
 
-	public function assocLawsTest($ignored, Association $assoc) {
+	public function assocLawsTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.laws.name", "description"=>"unavailable.$check");
 		}
@@ -3651,7 +3642,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocLawNewTest($ignored, Association $assoc) {
+	public function assocLawNewTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.law.new.name", "description"=>"unavailable.$check");
 		}
@@ -3671,7 +3662,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocDeitiesMineTest($ignored, Association $assoc) {
+	public function assocDeitiesMineTest($ignored, Association $assoc): array {
 		# Should be the same as above assocViewRanksTest.
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.deities.viewMine.name", "description"=>"unavailable.$check");
@@ -3687,7 +3678,7 @@ class Dispatcher {
 		);
 	}
 
-	public function assocDeitiesAllTest($ignored, Association $assoc) {
+	public function assocDeitiesAllTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.deities.viewAll.name", "description"=>"unavailable.$check");
 		}
@@ -3707,7 +3698,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocNewDeityTest($ignored, Association $assoc) {
+	public function assocNewDeityTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.deities.new.name", "description"=>"unavailable.$check");
 		}
@@ -3728,7 +3719,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocUpdateDeityTest($ignored, $opts) {
+	public function assocUpdateDeityTest($ignored, $opts): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.deities.update.name", "description"=>"unavailable.$check");
 		}
@@ -3757,7 +3748,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocWordsDeityTest($ignored, $opts) {
+	public function assocWordsDeityTest($ignored, $opts): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.deities.words.name", "description"=>"unavailable.$check");
 		}
@@ -3785,7 +3776,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocAddDeityTest($ignored, $opts) {
+	public function assocAddDeityTest($ignored, $opts): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.deities.add.name", "description"=>"unavailable.$check");
 		}
@@ -3816,7 +3807,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocRemoveDeityTest($ignored, $opts) {
+	public function assocRemoveDeityTest($ignored, $opts): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.deities.remove.name", "description"=>"unavailable.$check");
 		}
@@ -3847,7 +3838,7 @@ class Dispatcher {
 		}
 	}
 
-	public function assocAdoptDeityTest($ignored, $opts) {
+	public function assocAdoptDeityTest($ignored, $opts): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.deities.remove.name", "description"=>"unavailable.$check");
 		}
@@ -3883,42 +3874,42 @@ class Dispatcher {
 
 	/* ========== Meta Actions ========== */
 
-	public function metaBackgroundTest() {
+	public function metaBackgroundTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.background.name", "description"=>"unavailable.npc");
 		}
 		return array("name"=>"meta.background.name", "url"=>"maf_character_background", "description"=>"meta.background.description");
 	}
 
-	public function metaRenameTest() {
+	public function metaRenameTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.background.name", "description"=>"unavailable.npc");
 		}
 		return array("name"=>"meta.rename.name", "url"=>"maf_character_rename", "description"=>"meta.rename.description");
 	}
 
-	public function metaLoadoutTest() {
+	public function metaLoadoutTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.loadout.name", "description"=>"unavailable.npc");
 		}
 		return array("name"=>"meta.loadout.name", "url"=>"maf_character_loadout", "description"=>"meta.loadout.description");
 	}
 
-	public function metaFaithTest() {
+	public function metaFaithTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.faith.name", "description"=>"unavailable.npc");
 		}
 		return array("name"=>"meta.faith.name", "url"=>"maf_character_faith", "description"=>"meta.faith.description");
 	}
 
-	public function metaSettingsTest() {
+	public function metaSettingsTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.background.name", "description"=>"unavailable.npc");
 		}
 		return array("name"=>"meta.settings.name", "url"=>"maf_character_settings", "description"=>"meta.settings.description");
 	}
 
-	public function metaRetireTest() {
+	public function metaRetireTest(): array {
 		$char = $this->getCharacter();
 		if ($char->isNPC()) {
 			// FIXME: respawn template doesn't exist.
@@ -3933,7 +3924,7 @@ class Dispatcher {
 		return array("name"=>"meta.retire.name", "url"=>"maf_character_retire", "description"=>"meta.retire.description");
 	}
 
-	public function metaKillTest() {
+	public function metaKillTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.kill.name", "description"=>"unavailable.npc");
 		}
@@ -3943,7 +3934,7 @@ class Dispatcher {
 		return array("name"=>"meta.kill.name", "url"=>"maf_character_kill", "description"=>"meta.kill.description");
 	}
 
-	public function metaHeraldryTest() {
+	public function metaHeraldryTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.background.name", "description"=>"unavailable.npc");
 		}
@@ -3952,52 +3943,52 @@ class Dispatcher {
 
 	/* ========== Conversation Tests ========== */
 
-	public function conversationListTest() {
+	public function conversationListTest(): array {
 		return ["name"=>"conv.list.name", "url"=>"maf_convs", "description"=>"conv.list.description"];
 	}
 
-	public function conversationSummaryTest() {
+	public function conversationSummaryTest(): array {
 		return ["name"=>"conv.summary.name", "url"=>"maf_conv_summary", "description"=>"conv.summary.description"];
 	}
 
-	public function conversationRecentTest() {
+	public function conversationRecentTest(): array {
 		return ["name"=>"conv.recent.name", "url"=>"maf_conv_recent", "description"=>"conv.recent.description"];
 	}
 
-	public function conversationUnreadTest() {
+	public function conversationUnreadTest(): array {
 		return ["name"=>"conv.unread.name", "url"=>"maf_conv_unread", "description"=>"conv.unread.description"];
 	}
 
-	public function conversationContactsTest() {
+	public function conversationContactsTest(): array {
 		return ["name"=>"conv.contacts.name", "url"=>"maf_conv_contacts", "description"=>"conv.unrcontactsead.description"];
 	}
 
-	public function conversationNewTest() {
+	public function conversationNewTest(): array {
 		return ["name"=>"conv.new.name", "url"=>"maf_conv_new", "description"=>"conv.new.description"];
 	}
 
-	public function conversationLocalTest($ignored, Conversation $conv=null) {
+	public function conversationLocalTest($ignored, Conversation $conv=null): array {
 		if ($conv && $conv->getLocalFor() != $this->getCharacter()) {
 			return ["name"=>"conv.local.name", "description"=>"unavailable.conv.nopermission"];
 		}
 		return ["name"=>"conv.local.name", "url"=>"maf_conv_local", "description"=>"conv.new.description"];
 	}
 
-	public function conversationLocalRemoveTest($ignored, Message $msg) {
+	public function conversationLocalRemoveTest($ignored, Message $msg): array {
 		if ($msg->getConversation()->getLocalFor() != $this->getCharacter()) {
 			return ["name"=>"conv.localremove.name", "description"=>"unavailable.conv.nopermission"];
 		}
 		return ["name"=>"conv.localremove.name", "url"=>"maf_conv_local_remove", "description"=>"conv.localremove.description"];
 	}
 
-	public function conversationSingleTest($ignored, Conversation $conv) {
+	public function conversationSingleTest($ignored, Conversation $conv): array {
 		if ($conv->findCharPermissions($this->getCharacter())->isEmpty()) {
 			return ["name"=>"conv.read.name", "description"=>"unavailable.conv.nopermission"];
 		}
 		return ["name"=>"conv.read.name", "url"=>"maf_conv_read", "description"=>"conv.read.description"];
 	}
 
-	public function conversationManageTest($ignored, Conversation $conv) {
+	public function conversationManageTest($ignored, Conversation $conv): array {
 		if ($conv->getLocalFor()) {
 			return ["name"=>"conv.manage.name", "description"=>"unavailable.conv.islocal"];
 		}
@@ -4007,7 +3998,7 @@ class Dispatcher {
 		return ["name"=>"conv.manage.name", "url"=>"maf_conv_participants", "description"=>"conv.manage.description"];
 	}
 
-	public function conversationChangeTest($ignored, Conversation $conv) {
+	public function conversationChangeTest($ignored, Conversation $conv): array {
 		if ($conv->getLocalFor()) {
 			return ["name"=>"conv.change.name", "description"=>"unavailable.conv.islocal"];
 		}
@@ -4024,7 +4015,7 @@ class Dispatcher {
 		return ["name"=>"conv.change.name", "url"=>"maf_conv_participants", "description"=>"conv.change.description"];
 	}
 
-	public function conversationLeaveTest($ignored, Conversation $conv) {
+	public function conversationLeaveTest($ignored, Conversation $conv): array {
 		if ($conv->getLocalFor()) {
 			return ["name"=>"conv.leave.name", "description"=>"unavailable.conv.islocal"];
 		}
@@ -4041,7 +4032,7 @@ class Dispatcher {
 		return ["name"=>"conv.leave.name", "url"=>"maf_conv_leave", "description"=>"conv.leave.description"];
 	}
 
-	public function conversationRemoveTest($ignored, Conversation $conv) {
+	public function conversationRemoveTest($ignored, Conversation $conv): array {
 		if ($conv->getLocalFor()) {
 			return ["name"=>"conv.remove.name", "description"=>"unavailable.conv.islocal"];
 		}
@@ -4054,7 +4045,7 @@ class Dispatcher {
 		return ["name"=>"conv.remove.name", "url"=>"maf_conv_leave", "description"=>"conv.remove.description"];
 	}
 
-	public function conversationAddTest($ignored, Conversation $conv) {
+	public function conversationAddTest($ignored, Conversation $conv): array {
 		if ($conv->findCharPermissions($this->getCharacter())->isEmpty()) {
 			return ["name"=>"conv.add.name", "description"=>"unavailable.conv.nopermission"];
 		}
@@ -4068,14 +4059,14 @@ class Dispatcher {
 		return ["name"=>"conv.add.name", "url"=>"maf_conv_read", "description"=>"conv.change.description"];
 	}
 
-	public function conversationReplyTest($ignored, Conversation $conv) {
+	public function conversationReplyTest($ignored, Conversation $conv): array {
 		if ($conv->findCharPermissions($this->getCharacter())->isEmpty() && $conv->getLocalFor() != $this->getCharacter()) {
 			return ["name"=>"conv.reply.name", "description"=>"unavailable.conv.nopermission"];
 		}
 		return ["name"=>"conv.reply.name", "url"=>"maf_conv_change", "description"=>"conv.reply.description"];
 	}
 
-	public function conversationLocalReplyTest() {
+	public function conversationLocalReplyTest(): array {
 		return ["name"=>"conv.localreply.name", "url"=>"maf_conv_local_reply", "description"=>"conv.localreply.description"];
 	}
 
@@ -4083,7 +4074,7 @@ class Dispatcher {
 
 
 
-	public function journalMineTest() {
+	public function journalMineTest(): array {
 		#if (($check = $this->interActionsGenericTests()) !== true) {
 		#	return array("name"=>"journal.mine.name", "description"=>"unavailable.$check");
 		#}
@@ -4091,7 +4082,7 @@ class Dispatcher {
 		return array("name"=>"journal.mine", "url"=>"maf_journal_mine", "description"=>"journal.mine.description", "long"=>"journal.mine.longdesc");
 	}
 
-	public function journalWriteTest() {
+	public function journalWriteTest(): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"journal.write.name", "description"=>"unavailable.$check");
 		}
@@ -4099,7 +4090,7 @@ class Dispatcher {
 		return array("name"=>"journal.write", "url"=>"maf_journal_write", "description"=>"journal.write.description", "long"=>"journal.write.longdesc");
 	}
 
-	public function journalWriteBattleTest($ignored, BattleReport $report) {
+	public function journalWriteBattleTest($ignored, BattleReport $report): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"journal.write.name", "description"=>"unavailable.$check");
 		}
@@ -4111,7 +4102,7 @@ class Dispatcher {
 		return array("name"=>"journal.write", "url"=>"maf_journal_write_battle", "description"=>"journal.write.description", "long"=>"journal.write.longdesc");
 	}
 
-	public function journalWriteActivityTest($ignored, ActivityReport $report) {
+	public function journalWriteActivityTest($ignored, ActivityReport $report): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"journal.write.name", "description"=>"unavailable.$check");
 		}
@@ -4245,7 +4236,7 @@ class Dispatcher {
 
 
 
-	protected function action($trans, $url, $with_long=false, $parameters=null, $transkeys=null, $vars=null) {
+	protected function action($trans, $url, $with_long=false, $parameters=null, $transkeys=null, $vars=null): array {
 		$data = array(
 			"name"			=> $trans.'.name',
 			"url"				=> $url,

@@ -2,18 +2,13 @@
 
 namespace App\Service;
 
-use App\Entity\Action;
-use App\Entity\Character;
 use App\Entity\Battle;
 use App\Entity\BattleGroup;
-use App\Entity\BattleParticipant;
 use App\Entity\BattleReport;
 use App\Entity\BattleReportGroup;
 use App\Entity\BattleReportStage;
 use App\Entity\BattleReportCharacter;
-use App\Entity\BattleReportObserver;
 use App\Entity\Settlement;
-use App\Entity\Place;
 use App\Entity\Soldier;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,23 +22,21 @@ class BattleRunner {
 	*/
 
 	# Symfony Service variables.
-	private $em;
-	private $logger;
-	private $history;
-	private $geo;
-	private $character_manager;
-	private $milman;
-	private $npc_manager;
-	private $interactions;
-	private $warman;
-	private $actman;
-	private $politics;
-	private $helper;
-	private $combat;
+	private EntityManagerInterface $em;
+	private LoggerInterface $logger;
+	private History $history;
+	private Geography $geo;
+	private CharacterManager $character_manager;
+	private MilitaryManager $milman;
+	private Interactions $interactions;
+	private WarManager $warman;
+	private Politics $politics;
+	private HelperService $helper;
+	private CombatManager $combat;
 
 	# Preset values.
-	private $defaultOffset = 135;
-	private $battleSeparation = 270;
+	private int $defaultOffset = 135;
+	private int $battleSeparation = 270;
 	/*
 	Going to talk about these abit as they determine things. Offset is the absolute value from zero for each of the two primary sides.
 	In the case of defenders this is also the positive value for where the "walls" are.
@@ -51,37 +44,35 @@ class BattleRunner {
 	*/
 
 	# The following variables are used all over this class, in multiple functions, sometimes as far as 4 or 5 functions deep.
-	private $battle;
-	private $regionType;
-	private $xpMod;
-	private $debug=0;
+	private Battle $battle;
+	private bool|string $regionType;
+	private float $xpMod;
+	private int $debug=0;
 
-	private $siegeFinale;
-	private $defMinContacts;
-	private $defUsedContacts = 0;
-	private $defCurrentContacts = 0;
-	private $defSlain;
-	private $attMinContacts;
-	private $attUsedContacts = 0;
-	private $attCurrentContacts = 0;
+	private bool $siegeFinale;
+	private int $defMinContacts;
+	private int $defUsedContacts = 0;
+	private int $defCurrentContacts = 0;
+	private int $defSlain;
+	private int $attMinContacts;
+	private int $attUsedContacts = 0;
+	private int $attCurrentContacts = 0;
 	private $attSlain;
 
-	private $report;
-	private $nobility;
-	private $battlesize=1;
-	private $defenseBonus=0;
+	private BattleReport $report;
+	private mixed $nobility;
+	private int $battlesize=1;
+	private int $defenseBonus=0;
 
 
-	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, History $history, Geography $geo, CharacterManager $character_manager, NpcManager $npc_manager, Interactions $interactions, WarManager $war_manager, ActivityManager $actman, Politics $politics, MilitaryManager $milman, HelperService $helper, CombatManager $combat) {
+	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, History $history, Geography $geo, CharacterManager $character_manager, Interactions $interactions, WarManager $war_manager, Politics $politics, MilitaryManager $milman, HelperService $helper, CombatManager $combat) {
 		$this->em = $em;
 		$this->logger = $logger;
 		$this->history = $history;
 		$this->geo = $geo;
 		$this->character_manager = $character_manager;
-		$this->npc_manager = $npc_manager;
 		$this->interactions = $interactions;
 		$this->warman = $war_manager;
-		$this->actman = $actman;
 		$this->politics = $politics;
 		$this->milman = $milman;
 		$this->helper = $helper;
@@ -103,11 +94,6 @@ class BattleRunner {
 		$this->battle = $battle;
 		$this->log(1, "Battle ".$battle->getId()."\n");
 
-		$siege = $battle->getIsSiege();
-		$assault = false;
-		$sortie = false;
-		$some_inside = false;
-		$some_outside = false;
 		$char_count = 0;
 		$slumberers = 0;
 
@@ -140,7 +126,6 @@ class BattleRunner {
 		$this->log(15, "XP modifier set to ".$xpMod." with ".$char_count." characters and ".$slumberers." slumberers\n");
 
 		$this->report = new BattleReport;
-		$assault = false;
 		$this->report->setAssault(FALSE);
 		$this->report->setSortie(FALSE);
 		$this->report->setUrban(FALSE);
@@ -193,7 +178,6 @@ class BattleRunner {
 						$this->siegeFinale = FALSE;
 					}
 				}
-				$assault = true;
 				if (!$place) {
 					# So, this looks a bit weird, but stone stuff counts during stages 1 and 2, while wood stuff and moats only count during stage 1. Stage 3 gives you the fortress, and stage 4 gives the citadel bonus.
 					# If you're wondering why this looks different from how we figure out the max stage, that's because the final stage works differently.
@@ -271,11 +255,9 @@ class BattleRunner {
 		$this->em->flush(); // because we need the report ID below to set associations
 
 		$this->log(15, "populating characters and locking...\n");
-		$characters = array();
 		$this->regionType = false;
 		foreach ($battle->getGroups() as $group) {
 			foreach ($group->getCharacters() as $char) {
-				$characters[] = $char->getId();
 				$char->setBattling(true);
 				if (!$this->regionType) {
 					if ($myRegion = $this->geo->findMyRegion($char)) {
@@ -526,7 +508,7 @@ class BattleRunner {
 				$base_morale = 50;
 				// defense bonuses:
 				if ($group == $battle->getPrimaryDefender() or $battle->getPrimaryDefender()->getReinforcedBy()->contains($group)) {
-					if ($battle->getType = 'siegeassault') {
+					if ($battle->getType() === 'siegeassault') {
 						$base_morale += $this->defenseBonus/2;
 						$base_morale += 10;
 					}
@@ -577,15 +559,15 @@ class BattleRunner {
 			// TODO: might make this actual buy options, instead of hardcoded
 			$weapon = $char->getWeapon();
 			if (!$weapon) {
-				$weapon = $this->em->getRepository('App\Entity\EquipmentType')->findOneByName('sword');
+				$weapon = $this->em->getRepository('App\Entity\EquipmentType')->findOneBy(['name'=>'sword']);
 			}
 			$armour = $char->getArmour();
 			if (!$armour) {
-				$armour = $this->em->getRepository('App\Entity\EquipmentType')->findOneByName('plate armour');
+				$armour = $this->em->getRepository('App\Entity\EquipmentType')->findOneBy(['name'=>'plate armour']);
 			}
 			$equipment = $char->getEquipment();
 			if (!$equipment) {
-				$equipemnt = $this->em->getRepository('App\Entity\EquipmentType')->findOneByName('war horse');
+				$equipment = $this->em->getRepository('App\Entity\EquipmentType')->findOneBy(['name'=>'war horse']);
 			}
 
 			$noble = new Soldier();
@@ -609,23 +591,19 @@ class BattleRunner {
 		$this->log(20, "Calculating ranged penalties...\n");
 		$rangedPenalty = 1; # Default of no penalty. Yes, 1 is no penalty. It's a multiplier.
 		switch ($this->regionType) {
+			case 'marsh':
 			case 'scrub':
 				$rangedPenalty *=0.8;
 				break;
+			case 'rock':
 			case 'thin scrub':
 				$rangedPenalty *=0.9;
-				break;
-			case 'marsh':
-				$rangedPenalty *=0.8;
 				break;
 			case 'forest':
 				$rangedPenalty *=0.7;
 				break;
 			case 'dense forest':
 				$rangedPenalty *=0.5;
-				break;
-			case 'rock':
-				$rangedPenalty *=0.9;
 				break;
 			case 'snow':
 				$rangedPenalty *=0.6;
@@ -658,7 +636,7 @@ class BattleRunner {
 			}
 		}
 		$this->log(20, "...hunt phase...\n");
-		$hunt = $this->runStage('hunt', $rangedPenalty, $phase, $doRanged);
+		$this->runStage('hunt', $rangedPenalty, $phase, $doRanged);
 	}
 
 	private function prepareRound(): void {
@@ -792,7 +770,7 @@ class BattleRunner {
 			],
 		];
 		foreach ($group->getUnits() as $unit) {
-			$count = $setup[$line]['count'];
+			$count = $setup[$unit->getSettings()->getLine()]['count'];
 			$line = $unit->getSettings()->getLine();
 			if ($invert) {
 				$xPos = $startX - ($line*20);
@@ -814,7 +792,7 @@ class BattleRunner {
 				$unit->setXPos($xPos);
 				$unit->setYPos($yPos);
 			}
-			if ($iCount > 2) {
+			if ($count > 2) {
 				# Handle vertical offsets for future deployment.
 				# We only need this if we have to work out angled deployments.
 				if ($yPos > 0 && $yPos > $highY) {
@@ -1473,7 +1451,7 @@ class BattleRunner {
 					} elseif ($battle->getPrimaryDefender() == $group) {
 						$primaryVictor = $group;
 						$this->log(5, $group->getActiveReport()->getId()." (".($group->getAttacker()?"attacker":"defender").") ID'd as primary defender and primary victor.\n");
-					} elseif ($battle->getPrimaryAttacker()->getReinforcedBy->contains($group) || $battle->getPrimaryDefender()->getReinforcedBy->contains($group)) {
+					} elseif ($battle->getPrimaryAttacker()->getReinforcedBy()->contains($group) || $battle->getPrimaryDefender()->getReinforcedBy()->contains($group)) {
 						$primaryVictor = $group->getReinforcing();
 						$this->log(5, $group->getActiveReport()->getId()." (".($group->getAttacker()?"attacker":"defender").") ID'd as primary victor but is reninforcing group #".$primaryVictor()->getActiveReport()->getId()." (".($primaryVictor->getAttacker()?"attacker":"defender").").\n");
 					} else {

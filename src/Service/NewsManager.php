@@ -7,7 +7,6 @@ use App\Entity\NewsArticle;
 use App\Entity\NewsEdition;
 use App\Entity\NewsEditor;
 use App\Entity\NewsPaper;
-use App\Entity\NewsReader;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 

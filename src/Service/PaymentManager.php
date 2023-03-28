@@ -28,11 +28,8 @@ class PaymentManager {
 	private mixed $ruleset;
 	private mixed $stripeSecret;
 	private array $stripePrices;
-	private string $env;
 	private array $patreonAlikes = ['patreon'];
 
-
-	// FIXME: type hinting for $translator removed because the addition of LoggingTranslator is breaking it
 	public function __construct(EntityManagerInterface $em, UserManager $usermanager, TranslatorInterface $translator, LoggerInterface $logger, MailManager $mailman, KernelInterface $kernel) {
 		$this->em = $em;
 		$this->usermanager = $usermanager;
@@ -42,8 +39,7 @@ class PaymentManager {
 		$this->mailman = $mailman;
 		$this->ruleset = $_ENV['RULESET'];
 		$this->stripeSecret = $_ENV['STRIPE_SECRET'];
-		$this->stripePrices =
-		[
+		$this->stripePrices = [
 			'USD' => [
 				2 => $_ENV['STRIPEUSD2'],
 				5 => $_ENV['STRIPEUSD5'],
@@ -61,10 +57,9 @@ class PaymentManager {
 				100 => $_ENV['STRIPEEUR100'],
 			]
 		];
-		$this->env = $kernel->getEnvironment();
 	}
 
-	public function getPaymentLevels(User $user = null, $system = false) {
+	public function getPaymentLevels(User $user = null, $system = false): array {
 		if ($this->ruleset === 'maf') {
 			return [
 				 0 =>	array('name' => 'storage',	'characters' =>    0, 'fee' =>   0, 'selectable' => false, 'patreon'=>false, 'creator'=>false),
@@ -80,6 +75,7 @@ class PaymentManager {
 				51 =>   array('name' => 'explorer+',	'characters' =>   50, 'fee' =>   0, 'selectable' => false,  'patreon'=>400,   'creator'=>'andrew'),
 			];
 		}
+		return [0 => ['name' => 'user', 'characters' => 5, 'fee' => 0, 'selectable' => false, 'patreon' => false, 'creator' => false]];
 	}
 
 	public function calculateUserFee(User $user) {
@@ -103,12 +99,12 @@ class PaymentManager {
 		return $fee;
 	}
 
-	public function getCostOfHeraldry() {
+	public function getCostOfHeraldry(): int {
 		return 250;
 	}
 
 
-	public function calculateRefund(User $user) {
+	public function calculateRefund(User $user): float {
 		$today = new \DateTime("now");
 		$days = $today->diff($user->getPaidUntil())->format("%a");
 		$today->modify('+1 month -1 day');
@@ -123,7 +119,7 @@ class PaymentManager {
 		return $fees[$user->getAccountLevel()]['characters'];
 	}
 
-	public function paymentCycle($patronsOnly = false) {
+	public function paymentCycle($patronsOnly = false): array {
 		$this->logger->info("Payment Cycle...");
 		$free = 0;
 		$patronCount = 0;
@@ -299,7 +295,7 @@ class PaymentManager {
 		return array($free, $patronCount, $active, $credits, $expired, $storage, $bannedcount);
 	}
 
-	public function refreshPatreonTokens($patron) {
+	public function refreshPatreonTokens($patron): bool {
 		$now = new \DateTime("now");
 		if ($patron->getExpires() < $now) {
 			$creator = $patron->getCreator();
@@ -318,7 +314,7 @@ class PaymentManager {
 		return true; # No update needed. Why did you call this?
 	}
 
-	public function refreshPatreonPledge($patron, $args = ['skip_read_from_cache'=>true, 'skip_add_to_cache'=>true]) {
+	public function refreshPatreonPledge($patron, $args = ['skip_read_from_cache'=>true, 'skip_add_to_cache'=>true]): array {
 		$papi = new PAPI($patron->getAccessToken());
 		$check = false;
 		$counter = 0;
@@ -372,7 +368,7 @@ class PaymentManager {
 		return [$status, $entitlement];
 	}
 
-	public function checkPatreonFetch($member) {
+	public function checkPatreonFetch($member): bool {
 		# Validate that results are waht we expect them to be.
 		if (!is_numeric($member['data']['id'])) {
 			$this->logger->info($member);
@@ -390,7 +386,7 @@ class PaymentManager {
 		return true;
 	}
 
-	public function buildStripeIntent($currency, $amt, $user, $success, $cancel) {
+	public function buildStripeIntent($currency, $amt, $user, $success, $cancel): \Stripe\Checkout\Session|string {
 		$prices = $this->stripePrices;
 		if (array_key_exists($currency, $prices)) {
 			$iCurrency = $prices[$currency];
@@ -426,7 +422,7 @@ class PaymentManager {
 		return $checkout;
 	}
 
-	private function stripeAmtFromPid($pid) {
+	private function stripeAmtFromPid($pid): array {
 		foreach ($this->stripePrices as $aKey=>$aData) {
 			foreach ($aData as $bKey=>$each) {
 				if ($each === $pid) {
@@ -434,21 +430,22 @@ class PaymentManager {
 				}
 			}
 		}
+		return [0,0];
 	}
 
-	public function retrieveStripe($session) {
+	public function retrieveStripe($session): array {
 		$stripe = new \Stripe\StripeClient($this->stripeSecret);
 		return [$stripe->checkout->sessions->retrieve($session), $stripe->checkout->sessions->allLineItems($session)];
 	}
 
-	private function ChangeNotification(User $user, $subject, $text) {
+	private function ChangeNotification(User $user, $subject, $text): void {
 		$subject = $this->translator->trans("account.payment.mail.".$subject, array());
 		$content = $this->translator->trans("account.payment.mail.".$text, array());
 
 		$this->mailman->sendEmail($user->getEmail(), $subject, $content);
 	}
 
-	public function changeSubscription(User $user, $newlevel) {
+	public function changeSubscription(User $user, $newlevel): bool {
 		if (!array_key_exists($newlevel, $this->getPaymentLevels())) {
 			return false;
 		}
@@ -510,7 +507,7 @@ class PaymentManager {
 	}
 
 
-	public function account(User $user, $type, $amount, $transaction=null, $src='paypal') {
+	public function account(User $user, $type, $amount, $transaction=null, $src='paypal'): true {
 		if ($type === 'Stripe Payment') {
 			list($currency, $amount) = $this->stripeAmtFromPid($amount);
 		} else {
@@ -601,11 +598,11 @@ class PaymentManager {
 					$user->addCreditHistory($h);
 
 					$sender->setCredits($sender->getCredits()+$value);
-					$this->usermanager->updateUser($sender, false);
+					$this->em->flush();
 
 					$text = $this->translator->trans('account.invite.mail2.body', array("%mail%"=>$user->getEmail(), "%credits%"=>$value));
-					$numSent = $this->mailman->sendEmail($sender->getEmail(), $this->translator->trans('account.invite.mail2.subject'), $text);
-					$this->logger->info('sent friend subscriber email: ('.$numSent.') - '.$text);
+					$this->mailman->sendEmail($sender->getEmail(), $this->translator->trans('account.invite.mail2.subject'), $text);
+					$this->logger->info('sent friend subscriber email: '.$text);
 				}
 			}
 		}
@@ -615,7 +612,7 @@ class PaymentManager {
 		return true;
 	}
 
-	public function redeemHash(User $user, $hash) {
+	public function redeemHash(User $user, $hash): array {
 		$code = $this->em->getRepository(Code::class)->findOneByCode($hash);
 		if ($code) {
 			return array($code, $this->redeemCode($user, $code));
@@ -624,7 +621,7 @@ class PaymentManager {
 		}
 	}
 
-	public function redeemCode(User $user, Code $code) {
+	public function redeemCode(User $user, Code $code): true|string {
 		if ($code->getUsed()) {
 			$this->logger->alert("user #{$user->getId()} tried to redeem already-used code {$code->getId()}");
 			return "error.payment.already";
@@ -662,7 +659,7 @@ class PaymentManager {
 		return true;
 	}
 
-	public function createCode($credits, $vip_status=0, $sent_to=null, User $sent_from=null, $limit=false) {
+	public function createCode($credits, $vip_status=0, $sent_to=null, User $sent_from=null, $limit=false): Code {
 		$code = new Code;
 		$code->setCode(sha1(time()."mafcode".mt_rand(0,1000000)));
 		$code->setCredits($credits);
@@ -684,7 +681,7 @@ class PaymentManager {
 	}
 
 
-	public function spend(User $user, $type, $credits, $renew_subscription=false) {
+	public function spend(User $user, $type, $credits, $renew_subscription=false): bool {
 		if ($credits>0 && $user->getCredits()<$credits) {
 			return false;
 		}
@@ -710,11 +707,11 @@ class PaymentManager {
 	}
 
 
-	public function log_info($text) {
+	public function log_info($text): void {
 		$this->logger->info($text);
 	}
 
-	public function log_error($text) {
+	public function log_error($text): void {
 		$this->logger->error($text);
 	}
 
