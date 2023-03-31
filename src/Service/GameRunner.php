@@ -2,30 +2,12 @@
 
 namespace App\Service;
 
-use App\Entity\Building;
 use App\Entity\Character;
 use App\Entity\Election;
-use App\Entity\GeoData;
-use App\Entity\GameRequest;
-use App\Entity\House;
 use App\Entity\RealmPosition;
-use App\Entity\Setting;
-use App\Entity\Settlement;
-use App\Entity\Ship;
 use App\Entity\Supply;
-use App\Service\AppState;
-use App\Service\ActionResolution;
-use App\Service\BattleRunner;
-use App\Service\CharacterManager;
-use App\Service\ConversationManager;
-use App\Service\Generator;
-use App\Service\Interactions;
-use App\Service\MilitaryManager;
-use App\Service\NpcManager;
-use App\Service\RealmManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\ORM\EntityManagerInterface;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Psr\Log\LoggerInterface;
@@ -620,7 +602,9 @@ class GameRunner {
 		$this->logger->info("$date --   Checking on recruits...");
 		$query = $this->em->createQuery('SELECT s FROM App:Settlement s WHERE s.id > 0');
 		foreach ($query->getResult() as $settlement) {
-			$this->milman->TrainingCycle($settlement);
+			if (!$settlement->getSiege() || !$settlement->getSiege()->getEncircled()) {
+				$this->milman->TrainingCycle($settlement);
+			}
 		}
 
 		// Update soldier arrivals to units based on travel times being at or below zero.
@@ -716,31 +700,50 @@ class GameRunner {
 				$done=true;
 				break;
 			}
-			$resupply = $row[0];
-			$unit = $resupply->getUnit();
-			$found = false;
-			$orig = 0;
-			$id = $unit->getId();
-			$add = $resupply->getQuantity();
-			$rid = $resupply->getId();
-			if ($unit->getSupplies()) {
-				foreach ($unit->getSupplies() as $supply) {
-					if ($supply->getType() === $resupply->getType()) {
-						$found = true;
-						$orig = $supply->getQuantity();
-						$sid = $supply->getId();
-						$supply->setQuantity($orig+$resupply->getQuantity());
-						break;
+			$encircled = false;
+			if ($unit->getCharacter()) {
+				$char = $unit->getCharacter();
+				if ($char->getInsideSettlement()) {
+					$here = $char->getInsideSettlement();
+					if ($here->getSiege() && $here->getSiege()->getEncircled()) {
+						$encircled = true;
 					}
 				}
 			}
-			if (!$found) {
-				$supply = new Supply();
-				$this->em->persist($supply);
-				$supply->setUnit($unit);
-				$supply->setType($resupply->getType());
-				$supply->setQuantity($resupply->getQuantity());
+			if (!$encircled && $unit->getSupplier() !== $unit->getSettlement()) {
+				$here = $unit->getSettlement();
+				if ($here->getSiege() && $here->getSiege()->getEncircled()) {
+					$encircled = true;
+				}
 			}
+			$resupply = $row[0];
+			if (!$encircled) {
+				$unit = $resupply->getUnit();
+				$found = false;
+				$orig = 0;
+				$id = $unit->getId();
+				$add = $resupply->getQuantity();
+				$rid = $resupply->getId();
+				if ($unit->getSupplies()) {
+					foreach ($unit->getSupplies() as $supply) {
+						if ($supply->getType() === $resupply->getType()) {
+							$found = true;
+							$orig = $supply->getQuantity();
+							$sid = $supply->getId();
+							$supply->setQuantity($orig+$resupply->getQuantity());
+							break;
+						}
+					}
+				}
+				if (!$found) {
+					$supply = new Supply();
+					$this->em->persist($supply);
+					$supply->setUnit($unit);
+					$supply->setType($resupply->getType());
+					$supply->setQuantity($resupply->getQuantity());
+				}
+			}
+			#TODO: Give the food to the attackers.
 			$this->em->remove($resupply);
 			$this->em->flush();
 		}
