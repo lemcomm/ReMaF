@@ -700,6 +700,8 @@ class GameRunner {
 				$done=true;
 				break;
 			}
+			$resupply = $row[0];
+			$unit = $resupply->getUnit();
 			$encircled = false;
 			if ($unit->getCharacter()) {
 				$char = $unit->getCharacter();
@@ -716,9 +718,7 @@ class GameRunner {
 					$encircled = true;
 				}
 			}
-			$resupply = $row[0];
 			if (!$encircled) {
-				$unit = $resupply->getUnit();
 				$found = false;
 				$orig = 0;
 				$id = $unit->getId();
