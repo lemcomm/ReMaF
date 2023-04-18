@@ -11,8 +11,8 @@ index:
  last:      Last message
  msg:       by %sender% on %day% (%ts%)
  msgshort:  "%day%"
- ref:       Conversations for %ref%:
- ref2:      Private and Group Conversations:
+ ref:       "Conversations for %ref%:"
+ ref2:      "Private and Group Conversations:"
  localpre:  Local
  letter:    Letter from %sender% on %day% (%ts%)
  legacy:    Letter from %sender% on %day% (%ts%)
@@ -95,9 +95,9 @@ conversation:
  parent:
   label:		sub-topic of...
   empty:		(nothing)
-  reference: parent conversation:
+  reference: "parent conversation:"
  child:
-  reference: sub-topics to this:
+  reference: "sub-topics to this:"
  nearby:
   label:		Characters in the vicinity that you can contact
  captor:
@@ -153,7 +153,7 @@ message:
   submit:	  Send reply
  send:      Send Message
  new:       new
- response:  in response to:
+ response:  "in response to:"
  responses: responses
  from:      message from
  fromshort: from

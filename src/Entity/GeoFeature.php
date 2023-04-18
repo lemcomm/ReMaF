@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
+
 class GeoFeature {
 
 	public function ApplyDamage($damage) {
