@@ -127,7 +127,7 @@ class ArtifactsController extends AbstractController {
 				$characters[] = $char->getId();
 			}
 		}
-		$form = $this->createForm(new CharacterSelectType($characters, 'form.choose', 'choose target', 'assign artifact', 'messages'));
+		$form = $this->createForm(CharacterSelectType($characters, 'form.choose', 'choose target', 'assign artifact', 'messages'));
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
@@ -204,7 +204,7 @@ class ArtifactsController extends AbstractController {
 	public function giveAction(Request $request) {
 		$character = $this->get('dispatcher')->gateway('locationGiveArtifactTest');
 
-		$form = $this->createForm(new InteractionType('giveartifact', $this->get('geography')->calculateInteractionDistance($character), $character));
+		$form = $this->createForm(InteractionType('giveartifact', $this->get('geography')->calculateInteractionDistance($character), $character));
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
@@ -226,7 +226,7 @@ class ArtifactsController extends AbstractController {
 				array('%link-character%'=>$character->getId(), '%link-artifact%'=>$artifact->getId()),
 				History::MEDIUM, true, 20
 			);
-			$em->flush();
+			$this->em->flush();
 			return $this->render('Artifacts/give.html.twig', [
 				'success'=>true, 'artifact'=>$artifact, 'target'=>$target
 			]);

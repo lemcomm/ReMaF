@@ -629,7 +629,7 @@ class CharacterController extends AbstractController {
 			$my_rating = new CharacterRating;
 			$my_rating->setCharacter($char);
 		}
-		$form = $this->createForm(new CharacterRatingType::class, $my_rating);
+		$form = $this->createForm(CharacterRatingType::class, $my_rating);
 		return $this->render('Character/reputation.html.twig', [
 			'char'		=> $char,
 			'ratings'	=> $data,
@@ -642,7 +642,7 @@ class CharacterController extends AbstractController {
 
   	#[Route ('/char/rate', name:'maf_char_rate')]
 	public function rateAction(Request $request): RedirectResponse {
-		$form = $this->createForm(new CharacterRatingType::class);
+		$form = $this->createForm(CharacterRatingType::class);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
@@ -778,7 +778,7 @@ class CharacterController extends AbstractController {
 		if (!$character->getBackground()) {
 			$this->charman->newBackground($character);
 		}
-		$form = $this->createForm(new CharacterBackgroundType::class, $character->getBackground(), ['alive' =>$character->getAlive()]);
+		$form = $this->createForm(CharacterBackgroundType::class, $character->getBackground(), ['alive' =>$character->getAlive()]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$em->flush();
@@ -886,7 +886,7 @@ class CharacterController extends AbstractController {
 		}
 		$em = $this->em;
 
-		$form = $this->createForm(new CharacterSettingsType::class, $character);
+		$form = $this->createForm(CharacterSettingsType::class, $character);
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -914,7 +914,7 @@ class CharacterController extends AbstractController {
 		$opt['othr'] = $em->getRepository('App:EquipmentType')->findBy(['type'=>'equipment']);
 		$opt['mnts'] = $em->getRepository('App:EquipmentType')->findBy(['type'=>'mount']);
 
-		$form = $this->createForm(new CharacterLoadoutType::class, $character, $opts);
+		$form = $this->createForm(CharacterLoadoutType::class, $character, $opts);
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -945,7 +945,7 @@ class CharacterController extends AbstractController {
 			}
 		}
 
-		$form = $this->createForm(new AssocSelectType::class, null, ['assocs' => $opts, 'type' => 'faith', 'me' =>$character]);
+		$form = $this->createForm(AssocSelectType::class, null, ['assocs' => $opts, 'type' => 'faith', 'me' =>$character]);
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -1074,7 +1074,7 @@ class CharacterController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new InteractionType::class, null, [
+		$form = $this->createForm(InteractionType::class, null, [
 			'action'=>'surrender',
 			'maxdistance' => $this->geo->calculateInteractionDistance($character),
 			'me' => $character
@@ -1224,7 +1224,7 @@ class CharacterController extends AbstractController {
 		$others = $this->dispatcher->getActionableCharacters();
 		$em = $this->em;
 
-		$form = $this->createForm(new EntourageManageType::class, null, ['entourage'=>$character->getEntourage(), 'others'=>$others]);
+		$form = $this->createForm(EntourageManageType::class, null, ['entourage'=>$character->getEntourage(), 'others'=>$others]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();

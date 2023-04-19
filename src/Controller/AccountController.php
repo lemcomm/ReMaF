@@ -250,7 +250,7 @@ class AccountController extends AbstractController {
 		if (count($npcs)==0) {
 			$free_npcs = $npcm->getAvailableNPCs();
 			if (count($free_npcs) > 0) {
-				$npcs_form = $this->createForm(new NpcSelectType::class, null, ['freeNPCs'=>$free_npcs])->createView();
+				$npcs_form = $this->createForm(NpcSelectType::class, null, ['freeNPCs'=>$free_npcs])->createView();
 			} else {
 				$npcs_form = null;
 			}
@@ -357,7 +357,7 @@ class AccountController extends AbstractController {
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
-		$form = $this->createForm(new CharacterCreationType::class, null, ['user'=>$user, 'slotsavailable'=>$user->getNewCharsLimit()>0]);
+		$form = $this->createForm(CharacterCreationType::class, null, ['user'=>$user, 'slotsavailable'=>$user->getNewCharsLimit()>0]);
 
 		list($make_more, $characters_active, $characters_allowed) = $this->checkCharacterLimit($user);
 		if (!$make_more) {
@@ -526,7 +526,7 @@ class AccountController extends AbstractController {
 			throw new AccessDeniedException($user->isBanned());
 		}
 		$languages = $app->availableTranslations();
-		$form = $this->createForm(new SettingsType::class, null, ['user'=>$user, 'languages'=>$languages]);
+		$form = $this->createForm(SettingsType::class, null, ['user'=>$user, 'languages'=>$languages]);
 
 		if ($request->isMethod('POST') && $request->request->has("settings")) {
 			$form->handleRequest($request);
@@ -576,7 +576,7 @@ class AccountController extends AbstractController {
 	#[Route ('/account/listset', name:'maf_chars_set')]
 	public function listsetAction(Request $request): Response {
 		$user = $this->getUser();
-		$list_form = $this->createForm(new ListSelectType::class);
+		$list_form = $this->createForm(ListSelectType::class);
 		$list_form->handleRequest($request);
 		if ($list_form->isValid()) {
 			$data = $list_form->getData();

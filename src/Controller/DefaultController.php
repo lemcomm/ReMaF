@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\RegistrationFormType;
 use App\Service\AppState;
 use App\Service\PageReader;
 use App\Service\PaymentManager;
@@ -20,9 +21,18 @@ class DefaultController extends AbstractController {
 	public function indexAction(EntityManagerInterface $em) {
 		$query = $em->createQuery('SELECT j, c from App:Journal j JOIN j.character c WHERE j.public = true AND j.graphic = false AND j.pending_review = false AND j.GM_private = false AND j.GM_graphic = false ORDER BY j.date DESC')->setMaxResults(3);
 		$journals = $query->getResult();
+
+		if ($this->getUser()) {
+			$form = null;
+		} else {
+			$user = new User();
+			$form = $this->createForm(RegistrationFormType::class, $user, ['action'=>$this->generateUrl('maf_register'), 'labels'=>false]);
+		}
+
 		return $this->render('Default/index.html.twig', [
 			"simple"=>true,
-			"journals"=>$journals
+			"journals"=>$journals,
+			'form'=>$form
 		]);
 	}
 

@@ -2,24 +2,22 @@
 
 namespace App\Controller;
 
-use App\Entity\Character;
-use App\Entity\Journal;
 use App\Entity\UpdateNote;
 use App\Entity\User;
 use App\Form\UpdateNoteType;
 use App\Service\AppState;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class GMController extends AbstractController {
 
-	private $app;
-	private $em;
+	private AppState $app;
+	private EntityManagerInterface $em;
 
 	public function __construct(AppState $app, EntityManagerInterface $em) {
 		$this->app = $app;
@@ -27,7 +25,6 @@ class GMController extends AbstractController {
 	}
 	#[Route ('/olympus', name:'maf_gm_pending')]
 	public function pendingAction(): Response {
-		# Security is handled by Syfmony Firewall.
 		$query = $this->em->createQuery('SELECT r from App\Entity\UserReport r WHERE r.actioned = false');
 		$reports = $query->getResult();
 
@@ -38,8 +35,6 @@ class GMController extends AbstractController {
 
 	#[Route ('/olympus/user/{id}', name:'maf_gm_user_reports')]
 	public function userReportsAction(User $id): Response {
-		# Security is handled by Syfmony Firewall.
-
 		return $this->render('GM/userReports.html.twig',  [
 			'by'=>$id->getReports(),
 			'against'=>$id->getReportsAgainst()
@@ -48,8 +43,7 @@ class GMController extends AbstractController {
 
 	#[Route ('/olympus/archive', name:'maf_gm_pending')]
 
-	public function actionedAction() {
-		# Security is handled by Syfmony Firewall.
+	public function actionedAction(): Response {
 		$query = $this->em->createQuery('SELECT r from App\Entity\UserReport r WHERE r.actioned = true');
 		$reports = $query->getResult();
 
@@ -63,16 +57,14 @@ class GMController extends AbstractController {
 	#[Route ('/olympus/update')]
 
 	public function updateNoteAction(Request $request, UpdateNote $id=null): RedirectResponse|Response {
-		# Security is handled by Syfmony Firewall.
-
-		$form = $this->createForm(new UpdateNoteType($id));
+		$form = $this->createForm(UpdateNoteType::class, null, ['note'=>$id]);
 		$form->handleRequest($request);
 
 		if ($form->isValid() && $form->isSubmitted()) {
 			$data = $form->getData();
 			if (!$id) {
 				$note = new UpdateNote();
-				$now = new \DateTime('now');
+				$now = new DateTime('now');
 				$note->setTs($now);
 				$version = $data['version'];
 				$note->setVersion($version);
@@ -90,7 +82,6 @@ class GMController extends AbstractController {
 			$this->addFlash('notice', 'Update note created.');
 			return $this->redirectToRoute('maf_chars');
 		}
-
 
 		return $this->render('GM/update.html.twig', [
 			'form'=>$form->createView()

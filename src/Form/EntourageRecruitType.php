@@ -10,12 +10,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EntourageRecruitType extends AbstractType {
 
-	private $recruits;
-
-	public function __construct($recruits) {
-		$this->recruits = $recruits;
-	}
-
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
 			'intention'       => 'recruit_23469',

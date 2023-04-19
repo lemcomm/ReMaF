@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class FictionController extends AbstractController {
 
-	private $pages = array(
+	private array $pages = array(
 		'creation',
 		'firstones',
 		'fall',

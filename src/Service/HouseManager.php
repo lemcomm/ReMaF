@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Entity\Character;
 use App\Entity\House;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 
 class HouseManager {
@@ -13,7 +13,7 @@ class HouseManager {
 	protected $history;
 	protected $descman;
 
-	public function __construct(EntityManager $em, History $history, DescriptionManager $descman) {
+	public function __construct(EntityManagerInterface $em, History $history, DescriptionManager $descman) {
 		$this->em = $em;
 		$this->history = $history;
 		$this->descman = $descman;

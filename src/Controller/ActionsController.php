@@ -317,7 +317,7 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new InteractionType::class, null, [
+		$form = $this->createForm(InteractionType::class, null, [
 			'action'=>'givegold', 
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character), 
 			'me'=>$character
@@ -360,7 +360,7 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new InteractionType::class, null, [
+		$form = $this->createForm(InteractionType::class, null, [
 			'action'=>'giveship',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
 			'me'=>$character
@@ -439,7 +439,7 @@ class ActionsController extends AbstractController {
 				->add('submit', 'submit', array('label'=>$this->trans->trans('control.take.submit', array(), "actions")))
 				->getForm();
 		} else {
-			$form = $this->createForm(new RealmSelectType::class, null, ['realms'=>$realms, 'type'=> 'take']);
+			$form = $this->createForm(RealmSelectType::class, null, ['realms'=>$realms, 'type'=> 'take']);
 		}
 
 		// TODO: select war here as well?
@@ -526,7 +526,7 @@ class ActionsController extends AbstractController {
 		}
 		$settlement = $id;
 
-		$form = $this->createForm(new RealmSelectType::class, null, ['realms'=>$character->findRealms(), 'type' =>'changerealm']);
+		$form = $this->createForm(RealmSelectType::class, null, ['realms'=>$character->findRealms(), 'type' =>'changerealm']);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
@@ -574,7 +574,7 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new InteractionType::class, null, [
+		$form = $this->createForm(InteractionType::class, null, [
 			'action'=>$settlement->getRealm()?'grant':'grant2',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
 			'me'=>$character
@@ -635,7 +635,7 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new InteractionType::class, null, [
+		$form = $this->createForm(InteractionType::class, null, [
 			'action'=>'steward',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
 			'me'=>$character,
@@ -736,7 +736,7 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new CultureType::class, null, [
+		$form = $this->createForm(CultureType::class, null, [
 			'user' => $character->getUser(),
 			'available' => true,
 			'old_culture' => $settlement->getCulture()
@@ -847,14 +847,14 @@ class ActionsController extends AbstractController {
 			$dests = array_unique($dests);
 		}
 
-		$form = $this->createForm(new TradeType::class, $trade, [
+		$form = $this->createForm(TradeType::class, $trade, [
 			'character' => $character,
 			'settlement' => $settlement,
 			'sources' => $sources,
 			'dests' => $dests,
 			'allowed' => $allowed,
 		]);
-		$cancelform = $this->createForm(new TradeCancelType::class, null, [
+		$cancelform = $this->createForm(TradeCancelType::class, null, [
 			'trades' => $trades,
 			'character' => $character,
 		]);
@@ -987,7 +987,7 @@ class ActionsController extends AbstractController {
 		$query->setParameter('here', $settlement);
 		$entourage = $query->getResult();
 
-		$form = $this->createForm(new EntourageRecruitType::class, null, ['entourage' => $entourage]);
+		$form = $this->createForm(EntourageRecruitType::class, null, ['entourage' => $entourage]);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
@@ -1077,7 +1077,7 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new InteractionType::class, null, [
+		$form = $this->createForm(InteractionType::class, null, [
 			'action'=>'occupier',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
 			'me'=>$character
@@ -1114,7 +1114,7 @@ class ActionsController extends AbstractController {
 		$em = $this->em;
 		$this->dispatcher->setSettlement($settlement);
 
-		$form = $this->createForm(new RealmSelectType::class, null, [
+		$form = $this->createForm(RealmSelectType::class, null, [
 			'realms' => $character->findRealms(),
 			'type' => 'changeoccupier'
 		]);
@@ -1144,7 +1144,7 @@ class ActionsController extends AbstractController {
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$form = $this->createForm(new RealmSelectType::class, null, [
+		$form = $this->createForm(RealmSelectType::class, null, [
 			'realms' => $character->findRealms(),
 			'type' => 'occupy'
 		]);
@@ -1170,7 +1170,7 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new AreYouSureType::class);
+		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
                 if ($form->isValid() && $form->isSubmitted()) {
 			$type = 'manual';
