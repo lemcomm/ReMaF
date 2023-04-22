@@ -5,17 +5,17 @@
 	<p>{{ 'unit.list.intro'|trans({},"actions")|raw }}</p>
 
 	<h3> {{ 'unit.list.list'|trans({},"actions")|title }}</h3>
-        {% for unit in units %}
+	{% for unit in units %}
 		{% set id = unit.obj.id %}
 		{% set training = unit.obj.getRecruits.count %}
-                <hr>
+		<hr>
 		{% if training > 0 and not unit.settlement %}
 			<i>{{ 'unit.list.untrainable'|trans({}, "actions")|raw }}</i>
 		{% endif %}
-                <h4>{{ unit.obj.settings.name|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>') }}</h4><br>
-                {{ 'unit.list.soldiers'|trans({},"actions")|raw }}: {{ 'unit.list.count2'|trans({"%soldiers%":unit.obj.getActiveSoldiers.count, "%travelers%":unit.obj.getTravellingSoldiers.count, "%recruits%":training, "%wounded%":unit.obj.getWoundedSoldiers.count, "%dead%":unit.obj.getDeadSoldiers.count}, "actions") }}<br />
+		<h4>{{ unit.obj.settings.name|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>') }}</h4><br>
+		{{ 'unit.list.soldiers'|trans({},"actions")|raw }}: {{ 'unit.list.count2'|trans({"%soldiers%":unit.obj.getActiveSoldiers.count, "%travelers%":unit.obj.getTravellingSoldiers.count, "%recruits%":training, "%wounded%":unit.obj.getWoundedSoldiers.count, "%dead%":unit.obj.getDeadSoldiers.count}, "actions") }}<br />
 		{% if unit.obj.character == character %}
-        		{{ 'unit.list.youcommand'|trans({}, "actions")|raw }}
+			{{ 'unit.list.youcommand'|trans({}, "actions")|raw }}
 		{% elseif unit.obj.character %}
 			{{ 'unit.list.commander'|trans({"%name%":link(unit.obj.character)}, "actions")|raw }}
 		{% else %}
@@ -28,45 +28,45 @@
 		{% elseif not unit.obj.settlement == null %}
 			<br />{{ 'unit.list.nomarshal'|trans({}, "actions")|raw }}
 		{% endif %}
-		{% if unit.obj.travelDays %}
+		{% if unit.obj.travelDays > 0 %}
 			<br />{{ 'unit.list.traveling'|trans({"%days%":unit.obj.travelDays}, "actions")|raw }}
 		{% endif %}
 		<br /><br />
-        	<a href="{{ path('maf_unit_manage', {"unit":id}) }}"><button id="manage">{{ 'unit.list.manage'|trans({},"actions") }}</button></a>
-		 | <a href="{{ path('maf_unit_soldiers', {"unit":id}) }}"><button id="soldiers">{{ 'unit.list.review'|trans({},"actions") }}</button></a>
+		<a href="{{ path('maf_unit_manage', {"unit":id}) }}"><button id="manage">{{ 'unit.list.manage'|trans({},"actions") }}</button></a>
+		| <a href="{{ path('maf_unit_soldiers', {"unit":id}) }}"><button id="soldiers">{{ 'unit.list.review'|trans({},"actions") }}</button></a>
 		{% if unit.owner %}
-			{% if not unit.obj.character and not unit.obj.travelDays %}
-				 | <a href="{{ path('maf_unit_assign', {"unit":id}) }}"><button id="assign">{{ 'unit.list.assign'|trans({},"actions") }}</button></a>
-			{% elseif unit.obj.character != character and unit.base and not unit.obj.travelDays %}
-				 | <a href="{{ path('maf_unit_recall', {"unit":id}) }}"><button id="assign">{{ 'unit.list.recall'|trans({},"actions") }}</button></a>
+			{% if not unit.obj.character and unit.obj.travelDays < 1 %}
+				| <a href="{{ path('maf_unit_assign', {"unit":id}) }}"><button id="assign">{{ 'unit.list.assign'|trans({},"actions") }}</button></a>
+			{% elseif unit.obj.character != character and unit.base and unit.obj.travelDays < 1 %}
+				| <a href="{{ path('maf_unit_recall', {"unit":id}) }}"><button id="assign">{{ 'unit.list.recall'|trans({},"actions") }}</button></a>
 			{% endif %}
 			{% if unit.base %}
-				 | <a href="{{ path('maf_unit_appoint', {"unit":id}) }}"><button id="soldiers">{{ 'unit.list.appoint'|trans({},"actions") }}</button></a>
+				| <a href="{{ path('maf_unit_appoint', {"unit":id}) }}"><button id="soldiers">{{ 'unit.list.appoint'|trans({},"actions") }}</button></a>
 			{% endif %}
 			{% if unit.marshal %}
-				 | <a href="{{ path('maf_unit_revoke', {"unit":id}) }}"><button id="soldiers">{{ 'unit.list.revoke'|trans({},"actions") }}</button></a>
+				| <a href="{{ path('maf_unit_revoke', {"unit":id}) }}"><button id="soldiers">{{ 'unit.list.revoke'|trans({},"actions") }}</button></a>
 			{% endif %}
-			{% if character.insideSettlement != unit.obj.settlement and not unit.obj.travelDays %}
-				 | <a href="{{ path('maf_unit_rebase', {"unit":id}) }}"><button id="rebase">{{ 'unit.list.rebase'|trans({},"actions") }}</button></a>
+			{% if character.insideSettlement != unit.obj.settlement and unit.obj.travelDays < 1 %}
+				| <a href="{{ path('maf_unit_rebase', {"unit":id}) }}"><button id="rebase">{{ 'unit.list.rebase'|trans({},"actions") }}</button></a>
 			{% endif %}
 			{% if not unit.obj.travelDays %}
-			 	| <a href="{{ path('maf_unit_disband', {"unit":id}) }}"><button id="soldiers">{{ 'unit.list.disband'|trans({},"actions") }}</button></a>
+				| <a href="{{ path('maf_unit_disband', {"unit":id}) }}"><button id="soldiers">{{ 'unit.list.disband'|trans({},"actions") }}</button></a>
 			{% endif %}
 		{% endif %}
 		{% if unit.base %}
 			{% if unit.mine %}
-				 | <a href="{{ path('maf_unit_return', {"unit":id}) }}"><button id="assign">{{ 'unit.list.return'|trans({},"actions") }}</button></a>
+				| <a href="{{ path('maf_unit_return', {"unit":id}) }}"><button id="assign">{{ 'unit.list.return'|trans({},"actions") }}</button></a>
 			{% endif %}
 		{% endif %}
 		{% if unit.marshal and not unit.owner %}
 			{% if not unit.obj.character %}
-				 | <a href="{{ path('maf_unit_assign', {"unit":id}) }}"><button id="assign">{{ 'unit.list.assign'|trans({},"actions") }}</button></a>
+				| <a href="{{ path('maf_unit_assign', {"unit":id}) }}"><button id="assign">{{ 'unit.list.assign'|trans({},"actions") }}</button></a>
 			{% elseif unit.obj.character != character and unit.base %}
-				 | <a href="{{ path('maf_unit_recall', {"unit":id}) }}"><button id="assign">{{ 'unit.list.recall'|trans({},"actions") }}</button></a>
+				| <a href="{{ path('maf_unit_recall', {"unit":id}) }}"><button id="assign">{{ 'unit.list.recall'|trans({},"actions") }}</button></a>
 			{% endif %}
 		{% endif %}
-        {% else %}
-                {{ 'unit.list.empty' |trans({},"actions")|raw }}
-        {% endfor %}
+	{% else %}
+		{{ 'unit.list.empty' |trans({},"actions")|raw }}
+	{% endfor %}
 
 {% endblock %}

@@ -68,3 +68,6 @@ attack:
 loot:
  target:		If you take resources or thralls, you must name a target settlement to send your plunder to.
  noslaves:	The target settlement does not allow slavery, so you cannot send thralls there.
+
+chat:
+ long:		input size too long, max 200 characters.

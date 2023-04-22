@@ -1,0 +1,536 @@
+nearby:		Nearby Dungeons
+far:			You are hearing rumours about a particular %area%, roughly to the %direction%.
+close:		There are persistent rumours about a %area% nearby, somewhere to the %direction%.
+spotted:		You have discovered a %area%, %distance% to the %direction%.
+enter:
+ link:		enter a nearby dungeon
+ commit:		descend into this dungeon
+ intro: >
+   You have come upon a dungeon, a dangerous place of adventure and treasure. Higher nobility avoids these dirty holes,
+   and mortals are afraid of them, but young or desperate First Ones seek them for the experience and treasures they
+   contain.<br />
+   For sheer survival, you can join other First Ones and enter this dungeon together, fighting your way into its depths
+   until you beat it or it beats you. Teamwork is key. <br />
+ noothers:	You appear to be the first visitor.
+ others:		"The following characters have already gathered near the entrance:"
+dungeoneer:     dungeoneer
+wounds:         health
+lastaction:     last action
+currentaction:  current action
+error:
+ notin:     You are not in a dungeon. Find and enter a dungeon first.
+ already:   You are already inside a dungeon.
+ noparty:   You are not member of a party.
+ inside:    You cannot leave your party while inside the dungeon.
+
+
+area:
+ cave:      cave
+ wild:      wilderness
+ ruin:      ruin
+ dungeon:   dungeon
+ lab:       labyrinth
+ citadel:   citadel
+ hold:      bandit hold
+ glade:     infested glade
+ roguefort: mortal fortress
+ flooded:   flooded town
+ mausoleum: mausoleum
+ shipgrave: ship graveyard
+
+areaintro:
+ cave: >
+   This place is a natural cave, filled mostly with wild animals. Still, there can be treasures here, mostly from
+   the corpses of people killed for food by the creatures inside, or from those who ventured into the caves before,
+   and failed.
+ wild: >
+   This is an area of untamed wilderness, where you will find animals and strange creatures of nature. There are often
+   treasures once belonging to travellers lost, or shiny things gathered by the inhabitants of these unexplored reaches.
+ ruin: >
+   Ancient ruins whose purpose is hard to guess at. Maybe it was a castle once, or a temple. There may still be valuables
+   inside, either ancient treasures or belongings of those who tried to take them and died trying. For there is no saying
+   what kind of creatures you may find inside.
+ dungeon: > 
+   An entrance guides you down. It is impossible to guess why someone would build an underground lair at a place like this,
+   nor what it was for. You are certain that treasures are hidden inside, just as you are sure that they are well guarded.
+ lab: >
+   You're not quite sure who built this ancient labyrinth or what purpose it holds, but certainly it was built for a reason,
+   and anything of such size that has drawn such monsters to it must contain vast hoards of wealth. Some of the things you
+   see wandering inside don't even seem to understand they're lost within, as if they were under some sort of spell.
+ citadel: >
+   This ancient citadel was so well built that not only is it still standing, it's still standing despite the hoards of
+   monsters that appear to have made it their home. Surely, even with all the fiends patrolling it, it must have something
+   of worth within it's monster filled halls.
+ hold: >
+   When you approached this place, you were fairly certain the local authorities had built it, but now that you're closer
+   you can be quite certain that it's been taken over by a local brigand and his gang.
+ glade: >
+   When you imagine a glade, you don't normally expect it to be filled to the brim with monsters. But here you are, in a
+   monster filled clearing. Time to draw that weapon of yours, no?
+ roguefort: >
+   It doesn't happen very often, but occassionally one of those mortals gets some crazy idea in his head about how he can
+   can rule himself. Somehow, he manages to get a bunch of soldiers from the local garrisons to join him in his crazy idea
+   and now you end up with situations like this, were you and a few of your compatriots have deceided to teach the fool a
+   lesson about who's in charge.
+ mausoleum: >
+   This impressive stone mausoleum must have taken the work of hundreds of people over hundreds of days to build. Perhaps
+   the last resting place of a forgotten monarch or even the tomb of a civilization, it contains untold treasures entrusted
+   to eternity alongside the dead. And untold dangers as its passages and halls have been colonized by all manner of strange
+   and vicious creatures.
+ shipgrave: >
+   When ships reached the end of their seaworthy lives, they were brought here to be broken up and scavenged for parts that
+   could be reused. Thought to be stripped of everything that could be used again, who knows what hidden treasures could have
+   been missed hidden in the broken hulks. The wreaks also make excellent dens for the creatures of the wild that have made
+   them their homes.
+ flooded: >
+   Once a thriving town, this place became the victim of a sudden shift in tides and water levels. Swiftly abandoned by a
+   fleeing population, all manner of items that were left behind wait to be discovered.
+
+size:
+ dark: some
+ 50:	 	very small
+ 80:	 	small
+ 100:		normal
+ 120:		large
+ 150:		huge
+ 175:  massive
+ 200:  gigantic
+ 250:  immense
+ 300:  collosal
+
+monster:
+ dark:          creature|creatures
+ arachnid:      arachnid|arachnids
+ bandit:        bandit|bandits
+ bandita:       bandit archer|bandit archers
+ banditb:       bandit boss|bandit bosses
+ banditg:       bandit guard|bandit guards
+ barghest:      barghest|barghests
+ bat:           dire bat|dire bats
+ bear:          bear|bears
+ beetle:        fire beetle swarm|fire beetle swarms
+ cat:           wildcat|wildcats
+ crazy:         crazy man|crazy men
+ chimera:       chimera|chimeras
+ dragon:        dragon|dragons
+ eagle:         eagle|eagles
+ falcon:        falcon|falcons
+ fortguard:     infantryman|infantrymen
+ fortguarda:    archer|archers
+ fortguardc:    guard captain|guard captains
+ fortguardh:    heavy infantryman|heavy infantrymen
+ fortguardv:    veteran infantryman|veteran infantrymen
+ fortguardhv:   veteran heavy infantryman|veteran heavy infantrymen
+ fortcavalry:   cavalryman|cavalrymen
+ fortcavalrya:  mounted archer|mounted archers
+ fortcavalryc:  cavalry captain|cavalry captains
+ fortcavalryh:  heavy cavalryman|heavy cavalrymen
+ fortlord:      mortal lord|mortal lords
+ fortlesslord:  lesser mortal lord|mortal lesser lords
+ hawk:          hawk|hawks
+ lost:          lost hero|lost heroes
+ mongrel:       mongrel|mongrels
+ monhunter:     monster hunter|monster hunters
+ npcdungeoneer: mortal dungeoneer|mortal dungeoneers
+ ogre:          ogre|ogres
+ rat:           rat|rats
+ shaman:        shaman|shamans
+ slime:         green slime|green slimes
+ snake:         snake|snakes
+ troglodyte:    troglodyte|troglodytes
+ villager:      villager|villagers
+ wolf:		        wolf|wolves
+ wolfb:         dire wolf|dire wolves
+ wyvern:        wyvern|wyverns
+
+monsterdesc:
+ arachnid: >
+   These are not your typical household spiders, these are monsters. The small ones are as big as a cat, the large ones
+   rival a wolf, and all of them have a thick exosceleton, fangs, spider webs and everything else that ensures you will
+   have nightmares about them long after you have escaped. If you escape.
+ bandit: >
+   Human outlaws hiding from a world that wants to see them hanging. They can have a variety of weapons and armor and
+   can be dangerous enemies as they know the territory and consider it their home. Especially in larger groups, they can
+   be quite dangerous.
+ bandita: >
+   Human outlaws hiding from a world that wants to see them hanging. These bandit archers sport a variety of ranged weapons
+   as well as some secondary weapons and light armor for melee combat. They can be dangerous enemies as they know the 
+   territory and consider it their home. Especially in larger groups, they can be quite dangerous.
+ banditb: >
+   Human outlaws hiding from a world that wants to see them hanging. These outlaw leaders add experience and better equipment
+   to the mix, making them quite formidable opponents. Since they know the territory and consider it their home, you should
+   expect dirty fighting and trickery.
+ banditg: >
+   Human outlaws hiding from a world that wants to see them hanging. These bandit guards have the nasty habit of being capable
+   with a variety of weapons, and also tending to be accompanied by an assortment of beasts.
+ barghest: >
+   At first glance, the barghest looks like a large, dirty wolf. But if you get closer, you understand he is nothing like a
+   wolf. These creatures are hunters of beasts twice their size, their teeth are like daggers and their hide is thick. They
+   are covered in scars and legendary for being able to take a full sword blow and yet remain standing.
+ bat: >
+   Dire bats are more than just large bats, they also have fangs the size of small knives and they are not only unafraid of
+   humans, they seem to enjoy human blood as a meal. Attacking from the air, they can be quite difficult to hit.
+ bear: >
+   Taller than a human, much stronger and easily angered, bears are not to be underestimated. They may be a bit slow,
+   and prefer to live alone, but their strength is legendary and they can be quite brutal.
+ beetle: >
+   A swarm of fire beetles, each one the size of a mouse and with a poisonous bite that makes wounds feel as if they burn.
+   These creatures can cause a surprising amount of pain for their small size, and you never meet just one.
+ cat: >
+   Tiger, leopard, lion, panther, lynx - who can spot the difference? These cats are big, agile and dangerous. They are faster
+   than many other animals and they are predators that combine stealth and speed into a package that should not be
+   taken lightly.
+ chimera: >
+   It's hard to tell exactly what the main type of monster this is, but it appears to be a very . . . interesting, combination
+   of several very nasty, very deadly monsters.
+ crazy: >
+   Something has driven this man insane, and he is not to be argued with. He will attack on sight with whatever he can find,
+   sticks, stones or bare hands. Best to put him out of his misery.
+ dragon: >
+   Of all the beasts that you can encounter, the dragon is the one that you hear most often of people seeing, not slaying.
+   Everything that you've heard about dragons, seems to be a statement of fact as you look upon the magnificent creature.
+ dog: >
+   A trained guard dog, clearly left here by someone or something that wants to be aware if someone tries sneaking up.
+   Its not much a threat to a trained adventurer, but it's masters certainly might be.
+ eagle: >
+   These giant eagles can grow to a surprising size, and hunt sheep, deer or even cows for food. They can be quite a match
+   even for a well-armed First One, especially if encountered in groups. When they swoop down on you, take cover.
+ falcon: >
+   A trained hawk, probably the servant of someone, somewhere. Not that any of that matters since its attacking you.
+ fortguard: >
+   A simple footman in the service of their lord. It's unlikely they really understand their responsibilities or who they're
+   serving. Equipped with a standard-issue infantry weapon.
+ fortguarda: >
+   A simple footman in the service of their lord. It's unlikely they really understand their responsibilities or who they're
+   serving. Equipped with a standard-issue ranged weapon.
+ fortguardc: >
+   A guard captain in the service of their lord. It's possible that this individual might have some idea of the scope of their
+   responsibility. Regardless, they're a versatile and able combatant.
+ fortguardh: >
+   A heavy infantryman in the service of their lord. Clearly more capable than the footmen you've encountered previously.
+   Their heavier armor looks like it could take some blows, and their weapons appear to be sharper, even moreso than their
+   captain's armament.
+ fortguardv: >
+   A veteran soldier in the service of their lord. Between the scars and the way they carry themselves, this individual has
+   not only seen serious combat, but survived well enough to talk about it. Even their younger captains seem to show them
+   an amount of respect, uncommon to the rest of their company.
+ fortguardhv: >
+   A veteran heavy infantryman in the service of their lord. Between the scars the way they carry themselves, they're clearly
+   more capable than the footment you've encountered previously. Their armor looks sturdier, their weapons better maintained,
+   their eyes sharper, and their reflexes more attuned to your attacks. 
+ fortcavalry: >
+   A cavalryman in the service of their lord. It's unlikely they really understand their responsibilities or who they're
+   serving. Equipped with a standard-issue infantry weapon.
+ fortcavlarya: > 
+   A cavalryman in the service of their lord. It's unlikely they really understand their responsibilities or who they're
+   serving. Equipped with a standard-issue ranged weapon.
+ fortcavalryc: >
+   A cavalry captain in the service of their lord. It's possible that this individual might have some idea of the scope of their
+   responsibility. Regardless, they're a versatile and able combatant.
+ fortcavalryh: >
+   A heavy cavalryman in the service of their lord. Clearly more capable than the cavalrymen you've encountered previously.
+   Their heavier armor looks like it could take some blows, and their weapons appear to be sharper, even moreso than their
+   captain's armament.
+ fortlord: >
+   Its a rare occurence, but every so often one of the mortals gets some idea that they can be you, and they start trying to do
+   absurd things like rule themselves--and not just their local settlement either. Left uncheck, who knows what this mortal could
+   pull off. Best end them now.
+ fortlesslord: >
+   You know what they say about slimes, how if there's one there's more. Apparently the same thing happens when mortals get crazy
+   ideas about self-governance.
+ hawk: >
+   A large hawk, which seems to be bent on making you it's dinner. The talons on it seem capable of making that a distinct
+   possibility.
+ lost: >
+   A lost hero of old times, this elite warrior has been mentally damaged by all the carnage he has seen and caused. He has
+   retreated to this hiding place, maybe he even fought here one time, and has lost himself in a world of his own. He will
+   attack any intruders, and cannot be reasoned with anymore. He is an experienced and dangerous enemy.
+ mongrel: >
+   A stray dog, having gone feral from lack of proper care or attention. Now, it is little more than a wild beast.
+ monhunter: >
+   Mortals who specialize in hunting dangerous beasts or monsters for profit or amusement. They usually sport  longbows and 
+   javelins as well as using a wide range of potent poisons. Often seen working along dungeoneers.
+ npcdungeoneer: >
+   Mortals who raid dungeons  for profit or other nefarious purposes. Having faced numerous dangers in their life, they are 
+   fearless, ruthless, highly disciplined and more well equipped than most elite soldiers, making them a formidable foe. 
+ ogre: >
+   Nobody knows what these creatures truly are. While they look like huge, ugly humans, they show no sign of human intelligence
+   and the usage of clubs is the only sign that they may be smarter than most animals. They avoid humans, but if cornered
+   they are ruthless fighters, and can take an enormous amount of damage before they fall.
+ rat: >
+   The slime of the animal world.
+ shaman: >
+   Practitioners of mystic, dark, or the occult, shamans have been around almost as long as society. Whether or not their ways
+   actually work doesn't matter, just having one around can have an effect on things.
+ slime: >
+   Its a pretty standard green slime. They seem to be able to get basically anywhere.
+ snake: >
+   Some are small, some weigh more than a human and are several metres long. Many are poisonous, making them even more
+   dangerous. Snakes love damp, dark places and can be a nasty surprise for anyone not expecting them.
+ troglodyte: >
+   One of the strangest creatures of the wild, a troglodyte looks like an unholy crossbreed between a human and a lizard. They
+   have a basic humanoid shape, but ash-grey reptilian skin, a salamander head and a lizard tail. They do not appear to possess
+   more than basic intelligence, not do they communicate with more than grunts. As enemies, they are very dangerous as they can
+   attack with claws and bites at the same time, and sometimes make use of clubs or other primitive weapons.
+ villager: >
+   You're not sure why this villager has taken up arms, or why they are using said arms against you, but does it really matter?
+ wolf: >
+   Wild canines that are excellent pack-hunters and highly territorial. As much as one wolf is not very dangerous for
+   anyone with a sword and armor, a pack of wolves is bad news even for the well-equipped.
+ wolfb: >
+   Dire wolves are more than just bigger wolves, they are also incredibly aggressive and much tougher. Their thick skin
+   is used as leather armor by some tribes, provided you can actually slay such a beast.
+ wyvern: >
+   Often mistaken for dragons, the wyvern looks much like a bat with a longer neck and lizard snout from up close. Not that
+   you want to get close, as these flying reptile monsters are incredibly dangerous and their sharp talons can cut through
+   even metal armor. In the air, they are agile and fast, though on the ground less so. But even wounded and downed, they
+   are some of the most dangerous creatures of the wilderness.
+
+class:
+ animal:    animal
+ boss:      boss creature
+ first:     first one
+ fly:       flying creature
+ hover:     hovering creature
+ human:     human
+ indiv:     prefers solitude
+ mech:      mechanical construction
+ melee:     melee fighter
+ mixed:     melee and ranged fighter
+ monster:   monstrous creature
+ ranged:    ranged attacker
+ pack:      prefers to live in packs
+ phantom:   non-corporeal creature
+ poison:    poisonous
+ slime:     a type of slime
+ solo:      prefers to live alone or in small groups
+ spirit:    spirit
+ stealth:   stealthy
+ swarm:     swarm animals
+ swim:      swimming creature
+
+target:
+ random:    (random)
+ invalid:   (no valid targets)
+ nr:
+  monster:  "monsters #%nr%"
+  treasure: "treasure #%nr%"
+ monster:   "%amount% %size% %type%"
+ monsterlink: "%amount% <a href=\"%url%\" class=\"link_monster\">%size% %type%</a>"
+
+treasure:   A treasure worth %value% gold.
+notreasure: There are no treasures here.
+trap:       (trapped)
+
+cards:
+ title:		Your Actions
+ review: >
+   When exploring dungeons, you rely on your skills for this unusual activities. If you want to review your available
+   actions before entering, click here:
+ link:		review actions
+ intro: >
+   Here you can review your available actions. You can learn new actions through experience, and will receive them
+   when you leave a dungeon.<br />
+   All actions have a name, description and a number count in the top-right corner, showing how often you can use
+   this action per dungeon before you are exhausted.
+
+rarity:
+ common:    common
+ uncommon:  uncommon
+ rare:      rare
+ legendary: legendary
+
+dungeon:
+ title:         in a dungeon
+ link:          dungeon exploration
+ blabla: >
+   You are currently inside a dungeon, slightly limiting your other activities, but potentially leaving you with
+   great adventure and even some gold.
+ withparty: >
+   You were exploring a dungeon, but have now left. You can <a href="%url%">review the exploration</a>, especially if other members of your party are still inside.
+ forum:         Read all about dungeons and how they work <a href="%url%">on the forum</a>.
+ prepare:       You and your party are currently preparing your exploration of this %area%.
+ minparty:      At least %min% party members are required before you can enter a dungeon.
+ waiting:       Exploration and action timers will not start until at least half of the party members have selected an action.
+ level:         You are in area %level% of this %area%.
+ progress:      "Your party has %party% members, %missing% of whom have not yet decided upon an action. If they don't, the current actions will be resolved in at most %timeleft% hours."
+ actions:       party actions
+ cards:         your available actions
+ cardstext:     Choose one action from your available actions below.
+ details:
+  title:        current area scouting
+  rank:         "Best scouting result: %rank% scouts."
+  none:         This area is not yet scouted.
+  notstarted:   Exploration has not yet started.
+  1:            There are %monsters% monster groups in this area.
+  2:            In addition to the following monster groups, there are %treasures% treasures in this area.
+  3:            "The following monster groups and treasures were identified:"
+  4:            "The following monster groups, treasures and traps were identified:"
+ chat:
+  title:        party communication
+  submit:       add message
+  intro:        You are exploring this %area% with a party of %party%. Talking helps to work together and get the best results.
+  hint:         write a message and press enter
+  link:         read all %count% messages
+ events:
+  title:        dungeon events
+  intro:        "Everything that has happened in this dungeon, in chronological order:"
+  link:         read all %count% events
+ error:
+  title:        cannot enter dungeon
+  intro:        "You cannot enter this dungeon, because:"
+  reason:
+   busy:        You are already busy in a different dungeon. How did you even get here?
+   started:     Dungeon exploration has already been started, the party is on its way, you are too late.
+   full:        The party is full and there is no more room for additional dungeoneers.
+   samechar:    You can only enter the same dungeon once and another character of yours is already inside.
+
+result:
+ miss:    but misses
+ wound:   wounding it.
+ kill:    killing it.
+
+card:
+ none:      no action chosen
+ pass:      no action
+ selected:  action selected
+ basic:
+  leave:
+   title:	Leave
+   text:  Exit the dungeon with whatever treasures you have found so far.
+  scout:
+   title:	Scout
+   text:  Spend time scouting the current area. The more dungeoneers scout at the same time, the more everyone will find out.
+  plunder:
+   title:	Plunder
+   text:  Spend time plundering whatever treasures you have discovered.
+  fight:
+   title:	Fight
+   text:  Basic attack against monsters.
+  rest:
+   title: Rest
+   text:  Rest for a while and regain one random action.
+ fight:
+  double:
+   title: Twinstrike
+   text:  Attack monsters, hitting twice.
+  strong:
+   title: Powerblow
+   text:  Attack monsters with a powerful blow, doing double damage.
+  hit:
+   title: Careful Strike
+   text:  Time your attack carefully, improving your chance to hit.
+  weak:
+   title: Weak Strike
+   text:  Weak attack, maybe good enough for smaller enemies.
+  sweep:
+   title: Sweep
+   text:  Sweeping attack against creatures that dodge and evade your blows.
+  swing:
+   title: Wide Swing
+   text:  Swinging widely, this attack hits up to three targets in the same group.
+  stealth:
+   title: Stealth Strike
+   text:  Attack a monster without being seen by it.
+  kill:
+   title: Killing Blow
+   text:  A massively powerful attack that will fell all but the worst enemies in one strike.
+  tripple:
+   title: One-Two-Three
+   text:  A quick flurry of three attacks, each just slightly weaker than a normal blow.
+  sure:
+   title: Sure Strike
+   text:  A very carefully placed strike that will almost always finds its mark.
+  bomb1:
+   title: Burning Keg
+   text:  Light a keg of oil and throw it at an enemy, hitting every monster in a group.
+  bomb2:
+   title: Burning Barrel
+   text:  Light a barrel of oil and throw it at an enemy, burning every monster in a group severely.
+  slime:
+   title: Slay Slime
+   text:  Hunting slimes for so long has shown you the best ways to bring them down.
+ scout:
+  double:
+   title: Excellent Scout
+   text:  A more solid scouting action, counting double.
+  tripple:
+   title: Perfect Scout
+   text:  Incredibly good at scouting, this makes you scout as good as three normal people.
+ plunder:
+  care:
+   title: Careful Plunder
+   text:  You carefully plunder the treasures, with less exposure to attacks than a normal plunder action.
+ action:
+  heal1:
+   title: Bandage
+   text:  Patch up wounds on yourself or another dungeoneer, healing one wound.
+   log:   "%d% bandages %target%, healing one wound."
+  heal2:
+   title: Minor Healing
+   text:  Bandages, herbs, alcohol to clean, and the skill to use all that can heal two wounds on yourself or someone else.
+   log:   "%d% heals %target% for two wounds."
+  heal3:
+   title: Major Healing
+   text:  Some medical knowledge and maybe a touch of magic, and you can heal three wounds on yourself or someone else.
+   log:   "%d% heals %target% for three wounds."
+  distracta:
+   title: Distract Animals
+   text:  Distract a group of animals, preventing them from attacking.
+   log:   "%d% distracts %size% %monster%."
+  wait:
+   title: Wait
+   text:  Do nothing for a moment.
+  rest:
+   log:   "%d% rests and regains one %card% action."
+  rest2:
+   title: Good Rest
+   text:  Rest for a while and regain two random actions.
+  rest3:
+   title: Excellent Rest
+   text:  Rest for a while and regain three random action.
+  untrap1:
+   title: Simple Trap Disarm
+   text:  Attempt to remove a trap from a treasure. If you are unlucky, it will trigger.
+  untrap2:
+   title: Better Trap Disarm
+   text:  Remove a trap from a treasure, unless you are very unlucky and trigger it.
+  untrap3:
+   title: Best Trap Disarm
+   text:  Disarms a trap, very low chance of triggering the trap.
+
+
+play:
+ join:      "%d% has joined the party."
+ start:     The expedition has begun...
+ level:     The party is now proceeding to area %level%.
+ card:      "%d% performs the %card% action."
+ attack:
+  miss:     "%d% attacks %size% %monster%, but misses."
+  wound:    "%d% attacks %size% %monster%, wounding it."
+  kill:     "%d% attacks %size% %monster%, killing it."
+  notarget: "%d% prepares to attack, but cannot spot any monsters to fight."
+ monster:
+  miss:     "%size% %monster% misses %d%."
+  wound:    "%size% %monster% wounds %d%."
+  kill:     "%size% %monster% strikes down %d%."
+ plunder:   "%d% plunders %gold% gold of treasure."
+ leave:     "%d% has left the dungeon."
+ trap:
+  wound:    As %d% approaches the treasure, a trap is triggered, causing %wounds% wounds.
+  kill:     As %d% approaches the treasure, a deadly trap is triggered.
+ untrap:
+  wound:    "%d% tries to disarm a trap but fails, triggering the trap and suffering %wounds% wounds."
+  kill:     "%d% tries to disarm a trap but fails, triggering a deadly trap."
+  none:     "%d% tries to disarm a trap only to find out that this treasure was not trapped."
+  done:     "%d% successfully disarms a trap."
+
+party:
+ title:     party
+ intro:
+  inside:   Your party of %party% is currently exploring a %area%.
+  inside2:  Your party of %party% is currently exploring a %area%, but you have already left the dungeon. %inside% members are still inside.
+  outside:  Your party of %party% is not inside a dungeon at this time.
+  alone:    You are not currently a member of an exploration party.
+ leave:     leave this party
+ left:      You have left your party and are now ready to explore another dungeon with a different group.

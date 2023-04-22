@@ -112,7 +112,7 @@ contact:
    For questions, help or most other things related to the game, the best way with the fastest responses is very often our forum,
    which you can reach at this link:<br />
    <br />
-   <a href="http://forum.mightandfealty.com/">http://forum.mightandfealty.com/</a><br />
+   <a href="https://forum.mightandfealty.com/">https://forum.mightandfealty.com/</a><br />
    <br />
    This community is a great place to talk with other players as well as with the developers, who prefer to answer questions on the forum
    because that way future players with the same question can find an answer there.
@@ -143,7 +143,7 @@ registration:
     <br />
     We also strongly recommend the <a href="https://www.youtube.com/watch?v=YWC6n9CnB3U">tutorial video</a> and the rest of the manual.
 login:
- intro: Provide the username or e-mail you used to register below to log in:
+ intro: "Provide the username or e-mail you used to register below to log in:"
 
 pager:
  showing:       Showing %from% to %to%, %total% total
@@ -329,7 +329,7 @@ account:
   mail:
    expired:   "[Might & Fealty] Subscription Expired"
    expired2: >
-     <p>Your subscription for <a href="http://mightandfealty.com">Might &amp; Fealty</a> was to be renewed,
+     <p>Your subscription for <a href="https://mightandfealty.com">Might &amp; Fealty</a> was to be renewed,
      but there were not enough credits left in your account.</p>
      <p>We have changed your subscription back to trial level.<br />
      You can continue playing at this level as long as you wish, or renew your subscription by
@@ -337,7 +337,7 @@ account:
      To do so, simply log in and go to your profile page.</p>
    insufficient:  "[Might & Fealty] Subscription Downgraded"
    insufficient2: >
-     <p>Your subscription for <a href="http://mightandfealty.com">Might &amp; Fealty</a> was to be renewed,
+     <p>Your subscription for <a href="https://mightandfealty.com">Might &amp; Fealty</a> was to be renewed,
      but your patron status no longer shows you supporting the developers.</p>
      <p>As such, we have changed your subscription back to trial level.<br />
      You can continue playing at this level as long as you wish, or renew your subscription by
@@ -346,7 +346,7 @@ account:
  code:
   title:    Redeem Code
   intro:    If you have a code from a friend or the crowdfunding campaign, you can redeem it here.
-  label:    Code:
+  label:    "Code:"
   submit:   Redeem
   redeemed:   A code for %credits% game credits was found for your e-mail and automatically redeemed.
   redeemed2:  A code was found for your e-mail and automatically redeemed into %credits% game credits and a VIP status of "%vip%".
@@ -389,7 +389,7 @@ account:
     parts you have to pay extra for. There are, however, a few small limitations on free accounts.<br />
     Read more about our <a href="%url%" class="link_ajax">payment concept</a>.
   description3: >
-    The price for 100 credits is 1 &euro; or the <a href="http://www.xe.com/currency/eur-euro">equivalent in your local currency</a> (our payment providers will automatically convert currencies for you).
+    The price for 100 credits is 1 &euro; or the <a href="https://www.xe.com/currency/eur-euro">equivalent in your local currency</a> (our payment providers will automatically convert currencies for you).
   link:      Change subscription level
   submit:    Change subscription
   remaining: Your new subscription will start today, the first month subscription fee will automatically be reduced by %refund% credits remaining from your current subscription.
@@ -437,8 +437,8 @@ account:
   notenoughcredits:   You do not have enough credits for this purchase.
   bought:
    title:   Culture Pack Bought|Culture Packs Bought
-   intro:   Congratulations, you have bought a culture pack:|Congratulations, you have bought %amount% culture packs:
-   contains:  this pack contains:
+   intro:   "Congratulations, you have bought a culture pack:|Congratulations, you have bought %amount% culture packs:"
+   contains:  "this pack contains:"
  gift:
   link:     Gift to existing player
   title:    Gift for a friend
@@ -490,9 +490,9 @@ account:
      bribe to support some in-game ambitions, who knows, this invite comes with a code for <b>%credits% credits</b>. They also sent this message:</p>
      <hr /><p>%message%</p><hr />
      <p>Join your friend in creating history, check out the game here:</p>
-     <p><a href="http://mightandfealty.com/">Might & Fealty</a></p>
+     <p><a href="https://mightandfealty.com/">Might & Fealty</a></p>
      <p>or sign up directly through this link:</p>
-     <p><a href="http://mightandfealty.com/register/">registration</a></p>
+     <p><a href="https://mightandfealty.com/register/">registration</a></p>
      <p>If you register with this e-mail address, the game will automatically redeem the invite gift code for you. If not,
      simply enter the code below under "get more credits" after registration.</p>
      <p><b>%code%</b></p>
@@ -507,7 +507,7 @@ account:
   title: Support Development via Patreon
   info: If you'd like to take a more regular approach to supporting game development, you can opt to become one of Andrew's Patrons on Patreon. While you'll still need to opt-in to a subscription in game in order to get supporter benefits, you'll receive your entire patron pledge in equivalent game credits with a 50% bonus, regardless of how high your patron pledge is. In order to faciliate this, once you've become a Patron, you come back here and click the link below to let M&F authenticate with and request your user information and membership level from Patreon. This is updated daily, but if you'd like to request a specific update for your account, you can do it from your profile page's 'Update Your Patronage' link.
   andrew:
-   name: Support Andrew through Patreon:
+   name: "Support Andrew through Patreon:"
    connect: Login with Patreon.
   title2: Patron Status
   current: You are an active patron of %name% and are contributing $%amount% per month. Thank you!
@@ -610,7 +610,7 @@ character:
  partner: Partner|Partners
  none:    (no character)
  child:   Child|Children
- resupply: Resupply from camp followers:
+ resupply: "Resupply from camp followers:"
  status:  Status of %name%
  history: Character history
  inactive:  This character has not been played in a while
@@ -625,7 +625,7 @@ character:
  full:    View full details
  journals: "View journals they've written"
  list:
-  select:   Move character to:
+  select:   "Move character to:"
   submit:   Set new list
   updated:  just updated, change will be visible on next page load
   0:  New & Unplaced
@@ -706,8 +706,8 @@ character:
 
 bandits:
  title:   Bandits
- intro:   You can also temporarily play bandit characters, see [bandits]. Choose one of the free bandits below:
- choose:  Bandit to play:
+ intro:   "You can also temporarily play bandit characters, see [bandits]. Choose one of the free bandits below:"
+ choose:  "Bandit to play:"
  submit:  Choose this bandit character
 
 achievements:
@@ -1261,18 +1261,18 @@ interaction:
   name:     New member(s)
   submit:   Add member(s)
  abdicate:
-  name:     Announce as successor:
+  name:     "Announce as successor:"
   submit:   Abdicate
  giveship:
-  name:     Give ship to:
+  name:     "Give ship to:"
   submit:   Give it
  givegold:
-  name:     First One to receive your gold:
-  amount:   Amount of gold to give:
+  name:     "First One to receive your gold:"
+  amount:   "Amount of gold to give:"
   submit:   Give it
  giveartifact:
-  name:     First One to receive the artifact:
-  which:    Which artifact to give:
+  name:     "First One to receive the artifact:"
+  which:    "Which artifact to give:"
   submit:   Give artifact away
  surrender:
   name:     First One to surrender to
@@ -1534,9 +1534,9 @@ editor:
  help:    formatting help
  preview:
   title:  preview
-  intro:  Here's what the message will look like:
+  intro:  "Here's what the message will look like:"
  syntax: >
-   <p>Our editor uses a subset of the <a href="http://daringfireball.net/projects/markdown/syntax">Markdown</a> syntax.</p>
+   <p>Our editor uses a subset of the <a href="https://daringfireball.net/projects/markdown/syntax">Markdown</a> syntax.</p>
    <p>Simply write your text as you would write plain text and it will usually come out the way you want it.</p>
    <p>The one quirk you should be aware of is that single newlines are ignored, if you want to force a linebreak, add two or more spaces to the end of the line before hitting enter.</p>
 
@@ -1648,7 +1648,7 @@ rating:
  votes:     Votes
 
 unavailable:
- intro:         Sorry, but this action is not currently available, because:
+ intro:         "Sorry, but this action is not currently available, because:"
  restricted:    Your account is currently restricted.
  free:          This action is unavailable for trial accounts.
  free2:         With a free account, you can only take 3 estates per character.
@@ -1658,6 +1658,7 @@ unavailable:
  supporting:    You are already supporting someone else in this action.
  regrouping:    Your troops are regrouping, you cannot attack until they are ready again.
  atsea:         You are travelling at sea.
+ badlawtype:    Requested law type not found.
  nosettlement:  You are not near any settlement.
  notinside:     You are not inside a settlement.
  inside:        You are inside the settlement.
@@ -1816,8 +1817,8 @@ artifact:
     and history lost, as the artifact will start its "official" history with creation.<br />
     <br />
     <em>Double-check everything you enter here, as you can not change it once the artifact is created.</em>
-  name:         Name:
-  description:  Description:
+  name:         "Name:"
+  description:  "Description:"
   submit:       Create artifact
  owned:
   title:    Artifacts you created

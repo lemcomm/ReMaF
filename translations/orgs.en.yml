@@ -209,6 +209,7 @@ law:
   list:
    name:    Laws of %name%
    intro:   Listed here you will find the laws, and previous laws, of %name%, for you to review, or, if you have permission to, update.
+   noorg:   No organization supplied but the requested page required one.
   new:
    header:    Enact a New Law
    intro:   With the authority granted to you by your held positions or ranks, you are within your capabilities to enact a new law for %name%. This is a two step process, beginning here with selecting the type of law, to be followed by actually defining the particulars of the law after submission here.

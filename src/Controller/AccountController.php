@@ -90,7 +90,7 @@ class AccountController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/account/chars', name:'maf_chars')]
+	#[Route ('/account/characters', name:'maf_chars')]
 	public function charactersAction(Geography $geo, GameRequestManager $grm, NpcManager $npcm): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
