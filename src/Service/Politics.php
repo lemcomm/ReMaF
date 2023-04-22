@@ -8,7 +8,6 @@ use App\Entity\Realm;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\SettlementClaim;
-use App\Service\History;
 
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,7 +16,7 @@ class Politics {
 
 	protected CommonService $common;
 	protected EntityManagerInterface $em;
-	protected \App\Service\History $history;
+	protected History $history;
 	protected MilitaryManager $milman;
 
 	public function __construct(CommonService $common, EntityManagerInterface $em, History $history, MilitaryManager $milman) {
@@ -61,7 +60,7 @@ class Politics {
 				);
 			} elseif (!($alleg instanceof Realm)) {
 				$realm = $alleg->getRealm();
-			} elseif ($alleg instanceof Realm) {
+			} else {
 				$realm = $alleg;
 			}
 			if (!$done) {
@@ -250,17 +249,13 @@ class Politics {
 
 	public function changeSettlementOwner(Settlement $settlement, Character $character=null, $reason=false): void {
 		$oldowner = $settlement->getOwner();
-		if ($oldowner) {
-			$oldowner->removeOwnedSettlement($settlement);
-		}
-		if ($character) {
-			$character->addOwnedSettlement($settlement);
-		}
+		$oldowner?->removeOwnedSettlement($settlement);
+		$character?->addOwnedSettlement($settlement);
 		$settlement->setOwner($character);
 
 		$occupantTakeOver = false;
 		if (($reason == 'take' || $reason == 'abandon') && $settlement->getOccupant()) {
-			if ($settlement->getOccupant() == $character) {
+			if ($settlement->getOccupant() === $character) {
 				$occupantTakeOver = true;
 				$this->endOccupation($settlement, 'take', true);
 			} else {
@@ -316,7 +311,7 @@ class Politics {
 						History::HIGH, true
 					);
 				}
-				if ($settlement->getSteward() && $settlement->getSteward() != $character) {
+				if ($settlement->getSteward() && $settlement->getSteward() !== $character) {
 					$this->history->logEvent(
 						$settlement->getSteward(),
 						'event.settlement.stewardship.lost',
@@ -418,7 +413,7 @@ class Politics {
 					array('%link-settlement%'=>$settlement->getId(), '%link-character%'=>$oldowner->getId()),
 					History::HIGH, true
 				);
-				if ($settlement->getSteward() && $settlement->getSteward() != $character) {
+				if ($settlement->getSteward() && $settlement->getSteward() !== $character) {
 					$this->history->logEvent(
 						$settlement->getSteward(),
 						'event.character.wasgranted',
@@ -426,7 +421,7 @@ class Politics {
 						History::HIGH, true
 					);
 				}
-				if ($settlement->getSteward() == $character) {
+				if ($settlement->getSteward() === $character) {
 					$settlement->setSteward(null);
 				}
 				foreach ($settlement->getVassals() as $vassal) {
@@ -458,7 +453,7 @@ class Politics {
 					array('%link-settlement%'=>$settlement->getId(), '%link-character%'=>$oldowner->getId()),
 					History::HIGH, true
 				);
-				if ($settlement->getSteward() && $settlement->getSteward() != $character) {
+				if ($settlement->getSteward() && $settlement->getSteward() !== $character) {
 					$this->history->logEvent(
 						$settlement->getSteward(),
 						'event.character.wasgranted2',
@@ -466,7 +461,7 @@ class Politics {
 						History::HIGH, true
 					);
 				}
-				if ($settlement->getSteward() == $character) {
+				if ($settlement->getSteward() === $character) {
 					$settlement->setSteward(null);
 				}
 				// add a claim for the old owner
@@ -566,12 +561,8 @@ class Politics {
 	public function changeSettlementRealm(Settlement $settlement, Realm $newrealm=null, $reason=false): void {
 		$oldrealm = $settlement->getRealm();
 
-		if ($newrealm) {
-			$newrealm->addSettlement($settlement);
-		}
-		if ($oldrealm) {
-			$oldrealm->removeSettlement($settlement);
-		}
+		$newrealm?->addSettlement($settlement);
+		$oldrealm?->removeSettlement($settlement);
 		$settlement->setRealm($newrealm);
 
 		// history events
@@ -626,7 +617,7 @@ class Politics {
 				break;
 
 			case 'take': // has been taken via the take control action
-				if ($newrealm!=null && $newrealm != $oldrealm) {
+				if ($newrealm!=null && $newrealm !== $oldrealm) {
 					// joining a different realm
 					$this->history->logEvent(
 						$settlement,
@@ -751,12 +742,8 @@ class Politics {
 	public function changePlaceRealm(Place $place, Realm $newrealm=null, $reason=false): void {
 		$oldrealm = $place->getRealm();
 
-		if ($newrealm) {
-			$newrealm->addPlace($place);
-		}
-		if ($oldrealm) {
-			$oldrealm->removePlace($place);
-		}
+		$newrealm?->addPlace($place);
+		$oldrealm?->removePlace($place);
 		$place->setRealm($newrealm);
 
 		// history events
@@ -949,11 +936,8 @@ class Politics {
 
 	public function changePlaceOccupier(Character $char, Place $place, Realm $realm): void {
 		$new = false;
-		$old = null;
 		if (!$place->getOccupier()) {
 			$new = true;
-		} else {
-			$old = $place->getOccupier();
 		}
 		$place->setOccupier($realm);
 		$place->setOccupant($char);

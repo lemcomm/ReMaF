@@ -8,6 +8,7 @@ use App\Entity\Setting;
 use App\Entity\User;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -18,8 +19,8 @@ class AppState {
 
 	private CommonService $common;
 	private EntityManagerInterface $em;
-	private TokenStorageInterface $tokenStorage;
 	private RequestStack $requestStack;
+	private Security $security;
 
 	private array $languages = array(
 		'en' => 'english',
@@ -29,11 +30,11 @@ class AppState {
 		'it' => 'italiano'
 		);
 
-	public function __construct(CommonService $common, EntityManagerInterface $em, TokenStorageInterface $tokenStorage, RequestStack $requestStack) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, RequestStack $requestStack, Security $security) {
 		$this->common = $common;
 		$this->em = $em;
-		$this->tokenStorage = $tokenStorage;
 		$this->requestStack = $requestStack;
+		$this->security = $security;
 	}
 
 	public function availableTranslations(): array {
@@ -49,21 +50,11 @@ class AppState {
 		intercepted by the Symfony Firewall and sent to the secuirty/detect route which does
 		something similar. */
 		# Check if we have a user first
-		$token = $this->tokenStorage->getToken();
-		if (!$token) {
-			if (!$required) {
-				return null;
-			} else {
-				return 'maf_login';
-			}
-		}
-		$user = $token->getUser();
-		if (! $user instanceof UserInterface) {
-			if (!$required) {
-				return null;
-			} else {
-				return 'maf_login';
-			}
+		$user = $this->security->getUser();
+		if (!$user && !$required) {
+			return null;
+		} elseif ($required) {
+			return 'maf_login';
 		}
 
 		# Let the ban checks begin...
