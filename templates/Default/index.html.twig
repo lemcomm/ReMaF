@@ -36,7 +36,14 @@
 {% else %}
 	<div class="index_register">
 		<h2>{{ 'security.register.header'|trans({}, 'core') }}</h2>
-		{{ form(form) }}
+		{{ form_start(form) }}
+		{{ form_row(form._username) }}
+		{{ form_row(form.plainPassword) }}<br>
+		{{ form_row(form.display_name) }}
+		{{ form_row(form.email) }}<br>
+		<a href="{{ url("maf_terms") }}">{% trans %}form.register.toslink{% endtrans %}</a>
+		{{ form_row(form.agreeTerms) }}
+		{{ form_end(form) }}
 	</div>
 	<div class="index_login"><form action="{{ path('maf_login') }}" method="post">
 		<form action="{{ path('maf_login') }}" method="post">

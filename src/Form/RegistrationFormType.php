@@ -48,7 +48,7 @@ class RegistrationFormType extends AbstractType {
 				]),
 			],
 			'attr' => [
-				'placeholder' => 'form.username.username'
+				'placeholder' => 'form.display.display'
 			]
 		]);
                 $builder->add('email', TextType::class, [

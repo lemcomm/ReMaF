@@ -36,15 +36,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AccountController extends AbstractController {
 
-	private AppState $app;
 	private EntityManagerInterface $em;
 	private PaymentManager $pay;
 	private TranslatorInterface $trans;
 	private UserManager $userMan;
 	private Geography $geo;
 
-	public function __construct(AppState $appstate, EntityManagerInterface $em, Geography $geo, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan) {
-		$this->app = $appstate;
+	public function __construct(EntityManagerInterface $em, Geography $geo, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan) {
 		$this->em = $em;
 		$this->geo = $geo;
 		$this->pay = $pay;
@@ -71,6 +69,7 @@ class AccountController extends AbstractController {
 
 	#[Route ('/account', name:'maf_account')]
 	public function indexAction(): Response {
+		/** @var \App\Entity\User $user */
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -80,13 +79,13 @@ class AccountController extends AbstractController {
 		$user->setCurrentCharacter(null);
 		$this->em->flush();
 
-		list($announcements, $notices) = $this->notifications();
+		#list($announcements, $notices) = $this->notifications();
 		$update = $this->em->createQuery('SELECT u from App:UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult()[0];
 
 		return $this->render('Account/account.html.twig', [
-			'announcements' => $announcements,
+			#'announcements' => $announcements,
 			'update' => $update,
-			'notices' => $notices
+			#'notices' => $notices
 		]);
 	}
 
@@ -243,7 +242,7 @@ class AccountController extends AbstractController {
 		uasort($characters, array($this,'character_sort'));
 		uasort($npcs, array($this,'character_sort'));
 
-		list($announcements, $notices) = $this->notifications();
+		#list($announcements, $notices) = $this->notifications();
 
 		$this->checkCharacterLimit($user);
 
@@ -295,8 +294,8 @@ class AccountController extends AbstractController {
 		$update = $this->em->createQuery('SELECT u from App:UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult();
 
 		return $this->render('Account/characters.html.twig', [
-			'announcements' => $announcements,
-			'notices' => $notices,
+			#'announcements' => $announcements,
+			#'notices' => $notices,
 			'update' => $update[0],
 			'locked' => ($user->getAccountLevel()==0),
 			'list_form' => $list_form->createView(),

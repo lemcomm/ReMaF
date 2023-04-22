@@ -252,7 +252,7 @@
 
 	</div>
 </div>
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 {% block javascript %}
 {% endblock %}
 $(document).ready(function() {
@@ -273,8 +273,8 @@ $("#viewer").dialog({
 var ajaxlink = function(event){
 	event.preventDefault();
 	if ($("#viewer").dialog("isOpen")) {
-		$("#viewer").html('<center><img src="{{ asset('bundles/bm2site/images/loader.png') }}"/></center>');
-	};
+		$("#viewer").html('<center><img src="{{ asset('images/loader.png') }}"/></center>');
+	}
 	var url = $(this).attr("href");
 	$.get(url, function(data){
 		$("#viewer").html(data);

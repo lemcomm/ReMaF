@@ -28,7 +28,7 @@
 		<h2>{{ 'account.title'|trans|title }}</h2>
 		<div data-role="collapsible">
 			<div class="act_actions">
-				<a href="{{ path("bm2_site_account_data") }}">{{ 'account.data.link'|trans|title }}</a>
+				<a href="{{ path("maf_account_data") }}">{{ 'account.data.link'|trans|title }}</a>
 			</div>
 			<h3>{{ 'account.data.title'|trans|title }}</h3>
 			<ul class="simple">
@@ -39,14 +39,14 @@
 		</div>
 		<div data-role="collapsible">
 			<div class="act_actions">
-				<a href="{{ path("fos_user_change_password") }}">{{ 'account.password.link'|trans|title }}</a>
+				<a href="{{ path("maf_account_data") }}">{{ 'account.password.link'|trans|title }}</a>
 			</div>
 			<h3>{{ 'account.password.title'|trans|title }}</h3>
 			<p>{{ 'account.password.desc'|trans|raw }}</p>
 		</div>
 		<div data-role="collapsible">
 			<div class="act_actions">
-				<a href="{{ path("bm2_site_account_settings") }}">{{ 'account.settings.link'|trans|title }}</a>
+				<a href="{{ path("maf_account_settings") }}">{{ 'account.settings.link'|trans|title }}</a>
 			</div>
 			<h3>{{ 'account.settings.title'|trans|title }}</h3>
 			<ul class="simple">
@@ -61,17 +61,17 @@
 
 		<div data-role="collapsible" class="topspace">
 			<div class="act_actions">
-				<a href="{{ path("bm2_payment") }}">{{ 'account.payment.link'|trans|title }}</a>
+				<a href="{{ path("maf_payment") }}">{{ 'account.payment.link'|trans|title }}</a>
 			</div>
 			<h2>{{ 'account.payment.title'|trans|title }}</h2>
 			<p>{{ 'account.payment.credits'|trans({'%amount%':app.user.credits}) }}</p>
 			<div class="act_actions">
-				<a href="{{ path("bm2_site_payment_credits") }}">{{ 'account.credits.link'|trans|title }}</a>
+				<a href="{{ path("maf_payment_credits") }}">{{ 'account.credits.link'|trans|title }}</a>
 			</div>
 			<h3>{{ 'account.credits.title'|trans|title }}</h3>
 			<p>{{ 'account.credits.short'|trans }}</p>
 			<div class="act_actions">
-				<a href="{{ path("bm2_site_payment_subscription") }}">{{ 'account.sub.link'|trans|title }}</a>
+				<a href="{{ path("maf_payment_subscription") }}">{{ 'account.sub.link'|trans|title }}</a>
 			</div>
 			<h3>{{ 'account.sub.title'|trans|title }}</h3>
 			<p>{{ 'account.sub.short'|trans({"%mylevel%":('account.level.'~app.user.accountlevel)|trans, "%until%":app.user.paiduntil|date('dateformat'|trans)})|raw }}</p>

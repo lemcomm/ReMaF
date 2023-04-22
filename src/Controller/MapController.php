@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Character;
 use App\Entity\MapMarker;
-use App\Entity\Settlement;
 use App\Service\AppState;
 use App\Service\Geography;
 use App\Form\SetMarkerType;
@@ -35,7 +34,7 @@ class MapController extends AbstractController {
 		$this->trans = $trans;
 	}
 	
-	#[Route ('/map}', name:'maf_map')]
+	#[Route ('/map', name:'maf_map')]
 	public function indexAction(): Response {
 		$character = $this->app->getCharacter(false);
 		if ($character instanceof Character) {
@@ -58,8 +57,7 @@ class MapController extends AbstractController {
 			]);
 		} else {
 
-			return $this->render('Map/map-openlayers.html.twig', [
-			]);
+			return $this->render('Map/map-openlayers.html.twig');
 		}
 	}
 
@@ -76,7 +74,7 @@ class MapController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$my_markers = new ArrayCollection($em->getRepository('App:MapMarker')->findByOwner($character));
+		$my_markers = new ArrayCollection($em->getRepository('App:MapMarker')->findBy(['owner'=>$character]));
 
 		if (count($my_markers) >= 10) {
 			$limit = true;
@@ -112,7 +110,7 @@ class MapController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		if ($marker->getOwner() == $character) {
+		if ($marker->getOwner() === $character) {
 			$em = $this->em;
 			$em->remove($marker);
 			$em->flush();
@@ -169,7 +167,7 @@ class MapController extends AbstractController {
 		$em = $this->em;
 		$query = $em->createQuery('SELECT g.id, b.name, g.humidity, ST_AsGeoJSON(g.poly) AS geopoly FROM App:GeoData g JOIN g.biome b WHERE g.passable=true AND ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), g.poly) = true');
 		$query->setParameters(array('ax'=>$lowleft[0], 'ay'=>$lowleft[1], 'bx'=>$upright[0], 'by'=>$upright[1]));
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 		while (($row = $iterableResult->next()) !== false) {
 			$r = array_shift($row);
 
@@ -191,7 +189,7 @@ class MapController extends AbstractController {
 		$em = $this->em;
 		$query = $em->createQuery('SELECT p.id, p.name, ST_AsGeoJSON(p.geom) as geometry FROM App:MapPOI p WHERE ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), p.geom) = true');
 		$query->setParameters(array('ax'=>$lowleft[0], 'ay'=>$lowleft[1], 'bx'=>$upright[0], 'by'=>$upright[1]));
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 		while (($row = $iterableResult->next()) !== false) {
 			$r = array_shift($row);
 
@@ -356,7 +354,7 @@ class MapController extends AbstractController {
 		$em = $this->em;
 		$query = $em->createQuery('SELECT g.id, c.name as culture, c.colour_hex as colour, ST_AsGeoJSON(g.poly) AS geopoly FROM App:GeoData g JOIN g.settlement s JOIN s.culture c WHERE g.passable=true AND ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), g.poly) = true');
 		$query->setParameters(array('ax'=>$lowleft[0], 'ay'=>$lowleft[1], 'bx'=>$upright[0], 'by'=>$upright[1]));
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 		while (($row = $iterableResult->next()) !== false) {
 			$r = array_shift($row);
 
@@ -506,7 +504,7 @@ class MapController extends AbstractController {
 			// mix in ships
 			$query = $em->createQuery('SELECT s.id, ST_AsGeoJSON(s.location) as location FROM App:Ship s, App:Character me WHERE me = :me AND (ST_Distance(s.location, me.location) < :maxdistance OR s.owner = :me)');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>Geography::DISTANCE_FEATURE));
-			$iterableResult = $query->iterate();
+			$iterableResult = $query->toIterable();
 			while (($row = $iterableResult->next()) !== false) {
 				$s = array_shift($row);
 
@@ -526,7 +524,7 @@ class MapController extends AbstractController {
 			// mix in dungeons
 			$query = $em->createQuery('SELECT d.id, d.area as area, ST_AsGeoJSON(d.location) as location FROM DungeonBundle:Dungeon d, App:Character me WHERE me = :me AND ST_Distance(d.location, me.location) < :maxdistance');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>$this->geo->calculateSpottingDistance($character)));
-			$iterableResult = $query->iterate();
+			$iterableResult = $query->toIterable();
 			while (($row = $iterableResult->next()) !== false) {
 				$d = array_shift($row);
 
@@ -567,7 +565,6 @@ class MapController extends AbstractController {
 	private function dataRealms($mode): array {
 		$features = array();
 		$em = $this->em;
-		$id=1;
 		switch ($mode) {
 			case "all":
 				$realms = $em->getRepository('App:Realm')->findAll();
@@ -653,11 +650,11 @@ class MapController extends AbstractController {
 		if ($resource) {
 			$resource = $em->getRepository('App:ResourceType')->findOneByName($resource);
 			$query = $em->createQuery('SELECT t.id, t.amount, r.name, ST_AsGeoJSON(ST_MakeLine(aa.center, bb.center)) as geometry FROM App:Trade t JOIN t.resource_type r JOIN t.source a JOIN a.geo_data aa JOIN t.destination b JOIN b.geo_data bb WHERE r = :resource');
-			$query->setParameters('resource', $resource);
+			$query->setParameters(['resource' => $resource]);
 		} else {
 			$query = $em->createQuery('SELECT t.id, t.amount, r.name, ST_AsGeoJSON(ST_MakeLine(aa.center, bb.center)) as geometry FROM App:Trade t JOIN t.resource_type r JOIN t.source a JOIN a.geo_data aa JOIN t.destination b JOIN b.geo_data bb');
 		}
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 		while (($row = $iterableResult->next()) !== false) {
 			$r = array_shift($row);
 

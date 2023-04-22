@@ -7,22 +7,21 @@ use App\Entity\Listing;
 use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\Settlement;
-use App\Service\Politics;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PermissionManager {
 
-	protected $em;
-	protected $politics;
+	protected EntityManagerInterface $em;
+	protected Politics $politics;
 
-	private $recursion_limit = 20; // prevent infinite recursion
+	private int $recursion_limit = 20; // prevent infinite recursion
 
 	public function __construct(EntityManagerInterface $em, Politics $politics) {
 		$this->em = $em;
 		$this->politics = $politics;
 	}
 
-	public function checkRealmPermission(Realm $realm, Character $character, $permission, $return_details=false) {
+	public function checkRealmPermission(Realm $realm, Character $character, $permission, $return_details=false): false|array {
 		// check all positions of the character
 		foreach ($character->getPositions() as $position) {
 			if ($position->getRealm() == $realm) {
@@ -51,14 +50,14 @@ class PermissionManager {
 	}
 
 
-	public function checkPlacePermission(Place $place, Character $character, $permission, $return_details=false) {
+	public function checkPlacePermission(Place $place, Character $character, $permission, $return_details=false): bool|array {
 		// settlement owner always has all permissions without limits
 		if ($place->getOccupier() || $place->getOccupant()) {
 			$occupied = true;
 		} else {
 			$occupied = false;
 		}
-		if (($place->isOwner($character) && !$occupied) OR ($occupied && $place->getOccupant() == $character)) {
+		if (($place->isOwner($character) && !$occupied) OR ($occupied && $place->getOccupant() === $character)) {
 			if ($return_details) {
 				return array(true, null, 'owner', null);
 			} else {
@@ -112,20 +111,20 @@ class PermissionManager {
 		}
 	}
 
-	public function checkSettlementPermission(Settlement $settlement, Character $character, $permission, $return_details=false) {
+	public function checkSettlementPermission(Settlement $settlement, Character $character, $permission, $return_details=false): bool|array {
 		// settlement owner always has all permissions without limits
 		if ($settlement->getOccupier() || $settlement->getOccupant()) {
 			$occupied = true;
 		} else {
 			$occupied = false;
 		}
-		if (!$occupied && ($settlement->getOwner() == $character || $settlement->getSteward() == $character)) {
+		if (!$occupied && ($settlement->getOwner() === $character || $settlement->getSteward() === $character)) {
 			if ($return_details) {
 				return array(true, null, 'owner', null);
 			} else {
 				return true;
 			}
-		} elseif ($occupied && $settlement->getOccupant() == $character) {
+		} elseif ($occupied && $settlement->getOccupant() === $character) {
 			if ($return_details) {
 				return array(true, null, 'owner', null);
 			} else {
@@ -208,7 +207,7 @@ class PermissionManager {
 		}
 	}
 
-	public function findMySettlementPermissions(Settlement $settlement, Character $me) {
+	public function findMySettlementPermissions(Settlement $settlement, Character $me): array {
 		$permissions = array();
 
 		// TODO: owner ? - he has all permissions, so we need a hardcoded list or what?
@@ -225,7 +224,7 @@ class PermissionManager {
 	}
 
 
-	public function checkListing(Listing $list, Character $who, $depth=1) {
+	public function checkListing(Listing $list, Character $who, $depth=1): array {
 		foreach ($list->getMembers() as $member) {
 			if ($member->getTargetCharacter()) {
 				if ($member->getTargetCharacter() == $who) {

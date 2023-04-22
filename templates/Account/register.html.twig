@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends "layout.html.twig" %}
 
 {% trans_default_domain 'core' %}
 
@@ -8,11 +8,11 @@
     <h1>{% trans %}security.register.header{% endtrans %}</h1>
 
     {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username) }}
+        {{ form_row(registrationForm._username) }}
         {{ form_row(registrationForm.plainPassword) }}<br>
         {{ form_row(registrationForm.display_name) }}
         {{ form_row(registrationForm.email) }}<br>
-        <a href="{{ url("core_terms") }}">{% trans %}form.register.toslink{% endtrans %}</a>
+        <a href="{{ url("maf_terms") }}">{% trans %}form.register.toslink{% endtrans %}</a>
         {{ form_row(registrationForm.agreeTerms) }}
     {{ form_end(registrationForm) }}
 {% endblock %}
