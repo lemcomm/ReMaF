@@ -81,7 +81,7 @@ function getBlazon() {
 }
 
 function validateUnique() {
-	$.get("{{ path("bm2_site_heraldry_validate") }}", {
+	$.get("{{ path("maf_heraldry_validate") }}", {
 		shield: $("#heraldry_shield_colour").val(),
 		pattern: $("#heraldry_pattern").val(),
 		patterncolour: $("#heraldry_pattern_colour").val(),

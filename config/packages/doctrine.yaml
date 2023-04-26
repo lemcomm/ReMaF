@@ -23,10 +23,10 @@ doctrine:
                 alias: App
         dql:
             datetime_functions:
-                date_part:          BM2\SiteBundle\DQL\DatePart
+                date_part:          App\DQL\DatePart
             numeric_functions:
-                #pow:                BM2\SiteBundle\DQL\Pow
-                #round:              BM2\SiteBundle\DQL\Round
+                #pow:                App\DQL\Pow
+                #round:              App\DQL\Round
                 st_point:           LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StPoint
                 st_x:               LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StX
                 st_y:               LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StY

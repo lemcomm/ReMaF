@@ -80,7 +80,7 @@ class RoadconstructionType extends AbstractType {
 			'class'=>GeoFeature::class,
 			'choice_label'=>'name',
 			'query_builder'=>function(EntityRepository $er) use ($geo) {
-				return $er->createQueryBuilder('f')->from('BM2SiteBundle:GeoData', 'g')
+				return $er->createQueryBuilder('f')->from('App:GeoData', 'g')
 					->where('ST_Distance(g.poly, f.location) < :gutter')
 					->andWhere('g = :geo')->orderBy('f.name')->setParameters(array('geo'=>$geo, 'gutter'=>100));
 			}

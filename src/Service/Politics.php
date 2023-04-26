@@ -17,13 +17,11 @@ class Politics {
 	protected CommonService $common;
 	protected EntityManagerInterface $em;
 	protected History $history;
-	protected MilitaryManager $milman;
 
-	public function __construct(CommonService $common, EntityManagerInterface $em, History $history, MilitaryManager $milman) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, History $history) {
 		$this->common = $common;
 		$this->em = $em;
 		$this->history = $history;
-		$this->milman = $milman;
 	}
 
 
@@ -247,7 +245,7 @@ class Politics {
 	}
 
 
-	public function changeSettlementOwner(Settlement $settlement, Character $character=null, $reason=false): void {
+	public function changeSettlementOwner(Settlement $settlement, Character $character=null, $reason=false): array {
 		$oldowner = $settlement->getOwner();
 		$oldowner?->removeOwnedSettlement($settlement);
 		$character?->addOwnedSettlement($settlement);
@@ -301,6 +299,7 @@ class Politics {
 
 		// TODO: probably need to clean out some actions, too
 
+		$orphans = [];
 		if ($reason) switch ($reason) {
 			case 'take':
 				if ($settlement->getOwner()) {
@@ -380,18 +379,24 @@ class Politics {
 						$unit->setSettlement(NULL);
 					}
 				}
+				$i = 0;
 				foreach ($settlement->getDefendingUnits() as $unit) {
+					$orphans[] = $i;
 					if (!$character) {
-						$this->milman->returnUnitHome($unit, 'defenselost', $settlement);
+						$here = $settlement;
 					} else {
-						$this->milman->returnUnitHome($unit, 'defenselost', $character);
+						$here = $character;
 					}
+					$orphans[$i]['unit'] = $unit;
+					$orphans[$i]['why'] = 'defenselost';
+					$orphans[$i]['from'] = $here;
 					$this->history->logEvent(
 						$unit,
 						'event.unit.defenselost',
 						array("%link-settlement%"=>$settlement->getId()),
 						History::HIGH, true
 					);
+					$i++;
 				}
 				break;
 			case 'grant':
@@ -519,6 +524,7 @@ class Politics {
 				}
 				break;
 		}
+		return ['orphans'=>$orphans];
 	}
 
 	public function addClaim(Character $character, Settlement $settlement, $enforceable=false, $priority=false): void {
@@ -881,21 +887,24 @@ class Politics {
 				$unit->setSettlement(NULL);
 			}
 		}
+		$i = 0;
 		foreach ($settlement->getDefendingUnits() as $unit) {
-			# This refers specificlaly to units defending this settlement as a relation.
-			# That is, those units left by troop leaders to defend that are not based out of this settlement NOR attached to a character.
-			# Literally just those left here to defend. As of v2.4, you can't actually set these.
+			$orphans[] = $i;
 			if (!$char) {
-				$this->milman->returnUnitHome($unit, 'defenselost', $settlement);
+				$here = $settlement;
 			} else {
-				$this->milman->returnUnitHome($unit, 'defenselost', $char);
+				$here = $char;
 			}
+			$orphans[$i]['unit'] = $unit;
+			$orphans[$i]['why'] = 'defenselost';
+			$orphans[$i]['from'] = $here;
 			$this->history->logEvent(
 				$unit,
 				'event.unit.defenselost',
 				array("%link-settlement%"=>$settlement->getId()),
 				History::HIGH, true
 			);
+			$i++;
 		}
 		if ($char) {
 			if ($realm) {

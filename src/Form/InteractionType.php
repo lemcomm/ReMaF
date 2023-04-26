@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Artifact;
+use App\Entity\Character;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -40,7 +41,7 @@ class InteractionType extends AbstractType {
 			'multiple'=>$options['multiple'],
 			'expanded'=>true,
 			'required'=>$options['multiple'],
-			'class'=>'BM2SiteBundle:Character', 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($me, $maxdistance, $settlementcheck) {
+			'class'=>Character::class, 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($me, $maxdistance, $settlementcheck) {
 				$qb = $er->createQueryBuilder('c');
 				$qb->from('BM2SiteBundle:Character', 'me');
 				$qb->where('c.alive = true');

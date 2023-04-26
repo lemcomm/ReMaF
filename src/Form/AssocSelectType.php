@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Association;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -56,7 +57,7 @@ class AssocSelectType extends AbstractType {
 			'label' => $label,
 			'required'=>$required,
 			'attr' => array('title'=>$help),
-			'class'=>'BM2SiteBundle:Association',
+			'class'=>Association::class,
 			'choice_label'=>$choiceLabel,
 			'choices'=>$assocs,
 			'data'=>$me->getFaith()

@@ -6,6 +6,9 @@ use App\Entity\Activity;
 use App\Entity\ActivityReportObserver;
 use App\Entity\Battle;
 use App\Entity\BattleReportObserver;
+use App\Entity\Character;
+use App\Entity\EquipmentType;
+use App\Entity\Settlement;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -18,16 +21,16 @@ class HelperService {
 	If it is something that has absolutely no dependencies on other game services (Symfony services are fine), put it in CommonService instead.
 	*/
 
-	protected CommonService $common;
-	protected EntityManagerInterface $em;
-	protected Geography $geo;
-	protected History $history;
+	private CommonService $common;
+	private EntityManagerInterface $em;
+	private Geography $geo;
+	private PermissionManager $pm;
 
-	public function __construct(CommonService $common, EntityManagerInterface $em, Geography $geo, History $history) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, Geography $geo, PermissionManager $pm) {
 		$this->common = $common;
 		$this->em = $em;
 		$this->geo = $geo;
-		$this->history = $history;
+		$this->pm = $pm;
 	}
 
 	private function newObserver($type): true|BattleReportObserver|ActivityReportObserver {
@@ -112,6 +115,36 @@ class HelperService {
 				}
 			}
 		}
+	}
+
+	public function acquireItem(Settlement $settlement, EquipmentType $item=null, $test_trainer=false, $reduce_supply=true, Character $character=null): bool {
+		if ($item==null) return true;
+
+		$provider = $settlement->getBuildingByType($item->getProvider());
+		if (!$provider) return false;
+		if (!$provider->isActive()) return false;
+
+		if ($test_trainer) {
+			$trainer = $settlement->getBuildingByType($item->getTrainer());
+			if (!$trainer) return false;
+			if (!$trainer->isActive()) return false;
+		}
+
+		if ($item->getResupplyCost() > $provider->getResupply()) return false;
+
+		if ($reduce_supply) {
+			$left = $provider->getResupply() - $item->getResupplyCost();
+			if ($character) {
+				$perm = $this->pm->checkSettlementPermission($settlement, $character, 'resupply', true)[3];
+				if ($perm) {
+					if ($item->getResupplyCost() > $perm->getValueRemaining()) return false;
+					if ($perm->getReserve()!==null && $left < $perm->getReserve()) return false;
+					$perm->setValueRemaining($perm->getValueRemaining() - $item->getResupplyCost());
+				}
+			}
+			$provider->setResupply($left);
+		}
+		return true;
 	}
 
 }

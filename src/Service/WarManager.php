@@ -11,10 +11,6 @@ use App\Entity\Settlement;
 use App\Entity\Siege;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\ActionManager;
-use App\Service\History;
-use App\Service\Interactions;
-use App\Service\MilitaryManager;
 use App\Twig\GameTimeExtension;
 use Psr\Log\LoggerInterface;
 
@@ -31,20 +27,15 @@ class WarManager {
 	protected MilitaryManager $milman;
 	protected ActionManager $actman;
 	protected GameTimeExtension $gametime;
-	protected Interactions $interactions;
-	protected Politics $politics;
 	protected LoggerInterface $logger;
 
 	private int $debug=0;
 
-	public function __construct(EntityManagerInterface $em, History $history, MilitaryManager $milman, ActionManager $actman, GameTimeExtension $gametime, Interactions $interactions, Politics $politics, LoggerInterface $logger) {
+	public function __construct(EntityManagerInterface $em, History $history, ActionManager $actman, GameTimeExtension $gametime, LoggerInterface $logger) {
 		$this->em = $em;
 		$this->history = $history;
-		$this->milman = $milman;
 		$this->actman = $actman;
 		$this->gametime = $gametime;
-		$this->interactions = $interactions;
-		$this->politics = $politics;
 		$this->logger = $logger;
 	}
 

@@ -6,8 +6,6 @@ use App\Entity\Code;
 use App\Entity\CreditHistory;
 use App\Entity\User;
 use App\Entity\UserPayment;
-use App\Service\MailManager;
-use App\Service\UserManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -19,24 +17,22 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaymentManager {
 
-	protected EntityManagerInterface $em;
-	protected \App\Service\UserManager $usermanager;
-	protected \App\Service\MailManager $mailer;
-	protected TranslatorInterface $translator;
-	protected LoggerInterface $logger;
-	private \App\Service\MailManager $mailman;
+	private EntityManagerInterface $em;
+	private UserManager $usermanager;
+	private TranslatorInterface $translator;
+	private LoggerInterface $logger;
+	private MailManager $mailer;
 	private mixed $ruleset;
 	private mixed $stripeSecret;
 	private array $stripePrices;
 	private array $patreonAlikes = ['patreon'];
 
-	public function __construct(EntityManagerInterface $em, UserManager $usermanager, TranslatorInterface $translator, LoggerInterface $logger, MailManager $mailman, KernelInterface $kernel) {
+	public function __construct(EntityManagerInterface $em, UserManager $usermanager, TranslatorInterface $translator, LoggerInterface $logger, MailManager $mailer, KernelInterface $kernel) {
 		$this->em = $em;
 		$this->usermanager = $usermanager;
-		$this->mailer = $mailman;
+		$this->mailer = $mailer;
 		$this->translator = $translator;
 		$this->logger = $logger;
-		$this->mailman = $mailman;
 		$this->ruleset = $_ENV['RULESET'];
 		$this->stripeSecret = $_ENV['STRIPE_SECRET'];
 		$this->stripePrices = [
@@ -442,7 +438,7 @@ class PaymentManager {
 		$subject = $this->translator->trans("account.payment.mail.".$subject, array());
 		$content = $this->translator->trans("account.payment.mail.".$text, array());
 
-		$this->mailman->sendEmail($user->getEmail(), $subject, $content);
+		$this->mailer->sendEmail($user->getEmail(), $subject, $content);
 	}
 
 	public function changeSubscription(User $user, $newlevel): bool {
@@ -601,7 +597,7 @@ class PaymentManager {
 					$this->em->flush();
 
 					$text = $this->translator->trans('account.invite.mail2.body', array("%mail%"=>$user->getEmail(), "%credits%"=>$value));
-					$this->mailman->sendEmail($sender->getEmail(), $this->translator->trans('account.invite.mail2.subject'), $text);
+					$this->mailer->sendEmail($sender->getEmail(), $this->translator->trans('account.invite.mail2.subject'), $text);
 					$this->logger->info('sent friend subscriber email: '.$text);
 				}
 			}

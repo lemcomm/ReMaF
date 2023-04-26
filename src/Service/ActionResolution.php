@@ -19,6 +19,7 @@ class ActionResolution {
 	private Politics $politics;
 	private ArrayCollection $characters;
 	private PermissionManager $permissions;
+	private MilitaryManager $milman;
 	private WarManager $warman;
 	private ActionManager $actman;
 
@@ -26,7 +27,7 @@ class ActionResolution {
 	private int $debug=100;
 
 
-	public function __construct(EntityManagerInterface $em, CharacterManager $charman, CommonService $common, History $history, Dispatcher $dispatcher, Geography $geography, Interactions $interactions, Politics $politics, PermissionManager $permissions, WarManager $warman, ActionManager $actman) {
+	public function __construct(EntityManagerInterface $em, CharacterManager $charman, CommonService $common, History $history, Dispatcher $dispatcher, Geography $geography, Interactions $interactions, MilitaryManager $milman, Politics $politics, PermissionManager $permissions, WarManager $warman, ActionManager $actman) {
 		$this->em = $em;
 		$this->common = $common;
 		$this->charman = $charman;
@@ -36,6 +37,7 @@ class ActionResolution {
 		$this->interactions = $interactions;
 		$this->politics = $politics;
 		$this->permissions = $permissions;
+		$this->milman = $milman;
 		$this->warman = $warman;
 		$this->actman = $actman;
 		$this->characters = new ArrayCollection();
@@ -194,7 +196,12 @@ class ActionResolution {
 			$this->history->openLog($settlement, $action->getCharacter());
 
 			// the actual change
-			$this->politics->changeSettlementOwner($settlement, $action->getCharacter(), 'take');
+			$result = $this->politics->changeSettlementOwner($settlement, $action->getCharacter(), 'take');
+			if ($result['orphans']) {
+				foreach ($result['orphans'] as $unit) {
+					$this->milman->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
+				}
+			}
 			$this->politics->changeSettlementRealm($settlement, $action->getTargetRealm(), 'take');
 
 			// if we are not already inside, enter
@@ -361,7 +368,12 @@ class ActionResolution {
 			} else {
 				$reason = 'grant_fief';
 			}
-			$this->politics->changeSettlementOwner($settlement, $to, $reason);
+			$result = $this->politics->changeSettlementOwner($settlement, $to, $reason);
+			if ($result['orphans']) {
+				foreach ($result['orphans'] as $unit) {
+					$this->milman->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
+				}
+			}
 
 			if (strpos($action->getStringValue(), 'clear_realm') !== false && $settlement->getRealm()) {
 				$this->politics->changeSettlementRealm($settlement, null, 'grant');

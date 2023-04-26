@@ -9,7 +9,7 @@ use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterfac
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
+######[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 
 	private ?int $id;

@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Character;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -66,7 +67,7 @@ class NewConversationType extends AbstractType {
 					'multiple'=>true,
 					'expanded'=>true,
 					'label'=>'conversation.captor.label',
-					'class'=>'BM2SiteBundle:Character', 'property'=>'name', 'query_builder'=>function(EntityRepository $er) use ($captor) {
+					'class'=>Character::class, 'property'=>'name', 'query_builder'=>function(EntityRepository $er) use ($captor) {
 						$qb = $er->createQueryBuilder('c');
 						$qb->where('c.alive = true');
 						$qb->andWhere('c = :captor')->setParameter('captor', $captor);
@@ -79,7 +80,7 @@ class NewConversationType extends AbstractType {
 				'multiple'=>true,
 				'expanded'=>true,
 				'label'=>'conversation.nearby.label',
-				'class'=>'BM2SiteBundle:Character', 'property'=>'name', 'query_builder'=>function(EntityRepository $er) use ($me, $maxdistance) {
+				'class'=>Character::class, 'property'=>'name', 'query_builder'=>function(EntityRepository $er) use ($me, $maxdistance) {
 					$qb = $er->createQueryBuilder('c');
 					$qb->from('App\Entity\Character', 'me');
 					$qb->where('c.alive = true');
@@ -104,7 +105,7 @@ class NewConversationType extends AbstractType {
 					'multiple'=>true,
 					'expanded'=>true,
 					'label'=>'conversation.owner.label',
-					'class'=>'BM2SiteBundle:Character', 'property'=>'name', 'query_builder'=>function(EntityRepository $er) use ($owner) {
+					'class'=>Character::class, 'property'=>'name', 'query_builder'=>function(EntityRepository $er) use ($owner) {
 						$qb = $er->createQueryBuilder('c');
 						$qb->where('c.alive = true');
 						$qb->andWhere('c = :owner')->setParameter('owner', $owner);
@@ -121,7 +122,7 @@ class NewConversationType extends AbstractType {
 					'expanded'=>true,
 					'label' => 'conversation.recipients.label',
 					'placeholder' => 'conversation.recipients.empty',
-					'class' => 'BM2SiteBundle:Character',
+					'class' => Character::class,
 					'property' => 'name',
 					'query_builder'=>function(EntityRepository $er) use ($contacts) {
 						$qb = $er->createQueryBuilder('c');

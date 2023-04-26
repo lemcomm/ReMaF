@@ -1,14 +1,7 @@
 security:
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
-        legacy:
-            algorithm: sha512
-            encode_as_base64: true
-            iterations: 1
-        App\Entity\User:
-            algorithm: auto
-            migrate_from:
-              - legacy
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         users:

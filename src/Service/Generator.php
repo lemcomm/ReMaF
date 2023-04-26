@@ -14,17 +14,17 @@ use Doctrine\ORM\EntityManagerInterface;
 class Generator {
 
 	protected EntityManagerInterface $em;
-	protected MilitaryManager $milman;
+	private HelperService $helper;
 
-	public function __construct(EntityManagerInterface $em, MilitaryManager $milman) {
+	public function __construct(EntityManagerInterface $em, HelperService $helper) {
 		$this->em = $em;
-		$this->milman = $milman;
+		$this->helper = $helper;
 	}
 
 	public function randomName(Settlement $home=null, $gender=false): string {
 		$culture = $home?->getCulture();
 		$qb = $this->em->createQueryBuilder();
-		$qb->select('count(n.id)')->from('BM2SiteBundle:NameList', 'n');
+		$qb->select('count(n.id)')->from('App:NameList', 'n');
 		if ($culture) {
 			$qb->where('n.culture = :culture')->setParameter('culture', $culture);
 		}
@@ -41,7 +41,7 @@ class Generator {
 		// so we save the processing power to test for it
 
 		$qb = $this->em->createQueryBuilder();
-		$qb->select('n')->from('BM2SiteBundle:NameList', 'n');
+		$qb->select('n')->from('App:NameList', 'n');
 		if ($culture) {
 			$qb->where('n.culture = :culture')->setParameter('culture', $culture);
 		}
@@ -60,18 +60,18 @@ class Generator {
 
 		$soldier->setExperience(0)->setTraining(0);
 		if ($home) {
-			if ($this->milman->acquireItem($home, $weapon, true, false)
-				&& $this->milman->acquireItem($home, $armour, true, false)
-				&& $this->milman->acquireItem($home, $equipment, true, false)
-				&& $this->milman->acquireItem($home, $mount, true, false)) {
+			if ($this->helper->acquireItem($home, $weapon, true, false)
+				&& $this->helper->acquireItem($home, $armour, true, false)
+				&& $this->helper->acquireItem($home, $equipment, true, false)
+				&& $this->helper->acquireItem($home, $mount, true, false)) {
 
-				$this->milman->acquireItem($home, $weapon, true);
+				$this->helper->acquireItem($home, $weapon, true);
 				$soldier->setWeapon($weapon);
-				$this->milman->acquireItem($home, $armour, true);
+				$this->helper->acquireItem($home, $armour, true);
 				$soldier->setArmour($armour);
-				$this->milman->acquireItem($home, $equipment, true);
+				$this->helper->acquireItem($home, $equipment, true);
 				$soldier->setEquipment($equipment);
-				$this->milman->acquireItem($home, $mount, true);
+				$this->helper->acquireItem($home, $mount, true);
 				$soldier->setMount($mount);
 			} else {
 				return null;

@@ -22,14 +22,9 @@ class GameRunner {
 	private AppState $appstate;
 	private LoggerInterface $logger;
 	private ActionResolution $resolver;
-	private Economy $economy;
-	private Politics $politics;
 	private History $history;
 	private MilitaryManager $milman;
-	private BattleRunner $battlerunner;
-	private Interactions $interactions;
 	private Geography $geography;
-	private Generator $generator;
 	private RealmManager $rm;
 	private ConversationManager $convman;
 	private PermissionManager $pm;
@@ -44,19 +39,14 @@ class GameRunner {
 
 	private int $bandits_ok_distance = 50000;
 	private $seen;
-	public function __construct(EntityManagerInterface $em, AppState $appstate, LoggerInterface $logger, ActionResolution $resolver, Economy $economy, Politics $politics, History $history, MilitaryManager $milman, BattleRunner $battlerunner, Interactions $interactions, Geography $geography, Generator $generator, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm) {
+	public function __construct(EntityManagerInterface $em, AppState $appstate, LoggerInterface $logger, ActionResolution $resolver, History $history, MilitaryManager $milman, Geography $geography, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm) {
 		$this->em = $em;
 		$this->appstate = $appstate;
 		$this->logger = $logger;
 		$this->resolver = $resolver;
-		$this->economy = $economy;
-		$this->politics = $politics;
 		$this->history = $history;
 		$this->milman = $milman;
-		$this->battlerunner = $battlerunner;
-		$this->interactions = $interactions;
 		$this->geography = $geography;
-		$this->generator = $generator;
 		$this->rm = $rm;
 		$this->convman = $convman;
 		$this->pm = $pm;
@@ -691,7 +681,7 @@ class GameRunner {
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date --   Checking if units have gotten supplies...");
 		$done = false;
-		$query = $this->em->createQuery('SELECT r FROM BM2SiteBundle:Resupply r WHERE r.travel_days <= 1');
+		$query = $this->em->createQuery('SELECT r FROM App:Resupply r WHERE r.travel_days <= 1');
 		$iterableResult = $query->iterate();
 		while (!$done) {
 			$this->em->clear();

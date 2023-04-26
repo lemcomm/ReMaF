@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Character;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -30,7 +31,7 @@ class NpcSelectType extends AbstractType {
 			'placeholder' => 'form.choose',
 			'label' => 'bandits.choose',
 			'required' => true,
-			'class'=>'BM2SiteBundle:Character', 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($characters) {
+			'class'=>Character::class, 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($characters) {
 				$qb = $er->createQueryBuilder('c');
 				$qb->where('c IN (:characters)');
 				$qb->setParameter('characters', $characters);

@@ -88,11 +88,7 @@ class BuildingController extends AbstractController {
 		$allowed = array('allrealms.png', 'majorrealms.png', '2ndrealms.png', 'allrealms-thumb.png', 'majorrealms-thumb.png', '2ndrealms-thumb.png');
 		if (in_array($map, $allowed)) {
 			header('Content-type: image/png');
-			if (gethostname() == 'Ghost.local') {
-				readfile("/Users/Tom/Documents/BM2/$map");
-			} else {
-				readfile("/var/www/qgis/maps/$map");
-			}
+			readfile("/var/www/qgis/maps/$map");
 		} else {
 			echo "invalid map";
 		}

@@ -5,10 +5,6 @@ namespace App\Service;
 use App\Entity\Character;
 use App\Entity\Place;
 use App\Entity\Settlement;
-use App\Service\Geography;
-use App\Service\History;
-use App\Service\PermissionManager;
-use App\Service\Politics;
 use Doctrine\ORM\EntityManagerInterface;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Psr\Log\LoggerInterface;
@@ -420,7 +416,7 @@ class Interactions {
 			if (!$keepRealm) {
 				$this->pol->changeSettlementRealm($settlement, $settlement->getOccupier(), 'abandon');
 			}
-			$this->pol->changeSettlementOwner($settlement, $settlement->getOccupant(), 'abandon');
+			$this->pol->changeSettlementOwner($settlement, $settlement->getOccupant(), 'abandon'); # Abandoned settlements don't lose units. No need to handle that.
 			$this->em->flush();
 			return true;
 		} elseif ($settlement->getOccupant() === $character) {

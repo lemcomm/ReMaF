@@ -29,7 +29,7 @@ class InfoController extends AbstractController {
 	#[Route ('/info/building/{id}', name:'maf_info_buildingtype', requirements:['id'=>'\d+'])]
 	public function buildingtypeAction($id): Response {
 		$em = $this->em;
-		$buildingtype = $em->getRepository('BM2SiteBundle:BuildingType')->find($id);
+		$buildingtype = $em->getRepository('App:BuildingType')->find($id);
 		if (!$buildingtype) {
 			throw $this->createNotFoundException('error.notfound.buildingtype');
 		}
@@ -48,7 +48,7 @@ class InfoController extends AbstractController {
 	#[Route ('/info/buildings/{id}', name:'maf_info_buildings', requirements:['id'=>'\d+'])]
 	public function featuretypeAction($id): Response {
 		$em = $this->em;
-		$featuretype = $em->getRepository('BM2SiteBundle:FeatureType')->find($id);
+		$featuretype = $em->getRepository('App:FeatureType')->find($id);
 		if (!$featuretype) {
 			throw $this->createNotFoundException('error.notfound.featuretype');
 		}
@@ -67,7 +67,7 @@ class InfoController extends AbstractController {
 	#[Route ('/info/entourage/{id}', name:'maf_info_entourage', requirements:['id'=>'\d+'])]
 	public function entouragetypeAction($id): Response {
 		$em = $this->em;
-		$entouragetype = $em->getRepository('BM2SiteBundle:EntourageType')->find($id);
+		$entouragetype = $em->getRepository('App:EntourageType')->find($id);
 		if (!$entouragetype) {
 			throw $this->createNotFoundException('error.notfound.entouragetype');
 		}
@@ -86,7 +86,7 @@ class InfoController extends AbstractController {
 	#[Route ('/info/equipment/{id}', name:'maf_info_equipment', requirements:['id'=>'\d+'])]
 	public function equipmenttypeAction($id): Response {
 		$em = $this->em;
-		$equipmenttype = $em->getRepository('BM2SiteBundle:EquipmentType')->find($id);
+		$equipmenttype = $em->getRepository('App:EquipmentType')->find($id);
 		if (!$equipmenttype) {
 			throw $this->createNotFoundException('error.notfound.equipmenttype');
 		}
@@ -99,7 +99,7 @@ class InfoController extends AbstractController {
 
 	private function alltypes($type, $request): array {
 		$em = $this->em;
-		$all = $em->getRepository('BM2SiteBundle:'.$type)->findBy([], ['name'=>'asc']);
+		$all = $em->getRepository('App:'.$type)->findBy([], ['name'=>'asc']);
 		$toc = $this->pager->getPage('manual', 'toc', $request->getLocale());
 
 		return [

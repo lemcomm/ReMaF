@@ -984,7 +984,8 @@ class CharacterManager {
 	}
 
 	public function bequeathEstate(Settlement $settlement, Character $heir, Character $from, Character $via=null): void {
-		$this->politics->changeSettlementOwner($settlement, $heir);
+		$this->politics->changeSettlementOwner($settlement, $heir); # Bequeathing never changes units over. No need to handle that.
+
 
 		$this->history->closeLog($settlement, $from);
 		$this->history->openLog($settlement, $heir);
@@ -1013,7 +1014,7 @@ class CharacterManager {
 	}
 
 	private function failInheritEstate(Character $character, Settlement $settlement, $string = 'inherifail'): void {
-		$this->politics->changeSettlementOwner($settlement, null);
+		$this->politics->changeSettlementOwner($settlement, null); # Estates going lordless don't lose unit ownerships. No need to handle.
 		$this->history->logEvent(
 			$settlement, 'event.settlement.'.$string,
 			array('%link-character%'=>$character->getId()),

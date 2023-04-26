@@ -23,9 +23,9 @@ class MilitaryManager {
 
 	private EntityManagerInterface $em;
 	private History $history;
-	private PermissionManager $pm;
 	private AppState $appstate;
 	private Geography $geo;
+	private HelperService $helper;
 	private LoggerInterface $logger;
 
 	private int $group_assign=0;
@@ -33,11 +33,11 @@ class MilitaryManager {
 	private int $group_soldier=0;
 	private int $max_group=25; // a=0 ... z=25
 
-	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, History $history, PermissionManager $pm, AppState $appstate, Geography $geo) {
+	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, HelperService $helper, History $history, AppState $appstate, Geography $geo) {
 		$this->em = $em;
 		$this->logger = $logger;
+		$this->helper = $helper;
 		$this->history = $history;
-		$this->pm = $pm;
 		$this->appstate = $appstate;
 		$this->geo = $geo;
 	}
@@ -285,7 +285,7 @@ class MilitaryManager {
 					$success = false;
 				} else {
 					// resupply from settlement
-					if ($this->acquireItem($settlement, $soldier->$trained(), false, true, $soldier->getCharacter())) {
+					if ($this->helper->acquireItem($settlement, $soldier->$trained(), false, true, $soldier->getCharacter())) {
 						$soldier->$set($soldier->$trained());
 					} else {
 						$success = false;
@@ -294,36 +294,6 @@ class MilitaryManager {
 			}
 		}
 		return $success;
-	}
-
-	public function acquireItem(Settlement $settlement, EquipmentType $item=null, $test_trainer=false, $reduce_supply=true, Character $character=null): bool {
-		if ($item==null) return true;
-
-		$provider = $settlement->getBuildingByType($item->getProvider());
-		if (!$provider) return false;
-		if (!$provider->isActive()) return false;
-
-		if ($test_trainer) {
-			$trainer = $settlement->getBuildingByType($item->getTrainer());
-			if (!$trainer) return false;
-			if (!$trainer->isActive()) return false;
-		}
-
-		if ($item->getResupplyCost() > $provider->getResupply()) return false;
-
-		if ($reduce_supply) {
-			$left = $provider->getResupply() - $item->getResupplyCost();
-			if ($character) {
-				$perm = $this->pm->checkSettlementPermission($settlement, $character, 'resupply', true)[3];
-				if ($perm) {
-					if ($item->getResupplyCost() > $perm->getValueRemaining()) return false;
-					if ($perm->getReserve()!==null && $left < $perm->getReserve()) return false;
-					$perm->setValueRemaining($perm->getValueRemaining() - $item->getResupplyCost());
-				}
-			}
-			$provider->setResupply($left);
-		}
-		return true;
 	}
 
 	public function returnItem(Settlement $settlement=null, EquipmentType $item=null): bool {
@@ -345,22 +315,22 @@ class MilitaryManager {
 		$fail = false;
 		// first, check if our change is possible:
 		if ($weapon && $weapon != $soldier->getTrainedWeapon()) {
-			if (!$this->acquireItem($settlement, $weapon, true, false)) {
+			if (!$this->helper->acquireItem($settlement, $weapon, true, false)) {
 				$fail = true;
 			}
 		}
 		if ($armour && $armour != $soldier->getTrainedArmour()) {
-			if (!$this->acquireItem($settlement, $armour, true, false)) {
+			if (!$this->helper->acquireItem($settlement, $armour, true, false)) {
 				$fail = true;
 			}
 		}
 		if ($equipment && $equipment != $soldier->getTrainedEquipment()) {
-			if (!$this->acquireItem($settlement, $equipment, true, false)) {
+			if (!$this->helper->acquireItem($settlement, $equipment, true, false)) {
 				$fail = true;
 			}
 		}
 		if ($mount && $mount != $soldier->getTrainedMount()) {
-			if (!$this->acquireItem($settlement, $mount, true, false)) {
+			if (!$this->helper->acquireItem($settlement, $mount, true, false)) {
 				$fail = true;
 			}
 		}
@@ -376,28 +346,28 @@ class MilitaryManager {
 
 		// now do it - we don't need to check for trainers in the acquireItem() statement anymore, because we did it above
 		if ($weapon && $weapon != $soldier->getTrainedWeapon()) {
-			if ($this->acquireItem($settlement, $weapon)) {
+			if ($this->helper->acquireItem($settlement, $weapon)) {
 				$train += $weapon->getTrainingRequired();
 				$soldier->setWeapon($weapon)->setHasWeapon(true);
 				$change = true;
 			}
 		}
 		if ($armour && $armour != $soldier->getTrainedArmour()) {
-			if ($this->acquireItem($settlement, $armour)) {
+			if ($this->helper->acquireItem($settlement, $armour)) {
 				$train += $armour->getTrainingRequired();
 				$soldier->setArmour($armour)->setHasArmour(true);
 				$change = true;
 			}
 		}
 		if ($equipment && $equipment != $soldier->getTrainedEquipment()) {
-			if ($this->acquireItem($settlement, $equipment)) {
+			if ($this->helper->acquireItem($settlement, $equipment)) {
 				$train += $equipment->getTrainingRequired();
 				$soldier->setEquipment($equipment)->setHasEquipment(true);
 				$change = true;
 			}
 		}
 		if ($mount && $mount != $soldier->getTrainedMount()) {
-			if ($this->acquireItem($settlement, $mount)) {
+			if ($this->helper->acquireItem($settlement, $mount)) {
 				$train += $mount->getTrainingRequired();
 				$soldier->setMount($mount)->setHasEquipment(true);
 				$change = true;

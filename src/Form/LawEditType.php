@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Settlement;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -100,7 +101,7 @@ class LawEditType extends AbstractType {
 					'multiple'=>false,
 					'expanded'=>false,
 					'required'=>true,
-					'class'=>'BM2SiteBundle:Settlement',
+					'class'=>Settlement::class,
 					'choice_label'=>'name',
 					'choices'=>$options['settlements'],
 					'data'=>$law?$law->getSettlement():null,

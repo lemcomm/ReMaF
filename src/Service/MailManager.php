@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\Event;
 use App\Entity\MailEntry;
 use App\Entity\User;
-use App\Service\AppState;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
@@ -93,7 +92,7 @@ class MailManager {
 	public function sendEventEmails(): void {
 		$now = new DateTime("now");
 		$em = $this->em;
-		$query = $em->createQuery("SELECT u FROM BM2SiteBundle:User u JOIN u.mail_entries m WHERE m.type = :type");
+		$query = $em->createQuery("SELECT u FROM App:User u JOIN u.mail_entries m WHERE m.type = :type");
 		$query->setParameters(['type'=>'event']);
 		$users = $query->getResult();
 		$twoMonths = new DateTime("-2 months");

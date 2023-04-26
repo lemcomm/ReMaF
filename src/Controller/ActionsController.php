@@ -109,9 +109,6 @@ class ActionsController extends AbstractController {
 		]);
 	}
 
-	/**
-	  * @Route("/support", name="bm2_actionsupport")
-	  */
 	#[Route ('/actions/support', name:'maf_actions_support')]
 	public function supportAction(Request $request): RedirectResponse|array|Response {
 		$character = $this->dispatcher->gateway();
@@ -157,7 +154,7 @@ class ActionsController extends AbstractController {
 
 			$em->flush();
 			$this->addFlash('notice', $this->trans->trans('support.success.'.$action->getType(), ["%character%"=>$character->getName(), "%target"=>$action->getTargetSettlement()->getName()], 'actions'));
-			return $this->redirectToRoute('bm2_actions');
+			return $this->redirectToRoute('maf_actions');
 		} else {
 			return $this->render('Actions/support.html.twig', [
 				'action'=>null,
@@ -169,9 +166,7 @@ class ActionsController extends AbstractController {
 		}
 	}
 
-	/**
-	  * @Route("/oppose", name="bm2_actionoppose")
-	  */
+	#[Route ('/actions/oppose', name:'maf_actions_oppose')]
 	public function opposeAction(Request $request): RedirectResponse|array|Response {
 		$character = $this->dispatcher->gateway();
 		if (! $character instanceof Character) {
@@ -212,7 +207,7 @@ class ActionsController extends AbstractController {
 
 			$em->flush();
 			$this->addFlash('notice', $this->trans->trans('oppose.success.'.$action->getType(), ["%character%"=>$character->getName(), "%target"=>$action->getTargetSettlement()->getName()], 'actions'));
-			return $this->redirectToRoute('bm2_actions');
+			return $this->redirectToRoute('maf_actions');
 		} else {
 			return $this->render('Actions/oppose.html.twig', [
 				'action'=>null,
@@ -237,7 +232,7 @@ class ActionsController extends AbstractController {
 		} else {
 			$this->addFlash('notice', $this->trans->trans('location.enter.result.denied', array("%settlement%"=>$settlement->getName()), "actions"));
 		}
-		return $this->redirectToRoute('bm2_actions');
+		return $this->redirectToRoute('maf_actions');
 	}
 
 	#[Route ('/actions/exit', name:'maf_actions_exit')]
@@ -253,7 +248,7 @@ class ActionsController extends AbstractController {
 		} else {
 			$this->addFlash('notice', $this->trans->trans('location.exit.result.denied', array("%settlement%"=>$settlement->getName()), "actions"));
 		}
-		return $this->redirectToRoute('bm2_actions');
+		return $this->redirectToRoute('maf_actions');
 	}
 
 	   /**
@@ -505,7 +500,7 @@ class ActionsController extends AbstractController {
 
 			if ($result) {
 				$this->addFlash('notice', $this->trans->trans('event.settlement.take.start', ["%time%"=>$endTime->format('Y-M-d H:i:s')], 'communication'));
-				return $this->redirectToRoute('bm2_actions');
+				return $this->redirectToRoute('maf_actions');
 			}
 		}
 
@@ -671,7 +666,7 @@ class ActionsController extends AbstractController {
 				);
 				$this->addFlash('notice', $this->trans->trans('control.steward.success', ["%name%"=>$data['target']->getName()], 'actions'));
 				$this->em->flush();
-				return $this->redirectToRoute('bm2_actions');
+				return $this->redirectToRoute('maf_actions');
 			}
 
 		}
@@ -1095,7 +1090,7 @@ class ActionsController extends AbstractController {
 				$act->setComplete($complete);
 				$this->actman->queue($act);
 				$this->addFlash('notice', $this->trans->trans('event.settlement.occupant.start', ["%time%"=>$complete->format('Y-M-d H:i:s')], 'communication'));
-				return $this->redirectToRoute('bm2_actions');
+				return $this->redirectToRoute('maf_actions');
 			}
 		}
 
@@ -1131,7 +1126,7 @@ class ActionsController extends AbstractController {
 				$this->em->flush();
 			}
 			$this->addFlash('notice', $this->trans->trans('event.settlement.occupier.'.$result, [], 'communication'));
-			return $this->redirectToRoute('bm2_actions');
+			return $this->redirectToRoute('maf_actions');
 		}
 		return $this->render('Settlement/occupier.html.twig', [
 			'settlement'=>$settlement, 'form'=>$form->createView()
@@ -1156,7 +1151,7 @@ class ActionsController extends AbstractController {
 			$this->pol->changeSettlementOccupier($character, $settlement, $targetrealm);
 			$this->em->flush();
 			$this->addFlash('notice', $this->trans->trans('event.settlement.occupier.start', [], 'communication'));
-			return $this->redirectToRoute('bm2_actions');
+			return $this->redirectToRoute('maf_actions');
 		}
 		return $this->render('Settlement/occupationstart.html.twig', [
 			'settlement'=>$settlement, 'form'=>$form->createView()
@@ -1180,7 +1175,7 @@ class ActionsController extends AbstractController {
                         $this->pol->endOccupation($settlement, $type, false, $character);
 			$this->em->flush();
                         $this->addFlash('notice', $this->trans->trans('control.occupation.ended', array(), 'actions'));
-                        return $this->redirectToRoute('bm2_actions');
+                        return $this->redirectToRoute('maf_actions');
                 }
 		return $this->render('Settlement/occupationend.html.twig', [
 			'settlement'=>$settlement, 'form'=>$form->createView()

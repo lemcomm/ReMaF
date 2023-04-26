@@ -4,21 +4,8 @@ namespace App\Service;
 
 class ActivityDispatcher extends Dispatcher {
 
-	protected AppState $appstate;
-	protected PermissionManager $permission_manager;
-	protected Geography $geography;
-	protected MilitaryManager $milman;
-	protected Interactions $interactions;
-	protected AssociationManager $assocman;
-
-	public function __construct(AppState $appstate, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, AssociationManager $assocman) {
-		$this->appstate = $appstate;
-		$this->permission_manager = $pm;
-		$this->geography = $geo;
-		$this->milman = $milman;
-		$this->interactions = $interactions;
-		$this->assocman = $assocman;
-		parent::__construct($appstate, $pm, $geo, $milman, $interactions, $assocman);
+	public function __construct(AppState $appstate, PermissionManager $pm, Geography $geo, Interactions $interactions, AssociationManager $assocman) {
+		parent::__construct($appstate, $pm, $geo, $interactions, $assocman);
 	}
 
 	public function activityActions(): array {

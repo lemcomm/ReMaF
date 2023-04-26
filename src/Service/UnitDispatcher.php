@@ -15,13 +15,10 @@ class UnitDispatcher extends Dispatcher {
 	protected AssociationManager $assocman;
 
 	public function __construct(AppState $appstate, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, AssociationManager $assocman) {
-		$this->appstate = $appstate;
 		$this->pm = $pm;
-		$this->geography = $geo;
 		$this->milman = $milman;
 		$this->interactions = $interactions;
-		$this->assocman = $assocman;
-		parent::__construct($appstate, $pm, $geo, $milman, $interactions, $assocman);
+		parent::__construct($appstate, $pm, $geo, $interactions, $assocman);
 	}
 
 	/* =========== Tests ========== */
@@ -80,7 +77,7 @@ class UnitDispatcher extends Dispatcher {
 			return array("name"=>"recruit.entourage.name", "description"=>"unavailable.$check");
 		}
 
-		return $this->action("recruit.entourage", "bm2_site_actions_entourage");
+		return $this->action("recruit.entourage", "maf_actions_entourage");
 	}
 
 	public function personalAssignedUnitsTest(): array {

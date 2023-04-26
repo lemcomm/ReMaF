@@ -24,6 +24,7 @@ use App\Service\UserManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
+use Doctrine\ORM\Mapping\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -36,28 +37,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AccountController extends AbstractController {
 
-	private EntityManagerInterface $em;
-	private PaymentManager $pay;
-	private TranslatorInterface $trans;
-	private UserManager $userMan;
-	private Geography $geo;
-
-	public function __construct(EntityManagerInterface $em, Geography $geo, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan) {
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->pay = $pay;
-		$this->trans = $trans;
-		$this->userMan = $userMan;
-	}
-
-	private function notifications(): array {
+	private function notifications(EntityManagerInterface $em, PaymentManager $pay): array {
 		$announcements = file_get_contents(__DIR__."/../../Announcements.md");
 
 		$notices = array();
-		$codes = $this->em->getRepository(Code::class)->findBy(array('sent_to_email' => $this->getUser()->getEmail(), 'used' => false));
+		$codes = $em->getRepository(Code::class)->findBy(array('sent_to_email' => $this->getUser()->getEmail(), 'used' => false));
 		foreach ($codes as $code) {
 			// code found, activate and create a notice
-			$result = $this->pay->redeemCode($this->getUser(), $code);
+			$result = $pay->redeemCode($this->getUser(), $code);
 			if ($result === true) {
 				$result = 'success';
 			}
@@ -68,8 +55,7 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account', name:'maf_account')]
-	public function indexAction(): Response {
-		/** @var \App\Entity\User $user */
+	public function indexAction(EntityManagerInterface $em): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -77,10 +63,10 @@ class AccountController extends AbstractController {
 
 		// clean out character id so we have a clear slate (especially for the template)
 		$user->setCurrentCharacter(null);
-		$this->em->flush();
+		$em->flush();
 
 		#list($announcements, $notices) = $this->notifications();
-		$update = $this->em->createQuery('SELECT u from App:UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult()[0];
+		$update = $em->createQuery('SELECT u from App:UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult()[0];
 
 		return $this->render('Account/account.html.twig', [
 			#'announcements' => $announcements,
@@ -90,7 +76,7 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/characters', name:'maf_chars')]
-	public function charactersAction(Geography $geo, GameRequestManager $grm, NpcManager $npcm): Response {
+	public function charactersAction(Geography $geo, GameRequestManager $grm, NpcManager $npcm, UserManager $userMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -100,12 +86,11 @@ class AccountController extends AbstractController {
 		// clean out character id so we have a clear slate (especially for the template)
 		$user->setCurrentCharacter(null);
 
-		$canSpawn = $this->userMan->checkIfUserCanSpawnCharacters($user, false);
+		$canSpawn = $userMan->checkIfUserCanSpawnCharacters($user, false);
 		if ($user->getLimits() === null) {
-			$this->userMan->createLimits($user);
+			$userMan->createLimits($user);
 		}
-		$this->em->flush();
-		$trans = $this->trans;
+		$em->flush();
 		if (!$canSpawn) {
 			$this->addFlash('error', $trans->trans('newcharacter.overspawn2', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
 		}
@@ -151,7 +136,7 @@ class AccountController extends AbstractController {
 			if ($character->getBattling() && $character->getBattleGroups()->isEmpty() == TRUE) {
 				# NOTE: Because sometimes, battling isn't reset after a battle. May be related to entity locking.
 				$character->setBattling(false);
-				$this->em->flush();
+				$em->flush();
 			}
 
 			// This adds in functionality for detecting character actions on this page. --Andrew
@@ -244,7 +229,7 @@ class AccountController extends AbstractController {
 
 		#list($announcements, $notices) = $this->notifications();
 
-		$this->checkCharacterLimit($user);
+		$this->checkCharacterLimit($user, $pay, $em);
 
 		if (count($npcs)==0) {
 			$free_npcs = $npcm->getAvailableNPCs();
@@ -261,7 +246,7 @@ class AccountController extends AbstractController {
 		// check when our next payment is due and if we have enough to pay it
 		$now = new \DateTime("now");
 		$daysleft = (int)$now->diff($user->getPaidUntil())->format("%r%a");
-		$next_fee = $this->pay->calculateUserFee($user);
+		$next_fee = $pay->calculateUserFee($user);
 		if ($user->getCredits() >= $next_fee) {
 			$enough_credits = true;
 		} else {
@@ -282,7 +267,7 @@ class AccountController extends AbstractController {
 
 		if ($user->getIp() != $ip) {
 			$user->setIp($ip);
-			$this->em->flush();
+			$em->flush();
 		}
 
 		foreach ($user->getPatronizing() as $patron) {
@@ -291,7 +276,7 @@ class AccountController extends AbstractController {
 			}
 		}
 
-		$update = $this->em->createQuery('SELECT u from App:UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult();
+		$update = $em->createQuery('SELECT u from App:UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult();
 
 		return $this->render('Account/characters.html.twig', [
 			#'announcements' => $announcements,
@@ -318,7 +303,7 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/overview', name:'maf_account_overview')]
-	public function overviewAction(): Response {
+	public function overviewAction(Geography $geo): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -345,27 +330,27 @@ class AccountController extends AbstractController {
 
 		return $this->render('Account/overview.html.twig', [
 			'characters' => $characters,
-			'settlements' => $this->geo->findRegionsPolygon($settlements),
-			'claims' => $this->geo->findRegionsPolygon($claims)
+			'settlements' => $geo->findRegionsPolygon($settlements),
+			'claims' => $geo->findRegionsPolygon($claims)
 		]);
 	}
 
 	#[Route ('/account/newchar', name:'maf_char_new')]
-	public function newcharAction(Request $request, CharacterManager $charMan): Response {
+	public function newcharAction(Request $request, CharacterManager $charMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay, UserManager $userMan): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
 		$form = $this->createForm(CharacterCreationType::class, null, ['user'=>$user, 'slotsavailable'=>$user->getNewCharsLimit()>0]);
 
-		list($make_more, $characters_active, $characters_allowed) = $this->checkCharacterLimit($user);
+		list($make_more, $characters_active, $characters_allowed) = $this->checkCharacterLimit($user, $pay, $em);
 		if (!$make_more) {
 			throw new AccessDeniedHttpException('newcharacter.overlimit');
 		}
-		$canSpawn = $this->userMan->checkIfUserCanSpawnCharacters($user, true);
-		$this->em->flush();
+		$canSpawn = $userMan->checkIfUserCanSpawnCharacters($user, true);
+		$em->flush();
 		if (!$canSpawn) {
-			$this->addFlash('error', $this->trans->trans('newcharacter.overspawn2', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
+			$this->addFlash('error', $trans->trans('newcharacter.overspawn2', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
 		}
 
 		// Don't allow "reserves" - set a limit of 2 created but unspawned characters
@@ -389,7 +374,7 @@ class AccountController extends AbstractController {
 				$works = true;
 
 				// avoid bursts / client bugs by only allowing a character creation every 60 seconds
-				$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.user = :me AND c.created > :recent');
+				$query = $em->createQuery('SELECT c FROM App:Character c WHERE c.user = :me AND c.created > :recent');
 				$now = new \DateTime("now");
 				$recent = $now->sub(new \DateInterval("PT60S"));
 				$query->setParameters(array(
@@ -455,7 +440,7 @@ class AccountController extends AbstractController {
 						$user->setNewCharsLimit($user->getNewCharsLimit()-1);
 					}
 					$user->setCurrentCharacter($character);
-					$this->em->flush();
+					$em->flush();
 
 					return $this->redirectToRoute('maf_character_background', array('starting'=>true));
 				}
@@ -465,11 +450,11 @@ class AccountController extends AbstractController {
 		$mychars = array();
 		foreach ($user->getCharacters() as $char) {
 			$mypartners = array();
-			foreach ($this->findSexPartners($char) as $partner) {
+			foreach ($this->findSexPartners($char, $em) as $partner) {
 				$mypartners[] = array('id'=>$partner['id'], 'name'=>$partner['name'], 'mine'=>($partner['user']==$user->getId()));
 				if ($partner['user']!=$user->getId()) {
 					$theirpartners = array();
-					foreach ($this->findSexPartners($partner) as $reverse) {
+					foreach ($this->findSexPartners($partner, $em) as $reverse) {
 						$theirpartners[] = array('id'=>$reverse['id'], 'name'=>$reverse['name'], 'mine'=>($reverse['user']==$user->getId()));
 					}
 					$mychars[$partner['id']] = array('id'=>$partner['id'], 'name'=>$partner['name'], 'mine'=>false, 'partners'=>$theirpartners);
@@ -488,8 +473,8 @@ class AccountController extends AbstractController {
 		]);
 	}
 
-	private function findSexPartners($char) {
-		$query = $this->em->createQuery('SELECT p.id, p.name, u.id as user FROM BM2SiteBundle:Character p JOIN p.user u JOIN p.partnerships m WITH m.with_sex=true JOIN m.partners me WITH p!=me WHERE me=:me ORDER BY p.name');
+	private function findSexPartners($char, EntityManagerInterface $em) {
+		$query = $em->createQuery('SELECT p.id, p.name, u.id as user FROM App:Character p JOIN p.user u JOIN p.partnerships m WITH m.with_sex=true JOIN m.partners me WITH p!=me WHERE me=:me ORDER BY p.name');
 		if (is_object($char)) {
 			$query->setParameter('me', $char);
 		} else {
@@ -498,15 +483,15 @@ class AccountController extends AbstractController {
 		return $query->getResult();
 	}
 
-	private function checkCharacterLimit(User $user): array {
-		$levels = $this->pay->getPaymentLevels($user);
+	private function checkCharacterLimit(User $user, PaymentManager $pay, EntityManagerInterface $em): array {
+		$levels = $pay->getPaymentLevels($user);
 		$level = $levels[$user->getAccountLevel()];
 		$characters_allowed = $level['characters'];
 		$characters_active = $user->getActiveCharacters()->count();
 		if ($characters_active > $characters_allowed) {
 			if (!$user->getRestricted()) {
 				$user->setRestricted(true);
-				$this->em->flush();
+				$em->flush();
 			}
 			$make_more = false;
 		} else {
@@ -519,7 +504,7 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/settings', name:'maf_account_settings')]
-	public function settingsAction(Request $request, AppState $app): Response {
+	public function settingsAction(Request $request, AppState $app, EntityManagerInterface $em, TranslatorInterface $trans): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -536,8 +521,8 @@ class AccountController extends AbstractController {
 				$user->setNotifications($data['notifications']);
 				$user->setEmailDelay($data['emailDelay']);
 				$user->setNewsletter($data['newsletter']);
-				$this->em->flush();
-				$this->addFlash('notice', $this->trans->trans('account.settings.saved'));
+				$em->flush();
+				$this->addFlash('notice', $trans->trans('account.settings.saved'));
 				return $this->redirectToRoute('maf_account');
 			}
 		}
@@ -549,31 +534,31 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/endemails/{user}/{token}', name:'maf_end_emails')]
-	public function endEmailsAction(User $user, $token=null): RedirectResponse {
+	public function endEmailsAction(User $user, $token=null, EntityManagerInterface $em, TranslatorInterface $trans): RedirectResponse {
 		if ($user && $user->getEmailOptOutToken() === $token) {
 			$user->setNotifications(false);
-			$this->em->flush();
-			$this->addFlash('notice', $this->trans->trans('mail.optout.success', [], "communication"));
+			$em->flush();
+			$this->addFlash('notice', $trans->trans('mail.optout.success', [], "communication"));
 			return $this->redirectToRoute('maf_index');
 		} else {
-			$this->addFlash('notice', $this->trans->trans('mail.optout.failure', [], "communication"));
+			$this->addFlash('notice', $trans->trans('mail.optout.failure', [], "communication"));
 			return $this->redirectToRoute('maf_index');
 		}
 	}
 
 	#[Route ('/account/secret/{id}', name:'maf_secret', defaults: ['_format'=>'json'])]
-	public function secretAction(): Response {
+	public function secretAction(EntityManagerInterface $em): Response {
 		// generate a new one and save it
 		$key = sha1(time()."-maf-".mt_rand(0,1000000));
 		$user = $this->getUser();
 		$user->setAppKey($key);
-		$this->em->flush();
+		$em->flush();
 
 		return new Response(json_encode($key));
 	}
 
 	#[Route ('/account/listset', name:'maf_chars_set')]
-	public function listsetAction(Request $request): Response {
+	public function listsetAction(Request $request, EntityManagerInterface $em): Response {
 		$user = $this->getUser();
 		$list_form = $this->createForm(ListSelectType::class);
 		$list_form->handleRequest($request);
@@ -582,23 +567,23 @@ class AccountController extends AbstractController {
 			echo "---";
 			var_dump($data);
 			echo "---";
-			$character = $this->em->getRepository(Character::class)->find($data['char']);
+			$character = $em->getRepository(Character::class)->find($data['char']);
 			if (!$character || $character->getUser() != $user) {
 				return new Response("error");
 			}
 			$character->setList($data['list']);
-			$this->em->flush();
+			$em->flush();
 			return new Response("done");
 		}
 		return new Response("invalid form");
 	}
 
 	#[Route ('/account/listtoggle', name:'maf_chars_toggle', defaults: ['_format'=>'json'])]
-	public function listtoggleAction(Request $request): Response {
+	public function listtoggleAction(Request $request, EntityManagerInterface $em): Response {
 		$user = $this->getUser();
 		$id = $request->request->get('id');
 
-		$character = $this->em->getRepository(Character::class)->find($id);
+		$character = $em->getRepository(Character::class)->find($id);
 		if (!$character) {
 			throw new AccessDeniedHttpException('error.notfound.character');
 		}
@@ -612,20 +597,21 @@ class AccountController extends AbstractController {
 			} else {
 				$character->setList(1);
 			}
-			$this->em->flush();
+			$em->flush();
 		}
 
 		return new Response();
 	}
 
 
-	#[Route ('/account/play/{id}', name:'maf_play', requirements: ['character'=>'\d+'])]
-	public function playAction(Request $request, AppState $app, CharacterManager $charMan, ActionResolution $ar, Character $character): RedirectResponse {
+	#[Route ('/account/play/{id}', name:'maf_play', requirements: ['id'=>'\d+'])]
+	public function playAction(Character $id, Request $request, AppState $app, CharacterManager $charMan, ActionResolution $ar, EntityManagerInterface $em, PaymentManager $pay, UserManager $userMan): RedirectResponse {
 		$user = $this->getUser();
+		$character = $id;
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
-		$this->checkCharacterLimit($user);
+		$this->checkCharacterLimit($user, $pay, $em);
 
 		if ($character->getUser() !== $user) {
 			throw $this->createAccessDeniedException('error.noaccess.character');
@@ -640,7 +626,7 @@ class AccountController extends AbstractController {
 
 
 		if ($user->getLimits() === null) {
-			$this->userMan->createLimits($user);
+			$userMan->createLimits($user);
 		}
 
 		$app->setSessionData($character);
@@ -653,7 +639,7 @@ class AccountController extends AbstractController {
 				}
 				// time-based action resolution
 				$ar->progress();
-				$this->em->flush();
+				$em->flush();
 				if ($character->getSpecial()) {
 					// special menu active - check for reasons
 					if ($character->getDungeoneer() && $character->getDungeoneer()->isInDungeon()) {
@@ -667,25 +653,25 @@ class AccountController extends AbstractController {
 				if ($character->getSystem() == 'procd_inactive') {
 					$character->setSystem(NULL);
 				}
-				$this->em->flush();
+				$em->flush();
 				return $this->redirectToRoute('maf_char_start', array('logic'=>'new'));
 			case 'viewhist':
 				if ($character->getList() < 100 ) {
 					// move to historic list now that we've looked at his final days
 					$character->setList(100);
 				}
-				$this->em->flush();
-				return $this->redirectToRoute('maf_event_log', array('id'=>$character->getLog()->getId()));
+				$em->flush();
+				return $this->redirectToRoute('maf_events_log', array('id'=>$character->getLog()->getId()));
 			case 'newbackground':
 				$character->setLastAccess(new \DateTime("now"));
 				$character->setSlumbering(false);
 				if ($character->getSystem() == 'procd_inactive') {
 					$character->setSystem(NULL);
 				}
-				$this->em->flush();
+				$em->flush();
 				return $this->redirectToRoute('maf_char_background', ['id'=>$character->getId(), 'starting'=>'1']);
 			case 'edithist':
-				$this->em->flush();
+				$em->flush();
 				/* I don't have words for how stupid I think this is.
 				Apparently, if you don't flush after setting session data, the game has no idea which character you're trying to edit the background of.
 				Which is super odd to me, because session data doesn't involve the database... --Andrew, 20180213 */
@@ -697,7 +683,7 @@ class AccountController extends AbstractController {
 				if ($character->getSystem() == 'procd_inactive') {
 					$character->setSystem(NULL);
 				}
-				$this->em->flush();
+				$em->flush();
 				return $this->redirectToRoute('maf_char_start', array('logic'=>'retired'));
 			default:
 				throw new AccessDeniedHttpException('error.notfound.playlogic');

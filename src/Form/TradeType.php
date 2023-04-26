@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\ResourceType;
 use App\Entity\Settlement;
+use App\Entity\Trade;
 use Doctrine\DBAL\Types\TextType;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -16,8 +17,8 @@ class TradeType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
-			'intention'       => 'trade_5710',
-			'data_class'		=> 'BM2\SiteBundle\Entity\Trade',
+			'intention'	=> 'trade_5710',
+			'data_class'	=> Trade::class,
 		));
 		$resolver->setRequired(['character', 'settlement', 'sources', 'dests', 'allowed']);
 	}
