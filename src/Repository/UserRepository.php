@@ -3,8 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\User;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -17,12 +16,9 @@ use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 
-abstract class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface {
+abstract class UserRepository extends EntityRepository implements PasswordUpgraderInterface, UserLoaderInterface {
         # This exists for when we need to rehash user passwords, for instance, when changing algorthms.
         # We could also use to implement more complex EntityRepository->findByRandomThings() functions. They'd go here, as public function findByRandomThings().
-        public function __construct(ManagerRegistry $registry) {
-                parent::__construct($registry, User::class);
-        }
 
         public function save(User $entity, bool $flush = false): void {
                 $this->getEntityManager()->persist($entity);
@@ -41,9 +37,6 @@ abstract class UserRepository extends ServiceEntityRepository implements Passwor
         }
 
         public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void {
-                if (!$user instanceof User) {
-                        throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
-                }
 
                 $user->setPassword($newHashedPassword);
                 $this->getEntityManager()->flush();

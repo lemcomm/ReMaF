@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
@@ -13,63 +14,63 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 
 	private ?int $id;
-	private string $display_name;
-	private \DateTime $created;
-	private int $new_chars_limit;
-	private string $app_key;
-	private string $language;
-	private bool $notifications;
-	private bool $newsletter;
-	private int $account_level;
-	private int $vip_status;
-	private \DateTime $paid_until;
-	private int $credits;
-	private bool $restricted;
+	private ?string $display_name;
+	private ?DateTime $created;
+	private ?int $new_chars_limit;
+	private ?string $app_key;
+	private ?string $language;
+	private ?bool $notifications;
+	private ?bool $newsletter;
+	private ?int $account_level;
+	private ?int $vip_status;
+	private ?DateTime $paid_until;
+	private ?int $credits;
+	private ?bool $restricted;
 	private ?Character $current_character;
-	private Collection $payments;
-	private Collection $credit_history;
-	private Collection $characters;
-	private Collection $crests;
-	private Collection $cultures;
-	private Collection $ratings_given;
-	private Collection $rating_votes;
-	private Collection $listings;
-	private string $genome_set;
-	private Collection $artifacts;
-	private int $artifacts_limit;
+	private ?Collection $payments;
+	private ?Collection $credit_history;
+	private ?Collection $characters;
+	private ?Collection $crests;
+	private ?Collection $cultures;
+	private ?Collection $ratings_given;
+	private ?Collection $rating_votes;
+	private ?Collection $listings;
+	private ?string $genome_set;
+	private ?Collection $artifacts;
+	private ?int $artifacts_limit;
 	private ?string $token;
 	private ?string $reset_token;
 	private ?\DateTimeInterface $reset_time;
 	private ?string $email_token;
-	private Collection $logs;
-	private Collection $security_logs;
-	private string $ip;
-	private string $gm_name;
-	private bool $public_admin;
-	private string $email_opt_out_token;
-	private string $email_delay;
-	private bool $public;
-	private \DateTime $next_spawn_time;
-	private bool $show_patronage;
-	private int $old_account_level;
-	private Description $description;
-	private UserLimits $limits;
-	private Collection $descriptions;
-	private Collection $patronizing;
-	private Collection $reports;
-	private Collection $reports_against;
-	private Collection $added_report_notes;
-	private Collection $mail_entries;
-	private Collection $keys;
+	private ?Collection $logs;
+	private ?Collection $security_logs;
+	private ?string $ip;
+	private ?string $gm_name;
+	private ?bool $public_admin;
+	private ?string $email_opt_out_token;
+	private ?string $email_delay;
+	private ?bool $public;
+	private ?DateTime $next_spawn_time;
+	private ?bool $show_patronage;
+	private ?int $old_account_level;
+	private ?Description $description;
+	private ?UserLimits $limits;
+	private ?Collection $descriptions;
+	private ?Collection $patronizing;
+	private ?Collection $reports;
+	private ?Collection $reports_against;
+	private ?Collection $added_report_notes;
+	private ?Collection $mail_entries;
+	private ?Collection $keys;
         private ?string $username = null;
         private ?string $email = null;
         private ?bool $enabled = null;
         private ?string $salt = null;
         private ?string $password = null;
-        private ?\DateTime $lastLogin = null;
+        private ?DateTime $lastLogin = null;
         private ?string $confirmationToken = null;
-        private ?\DateTime $passwordRequestedAt = null;
-        private array $roles = [];
+        private ?DateTime $passwordRequestedAt = null;
+        private ?array $roles = [];
 
 	public function __construct() {
                		$this->payments = new ArrayCollection();
@@ -140,7 +141,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
                	}
 
 	public function isNewPlayer() {
-               		$days = $this->getCreated()->diff(new \DateTime("now"), true)->days;
+               		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
                		if ($days < 30) {
                			return true;
                		} else {
@@ -149,7 +150,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
                	}
 
 	public function isVeryNewPlayer() {
-               		$days = $this->getCreated()->diff(new \DateTime("now"), true)->days;
+               		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
                		if ($days < 7) {
                			return true;
                		} else {
@@ -325,7 +326,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Set created
      *
-     * @param \DateTime $created
+     * @param DateTime $created
      * @return User
      */
     public function setCreated($created)
@@ -338,7 +339,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Get created
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreated()
     {
@@ -578,7 +579,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Set next_spawn_time
      *
-     * @param \DateTime $nextSpawnTime
+     * @param DateTime $nextSpawnTime
      * @return User
      */
     public function setNextSpawnTime($nextSpawnTime)
@@ -591,7 +592,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Get next_spawn_time
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getNextSpawnTime()
     {
@@ -693,7 +694,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Set paid_until
      *
-     * @param \DateTime $paidUntil
+     * @param DateTime $paidUntil
      * @return User
      */
     public function setPaidUntil($paidUntil)
@@ -706,7 +707,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Get paid_until
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getPaidUntil()
     {

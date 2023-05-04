@@ -10,7 +10,7 @@ use App\Entity\User;
 use App\Form\CharacterCreationType;
 use App\Form\ListSelectType;
 use App\Form\NpcSelectType;
-use App\Form\SettingsType;
+use App\Form\UserSettingsType;
 
 use App\Service\ActionResolution;
 use App\Service\AppState;
@@ -38,7 +38,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class AccountController extends AbstractController {
 
 	private function notifications(EntityManagerInterface $em, PaymentManager $pay): array {
-		$announcements = file_get_contents(__DIR__."/../../Announcements.md");
+		$announcements = 'TODO: Put better announcements system in. :D';
 
 		$notices = array();
 		$codes = $em->getRepository(Code::class)->findBy(array('sent_to_email' => $this->getUser()->getEmail(), 'used' => false));
@@ -55,7 +55,7 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account', name:'maf_account')]
-	public function indexAction(EntityManagerInterface $em): Response {
+	public function indexAction(EntityManagerInterface $em, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -65,13 +65,17 @@ class AccountController extends AbstractController {
 		$user->setCurrentCharacter(null);
 		$em->flush();
 
-		#list($announcements, $notices) = $this->notifications();
+		list($announcements, $notices) = $this->notifications($em, $pay);
 		$update = $em->createQuery('SELECT u from App:UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult()[0];
+		if ($userMan->legacyPasswordCheck($user)) {
+			$this->addFlash('warning', $trans->trans('account.password.legacy', ['here'=>$this->generateUrl('maf_account_data')], 'messages'));
+		}
+
 
 		return $this->render('Account/account.html.twig', [
-			#'announcements' => $announcements,
+			'announcements' => $announcements,
 			'update' => $update,
-			#'notices' => $notices
+			'notices' => $notices,
 		]);
 	}
 
@@ -227,7 +231,7 @@ class AccountController extends AbstractController {
 		uasort($characters, array($this,'character_sort'));
 		uasort($npcs, array($this,'character_sort'));
 
-		#list($announcements, $notices) = $this->notifications();
+		list($announcements, $notices) = $this->notifications($em, $pay);
 
 		$this->checkCharacterLimit($user, $pay, $em);
 
@@ -275,12 +279,15 @@ class AccountController extends AbstractController {
 				$this->addFlash('warning', 'It appears we need a new access token for your patreon account in order to ensure you get your rewards. To corrected this, please click <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id='.$patron->getCreator()->getClientId().'&redirect_uri='.$patron->getCreator()->getReturnUri().'&scope=identity">here</a> and allow us to re-establish our connection to your patreon account.');
 			}
 		}
+		if ($userMan->legacyPasswordCheck($user)) {
+			$this->addFlash('warning', $trans->trans('account.password.legacy', ['%link%'=>$this->generateUrl('maf_account_data')], 'messages'));
+		}
 
 		$update = $em->createQuery('SELECT u from App:UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult();
 
 		return $this->render('Account/characters.html.twig', [
-			#'announcements' => $announcements,
-			#'notices' => $notices,
+			'announcements' => $announcements,
+			'notices' => $notices,
 			'update' => $update[0],
 			'locked' => ($user->getAccountLevel()==0),
 			'list_form' => $list_form->createView(),
@@ -291,7 +298,7 @@ class AccountController extends AbstractController {
 			'user' => $user,
 			'daysleft' => $daysleft,
 			'enough_credits' => $enough_credits,
-			'canSpawn' => $canSpawn
+			'canSpawn' => $canSpawn,
 		]);
 	}
 
@@ -510,10 +517,10 @@ class AccountController extends AbstractController {
 			throw new AccessDeniedException($user->isBanned());
 		}
 		$languages = $app->availableTranslations();
-		$form = $this->createForm(SettingsType::class, null, ['user'=>$user, 'languages'=>$languages]);
+		$form = $this->createForm(UserSettingsType::class, null, ['user'=>$user, 'languages'=>$languages]);
+		$form->handleRequest($request);
 
-		if ($request->isMethod('POST') && $request->request->has("settings")) {
-			$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
 			if ($form->isValid() && $form->isSubmitted()) {
 				$data = $form->getData();
 
@@ -534,8 +541,8 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/endemails/{user}/{token}', name:'maf_end_emails')]
-	public function endEmailsAction(User $user, $token=null, EntityManagerInterface $em, TranslatorInterface $trans): RedirectResponse {
-		if ($user && $user->getEmailOptOutToken() === $token) {
+	public function endEmailsAction(EntityManagerInterface $em, TranslatorInterface $trans, User $user, $token=null): RedirectResponse {
+		if ($user && $token && $user->getEmailOptOutToken() === $token) {
 			$user->setNotifications(false);
 			$em->flush();
 			$this->addFlash('notice', $trans->trans('mail.optout.success', [], "communication"));

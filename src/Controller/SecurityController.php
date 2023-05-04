@@ -29,20 +29,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController {
 
-	private AppState $app;
-	private Security $sec;
-        private TranslatorInterface $trans;
-        private EntityManagerInterface $em;
-        private MailManager $mail;
-
-        public function __construct(AppState $appstate, TranslatorInterface $trans, EntityManagerInterface $em, MailManager $mail, Security $sec) {
-                $this->app = $appstate;
-                $this->trans = $trans;
-                $this->em = $em;
-                $this->mail = $mail;
-		$this->sec = $sec;
-        }
-
 	#[Route ('/login', name:'maf_login')]
 	public function login(AuthenticationUtils $authenticationUtils): Response {
 		# Fetch the previous error, if there is one.
@@ -65,14 +51,12 @@ class SecurityController extends AbstractController {
 
 
 	#[Route ('/security/register', name:'maf_register')]
-	public function register(Request $request, UserPasswordHasherInterface $passwordHasher): Response {
+	public function register(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request, UserPasswordHasherInterface $passwordHasher): Response {
 		$user = new User();
 		$form = $this->createForm(RegistrationFormType::class, $user);
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
-			$em = $this->em;
-			$trans = $this->trans;
 			$check = $em->getRepository(User::class)->findOneBy(['username'=>$form->get('_username')->getData()]);
 			if ($check) {
 				$this->addFlash('error', $trans->trans('form.register.duplicate', [], 'core'));
@@ -82,7 +66,7 @@ class SecurityController extends AbstractController {
 			# Encode plain password in database
 			$user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
 			#Generate activation token
-			$user->setToken($this->app->generateAndCheckToken(16, 'User', 'token'));
+			$user->setToken($app->generateAndCheckToken(16, 'User', 'token'));
 
 			#Log user creation time and set user to inactive.
 			$user->setCreated(new \DateTime("now"));
@@ -107,7 +91,7 @@ class SecurityController extends AbstractController {
 				], 'core');
 				$subject = $trans->trans('security.register.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
 
-				$this->mail->sendEmail($user->getEmail(), $subject, $text);
+				$mail->sendEmail($user->getEmail(), $subject, $text);
 			}
 
 			$this->addFlash('notice', $trans->trans('security.register.flash', [], 'core'));
@@ -120,10 +104,8 @@ class SecurityController extends AbstractController {
 	}
 
 	#[Route ('/security/activate/{id}/{token}', name:'maf_account_activate')]
-	public function activate(string $id, string $email, string $token): RedirectResponse {
+	public function activate(EntityManagerInterface $em, TranslatorInterface $trans, string $id, string $email, string $token): RedirectResponse {
 		# Handles user activation after a user registers.
-		$em = $this->em;
-		$trans = $this->trans;
 		$user = $em->getRepository(User::class)->findOneBy(['id' => $id, 'email' => $email]);
 		if ($user && $user->getActive() === false && $token == $user->getToken()) {
 			$user->unsetToken();
@@ -142,9 +124,7 @@ class SecurityController extends AbstractController {
 	}
 
 	#[Route ('/security/reset', name:'maf_account_reset')]
-        public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, string $token = '0', string $email = '0'): RedirectResponse|Response {
-                $trans = $this->trans;
-                $em = $this->em;
+        public function reset(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request, UserPasswordHasherInterface $passwordHasher, string $token = '0', string $email = '0'): RedirectResponse|Response {
                 if ($token == '0') {
                         $form = $this->createForm(RequestResetFormType::class);
                         $form->handleRequest($request);
@@ -155,7 +135,7 @@ class SecurityController extends AbstractController {
                                         $user = $em->getRepository(User::class)->findOneByUsername($data['text']);
                                 }
                                 if ($user) {
-                                        $user->setResetToken($this->app->generateAndCheckToken(64, 'User', 'reset_token'));
+                                        $user->setResetToken($app->generateAndCheckToken(64, 'User', 'reset_token'));
                                         $em->flush();
                                         $link = $this->generateUrl('maf_account_reset', ['token' => $user->getResetToken(), 'email'=>$user->getEmail()], UrlGeneratorInterface::ABSOLUTE_URL);
                                         $text = $trans->trans(
@@ -166,7 +146,7 @@ class SecurityController extends AbstractController {
                                                 ], 'core');
                                         $subject = $trans->trans('security.reset.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
 
-                                        $this->mail->sendEmail($user->getEmail(), $subject, $text);
+                                        $mail->sendEmail($user->getEmail(), $subject, $text);
 					$this->addFlash('notice', $trans->trans('security.reset.flash.requested', [], 'core'));
                                 }
                                 return new RedirectResponse($this->generateUrl('maf_index'));
@@ -192,24 +172,22 @@ class SecurityController extends AbstractController {
                                         'form' => $form->createView(),
                                 ]);
                         } else {
-                                $this->app->logSecurityViolation($request->getClientIP(), 'core_reset', $this->getUser(), 'bad reset');
+                                $app->logSecurityViolation($request->getClientIP(), 'core_reset', $this->getUser(), 'bad reset');
                                 return new RedirectResponse($this->generateUrl('maf_index'));
                         }
                 }
         }
 
 	#[Route ('/security/remind', name:'maf_remind')]
-        public function remind(Request $request): RedirectResponse|Response {
+        public function remind(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request): RedirectResponse|Response {
                 $form = $this->createForm(ForgotUsernameFormType::class);
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
-                        $em = $this->em;
-                        $trans = $this->trans;
                         $user = $em->getRepository(User::class)->findOneBy(['email'=>$data['email']]);
 
                         if ($user) {
-                                $user->setResetToken($this->app->generateAndCheckToken(64, 'User', 'reset_token'));
+                                $user->setResetToken($app->generateAndCheckToken(64, 'User', 'reset_token'));
                                 $em->flush();
                                 $resetLink = $this->generateUrl('maf_account_reset', [], UrlGeneratorInterface::ABSOLUTE_URL);
                                 $loginLink = $this->generateUrl('maf_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -223,7 +201,7 @@ class SecurityController extends AbstractController {
                                         ], 'core');
                                 $subject = $trans->trans('security.remind.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
 
-                                $this->mail->sendEmail($user->getEmail(), $subject, $text);
+                                $mail->sendEmail($user->getEmail(), $subject, $text);
                         }
                         $this->addFlash('notice', $trans->trans('security.remind.flash', [], 'core'));
                         return new RedirectResponse($this->generateUrl('maf_index'));
@@ -235,17 +213,15 @@ class SecurityController extends AbstractController {
 
 
 	#[Route ('/security/newToken', name:'maf_token_new')]
-        public function newToken(Request $request): RedirectResponse|Response {
+        public function newToken(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request): RedirectResponse|Response {
                 $form = $this->createForm(NewTokenFormType::class);
                 $form->handleRequest($request);
 
                 if ($form->isSubmitted() && $form->isValid()) {
-                        $trans = $this->trans;
-                        $em = $this->em;
                         $data = $form->getData();
                         $user = $em->getRepository(User::class)->findOneBy(['username' => $data['username'], 'email' => $data['email']]);
                         if ($user) {
-                                $user->setToken($this->app->generateAndCheckToken(16, 'User', 'token'));
+                                $user->setToken($app->generateAndCheckToken(16, 'User', 'token'));
                                 $em->flush();
 
                                 $link = $this->generateUrl('maf_account_activate', ['username' => $user->getUsername(), 'email' => $user->getEmail(), 'token' => $user->getToken()], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -258,7 +234,7 @@ class SecurityController extends AbstractController {
                                         ], 'core');
                                 $subject = $trans->trans('security.register.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
 
-                                $this->mail->sendEmail($user->getEmail(), $subject, $text);
+                                $mail->sendEmail($user->getEmail(), $subject, $text);
                         }
                         $this->addFlash('notice', $trans->trans('security.newtoken.flash', [], 'core'));
                         return new RedirectResponse($this->generateUrl('maf_index'));
@@ -270,10 +246,8 @@ class SecurityController extends AbstractController {
         }
 
 	#[Route ('/security/confirm/{token}/{email}', name:'maf_account_confirm')]
-        public function confirm(string $token, string $email): RedirectResponse {
-                $em = $this->em;
+        public function confirm(EntityManagerInterface $em, TranslatorInterface $trans, string $token, string $email): RedirectResponse {
                 $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
-                $trans = $this->trans;
                 if ($user && $user->getConfirmed() === false && $token == $user->getToken()) {
                         $user->unsetEmailToken();
                         $user->setConfirmed(true);
@@ -295,7 +269,7 @@ class SecurityController extends AbstractController {
         }
 
 	#[Route ('/security/data', name:'maf_account_data')]
-	public function account(Request $request, UserPasswordHasherInterface $passwordHasher, DescriptionManager $descman) {
+	public function account(Request $request, AppState $app, DescriptionManager $descman, EntityManagerInterface $em, MailManager $mail, Security $sec, TranslatorInterface $trans, UserPasswordHasherInterface $passwordHasher) {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -304,10 +278,10 @@ class SecurityController extends AbstractController {
 		$gm = false;
 		$gm_name = null;
 		$public_admin = null;
-		if ($this->sec->isGranted('ROLE_OLYMPUS')) {
+		if ($sec->isGranted('ROLE_OLYMPUS')) {
 			$gm = true;
 			$gm_name = $user->getGmName();
-			if ($this->sec->isGranted('ROLE_ADMIN')) {
+			if ($sec->isGranted('ROLE_ADMIN')) {
 				$admin = true;
 				$public_admin = $user->getPublicAdmin();
 			}
@@ -316,7 +290,7 @@ class SecurityController extends AbstractController {
 		$opts = [
 			'username' => $user->getUsername(),
 			'email' => $user->getEmail(),
-			'display_name' => $user->getDisplayname(),
+			'display' => $user->getDisplayname(),
 			'public' => $user->getPublic(),
 			'show_patronage'=> $user->getShowPatronage(),
 			'gm' => $gm,
@@ -331,53 +305,57 @@ class SecurityController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$username = $form->get('username')->getData();
 			if ($username !== NULL && $username !== $user->getUsername()) {
-				$query = $this->em->createQuery('SELECT COUNT(u.id) FROM App:User u WHERE u.username LIKE :new')->setParameters(['new'=>$username]);
+				$query = $em->createQuery('SELECT COUNT(u.id) FROM App:User u WHERE u.username LIKE :new')->setParameters(['new'=>$username]);
 				if ($query->getSingleScalarResult() > 0) {
-					$this->addFlash('error', $this->trans->trans('security.account.change.username.notunique', [], 'core'));
+					$this->addFlash('error', $trans->trans('security.account.change.username.notunique', [], 'core'));
 					return new RedirectResponse($this->generateUrl('maf_account_data'));
 				}
 				$user->setUsername($username);
-				$this->addFlash('notice', $this->trans->trans('security.account.change.username.success', [], 'core'));
+				$this->addFlash('notice', $trans->trans('security.account.change.username.success', [], 'core'));
 			}
 			$password = $form->get('plainPassword')->getData();
 			if ($password !== NULL) {
-				$user->setPassword($passwordHasher->hashPassword($user, $password));
-				$this->addFlash('notice', $this->trans->trans('security.account.change.password', [], 'core'));
+				$hash = $passwordHasher->hashPassword($user, $password);
+				$user->setPassword($hash);
+				if (str_starts_with($hash, '$argon2')) {
+					$user->setSalt(null);
+				}
+				$this->addFlash('notice', $trans->trans('security.account.change.password', [], 'core'));
 			}
 			$email = $form->get('email')->getData();
 			if ($email !== NULL && $email !== $user->getEmail()) {
-				$query = $this->em->createQuery('SELECT COUNT(u.id) FROM App:User u WHERE u.email LIKE :new')->setParameters(['new'=>$email]);
+				$query = $em->createQuery('SELECT COUNT(u.id) FROM App:User u WHERE u.email LIKE :new')->setParameters(['new'=>$email]);
 				if ($query->getSingleScalarResult() > 0) {
-					$this->addFlash('error', $this->trans->trans('security.account.change.email.notunique', [], 'core'));
+					$this->addFlash('error', $trans->trans('security.account.change.email.notunique', [], 'core'));
 					return new RedirectResponse($this->generateUrl('maf_account_data'));
 				}
-				$user->setEmailToken($this->app->generateAndCheckToken(16, 'User', 'email_token'));
+				$user->setEmailToken($app->generateAndCheckToken(16, 'User', 'email_token'));
 				$user->setEmail($email);
 				$user->setEnabled(false);
 
 				$link = $this->generateUrl('maf_account_confirm', ['token' => $user->getEmailToken(), 'email' => $form->get('email')->getData()], UrlGeneratorInterface::ABSOLUTE_URL);
-				$text = $this->trans->trans(
+				$text = $trans->trans(
 					'security.account.email.text', [
 					'%sitename%' => $_ENV['SITE_NAME'],
 					'%link%' => $link,
 					'%adminemail%' => $_ENV['ADMIN_EMAIL']
 				], 'core');
-				$subject = $this->trans->trans('security.account.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
-				$this->mail->sendEmail($user->getEmail(), $subject, $text);
-				$this->addFlash('notice', $this->trans->trans('security.account.change.email.success', [], 'core'));
+				$subject = $trans->trans('security.account.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
+				$mail->sendEmail($user->getEmail(), $subject, $text);
+				$this->addFlash('notice', $trans->trans('security.account.change.email.success', [], 'core'));
 			}
 			$display = $form->get('display_name')->getData();
 			if ($display !== NULL && $display != $user->getDisplayName()) {
 				$user->setDisplayName($display);
-				$this->addFlash('notice', $this->trans->trans('security.account.change.display', [], 'core'));
+				$this->addFlash('notice', $trans->trans('security.account.change.display', [], 'core'));
 			}
 			$desc = $form->get('text')->getData();
 			if ($desc !== null && $desc !== $text) {
 				$descman->newDescription($user, $desc);
-				$this->addFlash('notice', $this->trans->trans('security.account.change.text', [], 'core'));
+				$this->addFlash('notice', $trans->trans('security.account.change.text', [], 'core'));
 			}
-			$this->em->flush();
-			return new RedirectResponse($this->generateUrl('maf_index'));
+			$em->flush();
+			return new RedirectResponse($this->generateUrl('maf_account'));
 		}
 		return $this->render('Account/data.html.twig', [
 			'form' => $form->createView()
@@ -385,7 +363,7 @@ class SecurityController extends AbstractController {
 	}
 
 	#[Route ('/security/keys', name:'maf_account_keys')]
-	public function keysAction(): Response {
+	public function keysAction(EntityManagerInterface $em): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -395,7 +373,7 @@ class SecurityController extends AbstractController {
 			$i = 0;
 			while (!$valid && $i < 10) {
 				$token = bin2hex(random_bytes(32));
-				$result = $this->em->getRepository(User::class)->findOneBy(['user'=>$user->getId(), 'token' => $token]);
+				$result = $em->getRepository(User::class)->findOneBy(['user'=>$user->getId(), 'token' => $token]);
 				if (!$result) {
 					$valid = true;
 				} else {
@@ -403,10 +381,10 @@ class SecurityController extends AbstractController {
 				}
 			}
 			$key = new AppKey;
-			$this->em->persist($key);
+			$em->persist($key);
 			$key->setUser($user);
 			$key->setToken($token);
-			$this->em->flush();
+			$em->flush();
 		}
 
 		return $this->render('Account/keys.html.twig', [
@@ -415,7 +393,7 @@ class SecurityController extends AbstractController {
 	}
 
 	#[Route ('/security/keys/reset/{key}', name:'maf_account_keys_reset', requirements:['key'=>'\d+'])]
-	public function keyResetAction(AppKey $key): RedirectResponse {
+	public function keyResetAction(EntityManagerInterface $em, TranslatorInterface $trans, AppKey $key): RedirectResponse {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -424,38 +402,38 @@ class SecurityController extends AbstractController {
 			$valid = false;
 			while (!$valid) {
 				$token = bin2hex(random_bytes(32));
-				$result = $this->em->getRepository(User::class)->findOneBy(['user'=>$user->getId(), 'token' => $token]);
+				$result = $em->getRepository(User::class)->findOneBy(['user'=>$user->getId(), 'token' => $token]);
 				if (!$result) {
 					$valid = true;
 				}
 			}
 			$key->setToken($token);
-			$this->em->flush();
-			$this->addFlash('notice', $this->trans->trans('account.key.reset.success', [], "communication"));
+			$em->flush();
+			$this->addFlash('notice', $trans->trans('account.key.reset.success', [], "messages"));
 		} else {
-			$this->addFlash('notice', $this->trans->trans('account.key.unauthorized', [], "communication"));
+			$this->addFlash('notice', $trans->trans('account.key.unauthorized', [], "messages"));
 		}
 		return $this->redirectToRoute('maf_account_keys');
 	}
 
 	#[Route ('/security/keys/{key}/delete', name:'maf_key_delete', requirements:['key'=>'\d+'])]
-	public function keyDeleteAction(AppKey $key): RedirectResponse {
+	public function keyDeleteAction(EntityManagerInterface $em, TranslatorInterface $trans, AppKey $key): RedirectResponse {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
 		$user = $this->getUser();
 		if ($user->getKeys()->containes($key)) {
-			$this->em->remove($key);
-			$this->em->flush();
-			$this->addFlash('notice', $this->trans->trans('account.key.delete.success', [], "communication"));
+			$em->remove($key);
+			$em->flush();
+			$this->addFlash('notice', $trans->trans('account.key.delete.success', [], "messages"));
 		} else {
-			$this->addFlash('notice', $this->trans->trans('account.key.unauthorized', [], "communication"));
+			$this->addFlash('notice', $trans->trans('account.key.unauthorized', [], "messages"));
 		}
 		return $this->redirectToRoute('maf_account_keys');
 	}
 	#[Route ('/account/keys/new', name:'maf_account_keys_new')]
-	public function keyNewAction(): RedirectResponse {
+	public function keyNewAction(EntityManagerInterface $em, TranslatorInterface $trans): RedirectResponse {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -464,11 +442,11 @@ class SecurityController extends AbstractController {
 		$valid = false;
 		$i = 0;
 		if ($user->getKeys()->contains() > 10) {
-			$this->addFlash('notice', $this->trans->trans('account.key.toomany', [], "communication"));
+			$this->addFlash('notice', $trans->trans('account.key.toomany', [], "messages"));
 		} else {
 			while (!$valid && $i < 10) {
 				$token = bin2hex(random_bytes(32));
-				$result = $this->em->getRepository(User::class)->findOneBy(['user'=>$user->getId(), 'token' => $token]);
+				$result = $em->getRepository(User::class)->findOneBy(['user'=>$user->getId(), 'token' => $token]);
 				if (!$result) {
 					$valid = true;
 				} else {
@@ -477,13 +455,13 @@ class SecurityController extends AbstractController {
 			}
 			if ($valid) {
 				$key = new AppKey;
-				$this->em->persist($key);
+				$em->persist($key);
 				$key->setUser($user);
 				$key->setToken($token);
-				$this->em->flush();
-				$this->addFlash('notice', $this->trans->trans('account.key.reset.success', [], "communication"));
+				$em->flush();
+				$this->addFlash('notice', $this->trans->trans('account.key.new.success', [], "messages"));
 			} else {
-				$this->addFlash('notice', $this->trans->trans('account.key.reset.fail', [], "communication"));
+				$this->addFlash('notice', $this->trans->trans('account.key.fail', [], "messages"));
 			}
 		}
 		return $this->redirectToRoute('maf_account_keys');

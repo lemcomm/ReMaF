@@ -122,4 +122,11 @@ class UserManager {
 		return $limits;
 	}
 
+	public function legacyPasswordCheck(User $user): bool {
+		if (str_starts_with($user->getPassword(), '$argon2')) {
+			return false;
+		}
+		return true;
+	}
+
 }

@@ -270,6 +270,8 @@ account:
   link:   Change Password
   title:  Change Password
   desc:   Tired of your old one? Feel like a new one? Change it here.
+  short:  "Password:"
+  legacy: It looks like your account is using a legacy password. You should update it <a href="%link%">here</a>. You can reuse your current password if you want, we just need you to confirm your password.
  settings:
   link:   Edit settings
   title:  Settings
@@ -512,6 +514,16 @@ account:
   title2: Patron Status
   current: You are an active patron of %name% and are contributing $%amount% per month. Thank you!
   link: Update Your Patronage
+ key:
+  reset:
+    success: API key reset successfully!
+  new:
+    success: API key generated successfully!
+  fail: Unable to generate new API key. Attempts limitation reached. Please try again.
+  toomany: You appaer to have a lot of API keys. Are you sure you need this many?
+  delete:
+    success: API key deleted succesfully!
+  unauthorized: Access denied! You do not have permission to access this page.
 
 newcharacter:
  title: Create Character

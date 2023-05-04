@@ -596,10 +596,10 @@ news:
   newname:  Pick a unique name
   submit:   Create publication
   unpublished:  unpublished
- member:    You are a member of:
- members:   Members of this publication:
- reader:    Publications you are reading:
- local:     Locally published:
+ member:    "You are a member of:"
+ members:   "Members of this publication:"
+ reader:    "Publications you are reading:"
+ local:     "Locally published:"
  local2:    Local publications
  owner:     Owner
  editor:    Editor

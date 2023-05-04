@@ -24,10 +24,17 @@ class UserDataType extends AbstractType {
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults([
 			'translation_domain' => 'core',
-			'username' => null,
-			'email' => null,
 			'display' => null,
+			'public' => null,
+			'show_patronage' => null,
+			'gm' => false,
+			'gm_name' => null,
+			'admin' => false,
+			'public_admin' => false,
+			'text' => null,
+
 		]);
+		$resolver->setRequired(['username', 'email']);
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options) {
@@ -67,6 +74,7 @@ class UserDataType extends AbstractType {
 					'class'=>'tt_bot'
 				],
 				'data' => $options['gm_name'],
+				'required'=>false,
 			]);
 		} else {
 			$builder->add('gm_name', HiddenType::class, array('data' => null, 'required'=>false));
@@ -79,6 +87,7 @@ class UserDataType extends AbstractType {
 					'class'=>'tt_bot'
 				],
 				'data' => $options['public_admin'],
+				'required'=>false,
 			]);
 		} else {
 			$builder->add('public_admin', HiddenType::class, array('data' => null, 'required'=>false));
@@ -122,6 +131,7 @@ class UserDataType extends AbstractType {
 				'class'=>'tt_bot'
 			],
 			'data' => $options['public'],
+			'required'=>false,
 		]);
 		$builder->add('show_patronage', CheckboxType::class, array(
 			'label' => 'form.patronage',

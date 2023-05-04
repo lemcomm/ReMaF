@@ -10,15 +10,15 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
-class SettingsType extends AbstractType {
+class UserSettingsType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
 			'intention'	=> 'settings_41234',
 			'attr'		=> array('class'=>'wide'),
-			'user'		=> null,
 			'languages'	=> []
 		));
+		$resolver->setRequired(['user']);
 	}
 
 	// FIXME: change this to use the user object (it's very old code, I didn't know about it)
@@ -26,12 +26,12 @@ class SettingsType extends AbstractType {
 		$builder->add('newsletter', CheckboxType::class, array(
 			'label' => 'account.settings.newsletter',
 			'required' => false,
-			'data'=>$this->user->getNewsletter()
+			'data'=>$options['user']->getNewsletter()
 		));
 		$builder->add('notifications', CheckboxType::class, array(
 			'label' => 'account.settings.notifications',
 			'required' => false,
-			'data'=>$this->user->getNotifications()
+			'data'=>$options['user']->getNotifications()
 		));
 		$builder->add('emailDelay', ChoiceType::class, array(
 			'label' => 'account.settings.delay.name',
@@ -51,14 +51,14 @@ class SettingsType extends AbstractType {
 				'fridays' => 'account.settings.delay.fridays',
 				'saturdays' => 'account.settings.delay.saturdays',
 			],
-			'data'=>$this->user->getEmailDelay()
+			'data'=>$options['user']->getEmailDelay()
 		));
 		$builder->add('language', ChoiceType::class, array(
 			'label' => 'account.settings.language',
 			'placeholder' => 'form.browser',
 			'required' => false,
-			'choices' => $this->languages,
-			'data'=>$this->user->getLanguage()
+			'choices' => $options['languages'],
+			'data'=>$options['user']->getLanguage()
 		));
 
 		$builder->add('submit', SubmitType::class, array('label'=>'account.settings.submit'));

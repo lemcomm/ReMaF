@@ -34,7 +34,7 @@ if (supports_html5_storage()) {
 }
 
 $("#enable").click(function(){
-	$.post("{{ path('bm2_secret', {'id':user.id}) }}", function(secret) {
+	$.post("{{ path('maf_secret', {'id':user.id}) }}", function(secret) {
 		localStorage['maf.userid'] = {{ user.id }};
 		localStorage['maf.secret'] = secret;
 	});
@@ -42,7 +42,7 @@ $("#enable").click(function(){
 
 $("#disable").click(function(){
 {# creating a new one first to invalidate the old one #}
-	$.post("{{ path('bm2_secret', {'id':user.id}) }}", function(secret) {
+	$.post("{{ path('maf_secret', {'id':user.id}) }}", function(secret) {
 		localStorage.removeItem("maf.userid");
 		localStorage.removeItem("maf.secret");
 	});
