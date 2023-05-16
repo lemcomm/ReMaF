@@ -6,6 +6,7 @@ use App\Entity\Association;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class Place {
 
@@ -511,7 +512,7 @@ class Place {
     /**
      * Set location
      *
-     * @param point $location
+     * @param Point $location
      * @return Place
      */
     public function setLocation($location)
@@ -524,7 +525,7 @@ class Place {
     /**
      * Get location
      *
-     * @return point 
+     * @return Point
      */
     public function getLocation()
     {

@@ -38,7 +38,7 @@
 		<script type="text/javascript" src="https://app.termly.io/embed.min.js" data-auto-block="on" data-website-uuid="66ba5197-b2e3-42ba-b41b-01f85ed493cf"></script>
 	{% endblock %}
 	{% if character %}
-		<link rel="alternate" type="application/rss+xml" title="New Events" href="http:{{ url('bm2_rss', {'appkey':app.user.appkey, 'user':app.user.id, 'char':character.id}, true) }}">
+		<link rel="alternate" type="application/rss+xml" title="New Events" href="http:{{ url('maf_rss', {'appkey':app.user.appkey, 'user':app.user.id, 'char':character.id}, true) }}">
 	{% endif %}
 	{% block header %}
 	{% endblock %}
