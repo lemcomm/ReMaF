@@ -2,11 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Action;
 use App\Entity\Association;
 use App\Entity\Character;
-use App\Entity\Description;
+use App\Entity\FeatureType;
+use App\Entity\Permission;
 use App\Entity\Place;
-use App\Entity\Settlement;
 use App\Entity\GeoFeature;
 use App\Entity\Spawn;
 use App\Form\AreYouSureType;
@@ -14,9 +15,9 @@ use App\Form\AssocSelectType;
 use App\Form\DescriptionNewType;
 use App\Form\InteractionType;
 use App\Form\PlacePermissionsSetType;
-use App\Form\SoldiersManageType;
 use App\Form\PlaceManageType;
 use App\Form\PlaceNewType;
+use App\Form\RealmSelectType;
 use App\Service\ActionManager;
 use App\Service\AppState;
 use App\Service\AssociationManager;
@@ -28,6 +29,7 @@ use App\Service\History;
 use App\Service\Interactions;
 use App\Service\PermissionManager;
 use App\Service\Politics;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -56,11 +58,10 @@ class PlaceController extends AbstractController {
 	}
 	
 	#[Route ('/place/{id}', name:'maf_place', requirements:['id'=>'\d+'])]
-	public function indexAction(Place $id) {
+	public function indexAction(Place $id): Response {
 		$character = $this->app->getCharacter(false, true, true);
 
 		$place = $id;
-		$em = $this->em;
 
 		if ($character && $character != $place->getOwner()) {
 			$heralds = $character->getAvailableEntourageOfType('Herald')->count();
@@ -104,12 +105,11 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/actionable', name:'maf_place_actionable')]
-	public function actionableAction(Geography $geo) {
+	public function actionableAction(Geography $geo): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('placeListTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$em = $this->em;
 		$places = $geo->findPlacesInActionRange($character);
 
 		$coll = new ArrayCollection($places);
@@ -128,7 +128,7 @@ class PlaceController extends AbstractController {
 	}
 	
 	#[Route ('/place/{id}/enter', name:'maf_place_enter', requirements:['id'=>'\d+'])]
-	public function enterPlaceAction(Place $id) {
+	public function enterPlaceAction(Place $id): RedirectResponse {
 		$character = $this->dispatcher->gateway('placeEnterTest', false, true, false, $id);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -145,14 +145,13 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/exit', name:'maf_place_exit')]
-	public function exitPlaceAction() {
-		$character = $this->dispatcher->gateway('placeLeaveTest', false, true, false);
+	public function exitPlaceAction(): RedirectResponse {
+		$character = $this->dispatcher->gateway('placeLeaveTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 		$id = $character->getInsidePlace();
 
-		$result = null;
 		if ($this->int->characterLeavePlace($character)) {
 			$this->em->flush();
 			$this->addFlash('notice', $this->trans->trans('place.exit.success', array('%name%' => $id->getName()), 'actions'));
@@ -164,14 +163,14 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/permissions', name:'maf_place_permissions', requirements:['id'=>'\d+'])]
-	public function permissionsAction(Place $id, Request $request) {
+	public function permissionsAction(Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 		$character = $this->dispatcher->gateway('placePermissionsTest', false, true, false, $place);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 		$em = $this->em;
-		if ($place->getOwner() == $character) {
+		if ($place->getOwner() === $character) {
 			$owner = true;
 			$original_permissions = clone $place->getPermissions();
 			$page = 'Place/permissions.html.twig';
@@ -181,12 +180,10 @@ class PlaceController extends AbstractController {
 			$page = 'Place/occupationPermissions.html.twig';
 		}
 
-		$form = $this->createForm(new PlacePermissionsSetType($character, $this->em, $owner, $place), $place);
+		$form = $this->createForm(PlacePermissionsSetType::class, $place, ['me'=>$character, 'owner'=>$owner, 'p'=>$place]);
 
 		$form->handleRequest($request);
 		if ($form->isValid()) {
-			$data = $form->getData();
-
 			# TODO: This can be combined with the code in SettlementController as part of a service function.
 			if ($owner) {
 				foreach ($place->getPermissions() as $permission) {
@@ -231,14 +228,14 @@ class PlaceController extends AbstractController {
 
 		return $this->render($page, [
 			'place' => $place,
-			'permissions' => $em->getRepository('BM2SiteBundle:Permission')->findByClass('place'),
+			'permissions' => $em->getRepository(Permission::class)->findBy(['class'=>'place']),
 			'form' => $form->createView(),
 			'owner' => $owner
 		]);
 	}
 
 	#[Route ('/place/new', name:'maf_place_new')]
-	public function newAction(DescriptionManager $desc, Economy $econ, Geography $geo, History $hist, PermissionManager $pm, Request $request) {
+	public function newAction(DescriptionManager $desc, Economy $econ, Geography $geo, History $hist, PermissionManager $pm, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('placeCreateTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -256,8 +253,13 @@ class PlaceController extends AbstractController {
 			$settlement = $region->getSettlement();
 			$canPlace = $pm->checkSettlementPermission($settlement, $character, 'placeoutside');
 			$notTooClose = $geo->checkPlacePlacement($character); #Too close? Returns false. Too close is under 500 meteres to nearest place or settlement.
+		} else {
+			$settlement = false;
 		}
 
+		if (!$settlement) {
+			throw new AccessDeniedHttpException('unavailable.nowhere');
+		}
 		if (!$canPlace) {
 			throw new AccessDeniedHttpException('unavailable.nopermission');
 		}
@@ -266,7 +268,7 @@ class PlaceController extends AbstractController {
 		}
 
 		# Check for lord and castles...
-		if ($character == $settlement->getOwner() || $character == $settlement->getSteward()) {
+		if ($character === $settlement->getOwner() || $character === $settlement->getSteward()) {
 			$rights[] = 'lord';
 			if ($character->getInsideSettlement() && $settlement->hasBuildingNamed('Wood Castle')) {
 				$rights[] = 'castle';
@@ -319,8 +321,6 @@ class PlaceController extends AbstractController {
 		} else {
 			$rights[] = 'outside';
 		}
-
-		$realm = $settlement->getRealm();
 		foreach ($settlement->getCapitalOf() as $capitals) {
 			if ($capitals->findRulers()->contains($character)) {
 				$rights[] = 'ruler';
@@ -337,7 +337,7 @@ class PlaceController extends AbstractController {
 		}
 		*/
 
-		if ($character->getHouse() && $character->getHouse()->getHead() == $character) {
+		if ($character->getHouse() && $character->getHouse()->getHead() === $character) {
 			$rights[] = 'dynasty head';
 		}
 
@@ -352,12 +352,10 @@ class PlaceController extends AbstractController {
 			$rights[] = 'forested';
 		}
 
-
 		#Now generate the list of things we can build!
-		$query = $this->em->createQuery("select p from BM2SiteBundle:PlaceType p where (p.requires in (:rights) OR p.requires IS NULL) AND p.visible = TRUE")->setParameter('rights', $rights);
+		$query = $this->em->createQuery("select p from App:PlaceType p where (p.requires in (:rights) OR p.requires IS NULL) AND p.visible = TRUE")->setParameter('rights', $rights);
 
-
-		$form = $this->createForm(new PlaceNewType($query->getResult(), $character->findRealms()));
+		$form = $this->createForm(PlaceNewType::class, null, ['types'=>$query->getResult(), 'realms' => $character->findRealms()]);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$em = $this->em;
@@ -402,7 +400,7 @@ class PlaceController extends AbstractController {
 					$feat->setActive(true);
 					$feat->setWorkers(0);
 					$feat->setCondition(0);
-					$feat->setType($em->getRepository('BM2SiteBundle:GeoFeatureType')->findOneByName('place'));
+					$feat->setType($em->getRepository(FeatureType::class)->findOneBy(['name'=>'place']));
 					$em->flush(); #We need the above to set the below and do relations.
 					$place->setGeoMarker($feat);
 					$place->setLocation($loc);
@@ -447,17 +445,18 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/transfer', name:'maf_place_transfer')]
-	public function transferAction(Geography $geo, History $hist, Place $id, Request $request) {
+	public function transferAction(Geography $geo, History $hist, Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 		$character = $this->dispatcher->gateway('placeTransferTest', false, true, false, $place);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new InteractionType('placetransfer',
-			$geo->calculateInteractionDistance($character),
-			$character
-		));
+		$form = $this->createForm(InteractionType::class, null, [
+			'action' => 'placetransfer',
+			'maxdistance' => $geo->calculateInteractionDistance($character),
+			'me' => $character
+		]);
 		$form->handleRequest($request);
 
 		if ($form->isValid() && $form->isSubmitted()) {
@@ -501,7 +500,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/manage', name:'maf_place_manage', requirements:['id'=>'\d+'])]
-	public function manageAction(DescriptionManager $desc, Politics $pol, Place $id, Request $request) {
+	public function manageAction(DescriptionManager $desc, Politics $pol, Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 
 		if ($place->getType()->getName() == 'embassy') {
@@ -519,13 +518,13 @@ class PlaceController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		if ($oldDescription = $place->getDescription()) {
+		if ($place->getDescription()) {
 			$oldDescription = $place->getDescription()->getText();
 		} else {
 			$oldDescription = null;
 		}
 
-		$form = $this->createForm(new PlaceManageType($oldDescription, $type, $place, $character));
+		$form = $this->createForm(PlaceManageType::class, null, ['description'=> $oldDescription, 'me'=>$place, 'char'=>$character]);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
@@ -549,12 +548,12 @@ class PlaceController extends AbstractController {
 				if ($type=='embassy') {
 					if ($place->getHostingRealm() != $data['hosting_realm']) {
 						$place->setHostingRealm($data['hosting_realm']);
-						$place->setOwningRealm(null);
-						$place->setAmbassador(null);
+						$place->setOwningRealm();
+						$place->setAmbassador();
 					}
 					if ($place->getOwningRealm() != $data['owning_realm']) {
 						$place->setOwningRealm($data['owning_realm']);
-						$place->setAmbassador(null);
+						$place->setAmbassador();
 					}
 					if ($place->getAmbassador() != $data['ambassador']) {
 						$place->setAmbassador($data['ambassador']);
@@ -574,10 +573,10 @@ class PlaceController extends AbstractController {
 	}
 
 	#TODO: Combine this and checkRealmNames into a single thing in a HelperService.
-	private function checkPlaceNames($form, $name, $formalname, $me=null) {
+	private function checkPlaceNames($form, $name, $formalname, $me=null): bool {
 		$fail = false;
 		$em = $this->em;
-		$allplaces = $em->getRepository('BM2SiteBundle:Place')->findAll();
+		$allplaces = $em->getRepository(Place::class)->findAll();
 		foreach ($allplaces as $other) {
 			if ($other == $me || $other->getDestroyed()) continue;
 			if (levenshtein($name, $other->getName()) < min(3, min(strlen($name), strlen($other->getName()))*0.75)) {
@@ -593,30 +592,28 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/changeoccupant', name:'maf_place_occupant', requirements:['id'=>'\d+'])]
-	public function changeOccupantAction(ActionManager $am, Geography $geo, Place $id, Request $request) {
+	public function changeOccupantAction(ActionManager $am, Geography $geo, Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 		$character = $this->dispatcher->gateway('placeChangeOccupantTest', false, true, false, $place);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new InteractionType('occupier',
-			$geo->calculateInteractionDistance($character),
-			$character
-		));
+		$form = $this->createForm(InteractionType::class, null, [
+			'action' => 'occupier',
+			'maxdistance' => $geo->calculateInteractionDistance($character),
+			'me' => $character
+		]);
 
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
-			$result = array(
-				'success'=>true
-			);
 			if ($data['target']) {
 				$act = new Action;
 				$act->setType('place.occupant')->setCharacter($character);
 				$act->setTargetPlace($place)->setTargetCharacter($data['target']);
 				$act->setBlockTravel(true);
-				$complete = new \DateTime("+1 hour");
+				$complete = new DateTime("+1 hour");
 				$act->setComplete($complete);
 				$am->queue($act);
 				$this->addFlash('notice', $this->trans->trans('event.settlement.occupant.start', ["%time%"=>$complete->format('Y-M-d H:i:s')], 'communication'));
@@ -631,14 +628,14 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/changeoccupier', name:'maf_place_occupier', requirements:['id'=>'\d+'])]
-	public function changeOccupierAction(Politics $pol, Place $id, Request $request) {
+	public function changeOccupierAction(Politics $pol, Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 		$character = $this->dispatcher->gateway('placeChangeOccupierTest', false, true, false, $place);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new RealmSelectType($character->findRealms(), 'changeoccupier'));
+		$form = $this->createForm(RealmSelectType::class, null, ['realms' => $character->findRealms(), 'type' => 'changeoccupier']);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
@@ -660,7 +657,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/occupation/end', name:'maf_place_occupation_end', requirements:['id'=>'\d+'])]
-	public function occupationEndAction(Politics $pol, Place $id, Request $request) {
+	public function occupationEndAction(Politics $pol, Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 		$character = $this->dispatcher->gateway('placeOccupationEndTest', false, true, false, $place);
 		if (! $character instanceof Character) {
@@ -681,18 +678,14 @@ class PlaceController extends AbstractController {
 	}
 	
 	#[Route ('/place/{id}/newplayer', name:'maf_place_newplayer', requirements:['id'=>'\d+'])]
-	public function newplayerAction(DescriptionManager $dm, Place $place, Request $request) {
+	public function newplayerAction(DescriptionManager $dm, Place $place, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('placeNewPlayerInfoTest', false, true, false, $place);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
 		$desc = $place->getSpawnDescription();
-		if ($desc) {
-			$text = $desc->getText();
-		} else {
-			$text = null;
-		}
+		$text = $desc?->getText();
 		$form = $this->createForm(DescriptionNewType::class, null, ['text'=>$text]);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
@@ -709,7 +702,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/spawn', name:'maf_place_spawn_toggle')]
-	public function placeSpawnToggleAction(Place $place) {
+	public function placeSpawnToggleAction(Place $place): RedirectResponse {
 		$character = $this->dispatcher->gateway('placeSpawnToggleTest', false, true, false, $place);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -743,7 +736,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/destroy', name:'maf_place_destroy', requirements:['id'=>'\d+'])]
-	public function destroyAction(Place $id, Request $request) {
+	public function destroyAction(History $history, Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 		if ($place->getType()->getName() == 'capital') {
 			$character = $this->dispatcher->gateway('placeManageRulersTest', false, true, false, $place);
@@ -763,7 +756,7 @@ class PlaceController extends AbstractController {
 			if ($spawn = $place->getSpawn()) {
 				$em->remove($spawn);
 			}
-			$this->get('history')->logEvent(
+			$history->logEvent(
 				$place,
 				'event.place.destroyed',
 				array('%link-character%'=>$character->getId()),
@@ -779,7 +772,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/assoc/add', name:'maf_place_assoc_add', requirements:['id'=>'\d+'])]
-	public function addAssocAction(AssociationManager $am, History $hist, Place $id, Request $request) {
+	public function addAssocAction(AssociationManager $am, History $hist, Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 		$character = $this->dispatcher->gateway('placeAddAssocTest', false, true, false, $place);
 		if (! $character instanceof Character) {
@@ -795,7 +788,7 @@ class PlaceController extends AbstractController {
 			}
 		}
 
-		$form = $this->createForm(new AssocSelectType($assocs, 'addToPlace', $character));
+		$form = $this->createForm(AssocSelectType::class, null, ['assocs' => $assocs, 'type' => 'addToPlace', 'me' => $character]);
 		$form->handleRequest($request);
                 if ($form->isValid() && $form->isSubmitted()) {
 			$data = $form->getData();
@@ -823,7 +816,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/{assoc}/evict', name:'maf_place_assoc_evict', requirements:['id'=>'\d+', 'assoc'=>'\d+'])]
-	public function evictAssocAction(AssociationManager $am, History $hist, Place $id, Association $assoc, Request $request) {
+	public function evictAssocAction(AssociationManager $am, History $hist, Place $id, Association $assoc, Request $request): RedirectResponse|Response {
 		$place = $id;
 		$character = $this->dispatcher->gateway('placeEvictAssocTest', false, true, false, [$place, $assoc]);
 		if (! $character instanceof Character) {
