@@ -377,7 +377,7 @@ class GameRunner {
 			$this->logger->info("  Too many NPCs, attempting to cull $cullcount NPCs");
 			$this->logger->info("  If players have NPC's already, it's not possible to cull them, so don't freak out if you see this every turn.");
 
-			while ($cullability > 0 AND $culled < $cullcount) {
+			while ($culled < $cullcount) {
 				$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.npc = true AND c.alive = true AND c.user IS NULL');
 				foreach ($query->getResult() as $potentialculling) {
 					if ($cullcount > $culled) {
@@ -390,7 +390,7 @@ class GameRunner {
 					}
 				}
 			}
-			if ($cullability > 0 AND $culled > 0) {
+			if ($culled > 0) {
 				$this->logger->info("  It was not possible to conduct the needed cullings this turn.");
 			}
 		}
@@ -687,7 +687,6 @@ class GameRunner {
 			$this->em->clear();
 			$row = $iterableResult->next();
 			if ($row===false) {
-				$done=true;
 				break;
 			}
 			$resupply = $row[0];
@@ -710,17 +709,14 @@ class GameRunner {
 			}
 			if (!$encircled) {
 				$found = false;
-				$orig = 0;
-				$id = $unit->getId();
-				$add = $resupply->getQuantity();
-				$rid = $resupply->getId();
 				if ($unit->getSupplies()) {
 					foreach ($unit->getSupplies() as $supply) {
 						if ($supply->getType() === $resupply->getType()) {
 							$found = true;
 							$orig = $supply->getQuantity();
-							$sid = $supply->getId();
 							$supply->setQuantity($orig+$resupply->getQuantity());
+							$date = date("Y-m-d H:i:s");
+							$this->logger->info("$date --   Unit ".$unit->getId()." had supplies, and got ".$resupply->getQuantity()." more food...");
 							break;
 						}
 					}
@@ -731,7 +727,12 @@ class GameRunner {
 					$supply->setUnit($unit);
 					$supply->setType($resupply->getType());
 					$supply->setQuantity($resupply->getQuantity());
+					$date = date("Y-m-d H:i:s");
+					$this->logger->info("$date --   Unit ".$unit->getId()." had no supplies, but got ".$resupply->getQuantity()." food...");
 				}
+			} else {
+				$date = date("Y-m-d H:i:s");
+				$this->logger->info("$date --   Unit ".$unit->getId()." is encircled, and thus skipped..");
 			}
 			#TODO: Give the food to the attackers.
 			$this->em->remove($resupply);
@@ -749,7 +750,6 @@ class GameRunner {
 			$this->em->clear();
 			$row = $iterableResult->next();
 			if ($row===false) {
-				$done=true;
 				break;
 			}
 			$unit = $row[0];
@@ -761,23 +761,32 @@ class GameRunner {
 			}
 			$char = $unit->getCharacter();
 			$food = 0;
-			$fsupply = null;
+			$fsupply = false;
 			foreach ($unit->getSupplies() as $fsupply) {
 				if ($fsupply->getType() === 'food') {
 					$food = $fsupply->getQuantity();
 					break;
 				}
 			}
+			$date = date("Y-m-d H:i:s");
+			if ($fsupply) {
+				$this->logger->info("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." from ".$fsupply->getId()." from unit ".$fsupply->getUnit()->getId()." and soldier count of ".$count);
+			} else {
+				$this->logger->info("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." and soldier count of ".$count);
+			}
+
 			if ($count <= $food) {
 				$short = 0;
 			} else {
 				$need = $count - $food;
-				$origNeed = $need;
+				$date = date("Y-m-d H:i:s");
+				$this->logger->info("$date --   Need ".$need." more food");
 				if ($char) {
 					$food_followers = $char->getEntourage()->filter(function($entry) {
 						return ($entry->getType()->getName()=='follower' && $entry->isAlive() && !$entry->getEquipment() && $entry->getSupply()>0);
 					})->toArray();
 					if (!empty($food_followers)) {
+						$this->logger->info("Checking followers...");
 						foreach ($food_followers as $ent) {
 							if ($ent->getSupply() > $need) {
 								$supply2 = $ent->getSupply()-$need;
@@ -796,6 +805,8 @@ class GameRunner {
 				} else {
 					$short = 0;
 				}
+				$date = date("Y-m-d H:i:s");
+				$this->logger->info("$date --   Final short of ".$short);
 			}
 			$available = $count-$short;
 			if ($available > 0) {
@@ -803,8 +814,10 @@ class GameRunner {
 			} else {
 				$var = 0;
 			}
-			$myfed = 0;
+			$date = date("Y-m-d H:i:s");
+			$this->logger->info("$date --   Available food of ".$available." from a count of ".$count." less a short of ".$short);
 			$dead = 0;
+			$myfed = 0;
 			$mystarved = 0;
 			if ($var <= 0.9) {
 				$starve = 1 - $var;
@@ -888,10 +901,12 @@ class GameRunner {
 					$myfed++;
 				}
 			}
+			$left = 0;
 			if ($fsupply) {
 				$left = $food-$count;
 				if ($left < 0) {
 					$fsupply->setQuantity(0);
+					$left = 0;
 				} else {
 					$fsupply->setQuantity($left);
 				}
@@ -899,7 +914,7 @@ class GameRunner {
 			$this->em->flush();
 			$date = date("Y-m-d H:i:s");
 			$id = $unit->getId();
-			$this->logger->info("$date --     Unit $id - Soldiers $count - Var $var - Food $food - Fed $myfed - Starved $mystarved - Killed $dead");
+			$this->logger->info("$date --     Unit $id - Soldiers $count - Var $var - Food $food - Leftover of $left - Fed $myfed - Starved $mystarved - Killed $dead");
 		}
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date --     Fed $fed - Starved $starved - Killed $killed");
