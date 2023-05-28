@@ -2,35 +2,17 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 
-class UserLog
-{
-    private ?\DateTimeInterface $timestamp = null;
+class UserLog {
 
-    private ?string $ip = null;
-
-    private ?string $route = null;
-
-    private ?string $referrer = null;
-
-    private ?string $message = null;
-
-    private ?int $id = null;
-
-    private ?User $user = null;
-
-    public function getTimestamp(): ?\DateTimeInterface
-    {
-        return $this->timestamp;
-    }
-
-    public function setTimestamp(\DateTimeInterface $timestamp): self
-    {
-        $this->timestamp = $timestamp;
-
-        return $this;
-    }
+	private ?string $ip = null;
+	private ?string $route = null;
+	private ?string $agent = null;
+	private ?DateTimeInterface $ts = null;
+	private ?int $id = null;
+	private ?User $user = null;
 
     public function getIp(): ?string
     {
@@ -56,30 +38,6 @@ class UserLog
         return $this;
     }
 
-    public function getReferrer(): ?string
-    {
-        return $this->referrer;
-    }
-
-    public function setReferrer(?string $referrer): self
-    {
-        $this->referrer = $referrer;
-
-        return $this;
-    }
-
-    public function getMessage(): ?string
-    {
-        return $this->message;
-    }
-
-    public function setMessage(string $message): self
-    {
-        $this->message = $message;
-
-        return $this;
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -93,6 +51,30 @@ class UserLog
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getTs(): ?DateTimeInterface
+    {
+        return $this->ts;
+    }
+
+    public function setTs(DateTimeInterface $ts): self
+    {
+        $this->ts = $ts;
+
+        return $this;
+    }
+
+    public function getAgent(): ?string
+    {
+        return $this->agent;
+    }
+
+    public function setAgent(string $agent): self
+    {
+        $this->agent = $agent;
 
         return $this;
     }

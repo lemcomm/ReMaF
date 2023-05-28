@@ -80,7 +80,6 @@
 		</one-to-many>
 		<one-to-one field="limits" target-entity="UserLimits" mapped-by="user"/>
 		<one-to-many field="keys" target-entity="AppKey" mapped-by="user"/>
-                <one-to-many field="logs" target-entity="UserLog" mapped-by="user"/>
 		<one-to-many field="security_logs" target-entity="SecurityLog" mapped-by="user"/>
 
 		<unique-constraints>

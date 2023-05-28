@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -45,6 +46,8 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	private ?Collection $logs;
 	private ?Collection $security_logs;
 	private ?string $ip;
+	private ?string $agent;
+	private ?bool $watched;
 	private ?string $gm_name;
 	private ?bool $public_admin;
 	private ?string $email_opt_out_token;
@@ -73,127 +76,127 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         private ?array $roles = [];
 
 	public function __construct() {
-               		$this->payments = new ArrayCollection();
-               		$this->credit_history = new ArrayCollection();
-               		$this->characters = new ArrayCollection();
-               		$this->crests = new ArrayCollection();
-               		$this->cultures = new ArrayCollection();
-               		$this->artifacts = new ArrayCollection();
-               		$this->descriptions = new ArrayCollection();
-               		$this->ratings_given = new ArrayCollection();
-               		$this->rating_votes = new ArrayCollection();
-               		$this->listings = new ArrayCollection();
-               		$this->patronizing = new ArrayCollection();
-               		$this->reports = new ArrayCollection();
-               		$this->reports_against = new ArrayCollection();
-               		$this->added_report_notes = new ArrayCollection();
-               		$this->mail_entries = new ArrayCollection();
-               		$this->keys = new ArrayCollection();
-               		$this->logs = new ArrayCollection();
-               		$this->security_logs = new ArrayCollection();
-               	}
+                              		$this->payments = new ArrayCollection();
+                              		$this->credit_history = new ArrayCollection();
+                              		$this->characters = new ArrayCollection();
+                              		$this->crests = new ArrayCollection();
+                              		$this->cultures = new ArrayCollection();
+                              		$this->artifacts = new ArrayCollection();
+                              		$this->descriptions = new ArrayCollection();
+                              		$this->ratings_given = new ArrayCollection();
+                              		$this->rating_votes = new ArrayCollection();
+                              		$this->listings = new ArrayCollection();
+                              		$this->patronizing = new ArrayCollection();
+                              		$this->reports = new ArrayCollection();
+                              		$this->reports_against = new ArrayCollection();
+                              		$this->added_report_notes = new ArrayCollection();
+                              		$this->mail_entries = new ArrayCollection();
+                              		$this->keys = new ArrayCollection();
+                              		$this->logs = new ArrayCollection();
+                              		$this->security_logs = new ArrayCollection();
+                              	}
 
 
 	public function getLivingCharacters() {
-               		return $this->getCharacters()->filter(
-               			function($entry) {
-               				return ($entry->isAlive()==true && $entry->isNPC()==false);
-               			}
-               		);
-               	}
+                              		return $this->getCharacters()->filter(
+                              			function($entry) {
+                              				return ($entry->isAlive()==true && $entry->isNPC()==false);
+                              			}
+                              		);
+                              	}
 
 	public function getActiveCharacters() {
-               		return $this->getCharacters()->filter(
-               			function($entry) {
-               				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==false);
-               			}
-               		);
-               	}
+                              		return $this->getCharacters()->filter(
+                              			function($entry) {
+                              				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==false);
+                              			}
+                              		);
+                              	}
 
 	public function getRetiredCharacters() {
-               		return $this->getCharacters()->filter(
-               			function($entry) {
-               				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==true);
-               			}
-               		);
-               	}
+                              		return $this->getCharacters()->filter(
+                              			function($entry) {
+                              				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==true);
+                              			}
+                              		);
+                              	}
 
 	public function getDeadCharacters() {
-               		return $this->getCharacters()->filter(
-               			function($entry) {
-               				return ($entry->isAlive()==false && $entry->isNPC()==false);
-               			}
-               		);
-               	}
+                              		return $this->getCharacters()->filter(
+                              			function($entry) {
+                              				return ($entry->isAlive()==false && $entry->isNPC()==false);
+                              			}
+                              		);
+                              	}
 
 
 	public function getNonNPCCharacters() {
-               		return $this->getCharacters()->filter(
-               			function($entry) {
-               				return ($entry->isNPC()==false);
-               			}
-               		);
-               	}
+                              		return $this->getCharacters()->filter(
+                              			function($entry) {
+                              				return ($entry->isNPC()==false);
+                              			}
+                              		);
+                              	}
 
 	public function isTrial() {
-               		// trial/free accounts cannot do some things
-               		if ($this->account_level <= 10) return true; else return false;
-               	}
+                              		// trial/free accounts cannot do some things
+                              		if ($this->account_level <= 10) return true; else return false;
+                              	}
 
 	public function isNewPlayer() {
-               		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
-               		if ($days < 30) {
-               			return true;
-               		} else {
-               			return false;
-               		}
-               	}
+                              		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
+                              		if ($days < 30) {
+                              			return true;
+                              		} else {
+                              			return false;
+                              		}
+                              	}
 
 	public function isVeryNewPlayer() {
-               		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
-               		if ($days < 7) {
-               			return true;
-               		} else {
-               			return false;
-               		}
-               	}
+                              		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
+                              		if ($days < 7) {
+                              			return true;
+                              		} else {
+                              			return false;
+                              		}
+                              	}
 
 	public function getFreePlaces() {
-               		$limit = $this->getLimits()->getPlaces();
-               		$count = 0;
-               		foreach ($this->getCharacters() as $character) {
-               			foreach ($character->getCreatedPlaces() as $place) {
-               				if (!$place->getDestroyed()) {
-               					$count++;
-               				}
-               			}
-               		}
-               		return $limit - $count;
-               	}
+                              		$limit = $this->getLimits()->getPlaces();
+                              		$count = 0;
+                              		foreach ($this->getCharacters() as $character) {
+                              			foreach ($character->getCreatedPlaces() as $place) {
+                              				if (!$place->getDestroyed()) {
+                              					$count++;
+                              				}
+                              			}
+                              		}
+                              		return $limit - $count;
+                              	}
 
 	public function getFreeArtifacts() {
-               		$limit = $this->getLimits()->getArtifacts();
-               		$count = 0;
-               		foreach ($this->getArtifacts() as $art) {
-               			$count++;
-               		}
-               		return $limit - $count;
-               	}
+                              		$limit = $this->getLimits()->getArtifacts();
+                              		$count = 0;
+                              		foreach ($this->getArtifacts() as $art) {
+                              			$count++;
+                              		}
+                              		return $limit - $count;
+                              	}
 
 	public function isBanned(): bool {
-		$roles = $this->getRoles();
-		if (in_array(['ROLE_BANNED_TOS'], $roles)) {
-			return 'error.banned.tos';
-		}
-		if (in_array(['ROLE_BANNED_MULTI'], $roles)) {
-			return 'error.banned.multi';
-		}
-		return false;
-	}
+               		$roles = $this->getRoles();
+               		if (in_array(['ROLE_BANNED_TOS'], $roles)) {
+               			return 'error.banned.tos';
+               		}
+               		if (in_array(['ROLE_BANNED_MULTI'], $roles)) {
+               			return 'error.banned.multi';
+               		}
+               		return false;
+               	}
 
 	public function getUserIdentifier(): string {
-               		return (string) strtolower($this->username);
-               	}
+                              		return (string) strtolower($this->username);
+                              	}
 
         public function getRoles(): array {
             $roles = $this->roles;
@@ -208,13 +211,13 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         }
 
 	public function getPassword(): string {
-               		return $this->password;
-               	}
+                              		return $this->password;
+                              	}
 
 	public function setPassword(string $password): self {
-               		$this->password = $password;
-               		return $this;
-               	}
+                              		$this->password = $password;
+                              		return $this;
+                              	}
 
         public function getSalt(): ?string {
             return $this->salt;
@@ -227,9 +230,9 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         }
 
 	public function eraseCredentials() {
-               	// If you store any temporary, sensitive data on the user, clear it here
-               	// $this->plainPassword = null;
-               	}
+                              	// If you store any temporary, sensitive data on the user, clear it here
+                              	// $this->plainPassword = null;
+                              	}
 
     /**
      * Set ip
@@ -1568,6 +1571,30 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
                 $securityLog->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAgent(): ?string
+    {
+        return $this->agent;
+    }
+
+    public function setAgent(?string $agent): self
+    {
+        $this->agent = $agent;
+
+        return $this;
+    }
+
+    public function isWatched(): ?bool
+    {
+        return $this->watched;
+    }
+
+    public function setWatched(?bool $watched): self
+    {
+        $this->watched = $watched;
 
         return $this;
     }
