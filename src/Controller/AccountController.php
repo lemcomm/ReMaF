@@ -259,20 +259,7 @@ class AccountController extends AbstractController {
 
 		$list_form = $this->createForm(ListSelectType::class);
 
-		if(!empty($_SERVER['HTTP_CLIENT_IP'])){
-			//ip from share internet
-			$ip = $_SERVER['HTTP_CLIENT_IP'];
-		}elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
-			//ip pass from proxy
-			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-		}else{
-			$ip = $_SERVER['REMOTE_ADDR'];
-		}
-
-		if ($user->getIp() != $ip) {
-			$user->setIp($ip);
-			$em->flush();
-		}
+		$this->logUser($user, 'characters');
 
 		foreach ($user->getPatronizing() as $patron) {
 			if ($patron->getUpdateNeeded()) {
@@ -618,6 +605,8 @@ class AccountController extends AbstractController {
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
+		$logic = $request->query->get('logic');
+		$this->logUser($user, 'play_char_'.$id.'_'.$logic);
 		$this->checkCharacterLimit($user, $pay, $em);
 
 		if ($character->getUser() !== $user) {
@@ -637,7 +626,7 @@ class AccountController extends AbstractController {
 		}
 
 		$app->setSessionData($character);
-		switch ($request->query->get('logic')) {
+		switch ($logic) {
 			case 'play':
 				$character->setLastAccess(new \DateTime("now"));
 				$character->setSlumbering(false);
