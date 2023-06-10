@@ -3,16 +3,17 @@
 namespace App\Service;
 
 use App\Entity\Character;
+use App\Entity\NetExit;
 use App\Entity\SecurityLog;
 use App\Entity\Setting;
 use App\Entity\User;
+use App\Entity\UserLog;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 
 class AppState {
@@ -163,7 +164,7 @@ class AppState {
 	}
 
 	/**
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function generateEmailOptOutToken(User $user): string {
 		$token = $this->generateToken();
@@ -173,7 +174,7 @@ class AppState {
 	}
 
 	/**
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function generateToken($length = 128, $method = 'trimbase64'): string {
 		if ($method = 'trimbase64') {
@@ -209,6 +210,73 @@ class AppState {
 		$log->setRoute($route);
 		$log->setIp($ip);
 		$em->flush();
+	}
+
+	/**
+	 * Returns a user's IP, usually as a string.
+	 * @return mixed
+	 */
+	public function findIp(): mixed {
+		if(!empty($_SERVER['HTTP_CLIENT_IP'])){
+			//ip from share internet
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		}elseif(!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
+			//ip pass from proxy
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		}else{
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		return $ip;
+	}
+
+	/**
+	 * Logs a given user if they have $user->getWatched set to true or if $alwaysLog is set to true.
+	 * @param $user
+	 * @param string $route
+	 * @param false $alwaysLog
+	 * @return void
+	 */
+	public function logUser($user, string $route, false $alwaysLog = false): void {
+		$ip = $this->findIp();
+		$agent = $_SERVER['HTTP_USER_AGENT'];
+		if ($user) {
+			if ($user->getIp() != $ip) {
+				$user->setIp($ip);
+			}
+			if ($user->getAgent() != $agent) {
+				$user->setAgent($agent);
+			}
+		}
+		if ($user->getWatched() || $alwaysLog) {
+			$entry = new UserLog;
+			$this->em->persist($entry);
+			$entry->setTs(new \DateTime('now'));
+			$entry->setUser($user);
+			$entry->setIp($ip);
+			$entry->setAgent($agent);
+			$entry->setRoute($route);
+		}
+		$this->em->flush();
+	}
+
+	/**
+	 * Checks whether a given user is accessing from an IP recorded on the NetExits table.
+	 * Returns false if they have $user->getBypassExits() as true or if the IP isn't found in the NetExits table.
+	 * @param $user
+	 * @return bool
+	 */
+	public function exitsCheck($user): bool {
+		if ($user->getBypassExits()) {
+			# Trusted user. Check bypassed.
+			return false;
+		}
+		$ip = $this->findIp();
+		if ($this->em->getRepository(NetExit::class)->findOneBy(['ip'=>$ip])) {
+			# Hit found, check failed.
+			return true;
+		}
+		# Nothing found, check passed.
+		return false;
 	}
 
 

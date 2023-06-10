@@ -7,18 +7,20 @@ use App\Form\RegistrationFormType;
 use App\Service\AppState;
 use App\Service\PageReader;
 use App\Service\PaymentManager;
-use App\Service\UserManager;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends AbstractController {
 
 	#[Route ('/', name:'maf_index')]
 	#[Route ('/', name:'maf_homepage')]
-	public function indexAction(EntityManagerInterface $em) {
+	public function indexAction(EntityManagerInterface $em): Response {
 		$query = $em->createQuery('SELECT j, c from App:Journal j JOIN j.character c WHERE j.public = true AND j.graphic = false AND j.pending_review = false AND j.GM_private = false AND j.GM_graphic = false ORDER BY j.date DESC')->setMaxResults(3);
 		$journals = $query->getResult();
 
@@ -37,7 +39,7 @@ class DefaultController extends AbstractController {
 	}
 
 	#[Route ('/about', name:'maf_about')]
-	public function aboutAction(Request $req, PageReader $pr, PaymentManager $pay) {
+	public function aboutAction(Request $req, PageReader $pr, PaymentManager $pay): Response {
 		$locale = $req->getLocale();
 
 		$intro = $pr->getPage('about', 'introduction', $locale);
@@ -56,7 +58,7 @@ class DefaultController extends AbstractController {
 		]);
 	}
 	#[Route ('/manual/{page}', name:'maf_manual')]
-	public function manualAction(Request $req, PageReader $pr, $page='intro') {
+	public function manualAction(Request $req, PageReader $pr, $page='intro'): Response {
 		return $this->render('Default/manual.html.twig', [
 			"page" => $page,
 			"toc" => $pr->getPage('manual', 'toc', $req->getLocale()),
@@ -65,7 +67,7 @@ class DefaultController extends AbstractController {
 	}
 
 	#[Route ('/vips', name:'maf_vips')]
-	public function vipsAction(EntityManagerInterface $em) {
+	public function vipsAction(EntityManagerInterface $em): Response {
 		$query = $em->createQuery('SELECT u.display_name, u.vip_status FROM App:User u WHERE u.vip_status > 0 ORDER BY u.vip_status DESC, u.display_name');
 		$vips = $query->getResult();
 
@@ -76,7 +78,7 @@ class DefaultController extends AbstractController {
 
 
   	#[Route ('/contact', name:'maf_contact')]
-	public function contactAction() {
+	public function contactAction(): Response {
 
 		return $this->render('Default/contact.html.twig', [
 			"simple"=>true
@@ -84,7 +86,7 @@ class DefaultController extends AbstractController {
 	}
 
   	#[Route ('/credits', name:'maf_credits')]
-	public function creditsAction(EntityManagerInterface $em) {
+	public function creditsAction(EntityManagerInterface $em): Response {
 		$query = $em->createQuery('SELECT u FROM App:User u JOIN u.patronizing p WHERE u.show_patronage = :true ORDER BY u.display_name ASC');
 		$query->setParameters(['true'=>true]);
 
@@ -95,28 +97,28 @@ class DefaultController extends AbstractController {
 	}
 
   	#[Route ('/terms', name:'maf_terms')]
-	public function termsAction() {
+	public function termsAction(): Response {
 
 		return $this->render('Default/terms.html.twig');
 	}
 
   	#[Route ('/privacy', name:'maf_privacy')]
-	public function privacyAction() {
+	public function privacyAction(): Response {
 
 		return $this->render('Default/privacy.html.twig');
 	}
 
   	#[Route ('/cookies', name:'maf_cookies')]
-	public function cookiesAction() {
+	public function cookiesAction(): Response {
 
 		return $this->render('Default/cookies.html.twig');
 	}
 
     	#[Route ('/user/{user}', name:'maf_user')]
-	public function userAction($user) {
+	public function userAction(AuthorizationChecker $checker, EntityManagerInterface $em, $user): Response {
 		# This allows us to not have a user returned and sanitize the output. No user? Pretend they just private :)
-		$user = $this->getDoctrine()->getManager()->getRepository(User::class)->findOneBy(['id'=>$user]);
-		$gm = $this->get('security.authorization_checker')->isGranted('ROLE_OLYMPUS');
+		$user = $em->getRepository(User::class)->findOneBy(['id'=>$user]);
+		$gm = $checker->isGranted('ROLE_OLYMPUS');
 
 		return $this->render('Default/user.html.twig', [
 			"user"=>$user,
@@ -124,8 +126,16 @@ class DefaultController extends AbstractController {
 		]);
 	}
 
+	#[Route ('/needIP', name:'maf_ip_req')]
+	public function ipReqAction(AppState $app, AuthorizationChecker $checker): Response {
+		if ($checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+			$app->logUser($this->getUser(), 'ip_req', true);
+		}
+		return $this->render('Default/needip.html.twig');
+	}
+
     	#[Route ('/paymentconcept', name:'maf_about_payment')]
-	public function paymentConceptAction(Request $request, PageReader $pr, PaymentManager $pay) {
+	public function paymentConceptAction(Request $request, PageReader $pr, PaymentManager $pay): Response {
 		return $this->render('Default/paymentConcept.html.twig', [
 			"simple"=>true,
 			"content"=>$pr->getPage('about', 'payment', $request->getLocale()),
@@ -134,7 +144,7 @@ class DefaultController extends AbstractController {
 	}
 
 
-	public function localeRedirectAction(AppState $appstate, $url) {
+	public function localeRedirectAction(AppState $appstate, $url): RedirectResponse {
 		if ($url=="-") $url="";
 		if (preg_match('/^[a-z]{2}\//', $url)===1) {
 			if (substr($url, 0, 2)=='en') {

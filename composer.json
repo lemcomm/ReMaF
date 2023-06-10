@@ -13,6 +13,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.13",
         "kagurati/patreon": "^1.1",
+        "kagurati/torutils": "^0.1.2",
         "league/commonmark": "^2.3",
         "longitude-one/doctrine-spatial": "^3.0",
         "phpdocumentor/reflection-docblock": "^5.3",

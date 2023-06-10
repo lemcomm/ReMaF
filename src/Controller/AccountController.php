@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\AppKey;
 use App\Entity\Character;
 use App\Entity\Code;
 use App\Entity\User;
@@ -24,7 +23,6 @@ use App\Service\UserManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
-use Doctrine\ORM\Mapping\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -55,10 +53,13 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account', name:'maf_account')]
-	public function indexAction(EntityManagerInterface $em, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan): Response {
+	public function indexAction(AppState $app, EntityManagerInterface $em, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
+		}
+		if ($app->exitsCheck($user)) {
+			return $this->redirectToRoute('maf_ip_req');
 		}
 
 		// clean out character id so we have a clear slate (especially for the template)
@@ -80,12 +81,15 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/characters', name:'maf_chars')]
-	public function charactersAction(Geography $geo, GameRequestManager $grm, NpcManager $npcm, UserManager $userMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay): Response {
+	public function charactersAction(AppState $app, Geography $geo, GameRequestManager $grm, NpcManager $npcm, UserManager $userMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
 		$user = $this->getUser();
+		if ($app->exitsCheck($user)) {
+			return $this->redirectToRoute('maf_ip_req');
+		}
 
 		// clean out character id so we have a clear slate (especially for the template)
 		$user->setCurrentCharacter(null);
@@ -259,7 +263,7 @@ class AccountController extends AbstractController {
 
 		$list_form = $this->createForm(ListSelectType::class);
 
-		$this->logUser($user, 'characters');
+		$app->logUser($user, 'characters');
 
 		foreach ($user->getPatronizing() as $patron) {
 			if ($patron->getUpdateNeeded()) {
@@ -436,7 +440,7 @@ class AccountController extends AbstractController {
 					$user->setCurrentCharacter($character);
 					$em->flush();
 
-					return $this->redirectToRoute('maf_character_background', array('starting'=>true));
+					return $this->redirectToRoute('maf_char_background', array('starting'=>true));
 				}
 			}
 		}
@@ -605,8 +609,11 @@ class AccountController extends AbstractController {
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
+		if ($app->exitsCheck($user)) {
+			return $this->redirectToRoute('maf_ip_req');
+		}
 		$logic = $request->query->get('logic');
-		$this->logUser($user, 'play_char_'.$id.'_'.$logic);
+		$app->logUser($user, 'play_char_'.$id.'_'.$logic);
 		$this->checkCharacterLimit($user, $pay, $em);
 
 		if ($character->getUser() !== $user) {

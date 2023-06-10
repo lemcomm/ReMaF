@@ -20,6 +20,7 @@
 		<field name="agent" type="text" nullable="true"/>
 		<one-to-many field="logs" target-entity="UserLog" mapped-by="user"/>
 		<field name="watched" type="boolean" nullable="true"/>
+		<field name="bypass_exits" type="boolean" nullable="true"/>
 
 		<field name="display_name" type="string"/>
 		<field name="gm_name" type="string" nullable="true"/>

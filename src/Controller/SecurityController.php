@@ -30,12 +30,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SecurityController extends AbstractController {
 
 	#[Route ('/login', name:'maf_login')]
-	public function login(AuthenticationUtils $authenticationUtils): Response {
+	public function login(AuthenticationUtils $authenticationUtils, EntityManagerInterface $em): Response {
 		# Fetch the previous error, if there is one.
 		$error = $authenticationUtils->getLastAuthenticationError();
 
 		#Fetch last username entered by the user.
 		$last = $authenticationUtils->getLastUsername();
+		$query = $em->createQuery('SELECT u from App:User u where LOWER(u.username) like :name and u.watched = true and u.enabled = false');
+		$query->setParameters(['name'=>$last]);
+		$query->setMaxResults(1);
+		$check = $query->getSingleResult();
+		if ($check) {
+			$this->addFlash('notice', 'This account was disabled for security reasons. To re-enable it, please reset your password using the link below.');
+		}
 
 		return $this->render('Account/login.html.twig', [
 			'last' => $last,
@@ -459,9 +466,9 @@ class SecurityController extends AbstractController {
 				$key->setUser($user);
 				$key->setToken($token);
 				$em->flush();
-				$this->addFlash('notice', $this->trans->trans('account.key.new.success', [], "messages"));
+				$this->addFlash('notice', $trans->trans('account.key.new.success', [], "messages"));
 			} else {
-				$this->addFlash('notice', $this->trans->trans('account.key.fail', [], "messages"));
+				$this->addFlash('notice', $trans->trans('account.key.fail', [], "messages"));
 			}
 		}
 		return $this->redirectToRoute('maf_account_keys');
