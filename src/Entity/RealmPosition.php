@@ -380,7 +380,7 @@ class RealmPosition {
      * @param integer $year
      * @return RealmPosition
      */
-    public function setYear($year)
+    public function setYear($year = null)
     {
         $this->year = $year;
 
@@ -403,7 +403,7 @@ class RealmPosition {
      * @param integer $week
      * @return RealmPosition
      */
-    public function setWeek($week)
+    public function setWeek($week = null)
     {
         $this->week = $week;
 
@@ -426,7 +426,7 @@ class RealmPosition {
      * @param integer $cycle
      * @return RealmPosition
      */
-    public function setCycle($cycle)
+    public function setCycle($cycle = null)
     {
         $this->cycle = $cycle;
 

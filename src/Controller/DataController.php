@@ -221,7 +221,7 @@ class DataController extends AbstractController {
 		return $this->outputHandler($reqType, $result);
 	}
 
-	#[Route ('/data/journal/{id}', name:'maf_data_characters_active', requirements:['id'=>'\d+'])]
+	#[Route ('/data/journal/{id}', name:'maf_data_journal', requirements:['id'=>'\d+'])]
 	public function journalAction(Request $request, Journal $id): Response {
 		$reqType = $this->validateRequest($request, 'journal');
 		if ($reqType instanceof Response) {

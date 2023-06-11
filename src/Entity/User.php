@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
 use DateTime;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\ReadableCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -41,13 +41,14 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	private ?int $artifacts_limit;
 	private ?string $token;
 	private ?string $reset_token;
-	private ?\DateTimeInterface $reset_time;
+	private ?DateTimeInterface $reset_time;
 	private ?string $email_token;
 	private ?Collection $logs;
 	private ?Collection $security_logs;
 	private ?string $ip;
 	private ?string $agent;
 	private ?bool $watched;
+	private ?bool $bypass_exits;
 	private ?string $gm_name;
 	private ?bool $public_admin;
 	private ?string $email_opt_out_token;
@@ -76,148 +77,148 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         private ?array $roles = [];
 
 	public function __construct() {
-                              		$this->payments = new ArrayCollection();
-                              		$this->credit_history = new ArrayCollection();
-                              		$this->characters = new ArrayCollection();
-                              		$this->crests = new ArrayCollection();
-                              		$this->cultures = new ArrayCollection();
-                              		$this->artifacts = new ArrayCollection();
-                              		$this->descriptions = new ArrayCollection();
-                              		$this->ratings_given = new ArrayCollection();
-                              		$this->rating_votes = new ArrayCollection();
-                              		$this->listings = new ArrayCollection();
-                              		$this->patronizing = new ArrayCollection();
-                              		$this->reports = new ArrayCollection();
-                              		$this->reports_against = new ArrayCollection();
-                              		$this->added_report_notes = new ArrayCollection();
-                              		$this->mail_entries = new ArrayCollection();
-                              		$this->keys = new ArrayCollection();
-                              		$this->logs = new ArrayCollection();
-                              		$this->security_logs = new ArrayCollection();
-                              	}
+                                    		$this->payments = new ArrayCollection();
+                                    		$this->credit_history = new ArrayCollection();
+                                    		$this->characters = new ArrayCollection();
+                                    		$this->crests = new ArrayCollection();
+                                    		$this->cultures = new ArrayCollection();
+                                    		$this->artifacts = new ArrayCollection();
+                                    		$this->descriptions = new ArrayCollection();
+                                    		$this->ratings_given = new ArrayCollection();
+                                    		$this->rating_votes = new ArrayCollection();
+                                    		$this->listings = new ArrayCollection();
+                                    		$this->patronizing = new ArrayCollection();
+                                    		$this->reports = new ArrayCollection();
+                                    		$this->reports_against = new ArrayCollection();
+                                    		$this->added_report_notes = new ArrayCollection();
+                                    		$this->mail_entries = new ArrayCollection();
+                                    		$this->keys = new ArrayCollection();
+                                    		$this->logs = new ArrayCollection();
+                                    		$this->security_logs = new ArrayCollection();
+                                    	}
 
 
-	public function getLivingCharacters() {
-                              		return $this->getCharacters()->filter(
-                              			function($entry) {
-                              				return ($entry->isAlive()==true && $entry->isNPC()==false);
-                              			}
-                              		);
-                              	}
+	public function getLivingCharacters(): ArrayCollection|ReadableCollection {
+      		return $this->getCharacters()->filter(
+      			function($entry) {
+      				return ($entry->isAlive()==true && $entry->isNPC()==false);
+      			}
+      		);
+      	}
 
-	public function getActiveCharacters() {
-                              		return $this->getCharacters()->filter(
-                              			function($entry) {
-                              				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==false);
-                              			}
-                              		);
-                              	}
+	public function getActiveCharacters(): ArrayCollection|ReadableCollection {
+      		return $this->getCharacters()->filter(
+      			function($entry) {
+      				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==false);
+      			}
+      		);
+      	}
 
-	public function getRetiredCharacters() {
-                              		return $this->getCharacters()->filter(
-                              			function($entry) {
-                              				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==true);
-                              			}
-                              		);
-                              	}
+	public function getRetiredCharacters(): ArrayCollection|ReadableCollection {
+      		return $this->getCharacters()->filter(
+      			function($entry) {
+      				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==true);
+      			}
+      		);
+      	}
 
-	public function getDeadCharacters() {
-                              		return $this->getCharacters()->filter(
-                              			function($entry) {
-                              				return ($entry->isAlive()==false && $entry->isNPC()==false);
-                              			}
-                              		);
-                              	}
+	public function getDeadCharacters(): ArrayCollection|ReadableCollection {
+      		return $this->getCharacters()->filter(
+      			function($entry) {
+      				return ($entry->isAlive()==false && $entry->isNPC()==false);
+      			}
+      		);
+      	}
 
 
-	public function getNonNPCCharacters() {
-                              		return $this->getCharacters()->filter(
-                              			function($entry) {
-                              				return ($entry->isNPC()==false);
-                              			}
-                              		);
-                              	}
+	public function getNonNPCCharacters(): ArrayCollection|ReadableCollection {
+      		return $this->getCharacters()->filter(
+      			function($entry) {
+      				return ($entry->isNPC()==false);
+      			}
+      		);
+      	}
 
-	public function isTrial() {
-                              		// trial/free accounts cannot do some things
-                              		if ($this->account_level <= 10) return true; else return false;
-                              	}
+	public function isTrial(): bool {
+      		// trial/free accounts cannot do some things
+      		if ($this->account_level <= 10) return true; else return false;
+      	}
 
-	public function isNewPlayer() {
-                              		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
-                              		if ($days < 30) {
-                              			return true;
-                              		} else {
-                              			return false;
-                              		}
-                              	}
+	public function isNewPlayer(): bool {
+      		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
+      		if ($days < 30) {
+      			return true;
+      		} else {
+      			return false;
+      		}
+      	}
 
-	public function isVeryNewPlayer() {
-                              		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
-                              		if ($days < 7) {
-                              			return true;
-                              		} else {
-                              			return false;
-                              		}
-                              	}
+	public function isVeryNewPlayer(): bool {
+      		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
+      		if ($days < 7) {
+      			return true;
+      		} else {
+      			return false;
+      		}
+      	}
 
-	public function getFreePlaces() {
-                              		$limit = $this->getLimits()->getPlaces();
-                              		$count = 0;
-                              		foreach ($this->getCharacters() as $character) {
-                              			foreach ($character->getCreatedPlaces() as $place) {
-                              				if (!$place->getDestroyed()) {
-                              					$count++;
-                              				}
-                              			}
-                              		}
-                              		return $limit - $count;
-                              	}
+	public function getFreePlaces(): int {
+      		$limit = $this->getLimits()->getPlaces();
+      		$count = 0;
+      		foreach ($this->getCharacters() as $character) {
+      			foreach ($character->getCreatedPlaces() as $place) {
+      				if (!$place->getDestroyed()) {
+      					$count++;
+      				}
+      			}
+      		}
+      		return $limit - $count;
+      	}
 
-	public function getFreeArtifacts() {
-                              		$limit = $this->getLimits()->getArtifacts();
-                              		$count = 0;
-                              		foreach ($this->getArtifacts() as $art) {
-                              			$count++;
-                              		}
-                              		return $limit - $count;
-                              	}
+	public function getFreeArtifacts(): int {
+      		$limit = $this->getLimits()->getArtifacts();
+      		$count = 0;
+      		foreach ($this->getArtifacts() as $art) {
+      			$count++;
+      		}
+      		return $limit - $count;
+      	}
 
 	public function isBanned(): bool {
-               		$roles = $this->getRoles();
-               		if (in_array(['ROLE_BANNED_TOS'], $roles)) {
-               			return 'error.banned.tos';
-               		}
-               		if (in_array(['ROLE_BANNED_MULTI'], $roles)) {
-               			return 'error.banned.multi';
-               		}
-               		return false;
-               	}
+      		$roles = $this->getRoles();
+      		if (in_array(['ROLE_BANNED_TOS'], $roles)) {
+      			return 'error.banned.tos';
+      		}
+      		if (in_array(['ROLE_BANNED_MULTI'], $roles)) {
+      			return 'error.banned.multi';
+      		}
+      		return false;
+      	}
 
 	public function getUserIdentifier(): string {
-                              		return (string) strtolower($this->username);
-                              	}
+      		return strtolower($this->username);
+      	}
 
         public function getRoles(): array {
-            $roles = $this->roles;
-	    $roles[] = 'ROLE_USER';
-	    return array_unique($roles);
+		$roles = $this->roles;
+		$roles[] = 'ROLE_USER';
+		return array_unique($roles);
         }
 
         public function setRoles(array $roles): self {
-            $this->roles = $roles;
+		$this->roles = $roles;
 
-            return $this;
+		return $this;
         }
 
 	public function getPassword(): string {
-                              		return $this->password;
-                              	}
+      		return $this->password;
+      	}
 
 	public function setPassword(string $password): self {
-                              		$this->password = $password;
-                              		return $this;
-                              	}
+      		$this->password = $password;
+      		return $this;
+      	}
 
         public function getSalt(): ?string {
             return $this->salt;
@@ -230,9 +231,9 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         }
 
 	public function eraseCredentials() {
-                              	// If you store any temporary, sensitive data on the user, clear it here
-                              	// $this->plainPassword = null;
-                              	}
+      		// If you store any temporary, sensitive data on the user, clear it here
+      		// $this->plainPassword = null;
+      	}
 
     /**
      * Set ip
@@ -240,20 +241,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param string $ip
      * @return User
      */
-    public function setIp($ip)
-    {
+    public function setIp(string $ip): static {
         $this->ip = $ip;
 
         return $this;
     }
 
-    /**
-     * Get ip
-     *
-     * @return string
-     */
-    public function getIp()
-    {
+	/**
+	 * Get ip
+	 *
+	 * @return string|null
+	 */
+    public function getIp(): ?string {
         return $this->ip;
     }
 
@@ -263,20 +262,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param string $displayName
      * @return User
      */
-    public function setDisplayName($displayName)
-    {
+    public function setDisplayName(string $displayName): static {
         $this->display_name = $displayName;
 
         return $this;
     }
 
-    /**
-     * Get display_name
-     *
-     * @return string
-     */
-    public function getDisplayName()
-    {
+	/**
+	 * Get display_name
+	 *
+	 * @return string|null
+	 */
+    public function getDisplayName(): ?string {
         return $this->display_name;
     }
 
@@ -286,20 +283,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param string $gmName
      * @return User
      */
-    public function setGmName($gmName)
-    {
+    public function setGmName(string $gmName): static {
         $this->gm_name = $gmName;
 
         return $this;
     }
 
-    /**
-     * Get gm_name
-     *
-     * @return string
-     */
-    public function getGmName()
-    {
+	/**
+	 * Get gm_name
+	 *
+	 * @return string|null
+	 */
+    public function getGmName(): ?string {
         return $this->gm_name;
     }
 
@@ -309,20 +304,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param boolean $publicAdmin
      * @return User
      */
-    public function setPublicAdmin($publicAdmin)
-    {
+    public function setPublicAdmin(bool $publicAdmin): static {
         $this->public_admin = $publicAdmin;
 
         return $this;
     }
 
-    /**
-     * Get public_admin
-     *
-     * @return boolean
-     */
-    public function getPublicAdmin()
-    {
+	/**
+	 * Get public_admin
+	 *
+	 * @return bool|null
+	 */
+    public function getPublicAdmin(): ?bool {
         return $this->public_admin;
     }
 
@@ -332,20 +325,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param DateTime $created
      * @return User
      */
-    public function setCreated($created)
-    {
+    public function setCreated(DateTime $created): static {
         $this->created = $created;
 
         return $this;
     }
 
-    /**
-     * Get created
-     *
-     * @return DateTime
-     */
-    public function getCreated()
-    {
+	/**
+	 * Get created
+	 *
+	 * @return DateTime|null
+	 */
+    public function getCreated(): ?DateTime {
         return $this->created;
     }
 
@@ -355,20 +346,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param integer $newCharsLimit
      * @return User
      */
-    public function setNewCharsLimit($newCharsLimit)
-    {
+    public function setNewCharsLimit(int $newCharsLimit): static {
         $this->new_chars_limit = $newCharsLimit;
 
         return $this;
     }
 
-    /**
-     * Get new_chars_limit
-     *
-     * @return integer
-     */
-    public function getNewCharsLimit()
-    {
+	/**
+	 * Get new_chars_limit
+	 *
+	 * @return int|null
+	 */
+    public function getNewCharsLimit(): ?int {
         return $this->new_chars_limit;
     }
 
@@ -378,20 +367,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param string $genomeSet
      * @return User
      */
-    public function setGenomeSet($genomeSet)
-    {
+    public function setGenomeSet($genomeSet): static {
         $this->genome_set = $genomeSet;
 
         return $this;
     }
 
-    /**
-     * Get genome_set
-     *
-     * @return string
-     */
-    public function getGenomeSet()
-    {
+	/**
+	 * Get genome_set
+	 *
+	 * @return string|null
+	 */
+    public function getGenomeSet(): ?string {
         return $this->genome_set;
     }
 
@@ -401,20 +388,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param string $appKey
      * @return User
      */
-    public function setAppKey($appKey)
-    {
+    public function setAppKey($appKey): static {
         $this->app_key = $appKey;
 
         return $this;
     }
 
-    /**
-     * Get app_key
-     *
-     * @return string
-     */
-    public function getAppKey()
-    {
+	/**
+	 * Get app_key
+	 *
+	 * @return string|null
+	 */
+    public function getAppKey(): ?string {
         return $this->app_key;
     }
 
@@ -424,20 +409,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param string $emailOptOutToken
      * @return User
      */
-    public function setEmailOptOutToken($emailOptOutToken)
-    {
+    public function setEmailOptOutToken($emailOptOutToken): static {
         $this->email_opt_out_token = $emailOptOutToken;
 
         return $this;
     }
 
-    /**
-     * Get email_opt_out_token
-     *
-     * @return string
-     */
-    public function getEmailOptOutToken()
-    {
+	/**
+	 * Get email_opt_out_token
+	 *
+	 * @return string|null
+	 */
+    public function getEmailOptOutToken(): ?string {
         return $this->email_opt_out_token;
     }
 
@@ -447,20 +430,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param string $emailDelay
      * @return User
      */
-    public function setEmailDelay($emailDelay)
-    {
+    public function setEmailDelay($emailDelay): static {
         $this->email_delay = $emailDelay;
 
         return $this;
     }
 
-    /**
-     * Get email_delay
-     *
-     * @return string
-     */
-    public function getEmailDelay()
-    {
+	/**
+	 * Get email_delay
+	 *
+	 * @return string|null
+	 */
+    public function getEmailDelay(): ?string {
         return $this->email_delay;
     }
 
@@ -470,20 +451,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param string $language
      * @return User
      */
-    public function setLanguage($language)
-    {
+    public function setLanguage($language): static {
         $this->language = $language;
 
         return $this;
     }
 
-    /**
-     * Get language
-     *
-     * @return string
-     */
-    public function getLanguage()
-    {
+	/**
+	 * Get language
+	 *
+	 * @return string|null
+	 */
+    public function getLanguage(): ?string {
         return $this->language;
     }
 
@@ -493,20 +472,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param boolean $notifications
      * @return User
      */
-    public function setNotifications($notifications)
-    {
+    public function setNotifications($notifications): static {
         $this->notifications = $notifications;
 
         return $this;
     }
 
-    /**
-     * Get notifications
-     *
-     * @return boolean
-     */
-    public function getNotifications()
-    {
+	/**
+	 * Get notifications
+	 *
+	 * @return bool|null
+	 */
+    public function getNotifications(): ?bool {
         return $this->notifications;
     }
 
@@ -516,20 +493,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param boolean $newsletter
      * @return User
      */
-    public function setNewsletter($newsletter)
-    {
+    public function setNewsletter($newsletter): static {
         $this->newsletter = $newsletter;
 
         return $this;
     }
 
-    /**
-     * Get newsletter
-     *
-     * @return boolean
-     */
-    public function getNewsletter()
-    {
+	/**
+	 * Get newsletter
+	 *
+	 * @return bool|null
+	 */
+    public function getNewsletter(): ?bool {
         return $this->newsletter;
     }
 
@@ -539,20 +514,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param boolean $public
      * @return User
      */
-    public function setPublic($public)
-    {
+    public function setPublic($public): static {
         $this->public = $public;
 
         return $this;
     }
 
-    /**
-     * Get public
-     *
-     * @return boolean
-     */
-    public function getPublic()
-    {
+	/**
+	 * Get public
+	 *
+	 * @return bool|null
+	 */
+    public function getPublic(): ?bool {
         return $this->public;
     }
 
@@ -562,20 +535,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param integer $artifactsLimit
      * @return User
      */
-    public function setArtifactsLimit($artifactsLimit)
-    {
+    public function setArtifactsLimit($artifactsLimit): static {
         $this->artifacts_limit = $artifactsLimit;
 
         return $this;
     }
 
-    /**
-     * Get artifacts_limit
-     *
-     * @return integer
-     */
-    public function getArtifactsLimit()
-    {
+	/**
+	 * Get artifacts_limit
+	 *
+	 * @return int|null
+	 */
+    public function getArtifactsLimit(): ?int {
         return $this->artifacts_limit;
     }
 
@@ -585,20 +556,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param DateTime $nextSpawnTime
      * @return User
      */
-    public function setNextSpawnTime($nextSpawnTime)
-    {
+    public function setNextSpawnTime($nextSpawnTime): static {
         $this->next_spawn_time = $nextSpawnTime;
 
         return $this;
     }
 
-    /**
-     * Get next_spawn_time
-     *
-     * @return DateTime
-     */
-    public function getNextSpawnTime()
-    {
+	/**
+	 * Get next_spawn_time
+	 *
+	 * @return DateTime|null
+	 */
+    public function getNextSpawnTime(): ?DateTime {
         return $this->next_spawn_time;
     }
 
@@ -608,20 +577,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param boolean $showPatronage
      * @return User
      */
-    public function setShowPatronage($showPatronage)
-    {
+    public function setShowPatronage($showPatronage): static {
         $this->show_patronage = $showPatronage;
 
         return $this;
     }
 
-    /**
-     * Get show_patronage
-     *
-     * @return boolean
-     */
-    public function getShowPatronage()
-    {
+	/**
+	 * Get show_patronage
+	 *
+	 * @return bool|null
+	 */
+    public function getShowPatronage(): ?bool {
         return $this->show_patronage;
     }
 
@@ -631,20 +598,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param integer $accountLevel
      * @return User
      */
-    public function setAccountLevel($accountLevel)
-    {
+    public function setAccountLevel($accountLevel): static {
         $this->account_level = $accountLevel;
 
         return $this;
     }
 
-    /**
-     * Get account_level
-     *
-     * @return integer
-     */
-    public function getAccountLevel()
-    {
+	/**
+	 * Get account_level
+	 *
+	 * @return int|null
+	 */
+    public function getAccountLevel(): ?int {
         return $this->account_level;
     }
 
@@ -654,20 +619,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param integer $oldAccountLevel
      * @return User
      */
-    public function setOldAccountLevel($oldAccountLevel)
-    {
+    public function setOldAccountLevel($oldAccountLevel): static {
         $this->old_account_level = $oldAccountLevel;
 
         return $this;
     }
 
-    /**
-     * Get old_account_level
-     *
-     * @return integer
-     */
-    public function getOldAccountLevel()
-    {
+	/**
+	 * Get old_account_level
+	 *
+	 * @return int|null
+	 */
+    public function getOldAccountLevel(): ?int {
         return $this->old_account_level;
     }
 
@@ -677,20 +640,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param integer $vipStatus
      * @return User
      */
-    public function setVipStatus($vipStatus)
-    {
+    public function setVipStatus($vipStatus): static {
         $this->vip_status = $vipStatus;
 
         return $this;
     }
 
-    /**
-     * Get vip_status
-     *
-     * @return integer
-     */
-    public function getVipStatus()
-    {
+	/**
+	 * Get vip_status
+	 *
+	 * @return int|null
+	 */
+    public function getVipStatus(): ?int {
         return $this->vip_status;
     }
 
@@ -700,20 +661,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param DateTime $paidUntil
      * @return User
      */
-    public function setPaidUntil($paidUntil)
-    {
+    public function setPaidUntil($paidUntil): static {
         $this->paid_until = $paidUntil;
 
         return $this;
     }
 
-    /**
-     * Get paid_until
-     *
-     * @return DateTime
-     */
-    public function getPaidUntil()
-    {
+	/**
+	 * Get paid_until
+	 *
+	 * @return DateTime|null
+	 */
+    public function getPaidUntil(): ?DateTime {
         return $this->paid_until;
     }
 
@@ -723,20 +682,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param integer $credits
      * @return User
      */
-    public function setCredits($credits)
-    {
+    public function setCredits($credits): static {
         $this->credits = $credits;
 
         return $this;
     }
 
-    /**
-     * Get credits
-     *
-     * @return integer
-     */
-    public function getCredits()
-    {
+	/**
+	 * Get credits
+	 *
+	 * @return int|null
+	 */
+    public function getCredits(): ?int {
         return $this->credits;
     }
 
@@ -746,100 +703,91 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
      * @param boolean $restricted
      * @return User
      */
-    public function setRestricted($restricted)
-    {
+    public function setRestricted($restricted): static {
         $this->restricted = $restricted;
 
         return $this;
     }
 
-    /**
-     * Get restricted
-     *
-     * @return boolean
-     */
-    public function getRestricted()
-    {
+	/**
+	 * Get restricted
+	 *
+	 * @return bool|null
+	 */
+    public function getRestricted(): ?bool {
         return $this->restricted;
     }
 
-    /**
-     * Set description
-     *
-     * @param \App\Entity\Description $description
-     * @return User
-     */
-    public function setDescription(\App\Entity\Description $description = null)
-    {
+	/**
+	 * Set description
+	 *
+	 * @param Description|null $description
+	 * @return User
+	 */
+    public function setDescription(Description $description = null): static {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get description
-     *
-     * @return \App\Entity\Description
-     */
-    public function getDescription()
-    {
+	/**
+	 * Get description
+	 *
+	 * @return Description|null
+	 */
+    public function getDescription(): ?Description {
         return $this->description;
     }
 
-    /**
-     * Set current_character
-     *
-     * @param \App\Entity\Character $currentCharacter
-     * @return User
-     */
-    public function setCurrentCharacter(\App\Entity\Character $currentCharacter = null)
-    {
+	/**
+	 * Set current_character
+	 *
+	 * @param Character|null $currentCharacter
+	 * @return User
+	 */
+    public function setCurrentCharacter(Character $currentCharacter = null): static {
         $this->current_character = $currentCharacter;
 
         return $this;
     }
 
-    /**
-     * Get current_character
-     *
-     * @return \App\Entity\Character
-     */
-    public function getCurrentCharacter()
-    {
+	/**
+	 * Get current_character
+	 *
+	 * @return Character|null
+	 */
+    public function getCurrentCharacter(): ?Character {
         return $this->current_character;
     }
 
-    /**
-     * Set limits
-     *
-     * @param \App\Entity\UserLimits $limits
-     * @return User
-     */
-    public function setLimits(\App\Entity\UserLimits $limits = null)
-    {
+	/**
+	 * Set limits
+	 *
+	 * @param UserLimits|null $limits
+	 * @return User
+	 */
+    public function setLimits(UserLimits $limits = null): static {
         $this->limits = $limits;
 
         return $this;
     }
 
-    /**
-     * Get limits
-     *
-     * @return \App\Entity\UserLimits
-     */
-    public function getLimits()
-    {
+	/**
+	 * Get limits
+	 *
+	 * @return UserLimits|null
+	 */
+    public function getLimits(): ?UserLimits {
         return $this->limits;
     }
 
     /**
      * Add descriptions
      *
-     * @param \App\Entity\Description $descriptions
+     * @param Description $descriptions
      * @return User
      */
-    public function addDescription(\App\Entity\Description $descriptions)
-    {
+    public function addDescription(Description $descriptions): static {
         $this->descriptions[] = $descriptions;
 
         return $this;
@@ -848,31 +796,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove descriptions
      *
-     * @param \App\Entity\Description $descriptions
+     * @param Description $descriptions
      */
-    public function removeDescription(\App\Entity\Description $descriptions)
+    public function removeDescription(Description $descriptions)
     {
         $this->descriptions->removeElement($descriptions);
     }
 
-    /**
-     * Get descriptions
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getDescriptions()
-    {
+	/**
+	 * Get descriptions
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getDescriptions(): ArrayCollection|Collection|null {
         return $this->descriptions;
     }
 
     /**
      * Add payments
      *
-     * @param \App\Entity\UserPayment $payments
+     * @param UserPayment $payments
      * @return User
      */
-    public function addPayment(\App\Entity\UserPayment $payments)
-    {
+    public function addPayment(UserPayment $payments): static {
         $this->payments[] = $payments;
 
         return $this;
@@ -881,31 +827,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove payments
      *
-     * @param \App\Entity\UserPayment $payments
+     * @param UserPayment $payments
      */
-    public function removePayment(\App\Entity\UserPayment $payments)
+    public function removePayment(UserPayment $payments)
     {
         $this->payments->removeElement($payments);
     }
 
-    /**
-     * Get payments
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPayments()
-    {
+	/**
+	 * Get payments
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getPayments(): ArrayCollection|Collection|null {
         return $this->payments;
     }
 
     /**
      * Add credit_history
      *
-     * @param \App\Entity\CreditHistory $creditHistory
+     * @param CreditHistory $creditHistory
      * @return User
      */
-    public function addCreditHistory(\App\Entity\CreditHistory $creditHistory)
-    {
+    public function addCreditHistory(CreditHistory $creditHistory): static {
         $this->credit_history[] = $creditHistory;
 
         return $this;
@@ -914,31 +858,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove credit_history
      *
-     * @param \App\Entity\CreditHistory $creditHistory
+     * @param CreditHistory $creditHistory
      */
-    public function removeCreditHistory(\App\Entity\CreditHistory $creditHistory)
+    public function removeCreditHistory(CreditHistory $creditHistory)
     {
         $this->credit_history->removeElement($creditHistory);
     }
 
-    /**
-     * Get credit_history
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCreditHistory()
-    {
+	/**
+	 * Get credit_history
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getCreditHistory(): ArrayCollection|Collection|null {
         return $this->credit_history;
     }
 
     /**
      * Add characters
      *
-     * @param \App\Entity\Character $characters
+     * @param Character $characters
      * @return User
      */
-    public function addCharacter(\App\Entity\Character $characters)
-    {
+    public function addCharacter(Character $characters): static {
         $this->characters[] = $characters;
 
         return $this;
@@ -947,31 +889,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove characters
      *
-     * @param \App\Entity\Character $characters
+     * @param Character $characters
      */
-    public function removeCharacter(\App\Entity\Character $characters)
+    public function removeCharacter(Character $characters)
     {
         $this->characters->removeElement($characters);
     }
 
-    /**
-     * Get characters
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCharacters()
-    {
+	/**
+	 * Get characters
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getCharacters(): ArrayCollection|Collection|null {
         return $this->characters;
     }
 
     /**
      * Add ratings_given
      *
-     * @param \App\Entity\CharacterRating $ratingsGiven
+     * @param CharacterRating $ratingsGiven
      * @return User
      */
-    public function addRatingsGiven(\App\Entity\CharacterRating $ratingsGiven)
-    {
+    public function addRatingsGiven(CharacterRating $ratingsGiven): static {
         $this->ratings_given[] = $ratingsGiven;
 
         return $this;
@@ -980,31 +920,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove ratings_given
      *
-     * @param \App\Entity\CharacterRating $ratingsGiven
+     * @param CharacterRating $ratingsGiven
      */
-    public function removeRatingsGiven(\App\Entity\CharacterRating $ratingsGiven)
+    public function removeRatingsGiven(CharacterRating $ratingsGiven)
     {
         $this->ratings_given->removeElement($ratingsGiven);
     }
 
-    /**
-     * Get ratings_given
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRatingsGiven()
-    {
+	/**
+	 * Get ratings_given
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getRatingsGiven(): ArrayCollection|Collection|null {
         return $this->ratings_given;
     }
 
     /**
      * Add rating_votes
      *
-     * @param \App\Entity\CharacterRatingVote $ratingVotes
+     * @param CharacterRatingVote $ratingVotes
      * @return User
      */
-    public function addRatingVote(\App\Entity\CharacterRatingVote $ratingVotes)
-    {
+    public function addRatingVote(CharacterRatingVote $ratingVotes): static {
         $this->rating_votes[] = $ratingVotes;
 
         return $this;
@@ -1013,31 +951,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove rating_votes
      *
-     * @param \App\Entity\CharacterRatingVote $ratingVotes
+     * @param CharacterRatingVote $ratingVotes
      */
-    public function removeRatingVote(\App\Entity\CharacterRatingVote $ratingVotes)
+    public function removeRatingVote(CharacterRatingVote $ratingVotes)
     {
         $this->rating_votes->removeElement($ratingVotes);
     }
 
-    /**
-     * Get rating_votes
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getRatingVotes()
-    {
+	/**
+	 * Get rating_votes
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getRatingVotes(): ArrayCollection|Collection|null {
         return $this->rating_votes;
     }
 
     /**
      * Add artifacts
      *
-     * @param \App\Entity\Artifact $artifacts
+     * @param Artifact $artifacts
      * @return User
      */
-    public function addArtifact(\App\Entity\Artifact $artifacts)
-    {
+    public function addArtifact(Artifact $artifacts): static {
         $this->artifacts[] = $artifacts;
 
         return $this;
@@ -1046,31 +982,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove artifacts
      *
-     * @param \App\Entity\Artifact $artifacts
+     * @param Artifact $artifacts
      */
-    public function removeArtifact(\App\Entity\Artifact $artifacts)
+    public function removeArtifact(Artifact $artifacts)
     {
         $this->artifacts->removeElement($artifacts);
     }
 
-    /**
-     * Get artifacts
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getArtifacts()
-    {
+	/**
+	 * Get artifacts
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getArtifacts(): ArrayCollection|Collection|null {
         return $this->artifacts;
     }
 
     /**
      * Add listings
      *
-     * @param \App\Entity\Listing $listings
+     * @param Listing $listings
      * @return User
      */
-    public function addListing(\App\Entity\Listing $listings)
-    {
+    public function addListing(Listing $listings): static {
         $this->listings[] = $listings;
 
         return $this;
@@ -1079,31 +1013,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove listings
      *
-     * @param \App\Entity\Listing $listings
+     * @param Listing $listings
      */
-    public function removeListing(\App\Entity\Listing $listings)
+    public function removeListing(Listing $listings)
     {
         $this->listings->removeElement($listings);
     }
 
-    /**
-     * Get listings
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getListings()
-    {
+	/**
+	 * Get listings
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getListings(): ArrayCollection|Collection|null {
         return $this->listings;
     }
 
     /**
      * Add crests
      *
-     * @param \App\Entity\Heraldry $crests
+     * @param Heraldry $crests
      * @return User
      */
-    public function addCrest(\App\Entity\Heraldry $crests)
-    {
+    public function addCrest(Heraldry $crests): static {
         $this->crests[] = $crests;
 
         return $this;
@@ -1112,31 +1044,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove crests
      *
-     * @param \App\Entity\Heraldry $crests
+     * @param Heraldry $crests
      */
-    public function removeCrest(\App\Entity\Heraldry $crests)
+    public function removeCrest(Heraldry $crests)
     {
         $this->crests->removeElement($crests);
     }
 
-    /**
-     * Get crests
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCrests()
-    {
+	/**
+	 * Get crests
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getCrests(): ArrayCollection|Collection|null {
         return $this->crests;
     }
 
     /**
      * Add patronizing
      *
-     * @param \App\Entity\Patron $patronizing
+     * @param Patron $patronizing
      * @return User
      */
-    public function addPatronizing(\App\Entity\Patron $patronizing)
-    {
+    public function addPatronizing(Patron $patronizing): static {
         $this->patronizing[] = $patronizing;
 
         return $this;
@@ -1145,31 +1075,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove patronizing
      *
-     * @param \App\Entity\Patron $patronizing
+     * @param Patron $patronizing
      */
-    public function removePatronizing(\App\Entity\Patron $patronizing)
+    public function removePatronizing(Patron $patronizing)
     {
         $this->patronizing->removeElement($patronizing);
     }
 
-    /**
-     * Get patronizing
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getPatronizing()
-    {
+	/**
+	 * Get patronizing
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getPatronizing(): ArrayCollection|Collection|null {
         return $this->patronizing;
     }
 
     /**
      * Add reports
      *
-     * @param \App\Entity\UserReport $reports
+     * @param UserReport $reports
      * @return User
      */
-    public function addReport(\App\Entity\UserReport $reports)
-    {
+    public function addReport(UserReport $reports): static {
         $this->reports[] = $reports;
 
         return $this;
@@ -1178,31 +1106,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove reports
      *
-     * @param \App\Entity\UserReport $reports
+     * @param UserReport $reports
      */
-    public function removeReport(\App\Entity\UserReport $reports)
+    public function removeReport(UserReport $reports)
     {
         $this->reports->removeElement($reports);
     }
 
-    /**
-     * Get reports
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getReports()
-    {
+	/**
+	 * Get reports
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getReports(): ArrayCollection|Collection|null {
         return $this->reports;
     }
 
     /**
      * Add reports_against
      *
-     * @param \App\Entity\UserReportAgainst $reportsAgainst
+     * @param UserReportAgainst $reportsAgainst
      * @return User
      */
-    public function addReportsAgainst(\App\Entity\UserReportAgainst $reportsAgainst)
-    {
+    public function addReportsAgainst(UserReportAgainst $reportsAgainst): static {
         $this->reports_against[] = $reportsAgainst;
 
         return $this;
@@ -1211,31 +1137,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove reports_against
      *
-     * @param \App\Entity\UserReportAgainst $reportsAgainst
+     * @param UserReportAgainst $reportsAgainst
      */
-    public function removeReportsAgainst(\App\Entity\UserReportAgainst $reportsAgainst)
+    public function removeReportsAgainst(UserReportAgainst $reportsAgainst)
     {
         $this->reports_against->removeElement($reportsAgainst);
     }
 
-    /**
-     * Get reports_against
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getReportsAgainst()
-    {
+	/**
+	 * Get reports_against
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getReportsAgainst(): ArrayCollection|Collection|null {
         return $this->reports_against;
     }
 
     /**
      * Add added_report_notes
      *
-     * @param \App\Entity\UserReportNote $addedReportNotes
+     * @param UserReportNote $addedReportNotes
      * @return User
      */
-    public function addAddedReportNote(\App\Entity\UserReportNote $addedReportNotes)
-    {
+    public function addAddedReportNote(UserReportNote $addedReportNotes): static {
         $this->added_report_notes[] = $addedReportNotes;
 
         return $this;
@@ -1244,31 +1168,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove added_report_notes
      *
-     * @param \App\Entity\UserReportNote $addedReportNotes
+     * @param UserReportNote $addedReportNotes
      */
-    public function removeAddedReportNote(\App\Entity\UserReportNote $addedReportNotes)
+    public function removeAddedReportNote(UserReportNote $addedReportNotes)
     {
         $this->added_report_notes->removeElement($addedReportNotes);
     }
 
-    /**
-     * Get added_report_notes
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getAddedReportNotes()
-    {
+	/**
+	 * Get added_report_notes
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getAddedReportNotes(): ArrayCollection|Collection|null {
         return $this->added_report_notes;
     }
 
     /**
      * Add mail_entries
      *
-     * @param \App\Entity\MailEntry $mailEntries
+     * @param MailEntry $mailEntries
      * @return User
      */
-    public function addMailEntry(\App\Entity\MailEntry $mailEntries)
-    {
+    public function addMailEntry(MailEntry $mailEntries): static {
         $this->mail_entries[] = $mailEntries;
 
         return $this;
@@ -1277,31 +1199,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove mail_entries
      *
-     * @param \App\Entity\MailEntry $mailEntries
+     * @param MailEntry $mailEntries
      */
-    public function removeMailEntry(\App\Entity\MailEntry $mailEntries)
+    public function removeMailEntry(MailEntry $mailEntries)
     {
         $this->mail_entries->removeElement($mailEntries);
     }
 
-    /**
-     * Get mail_entries
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getMailEntries()
-    {
+	/**
+	 * Get mail_entries
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getMailEntries(): ArrayCollection|Collection|null {
         return $this->mail_entries;
     }
 
     /**
      * Add keys
      *
-     * @param \App\Entity\AppKey $keys
+     * @param AppKey $keys
      * @return User
      */
-    public function addKey(\App\Entity\AppKey $keys)
-    {
+    public function addKey(AppKey $keys): static {
         $this->keys[] = $keys;
 
         return $this;
@@ -1310,31 +1230,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove keys
      *
-     * @param \App\Entity\AppKey $keys
+     * @param AppKey $keys
      */
-    public function removeKey(\App\Entity\AppKey $keys)
+    public function removeKey(AppKey $keys)
     {
         $this->keys->removeElement($keys);
     }
 
-    /**
-     * Get keys
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getKeys()
-    {
+	/**
+	 * Get keys
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getKeys(): ArrayCollection|Collection|null {
         return $this->keys;
     }
 
     /**
      * Add cultures
      *
-     * @param \App\Entity\Culture $cultures
+     * @param Culture $cultures
      * @return User
      */
-    public function addCulture(\App\Entity\Culture $cultures)
-    {
+    public function addCulture(Culture $cultures): static {
         $this->cultures[] = $cultures;
 
         return $this;
@@ -1343,20 +1261,19 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     /**
      * Remove cultures
      *
-     * @param \App\Entity\Culture $cultures
+     * @param Culture $cultures
      */
-    public function removeCulture(\App\Entity\Culture $cultures)
+    public function removeCulture(Culture $cultures)
     {
         $this->cultures->removeElement($cultures);
     }
 
-    /**
-     * Get cultures
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCultures()
-    {
+	/**
+	 * Get cultures
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+    public function getCultures(): ArrayCollection|Collection|null {
         return $this->cultures;
     }
 
@@ -1396,12 +1313,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function getLastLogin(): ?\DateTimeInterface
+    public function getLastLogin(): ?DateTimeInterface
     {
         return $this->lastLogin;
     }
 
-    public function setLastLogin(?\DateTimeInterface $lastLogin): self
+    public function setLastLogin(?DateTimeInterface $lastLogin): self
     {
         $this->lastLogin = $lastLogin;
 
@@ -1420,12 +1337,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function getPasswordRequestedAt(): ?\DateTimeInterface
+    public function getPasswordRequestedAt(): ?DateTimeInterface
     {
         return $this->passwordRequestedAt;
     }
 
-    public function setPasswordRequestedAt(?\DateTimeInterface $passwordRequestedAt): self
+    public function setPasswordRequestedAt(?DateTimeInterface $passwordRequestedAt): self
     {
         $this->passwordRequestedAt = $passwordRequestedAt;
 
@@ -1491,12 +1408,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function getResetTime(): ?\DateTimeInterface
+    public function getResetTime(): ?DateTimeInterface
     {
         return $this->reset_time;
     }
 
-    public function setResetTime(?\DateTimeInterface $reset_time): self
+    public function setResetTime(?DateTimeInterface $reset_time): self
     {
         $this->reset_time = $reset_time;
 
@@ -1595,6 +1512,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     public function setWatched(?bool $watched): self
     {
         $this->watched = $watched;
+
+        return $this;
+    }
+
+    public function isBypassExits(): ?bool
+    {
+        return $this->bypass_exits;
+    }
+
+    public function setBypassExits(?bool $bypass_exits): static
+    {
+        $this->bypass_exits = $bypass_exits;
 
         return $this;
     }

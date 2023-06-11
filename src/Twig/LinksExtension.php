@@ -222,7 +222,7 @@ class LinksExtension extends AbstractExtension {
 			case 'activityreport':  return 'maf_activity_report';
 			case 'character':       return 'maf_char_view';
 			case 'settlement':      return 'maf_settlement';
-			case 'battle':    	return 'maf_battle';
+			case 'battle':    	return 'maf_queue_battle';
 			case 'battlereport':    return 'maf_battlereport';
 			case 'realm':           return 'maf_realm';
 			case 'realmposition':   return 'maf_position';
@@ -232,9 +232,9 @@ class LinksExtension extends AbstractExtension {
 			case 'building':
 			case 'buildingtype':    return 'maf_info_buildingtype';
 			case 'entourage':
-			case 'entouragetype':   return 'bm2_site_info_entouragetype';
-			case 'equipmenttype':   return 'bm2_site_info_equipmenttype';
-			case 'action':		return 'maf_action_details';
+			case 'entouragetype':   return 'maf_info_entouragetype';
+			case 'equipmenttype':   return 'maf_info_equipmenttype';
+			case 'action':		return 'maf_queue_details';
 			case 'election':	return 'maf_realm_vote';
 			case 'mercenaries':	return 'maf_mercenaries';
 			case 'quest':		return 'maf_quests_details';
