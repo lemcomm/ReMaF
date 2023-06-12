@@ -16,6 +16,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 
 
+/**
+ * Form for handling an interaction between characters.
+ *
+ * Accepts the following options (in their legacy order):
+ * * 'action' - string - type of action
+ * * 'maxdistance' - integer - interaction range to search for characters in. Use Geography->calculateInteractionDistance($char)
+ * * 'me' - Character Entity - the character to search from, generally who is doing the action
+ * * 'multiple' - boolean (false) - Allow multiple targets
+ * * 'settlementcheck' - boolean (false) - Respect inside/outside settlements
+ * * 'required' - boolean (true) - Set target field as required/don't accept null.
+ */
 class InteractionType extends AbstractType {
 	public function getName() {
 		return 'interaction';

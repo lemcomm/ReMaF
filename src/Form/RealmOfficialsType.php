@@ -44,8 +44,4 @@ class RealmOfficialsType extends AbstractType {
 
 		$builder->add('submit', SubmitType::class, array('label'=>'position.appoint.submit'));
 	}
-
-	public function getName() {
-		return 'realmofficials';
-	}
 }

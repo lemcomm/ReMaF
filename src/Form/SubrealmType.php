@@ -1,12 +1,22 @@
 <?php
 
-namespace BM2\SiteBundle\Form;
+namespace App\Form;
 
+use App\Entity\Character;
+use App\Entity\Settlement;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 
+/**
+ * Form for creating a new subrealm.
+ * Accepts 'realm' as variable. Expects a Realm object.
+ */
 class SubrealmType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver) {
@@ -20,49 +30,48 @@ class SubrealmType extends AbstractType {
 
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 		$realm = $options['realm'];
+		$realmtypes = array();
+		for ($i=1;$i<$realm->getType();$i++) {
+			$realmtypes[$i] = 'realm.type.'.$i;
+		}
 
-		$builder->add('settlement', 'entity', array(
+		$builder->add('settlement', EntityType::class, array(
 			'label' => 'diplomacy.subrealm.estates',
 			'multiple'=>true,
 			'expanded'=>true,
-			'class'=>'BM2SiteBundle:Settlement', 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($realm) {
+			'class'=>Settlement::class,
+			'choice_label'=>'name',
+			'query_builder'=>function(EntityRepository $er) use ($realm) {
 				$qb = $er->createQueryBuilder('e');
 				$qb->where('e.realm = :realm')->setParameter('realm', $realm);
 				$qb->orderBy('e.name');
 				return $qb;
 			},
 		));
-
-		$builder->add('name', 'text', array(
+		$builder->add('name', TextType::class, array(
 			'label'=>'realm.name',
 			'required'=>true,
 			'attr' => array('size'=>20, 'maxlength'=>40)
 		));
-		$builder->add('formal_name', 'text', array(
+		$builder->add('formal_name', TextType::class, array(
 			'label'=>'realm.formalname',
 			'required'=>true,
 			'attr' => array('size'=>40, 'maxlength'=>160)
 		));
-
-		$realmtypes = array();
-		for ($i=1;$i<$this->realm->getType();$i++) {
-			$realmtypes[$i] = 'realm.type.'.$i;
-		}
-
-		$builder->add('type', 'choice', array(
+		$builder->add('type', ChoiceType::class, array(
 			'required'=>true,
 			'placeholder'=>'diplomacy.subrealm.empty',
 			'choices' => $realmtypes,
 			'label'=> 'realm.designation',
 		));
-
-
-		$builder->add('ruler', 'entity', array(
+		$builder->add('ruler', EntityType::class, array(
 			'label' => 'diplomacy.subrealm.ruler',
 			'placeholder'=>'diplomacy.subrealm.empty',
 			'multiple'=>false,
 			'expanded'=>false,
-			'class'=>'BM2SiteBundle:Character', 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($realm) {
+			'class'=>Character::class,
+			'choice_label'=>'name',
+			'query_builder'=>function(EntityRepository $er) use ($realm) {
 				$qb = $er->createQueryBuilder('c');
 				$qb->join('c.owned_settlements', 's');
 				$qb->where('s.realm = :realm')->setParameter('realm', $realm);
@@ -70,12 +79,6 @@ class SubrealmType extends AbstractType {
 				return $qb;
 			},
 		));
-
-
-		$builder->add('submit', 'submit', array('label'=>'diplomacy.subrealm.submit'));
-	}
-
-	public function getName() {
-		return 'estates';
+		$builder->add('submit', SubmitType::class, array('label'=>'diplomacy.subrealm.submit'));
 	}
 }

@@ -553,7 +553,7 @@ class MilitaryManager {
 			$unit->setSupplier($data['supplier']);
 			# Data can be passed as null, which works below because it's set as such, but not here because this doens't exist.
 		}
-		$settings = $this->newUnitSettings($unit, $character, $data, true); #true to tell newUnitSettings not to flush so we can do it here.
+		$this->newUnitSettings($unit, $character, $data, true); #true to tell newUnitSettings not to flush so we can do it here.
 		$this->em->flush();
 		if ($home) {
 			$owner = $home->getOwner();

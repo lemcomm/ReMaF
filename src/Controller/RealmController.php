@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Permission;
 use App\Entity\Realm;
 use App\Entity\RealmPosition;
 use App\Entity\Character;
@@ -30,11 +31,14 @@ use App\Service\History;
 use App\Service\NotificationManager;
 use App\Service\Politics;
 use App\Service\RealmManager;
+use DateInterval;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
@@ -45,7 +49,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /*
-	FIXME: some of this stuff should be moved to the new realm manager service
+	FIXME: some of this stuff should be moved to the realm manager service
 */
 
 /*
@@ -116,7 +120,7 @@ class RealmController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$query = $em->createQuery('SELECT r FROM BM2SiteBundle:RealmRelation r WHERE r.source_realm = :me OR r.target_realm = :me');
+		$query = $em->createQuery('SELECT r FROM App:RealmRelation r WHERE r.source_realm = :me OR r.target_realm = :me');
 		$query->setParameter('me', $realm);
 
 		$diplomacy = array();
@@ -195,7 +199,7 @@ class RealmController extends AbstractController {
 	private function checkRealmNames($form, $name, $formalname, $me=null): bool {
 		$fail = false;
 		$em = $this->em;
-		$allrealms = $em->getRepository('BM2SiteBundle:Realm')->findAll();
+		$allrealms = $em->getRepository(Realm::class)->findAll();
 		foreach ($allrealms as $other) {
 			if ($other == $me) continue;
 			if (levenshtein($name, $other->getName()) < min(3, min(strlen($name), strlen($other->getName()))*0.75)) {
@@ -355,7 +359,12 @@ class RealmController extends AbstractController {
 		}
 
 		$success=false;
-		$form = $this->createForm(new InteractionType('abdicate', $this->geo->calculateInteractionDistance($character), $character, false, true));
+		$form = $this->createForm(InteractionType::class, null, [
+			'action'=>'abidcate',
+			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
+			'me'=>$character,
+			'settlementcheck'=>true,
+		]);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
@@ -391,8 +400,6 @@ class RealmController extends AbstractController {
 				'translation_domain' => 'politics'
 				))
 			->getForm();
-
-		$success=false;
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$fail = false;
@@ -584,7 +591,7 @@ class RealmController extends AbstractController {
 		return $this->render('Realm/position.html.twig', [
 			'realm' => $realm,
 			'position' => $position,
-			'permissions' => $em->getRepository('BM2SiteBundle:Permission')->findByClass('realm'),
+			'permissions' => $em->getRepository(Permission::class)->findBy(['class'=>'realm']),
 			'form' => $form->createView()
 		]);
 	}
@@ -598,7 +605,7 @@ class RealmController extends AbstractController {
 
 		$em = $this->em;
 
-		if (!$position || $position->getRealm() !== $realm) {
+		if ($position->getRealm() !== $realm) {
 			throw $this->createNotFoundException('error.notfound.position');
 		}
 
@@ -612,8 +619,6 @@ class RealmController extends AbstractController {
 		$form = $this->createForm(RealmOfficialsType::class, null, ['candidates'=>$candidates, 'holders'=>$position->getHolders()]);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
-			$data = $form->getData();
-
 			// TODO: to prevent spam and other abuses, put a time limit on this or make it a timed action
 			$nodemoruler=false; $ok=false;
 			foreach ($candidates as $candidate) {
@@ -674,7 +679,7 @@ class RealmController extends AbstractController {
 	}
 	
 	#[Route('/realm/{realm}/accolades', name:'maf_realm_accolades', requirements:['realm'=>'\d+'])]
-	public function triumphsAction(Realm $realm, Request $request): RedirectResponse {
+	public function triumphsAction(Realm $realm, Request $request): RedirectResponse|Response {
 		$this->addFlash('notice', "This feature isn't quite ready yet, sorry!");
 		return $this->redirectToRoute('maf_index');
 		// FIXME: these should be visible to all realm members - seperate method or same?
@@ -690,7 +695,7 @@ class RealmController extends AbstractController {
 	}
 
 	#[Route('/realm/{realm}/diplomacy', name:'maf_realm_diplomacy', requirements:['realm'=>'\d+'])]
-	public function diplomacyAction(Realm $realm, Request $request): RedirectResponse|Response {
+	public function diplomacyAction(Realm $realm): RedirectResponse|Response {
 		$character = $this->gateway($realm, 'hierarchyDiplomacyTest');
 		if (!($character instanceof Character)) {
 			return $this->redirectToRoute($character);
@@ -716,14 +721,11 @@ class RealmController extends AbstractController {
 
 	   	if (is_resource($process)) {
 	   		$dot = $this->renderView('Realm/hierarchy.dot.twig', array('hierarchy'=>$this->hierarchy, 'me'=>$realm));
-
 	   		fwrite($pipes[0], $dot);
 	   		fclose($pipes[0]);
-
 	   		$svg = stream_get_contents($pipes[1]);
 	   		fclose($pipes[1]);
-
-	   		$return_value = proc_close($process);
+	   		proc_close($process);
 	   	}
 
 		return $this->render('Realm/hierarchy.html.twig', [
@@ -791,18 +793,15 @@ class RealmController extends AbstractController {
 			]);
 		}
 
-		$form = $this->createForm(new RealmSelectType($realms, 'join'));
-
+		$form = $this->createForm(RealmSelectType::class, null, ['realms'=>$realms, 'type'=>'join']);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$target = $data['target'];
 			$msg = $data['message'];
-
-			$data = $form->getData();
 			if ($target->getType() > $realm->getType()) {
-				$timeout = new \DateTime("now");
-				$timeout->add(new \DateInterval("P7D"));
+				$timeout = new DateTime("now");
+				$timeout->add(new DateInterval("P7D"));
 				# newRequestFromRealmToRealm($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, Character $fromChar = null, Realm $fromRealm = null, Realm $toRealm = null, Character $includeChar = null, Settlement $includeSettlement = null, Realm $includeRealm = null, Place $includePlace, RealmPosition $includePos = null)
 				$grm->newRequestFromRealmToRealm('realm.join', $timeout, null, null, $realm->getName().' Request to Join', $msg, $character, $realm, $target);
 				$this->addFlash('success', $this->trans->trans('realm.join.sent', ['%target%'=>$target->getName()], 'politics'));
@@ -828,7 +827,7 @@ class RealmController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createForm(new SubrealmType($realm));
+		$form = $this->createForm(SubrealmType::class, null, ['realm'=>$realm]);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
@@ -976,7 +975,7 @@ class RealmController extends AbstractController {
 			$parent = $realm->getSuperior();
 
 			$realm->getSuperior()->getInferiors()->removeElement($realm);
-			$realm->setSuperior(null);
+			$realm->setSuperior();
 
 			$this->hist->logEvent(
 				$realm,
@@ -1008,7 +1007,7 @@ class RealmController extends AbstractController {
 	}
 	
 	#[Route('/realm/{realm}/relations', name:'maf_realm_relations', requirements:['realm'=>'\d+'])]
-	public function relationsAction(Realm $realm, Request $request): Response {
+	public function relationsAction(Realm $realm): Response {
 		$relations = array();
 		foreach ($realm->getMyRelations() as $rel) {
 			$relations[$rel->getTargetRealm()->getId()]['link'] = $rel->getTargetRealm();
@@ -1039,7 +1038,7 @@ class RealmController extends AbstractController {
 
 		if ($relation==null) {
 			// make sure we don't duplicate a relation, e.g. when the player opens two tabs
-			$relation = $this->em->getRepository('BM2SiteBundle:RealmRelation')->findOneBy(array('source_realm'=>$realm, 'target_realm'=>$target));
+			$relation = $this->em->getRepository(RealmRelation::class)->findOneBy(array('source_realm'=>$realm, 'target_realm'=>$target));
 			if ($relation == null) {
 				$relation = new RealmRelation;
 				if ($target) {
@@ -1058,7 +1057,7 @@ class RealmController extends AbstractController {
 		if ($form->isValid()) {
 			$data = $form->getData();
 			$data->setSourceRealm($realm);
-			$data->setLastChange(new \DateTime("now"));
+			$data->setLastChange(new DateTime("now"));
 			// make sure important fields are not empty/null - which would cause fatal errors
 			if (!$data->getPublic()) $data->setPublic("");
 			if (!$data->getInternal()) $data->setInternal("");
@@ -1082,8 +1081,8 @@ class RealmController extends AbstractController {
 		]);
 	}
 	
-	#[Route('/realm/{realm}/delreation/{relation}/{target}', name:'maf_realm_delrelation', requirements:['realm'=>'\d+', 'relation'=>'\d+', 'target'=>'\d+'], defaults:['target'=>0])]
-	public function deleterelationAction(Realm $realm, Request $request, RealmRelation $relation=null, Realm $target=null): RedirectResponse {
+	#[Route('/realm/{realm}/delreation/{relation}', name:'maf_realm_delrelation', requirements:['realm'=>'\d+', 'relation'=>'\d+'], defaults:['target'=>0])]
+	public function deleterelationAction(Realm $realm, RealmRelation $relation=null): RedirectResponse {
 		$character = $this->gateway($realm, 'diplomacyRelationsTest');
 		if (!($character instanceof Character)) {
 			return $this->redirectToRoute($character);
@@ -1107,14 +1106,14 @@ class RealmController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$query = $em->createQuery('SELECT r FROM BM2SiteBundle:RealmRelation r WHERE r.source_realm = :me AND r.target_realm = :they');
+		$query = $em->createQuery('SELECT r FROM App:RealmRelation r WHERE r.source_realm = :me AND r.target_realm = :they');
 		$query->setParameters(array(
 			'me' => $realm,
 			'they' => $target
 		));
 		$we_to_them = $query->getOneOrNullResult();
 
-		$query = $em->createQuery('SELECT r FROM BM2SiteBundle:RealmRelation r WHERE r.source_realm = :they AND r.target_realm = :me');
+		$query = $em->createQuery('SELECT r FROM App:RealmRelation r WHERE r.source_realm = :they AND r.target_realm = :me');
 		$query->setParameters(array(
 			'me' => $realm,
 			'they' => $target
@@ -1188,11 +1187,8 @@ class RealmController extends AbstractController {
 			$form = $this->createForm(ElectionType::class, $election);
 			$form->handleRequest($request);
 			if ($form->isValid()) {
-				$data = $form->getData();
-
 				// FIXME: only ruler or those with appropriate permissions should be able to start an election for a position
-
-				$complete = new \DateTime("now");
+				$complete = new DateTime("now");
 				$duration = $form->get('duration')->getData();
 				switch ($duration) {
 					case 1:
@@ -1200,10 +1196,10 @@ class RealmController extends AbstractController {
 					case 5:
 					case 7:
 					case 10:
-						$complete->add(new \DateInterval("P".$duration."D"));
+						$complete->add(new DateInterval("P".$duration."D"));
 						break;
 					default:
-						$complete->add(new \DateInterval("P3D"));
+						$complete->add(new DateInterval("P3D"));
 				}
 				$election->setComplete($complete);
 
@@ -1279,11 +1275,11 @@ class RealmController extends AbstractController {
 				# First strip it of all non-numeric characters and see if we can find a character.
 				$id = preg_replace('/[^1234567890]*/', '', $input);
 				if ($id) {
-					$candidate = $em->getRepository('BM2SiteBundle:Character')->findOneBy(array('id'=>$id, 'alive' => TRUE));
+					$candidate = $em->getRepository(Character::class)->findOneBy(array('id'=>$id, 'alive' => TRUE));
 				} else {
 					# Presumably, that wasn't an ID. Assume it's just a name.
 					$name = trim(preg_replace('/[1234567890()]*/', '', $input));
-					$candidate = $em->getRepository('BM2SiteBundle:Character')->findOneBy(array('name' => $name, 'alive' => TRUE), array('id' => 'ASC'));
+					$candidate = $em->getRepository(Character::class)->findOneBy(array('name' => $name, 'alive' => TRUE), array('id' => 'ASC'));
 				}
 				if ($candidate) {
 					$vote = new Vote;
@@ -1299,7 +1295,7 @@ class RealmController extends AbstractController {
 		}
 
 		$form_votes = $this->createFormBuilder(null, array('translation_domain'=>'politics'))
-			->add('targets', 'collection', array(
+			->add('targets', CollectionType::class, array(
 			'type'		=> "text",
 			'allow_add'	=> true,
 			'allow_delete' => true,
@@ -1310,7 +1306,7 @@ class RealmController extends AbstractController {
 			if ($form_votes->isValid()) {
 				$data = $form_votes->getData();
 				foreach ($data['targets'] as $id=>$procontra) {
-					$myvote = $em->getRepository('BM2SiteBundle:Vote')->findOneBy(array('character'=>$character, 'election'=>$election, 'target_character'=>$id));
+					$myvote = $em->getRepository(Vote::class)->findOneBy(array('character'=>$character, 'election'=>$election, 'target_character'=>$id));
 					if ($myvote) {
 						switch ($procontra) {
 							case "pro":				$myvote->setVote(1); break;
@@ -1319,7 +1315,7 @@ class RealmController extends AbstractController {
 						}
 					} else {
 						if ($procontra == "pro" || $procontra == "contra") {
-							if ($candidate = $em->getRepository('BM2SiteBundle:Character')->find($id)) {
+							if ($candidate = $em->getRepository(Character::class)->find($id)) {
 								$vote = new Vote;
 								$vote->setCharacter($character);
 								$vote->setElection($election);
