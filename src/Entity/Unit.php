@@ -18,6 +18,16 @@ class Unit {
             		return $size;
             	}
 
+	public function getMilitiaCount(): int {
+		$c = 0;
+		foreach ($this->soldiers as $each) {
+			if ($each->isActive(true, true)) {
+				$c++;
+			}
+		}
+		return $c;
+	}
+
 	public function getActiveSoldiers() {
             		return $this->getSoldiers()->filter(
             			function($entry) {

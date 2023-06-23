@@ -72,6 +72,7 @@ class SecurityController extends AbstractController {
 			$user->setUsername($form->get('_username')->getData());
 			# Encode plain password in database
 			$user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
+			$user->setLastPassword(new \DateTime('now'));
 			#Generate activation token
 			$user->setToken($app->generateAndCheckToken(16, 'User', 'token'));
 
@@ -168,6 +169,7 @@ class SecurityController extends AbstractController {
                                 $form->handleRequest($request);
                                 if ($form->isSubmitted() && $form->isValid()) {
 					$user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
+					$user->setLastPassword(new \DateTime('now'));
                                         $user->unsetResetToken();
                                         $user->unsetResetTime();
                                         $em->flush();
