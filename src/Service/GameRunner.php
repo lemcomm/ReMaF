@@ -30,6 +30,7 @@ class GameRunner {
 	private PermissionManager $pm;
 	private NpcManager $npc;
 	private CharacterManager $cm;
+	private WarManager $wm;
 
 	private int $cycle=0;
 	private bool $output=false;
@@ -39,7 +40,8 @@ class GameRunner {
 
 	private int $bandits_ok_distance = 50000;
 	private $seen;
-	public function __construct(EntityManagerInterface $em, AppState $appstate, LoggerInterface $logger, ActionResolution $resolver, History $history, MilitaryManager $milman, Geography $geography, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm) {
+
+	public function __construct(EntityManagerInterface $em, AppState $appstate, LoggerInterface $logger, ActionResolution $resolver, History $history, MilitaryManager $milman, Geography $geography, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm, WarManager $wm) {
 		$this->em = $em;
 		$this->appstate = $appstate;
 		$this->logger = $logger;
@@ -52,6 +54,7 @@ class GameRunner {
 		$this->pm = $pm;
 		$this->npc = $npc;
 		$this->cm = $cm;
+		$this->wm = $wm;
 
 		$this->cycle = $this->appstate->getCycle();
 		$this->speedmod = $this->appstate->getGlobal('travel.speedmod', 1.0);
@@ -466,7 +469,7 @@ class GameRunner {
 		return true;
 	}
 
-	public function runSoldierUpdatesCycle() {
+	public function runSoldierCycle() {
 		$last = $this->appstate->getGlobal('cycle.soldiers', 0);
 		if ($last==='complete') return true;
 		$date = date("Y-m-d H:i:s");
@@ -934,6 +937,44 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 		return true;
+	}
+
+	public function updateSieges() {
+		$this->logger->info("Sieges cleanup..");
+		$all = $this->em->getRepository(Siege::class)->findAll();
+		foreach ($all as $siege) {
+			$settlement = $siege->getSettlement();
+			$place = $siege->getPlace();
+			$attacker = $siege->getAttacker();
+			if ($attacker->getLeader()) {
+				$leader = $attacker->getLeader();
+				if ($settlement && ($leader->getInsideSettlement() == $settlement || $leader->getInsidePlace()->getSettlement() == $settlement)) {
+					# Attacking leader is somehow inside the settlement he is besieging, looks like siege should be over! :D
+					$this->logger->info("  Disbanding Siege ".$siege->getId()." for Settlement ".$settlement->getId());
+					foreach ($siege->getCharacters() as $char) {
+						$this->history->logEvent(
+							$char,
+							'siege.leaderinside.settlement',
+							['%link-character%'=>$leader->getId(), '%link-settlement%'=>$settlement->getId()]
+						);
+					}
+					$this->wm->disbandSiege($siege, $leader, true);
+
+				}
+				if ($place && $leader->getInsidePlace() === $place) {
+					# Attacking leader is somehow inside the place he is besieging, looks like siege should be over! :D
+					$this->logger->info("  Disbanding Siege ".$siege->getId()." for Place ".$place->getId());
+					foreach ($siege->getCharacters() as $char) {
+						$this->history->logEvent(
+							$char,
+							'siege.leaderinside.place',
+							['%link-character%'=>$leader->getId(), '%link-place%'=>$place->getId()]
+						);
+					}
+					$this->wm->disbandSiege($siege, $leader, true);
+				}
+			}
+		}
 	}
 
 	public function updateActions() {
