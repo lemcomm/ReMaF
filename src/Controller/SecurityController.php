@@ -39,7 +39,7 @@ class SecurityController extends AbstractController {
 		$query = $em->createQuery('SELECT u from App:User u where LOWER(u.username) like :name and u.watched = true and u.enabled = false');
 		$query->setParameters(['name'=>$last]);
 		$query->setMaxResults(1);
-		$check = $query->getSingleResult();
+		$check = $query->getOneOrNullResult();
 		if ($check) {
 			$this->addFlash('notice', 'This account was disabled for security reasons. To re-enable it, please reset your password using the link below.');
 		}

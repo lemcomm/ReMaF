@@ -26,7 +26,7 @@ class DungeonMaster {
 	private History $history;
 	private LoggerInterface $logger;
 	private RouterInterface $router;
-
+	private NotificationManager $noteman;
 
 	private int $initial_random_cards = 3;
 	private int $min_party_size = 2;
@@ -45,12 +45,13 @@ class DungeonMaster {
 		'basic.fight'		=> 5
 	);
 
-	public function __construct(EntityManagerInterface $em, CommonService $common, DungeonCreator $creator, History $history, LoggerInterface $logger, RouterInterface $router) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, DungeonCreator $creator, History $history, LoggerInterface $logger, NotificationManager $noteman, RouterInterface $router) {
 		$this->em = $em;
 		$this->creator = $creator;
 		$this->common = $common;
 		$this->history = $history;
 		$this->logger = $logger;
+		$this->noteman = $noteman;
 		$this->router = $router;
 	}
 
@@ -636,7 +637,10 @@ In short before a dungeon starts you get a bit longer, but when it's running you
 				$target->setAmount(max(0,$target->getAmount()-1));
 				$wounds-=$target->getType()->getWounds();
 				if ($target->getType()->getName()=='dragon') {
+					$char = $dungeoneer->getcharacter();
+					$char->getUser()->setArtifactsLimit($char->getUser()->getArtifactsLimit()+1);
 					$this->common->addAchievement($dungeoneer->getCharacter(), 'dragons', 1);
+					$this->noteman->spoolAchievement('dragon', $char);
 				}
 			}
 			if ($wounds>0) {

@@ -17,6 +17,7 @@ use App\Service\MailManager;
 use App\Service\DiscordIntegrator;
 use App\Twig\MessageTranslateExtension;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NotificationManager {
@@ -87,6 +88,17 @@ class NotificationManager {
 			return [$entity->getCreator()]; #NOTE: Creator is a User Entity.
 		}
 		return false;
+	}
+
+	public function spoolAchievement($type, Character $char): void {
+		if ($type === 'dragon') {
+			$text = '['.$char->getName().'](https://mightandfealty.com/character/view/'.$char->getId().') has accomplished a feat few others have, and successfully slain a dragon!';
+			try {
+				$this->discord->pushToGeneral($text);
+			} catch (Exception $e) {
+				# Nothing
+			}
+		}
 	}
 
 	public function spoolEvent(Event $event): bool {

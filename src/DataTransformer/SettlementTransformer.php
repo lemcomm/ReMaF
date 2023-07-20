@@ -5,9 +5,6 @@ namespace App\DataTransformer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
-use Doctrine\Common\Persistence\ObjectManager;
-
-use App\Entity\Settlement;
 
 class SettlementTransformer implements DataTransformerInterface {
 	private EntityManagerInterface $em;

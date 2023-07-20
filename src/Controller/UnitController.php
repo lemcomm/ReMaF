@@ -408,7 +408,7 @@ class UnitController extends AbstractController {
                                         $this->hist->closeLog($unit, $here->getOwner());
                                 }
                                 if ($here->getSteward() && $here->getSteward() !== $data['target']) {
-                                        $this->hist->closeLog($unit, $here->getOwner());
+                                        $this->hist->closeLog($unit, $here->getSteward());
                                 }
                         }
                         if ($unit->getMarshal() && $unit->getMarshal() !== $data['target']) {

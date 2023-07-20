@@ -96,6 +96,10 @@ class History {
 	}
 
 	public function openLog($entity, Character $reader): EventMetadata|array {
+		$self = false;
+		if ($entity === $reader) {
+			$self = true;
+		}
 		$log = $this->findLog($entity);
 		$exists = $this->em->getRepository(EventMetadata::class)->findBy(['log'=>$log, 'reader'=>$reader, 'access_until'=>null]);
 		if (!$exists) {
@@ -107,6 +111,11 @@ class History {
 			$meta->setReader($reader);
 			$this->em->persist($meta);
 			return $meta;
+		} elseif ($self) {
+			$last = $log->getMetadatas()->last();
+			if ($last instanceof EventMetadata) {
+				$last->setAccessUntil();
+			}
 		}
 		return $exists;
 	}

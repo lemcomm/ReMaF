@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Action;
 use App\Entity\BattleGroup;
 use App\Entity\Character;
+use App\Entity\Listing;
 use App\Entity\Place;
 use App\Entity\Realm;
+use App\Entity\ResourceType;
 use App\Entity\Siege;
 use App\Entity\War;
 use App\Entity\WarTarget;
@@ -26,14 +28,21 @@ use App\Service\Geography;
 use App\Service\History;
 
 use App\Service\WarManager;
+use DateInterval;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -56,7 +65,7 @@ class WarController extends AbstractController {
 	}
 	
 	#[Route('/war/view/{id}', name:'maf_war_view', requirements:['id'=>'\d+'])]
-	public function viewAction(War $id) {
+	public function viewAction(War $id): Response {
 
 		return $this->render('War/view.html.twig', [
 			'war'=>$id
@@ -64,7 +73,7 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/declare/{realm}', name:'maf_war_declare', requirements:['realm'=>'\d+'])]
-	public function declareAction(Realm $realm, Request $request) {
+	public function declareAction(Realm $realm, Request $request): RedirectResponse|Response {
 		$this->disp->setRealm($realm);
 		$character = $this->disp->gateway('hierarchyWarTest');
 		if (! $character instanceof Character) {
@@ -80,7 +89,7 @@ class WarController extends AbstractController {
 */
 		$me = array($realm->getId());
 
-		$form = $this->createForm(new WarType($me), $war);
+		$form = $this->createForm(WarType::class, $war, ['me'=>$me]);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$em = $this->em;
@@ -134,11 +143,8 @@ class WarController extends AbstractController {
 		]);
 	}
 
-	/**
-	  * @Route("/settlement/defend")
-	  */
 	#[Route('/war/settlement/defend', name:'maf_war_settlement_defend')]
-	public function defendSettlementAction(Request $request) {
+	public function defendSettlementAction(Request $request): Response {
 		list($character, $settlement) = $this->disp->gateway('militaryDefendSettlementTest', true);
 		$form = $this->createFormBuilder(null, array('translation_domain'=>'actions'))
 			->add('submit', SubmitType::class, [
@@ -164,11 +170,8 @@ class WarController extends AbstractController {
 		]);
 	}
 
-	/**
-	  * @Route("/place/defend")
-	  */
 	#[Route('/war/place/defend', name:'maf_war_place_defend')]
-	public function defendPlaceAction(Request $request) {
+	public function defendPlaceAction(Request $request): Response {
 		list($character, $settlement, $place) = $this->disp->gateway('militaryDefendPlaceTest', true, null, true);
 		$form = $this->createFormBuilder(null, array('translation_domain'=>'actions'))
 			->add('submit', SubmitType::class, [
@@ -194,11 +197,11 @@ class WarController extends AbstractController {
 		]);
 	}
 
-	#[Route('/siege')]
-	#[Route('/siege/', name:'maf_war_siege')]
-	#[Route('/siege/place')]
-	#[Route('/siege/place/{place}', name:'maf_war_siege_place', requirements:['place'=>'\d+'])]
-	public function siegeAction(TranslatorInterface $trans, Request $request, Place $place = null) {
+	#[Route('/war/siege')]
+	#[Route('/war/siege/', name:'maf_war_siege')]
+	#[Route('/war/siege/place')]
+	#[Route('/war/siege/place/{place}', name:'maf_war_siege_place', requirements:['place'=>'\d+'])]
+	public function siegeAction(TranslatorInterface $trans, Request $request, Place $place = null): RedirectResponse|Response {
 		# Security check.
 		list($character, $settlement) = $this->disp->gateway(false, true, false);
 		if (! $character instanceof Character) {
@@ -270,7 +273,7 @@ class WarController extends AbstractController {
 					$wars[] = $war;
 				}
 			}
-			$form = $this->createForm(new SiegeStartType($realms, $wars));
+			$form = $this->createForm(SiegeStartType::class, null, ['realms'=>$realms, 'wars'=>$wars]);
 		}
 
 		$form->handleRequest($request);
@@ -314,7 +317,7 @@ class WarController extends AbstractController {
 						$maxstages++; # Think "curtain wall".
 					}
 					if($settlement->hasBuildingNamed('Citadel')) {
-						$maxstages++; # At this point, our castle has a large, enclosed compound of it's own, usually built at the same strength as the primary walls.
+						$maxstages++; # At this point, our castle has a large, enclosed compound of its own, usually built at the same strength as the primary walls.
 					}
 					$siege->setMaxStage($maxstages); # Assuming we have everything, this will max out at 5.
 				} elseif ($data['confirm'] && $place) {
@@ -384,7 +387,7 @@ class WarController extends AbstractController {
 
 				if ($settlement) {
 					# add everyone who has a "defend settlement" action set
-					foreach ($em->getRepository('BM2SiteBundle:Action')->findBy(array('target_settlement' => $settlement->getId(), 'type' => 'settlement.defend')) as $defender) {
+					foreach ($em->getRepository(Action::class)->findBy(array('target_settlement' => $settlement->getId(), 'type' => 'settlement.defend')) as $defender) {
 						$defenders->addCharacter($defender->getCharacter());
 
 						$act = new Action;
@@ -409,7 +412,7 @@ class WarController extends AbstractController {
 					}
 				} elseif ($place) {
 					# add everyone who has a "defend place" action set
-					foreach ($em->getRepository('BM2SiteBundle:Action')->findBy(array('target_place' => $place->getId(), 'type' => 'place.defend')) as $defender) {
+					foreach ($em->getRepository(Action::class)->findBy(array('target_place' => $place->getId(), 'type' => 'place.defend')) as $defender) {
 						$defenders->addCharacter($defender->getCharacter());
 
 						$act = new Action;
@@ -530,6 +533,7 @@ class WarController extends AbstractController {
 									return $this->redirectToRoute('maf_war_siege', array('action'=>'select'));
 								}
 							}
+							break;
 						case 'assault':
 							# We're either attackers assaulting or defenders sortieing! Battle type (assault vs sortie) is figured out by WarMan based on which group is passed as the attacker.
 							if ($siege->getAttacker()->getLeader() == $character) {
@@ -539,7 +543,7 @@ class WarController extends AbstractController {
 									$result = $this->wm->createBattle($character, $settlement, null, null, $siege, $siege->getAttacker(), $siege->getDefender());
 								}
 								return $this->redirectToRoute('maf_queue_battle', array('id'=>$result['battle']->getId()));
-							} else if ($siege->getDefender()->getLeader() == $character && $data['subaction'] == 'assault') {
+							} else if ($siege->getDefender()->getLeader() == $character) {
 								if ($place) {
 									$result = $this->wm->createBattle($character, null, $place, null, $siege, $siege->getDefender(), $siege->getAttacker());
 								} else {
@@ -551,7 +555,7 @@ class WarController extends AbstractController {
 							}
 						case 'disband':
 							# Stop the siege.
-							if ($siege->getAttacker()->getLeader() == $character && $data['disband'] == TRUE) {
+							if ($siege->getAttacker()->getLeader() == $character && $data['disband']) {
 								if ($this->wm->disbandSiege($siege, $character)) {
 									$this->addFlash('notice', $trans->trans('military.siege.disband.success', [], "actions"));
 								} else {
@@ -612,7 +616,7 @@ class WarController extends AbstractController {
 								}
 								$em->flush(); # So we can reference it below.
 								if ($side) {
-									if ($side == $siege->getAttacker() && !$siege->getEncircled()) {
+									if ($side === $siege->getAttacker() && !$siege->getEncircled()) {
 										# We aren't already encircling, check if we should now!
 										$siege->updateEncirclement();
 									}
@@ -632,6 +636,7 @@ class WarController extends AbstractController {
 									return $this->redirectToRoute('maf_war_siege', array('action'=>'select'));
 								}
 							}
+							break;
 						case 'assume':
 							# Someone is assuming leadership.
 							# First, make sure they're in a position to actually do this.
@@ -674,8 +679,8 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/settlement/loot', name:'maf_war_settlement_loot')]
-	public function lootSettlementAction(AppState $app, LoggerInterface $logger, Request $request) {
-		$character = $this->disp->gateway('militaryLootSettlementTest', false, true);
+	public function lootSettlementAction(AppState $app, LoggerInterface $logger, Request $request): RedirectResponse|Response {
+		$character = $this->disp->gateway('militaryLootSettlementTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -725,7 +730,7 @@ class WarController extends AbstractController {
 				}
 				if ($method=='thralls') {
 					// check if target settlement allows slaves
-					if ($data['target']->getAllowThralls()==false) {
+					if (!$data['target']->getAllowThralls()) {
 						$form->addError(new FormError("loot.noslaves"));
 						return $this->render('War/lootSettlement.html.twig', [
 							'form'=>$form->createView(), 'settlement'=>$settlement
@@ -745,10 +750,10 @@ class WarController extends AbstractController {
 			$act->setType('settlement.loot')->setCharacter($character);
 			$act->setTargetSettlement($settlement);
 			$act->setBlockTravel(true)->setCanCancel(false);
-			$complete = new \DateTime("now");
-			$complete->add(new \DateInterval("PT".$time."H"));
+			$complete = new DateTime("now");
+			$complete->add(new DateInterval("PT".$time."H"));
 			$act->setComplete($complete);
-			$result = $this->am->queue($act);
+			$this->am->queue($act);
 
 			if ($inside) {
 				$event = 'event.settlement.loot';
@@ -799,7 +804,7 @@ class WarController extends AbstractController {
 							}
 						}
 						$max = floor($settlement->getPopulation() * $ratio * 1.5 * $mod);
-						list($taken, $lost) = $this->lootvalue($max);
+						list($taken) = $this->lootvalue($max);
 						if ($taken > 0) {
 							// no loss / inefficiency here
 							$destination->setThralls($destination->getThralls() + $taken);
@@ -857,7 +862,7 @@ class WarController extends AbstractController {
 						$result['thralls'] = $taken;
 						break;
 					case 'supply':
-						$food = $em->getRepository('BM2SiteBundle:ResourceType')->findOneByName("food");
+						$food = $em->getRepository(ResourceType::class)->findOneBy(['name'=>"food"]);
 						$local_food_storage = $settlement->findResource($food);
 						$can_take = ceil(20 * $ratio);
 
@@ -935,9 +940,8 @@ class WarController extends AbstractController {
 								if ($dres) {
 									$dres->setStorage($dres->getStorage() + $taken); // this can bring a settlement temporarily above its max storage value
 									$notice_target = true;
-								} else {
-									// TODO: we don't have this resource - what to we do? right now, the plunder is simply lost
 								}
+								// TODO: we don't have this resource - what to we do? right now, the plunder is simply lost
 							}
 							$result['resources'][$resource->getType()->getName()] = $taken;
 						}
@@ -959,7 +963,7 @@ class WarController extends AbstractController {
 						}
 						break;
  					case 'wealth':
- 						if ($character == $settlement->getOwner() || $character == $settlement->getSteward()) {
+ 						if ($character === $settlement->getOwner() || $character === $settlement->getSteward()) {
  							// forced tax collection - doesn't depend on soldiers so much
  							if ($ratio >= 0.02) {
  								$mod = 0.3;
@@ -1042,7 +1046,7 @@ class WarController extends AbstractController {
 		]);
 	}
 
-	private function lootvalue($max) {
+	private function lootvalue($max): array {
 		$a = max(rand(0, $max), rand(0, $max));
 		$b = max(rand(0, $max), rand(0, $max));
 
@@ -1054,7 +1058,7 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/disengage', name:'maf_war_disengage')]
-	public function disengageAction(Request $request) {
+	public function disengageAction(Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('militaryDisengageTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -1067,20 +1071,20 @@ class WarController extends AbstractController {
 
 		$form = $this->createFormBuilder();
 		if (count($engagements) > 1) {
-			$form->add('bg', 'entity', array(
+			$form->add('bg', EntityType::class, array(
 				'empty_value' => 'military.dise',
 				'label'=>'military.disengage.battles',
 				'translation_domain' => 'actions',
 				'multiple'=>true,
 				'expanded'=>true,
-				'class'=>'BM2SiteBundle:BattleGroup',
+				'class'=>BattleGroup::class,
 				'property'=>'battle.name',
 				'query_builder'=>function(EntityRepository $er) use ($engagements) {
 					return $er->createQueryBuilder('g')->where('g in (:battles)')->setParameter('battles', $engagements);
 				}
 			));
 		}
-		$form->add('submit', 'submit', array('label'=>'military.disengage.submit', 'translation_domain' => 'actions'));
+		$form->add('submit', SubmitType::class, array('label'=>'military.disengage.submit', 'translation_domain' => 'actions'));
 		$form = $form->getForm();
 
 		$form->handleRequest($request);
@@ -1131,14 +1135,14 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/evade', name:'maf_war_evade')]
-	public function evadeAction(Request $request) {
+	public function evadeAction(Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('militaryEvadeTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
 		$form = $this->createFormBuilder()
-			->add('submit', 'submit', array('label'=>'military.evade.submit', 'translation_domain' => 'actions'))
+			->add('submit', SubmitType::class, array('label'=>'military.evade.submit', 'translation_domain' => 'actions'))
 			->getForm();
 
 		$form->handleRequest($request);
@@ -1158,33 +1162,31 @@ class WarController extends AbstractController {
 		]);
 	}
 
-
-	/**
-	  * @Route("/block")
-	  */
 	#[Route('/war/block', name:'maf_war_block')]
-	public function blockAction(Request $request) {
+	public function blockAction(Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('militaryBlockTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 		$form = $this->createFormBuilder(null, array('attr'=>array('class'=>'wide')))
-			->add('mode', 'choice', array(
+			->add('mode', ChoiceType::class, [
 				'required'=>true,
 				'empty_value'=>'form.choose',
 				'label'=>'military.block.mode.label',
 				'translation_domain'=>'actions',
-				'choices'=>array('allow'=>'military.block.mode.allow', 'attack'=>'military.block.mode.attack')
-			))
-			->add('target', 'entity', array(
+				'choices'=> ['allow'=>'military.block.mode.allow', 'attack'=>'military.block.mode.attack']
+			])
+			->add('target', EntityType::class, [
 				'required' => true,
 				'placeholder'=>'form.choose',
 				'label'=>'military.block.target',
 				'translation_domain'=>'actions',
-				'class'=>'BM2SiteBundle:Listing', 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($character) {
+				'class'=>Listing::class,
+				'choice_label'=>'name',
+				'query_builder'=>function(EntityRepository $er) use ($character) {
 					return $er->createQueryBuilder('l')->where('l.owner = :me')->setParameter('me',$character->getUser());
-				}))
-			->add('submit', 'submit', array('label'=>'military.block.submit', 'translation_domain'=>'actions'))
+				}])
+			->add('submit', SubmitType::class, ['label'=>'military.block.submit', 'translation_domain'=>'actions'])
 			->getForm();
 		$form->handleRequest($request);
 		if ($form->isValid()) {
@@ -1208,8 +1210,8 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/damage', name:'maf_war_damage')]
-	public function damageAction(Request $request) {
-		$character = $this->disp->gateway('militaryDamageFeatureTest', false, true);
+	public function damageAction(Request $request): RedirectResponse|Response {
+		$character = $this->disp->gateway('militaryDamageFeatureTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1239,12 +1241,12 @@ class WarController extends AbstractController {
 			$act = new Action;
 			$act->setType('military.damage')->setCharacter($character);
 			$act->setBlockTravel(true)->setCanCancel(false);
-			$complete = new \DateTime("now");
-			$complete->add(new \DateInterval("PT".$hours."H"));
+			$complete = new DateTime("now");
+			$complete->add(new DateInterval("PT".$hours."H"));
 			$act->setComplete($complete);
 			$result = $this->am->queue($act);
 
-			if ($result['success'] == true) {
+			if ($result['success']) {
 				$settlement = $target->getGeoData()->getSettlement();
 
 				$result = $target->ApplyDamage($damage);
@@ -1277,7 +1279,7 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/nobles/attack', name:'maf_war_nobles_attack')]
-	public function attackOthersAction(Request $request) {
+	public function attackOthersAction(Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('militaryAttackNoblesTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -1285,7 +1287,13 @@ class WarController extends AbstractController {
 
 		$result = false;
 
-		$form = $this->createForm(new InteractionType('attack', $this->geo->calculateInteractionDistance($character), $character, true, true));
+		$form = $this->createForm(InteractionType::class, null, [
+			'action'=>'attack',
+			'maxdistance'=> $this->geo->calculateInteractionDistance($character),
+			'me'=>$character,
+			'multiple'=>true,
+			'settlementcheck'=>true
+		]);
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
@@ -1297,7 +1305,7 @@ class WarController extends AbstractController {
 				$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target']);
 				if ($result['outside'] && $character->getInsideSettlement()) {
 					// leave settlement if we attack targets outside
-					$character->setInsideSettlement(null);
+					$character->setInsideSettlement();
 				}
 
 				$em->flush();
@@ -1311,27 +1319,25 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/nobles/aid', name:'maf_war_nobles_aid')]
-	public function aidAction(Request $request) {
+	public function aidAction(Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('militaryAidTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$em = $this->em;
-
 		$success = false; $target = null;
-
+		#TODO: This will need debugging. See differences from this form in 2.x.
 		$form = $this->createFormBuilder()
-			->add('target', 'hidden_entity', array('required' => true, 'entity_repository'=>'BM2SiteBundle:Character'))
-			->add('duration', 'choice', array('choices'=>array('3'=>'three days', '12'=>'two weeks', '30'=>'five weeks')))
-			->add('submit', 'submit')
+			->add('target', HiddenType::class)
+			->add('duration', ChoiceType::class, ['choices'=> ['3'=>'three days', '12'=>'two weeks', '30'=>'five weeks']])
+			->add('submit', SubmitType::class)
 			->getForm();
 
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
 
-			$complete = new \DateTime("now");
-			$complete->add(new \DateInterval("P".round($data['duration'])."D"));
+			$complete = new DateTime("now");
+			$complete->add(new DateInterval("P".round($data['duration'])."D"));
 
 			$act = new Action;
 			$act->setType('military.aid')
@@ -1353,8 +1359,8 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/battles/join', name:'maf_war_battles_join')]
-	public function battleJoinAction(Request $request) {
-		list($character, $settlement) = $this->disp->gateway('militaryJoinBattleTest', true);
+	public function battleJoinAction(Request $request): RedirectResponse|Response {
+		list($character) = $this->disp->gateway('militaryJoinBattleTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1366,7 +1372,7 @@ class WarController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isValid()) {
 			$data = $form->getData();
-			$character->setInsideSettlement(NULL);
+			$character->setInsideSettlement();
 			if (isset($data['group'])) {
 				$this->wm->joinBattle($character, $data['group']);
 				$this->em->flush();
@@ -1376,7 +1382,7 @@ class WarController extends AbstractController {
 
 		return $this->render('War/battleJoin.html.twig', [
 			'battles'=>$battles,
-			'now'=>new \DateTime("now"),
+			'now'=>new DateTime("now"),
 			'form'=>$form->createView(),
 			'success'=>$success
 		]);

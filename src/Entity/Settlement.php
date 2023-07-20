@@ -83,8 +83,8 @@ class Settlement {
 		$militia = 0;
 		if (!$supporters) {
 			$supporters = new ArrayCollection();
-			$supporters->add($taker);
 		}
+		$supporters->add($taker);
 		foreach ($supporters as $each) {
 			if ($each instanceof Character) {
 				$supportCount += $each->countSoldiers();
@@ -154,10 +154,12 @@ class Settlement {
 		if ($enforce_claim) {
 			$time_to_take *= 0.2;
 		}
-		if ($this->getOccupant() && ($this->getOccupant() === $taker || $supporters->contains($this->getOccupant()))) {
-			$supportCount += $militia;
-		} else {
-			$opposeCount += $militia;
+		if ($this->getOwner()) {
+			if ($this->getOccupant() && ($this->getOccupant() === $taker || $supporters->contains($this->getOccupant()))) {
+				$supportCount += $militia;
+			} else {
+				$opposeCount += $militia;
+			}
 		}
 		$time_to_take *= $mod;
 
