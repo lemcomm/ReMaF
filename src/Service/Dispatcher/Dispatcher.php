@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Dispatcher;
 
 use App\Entity\ActivityReport;
 use App\Entity\Association;
@@ -16,6 +16,11 @@ use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Entity\Ship;
+use App\Service\AppState;
+use App\Service\CommonService;
+use App\Service\Geography;
+use App\Service\Interactions;
+use App\Service\PermissionManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;

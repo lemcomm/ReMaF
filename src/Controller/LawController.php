@@ -12,7 +12,7 @@ use App\Form\AreYouSureType;
 use App\Form\LawTypeSelectType;
 use App\Form\LawEditType;
 
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\LawManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

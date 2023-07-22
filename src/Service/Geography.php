@@ -288,6 +288,10 @@ class Geography {
 		return array($land, new Point($coast->coordinates[0], $coast->coordinates[1]));
 	}
 
+	public function findNearestSettlement(Character $character) {
+		return $this->common->findNearestSettlement($character);
+	}
+
 	public function findNearestPlace(Character $character) {
 		$query = $this->em->createQuery('SELECT p, ST_Distance(p.location, c.location) AS distance FROM App:Place p JOIN App:Character c WHERE c = :char AND p.location IS NOT NULL ORDER BY distance ASC');
 		$query->setParameter('char', $character);
@@ -501,7 +505,7 @@ class Geography {
 		if ($this->findPlacesNearMe($character, $this->place_separation)) {
 			return false; #Too close!
 		}
-		$settlement = $this->common->findNearestSettlement($character)[0];
+		$settlement = $this->findNearestSettlement($character)[0];
 		$distance = $this->calculateDistancetoSettlement($character, $settlement);
 		if ($distance < $this->place_separation) {
 			return false; #Too close!

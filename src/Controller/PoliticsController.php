@@ -15,7 +15,7 @@ use App\Form\PartnershipsType;
 use App\Form\PrisonersManageType;
 use App\Service\ActionManager;
 use App\Service\CharacterManager;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
 use App\Service\History;
 use App\Service\Politics;

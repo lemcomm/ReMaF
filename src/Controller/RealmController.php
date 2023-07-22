@@ -24,7 +24,7 @@ use App\Form\SubrealmType;
 use App\Service\AppState;
 use App\Service\ConversationManager;
 use App\Service\DescriptionManager;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
 use App\Service\Geography;
 use App\Service\History;

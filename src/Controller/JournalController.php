@@ -11,7 +11,7 @@ use App\Form\JournalType;
 use App\Form\UserReportType;
 use App\Service\AppState;
 use App\Service\DiscordIntegrator;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\NotificationManager;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;

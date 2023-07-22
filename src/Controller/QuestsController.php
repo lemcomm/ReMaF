@@ -9,7 +9,7 @@ use App\Entity\Quester;
 use App\Entity\Settlement;
 use App\Form\QuestType;
 use App\Service\AppState;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\Geography;
 use App\Service\History;
 

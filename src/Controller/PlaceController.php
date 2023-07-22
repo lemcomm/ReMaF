@@ -22,7 +22,7 @@ use App\Service\ActionManager;
 use App\Service\AppState;
 use App\Service\AssociationManager;
 use App\Service\DescriptionManager;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\Economy;
 use App\Service\Geography;
 use App\Service\History;

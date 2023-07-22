@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Service\ConversationManager;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\Geography;
 use App\Service\NewsManager;
 use DateInterval;

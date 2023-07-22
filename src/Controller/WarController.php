@@ -25,7 +25,7 @@ use App\Service\ActionManager;
 use App\Service\CommonService;
 use App\Service\Geography;
 use App\Service\History;
-use App\Service\WarDispatcher;
+use App\Service\Dispatcher\WarDispatcher;
 use App\Service\WarManager;
 
 use DateInterval;

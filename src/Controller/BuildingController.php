@@ -2,9 +2,8 @@
 
 namespace App\Controller;
 
-use App\Service\AppState;
 use App\Service\CommonService;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Entity\Character;
 
 use Doctrine\ORM\EntityManagerInterface;

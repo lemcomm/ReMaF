@@ -1,12 +1,18 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Dispatcher;
 
 use App\Entity\Association;
 use App\Entity\AssociationDeity;
 use App\Entity\AssociationMember;
 use App\Entity\AssociationRank;
 use App\Entity\Deity;
+use App\Service\AppState;
+use App\Service\AssociationManager;
+use App\Service\CommonService;
+use App\Service\Geography;
+use App\Service\Interactions;
+use App\Service\PermissionManager;
 
 class AssociationDispatcher extends Dispatcher {
 

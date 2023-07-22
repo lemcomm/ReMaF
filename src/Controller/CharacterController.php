@@ -25,7 +25,7 @@ use App\Service\ActionManager;
 use App\Service\AppState;
 use App\Service\CharacterManager;
 use App\Service\ConversationManager;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
 use App\Service\Geography;
 use App\Service\History;
@@ -37,7 +37,6 @@ use App\Service\UserManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Entity;
 use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -47,7 +46,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -102,7 +100,7 @@ class CharacterController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		if ($location=$character->getLocation()) {
+		if ($character->getLocation()) {
 			$nearest = $this->geo->findNearestSettlement($character);
 			$settlement=array_shift($nearest);
 			$location = $settlement->getGeoData();

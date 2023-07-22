@@ -9,7 +9,6 @@ use App\Entity\FeatureType;
 use App\Entity\Journal;
 
 use App\Entity\User;
-use App\Service\AppState;
 use App\Service\CommonService;
 use App\Twig\LinksExtension;
 use Doctrine\ORM\EntityManagerInterface;

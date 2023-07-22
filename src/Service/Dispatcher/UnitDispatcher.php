@@ -1,9 +1,15 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Dispatcher;
 
 use App\Entity\Settlement;
 use App\Entity\Unit;
+use App\Service\AppState;
+use App\Service\CommonService;
+use App\Service\Geography;
+use App\Service\Interactions;
+use App\Service\MilitaryManager;
+use App\Service\PermissionManager;
 
 class UnitDispatcher extends Dispatcher {
 

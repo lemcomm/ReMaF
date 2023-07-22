@@ -19,7 +19,7 @@ use App\Service\History;
 use App\Service\MilitaryManager;
 
 use App\Service\PermissionManager;
-use App\Service\UnitDispatcher;
+use App\Service\Dispatcher\UnitDispatcher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

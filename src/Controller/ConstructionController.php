@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Character;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\Economy;
 use App\Service\Geography;
 use App\Entity\Building;
