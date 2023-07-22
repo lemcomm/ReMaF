@@ -26,11 +26,12 @@ refactor to use $this->action() everywhere (with some exceptions where it doesn'
 */
 
 class Dispatcher {
-	protected mixed $character;
-	protected mixed $realm;
-	protected mixed $house;
-	protected mixed $settlement;
+	protected mixed $character = null;
+	protected mixed $realm = null;
+	protected mixed $house = null;
+	protected mixed $settlement = null;
 	protected AppState $appstate;
+	protected CommonService $common;
 	protected PermissionManager $permission_manager;
 	protected Geography $geography;
 	protected Interactions $interactions;
@@ -44,8 +45,9 @@ class Dispatcher {
 	private ?bool $actionableShip=false;
 	private ?bool $actionableHouses=false;
 
-	public function __construct(AppState $appstate, PermissionManager $pm, Geography $geo, Interactions $interactions, AssociationManager $assocman) {
+	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions, AssociationManager $assocman) {
 		$this->appstate = $appstate;
+		$this->common = $common;
 		$this->permission_manager = $pm;
 		$this->geography = $geo;
 		$this->interactions = $interactions;
@@ -137,11 +139,13 @@ class Dispatcher {
 	}
 
 	protected function veryGenericTests(): true|string {
-		if ($this->getCharacter()->getUser()->getRestricted()) {
-			return 'restricted';
-		}
-		if ($this->getCharacter()->isNPC()) {
-			return 'npc';
+		if ($this->getCharacter() instanceof Character) {
+			if ($this->getCharacter()->getUser()->getRestricted()) {
+				return 'restricted';
+			}
+			if ($this->getCharacter()->isNPC()) {
+				return 'npc';
+			}
 		}
 		return true;
 	}
@@ -219,7 +223,7 @@ class Dispatcher {
 	}
 
 	protected function interActionsGenericTests(): true|string {
-		if ($this->getCharacter()->getUser()->getRestricted()) {
+		if ($this->veryGenericTests() === 'restricted') {
 			return 'restricted';
 		}
 		return true;
@@ -4118,7 +4122,7 @@ class Dispatcher {
 			if ($this->getCharacter()->getInsideSettlement()) {
 				$this->actionableSettlement = $this->getCharacter()->getInsideSettlement();
 			} else if ($location=$this->getCharacter()->getLocation()) {
-				$nearest = $this->geography->findNearestSettlement($this->getCharacter());
+				$nearest = $this->common->findNearestSettlement($this->getCharacter());
 				$settlement=array_shift($nearest);
 				if ($nearest['distance'] < $this->geography->calculateActionDistance($settlement)) {
 					$this->actionableSettlement=$settlement;

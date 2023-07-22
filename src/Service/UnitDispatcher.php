@@ -14,11 +14,11 @@ class UnitDispatcher extends Dispatcher {
 	protected Interactions $interactions;
 	protected AssociationManager $assocman;
 
-	public function __construct(AppState $appstate, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, AssociationManager $assocman) {
+	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, AssociationManager $assocman) {
 		$this->pm = $pm;
 		$this->milman = $milman;
 		$this->interactions = $interactions;
-		parent::__construct($appstate, $pm, $geo, $interactions, $assocman);
+		parent::__construct($appstate, $common, $pm, $geo, $interactions, $assocman);
 	}
 
 	/* =========== Tests ========== */

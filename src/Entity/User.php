@@ -75,6 +75,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         private ?string $confirmationToken = null;
         private ?DateTime $passwordRequestedAt = null;
         private ?array $roles = [];
+	private ?DateTimeInterface $last_password;
 
 	public function __construct() {
                                     		$this->payments = new ArrayCollection();
@@ -1408,6 +1409,18 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         return $this;
     }
 
+	public function getLastPassword(): ?DateTimeInterface
+	{
+		return $this->last_password;
+	}
+
+	public function setLastPassword(?DateTimeInterface $last_password): self
+	{
+		$this->last_password = $last_password;
+
+		return $this;
+	}
+
     public function getResetTime(): ?DateTimeInterface
     {
         return $this->reset_time;
@@ -1504,7 +1517,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function isWatched(): ?bool
+    public function getWatched(): ?bool
     {
         return $this->watched;
     }
@@ -1516,7 +1529,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         return $this;
     }
 
-    public function isBypassExits(): ?bool
+    public function getBypassExits(): ?bool
     {
         return $this->bypass_exits;
     }

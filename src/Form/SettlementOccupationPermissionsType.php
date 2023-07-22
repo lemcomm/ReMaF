@@ -1,6 +1,6 @@
 <?php
 
-namespace BM2\SiteBundle\Form;
+namespace App\Form;
 
 use App\Entity\Listing;
 use App\Entity\Settlement;

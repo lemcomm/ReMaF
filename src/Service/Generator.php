@@ -14,11 +14,11 @@ use Doctrine\ORM\EntityManagerInterface;
 class Generator {
 
 	protected EntityManagerInterface $em;
-	private HelperService $helper;
+	private ActionManager $actman;
 
-	public function __construct(EntityManagerInterface $em, HelperService $helper) {
+	public function __construct(EntityManagerInterface $em, ActionManager $actman) {
 		$this->em = $em;
-		$this->helper = $helper;
+		$this->actman = $actman;
 	}
 
 	public function randomName(Settlement $home=null, $gender=false): string {
@@ -60,18 +60,18 @@ class Generator {
 
 		$soldier->setExperience(0)->setTraining(0);
 		if ($home) {
-			if ($this->helper->acquireItem($home, $weapon, true, false)
-				&& $this->helper->acquireItem($home, $armour, true, false)
-				&& $this->helper->acquireItem($home, $equipment, true, false)
-				&& $this->helper->acquireItem($home, $mount, true, false)) {
+			if ($this->actman->acquireItem($home, $weapon, true, false)
+				&& $this->actman->acquireItem($home, $armour, true, false)
+				&& $this->actman->acquireItem($home, $equipment, true, false)
+				&& $this->actman->acquireItem($home, $mount, true, false)) {
 
-				$this->helper->acquireItem($home, $weapon, true);
+				$this->actman->acquireItem($home, $weapon, true);
 				$soldier->setWeapon($weapon);
-				$this->helper->acquireItem($home, $armour, true);
+				$this->actman->acquireItem($home, $armour, true);
 				$soldier->setArmour($armour);
-				$this->helper->acquireItem($home, $equipment, true);
+				$this->actman->acquireItem($home, $equipment, true);
 				$soldier->setEquipment($equipment);
-				$this->helper->acquireItem($home, $mount, true);
+				$this->actman->acquireItem($home, $mount, true);
 				$soldier->setMount($mount);
 			} else {
 				return null;

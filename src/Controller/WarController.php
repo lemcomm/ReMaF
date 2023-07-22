@@ -22,7 +22,7 @@ use App\Form\SiegeStartType;
 use App\Form\WarType;
 
 use App\Service\ActionManager;
-use App\Service\AppState;
+use App\Service\CommonService;
 use App\Service\Dispatcher;
 use App\Service\Geography;
 use App\Service\History;
@@ -679,7 +679,7 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/settlement/loot', name:'maf_war_settlement_loot')]
-	public function lootSettlementAction(AppState $app, LoggerInterface $logger, Request $request): RedirectResponse|Response {
+	public function lootSettlementAction(CommonService $common, LoggerInterface $logger, Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('militaryLootSettlementTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -772,7 +772,7 @@ class WarController extends AbstractController {
 				switch ($method) {
 					case 'thralls':
 						$mod = 1;
-						$cycle = $app->getCycle();
+						$cycle = $common->getCycle();
 						if ($settlement->getAbductionCooldown() && !$inside) {
 							$cooldown = $settlement->getAbductionCooldown() - $cycle;
 							if ($cooldown <= -24) {
@@ -866,9 +866,9 @@ class WarController extends AbstractController {
 						$local_food_storage = $settlement->findResource($food);
 						$can_take = ceil(20 * $ratio);
 
-						$max_supply = $app->getGlobal('supply.max_value', 800);
-						$max_items = $app->getGlobal('supply.max_items', 15);
-						$max_food = $app->getGlobal('supply.max_food', 50);
+						$max_supply = $common->getGlobal('supply.max_value', 800);
+						$max_items = $common->getGlobal('supply.max_items', 15);
+						$max_food = $common->getGlobal('supply.max_food', 50);
 
 						foreach ($character->getAvailableEntourageOfType('follower') as $follower) {
 							if ($follower->getEquipment()) {

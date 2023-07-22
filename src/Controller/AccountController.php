@@ -14,6 +14,7 @@ use App\Form\UserSettingsType;
 use App\Service\ActionResolution;
 use App\Service\AppState;
 use App\Service\CharacterManager;
+use App\Service\CommonService;
 use App\Service\GameRequestManager;
 use App\Service\Geography;
 use App\Service\NpcManager;
@@ -81,7 +82,7 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/characters', name:'maf_chars')]
-	public function charactersAction(AppState $app, Geography $geo, GameRequestManager $grm, NpcManager $npcm, UserManager $userMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay): Response {
+	public function charactersAction(AppState $app, CommonService $common, GameRequestManager $grm, Geography $geo, NpcManager $npcm, UserManager $userMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -125,7 +126,7 @@ class AccountController extends AbstractController {
 			$siege = false;
 			$alive = $character->getAlive();
 			if ($alive && $character->getLocation()) {
-				$nearest = $geo->findNearestSettlement($character);
+				$nearest = $common->findNearestSettlement($character);
 				$settlement=array_shift($nearest);
 				$at_settlement = ($nearest['distance'] < $geo->calculateActionDistance($settlement));
 				$location = $settlement->getName();
@@ -502,12 +503,12 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/settings', name:'maf_account_settings')]
-	public function settingsAction(Request $request, AppState $app, EntityManagerInterface $em, TranslatorInterface $trans): Response {
+	public function settingsAction(Request $request, CommonService $common, EntityManagerInterface $em, TranslatorInterface $trans): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
-		$languages = $app->availableTranslations();
+		$languages = $common->availableTranslations();
 		$form = $this->createForm(UserSettingsType::class, null, ['user'=>$user, 'languages'=>$languages]);
 		$form->handleRequest($request);
 

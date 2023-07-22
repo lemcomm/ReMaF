@@ -33,13 +33,12 @@ class ActivityManager {
 	private LoggerInterface $logger;
 	private CombatManager $combat;
 	private CharacterManager $charMan;
-	private AppState $appState;
 	private History $history;
 
 	private int $debug=0;
 	private ?ActivityReport $report;
 
-	public function __construct(CommonService $common, EntityManagerInterface $em, Geography $geo, HelperService $helper, LoggerInterface $logger, CombatManager $combat, CharacterManager $charMan, AppState $appState, History $history) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, Geography $geo, HelperService $helper, LoggerInterface $logger, CombatManager $combat, CharacterManager $charMan, History $history) {
 		$this->common = $common;
 		$this->em = $em;
 		$this->geo = $geo;
@@ -47,7 +46,6 @@ class ActivityManager {
 		$this->logger = $logger;
 		$this->combat = $combat;
 		$this->charMan = $charMan;
-		$this->appState = $appState;
 		$this->history = $history;
 	}
 
@@ -347,7 +345,7 @@ class ActivityManager {
 			$report->setLocation($act->getLocation());
 			$report->setGeoData($act->getGeoData());
 			$report->setTs(new \DateTime("now"));
-			$report->setCycle($this->appState->getCycle());
+			$report->setCycle($this->common->getCycle());
 			$em->persist($report);
 			$act->setReport($report);
 			$this->report = $report;

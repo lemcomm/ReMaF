@@ -142,19 +142,19 @@ class Politics {
 			}
 		}
 		if ($character->getLiege()) {
-			$character->setLiege(null);
+			$character->setLiege();
 		}
 		if ($character->getRealm()) {
-			$character->setRealm(NULL);
+			$character->setRealm();
 		}
 		if ($character->getLiegeLand()) {
-			$character->setLiegeLand(NULL);
+			$character->setLiegeLand();
 		}
 		if ($character->getLiegePlace()) {
-			$character->setLiegePlace(NULL);
+			$character->setLiegePlace();
 		}
 		if ($character->getLiegePosition()) {
-			$character->setLiegePosition(NULL);
+			$character->setLiegePosition();
 		}
 	}
 
@@ -172,7 +172,7 @@ class Politics {
 				array('%link-character%'=>$character->getId()),
 				History::MEDIUM, true
 			);
-			$character->setLiege(null);
+			$character->setLiege();
 			return true;
 		}
 		if ($character->getLiegeLand()) {
@@ -188,7 +188,7 @@ class Politics {
 				array('%link-character%'=>$character->getId()),
 				History::MEDIUM, true
 			);
-			$character->setLiegeLand(null);
+			$character->setLiegeLand();
 			return true;
 		}
 		if ($character->getLiegePlace()) {
@@ -204,7 +204,7 @@ class Politics {
 				array('%link-character%'=>$character->getId()),
 				History::MEDIUM, true
 			);
-			$character->setLiegePlace(null);
+			$character->setLiegePlace();
 			return true;
 		}
 		if ($character->getLiegePosition()) {
@@ -222,7 +222,7 @@ class Politics {
 				History::MEDIUM, true
 			);
 			*/
-			$character->setLiegePosition(null);
+			$character->setLiegePosition();
 			return true;
 		}
 		if ($character->getRealm()) {
@@ -238,7 +238,7 @@ class Politics {
 				array('%link-character%'=>$character->getId()),
 				History::LOW, true
 			);
-			$character->setRealm(null);
+			$character->setRealm();
 			return true;
 		}
 		return true;
@@ -257,7 +257,7 @@ class Politics {
 				$occupantTakeOver = true;
 				$this->endOccupation($settlement, 'take', true);
 			} else {
-				$this->endOccupation($settlement, 'take', false);
+				$this->endOccupation($settlement, 'take');
 			}
 		}
 
@@ -318,7 +318,7 @@ class Politics {
 						History::HIGH, true
 					);
 				}
-				$settlement->setSteward(null);
+				$settlement->setSteward();
 				$this->history->logEvent(
 					$character,
 					'event.settlement.ownership.gained',
@@ -328,7 +328,7 @@ class Politics {
 				// add a claim for the old owner -- FIXME: He should have ruled for some time before this becomes an enforceable claim
 				// 										   or maybe more general change: all enforceable claims last only for (1x, 2x, 3x) as long as you had ruled?
 				if ($oldowner && $oldowner->isAlive() && !$oldowner->getSlumbering()) {
-					$this->addClaim($oldowner, $settlement, true, false);
+					$this->addClaim($oldowner, $settlement, true);
 				}
 				foreach ($settlement->getVassals() as $vassal) {
 					$vassal->setLiegeLand(null);
@@ -360,21 +360,21 @@ class Politics {
 								$unit,
 								'event.unit.basetaken',
 								array("%link-realm%"=>$realm->getId(), "%link-settlement%"=>$settlement->getId()),
-								History::HIGH, false
+								History::HIGH
 							);
 						} else {
 							$this->history->logEvent(
 								$unit,
 								'event.unit.basetaken2',
 								array("%link-settlement%"=>$settlement->getId()),
-								History::HIGH, false
+								History::HIGH
 							);
 						}
 						$this->history->logEvent(
 							$unit->getCharacter(),
 							'event.character.isolated',
 							array("%link-settlement%"=>$settlement->getId(), "%link-unit%"=>$unit->getId()),
-							History::HIGH, false
+							History::HIGH
 						);
 						$unit->setSettlement(NULL);
 					}
@@ -427,7 +427,7 @@ class Politics {
 					);
 				}
 				if ($settlement->getSteward() === $character) {
-					$settlement->setSteward(null);
+					$settlement->setSteward();
 				}
 				foreach ($settlement->getVassals() as $vassal) {
 					$vassal->setOathCurrent(false);
@@ -467,7 +467,7 @@ class Politics {
 					);
 				}
 				if ($settlement->getSteward() === $character) {
-					$settlement->setSteward(null);
+					$settlement->setSteward();
 				}
 				// add a claim for the old owner
 				// FIXME: He should have ruled for some time before this becomes an enforceable claim
@@ -578,8 +578,7 @@ class Politics {
 					$this->history->logEvent(
 						$settlement,
 						'event.settlement.changed',
-						array('%link-realm%'=>$newrealm->getId()),
-						History::MEDIUM
+						array('%link-realm%'=>$newrealm->getId())
 					);
 				}
 				if ($oldrealm && $newrealm) {
@@ -587,28 +586,24 @@ class Politics {
 					$this->history->logEvent(
 						$oldrealm,
 						'event.realm.lost2',
-						array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$newrealm->getId()),
-						History::MEDIUM
+						array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$newrealm->getId())
 					);
 					$this->history->logEvent(
 						$newrealm,
 						'event.realm.gained2',
-						array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$oldrealm->getId()),
-						History::MEDIUM
+						array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$oldrealm->getId())
 					);
 				} else if ($oldrealm) {
 					$this->history->logEvent(
 						$oldrealm,
 						'event.realm.lost',
-						array('%link-settlement%'=>$settlement->getId()),
-						History::MEDIUM
+						array('%link-settlement%'=>$settlement->getId())
 					);
 				} else {
 					$this->history->logEvent(
 						$newrealm,
 						'event.realm.gained',
-						array('%link-settlement%'=>$settlement->getId()),
-						History::MEDIUM
+						array('%link-settlement%'=>$settlement->getId())
 					);
 				}
 				break;
@@ -628,29 +623,25 @@ class Politics {
 					$this->history->logEvent(
 						$settlement,
 						'event.settlement.taken2',
-						array('%link-character%'=>$settlement->getOwner()->getId(), '%link-realm%'=>$newrealm->getId()),
-						History::MEDIUM
+						array('%link-character%'=>$settlement->getOwner()->getId(), '%link-realm%'=>$newrealm->getId())
 					);
 					if ($oldrealm) {
 						// TODO: different text when the new realm is related to the old realm (subrealm, parent realm, etc.)
 						$this->history->logEvent(
 							$newrealm,
 							'event.realm.gained2',
-							array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$oldrealm->getId()),
-							History::MEDIUM
+							array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$oldrealm->getId())
 						);
 						$this->history->logEvent(
 							$oldrealm,
 							'event.realm.lost2',
-							array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$newrealm->getId()),
-							History::MEDIUM
+							array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$newrealm->getId())
 						);
 					} else {
 						$this->history->logEvent(
 							$newrealm,
 							'event.realm.gained',
-							array('%link-settlement%'=>$settlement->getId()),
-							History::MEDIUM
+							array('%link-settlement%'=>$settlement->getId())
 						);
 					}
 				} else {
@@ -658,15 +649,13 @@ class Politics {
 					$this->history->logEvent(
 						$settlement,
 						'event.settlement.taken',
-						array('%link-character%'=>$settlement->getOwner()->getId()),
-						History::MEDIUM
+						array('%link-character%'=>$settlement->getOwner()->getId())
 					);
 					if ($oldrealm && $newrealm==null) {
 						$this->history->logEvent(
 							$oldrealm,
 							'event.realm.lost',
-							array('%link-settlement%'=>$settlement->getId()),
-							History::MEDIUM
+							array('%link-settlement%'=>$settlement->getId())
 						);
 					}
 				}
@@ -701,8 +690,7 @@ class Politics {
 				$this->history->logEvent(
 					$oldrealm,
 					'event.realm.lost',
-					array('%link-settlement%'=>$settlement->getId()),
-					History::MEDIUM
+					array('%link-settlement%'=>$settlement->getId())
 				);
 				break;
 			case 'abandon':	// settlement owner has decided to change
@@ -710,8 +698,7 @@ class Politics {
 					$this->history->logEvent(
 						$settlement,
 						'event.settlement.changed',
-						array('%link-realm%'=>$newrealm->getId()),
-						History::MEDIUM
+						array('%link-realm%'=>$newrealm->getId())
 					);
 				}
 				if ($oldrealm && $newrealm) {
@@ -719,21 +706,18 @@ class Politics {
 					$this->history->logEvent(
 						$oldrealm,
 						'event.realm.abandon2',
-						array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$newrealm->getId()),
-						History::MEDIUM
+						array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$newrealm->getId())
 					);
 					$this->history->logEvent(
 						$newrealm,
 						'event.realm.gained2',
-						array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$oldrealm->getId()),
-						History::MEDIUM
+						array('%link-settlement%'=>$settlement->getId(), '%link-realm%'=>$oldrealm->getId())
 					);
 				} else if ($oldrealm) {
 					$this->history->logEvent(
 						$oldrealm,
 						'event.realm.abandon',
-						array('%link-settlement%'=>$settlement->getId()),
-						History::MEDIUM
+						array('%link-settlement%'=>$settlement->getId())
 					);
 				}
 				break;
@@ -759,8 +743,7 @@ class Politics {
 					$this->history->logEvent(
 						$place,
 						'event.place.changed',
-						array('%link-realm%'=>$newrealm->getId()),
-						History::MEDIUM
+						array('%link-realm%'=>$newrealm->getId())
 					);
 				}
 				if ($oldrealm && $newrealm) {
@@ -768,28 +751,24 @@ class Politics {
 					$this->history->logEvent(
 						$oldrealm,
 						'event.realm.lostplace2',
-						array('%link-place%'=>$place->getId(), '%link-realm%'=>$newrealm->getId()),
-						History::MEDIUM
+						array('%link-place%'=>$place->getId(), '%link-realm%'=>$newrealm->getId())
 					);
 					$this->history->logEvent(
 						$newrealm,
 						'event.realm.gainedplace2',
-						array('%link-place%'=>$place->getId(), '%link-realm%'=>$oldrealm->getId()),
-						History::MEDIUM
+						array('%link-place%'=>$place->getId(), '%link-realm%'=>$oldrealm->getId())
 					);
 				} else if ($oldrealm) {
 					$this->history->logEvent(
 						$oldrealm,
 						'event.realm.lostplace',
-						array('%link-place%'=>$place->getId()),
-						History::MEDIUM
+						array('%link-place%'=>$place->getId())
 					);
 				} else {
 					$this->history->logEvent(
 						$newrealm,
 						'event.realm.gainedplace',
-						array('%link-place%'=>$place->getId()),
-						History::MEDIUM
+						array('%link-place%'=>$place->getId())
 					);
 				}
 				break;
@@ -815,8 +794,7 @@ class Politics {
 				$this->history->logEvent(
 					$oldrealm,
 					'event.place.lost',
-					array('%link-place%'=>$place->getId()),
-					History::MEDIUM
+					array('%link-place%'=>$place->getId())
 				);
 				break;
 			default:
@@ -847,7 +825,7 @@ class Politics {
 						$unit,
 						'event.unit.supplierlost',
 						array("%link-settlement%"=>$settlement->getId()),
-						History::HIGH, false
+						History::HIGH
 					);
 				}
 			} else {
@@ -856,7 +834,7 @@ class Politics {
 					$unit,
 					'event.unit.supplierlost',
 					array("%link-settlement%"=>$settlement->getId()),
-					History::HIGH, false
+					History::HIGH
 				);
 			}
 		}
@@ -868,21 +846,21 @@ class Politics {
 						$unit,
 						'event.unit.basetaken',
 						array("%link-realm%"=>$realm->getId(), "%link-settlement%"=>$settlement->getId()),
-						History::HIGH, false
+						History::HIGH
 					);
 				} else {
 					$this->history->logEvent(
 						$unit,
 						'event.unit.basetaken2',
 						array("%link-settlement%"=>$settlement->getId()),
-						History::HIGH, false
+						History::HIGH
 					);
 				}
 				$this->history->logEvent(
 					$unit->getCharacter(),
 					'event.character.isolated',
 					array("%link-settlement%"=>$settlement->getId(), "%link-unit%"=>$unit->getId()),
-					History::HIGH, false
+					History::HIGH
 				);
 				$unit->setSettlement(NULL);
 			}

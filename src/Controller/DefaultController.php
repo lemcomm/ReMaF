@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Service\AppState;
+use App\Service\CommonService;
 use App\Service\PageReader;
 use App\Service\PaymentManager;
 
@@ -144,7 +145,7 @@ class DefaultController extends AbstractController {
 	}
 
 
-	public function localeRedirectAction(AppState $appstate, $url): RedirectResponse {
+	public function localeRedirectAction(CommonService $common, $url): RedirectResponse {
 		if ($url=="-") $url="";
 		if (preg_match('/^[a-z]{2}\//', $url)===1) {
 			if (substr($url, 0, 2)=='en') {
@@ -162,7 +163,7 @@ class DefaultController extends AbstractController {
 				$locale = substr($this->getRequest()->getPreferredLanguage(),0,2);
 			}
 			if ($locale) {
-				$languages = $appstate->availableTranslations();
+				$languages = $common->availableTranslations();
 				if (!isset($languages[$locale])) {
 					$locale='en';
 				}

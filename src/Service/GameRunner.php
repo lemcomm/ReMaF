@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Character;
 use App\Entity\Election;
 use App\Entity\RealmPosition;
+use App\Entity\Siege;
 use App\Entity\Supply;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
@@ -19,7 +20,7 @@ class GameRunner {
 	private int $batchsize=200;
 	private int $maxtime=2400;
 	private EntityManagerInterface $em;
-	private AppState $appstate;
+	private CommonService $common;
 	private LoggerInterface $logger;
 	private ActionResolution $resolver;
 	private History $history;
@@ -40,9 +41,9 @@ class GameRunner {
 	private int $bandits_ok_distance = 50000;
 	private ArrayCollection $seen;
 
-	public function __construct(EntityManagerInterface $em, AppState $appstate, LoggerInterface $logger, ActionResolution $resolver, History $history, MilitaryManager $milman, Geography $geography, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm, WarManager $wm) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, LoggerInterface $logger, ActionResolution $resolver, History $history, MilitaryManager $milman, Geography $geography, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm, WarManager $wm) {
 		$this->em = $em;
-		$this->appstate = $appstate;
+		$this->common = $common;
 		$this->logger = $logger;
 		$this->resolver = $resolver;
 		$this->history = $history;
@@ -54,7 +55,7 @@ class GameRunner {
 		$this->npc = $npc;
 		$this->cm = $cm;
 		$this->wm = $wm;
-		$this->cycle = $this->appstate->getCycle();
+		$this->cycle = $this->common->getCycle();
 	}
 
 	public function runCycle($type, $maxtime=1200, $timing=false, $debug=false, $output=false, $limited=false): bool {
@@ -100,7 +101,7 @@ class GameRunner {
 
 	public function nextCycle($next_day=true): true {
 		if ($next_day) {
-			$this->appstate->setGlobal('cycle', ++$this->cycle);
+			$this->common->setGlobal('cycle', ++$this->cycle);
 			if ($this->cycle%360 == 0) {
 				// new year !
 				$this->eventNewYear();
@@ -124,7 +125,7 @@ class GameRunner {
 
 	# Due to the nature of GameRequests, we need them to be checked before anything else, as they can invalidate the results of other turn/update checks. Hence, theyr'e first in the list.
 	public function runGameRequestCycle(): true {
-		$last = $this->appstate->getGlobal('cycle.gamerequest', 0);
+		$last = $this->common->getGlobal('cycle.gamerequest', 0);
 		if ($last==='complete') return true;
 		$this->logger->info("Game Request Cycle...");
 
@@ -175,12 +176,12 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 
-		$this->appstate->setGlobal('cycle.gamerequest', 'complete');
+		$this->common->setGlobal('cycle.gamerequest', 'complete');
 		return true;
 	}
 
 	public function runCharactersUpdatesCycle(): true {
-		$last = $this->appstate->getGlobal('cycle.characters', 0);
+		$last = $this->common->getGlobal('cycle.characters', 0);
 		if ($last==='complete') return true;
 		$this->logger->info("Characters Cycle...");
 
@@ -352,14 +353,14 @@ class GameRunner {
 			$this->logger->info("  $keeponslumbercount positions kept on slumber!");
 		}
 		$this->logger->info("  Counted $knownslumber known slumberers and $knowndead known dead.");
-		$this->appstate->setGlobal('cycle.characters', 'complete');
+		$this->common->setGlobal('cycle.characters', 'complete');
 		$this->em->flush();
 		$this->em->clear();
 		return true;
 	}
 
 	public function runNPCCycle(): true {
-		$last = $this->appstate->getGlobal('cycle.npcs', 0);
+		$last = $this->common->getGlobal('cycle.npcs', 0);
 		if ($last==='complete') return true;
 		$this->logger->info("NPC Cycle...");
 
@@ -459,7 +460,7 @@ class GameRunner {
 			$this->logger->info("  No active NPCs.");
 		}
 
-		$this->appstate->setGlobal('cycle.npcs', 'complete');
+		$this->common->setGlobal('cycle.npcs', 'complete');
 		$this->em->flush();
 		$this->em->clear();
 
@@ -467,7 +468,7 @@ class GameRunner {
 	}
 
 	public function runSoldierCycle(): true {
-		$last = $this->appstate->getGlobal('cycle.soldiers', 0);
+		$last = $this->common->getGlobal('cycle.soldiers', 0);
 		if ($last==='complete') return true;
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date -- Soldiers update...");
@@ -930,7 +931,7 @@ class GameRunner {
 		$query = $this->em->createQuery('UPDATE App:Resupply r SET r.travel_days = (r.travel_days - 1) WHERE r.travel_days IS NOT NULL');
 		$query->execute();
 
-		$this->appstate->setGlobal('cycle.soldiers', 'complete');
+		$this->common->setGlobal('cycle.soldiers', 'complete');
 		$this->em->flush();
 		$this->em->clear();
 		return true;
@@ -984,7 +985,7 @@ class GameRunner {
 	}
 
 	private function abstractActionsCycle($hourly): bool {
-		$last = $this->appstate->getGlobal('cycle.action', 0);
+		$last = $this->common->getGlobal('cycle.action', 0);
 		if ($last==='complete') return true;
 		$last=(int)$last;
 		$this->logger->info("Actions Cycle...");
@@ -1014,7 +1015,7 @@ class GameRunner {
 			$this->resolver->update($action);
 
 			if (($i++ % $this->batchsize) == 0) {
-				$this->appstate->setGlobal('cycle.action', $lastid);
+				$this->common->setGlobal('cycle.action', $lastid);
 				$this->em->flush();
 			}
 			$time_spent = microtime(true)-$time_start;
@@ -1025,9 +1026,9 @@ class GameRunner {
 		}
 
 		if ($complete) {
-			$this->appstate->setGlobal('cycle.action', 'complete');
+			$this->common->setGlobal('cycle.action', 'complete');
 		} else {
-			$this->appstate->setGlobal('cycle.action', $lastid);
+			$this->common->setGlobal('cycle.action', $lastid);
 		}
 
 		$this->em->flush();
@@ -1036,14 +1037,14 @@ class GameRunner {
 	}
 
 	public function runResupplyCycle(): bool {
-		$last = $this->appstate->getGlobal('cycle.resupply', 0);
+		$last = $this->common->getGlobal('cycle.resupply', 0);
 		if ($last==='complete') return true;
         	$last=(int)$last;
 		$this->logger->info("Resupply Cycle...");
 
-		$max_supply = $this->appstate->getGlobal('supply.max_value', 800);
-		$max_items = $this->appstate->getGlobal('supply.max_items', 15);
-		$max_food = $this->appstate->getGlobal('supply.max_food', 100);
+		$max_supply = $this->common->getGlobal('supply.max_value', 800);
+		$max_items = $this->common->getGlobal('supply.max_items', 15);
+		$max_food = $this->common->getGlobal('supply.max_food', 100);
 
 		$query = $this->em->createQuery('SELECT e FROM App:Entourage e JOIN e.type t JOIN e.character c JOIN c.inside_settlement s WHERE c.prisoner_of IS NULL AND c.slumbering = false and c.travel is null and e.id>:last ORDER BY e.id ASC');
 		$query->setParameter('last', 0);
@@ -1106,9 +1107,9 @@ class GameRunner {
 		}
 
 		if ($complete) {
-			$this->appstate->setGlobal('cycle.resupply', 'complete');
+			$this->common->setGlobal('cycle.resupply', 'complete');
 		} else {
-			$this->appstate->setGlobal('cycle.resupply', $lastid);
+			$this->common->setGlobal('cycle.resupply', $lastid);
 		}
 
 		$this->em->flush();
@@ -1117,7 +1118,7 @@ class GameRunner {
 	}
 
 	public function runRealmsCycle(): true {
-		$last = $this->appstate->getGlobal('cycle.realm', 0);
+		$last = $this->common->getGlobal('cycle.realm', 0);
 		if ($last==='complete') return true;
         	$last=(int)$last;
 		$this->logger->info("Realms Cycle...");
@@ -1219,7 +1220,7 @@ class GameRunner {
 				}
 			}
 		}
-		$this->appstate->setGlobal('cycle.realm', 'complete');
+		$this->common->setGlobal('cycle.realm', 'complete');
 		$this->em->flush();
 		$this->em->clear();
 
@@ -1227,7 +1228,7 @@ class GameRunner {
 	}
 
 	public function runHousesCycle(): true {
-		$last = $this->appstate->getGlobal('cycle.houses', 0);
+		$last = $this->common->getGlobal('cycle.houses', 0);
 		if ($last==='complete') return true;
         	$last=(int)$last;
 		$this->logger->info("Houses Cycle...");
@@ -1269,7 +1270,7 @@ class GameRunner {
 			}
 		}
 
-		$this->appstate->setGlobal('cycle.houses', 'complete');
+		$this->common->setGlobal('cycle.houses', 'complete');
 		$this->em->flush();
 		$this->em->clear();
 
@@ -1277,7 +1278,7 @@ class GameRunner {
 	}
 
 	public function runAssociationsCycle(): true {
-		$last = $this->appstate->getGlobal('cycle.assocs', 0);
+		$last = $this->common->getGlobal('cycle.assocs', 0);
 		if ($last==='complete') return true;
         	$last=(int)$last;
 		$this->logger->info("Associations Cycle...");
@@ -1319,7 +1320,7 @@ class GameRunner {
 			}
 		}
 
-		$this->appstate->setGlobal('cycle.assocs', 'complete');
+		$this->common->setGlobal('cycle.assocs', 'complete');
 		$this->em->flush();
 		$this->em->clear();
 
@@ -1329,9 +1330,9 @@ class GameRunner {
 	public function runConversationsCleanup(): true {
 		# This is run separately from the main turn command, and runs after it. It remains here because it is still primarily turn logic.
 		# Ideally, this does nothing. If it does something though, it just means we caught a character that should or shouldn't be part of a conversation and fixed it.
-		$lastRealm = $this->appstate->getGlobal('cycle.convs.realm', 0);
-		$lastHouse = $this->appstate->getGlobal('cycle.convs.house', 0);
-		$lastAssoc = $this->appstate->getGlobal('cycle.convs.assoc', 0);
+		$lastRealm = $this->common->getGlobal('cycle.convs.realm', 0);
+		$lastHouse = $this->common->getGlobal('cycle.convs.house', 0);
+		$lastAssoc = $this->common->getGlobal('cycle.convs.assoc', 0);
 		$lastRealm=(int)$lastRealm;
 		$lastHouse=(int)$lastHouse;
 		$lastAssoc=(int)$lastAssoc;
@@ -1368,9 +1369,9 @@ class GameRunner {
 		}
 
 		if ($complete) {
-			$this->appstate->setGlobal('cycle.convs.realm', 'complete');
+			$this->common->setGlobal('cycle.convs.realm', 'complete');
 		} else {
-			$this->appstate->setGlobal('cycle.convs.realm', $lastRealm);
+			$this->common->setGlobal('cycle.convs.realm', $lastRealm);
 		}
 		$this->logger->info("  Result: ".$total." realms, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 		$this->em->flush();
@@ -1409,9 +1410,9 @@ class GameRunner {
 		}
 
 		if ($complete) {
-			$this->appstate->setGlobal('cycle.convs.house', 'complete');
+			$this->common->setGlobal('cycle.convs.house', 'complete');
 		} else {
-			$this->appstate->setGlobal('cycle.convs.house', $lastHouse);
+			$this->common->setGlobal('cycle.convs.house', $lastHouse);
 		}
 		$this->logger->info("  Result: ".$total." houses, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 		$this->em->flush();
@@ -1453,9 +1454,9 @@ class GameRunner {
 		$this->em->clear();
 
 		if ($complete) {
-			$this->appstate->setGlobal('cycle.convs.assoc', 'complete');
+			$this->common->setGlobal('cycle.convs.assoc', 'complete');
 		} else {
-			$this->appstate->setGlobal('cycle.convs.assoc', $lastAssoc);
+			$this->common->setGlobal('cycle.convs.assoc', $lastAssoc);
 		}
 		$this->logger->info("  Result: ".$total." associations, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 		$this->em->flush();
@@ -1468,7 +1469,7 @@ class GameRunner {
 	}
 
 	public function runPositionsCycle(): true {
-		$last = $this->appstate->getGlobal('cycle.positions', 0);
+		$last = $this->common->getGlobal('cycle.positions', 0);
 		if ($last==='complete') return true;
         	$last=(int)$last;
 		$this->logger->info("Positions Cycle...");
@@ -1587,7 +1588,7 @@ class GameRunner {
 		$this->em->flush();
 
 		$this->logger->info("  Checking for routine elections...");
-		$cycle = $this->appstate->getCycle();
+		$cycle = $this->cycle;
 		$query = $this->em->createQuery("SELECT p FROM App:RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND p.elected = true AND (p.retired = false OR p.retired IS NULL) AND p.cycle <= :cycle AND p.cycle IS NOT NULL AND h.id IS NOT NULL AND p NOT IN (SELECT y FROM App:Election x JOIN x.position y WHERE x.closed=false OR x.complete > :timeout) GROUP BY p");
 		$query->setParameter('timeout', $timeout);
 		$query->setParameter('cycle', $cycle);
@@ -1634,7 +1635,7 @@ class GameRunner {
 			}
 		}
 
-		$this->appstate->setGlobal('cycle.positions', 'complete');
+		$this->common->setGlobal('cycle.positions', 'complete');
 		$this->em->flush();
 		$this->em->clear();
 
@@ -1642,7 +1643,7 @@ class GameRunner {
 	}
 
 	public function runSeaFoodCycle(): bool {
-		$last = $this->appstate->getGlobal('cycle.seafood', 0);
+		$last = $this->common->getGlobal('cycle.seafood', 0);
 		if ($last==='complete') return true;
 		$this->logger->info("Sea Food Cycle...");
 
@@ -1687,9 +1688,9 @@ class GameRunner {
 		}
 
 		if ($complete) {
-			$this->appstate->setGlobal('cycle.seafood', 'complete');
+			$this->common->setGlobal('cycle.seafood', 'complete');
 		} else {
-			$this->appstate->setGlobal('cycle.seafood', 0);
+			$this->common->setGlobal('cycle.seafood', 0);
 		}
 
 		$this->em->flush();
@@ -1754,16 +1755,6 @@ class GameRunner {
 		$this->em->flush();
 	}
 
-
-	public function getCycle(): int { return $this->cycle; }
-	public function getDate(): array {
-		// our in-game date - 6 days a week, 60 weeks a year
-		$year = floor($this->cycle/360)+1;
-		$week = floor($this->cycle%360/6)+1;
-		$day = ($this->cycle%6)+1;
-		return array('year'=>$year, 'week'=>$week, 'day'=>$day);
-	}
-
 	public function postToRealm(RealmPosition $position, $systemflag, $msg): void {
 		$query = $this->em->createQuery('SELECT c FROM App:Conversation c WHERE c.realm = :realm AND c.system = :system');
 		switch ($systemflag) {
@@ -1820,10 +1811,10 @@ class GameRunner {
 
 	public function Progress($part): array {
 		$entity = 'App\Entity\\'.ucfirst($part);
-		$last = $this->appstate->getGlobal('cycle.'.$part);
+		$last = $this->common->getGlobal('cycle.'.$part);
 		$flush = false;
 		if (!$last) {
-			$this->appstate->setGlobal('cycle.'.$part, 0);
+			$this->common->setGlobal('cycle.'.$part, 0);
 			$last=0; $flush=true;
 		}
 		if ($flush) { $this->em->flush(); }

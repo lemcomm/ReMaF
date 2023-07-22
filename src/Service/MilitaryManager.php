@@ -22,10 +22,10 @@ Military exists for management of soldiers, units, and entourage, and for their 
 class MilitaryManager {
 
 	private EntityManagerInterface $em;
+	private ActionManager $actman;
 	private History $history;
-	private AppState $appstate;
+	private CommonService $common;
 	private Geography $geo;
-	private HelperService $helper;
 	private LoggerInterface $logger;
 
 	private int $group_assign=0;
@@ -33,12 +33,12 @@ class MilitaryManager {
 	private int $group_soldier=0;
 	private int $max_group=25; // a=0 ... z=25
 
-	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, HelperService $helper, History $history, AppState $appstate, Geography $geo) {
+	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, ActionManager $actman, CommonService $common, History $history, Geography $geo) {
 		$this->em = $em;
 		$this->logger = $logger;
-		$this->helper = $helper;
+		$this->actman = $actman;
 		$this->history = $history;
-		$this->appstate = $appstate;
+		$this->common = $common;
 		$this->geo = $geo;
 	}
 
@@ -77,15 +77,8 @@ class MilitaryManager {
 		}
 	}
 
-	#TODO: Move this getClassName method, and it's siblings in other files, into a single HelperService file.
-	private function getClassName($entity): false|int|string {
-		$classname = get_class($entity);
-		if ($pos = strrpos($classname, '\\')) return substr($classname, $pos + 1);
-		return $pos;
-	}
-
 	public function findAvailableEquipment($entity, $with_trainers) {
-		switch($this->getClassName($entity)) {
+		switch($this->common->getClassName($entity)) {
 			case 'Settlement':
 				if ($with_trainers) {
 					$query = $this->em->createQuery('SELECT e as item, ba.resupply FROM App:EquipmentType e LEFT JOIN e.provider p LEFT JOIN p.buildings ba LEFT JOIN ba.settlement sa LEFT JOIN e.trainer t LEFT JOIN t.buildings bb LEFT JOIN bb.settlement sb WHERE sa = :location AND ba.active = true AND sb = :location AND bb.active = true ORDER BY p.name ASC, e.name ASC');
@@ -285,7 +278,7 @@ class MilitaryManager {
 					$success = false;
 				} else {
 					// resupply from settlement
-					if ($this->helper->acquireItem($settlement, $soldier->$trained(), false, true, $soldier->getCharacter())) {
+					if ($this->actman->acquireItem($settlement, $soldier->$trained(), false, true, $soldier->getCharacter())) {
 						$soldier->$set($soldier->$trained());
 					} else {
 						$success = false;
@@ -315,22 +308,22 @@ class MilitaryManager {
 		$fail = false;
 		// first, check if our change is possible:
 		if ($weapon && $weapon != $soldier->getTrainedWeapon()) {
-			if (!$this->helper->acquireItem($settlement, $weapon, true, false)) {
+			if (!$this->actman->acquireItem($settlement, $weapon, true, false)) {
 				$fail = true;
 			}
 		}
 		if ($armour && $armour != $soldier->getTrainedArmour()) {
-			if (!$this->helper->acquireItem($settlement, $armour, true, false)) {
+			if (!$this->actman->acquireItem($settlement, $armour, true, false)) {
 				$fail = true;
 			}
 		}
 		if ($equipment && $equipment != $soldier->getTrainedEquipment()) {
-			if (!$this->helper->acquireItem($settlement, $equipment, true, false)) {
+			if (!$this->actman->acquireItem($settlement, $equipment, true, false)) {
 				$fail = true;
 			}
 		}
 		if ($mount && $mount != $soldier->getTrainedMount()) {
-			if (!$this->helper->acquireItem($settlement, $mount, true, false)) {
+			if (!$this->actman->acquireItem($settlement, $mount, true, false)) {
 				$fail = true;
 			}
 		}
@@ -346,28 +339,28 @@ class MilitaryManager {
 
 		// now do it - we don't need to check for trainers in the acquireItem() statement anymore, because we did it above
 		if ($weapon && $weapon != $soldier->getTrainedWeapon()) {
-			if ($this->helper->acquireItem($settlement, $weapon)) {
+			if ($this->actman->acquireItem($settlement, $weapon)) {
 				$train += $weapon->getTrainingRequired();
 				$soldier->setWeapon($weapon)->setHasWeapon(true);
 				$change = true;
 			}
 		}
 		if ($armour && $armour != $soldier->getTrainedArmour()) {
-			if ($this->helper->acquireItem($settlement, $armour)) {
+			if ($this->actman->acquireItem($settlement, $armour)) {
 				$train += $armour->getTrainingRequired();
 				$soldier->setArmour($armour)->setHasArmour(true);
 				$change = true;
 			}
 		}
 		if ($equipment && $equipment != $soldier->getTrainedEquipment()) {
-			if ($this->helper->acquireItem($settlement, $equipment)) {
+			if ($this->actman->acquireItem($settlement, $equipment)) {
 				$train += $equipment->getTrainingRequired();
 				$soldier->setEquipment($equipment)->setHasEquipment(true);
 				$change = true;
 			}
 		}
 		if ($mount && $mount != $soldier->getTrainedMount()) {
-			if ($this->helper->acquireItem($settlement, $mount)) {
+			if ($this->actman->acquireItem($settlement, $mount)) {
 				$train += $mount->getTrainingRequired();
 				$soldier->setMount($mount)->setHasEquipment(true);
 				$change = true;
@@ -427,9 +420,9 @@ class MilitaryManager {
 
 	private function salvageItem(Character $character, EquipmentType $equipment=null, $amount=-1): bool {
 		if ($equipment) {
-			$max_supply = min($this->appstate->getGlobal('supply.max_value', 800), $equipment->getResupplyCost() * $this->appstate->getGlobal('supply.max_items', 15));
+			$max_supply = min($this->common->getGlobal('supply.max_value', 800), $equipment->getResupplyCost() * $this->common->getGlobal('supply.max_items', 15));
 		} else {
-			$max_supply = $this->appstate->getGlobal('supply.max_food', 50);
+			$max_supply = $this->common->getGlobal('supply.max_food', 50);
 		}
 
 		if ($equipment) {

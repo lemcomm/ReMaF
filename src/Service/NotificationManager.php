@@ -12,9 +12,6 @@ use App\Entity\Journal;
 use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\Settlement;
-use App\Service\AppState;
-use App\Service\MailManager;
-use App\Service\DiscordIntegrator;
 use App\Twig\MessageTranslateExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -23,7 +20,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class NotificationManager {
 
 	protected EntityManagerInterface $em;
-	protected AppState $appstate;
 	protected MailManager $mailman;
 	protected MessageTranslateExtension $msgtrans;
 	protected TranslatorInterface $trans;
@@ -31,9 +27,8 @@ class NotificationManager {
 	private false|string $type;
 	private false|string $name;
 
-	public function __construct(EntityManagerInterface $em, AppState $appstate, MailManager $mailman, MessageTranslateExtension $msgtrans, TranslatorInterface $trans, DiscordIntegrator $discord) {
+	public function __construct(EntityManagerInterface $em, MailManager $mailman, MessageTranslateExtension $msgtrans, TranslatorInterface $trans, DiscordIntegrator $discord) {
 		$this->em = $em;
-		$this->appstate = $appstate;
 		$this->mailman = $mailman;
 		$this->msgtrans = $msgtrans;
 		$this->trans = $trans;

@@ -27,6 +27,7 @@ class BattleRunner {
 	private History $history;
 	private Geography $geo;
 	private CharacterManager $character_manager;
+	private CommonService $common;
 	private MilitaryManager $milman;
 	private Interactions $interactions;
 	private WarManager $warman;
@@ -65,12 +66,13 @@ class BattleRunner {
 	private int $defenseBonus=0;
 
 
-	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, History $history, Geography $geo, CharacterManager $character_manager, Interactions $interactions, WarManager $war_manager, Politics $politics, MilitaryManager $milman, HelperService $helper, CombatManager $combat) {
+	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, History $history, Geography $geo, CharacterManager $character_manager, CommonService $common, Interactions $interactions, WarManager $war_manager, Politics $politics, MilitaryManager $milman, HelperService $helper, CombatManager $combat) {
 		$this->em = $em;
 		$this->logger = $logger;
 		$this->history = $history;
 		$this->geo = $geo;
 		$this->character_manager = $character_manager;
+		$this->common = $common;
 		$this->interactions = $interactions;
 		$this->warman = $war_manager;
 		$this->politics = $politics;
@@ -494,7 +496,7 @@ class BattleRunner {
 				$this->battlesize = min($mysize, $enemysize);
 
 				foreach ($group->getCharacters() as $char) {
-					$this->character_manager->addAchievement($char, 'battlesize', $this->battlesize);
+					$this->common->addAchievement($char, 'battlesize', $this->battlesize);
 					$charReport = new BattleReportCharacter();
 					$this->em->persist($charReport);
 					$charReport->setGroupReport($group->getActiveReport());
@@ -523,7 +525,7 @@ class BattleRunner {
 						$soldier->setFortified(true);
 					}
 					if ($soldier->isNoble()) {
-						$this->character_manager->addAchievement($soldier->getCharacter(), 'battles');
+						$this->common->addAchievement($soldier->getCharacter(), 'battles');
 						$morale = $base_morale * 1.5;
 					} else {
 						$this->history->addToSoldierLog($soldier, 'battle', array("%link-battle%"=>$this->report->getId()));

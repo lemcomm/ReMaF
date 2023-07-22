@@ -25,8 +25,8 @@ doctrine:
             datetime_functions:
                 date_part:          App\DQL\DatePart
             numeric_functions:
-                #pow:                App\DQL\Pow
-                #round:              App\DQL\Round
+                pow:                App\DQL\Pow
+                round:              App\DQL\Round
                 st_point:           LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StPoint
                 st_x:               LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StX
                 st_y:               LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StY

@@ -22,7 +22,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class CharacterManager {
 
 	protected EntityManagerInterface $em;
-	protected AppState $appstate;
 	protected CommonService $common;
 	protected MilitaryManager $milman;
 	protected History $history;
@@ -36,9 +35,8 @@ class CharacterManager {
 
 	private ?ArrayCollection $seen;
 
-	public function __construct(EntityManagerInterface $em, AppState $appstate, CommonService $common, History $history, MilitaryManager $milman, Politics $politics, RealmManager $realmmanager, ConversationManager $convman, DungeonMaster $dm, WarManager $warman, AssociationManager $assocman, HelperService $helper) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, History $history, MilitaryManager $milman, Politics $politics, RealmManager $realmmanager, ConversationManager $convman, DungeonMaster $dm, WarManager $warman, AssociationManager $assocman, HelperService $helper) {
 		$this->em = $em;
-		$this->appstate = $appstate;
 		$this->common = $common;
 		$this->history = $history;
 		$this->milman = $milman;
@@ -1265,28 +1263,6 @@ class CharacterManager {
 		$query = $this->em->createQuery('SELECT e, l, m FROM App:Event e JOIN e.log l JOIN l.metadatas m WHERE m.reader = :me AND e.ts > m.last_access AND (m.access_until IS NULL OR e.cycle <= m.access_until) AND (m.access_from IS NULL OR e.cycle >= m.access_from) ORDER BY e.ts DESC');
 		$query->setParameter('me', $character);
 		return $query->getResult();
-	}
-
-
-	/* achievements */
-	public function getAchievement(Character $character, $key) {
-		return $this->common->getAchievement($character, $key);
-	}
-
-	public function getAchievementValue(Character $character, $key) {
-		return $this->common->getAchievementValue($character, $key);
-	}
-
-	public function setAchievement(Character $character, $key, $value): void {
-		$this->common->setMaxAchievement($character, $key, $value, false);
-	}
-
-	public function setMaxAchievement(Character $character, $key, $value, $only_raise=true): void {
-		$this->common->setMaxAchievement($character, $key, $value, $only_raise);
-	}
-
-	public function addAchievement(Character $character, $key, $value=1): void {
-		$this->common->addAchievement($character, $key, $value);
 	}
 
 	public function Reputation(Character $char, User $me=null): array {

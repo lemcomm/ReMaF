@@ -4,8 +4,8 @@ namespace App\Service;
 
 class ActivityDispatcher extends Dispatcher {
 
-	public function __construct(AppState $appstate, PermissionManager $pm, Geography $geo, Interactions $interactions, AssociationManager $assocman) {
-		parent::__construct($appstate, $pm, $geo, $interactions, $assocman);
+	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions, AssociationManager $assocman) {
+		parent::__construct($appstate, $common, $pm, $geo, $interactions, $assocman);
 	}
 
 	public function activityActions(): array {

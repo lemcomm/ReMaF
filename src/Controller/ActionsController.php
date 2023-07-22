@@ -16,6 +16,7 @@ use App\Form\TradeType;
 use App\Service\ActionManager;
 use App\Service\ActionResolution;
 use App\Service\AppState;
+use App\Service\CommonService;
 use App\Service\Dispatcher;
 use App\Service\Economy;
 use App\Service\Generator;
@@ -85,7 +86,7 @@ class ActionsController extends AbstractController {
 	}
 
 	#[Route ('/actions/', name:'maf_actions')]
-	public function indexAction(): RedirectResponse|Response {
+	public function indexAction(CommonService $common): RedirectResponse|Response {
 		list($character, $settlement) = $this->dispatcher->gateway(false, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -96,7 +97,7 @@ class ActionsController extends AbstractController {
 				'%type%' => $this->trans->trans($settlement->getType()),
 				'%name%' => $this->links->ObjectLink($settlement) ));
 		} else {
-			$nearest = $this->geo->findNearestSettlement($character);
+			$nearest = $common->findNearestSettlement($character);
 			$settlement=array_shift($nearest);
 			$pagetitle = $this->trans->trans('settlement.area', array(
 				'%name%' => $this->links->ObjectLink($settlement) ));
@@ -349,7 +350,7 @@ class ActionsController extends AbstractController {
 	}
 
 	#[Route ('/actions/giveship', name:'maf_actions_giveship')]
-	public function giveShipAction(Request $request): RedirectResponse|Response {
+	public function giveShipAction(CommonService $common, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('locationGiveShipTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -373,7 +374,7 @@ class ActionsController extends AbstractController {
 			$ship = $query->getOneOrNullResult();
 			if ($ship) {
 				$ship->setOwner($data['target']);
-				$current_cycle = intval($this->app->getGlobal('cycle'));
+				$current_cycle = intval($common->getGlobal('cycle'));
 				$this->hist->logEvent(
 					$data['target'],
 					'event.character.gotship',

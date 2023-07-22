@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\UpdateNote;
 use App\Entity\User;
 use App\Form\UpdateNoteType;
-use App\Service\AppState;
+use App\Service\CommonService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,11 +16,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class GMController extends AbstractController {
 
-	private AppState $app;
 	private EntityManagerInterface $em;
 
-	public function __construct(AppState $app, EntityManagerInterface $em) {
-		$this->app = $app;
+	public function __construct(EntityManagerInterface $em) {
 		$this->em = $em;
 	}
 	#[Route ('/olympus', name:'maf_gm_pending')]
@@ -56,7 +54,7 @@ class GMController extends AbstractController {
 	#[Route ('/olympus/update/')]
 	#[Route ('/olympus/update')]
 
-	public function updateNoteAction(Request $request, UpdateNote $id=null): RedirectResponse|Response {
+	public function updateNoteAction(CommonService $common, Request $request, UpdateNote $id=null): RedirectResponse|Response {
 		$form = $this->createForm(UpdateNoteType::class, null, ['note'=>$id]);
 		$form->handleRequest($request);
 
@@ -76,8 +74,8 @@ class GMController extends AbstractController {
 			$note->setTitle($data['title']);
 			$this->em->flush();
 			if (!$id) {
-				$this->app->setGlobal('game-version', $version);
-				$this->app->setGlobal('game-updated', $now->format('Y-m-d'));
+				$common->setGlobal('game-version', $version);
+				$common->setGlobal('game-updated', $now->format('Y-m-d'));
 			}
 			$this->addFlash('notice', 'Update note created.');
 			return $this->redirectToRoute('maf_chars');

@@ -8,15 +8,14 @@ use App\Entity\Law;
 use App\Entity\LawType;
 use App\Entity\Realm;
 use App\Entity\Settlement;
-use App\Service\AppState;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 class LawManager {
 
-	protected EntityManagerInterface $em;
-	protected AppState $appstate;
-	protected History $history;
+	private CommonService $common;
+	private EntityManagerInterface $em;
+	private History $history;
 
 	public array $choices = [
 		'assocVisibility' => [
@@ -64,9 +63,9 @@ class LawManager {
 
 	public array $taxLaws = ['taxesFood', 'taxesWood', 'taxesMetal', 'taxesWealth'];
 
-	public function __construct(EntityManagerInterface $em, AppState $appstate, History $history) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, History $history) {
 		$this->em = $em;
-		$this->appstate = $appstate;
+		$this->common = $common;
 		$this->history = $history;
 	}
 
@@ -115,7 +114,7 @@ class LawManager {
 					$title = $law->getType()->getName();
 				}
 				$law->setEnacted(new DateTime("now"));
-				$law->setCycle($this->appstate->getCycle());
+				$law->setCycle($this->common->getCycle());
 				$law->setEnactedBy($character);
 				if ($settlement) {
 					$law->setSettlement($settlement);

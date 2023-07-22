@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\AppState;
+use App\Service\CommonService;
 use App\Service\Dispatcher;
 use App\Entity\Character;
 
@@ -14,12 +15,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class BuildingController extends AbstractController {
 
-	private AppState $app;
 	private Dispatcher $dispatcher;
 	private EntityManagerInterface $em;
 	
-	public function __construct(AppState $app, Dispatcher $dispatcher, EntityManagerInterface $em) {
-		$this->app = $app;
+	public function __construct(Dispatcher $dispatcher, EntityManagerInterface $em) {
 		$this->dispatcher = $dispatcher;
 		$this->em = $em;
 	}
@@ -48,7 +47,7 @@ class BuildingController extends AbstractController {
 	}
 
 	#[Route ('/building/library', name:'maf_building_library')]
-	public function libraryAction(): RedirectResponse|Response {
+	public function libraryAction(CommonService $common): RedirectResponse|Response {
 		list($character, $settlement) = $this->dispatcher->gateway('locationLibraryTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -59,7 +58,7 @@ class BuildingController extends AbstractController {
 		$query->setMaxResults(5);
 		$top_settlements = $query->getResult();
 
-		$cycle = $this->app->getCycle();
+		$cycle = $common->getCycle();
 
 		$query = $em->createQuery('SELECT s as stat, r, (s.population + s.area * 10) as size FROM App:StatisticRealm s JOIN s.realm r WHERE s.cycle = :cycle ORDER BY size DESC');
 		$query->setParameter('cycle', $cycle);
@@ -97,7 +96,7 @@ class BuildingController extends AbstractController {
 	}
 
 	#[Route ('/building/temple', name:'maf_building_temple')]
-	public function templeAction(): RedirectResponse|Response {
+	public function templeAction(CommonService $common): RedirectResponse|Response {
 		list($character, $settlement) = $this->dispatcher->gateway('locationTempleTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -111,7 +110,7 @@ class BuildingController extends AbstractController {
 		$query = $em->createQuery('SELECT s FROM App:StatisticSettlement s WHERE s.settlement = :me ORDER BY s.cycle DESC');
 		$query->setMaxResults(600); // TODO: max two in-game years - for now. No idea how much flot.js can handle.
 		$query->setParameter('me', $settlement);
-		$current_cycle = intval($this->app->getGlobal('cycle'));
+		$current_cycle = intval($common->getGlobal('cycle'));
 		foreach ($query->getResult() as $row) {
 			$cycle = $row->getCycle() - $current_cycle;
 
@@ -124,7 +123,7 @@ class BuildingController extends AbstractController {
 	}
 
 	#[Route ('/building/barracks', name:'maf_building_barracks')]
-	public function barracksAction(): RedirectResponse|Response {
+	public function barracksAction(CommonService $common): RedirectResponse|Response {
 		list($character, $settlement) = $this->dispatcher->gateway('locationBarracksTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -137,7 +136,7 @@ class BuildingController extends AbstractController {
 		$query = $em->createQuery('SELECT s FROM App:StatisticSettlement s WHERE s.settlement = :me ORDER BY s.cycle DESC');
 		$query->setMaxResults(600); // TODO: max two in-game years - for now. No idea how much flot.js can handle.
 		$query->setParameter('me', $settlement);
-		$current_cycle = intval($this->app->getGlobal('cycle'));
+		$current_cycle = intval($common->getGlobal('cycle'));
 		foreach ($query->getResult() as $row) {
 			$cycle = $row->getCycle() - $current_cycle;
 

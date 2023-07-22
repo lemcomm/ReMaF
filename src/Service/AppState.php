@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\Character;
 use App\Entity\NetExit;
 use App\Entity\SecurityLog;
-use App\Entity\Setting;
 use App\Entity\User;
 use App\Entity\UserLog;
 use DateTime;
@@ -23,13 +22,7 @@ class AppState {
 	private RequestStack $requestStack;
 	private Security $security;
 
-	private array $languages = array(
-		'en' => 'english',
-		'de' => 'deutsch',
-		'es' => 'español',
-		'fr' => 'français',
-		'it' => 'italiano'
-		);
+
 
 	public function __construct(CommonService $common, EntityManagerInterface $em, RequestStack $requestStack, Security $security) {
 		$this->common = $common;
@@ -38,9 +31,7 @@ class AppState {
 		$this->security = $security;
 	}
 
-	public function availableTranslations(): array {
-		return $this->languages;
-	}
+
 
 	public function getCharacter($required=true, $ok_if_dead=false, $ok_if_notstarted=false) {
 		/* This used to throw exceptions rather than adding flashes and returning strings.
@@ -99,39 +90,6 @@ class AppState {
 		return $character;
 	}
 
-	public function getDate($cycle=null): array {
-		// our in-game date - 6 days a week, 60 weeks a year = 1 year about 2 months
-		if (null===$cycle) {
-			$cycle = $this->getCycle();
-		}
-
-		$year = floor($cycle/360)+1;
-		$week = floor($cycle%360/6)+1;
-		$day = ($cycle%6)+1;
-		return array('year'=>$year, 'week'=>$week, 'day'=>$day);
-	}
-
-	public function getCycle(): int {
-		return (int)($this->getGlobal('cycle', 0));
-	}
-
-	public function getGlobal($name, $default=false) {
-		$setting = $this->em->getRepository(Setting::class)->findOneBy(['name'=>$name]);
-		if (!$setting) return $default;
-		return $setting->getValue();
-	}
-	public function setGlobal($name, $value): void {
-		$setting = $this->em->getRepository(Setting::class)->findOneBy(['name'=>$name]);
-		if (!$setting) {
-			$setting = new Setting();
-			$setting->setName($name);
-			$this->em->persist($setting);
-		}
-		$setting->setValue($value);
-		$this->em->flush($setting);
-	}
-
-
 	public function setSessionData(Character $character): void {
 		$session = $this->requestStack->getSession();
 		$session->clear();
@@ -157,20 +115,6 @@ class AppState {
 			}
 			$session->set('realms', $realms);
 		}
-	}
-
-	public function findEmailOptOutToken(User $user): string {
-		return $user->getEmailOptOutToken()?:$this->generateEmailOptOutToken($user);
-	}
-
-	/**
-	 * @throws Exception
-	 */
-	public function generateEmailOptOutToken(User $user): string {
-		$token = $this->generateToken();
-		$user->setEmailOptOutToken($token);
-		$this->em->flush();
-		return $token;
 	}
 
 	/**

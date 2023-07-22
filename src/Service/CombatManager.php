@@ -533,14 +533,14 @@ class CombatManager {
 				$this->charMan->imprison_prepare($target->getCharacter(), $me->getCharacter());
 				$this->history->logEvent($target->getCharacter(), 'event.character.capture', array('%link-character%'=>$me->getCharacter()->getId()), History::HIGH, true);
 				$result='capture';
-				$this->charMan->addAchievement($me->getCharacter(), 'captures');
+				$this->common->addAchievement($me->getCharacter(), 'captures');
 			} else {
 				if ($battle) {
 					if ($me->isNoble()) {
 						if ($target->isNoble()) {
-							$this->charMan->addAchievement($me->getCharacter(), 'kills.nobles');
+							$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
 						} else {
-							$this->charMan->addAchievement($me->getCharacter(), 'kills.soldiers');
+							$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
 						}
 					}
 					$logs[] = "killed\n";

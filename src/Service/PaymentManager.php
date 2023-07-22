@@ -11,7 +11,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Patreon\API as PAPI;
 use Patreon\OAuth as POA;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 
@@ -27,7 +26,7 @@ class PaymentManager {
 	private array $stripePrices;
 	private array $patreonAlikes = ['patreon'];
 
-	public function __construct(EntityManagerInterface $em, UserManager $usermanager, TranslatorInterface $translator, LoggerInterface $logger, MailManager $mailer, KernelInterface $kernel) {
+	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, LoggerInterface $logger, MailManager $mailer, UserManager $usermanager) {
 		$this->em = $em;
 		$this->usermanager = $usermanager;
 		$this->mailer = $mailer;
