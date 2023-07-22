@@ -47,7 +47,7 @@ doctrine:
                 st_line_interpolate_point:     LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpLineInterpolatePoint
                 st_line_locate_point:          LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpLineLocatePoint
                 st_line_substring:  LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\SpLineSubstring
-                st_azimuth:         LongitudeOne\Spatial\ORM\Query\AST\Functions\PostgreSql\STAzimuth
+                st_azimuth:         App\ORM\Query\AST\Functions\PostgreSql\StAzimuth
                 st_touches:         LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StTouches
                 st_crosses:         LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StCrosses
                 st_intersects:      LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StIntersects

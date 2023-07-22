@@ -11,13 +11,17 @@ use App\Entity\BattleReport;
 use App\Entity\Character;
 use App\Entity\Conversation;
 use App\Entity\Deity;
+use App\Entity\GeoData;
+use App\Entity\GeoFeature;
 use App\Entity\House;
 use App\Entity\Law;
 use App\Entity\Message;
 use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\Settlement;
+use App\Entity\Ship;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /*
@@ -38,12 +42,12 @@ class Dispatcher {
 	protected AssociationManager $assocman;
 
 	// test results to store because they are expensive to calculate
-	private ?bool $actionableSettlement=false;
-	private ?bool $actionablePlace=false;
-	private ?bool $actionableRegion=false;
-	private ?bool $actionableDock=false;
-	private ?bool $actionableShip=false;
-	private ?bool $actionableHouses=false;
+	private null|bool|Settlement $actionableSettlement=false;
+	private null|bool|Place $actionablePlace=false;
+	private null|bool|GeoData $actionableRegion=false;
+	private null|bool|GeoFeature $actionableDock=false;
+	private null|bool|Ship $actionableShip=false;
+	private null|bool|Collection $actionableHouses=false;
 
 	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions, AssociationManager $assocman) {
 		$this->appstate = $appstate;
@@ -2222,7 +2226,7 @@ class Dispatcher {
 		if ($this->getCharacter()->isInBattle()) {
 			return array("name"=>"surrender.name", "description"=>"unavailable.inbattle");
 		}
-		return $this->action("surrender", "maf_character_surrender");
+		return $this->action("surrender", "maf_char_surrender");
 	}
 
 	public function personalEscapeTest(): array {
@@ -2233,7 +2237,7 @@ class Dispatcher {
 			return array("name"=>"escape.name", "description"=>"unavailable.already");
 		}
 
-		return $this->action("escape", "maf_character_escape");
+		return $this->action("escape", "maf_char_escape");
 	}
 
 	public function personalRequestsManageTest(): array {
@@ -2585,9 +2589,9 @@ class Dispatcher {
 		}
 
 		return $this->action("place.manage", "maf_place_manage", true,
-				array('id'=>$place->getId()),
-				array("%name%"=>$place->getName(), "%formalname%"=>$place->getFormalName())
-			);
+			array('id'=>$place->getId()),
+			array("%name%"=>$place->getName(), "%formalname%"=>$place->getFormalName())
+		);
 	}
 
 	public function placeManageEmbassyTest($ignored, Place $place): array {
@@ -2606,9 +2610,9 @@ class Dispatcher {
 			(!$place->getAmbassador() && !$place->getOwningRealm() && !$place->getHostingRealm() && $place->getOwner() == $character)
 		) {
 			return $this->action("place.embassy", "maf_place_manage", true,
-					array('id'=>$place->getId()),
-					array("%name%"=>$place->getName(), "%formalname%"=>$place->getFormalName())
-				);
+				array('id'=>$place->getId()),
+				array("%name%"=>$place->getName(), "%formalname%"=>$place->getFormalName())
+			);
 		} else {
 			return array("name"=>"place.embassy.name", "description"=>"unavailable.notowner");
 		}
@@ -2648,40 +2652,40 @@ class Dispatcher {
 	public function placeLeaveTest($check_duplicate=false): array {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"place.exit.name",
-				     "description"=>"unavailable.$check"
-				    );
+				"description"=>"unavailable.$check"
+			);
 		}
 		if (!$this->getCharacter()->getInsidePlace()) {
 			return array("name"=>"place.exit.name",
-				     "description"=>"unavailable.outsideplace"
-				    );
+				"description"=>"unavailable.outsideplace"
+			);
 		}
 		if ($this->getCharacter()->getInsidePlace()->getSiege()) {
 			return array("name"=>"location.exit.name", "description"=>"unavailable.besieged");
 		}
 		if (!$place = $this->getActionablePlace()) {
 			return array("name"=>"place.exit.name",
-				     "description"=>"unavailable.noplace"
-				    );
+				"description"=>"unavailable.noplace"
+			);
 		}
 		if ($check_duplicate && $this->getCharacter()->isDoingAction('place.exit')) {
 			return array("name"=>"place.exit.name",
-				     "description"=>"unavailable.already"
-				    );
+				"description"=>"unavailable.already"
+			);
 		}
 		if ($this->getCharacter()->isInBattle()) {
 			return array("name"=>"place.exit.name",
-				     "description"=>"unavailable.inbattle"
-				    );
+				"description"=>"unavailable.inbattle"
+			);
 		}
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"place.exit.name",
-				     "description"=>"unavailable.prisoner"
-				    );
+				"description"=>"unavailable.prisoner"
+			);
 		} else {
 			return $this->action("place.exit",
-					     "maf_place_exit"
-					    );
+				"maf_place_exit"
+			);
 		}
 	}
 
@@ -3876,35 +3880,35 @@ class Dispatcher {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.background.name", "description"=>"unavailable.npc");
 		}
-		return array("name"=>"meta.background.name", "url"=>"maf_character_background", "description"=>"meta.background.description");
+		return array("name"=>"meta.background.name", "url"=>"maf_char_background", "description"=>"meta.background.description");
 	}
 
 	public function metaRenameTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.background.name", "description"=>"unavailable.npc");
 		}
-		return array("name"=>"meta.rename.name", "url"=>"maf_character_rename", "description"=>"meta.rename.description");
+		return array("name"=>"meta.rename.name", "url"=>"maf_char_rename", "description"=>"meta.rename.description");
 	}
 
 	public function metaLoadoutTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.loadout.name", "description"=>"unavailable.npc");
 		}
-		return array("name"=>"meta.loadout.name", "url"=>"maf_character_loadout", "description"=>"meta.loadout.description");
+		return array("name"=>"meta.loadout.name", "url"=>"maf_char_loadout", "description"=>"meta.loadout.description");
 	}
 
 	public function metaFaithTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.faith.name", "description"=>"unavailable.npc");
 		}
-		return array("name"=>"meta.faith.name", "url"=>"maf_character_faith", "description"=>"meta.faith.description");
+		return array("name"=>"meta.faith.name", "url"=>"maf_char_faith", "description"=>"meta.faith.description");
 	}
 
 	public function metaSettingsTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.background.name", "description"=>"unavailable.npc");
 		}
-		return array("name"=>"meta.settings.name", "url"=>"maf_character_settings", "description"=>"meta.settings.description");
+		return array("name"=>"meta.settings.name", "url"=>"maf_char_settings", "description"=>"meta.settings.description");
 	}
 
 	public function metaRetireTest(): array {
@@ -3919,7 +3923,7 @@ class Dispatcher {
 		if ($char->getActivityParticipation()->count() > 0) {
 			return array("name"=>"meta.retire.name", "description"=>"unavailable.unfinishedbusiness");
 		}
-		return array("name"=>"meta.retire.name", "url"=>"maf_character_retire", "description"=>"meta.retire.description");
+		return array("name"=>"meta.retire.name", "url"=>"maf_char_retire", "description"=>"meta.retire.description");
 	}
 
 	public function metaKillTest(): array {
@@ -3929,14 +3933,14 @@ class Dispatcher {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"meta.kill.name", "description"=>"unavailable.prisonershort");
 		}
-		return array("name"=>"meta.kill.name", "url"=>"maf_character_kill", "description"=>"meta.kill.description");
+		return array("name"=>"meta.kill.name", "url"=>"maf_char_kill", "description"=>"meta.kill.description");
 	}
 
 	public function metaHeraldryTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.background.name", "description"=>"unavailable.npc");
 		}
-		return array("name"=>"meta.heraldry.name", "url"=>"maf_character_heraldry", "description"=>"meta.heraldry.description");
+		return array("name"=>"meta.heraldry.name", "url"=>"maf_heraldry", "description"=>"meta.heraldry.description");
 	}
 
 	/* ========== Conversation Tests ========== */

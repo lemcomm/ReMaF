@@ -531,7 +531,7 @@ class Geography {
 		$qb = $this->em->createQueryBuilder();
 		$qb->select('d as dungeon, ST_Distance(me.location, d.location) AS distance, ST_Azimuth(me.location, d.location) AS direction')
 			->from('App\Entity\Character', 'me')
-			->from('DungeonBundle:Dungeon', 'd')
+			->from('App:Dungeon', 'd')
 			->where('me = :me')
 			->andWhere('ST_Distance(me.location, d.location) < :maxdistance')
 			->setParameters(['me'=>$character, 'maxdistance'=>$maxdistance]);

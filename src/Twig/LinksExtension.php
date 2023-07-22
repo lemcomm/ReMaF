@@ -226,7 +226,7 @@ class LinksExtension extends AbstractExtension {
 			case 'battlereport':    return 'maf_battlereport';
 			case 'realm':           return 'maf_realm';
 			case 'realmposition':   return 'maf_position';
-			case 'eventlog':        return 'maf_eventlog';
+			case 'eventlog':        return 'maf_events_log';
 			case 'feature':
 			case 'featuretype':     return 'maf_info_featuretype';
 			case 'building':

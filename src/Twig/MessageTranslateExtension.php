@@ -16,7 +16,6 @@ use App\Entity\EventLog;
 use App\Entity\FeatureType;
 use App\Entity\House;
 use App\Entity\Law;
-use App\Entity\Mercenaries;
 use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\RealmPosition;
@@ -159,10 +158,6 @@ class MessageTranslateExtension extends AbstractExtension {
 						$artifact = $this->em->getRepository(Artifact::class)->find($value);
 						$data['%artifact'.$index.'%'] = $this->links->ObjectLink($artifact, false, $this->absolute);
 						break;
-					case 'mercenaries':
-						$mercenaries = $this->em->getRepository(Mercenaries::class)->find($value);
-						$data['%mercenaries'.$index.'%'] = $this->links->ObjectLink($mercenaries, false, $this->absolute);
-						break;
 					case 'place':
 						$place = $this->em->getRepository(Place::class)->find($value);
 						$data['%place'.$index.'%'] = $this->links->ObjectLink($place, false, $this->absolute);
@@ -233,7 +228,7 @@ class MessageTranslateExtension extends AbstractExtension {
 						break;
 					default:
 						if (is_array($value)) {
-							$data[$key]=$this->translator->trans($value['key'], $value);
+							$data[$key]=$this->trans->trans($value['key'], $value);
 						} else {
 							$data[$key]=$value;
 						}
@@ -245,13 +240,13 @@ class MessageTranslateExtension extends AbstractExtension {
 				switch ($subkey) {
 					case 'card':
 						$card = $this->em->getRepository(DungeonCardType::class)->find($value);
-						$data['%card'.$index.'%'] = "<em>".$this->translator->trans('card.'.$card->getName().'.title', array(), $domain)."</em>";
+						$data['%card'.$index.'%'] = "<em>".$this->trans->trans('card.'.$card->getName().'.title', array(), $domain)."</em>";
 						break;
 					case 'distance':
 						$data['%distance'.$index.'%'] = $this->geo->distanceFilter($value);
 						break;
 					case 'direction':
-						$data['%direction'.$index.'%'] = $this->translator->trans($this->geo->directionFilter($value, true));
+						$data['%direction'.$index.'%'] = $this->trans->trans($this->geo->directionFilter($value, true));
 						break;
 				}
 			} else {

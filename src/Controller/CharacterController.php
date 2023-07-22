@@ -141,6 +141,7 @@ class CharacterController extends AbstractController {
 			}
 		}
 		$this->em->flush();
+		$this->addFlash('warning', 'beginning render!');
 		return $this->render('Character/summary.html.twig', [
 			'events' => $this->charman->findEvents($character),
 			'unread' => $this->conv->getUnreadConvPermissions($character),
@@ -1415,7 +1416,7 @@ class CharacterController extends AbstractController {
 		return new Response();
 	}
 
-     	#[Route ('/char/battlereport/{id}', name:'maf_char_rename', requirements: ['id'=>'\d+'])]
+     	#[Route ('/char/battlereport/{id}', name:'maf_battlereport', requirements: ['id'=>'\d+'])]
 	public function viewBattleReportAction(Security $sec, BattleReport $id): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter(true,true,true);
 		if (! $character instanceof Character) {

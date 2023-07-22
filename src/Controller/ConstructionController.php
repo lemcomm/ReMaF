@@ -40,7 +40,7 @@ class ConstructionController extends AbstractController {
 		$this->geo = $geo;
 	}
 	
-	#[Route ('/build/roads', name:'maf_build_roads')]
+	#[Route ('/build/roads', name:'maf_construction_roads')]
 	public function roadsAction(Request $request): RedirectResponse|Response {
 		list($character, $settlement) = $this->dispatcher->gateway('economyRoadsTest', true);
 		if (! $character instanceof Character) {
@@ -185,7 +185,7 @@ class ConstructionController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/build/features', name:'maf_build_features')]
+	#[Route ('/build/features', name:'maf_construction_features')]
 	public function featuresAction(Request $request): RedirectResponse|Response {
 		// TODO: add a way to remove / demolish features
 		list($character, $settlement) = $this->dispatcher->gateway('economyFeaturesTest', true);
@@ -355,7 +355,7 @@ class ConstructionController extends AbstractController {
 		return new Point($p['value'][0], $p['value'][1]);
 	}
 
-	#[Route ('/build/buildings', name:'maf_build_buildings')]
+	#[Route ('/build/buildings', name:'maf_construction_buildings')]
 	public function buildingsAction(Request $request): RedirectResponse|Response {
 		list($character, $settlement) = $this->dispatcher->gateway('economyBuildingsTest', true);
 		if (! $character instanceof Character) {
@@ -485,7 +485,7 @@ class ConstructionController extends AbstractController {
 		));
 	}
 
-	#[Route ('/build/abandon/{building}', name:'maf_build_roads', methods:['post'])]
+	#[Route ('/build/abandon/{building}', name:'maf_construction_abandon', methods:['post'])]
 	public function abandonbuildingAction(Router $router, Building $building): RedirectResponse {
 		$character = $this->dispatcher->gateway('economyBuildingsTest');
 		if (! $character instanceof Character) {
@@ -498,7 +498,7 @@ class ConstructionController extends AbstractController {
 		return new RedirectResponse($router->generate('maf_build_buildings'));
 	}
 
-	#[Route ('/build/focus', name:'maf_build_focus', methods:['post'])]
+	#[Route ('/build/focus', name:'maf_construction_focus', methods:['post'])]
 	public function focusAction(Request $request): RedirectResponse|Response {
 		list($character, $settlement) = $this->dispatcher->gateway('economyBuildingsTest', true);
 		if (! $character instanceof Character) {

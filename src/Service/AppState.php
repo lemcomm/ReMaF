@@ -33,7 +33,7 @@ class AppState {
 
 
 
-	public function getCharacter($required=true, $ok_if_dead=false, $ok_if_notstarted=false) {
+	public function getCharacter($required=true, $ok_if_dead=false, $ok_if_notstarted=false): mixed {
 		/* This used to throw exceptions rather than adding flashes and returning strings.
 		The change was done in order to ensure that when you're somewhere you shouldn't be,
 		that the game is smart enough to redirect you to the right spot.
@@ -43,10 +43,12 @@ class AppState {
 		something similar. */
 		# Check if we have a user first
 		$user = $this->security->getUser();
-		if (!$user && !$required) {
-			return null;
-		} elseif ($required) {
-			return 'maf_login';
+		if (!$user) {
+			if (!$required) {
+				return null;
+			} else {
+				return 'maf_login';
+			}
 		}
 
 		# Let the ban checks begin...
