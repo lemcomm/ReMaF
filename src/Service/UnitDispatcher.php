@@ -7,18 +7,12 @@ use App\Entity\Unit;
 
 class UnitDispatcher extends Dispatcher {
 
-	protected AppState $appstate;
-	protected PermissionManager $pm;
-	protected Geography $geography;
 	protected MilitaryManager $milman;
-	protected Interactions $interactions;
-	protected AssociationManager $assocman;
+	protected PermissionManager $pm;
 
-	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, AssociationManager $assocman) {
-		$this->pm = $pm;
+	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions) {
+		parent::__construct($appstate, $common, $pm, $geo, $interactions);
 		$this->milman = $milman;
-		$this->interactions = $interactions;
-		parent::__construct($appstate, $common, $pm, $geo, $interactions, $assocman);
 	}
 
 	/* =========== Tests ========== */

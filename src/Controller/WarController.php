@@ -23,11 +23,11 @@ use App\Form\WarType;
 
 use App\Service\ActionManager;
 use App\Service\CommonService;
-use App\Service\Dispatcher;
 use App\Service\Geography;
 use App\Service\History;
-
+use App\Service\WarDispatcher;
 use App\Service\WarManager;
+
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -49,18 +49,18 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class WarController extends AbstractController {
 
 	private ActionManager $am;
-	private Dispatcher $disp;
 	private EntityManagerInterface $em;
 	private Geography $geo;
 	private History $hist;
+	private WarDispatcher $warDisp;
 	private WarManager $wm;
 
-	public function __construct(ActionManager $am, Dispatcher $disp, EntityManagerInterface $em, Geography $geo, History $hist, WarManager $wm) {
+	public function __construct(ActionManager $am, EntityManagerInterface $em, Geography $geo, History $hist, WarDispatcher $warDisp, WarManager $wm) {
 		$this->am = $am;
-		$this->disp = $disp;
 		$this->em = $em;
 		$this->geo = $geo;
 		$this->hist = $hist;
+		$this->warDisp = $warDisp;
 		$this->wm = $wm;
 	}
 	
@@ -74,8 +74,8 @@ class WarController extends AbstractController {
 
 	#[Route('/war/declare/{realm}', name:'maf_war_declare', requirements:['realm'=>'\d+'])]
 	public function declareAction(Realm $realm, Request $request): RedirectResponse|Response {
-		$this->disp->setRealm($realm);
-		$character = $this->disp->gateway('hierarchyWarTest');
+		$this->warDisp->setRealm($realm);
+		$character = $this->warDisp->gateway('hierarchyWarTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -145,7 +145,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/settlement/defend', name:'maf_war_settlement_defend')]
 	public function defendSettlementAction(Request $request): Response {
-		list($character, $settlement) = $this->disp->gateway('militaryDefendSettlementTest', true);
+		list($character, $settlement) = $this->warDisp->gateway('militaryDefendSettlementTest', true);
 		$form = $this->createFormBuilder(null, array('translation_domain'=>'actions'))
 			->add('submit', SubmitType::class, [
 				'label'=>'military.settlement.defend.submit',
@@ -172,7 +172,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/place/defend', name:'maf_war_place_defend')]
 	public function defendPlaceAction(Request $request): Response {
-		list($character, $settlement, $place) = $this->disp->gateway('militaryDefendPlaceTest', true, null, true);
+		list($character, $settlement, $place) = $this->warDisp->gateway('militaryDefendPlaceTest', true, null, true);
 		$form = $this->createFormBuilder(null, array('translation_domain'=>'actions'))
 			->add('submit', SubmitType::class, [
 				'label'=>'military.place.defend.submit',
@@ -203,7 +203,7 @@ class WarController extends AbstractController {
 	#[Route('/war/siege/place/{place}', name:'maf_war_siege_place', requirements:['place'=>'\d+'])]
 	public function siegeAction(TranslatorInterface $trans, Request $request, Place $place = null): RedirectResponse|Response {
 		# Security check.
-		list($character, $settlement) = $this->disp->gateway(false, true, false);
+		list($character, $settlement) = $this->warDisp->gateway(false, true, false);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -229,18 +229,18 @@ class WarController extends AbstractController {
 		}
 		if($siege) {
 			$character = match ($action) {
-				'leadership' => $this->disp->gateway('militarySiegeLeadershipTest', false, true, false, $siege),
-				'assault' => $this->disp->gateway('militarySiegeAssaultTest', false, true, false, $siege),
-				'disband' => $this->disp->gateway('militarySiegeDisbandTest', false, true, false, $siege),
-				'leave' => $this->disp->gateway('militarySiegeLeaveTest', false, true, false, $siege),
-				'joinsiege' => $this->disp->gateway('militarySiegeJoinSiegeTest', false, true, false, $siege),
-				'assume' => $this->disp->gateway('militarySiegeAssumeTest', false, true, false, $siege),
-				default => $this->disp->gateway('militarySiegeGeneralTest', false, true, false, $siege),
+				'leadership' => $this->warDisp->gateway('militarySiegeLeadershipTest', false, true, false, $siege),
+				'assault' => $this->warDisp->gateway('militarySiegeAssaultTest', false, true, false, $siege),
+				'disband' => $this->warDisp->gateway('militarySiegeDisbandTest', false, true, false, $siege),
+				'leave' => $this->warDisp->gateway('militarySiegeLeaveTest', false, true, false, $siege),
+				'joinsiege' => $this->warDisp->gateway('militarySiegeJoinSiegeTest', false, true, false, $siege),
+				'assume' => $this->warDisp->gateway('militarySiegeAssumeTest', false, true, false, $siege),
+				default => $this->warDisp->gateway('militarySiegeGeneralTest', false, true, false, $siege),
 			};
 		} elseif (!$place) {
-			$character = $this->disp->gateway('militarySiegeSettlementTest');
+			$character = $this->warDisp->gateway('militarySiegeSettlementTest');
 		} else {
-			$character = $this->disp->gateway('militarySiegePlaceTest', false, true, false, $place);
+			$character = $this->warDisp->gateway('militarySiegePlaceTest', false, true, false, $place);
 		}
 
 		# Prepare other variables.
@@ -680,7 +680,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/settlement/loot', name:'maf_war_settlement_loot')]
 	public function lootSettlementAction(CommonService $common, LoggerInterface $logger, Request $request): RedirectResponse|Response {
-		$character = $this->disp->gateway('militaryLootSettlementTest');
+		$character = $this->warDisp->gateway('militaryLootSettlementTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1059,7 +1059,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/disengage', name:'maf_war_disengage')]
 	public function disengageAction(Request $request): RedirectResponse|Response {
-		$character = $this->disp->gateway('militaryDisengageTest');
+		$character = $this->warDisp->gateway('militaryDisengageTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1136,7 +1136,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/evade', name:'maf_war_evade')]
 	public function evadeAction(Request $request): RedirectResponse|Response {
-		$character = $this->disp->gateway('militaryEvadeTest');
+		$character = $this->warDisp->gateway('militaryEvadeTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1164,7 +1164,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/block', name:'maf_war_block')]
 	public function blockAction(Request $request): RedirectResponse|Response {
-		$character = $this->disp->gateway('militaryBlockTest');
+		$character = $this->warDisp->gateway('militaryBlockTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1211,7 +1211,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/damage', name:'maf_war_damage')]
 	public function damageAction(Request $request): RedirectResponse|Response {
-		$character = $this->disp->gateway('militaryDamageFeatureTest');
+		$character = $this->warDisp->gateway('militaryDamageFeatureTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1280,7 +1280,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/nobles/attack', name:'maf_war_nobles_attack')]
 	public function attackOthersAction(Request $request): RedirectResponse|Response {
-		$character = $this->disp->gateway('militaryAttackNoblesTest');
+		$character = $this->warDisp->gateway('militaryAttackNoblesTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1320,7 +1320,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/nobles/aid', name:'maf_war_nobles_aid')]
 	public function aidAction(Request $request): RedirectResponse|Response {
-		$character = $this->disp->gateway('militaryAidTest');
+		$character = $this->warDisp->gateway('militaryAidTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1360,7 +1360,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/battles/join', name:'maf_war_battles_join')]
 	public function battleJoinAction(Request $request): RedirectResponse|Response {
-		list($character) = $this->disp->gateway('militaryJoinBattleTest', true);
+		list($character) = $this->warDisp->gateway('militaryJoinBattleTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
