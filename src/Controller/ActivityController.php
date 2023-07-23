@@ -13,7 +13,7 @@ use App\Form\ActivitySelectType;
 use App\Form\EquipmentLoadoutType;
 
 use App\Service\ActionManager;
-use App\Service\ActivityDispatcher;
+use App\Service\Dispatcher\ActivityDispatcher;
 use App\Service\ActivityManager;
 use App\Service\AppState;
 use App\Service\Geography;
