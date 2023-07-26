@@ -268,7 +268,8 @@ class AccountController extends AbstractController {
 
 		foreach ($user->getPatronizing() as $patron) {
 			if ($patron->getUpdateNeeded()) {
-				$this->addFlash('warning', 'It appears we need a new access token for your patreon account in order to ensure you get your rewards. To corrected this, please click <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id='.$patron->getCreator()->getClientId().'&redirect_uri='.$patron->getCreator()->getReturnUri().'&scope=identity">here</a> and allow us to re-establish our connection to your patreon account.');
+				$encode = urlencode($patron->getCreator()->getReturnUri());
+				$this->addFlash('warning', 'It appears we need a new access token for your patreon account in order to ensure you get your rewards. To corrected this, please click <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id='.$patron->getCreator()->getClientId().'&redirect_uri='.$encode.'&scope=identity">here</a> and allow us to re-establish our connection to your patreon account.');
 			}
 		}
 		if ($userMan->legacyPasswordCheck($user)) {
@@ -647,7 +648,7 @@ class AccountController extends AbstractController {
 				if ($character->getSpecial()) {
 					// special menu active - check for reasons
 					if ($character->getDungeoneer() && $character->getDungeoneer()->isInDungeon()) {
-						return $this->redirectToRoute('maf_dungeon_index');
+						return $this->redirectToRoute('maf_dungeon');
 					}
 				}
 				return $this->redirectToRoute('maf_char_recent');

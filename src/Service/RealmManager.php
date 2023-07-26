@@ -474,7 +474,7 @@ class RealmManager {
 				}
 				$realm->removePlace($place);
 				$place->setRealm($superior);
-				$superior->addSettlement($place);
+				$superior->addPlace($place);
 			}
 		}
 		$this->em->flush();
@@ -485,14 +485,14 @@ class RealmManager {
 					'event.realm.abolished.vassals.estate.sov',
 					array('%link-realm%'=>$realm->getId())
 				);
-				$vassal->setRealm($superior);
+				$vassal->setRealm(null);
 			} else {
 				$this->history->logEvent(
 					$vassal,
 					'event.realm.abolished.vassals.estate.notsov',
 					array('%link-realm%'=>$realm->getId(), '%link-realm-2%'=>$superior->getId())
 				);
-				$vassal->setRealm(null);
+				$vassal->setRealm($superior);
 			}
 		}
 		$this->em->flush();
