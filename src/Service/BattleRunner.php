@@ -964,14 +964,16 @@ class BattleRunner {
 							$this->log(50, $soldier->getName()." (".$soldier->getType()."): morale ".round($soldier->getMorale()));
 							if ($soldier->getMorale()*2 < rand(0,100)) {
 								if ($soldier->isNoble()) {
-									$this->log(50, " - has no fear");
+									$this->log(50, " - has no fear\n");
 									$staredDeath++;
 								} else {
-									$this->log(50, " - panics");
+									$this->log(50, " - panics\n");
 									$soldier->setRouted(true);
 									$this->history->addToSoldierLog($soldier, 'routed.ranged');
 									$routed++;
 								}
+							} else {
+								$this->log(50, " - has resolve\n");
 							}
 							$this->log(50, "\n");
 						}
@@ -1200,17 +1202,6 @@ class BattleRunner {
 						$mod = min(0.99, $mod+0.1);
 					}
 					$soldier->setMorale($soldier->getMorale() * $mod);
-					if ($soldier->getMorale()*2 < rand(0,100)) {
-						if ($soldier->isNoble()) {
-							$this->log(50, " - has no fear");
-							$staredDeath++;
-						} else {
-							$this->log(50, " - panics");
-							$soldier->setRouted(true);
-							$this->history->addToSoldierLog($soldier, 'routed.ranged');
-							$routed++;
-						}
-					}
 					if ($soldier->getMorale() < rand(0,100)) {
 						if ($soldier->isNoble()) {
 							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." - has no fear\n");

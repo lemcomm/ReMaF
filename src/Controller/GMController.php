@@ -40,7 +40,6 @@ class GMController extends AbstractController {
 	}
 
 	#[Route ('/olympus/archive', name:'maf_gm_pending')]
-
 	public function actionedAction(): Response {
 		$query = $this->em->createQuery('SELECT r from App\Entity\UserReport r WHERE r.actioned = true');
 		$reports = $query->getResult();
@@ -53,8 +52,10 @@ class GMController extends AbstractController {
 	#[Route ('/olympus/update/{id}', name:'maf_admin_update')]
 	#[Route ('/olympus/update/')]
 	#[Route ('/olympus/update')]
-
 	public function updateNoteAction(CommonService $common, Request $request, UpdateNote $id=null): RedirectResponse|Response {
+		if ($request->query->get('last')) {
+			$id = $this->em->createQuery('SELECT n FROM App:UpdateNote n ORDER BY n.id DESC')->setMaxResults(1)->getSingleResult();
+		}
 		$form = $this->createForm(UpdateNoteType::class, null, ['note'=>$id]);
 		$form->handleRequest($request);
 

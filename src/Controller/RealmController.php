@@ -969,6 +969,7 @@ class RealmController extends AbstractController {
 
 		$this->rm->makeRuler($realm, $character);
 		$realm->setActive(TRUE);
+		$this->hist->openLog($realm, $character);
 		$this->hist->logEvent(
 			$realm,
 			'event.realm.restored',
