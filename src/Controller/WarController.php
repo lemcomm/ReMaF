@@ -336,6 +336,39 @@ class WarController extends AbstractController {
 						array('%link-character%'=>$character->getId()),
 						History::MEDIUM, false, 60
 					);
+					if ($owner = $settlement->getOwner()) {
+						$this->hist->logEvent(
+							$owner,
+							'event.settlement.besieged2',
+							[
+								'%link-settlement%'=>$settlement->getId(),
+								'%link-character%'=>$character->getId()
+							],
+							History::MEDIUM, false, 60
+						);
+					}
+					if ($steward = $settlement->getSteward()) {
+						$this->hist->logEvent(
+							$steward,
+							'event.settlement.besieged2',
+							[
+								'%link-settlement%'=>$settlement->getId(),
+								'%link-character%'=>$character->getId()
+							],
+							History::MEDIUM, false, 60
+						);
+					}
+					if ($occupant = $settlement->getOccupant()) {
+						$this->hist->logEvent(
+							$occupant,
+							'event.settlement.besieged2',
+							[
+								'%link-settlement%'=>$settlement->getId(),
+								'%link-character%'=>$character->getId()
+							],
+							History::MEDIUM, false, 60
+						);
+					}
 				} elseif ($place) {
 					$this->hist->logEvent(
 						$place,
@@ -343,6 +376,17 @@ class WarController extends AbstractController {
 						array('%link-character%'=>$character->getId()),
 						History::MEDIUM, false, 60
 					);
+					if ($owner = $place->getOwner()) {
+						$this->hist->logEvent(
+							$owner,
+							'event.place.besieged2',
+							[
+								'%link-place%'=>$place->getId(),
+								'%link-character%'=>$character->getId()
+							],
+							History::MEDIUM, false, 60
+						);
+					}
 				}
 
 				# TODO: combine this code with the code in action resolution for battles so we have less code duplication.
