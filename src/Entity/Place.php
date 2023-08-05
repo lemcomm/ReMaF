@@ -78,8 +78,10 @@ class Place {
                         }
                 } elseif ($this->getOwner() === $char) {
                         return true;
-                } elseif (!$this->getOwner() && ($this->getGeoData()->getSettlement()->getOwner() === $char || $this->getGeoData()->getSettlement()->getSteward() === $char))
-                return false;
+                } elseif (!$this->getOwner() && ($this->getGeoData()->getSettlement()->getOwner() === $char || $this->getGeoData()->getSettlement()->getSteward() === $char)) {
+			return true;
+		}
+		return false;
         }
 
     /**
