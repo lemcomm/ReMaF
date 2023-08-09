@@ -43,7 +43,7 @@ class CombatManager {
 		$defense = $this->DefensePower($target, $battle)*0.75;
 
 		$eWep = $target->getWeapon();
-		if ($eWep->getType()->getSkill()->getCategory()->getName() === 'polearms') {
+		if ($eWep->getSkill()?->getCategory()->getName() === 'polearms') {
 			$counterType = 'antiCav';
 		} else {
 			$counterType = False;
@@ -203,8 +203,20 @@ class CombatManager {
 				}
 			}
 		}
-		if (rand(0,100)<25) {
-			if ($target->getEquipment() && $target->getEquipment()->getDefense()>0) {
+		if ($attacker->getWeapon()) {
+			$wpnSkill = $attacker->getWeapon()->getSkill()->getCategory()->getName();
+		} else {
+			$wpnSkill = false;
+		}
+		if ($target->getEquipment() && (rand(0,100)<25 || $wpnSkill === 'axes')) {
+			$eqpName = $target->getEquipment()->getName();
+			if ($eqpName === 'shield') {
+				$target->dropEquipment();
+				$logs[] = "equipment damaged\n";
+			} elseif ($eqpName === 'pavise' && rand(1,8) < 2) {
+				$target->dropEquipment();
+				$logs[] = "equipment damaged\n";
+			} elseif ($target->getEquipment() && $target->getEquipment()->getDefense()>0) {
 				$resilience = sqrt($target->getEquipment()->getDefense());
 				if (rand(0,100)<$resilience) {
 					$target->dropEquipment();
@@ -243,7 +255,8 @@ class CombatManager {
 			if ($me->isFortified()) {
 				$attack += ($defBonus/2);
 			}
-			if (!$target->isMounted() && $target->getEquipment()->getType()->getName() === 'shield') {
+			$eqpt = $target->getEquipment();
+			if (!$target->getMount() && $eqpt && $eqpt->getName() === 'shield') {
 				$counterType = 'lightShield';
 			}
 		}
