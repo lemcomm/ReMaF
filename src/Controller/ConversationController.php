@@ -50,8 +50,8 @@ class ConversationController extends AbstractController {
 		$this->trans = $trans;
 	}
 
-	#[Route ('/conv')]
-	#[Route ('/conv/', name:'maf_convs')]
+	#[Route ('/conv', name:'maf_convs')]
+	#[Route ('/conv/', name:'maf_convs2')]
 	public function indexAction(): RedirectResponse|Response {
                 $char = $this->dispatcher->gateway('conversationListTest');
                 if (! $char instanceof Character) {

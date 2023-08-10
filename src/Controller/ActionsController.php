@@ -249,9 +249,6 @@ class ActionsController extends AbstractController {
 		return $this->redirectToRoute('maf_actions');
 	}
 
-	   /**
-	     * @Route("/embark")
-	     */
 	#[Route ('/actions/embark', name:'maf_actions_embark')]
 	public function embarkAction(): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('locationEmbarkTest');

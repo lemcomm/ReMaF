@@ -214,9 +214,6 @@ class QuestsController extends AbstractController {
 		return $this->redirectToRoute('maf_quests_details', array('id'=>$quest->getId()));
 	}
 
-	/**
-	  * @Route("/confirm/{quester}", requirements={"id"="\d+"})
-	  */
 	#[Route('/quests/confirm/{quester}', name:'maf_quests_confirm', requirements:['quester'=>'\d+'])]
 	public function confirmAction(Quester $quester): RedirectResponse {
 		$character = $this->app->getCharacter();

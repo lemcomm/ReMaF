@@ -122,7 +122,7 @@ class MapController extends AbstractController {
 		return new Response("failed");
 	}
 	
-	#[Route ('/map/data', defaults:['_format'=>'json'])]
+	#[Route ('/map/data', name:'maf_map_data', defaults:['_format'=>'json'])]
 	public function dataAction(Request $request): JsonResponse|Response {
 		$type = $request->query->get('type');
 		$bbox_raw = $request->query->get('bbox');
