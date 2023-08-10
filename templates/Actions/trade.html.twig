@@ -2,7 +2,7 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/tablesorter/jquery.tablesorter.min.js') }}"></script>
+	<script src="{{ asset('tablesorter/jquery.tablesorter.min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -155,18 +155,18 @@
 <h3>{{ "economy.trade.new"|trans({},"actions")|title }}</h3>
 {# TODO: add own merchants if any to make it a better deal #}
 {% if (form) %}
-	<form class="wide" action="{{ path('bm2_site_actions_trade') }}" method="post">
+	<form class="wide" action="{{ path('maf_actions_trade') }}" method="post">
 		{{ form_widget(form) }}
 		<button type="submit">{{ "economy.trade.submit"|trans({},"actions") }}</button>
 	</form>
 
 	<div class="hidden">
-	<form id="canceldeal" action="{{ path('bm2_site_actions_trade') }}" method="post">
+	<form id="canceldeal" action="{{ path('maf_actions_trade') }}" method="post">
 		{{ form_widget(cancelform) }}
 	</form>
 	</div>
 {% else %}
-	<p>{{ "unavailable.trade.nooptions"|trans }}</h3>
+	<p>{{ "unavailable.trade.nooptions"|trans }}</p>
 {% endif %}
 
 {% endblock %}

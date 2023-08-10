@@ -139,7 +139,6 @@ class CharacterController extends AbstractController {
 			}
 		}
 		$this->em->flush();
-		$this->addFlash('warning', 'beginning render!');
 		return $this->render('Character/summary.html.twig', [
 			'events' => $this->charman->findEvents($character),
 			'unread' => $this->conv->getUnreadConvPermissions($character),

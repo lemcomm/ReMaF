@@ -7,13 +7,14 @@
 <ul>
 {% for listing in listings %}
 	<li>
-		<a href="{{ path('bm2_site_politics_list', {'id':listing.id}) }}">{{ listing.name }}</a>
+		<a href="{{ path('maf_politics_list', {'id':listing.id}) }}">{{ listing.name }}</a>
 		<small>
-			({{ "lists.creator"|trans({"%character%":link(listing.creator)},"politics")|raw }})</li>
+			({{ "lists.creator"|trans({"%character%":link(listing.creator)},"politics")|raw }})
 		</small>
+	</li>
 {% endfor %}
 </ul>
 
-<a href="{{ path('bm2_site_politics_list', {'id':0}) }}">{{ 'lists.new'|trans({},"politics") }}</a>
+<a href="{{ path('maf_politics_list', {'id':0}) }}">{{ 'lists.new'|trans({},"politics") }}</a>
 
 {% endblock %}

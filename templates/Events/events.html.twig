@@ -2,14 +2,14 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/tablesorter/jquery.tablesorter.min.js') }}"></script>
+	<script src="{{ asset('tablesorter/jquery.tablesorter.min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
 <h2>{{ "events.title"|trans|title }}</h2>
 <div class="rssfeed">
-	<a href="{{ path('bm2_rss', {'appkey':app.user.appkey, 'user':app.user.id, 'char':character.id}) }}">
-		<img src="{{ asset('bundles/bm2site/images/rss-icon.svg') }}" alt="RSS" />
+	<a href="{{ path('maf_rss', {'appkey':app.user.appkey, 'user':app.user.id, 'char':character.id}) }}">
+		<img src="{{ asset('images/rss-icon.svg') }}" alt="RSS" />
 		{{ "rss.feed"|trans({},"communication") }}
 	</a>
 </div>
@@ -36,7 +36,7 @@
 #}
 		<td align="right">{{ log.events }}</td>
 		<td align="right">{% if log.new > 0 %}{{ log.new }}{% endif %}</td>
-		<td><a href="{{ path("bm2_eventlog", {'id':id}) }}">{{ 'events.read'|trans }}</a></td>
+		<td><a href="{{ path("maf_events_log", {'id':id}) }}">{{ 'events.read'|trans }}</a></td>
 	</tr>
 {% endfor %}
 </tbody></table>

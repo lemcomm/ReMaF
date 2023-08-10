@@ -2,7 +2,7 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/tablesorter/jquery.tablesorter.min.js') }}"></script>
+	<script src="{{ asset('tablesorter/jquery.tablesorter.min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
 {% else %}
 	<p>{{ "recruit.assigned.intro"|trans({},"actions")|raw }}</p>
 
-	<form action="{{ path('bm2_site_actions_assigned') }}" method="post">
+	<form action="{{ path('maf_unit_soldiers') }}" method="post">
 	{{ form_errors(form) }}
 	{{ form_widget(form._token) }}
 	<table id="assigned"><thead>
@@ -45,7 +45,7 @@
 					{% if man.assignedsince <= 0 %}
 						{{ "today"|trans }}
 					{% else %}
-						{% set days = appstate.global('cycle') - man.assignedsince %}
+						{% set days = common.global('cycle') - man.assignedsince %}
 						{{ days }} {{ "day"|transchoice(days) }}
 					{% endif %}
 				</td>

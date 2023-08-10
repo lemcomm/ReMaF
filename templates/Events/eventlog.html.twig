@@ -5,7 +5,7 @@
 {% if log.realm or log.settlement %}
 	<button id="allread">{{ 'events.allread'|trans }}</button>
 {% elseif log.character and log.character == character and character.alive == false %}
-	<a href="{{ path("bm2_site_character_background") }}">{{ "meta.background.descdeath"|trans({},"actions") }}</a>
+	<a href="{{ path("maf_char_background") }}">{{ "meta.background.descdeath"|trans({},"actions") }}</a>
 	<br />
 {% endif %}
 <br />
@@ -43,7 +43,7 @@ $("#filter_ultra").change(function(){
 });
 
 $("#allread").click(function(){
-	$.post("{{ path('bm2_site_events_allread', {"log":log.id}) }}", function() {
+	$.post("{{ path("maf_events_allread", {"log":log.id}) }}", function() {
 		$("#allread").replaceWith('<div class="success">{{ "events.alldone"|trans }}</div>');
 	});
 });

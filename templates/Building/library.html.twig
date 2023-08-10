@@ -2,7 +2,7 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/js/flot/jquery.flot.min.js') }}"></script>
+	<script src="{{ asset('js/flot/jquery.flot.min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -12,20 +12,20 @@
 <h3>{{ "building.library.maps.name"|trans({},"actions")|title }}</h3>
 <p>
 	<div class="mapthumb">
-	<a href="{{ path('bm2_site_building_map', {'map': 'allrealms.png'}) }}">
-		<img src="{{ path('bm2_site_building_map', {'map': 'allrealms-thumb.png'}) }}" />
+	<a href="{{ path('maf_building_map', {'map': 'allrealms.png'}) }}">
+		<img src="{{ path('maf_building_map', {'map': 'allrealms-thumb.png'}) }}" />
 		{{ "building.library.maps.allrealms"|trans({},"actions") }}
 	</a>
 	</div>
 	<div class="mapthumb">
-	<a href="{{ path('bm2_site_building_map', {'map': '2ndrealms.png'}) }}">
-		<img src="{{ path('bm2_site_building_map', {'map': '2ndrealms-thumb.png'}) }}" />
+	<a href="{{ path('maf_building_map', {'map': '2ndrealms.png'}) }}">
+		<img src="{{ path('maf_building_map', {'map': '2ndrealms-thumb.png'}) }}" />
 		{{ "building.library.maps.2ndrealms"|trans({},"actions") }}
 	</a>
 	</div>
 	<div class="mapthumb">
-	<a href="{{ path('bm2_site_building_map', {'map': 'majorrealms.png'}) }}">
-		<img src="{{ path('bm2_site_building_map', {'map': 'majorrealms-thumb.png'}) }}" />
+	<a href="{{ path('maf_building_map', {'map': 'majorrealms.png'}) }}">
+		<img src="{{ path('maf_building_map', {'map': 'majorrealms-thumb.png'}) }}" />
 		{{ "building.library.maps.majorrealms"|trans({},"actions") }}
 	</a>
 	</div>

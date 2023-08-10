@@ -16,7 +16,7 @@
 	{% if visible %}
 		{% set shown = shown + 1 %}
 		{% set gap = false %}
-{# TODO: being able to use the History:: consts here would be really cool #}
+		{# TODO: being able to use the History:: consts here would be really cool #}
 		<dt class="prio_{{ event.priority }}">{{ event.cycle|gametime('short') }}</dt>
 		<dd class="prio_{{ event.priority }}">{{ event|eventtranslate }}</dd>
 	{% elseif gap == false %}
@@ -37,7 +37,7 @@
 		{% endif %}
 	{% endif %}
 	{% if form %}
-		<form class="wide" action="{{ path('bm2_eventlog', {'id':log.id}) }}" method="post" {{ form_start(form) }}
+		<form class="wide" action="{{ path('maf_events_log', {'id':log.id}) }}" method="post" {{ form_start(form) }}
 			{{ form_widget(form) }}
 			<button name="submit">{{ 'entourage.assign.submit'|trans({},"actions") }}</button>
 		</form>

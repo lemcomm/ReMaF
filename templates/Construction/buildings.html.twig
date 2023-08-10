@@ -2,7 +2,7 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/tablesorter/jquery.tablesorter.min.js') }}"></script>
+	<script src="{{ asset('tablesorter/jquery.tablesorter.min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -21,7 +21,7 @@
 		<div id="over50" class="warning hidden">{{ 'economy.build.warning.over50percent'|trans({}, "actions") }}</div>
 		<div id="over100" class="error hidden">{{ 'economy.build.error.over100percent'|trans({}, "actions") }}</div>
 		{% if buildings is empty %}
-			<form action="{{ path('bm2_site_construction_buildings') }}" method="post">
+			<form action="{{ path('maf_construction_buildings') }}" method="post">
 			{{ form_widget(form._token) }}
 		{% else %}
 			<h3>{{ 'economy.build.existing'|trans({}, "actions")|title }}</h3>
@@ -41,7 +41,7 @@
 				</tbody>
 			</table>
 
-			<form action="{{ path('bm2_site_construction_buildings') }}" method="post">
+			<form action="{{ path('maf_construction_buildings') }}" method="post">
 			{{ form_widget(form._token) }}
 			<h3>{{ 'economy.build.underconstruction'|trans({},"actions")|title }}</h3>
 			<table id="buildingslist2">
@@ -101,13 +101,13 @@
 			{% if roadworkers > 0 or featureworkers > 0 %}
 			<tfoot>
 				{% if roadworkers > 0 %}
-				<tr><td colspan="3">{{ "economy.roadworkers"|trans({"%url%":path('bm2_site_construction_roads')}, "actions")|raw }}</td>
+				<tr><td colspan="3">{{ "economy.roadworkers"|trans({"%url%":path('maf_construction_roads')}, "actions")|raw }}</td>
 						<td align="center">{{ roadworkers*100 }} %</td>
 						<td align="right">{{ (roadworkers*settlement.population)|number_format }} {{ 'road.workers'|trans }}</td>
 				</tr>
 				{% endif %}
 				{% if featureworkers > 0 %}
-				<tr><td colspan="3">{{ "economy.featureworkers"|trans({"%url%":path('bm2_site_construction_features')}, "actions")|raw }}</td>
+				<tr><td colspan="3">{{ "economy.featureworkers"|trans({"%url%":path('maf_construction_features')}, "actions")|raw }}</td>
 						<td align="center">{{ featureworkers*100 }} %</td>
 						<td align="right">{{ (featureworkers*settlement.population)|number_format }} {{ 'build.workers'|trans }}</td>
 				</tr>
@@ -116,7 +116,7 @@
 			{% endif %}
 			</table>
 		{% endif %}
-
+		</form>
 		<h3>{{ 'economy.build.canbuild'|trans({}, "actions")|title }}</h3>
 		<p>{{ settlement.AvailableWorkforce }} {{ 'build.workers'|trans }} ({{ (settlement.AvailableWorkforcePercent*100)|number_format }} %)</p>
 		{% if available is not empty %}
@@ -227,9 +227,9 @@ $("#buildingslist").on("click", ".setfocus", function(){
 	var set = $(this).data("set");
 	var row = $(this).closest('tr');
 
-	$(this).closest('td').html('<img src="{{ asset('bundles/bm2site/images/activitysmall.gif') }}" />');
+	$(this).closest('td').html('<img src="{{ asset('images/activitysmall.gif') }}" />');
 
-	$.post("{{ path('bm2_site_construction_focus') }}", {"building":id, "focus":set}, function(data) {
+	$.post("{{ path('maf_construction_focus') }}", {"building":id, "focus":set}, function(data) {
 		row.replaceWith(data);
 		{# TODO: update available for construction workers count below - how do we get that data? #}
 	});

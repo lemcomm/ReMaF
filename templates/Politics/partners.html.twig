@@ -7,7 +7,7 @@
 	{% if character.partnerships is not empty %}
 	<h3>{{ "partners.old.name"|trans({},"politics")|title }}</h3>
 	<p>{{ "partners.old.intro"|trans({},"politics")|raw }}</p>
-	<form action="{{ path('bm2_site_politics_partners', {'type':'old'}) }}" method="post">
+	<form action="{{ path('maf_politics_partners', {'type':'old'}) }}" method="post">
 	{{ form_errors(form_old) }}
 	{{ form_widget(form_old._token) }}
 	<table><tbody>
@@ -48,7 +48,7 @@
 	<h3>{{ "partners.new.name"|trans({},"politics")|title }}</h3>
 	{% if newavailable %}
 		<p>{{ "partners.new.intro"|trans({},"politics")|raw }}</p>
-		<form class="compact" action="{{ path('bm2_site_politics_partners', {'type':'new'}) }}" method="post">
+		<form class="compact" action="{{ path('maf_politics_partners', {'type':'new'}) }}" method="post">
 			{{ form_widget(form_new) }}
 		<button type="submit">{{ "relation.choice.submitnew"|trans({},"politics") }}</button>
 		</form>

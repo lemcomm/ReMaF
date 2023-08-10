@@ -126,9 +126,9 @@ function generateSQL() {
     var passable = 'true';
     if (point[2]<=-1) {
       biome="ocean"; passable='false';
-    } else if (point[2]<water) {
+    } else if (point[2] < water) {
       biome="water"; passable='false';
-    } else if (point[2]>mountains) {
+    } else if (point[2] > mountains) {
       biome="mountain";
     } else {
       biome="grass";

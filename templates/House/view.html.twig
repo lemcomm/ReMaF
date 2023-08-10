@@ -3,7 +3,7 @@
 {% block content %}
 	{% if house.crest %}
 		<div class="heraldry">
-			<img src="{{ path("bm2_site_heraldry_crest", {"id":house.crest.id}) }}"/>
+			<img src="{{ path("maf_heraldry_crest", {"id":house.crest.id}) }}"/>
 		</div>
 	{% endif %}
 	<div class="queue">
@@ -38,7 +38,7 @@
 				<dd> {{ link(house.home) }}</dd>
 			{% endif %}
 		{% else %}
-			<dd>{{ link(house.insideSettlement) }}</dt>
+			<dd>{{ link(house.insideSettlement) }}</dd>
 		{% endif %}
 		{% if house.superior %}
 			<dt>{{ 'house.view.superior'|trans({}, "politics") }}</dt>

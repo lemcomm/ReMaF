@@ -26,7 +26,6 @@
 {% endif %}
 {% if access %}
 	<a href="{{path('maf_journal_write_activity', {"report":report.id}) }}">{{ 'report.journalwrite'|trans }}</a>
-	<p>
 	<table class="battlereport" >
 	<tr>
 		<th colspan="2"><h3>{{ 'report.duel.participants'|trans|title }}</h3></th>
@@ -36,9 +35,9 @@
 			{% for character in report.characters %}
 				<td class="reportcolumn"><ul class="shortlist">
 					{% if character.character.crest %}
-						{{ character_link(character.character.id, '<img src="'~path("bm2_site_heraldry_crest", {"id":character.character.crest.id})~'" width="60px" height="60px"/>') }}
+						{{ character_link(character.character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.character.crest.id})~'" width="60px" height="60px"/>') }}
 					{% else %}
-						{{ character_link(character.character.id, '<img src="'~asset("bundles/bm2site/heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }}
+						{{ character_link(character.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }}
 					{% endif %}
 					{{ link(character.character) }}
 				</ul></td>
@@ -46,7 +45,8 @@
 		</tr>
 		{% for i in 1 .. roundcount %}
 			<tr>
-				<th colspan="2"><h4>{{ 'report.duel.round.title'|trans({'%i%':i})|title }}</h4></th></tr>
+				<th colspan="2"><h4>{{ 'report.duel.round.title'|trans({'%i%':i})|title }}</h4></th>
+			</tr>
 			<tr>
 			{% for character in report.characters %}
 				<td>
@@ -60,7 +60,6 @@
 			{% endfor %}
 			</tr>
 		{% endfor %}
-		</tr>
 		<tr>
 			<th colspan="2"><h3>{{ 'report.duel.finish'|trans|title }}</h3></th>
 		</tr>
@@ -83,14 +82,11 @@
 		</tr>
 	{% endif %}
 	</table>
-	</p>
 {% endif %}
 
-<p>
 {% if admin %}
 <h2>Raw Debug Output</h2>
 <pre>{{ report.debug }}</pre>
 {% endif %}
-</p>
 
 {% endblock %}

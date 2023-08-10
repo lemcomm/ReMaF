@@ -545,7 +545,7 @@ class UnitController extends AbstractController {
                 ]);
         }
 
-	#[Route('/units/{unit}/disband', name:'maf_unit_', requirements:['unit'=>'\d+'])]
+	#[Route('/units/{unit}/disband', name:'maf_unit_disband', requirements:['unit'=>'\d+'])]
 
         public function unitDisbandAction(Request $request, Unit $unit): RedirectResponse|Response {
                 $character = $this->gateway('unitDisbandTest', $unit);

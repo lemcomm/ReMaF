@@ -14,7 +14,7 @@
 
 {% block content %}
 	<h2>{{ "control.permissions.name"|trans({},"actions")|title }}</h2>
-	<p>{{ "control.permissions.intro"|trans({"%settlement%":link(settlement), "%listsurl%":path('bm2_lists')},"actions")|raw }}</p>
+	<p>{{ "control.permissions.intro"|trans({"%settlement%":link(settlement), "%listsurl%":path('maf_politics_lists')},"actions")|raw }}</p>
 
 	<div class="warning">
 		{# TODO: remove warning when permissions are done #}
@@ -30,7 +30,7 @@
 		{% endif %}
 	</tr>
 	</table>
-	<form class="wide" action="{{ path('bm2_site_settlement_permissions', {'id':settlement.id}) }}" method="post" {{ form_start(form) }}
+	<form class="wide" action="{{ path('maf_settlement_permissions', {'id':settlement.id}) }}" method="post" {{ form_start(form) }}
 		{{ form_errors(form) }}
 		{{ form_widget(form._token) }}
 		{% if lord %}

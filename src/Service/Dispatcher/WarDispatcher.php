@@ -12,7 +12,6 @@ use App\Service\PermissionManager;
 class WarDispatcher extends Dispatcher {
 
 	protected MilitaryManager $milman;
-	protected PermissionManager $pm;
 
 	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions) {
 		parent::__construct($appstate, $common, $pm, $geo, $interactions);

@@ -5,7 +5,7 @@
 {% if success == false %}
 	<p>{{ "military.battles.join.intro"|trans({},"actions")|raw }}</p>
 
-	<form action="{{ path('bm2_site_war_battlejoin') }}" method="post">
+	<form action="{{ path('maf_war_battles_join') }}" method="post">
 		{{ form_widget(form._token) }}
 
 		{% for data in battles %}

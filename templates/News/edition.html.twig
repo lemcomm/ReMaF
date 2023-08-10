@@ -2,13 +2,13 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/js/jquery.gridster.min.js') }}"></script>
-	<link rel="stylesheet" href="{{ asset('bundles/bm2site/css/jquery.gridster.css') }}" />
-	<script src="{{ asset('bundles/bm2site/js/showdown.js') }}"></script>
+	<script src="{{ asset('js/jquery.gridster.min.js') }}"></script>
+	<link rel="stylesheet" href="{{ asset('css/jquery.gridster.css') }}" />
+	<script src="{{ asset('js/showdown.js') }}"></script>
 {% endblock %}
 
 {% block content %}
-	<h2><a href="{{ url("bm2_site_news_editor", {"paper":paper.id}) }}">{{ paper.name }}</a></h2>
+	<h2><a href="{{ url("maf_news_editor", {"paper":paper.id}) }}">{{ paper.name }}</a></h2>
 	{% if edition.collection %}
 		<h3>{{ "news.collection"|trans({},"communication")|title }}</h3>
 	{% else %}
@@ -39,10 +39,10 @@
 				</select>
 				<button class="edit" data-article="{{ article.id }}">{{ "news.layout.edit"|trans({},"communication") }}</button>
 				{% if edition.collection %}
-					<form method="post" action="{{ url('bm2_site_news_delarticle', {"article":article.id}) }}">
+					<form method="post" action="{{ url('maf_news_article_delete', {"article":article.id}) }}">
 						<button type="submit">{{ "news.layout.delete"|trans({},"communication") }}</button>
 					</form>
-					<form method="post" action="{{ url('bm2_site_news_restorearticle', {"article":article.id}) }}">
+					<form method="post" action="{{ url('maf_news_article_restore', {"article":article.id}) }}">
 						<select class="putback" name="edition">
 							{% for ed in edition.paper.editions %}
 								{% if not ed.collection and not ed.published %}
@@ -53,7 +53,7 @@
 						</select>
 					</form>
 				{% else %}
-					<form method="post" action="{{ url('bm2_site_news_storearticle', {"article":article.id}) }}">
+					<form method="post" action="{{ url('maf_news_article_store', {"article":article.id}) }}">
 						<button type="submit">{{ "news.layout.delete"|trans({},"communication") }}</button>
 					</form>
 				{% endif %}
@@ -70,7 +70,7 @@
 	{% if editor.author %}
 		<hr />
 		<h3>{{ "news.article.new"|trans({},"communication")|trans }}</h3>
-		{% include "element/editorfield.html.twig" with { "form":form, "url":url('bm2_site_news_newarticle'), "extended":true} %}
+		{% include "element/editorfield.html.twig" with { "form":form, "url":url('maf_news_article_new'), "extended":true} %}
 	{% endif %}
 
 {# TODO: update layout when submitting a new article! #}
@@ -108,7 +108,7 @@ $("#update").click(function(){
 
 	// fire off the request
 	request = $.ajax({
-		url: "{{ path('bm2_site_news_layout') }}",
+		url: "{{ path('maf_news_layout') }}",
 		type: "post",
 		data: { edition: {{ edition.id }}, layout: JSON.stringify(gridster.serialize()) },
 		dataType: "json"
@@ -134,7 +134,7 @@ $("#publish").click(function(){
 
 	// fire off the request
 	request = $.ajax({
-		url: "{{ path('bm2_site_news_publish', {"edition":edition.id}) }}",
+		url: "{{ path('maf_news_edition_publish', {"edition":edition.id}) }}",
 		type: "post",
 	});
 
@@ -154,7 +154,7 @@ $(".edit").click(function(){
 	$("#newsarticle_title").val($("#title_"+id).html());
 	$("#newsarticle_content").html($("#content_"+id).html()).change();
 	$("#newsarticle_submit").html("{{ "news.article.edit"|trans({},"communication") }}");
-	var url = "{{ url('bm2_site_news_editarticle', {"article":"000"}) }}";
+	var url = "{{ url('maf_news_article_edit', {"article":"000"}) }}";
 	url = url.replace("000", id);
 	$("#newsarticle").closest("form").attr("action", url);
 });

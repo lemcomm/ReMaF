@@ -29,7 +29,7 @@
 			<td>{{ marker.name }}</td>
 			<td>{{ ('marker.'~marker.type)|trans }}</td>
 			<td>{{ link(marker.realm) }}</td>
-			<td><button class="removemarker" data-path="{{ path('bm2_removemarker', {'marker':marker.id}) }}">{{ 'marker.set.removelink'|trans }}</button></td>
+			<td><button class="removemarker" data-path="{{ path('maf_map_removemarker', {'marker':marker.id}) }}">{{ 'marker.set.removelink'|trans }}</button></td>
 		</tr>
 		{% endfor %}
 	</tbody>

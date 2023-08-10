@@ -160,7 +160,7 @@
 	<p><a href="{{ path('maf_dungeon') }}">{{ 'dungeon.link'|trans({}, "dungeons") }}</a></p>
 {% elseif character.dungeoneer and character.dungeoneer.party %}
 	<h3>{{ 'dungeon.title'|trans({}, "dungeons")|title }}</h3>
-	<p>{{ 'dungeon.withparty'|trans({"%url%":path("maf_dungeons_party")}, "dungeons")|raw }}</p>
+	<p>{{ 'dungeon.withparty'|trans({"%url%":path("maf_dungeon_party")}, "dungeons")|raw }}</p>
 {% elseif dungeons %}
 	<h3>{{ 'nearby'|trans({}, "dungeons")|title }}</h3>
 	{% set actionable = false %}
@@ -192,7 +192,7 @@
 	{% endfor %}
 	</ul>
 	{% if actionable %}
-		<a href="{{ path('maf_dungeons') }}">{{ 'enter.link'|trans({}, "dungeons") }}</a>
+		<a href="{{ path('maf_dungeon') }}">{{ 'enter.link'|trans({}, "dungeons") }}</a>
 	{% endif %}
 {% endif %}
 

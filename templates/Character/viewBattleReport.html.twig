@@ -63,7 +63,7 @@
 			<td rowspan="100" class="battlebanners" align="right"><ul>
 			{% for participant in report.participants if participant.groupId == 0 %}
 				{% if participant.character.crest %}
-					<li>{{ character_link(participant.character.id, '<img src="'~path("bm2_site_heraldry_crest", {"id":participant.character.crest.id})~'"/>') }}</li>
+					<li>{{ character_link(participant.character.id, '<img src="'~path("maf_heraldry_crest", {"id":participant.character.crest.id})~'"/>') }}</li>
 				{% endif %}
 			{% endfor %}
 			</ul></td>
@@ -81,7 +81,7 @@
 			<td rowspan="100" class="battlebanners" align="left"><ul>
 			{% for participant in report.participants if participant.groupId == 1 %}
 				{% if participant.character.crest %}
-					<li><img src="{{ path("bm2_site_heraldry_crest", {"id":participant.character.crest.id}) }}"/></li>
+					<li><img src="{{ path("maf_heraldry_crest", {"id":participant.character.crest.id}) }}"/></li>
 				{% endif %}
 			{% endfor %}
 			</ul></td>
@@ -191,9 +191,9 @@
 					{% if participant.character %}
 						<li>
 						{% if participant.character.crest %}
-							{{ character_link(participant.character.id, '<img src="'~path("bm2_site_heraldry_crest", {"id":participant.character.crest.id})~'" width="60px" height="60px"/>') }}
+							{{ character_link(participant.character.id, '<img src="'~path("maf_heraldry_crest", {"id":participant.character.crest.id})~'" width="60px" height="60px"/>') }}
 						{% else %}
-							{{ character_link(participant.character.id, '<img src="'~asset("bundles/bm2site/heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }}
+							{{ character_link(participant.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }}
 						{% endif %}
 						{{ link(participant.character) }}
 						</li>

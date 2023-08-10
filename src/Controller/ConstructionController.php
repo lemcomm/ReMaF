@@ -495,7 +495,7 @@ class ConstructionController extends AbstractController {
 		$building->abandon();
 		$this->em->flush();
 
-		return new RedirectResponse($router->generate('maf_build_buildings'));
+		return new RedirectResponse($router->generate('maf_construction_buildings'));
 	}
 
 	#[Route ('/build/focus', name:'maf_construction_focus', methods:['post'])]

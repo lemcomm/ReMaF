@@ -28,7 +28,7 @@
 {% if char.user != app.user %}
 	<hr />
 	<h3>{{ (have_an_opinion?'rating.edit':'rating.write')|trans|title }}</h3>
-	{{ form(form, {'action':path('bm2_site_character_rate')}) }}
+	{{ form(form, {'action':path('maf_char_rate')}) }}
 {% endif %}
 
 {% if ratings is not empty %}

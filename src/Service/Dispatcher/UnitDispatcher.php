@@ -19,6 +19,7 @@ class UnitDispatcher extends Dispatcher {
 	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions) {
 		parent::__construct($appstate, $common, $pm, $geo, $interactions);
 		$this->milman = $milman;
+		$this->pm = $pm;
 	}
 
 	/* =========== Tests ========== */

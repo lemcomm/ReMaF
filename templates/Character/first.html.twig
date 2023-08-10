@@ -16,5 +16,5 @@
 			{{ "first.intro.subrealm"|trans({"%conv%":path("maf_conv_read", {"conv":conv.id}), "%conv2%":path("maf_conv_read", {"conv":supConv.id})})|raw }}
 		{% endif %}
 	{% endif %}
-	<p>{{ "first.intro.final"|trans({"%manual%":path('bm2_manual'), "%discord%":"https://discord.gg/7YpAhEh"})|raw }}
+	<p>{{ "first.intro.final"|trans({"%manual%":path('maf_manual'), "%discord%":"https://discord.gg/7YpAhEh"})|raw }}
 {% endblock %}

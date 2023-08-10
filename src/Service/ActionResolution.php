@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Action;
 
+use App\Service\Dispatcher\Dispatcher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 

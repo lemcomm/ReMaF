@@ -2,11 +2,11 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/map/OpenLayers.js') }}"></script>
+	<script src="{{ asset('map/OpenLayers.js') }}"></script>
 	{% if app.environment != 'prod' %}
-		<script src="{{ asset('bundles/bm2site/map/map.js?env='~app.environment) }}"></script>
+		<script src="{{ asset('map/map.js?env='~app.environment) }}"></script>
 	{% else %}
-		<script src="{{ asset('bundles/bm2site/map/map.js') }}"></script>
+		<script src="{{ asset('map/map.js') }}"></script>
 	{% endif %}
 {% endblock %}
 
@@ -21,7 +21,7 @@
 	&nbsp;<ul id="loadlist" class="shortlist" style="display:inline"></ul>
 
 	<div id="mapviewer">
-	<div id="searchbox"><input id="search" placeholder="{{ 'map.search'|trans }}" /><span id="searchrunning"</span></div>
+	<div id="searchbox"><input id="search" placeholder="{{ 'map.search'|trans }}" /><span id="searchrunning"></span></div>
 	<div id="sd_anchor" style="width:20em;float:right;margin-right:0;min-height:50em">
 		<div id="accordion">
 			<h1>{{ 'map.layers'|trans|title }}</h1>

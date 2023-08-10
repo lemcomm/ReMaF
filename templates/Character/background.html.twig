@@ -5,20 +5,18 @@
 	<p>{{ "meta.background.intro"|trans({"%name%":character.name},"actions")|raw }}</p>
 	{% if starting %}
 		{% if character.alive %}
-			<p>
-				{{ "meta.background.traits"|trans({},"actions") }}
-				<dl class="traits">
-					{% for trait in character.genome|split('',1) %}
-						<dt>{{ ('trait.name.'~trait)|trans }}</dt>
-						<dd>{% if character.male %}{{ ('trait.description.male.'~trait)|trans }}{% else %}{{ ('trait.description.female.'~trait)|trans }}{% endif %}</dd>
-					{% endfor %}
-				</dl>
-			</p>
+			{{ "meta.background.traits"|trans({},"actions") }}
+			<dl class="traits">
+				{% for trait in character.genome|split('',1) %}
+					<dt>{{ ('trait.name.'~trait)|trans }}</dt>
+					<dd>{% if character.male %}{{ ('trait.description.male.'~trait)|trans }}{% else %}{{ ('trait.description.female.'~trait)|trans }}{% endif %}</dd>
+				{% endfor %}
+			</dl>
 
-			{% set url = path('maf_character_start',{"id":character.id, "logic":'new'}) %}
+			{% set url = path('maf_char_start',{"id":character.id, "logic":'new'}) %}
 			<p>{{ "meta.background.skip"|trans({"%url%":url},"actions")|raw }}</p>
 		{% else %}
-			{% set url = path('bm2_characters') %}
+			{% set url = path('maf_chars') %}
 		{% endif %}
 	{% endif %}
 

@@ -21,7 +21,7 @@
 					<tr>
 						<td>{{ quest.summary }}</td>
 						<td><ul class="shortlist">{% for quester in quest.questers %}<li>{{ link(quester.character) }}</li>{% endfor %}</ul></td>
-						<td><a href="{{ path('bm2_site_quests_details', {'id':quest.id}) }}">{{ "quests.details"|trans({},"actions") }}</a></td>
+						<td><a href="{{ path('maf_quests_details', {'id':quest.id}) }}">{{ "quests.details"|trans({},"actions") }}</a></td>
 					</tr>
 				{% endfor %}
 			</tbody>

@@ -44,10 +44,10 @@
 									{% if quester.confirmedcompleted is null %}
 										{% if quest.owner == character %}
 											claims completed
-											<form style="display:inline-block" method="post" action="{{ path('bm2_site_quests_confirm', {'quester':quester.id}) }}">
+											<form style="display:inline-block" method="post" action="{{ path('app_quests_confirm', {'quester':quester.id}) }}">
 												<button type="submit">confirm</button>
 											</form>
-											<form style="display:inline-block" method="post" action="{{ path('bm2_site_quests_reject', {'quester':quester.id}) }}">
+											<form style="display:inline-block" method="post" action="{{ path('maf_quests_reject', {'quester':quester.id}) }}">
 												<button type="submit">reject</button>
 											</form>
 										{% else %}
@@ -85,16 +85,16 @@
 		(owner actions)
 	{% else %}
 		{% for quester in quest.questers if quester.character == character %}
-			<form method="post" action="{{ path('bm2_site_quests_leave', {'quest':quest.id}) }}">
+			<form method="post" action="{{ path('maf_quests_leave', {'quest':quest.id}) }}">
 				<button type="submit">abandon this quest</button>
 			</form>
 			{% if quester.claimcompleted is null %}
-				<form method="post" action="{{ path('bm2_site_quests_completed', {'quest':quest.id}) }}">
+				<form method="post" action="{{ path('maf_quests_completed', {'quest':quest.id}) }}">
 					<button type="submit">claim you have completed the quest</button>
 				</form>
 			{% endif %}
 		{% else %}
-			<form method="post" action="{{ path('bm2_site_quests_join', {'quest':quest.id}) }}">
+			<form method="post" action="{{ path('maf_quests_join', {'quest':quest.id}) }}">
 				<button type="submit">accept this quest</button>
 			</form>
 		{% endfor %}

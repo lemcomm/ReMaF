@@ -38,8 +38,8 @@
 	<dd>{{ realm.name }}</dd>
 	<dt>{{ 'realm.designation'|trans({},"politics") }}</dt>
 	<dd>{{ ('realm.type.'~realm.type)|trans({},"politics") }}</dd>
-	<dt>{{ 'realm.capital.name0'|trans({},"politics") }}</dd>
-	<dd>{% if realm.capital %}{{ link(realm.capital) }}{% else %}-{% endif %}</dt>
+	<dt>{{ 'realm.capital.name0'|trans({},"politics") }}</dt>
+	<dd>{% if realm.capital %}{{ link(realm.capital) }}{% else %}-{% endif %}</dd>
 	<dt>{{ 'realm.ruler'|transchoice(realm.findrulers.count, {},"politics") }}</dt>
 	<dd><ul class="shortlist">
 		{% for ruler in realm.findrulers %}
@@ -84,7 +84,7 @@
 {% endif %}
 
 {% if realm.superior or realm.inferiors is not empty %}
-	<p><a href="{{ path('bm2_site_realm_hierarchy', {'realm':realm.id}) }}">{{ 'viewdetails'|trans|title }}</a></p>
+	<p><a href="{{ path('maf_realm_hierarchy', {'realm':realm.id}) }}">{{ 'viewdetails'|trans|title }}</a></p>
 {% endif %}
 
 <h3>{{ 'realm.details'|trans({},"politics")|title }}</h3>
@@ -153,7 +153,7 @@
 			</td>
 			<td>
 				{% if character %}
-					<a href="{{ path('bm2_site_realm_viewrelations', {'realm':realm.id, 'target':relation.target.id}) }}">{{ 'diplomacy.report.link'|trans({},"politics") }}</a>
+					<a href="{{ path('maf_realm_viewrelations', {'realm':realm.id, 'target':relation.target.id}) }}">{{ 'diplomacy.report.link'|trans({},"politics") }}</a>
 				{% endif %}
 			</td>
 		</tr>
@@ -175,7 +175,7 @@
 {% block jquery %}
 	{% if restorable %}
 		$("#restorerealm").click(function(){
-			$.post("{{ path('bm2_site_realm_restore', {"id":realm.id}) }}", function() {
+			$.post("{{ path('maf_realm_restore', {"id":realm.id}) }}", function() {
 				$("#restore_wrapper").replaceWith('<div class="success">{{ "diplomacy.restore.success"|trans ({}, "politics")}}</div>');
 			});
 		});
