@@ -1,5 +1,34 @@
+# Declare overrides for routes that should NOT be localized.
+maf_patreon:
+    path: /payment/patreon/{creator}
+    controller: App\Controller\PaymentController::patreonAction
+    requirements:
+        creator: '[A-Za-z]+'
+
+maf_end_emails:
+    path: /account/endemails/{user}/{token}
+    controller: App\Controller\AccountController::endEmailsAction
+
+maf_stripe_success:
+    path: /payment/stripe_success
+    controller: App\Controller\PaymentController::stripeSuccessAction
+
+# Default routes, name must be "controllers"
 controllers:
     resource:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+    prefix: /{_locale}
+    requirements:
+        _locale: '%app_locales%'
+    defaults:
+        _locale: '%locale%'
+
+# Auto-redirect for non-localized inputs
+_catcher:
+    path:	/{url}
+    requirements:
+        url: .*
+    controller: App\Controller\DefaultController::localeRedirectAction
+

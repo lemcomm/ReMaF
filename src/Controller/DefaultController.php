@@ -145,6 +145,7 @@ class DefaultController extends AbstractController {
 	}
 
 
+	#Route Annotation deliberately omitted in order to enable auto-localization. Route defined in config/routes.yaml.
 	public function localeRedirectAction(CommonService $common, $url): RedirectResponse {
 		if ($url=="-") $url="";
 		if (preg_match('/^[a-z]{2}\//', $url)===1) {

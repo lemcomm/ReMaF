@@ -533,7 +533,7 @@ class AccountController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/account/endemails/{user}/{token}', name:'maf_end_emails')]
+	#Route Annotation deliberately omitted in order to bypass auto-localization. Route defined in config/routes.yaml.
 	public function endEmailsAction(EntityManagerInterface $em, TranslatorInterface $trans, User $user, $token=null): RedirectResponse {
 		if ($user && $token && $user->getEmailOptOutToken() === $token) {
 			$user->setNotifications(false);
