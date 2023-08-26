@@ -784,13 +784,15 @@ class RealmController extends AbstractController {
 				}
 			}
 		}
+		$myrealm = null;
 		foreach ($character->findRealms() as $myrealm) {
+			$id = $myrealm->getId();
 			if ($myrealm->getType() > $realm->getType()) {
 				if ($myrealm !== $realm->getSuperior()) {
 					if (isset($available[$id])) {
-						$available[$id]['via'][] = $char;
+						$available[$id]['via'][] = $character;
 					} else {
-						$available[$id] = array('realm'=>$myrealm, 'via'=>array($char));
+						$available[$id] = array('realm'=>$myrealm, 'via'=>array($character));
 					}
 					if (!$realms->contains($myrealm)) {
 						$realms->add($myrealm);

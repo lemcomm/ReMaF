@@ -609,12 +609,42 @@ class GameRunner {
 		$count = 0;
 		$query = $this->em->createQuery('SELECT s FROM App:Soldier s WHERE s.travel_days <= 0');
 		$units = [];
+		$skippables = [];
 		foreach ($query->getResult() as $soldier) {
+			$unit = $soldier->getUnit();
+
+			# Check for unit in chace of skippable units.
+			if (in_array($unit->getId(), $skippables)) {
+				$soldier->setTravelDays(1); # Avoid negatives, just in case.
+				continue;
+			}
+
+			# Not found, check if this soldier can actually get to their unit.
+			$char = null;
+			$here1 = null;
+			$here2 = null;
+			if ($char = $unit->getCharacter()) {
+				if ($here1 = $char->getInsideSettlement()) {
+					if ($here1->getSiege() && $here1->getSiege()->getEncircled()) {
+						$skippables[] = $unit->getId();
+						$soldier->setTravelDays(1); # Avoid negatives, just in case.
+						continue;
+					}
+				}
+			} elseif ($here2 = $unit->getSettlement()) {
+				if ($here2->getSiege() && $here2->getSiege()->getEncirlced()) {
+					$skippables[] = $unit->getId();
+					$soldier->setTravelDays(1); # Avoid negatives, just in case.
+					continue;
+				}
+			}
+
+			# Soldier has arrived!
 			$count++;
 			$soldier->setTravelDays(null);
 			$soldier->setDestination(null);
-			if (!in_array($soldier->getUnit()->getId(), $units)) {
-				$units[] = $soldier->getUnit()->getId();
+			if (!in_array($unit->getId(), $units)) {
+				$units[] = $unit->getId();
 			}
 		}
 		if ($count) {
@@ -649,6 +679,30 @@ class GameRunner {
 		$query = $this->em->createQuery('SELECT u FROM App:Unit u WHERE u.travel_days <= 0');
 		$units = [];
 		foreach ($query->getResult() as $unit) {
+			$here = null;
+			if ($unit->getDefendingSettlement()) {
+				$here = $unit->getDefendingSettlement();
+			} else {
+				$here = $unit->getSettlement();
+			}
+			if (!$here) {
+				# Shouldn't be possible... but just in case.
+				$this->logger->error("ERROR: Unit ".$unit->getId()." returned to nowhere!");
+				if ($unit->getCharacter()) {
+					$unit->setTravelDays(null);
+					$unit->setDestination(null);
+				} else {
+					foreach ($unit->getSoldier() as $each) {
+						$this->milman->disband($each);
+					}
+					$this->milman->disbandUnit($unit, true);
+				}
+
+			}
+			if ($here->getSiege() && $here->getSiege()->getEncircled()) {
+				$unit->setTravelDays(1);
+				continue;
+			}
 			$count++;
 			$unit->setTravelDays(null);
 			if ($unit->getDestination()=='base') {
