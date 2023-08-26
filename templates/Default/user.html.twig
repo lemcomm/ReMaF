@@ -76,7 +76,7 @@
 
 		<h3>{{ 'user.profile.profile'|trans }}</h3>
 		{% if user.description %}
-			{{ user.description.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+			{{ user.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 			<hr>
 		{% else %}
 			<i>{{ 'user.profile.empty'|trans }}</i>

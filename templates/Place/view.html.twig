@@ -21,11 +21,11 @@
 		<h3>{{ 'description'|trans({},"places")|title }}</h3>
 		{% if inside %}
 			{% if place.description.text is not null %}
-			{{ place.description.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+			{{ place.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 			{% endif %}
 		{% else %}
 			{% if place.shortDescription is not null %}
-			{{ place.shortDescription|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+			{{ place.shortDescription|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 			{% endif %}
 		{% endif %}
 	{% else %}

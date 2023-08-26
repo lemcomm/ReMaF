@@ -36,7 +36,7 @@
                         <td>{{ ('law.info.'~law.type.name~'.desc')|trans({},"orgs") }}</td>
                 {% else %}
                         <th> {{ law.title|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>') }}</th>
-                        <td>{{ law.description|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks}}</td>
+                        <td>{{ law.description|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks}}</td>
                 {% endif %}
                 <td>
                         {% if law.cascades %}

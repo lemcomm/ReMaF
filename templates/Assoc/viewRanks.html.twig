@@ -24,7 +24,7 @@
 				{{ 'assoc.route.rankInfo.superior' |trans }} <a href="{{rank.superior.id}}">{{rank.superior.name}}</a>
 			{% endif %}
 			{% if rank.description %}
-				<p>{{ rank.description.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}</p>
+				<p>{{ rank.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}</p>
 			{% endif %}
 
 			{% if member %}

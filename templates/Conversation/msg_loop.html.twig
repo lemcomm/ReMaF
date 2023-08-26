@@ -55,7 +55,7 @@
 		</div>
 
 		<div class="cmsg_content_{{message.type}}">
-			{{ message.content|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}
+			{{ message.content|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}
 		</div>
 
 		<div class="cmsg_message_meta_{{message.type}}">
@@ -95,7 +95,7 @@
 			#}
 		</div>
 	{% else %}
-			<i>{{ (message.content ~ ' -- ' ~ (message.cycle|gametime("short")) ~ ' (' ~ (message.sent|date) ~ ')')|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}</i>
+			<i>{{ (message.content ~ ' -- ' ~ (message.cycle|gametime("short")) ~ ' (' ~ (message.sent|date) ~ ')')|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}</i>
 	{% endif %}
 	</div>
 	</div>

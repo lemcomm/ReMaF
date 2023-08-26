@@ -111,7 +111,7 @@
 			{% endif %}
 		</b></dt>
 		<dd>	<br />
-			{{ position.description|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+			{{ position.description|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 			<br />
 			{{ 'realm.positions.holder'|trans({'count':position.holders.count},"politics") }}:
 			<ul class="shortlist" style="display:inline">

@@ -9,12 +9,12 @@
 		<dt>creator</dt>
 		<dd>{{ link(quest.owner) }}</dd>
 		<dt>description</dt>
-		<dd>{{ quest.description|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}</dd>
+		<dd>{{ quest.description|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}</dd>
 		<dt>reward</dt>
-		<dd>{{ quest.reward|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}</dd>
+		<dd>{{ quest.reward|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}</dd>
 		<dt>clarifications</dt>
 		<dd>{% if quest.notes %}
-			{{ quest.notes|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+			{{ quest.notes|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 			{% else %}&nbsp;{% endif %}</dd>
 		<dt>status</dt>
 		<dd>

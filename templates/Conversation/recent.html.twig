@@ -49,7 +49,7 @@
                                 </div>
 
                                 <div class="cmsg_content_{{message.type}}">
-                                {{ message.content|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}
+                                {{ message.content|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}
                                 </div>
 
                                 {% if message.type != 'system' and archive == false %}

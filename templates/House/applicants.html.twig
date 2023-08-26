@@ -10,7 +10,7 @@
 		{{ 'house.manage.applicant.preamble'|trans({"%link-character%":link(joinrequest.fromCharacter), "%date%":joinrequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 		<div class="subcontent inline_announcements" style="color:#460702">
 		<h4>{{ joinrequest.subject|title }}</h4>
-		{{ joinrequest.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
+		{{ joinrequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
 		<a href="{{path('maf_gamerequest_approve', {"id":joinrequest.id, "route":app.request.get('_route')}) }}"><button id="approve">{{ 'house.manage.applicant.approve'|trans({},"politics") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":joinrequest.id}) }}"><button id="deny">{{ 'house.manage.applicant.deny'|trans({},"politics") }}</button></a>
 		</div>
 	{% else %}

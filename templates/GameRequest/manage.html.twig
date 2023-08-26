@@ -18,7 +18,7 @@
 			{% endif %}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
-			{{ gamerequest.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
+			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
 			<a href="{{path('maf_gamerequest_approve', {"id":gamerequest.id}) }}"><button id="approve">{{ 'personal.request.approve'|trans({},"actions") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'personal.request.deny'|trans({},"actions") }}</button></a>
 			</div>
 		{% elseif gamerequest.type == 'house.cadet' %}
@@ -26,7 +26,7 @@
 			{{ 'house.manage.cadet.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-house%":link(gamerequest.fromHouse), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
-			{{ gamerequest.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
+			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
 			<a href="{{path('maf_gamerequest_approve', {"id":gamerequest.id}) }}"><button id="approve">{{ 'house.manage.cadet.approve'|trans({},"politics") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'house.manage.cadet.deny'|trans({},"politics") }}</button></a>
 			</div>
 		{% elseif gamerequest.type == 'house.subcreate' %}
@@ -34,7 +34,7 @@
 			{{ 'house.manage.subcreate.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
-			{{ gamerequest.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
+			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
 			<a href="{{path('maf_gamerequest_approve', {"id":gamerequest.id}) }}"><button id="approve">{{ 'house.manage.subcreate.approve'|trans({},"politics") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'house.manage.subcreate.deny'|trans({},"politics") }}</button></a>
 			</div>
 		{% elseif gamerequest.type == 'house.join' %}
@@ -42,7 +42,7 @@
 			{{ 'house.manage.applicant.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
-			{{ gamerequest.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
+			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
 			<a href="{{path('maf_gamerequest_approve', {"id":gamerequest.id}) }}"><button id="approve">{{ 'house.manage.applicant.approve'|trans({},"politics") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'house.manage.applicant.deny'|trans({},"politics") }}</button></a>
 			</div>
 		{% elseif gamerequest.type == 'house.uncadet' %}
@@ -50,7 +50,7 @@
 			{{ 'house.manage.uncadet.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-house%":link(gamerequest.fromHouse), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
-			{{ gamerequest.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
+			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
 			<a href="{{path('maf_gamerequest_approve', {"id":gamerequest.id}) }}"><button id="approve">{{ 'house.manage.uncadet.approve'|trans({},"politics") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'house.manage.uncadet.deny'|trans({},"politics") }}</button></a>
 			</div>
 		{% elseif gamerequest.type == 'oath.offer' %}
@@ -66,7 +66,7 @@
 			{% endif %}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
-			{{ gamerequest.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
+			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
 			<a href="{{path('maf_gamerequest_approve', {"id":gamerequest.id}) }}"><button id="approve">{{ 'oath.offer.approve'|trans({},"politics") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'oath.offer.deny'|trans({},"politics") }}</button></a>
 			</div>
 		{% elseif gamerequest.type == 'realm.join' %}
@@ -74,7 +74,7 @@
 			{{ 'diplomacy.join.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-realm%":link(gamerequest.fromRealm), "%link-realm-2%":link(gamerequest.toRealm), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
-			{{ gamerequest.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
+			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
 			<a href="{{path('maf_gamerequest_approve', {"id":gamerequest.id}) }}"><button id="approve">{{ 'diplomacy.join.approve'|trans({},"politics") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'diplomacy.join.deny'|trans({},"politics") }}</button></a>
 			</div>
 		{% elseif gamerequest.type == 'assoc.join' %}
@@ -82,7 +82,7 @@
 			{{ 'assoc.requests.join.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-assoc%":link(gamerequest.toAssociation), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "orgs")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
-			{{ gamerequest.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
+			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
 			<a href="{{path('maf_gamerequest_approve', {"id":gamerequest.id}) }}"><button id="approve">{{ 'diplomacy.join.approve'|trans({},"politics") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'diplomacy.join.deny'|trans({},"politics") }}</button></a>
 			</div>
 		{% endif %}
@@ -106,7 +106,7 @@
 				{% endif %}
 				<div class="subcontent inline_announcements" style="color:#460702">
 				<h4>{{ gamerequest.subject|title }}</h4>
-				{{ gamerequest.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
+				{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}
 				<a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'personal.request.cancel'|trans({},"actions") }}</button></a>
 				</div>
 			{% endif %}
