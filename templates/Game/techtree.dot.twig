@@ -1,15 +1,15 @@
 <pre>
 digraph techtree {
 {% for npc in entourage %}
-	"{{ npc.name }}" [label="{{ ('npc.'~npc.name)|transchoice(1)|title }}" shape=box color="blue" fontcolor="blue"];
+	"{{ npc.name }}" [label="{{ ('npc.'~npc.name)|trans({'count':1})|title }}" shape=box color="blue" fontcolor="blue"];
 {% endfor %}
 
 {% for item in equipment %}
-	"{{ item.name }}" [label="{{ ('item.'~item.name)|transchoice(1)|title }}" shape=box color="green" fontcolor="green"];
+	"{{ item.name }}" [label="{{ ('item.'~item.name)|trans({'count':1})|title }}" shape=box color="green" fontcolor="green"];
 {% endfor %}
 
 {% for building in buildings %}
-	"{{ building.name }}" [label="{{ ('building.'~building.name)|trans({},"economy")|title }}"];
+	"{{ building.name }}" [label="{{ ('building.'~building.name)|trans({'count':1}, "economy")|title }}"];
 {% endfor %}
 
 

@@ -12,7 +12,7 @@
 			</dt>
 			<dd>{{ link(parent) }}</dd>
 		{% endfor %}
-		<dt>{{ 'character.child'|transchoice(char.children|length)|title }}</dt>
+		<dt>{{ 'character.child'|trans({'count':char.children|length})|title }}</dt>
 		<dd><ul class="simple">
 			{% for child in char.children %}
 				<li>{{ link(child) }}</li>

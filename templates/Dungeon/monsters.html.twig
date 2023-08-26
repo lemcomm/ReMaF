@@ -1,5 +1,5 @@
 <div class="monsterdetails">
-<h3>{{ type.name|transchoice(1, {}, "dungeons")|title }}</h3>
+<h3>{{ type.name|trans({'count':1}, "dungeons")|title }}</h3>
 <p>{{ ('monsterdesc.'~type.name)|trans({}, "dungeons")|raw }}</p>
 
 <dl>

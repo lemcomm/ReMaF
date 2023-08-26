@@ -24,7 +24,7 @@
 <dt>{{ "queue.block"|trans({}, "actions") }}</dt>
 <dd>{% if action.blocktravel %}{{ 'yes'|trans }}{% else %}{{ 'no'|trans }}{% endif %}</dd>
 {% if action.targetrealm %}
-	<dt>{{ "realm"|transchoice(1) }}</dt>
+	<dt>{{ "realm"|trans({'count':1}) }}</dt>
 	<dd>{{ link(action.targetrealm) }}</dd>
 {% endif %}
 {% if action.targetsettlement %}

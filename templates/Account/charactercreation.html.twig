@@ -9,7 +9,7 @@
 	{% if limit <= 0 %}
 		<div class="warning">{{ 'newcharacter.limited'|trans }}</div>
 	{% elseif limit < 6 %}
-		<p>{{ 'newcharacter.limit'|transchoice(limit, {"%limit%":limit}) }}</p>
+		<p>{{ 'newcharacter.limit'|trans({"count":limit, "%limit%":limit}) }}</p>
 	{% endif %}
 	{% if spawnlimit %}
 		<div class="error">{{ 'newcharacter.spawnlimit'|trans|raw }}</div>

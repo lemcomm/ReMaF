@@ -48,7 +48,7 @@
 		</div>
 	{% endif %}
 
-	<h3>{{ "news.edition"|transchoice(10, {},"communication")|title }}</h3>
+	<h3>{{ "news.edition"|trans({'count':10},"communication")|title }}</h3>
 	<table>
 		<thead><tr>
 		</tr></thead>
@@ -70,7 +70,7 @@
 				{% if edition.published %}
 					<td>{{ gametime(edition.publishedcycle, 'long') }}</td>
 					<td>{{ edition.published|date }}</td>
-					<td align="right">{{ "news.readers"|transchoice(edition.readers.count,{"%count%":edition.readers.count},"communication") }}</td>
+					<td align="right">{{ "news.readers"|trans({'count':edition.readers.count, "%count%":edition.readers.count},"communication") }}</td>
 				{% else %}
 					<td colspan="3">({{ "news.create.unpublished"|trans({},"communication") }})</td>
 				{% endif %}

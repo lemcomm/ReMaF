@@ -3,11 +3,11 @@
 {% block content %}
 	{% if featuretype.icon %}
 		<div class="artviewer withbg">
-			<img class="clipart" src="{{ asset('bundles/bm2site/images/'~featuretype.iconUnderConstruction) }}" />
+			<img class="clipart" src="{{ asset('images/'~featuretype.iconUnderConstruction) }}" />
 			<br />{{ 'underconstruction'|trans }}
 		</div>
 		<div class="artviewer withbg">
-			<img class="clipart" src="{{ asset('bundles/bm2site/images/'~featuretype.icon) }}" />
+			<img class="clipart" src="{{ asset('images/'~featuretype.icon) }}" />
 			<br />{{ 'finished'|trans }}
 		</div>
 	{% endif %}

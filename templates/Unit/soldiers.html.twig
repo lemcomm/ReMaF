@@ -88,7 +88,7 @@
 						<td></td>
 					{% endif %}
 					<td class="progress_column"><div class="progressbar" value="{{progress}}"><span class="progress_value_dummy">{{ soldier.training|number_format }} / {{ soldier.trainingRequired }}</span></div></td>
-					<td align="right">{% if time < 1 %}{{ 'today'|trans }}{% else %}{{ time|number_format }} {{ "day"|transchoice(time|number_format) }}{% endif %}</td>
+					<td align="right">{% if time < 1 %}{{ 'today'|trans }}{% else %}{{ time|number_format }} {{ "day"|trans({'count':time|number_format}) }}{% endif %}</td>
 					<td>
 						<a href="{{ path('maf_unit_recruit_cancel', {"unit":unit.id, "recruit":soldier.id}) }}"><button class="canceltraining" value="{{ soldier.id }}">{{ 'recruit.troops.cancel'|trans({},"actions") }}</button></a>
 						{% if soldier.oldweapon or soldier.oldarmour or soldier.oldequipment or soldier.oldmount %}

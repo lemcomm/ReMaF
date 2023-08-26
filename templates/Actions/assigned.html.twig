@@ -46,7 +46,7 @@
 						{{ "today"|trans }}
 					{% else %}
 						{% set days = common.global('cycle') - man.assignedsince %}
-						{{ days }} {{ "day"|transchoice(days) }}
+						{{ days }} {{ "day"|trans({'count':days} }}
 					{% endif %}
 				</td>
 				<td align="right">

@@ -156,7 +156,7 @@
 	{% endif %}
 
 	{% if details.spot or isowner or issteward %}
-		<h2>{{ 'npc.soldier'|transchoice(10)|capitalize }}</h2>
+		<h2>{{ 'npc.soldier'|trans({'count':10})|capitalize }}</h2>
 		{% if settlement.countDefenders > 0 %}
 			{{ 'settlement.militiacount'|trans({"%count%":settlement.countDefenders}) }}
 		{% else %}
@@ -165,7 +165,7 @@
 		{% if details.spy or isowner or issteward %}
 			<ul>
 			{% for type,number in militia %}
-				<li>{{number}} {{ ("soldier."~type)|transchoice(number) }}</li>
+				<li>{{number}} {{ ("soldier."~type)|trans({'count':number}) }}</li>
 			{% endfor %}
 			{% if recruits > 0 %}
 				<li>{{ 'settlement.recruitscount'|trans({"%count%":recruits}) }}</li>
@@ -182,7 +182,7 @@
 	{% if details.spot or isowner or issteward %}
 		<h2>{{ 'settlement.economy'|trans|title }}</h2>
 
-		<h3>{{ 'building'|transchoice(10)|title }}</h3>
+		<h3>{{ 'building'|trans({'count':10})|title }}</h3>
 		<ul class="shortlist">
 			{% for building in settlement.buildings %}
 				{% if building.active %}
@@ -349,7 +349,7 @@
 		{% endfor %}
 		</ul>
 		{% if shortages > 0 %}
-			{{ 'settlement.shortage.effect'|transchoice(shortages) }}
+			{{ 'settlement.shortage.effect'|trans({'count':shortages}) }}
 		{% else %}
 			{{ 'settlement.shortage.none'|trans }}
 		{% endif %}
@@ -365,7 +365,7 @@
 
 	{% if settlement.description is not null %}
 		<h2>{{ 'settlement.description'|trans|title }}</h2>
-		{{ settlement.description.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+		{{ settlement.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 	{% endif %}
 
 	<br class="clear" />

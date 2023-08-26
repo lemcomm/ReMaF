@@ -27,7 +27,7 @@
 	<tbody>
 		{% for beast in beastiary %}
 			<tr>
-				<td>{{ ('monster.'~beast.name)|transchoice(1, {}, "dungeons") }}</td>
+				<td>{{ ('monster.'~beast.name)|trans({'count':1}, "dungeons") }}</td>
 				<td align="right">{{ beast.points }}</td>
 				<td><ul class="shortlist">
 					{% for class in beast.class %}

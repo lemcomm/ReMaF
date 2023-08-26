@@ -170,14 +170,14 @@
 	<div class="symfony-shortcuts" data-role="navbar">
 		<ul>
 			{% if app.session.get('soldiers') > 0 %}
-				<li><a href="{{ path('maf_char_soldiers') }}"><span class="value">{{ app.session.get('soldiers') }}</span>{{ 'npc.soldier'|transchoice(app.session.get('soldiers')) }}</a></li>
+				<li><a href="{{ path('maf_char_soldiers') }}"><span class="value">{{ app.session.get('soldiers') }}</span>{{ 'npc.soldier'|trans({'count':app.session.get('soldiers')}) }}</a></li>
 			{% endif %}
 			{% if app.session.get('entourage') > 0 %}
-				<li><a href="{{ path('maf_char_entourage') }}"><span class="value">{{ app.session.get('entourage') }}</span>{{ 'npc.entourage2'|transchoice(app.session.get('entourage')) }}</a></li>
+				<li><a href="{{ path('maf_char_entourage') }}"><span class="value">{{ app.session.get('entourage') }}</span>{{ 'npc.entourage2'|trans({'count':app.session.get('entourage')}) }}</a></li>
 			{% endif %}
 			{% if app.session.get('settlements') is not empty %}
 				<li class="drawer">
-					<a href="{{ path('maf_char_estates') }}"><span class="value">{{ app.session.get('settlements')|length }}</span>{{ 'estate'|transchoice(app.session.get('settlements')|length) }}</a>
+					<a href="{{ path('maf_char_estates') }}"><span class="value">{{ app.session.get('settlements')|length }}</span>{{ 'estate'|trans({'count':app.session.get('settlements')|length}) }}</a>
 					<ul>
 						{% for id,name in app.session.get('settlements') %}
 						<li>{{ settlement_link(id, name) }}</li>
@@ -187,7 +187,7 @@
 			{% endif %}
 			{% if app.session.get('realms') is not empty %}
 				<li class="drawer">
-					<a href="{{ path('maf_politics') }}"><span class="value">{{ app.session.get('realms')|length }}</span>{{ 'realm'|transchoice(app.session.get('realms')|length) }}</a>
+					<a href="{{ path('maf_politics') }}"><span class="value">{{ app.session.get('realms')|length }}</span>{{ 'realm'|trans({'count':app.session.get('realms')|length}) }}</a>
 					<ul>
 						{% for id,name in app.session.get('realms') %}
 						<li>{{ realm_link(id, name) }}</li>

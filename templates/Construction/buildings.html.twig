@@ -27,7 +27,7 @@
 			<h3>{{ 'economy.build.existing'|trans({}, "actions")|title }}</h3>
 			<table id="buildingslist">
 				<thead><tr>
-					<th>{{ "building"|transchoice(1)|title }}</th>
+					<th>{{ "building"|trans({'count':1})|title }}</th>
 					<th colspan="2">{{ "economy.build.speed"|trans({}, "actions") }}</th>
 					<th data-sorter="false">{{ "economy.build.focus"|trans({}, "actions") }}</th>
 					<th>{{ "economy.build.employees"|trans({}, "actions") }}</th>
@@ -46,7 +46,7 @@
 			<h3>{{ 'economy.build.underconstruction'|trans({},"actions")|title }}</h3>
 			<table id="buildingslist2">
 				<thead><tr style="margin-top: 1em">
-					<th>{{ "building"|transchoice(1)|title }}</th>
+					<th>{{ "building"|trans({'count':1}|title }}</th>
 					<th>{{ "economy.build.status"|trans({}, "actions") }}</th>
 					<th>{{ "economy.build.progress"|trans({}, "actions") }}</th>
 					<th colspan="2">{{ "economy.build.workers"|trans({}, "actions") }}</th>
@@ -82,9 +82,9 @@
 										{{ 'today'|trans }}
 									{% else %}
 										{% if worstcase > complete + 1 %}
-											{{ complete|number_format }}-{{ worstcase|number_format }} {{ 'day'|transchoice(worstcase|number_format) }}
+											{{ complete|number_format }}-{{ worstcase|number_format }} {{ 'day'|trans({'count':worstcase|number_format} }}
 										{% else %}
-											{{ complete|number_format }} {{ 'day'|transchoice(complete|number_format) }}
+											{{ complete|number_format }} {{ 'day'|trans({'count':complete|number_format} }}
 										{% endif %}
 									{% endif %}
 								</td>
@@ -122,7 +122,7 @@
 		{% if available is not empty %}
 			<table id="constructions">
 				<thead><tr>
-					<th>{{ "building"|transchoice(1)|title }}</th>
+					<th>{{ "building"|trans({'count':1}|title }}</th>
 					<th colspan="2" data-sorter="false">{{ "economy.build.workers"|trans({}, "actions") }}</th>
 					<th>{{ "economy.build.effort"|trans({}, "actions") }}</th>
 				</tr></thead>
@@ -151,7 +151,7 @@
 		{# TODO: per default, collapsed #}
 		<table id="unavailable" class="disabled">
 			<thead><tr>
-				<th>{{ "building"|transchoice(1)|title }}</th>
+				<th>{{ "building"|trans({'count':1}|title }}</th>
 				<th data-sorter="false"></th>
 			</tr></thead>
 			<tbody>

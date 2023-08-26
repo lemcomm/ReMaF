@@ -1,7 +1,7 @@
 {% extends app.request.isXmlHttpRequest ? "plain.html.twig" : "layout.html.twig" %}
 
 {% block content %}
-<h3>{{ 'estate'|transchoice(settlements|length)|title }}</h3>
+<h3>{{ 'estate'|trans({'count':settlements|length})|title }}</h3>
 <table id="estates">
 	<thead>
 		<tr>

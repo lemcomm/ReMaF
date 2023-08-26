@@ -25,7 +25,7 @@
 		<h3>{{ 'economy.features.existing'|trans({}, "actions")|title }}</h3>
 		<table>
 			<thead><tr>
-				<th>{{ "feature"|transchoice(1)|title }}</th>
+				<th>{{ "feature"|trans({'count':1}|title }}</th>
 				<th>{{ "feature.name"|trans({}, "economy") }}</th>
 			</tr></thead>
 			<tbody>
@@ -45,7 +45,7 @@
 		<table>
 			<thead><tr>
 				<th></th>
-				<th>{{ "feature"|transchoice(1)|title }}</th>
+				<th>{{ "feature"|trans({'count':1}|title }}</th>
 				<th>{{ "economy.features.progress"|trans({}, "actions") }}</th>
 				<th>{{ "economy.features.workers"|trans({}, "actions") }}</th>
 				<th>{{ "economy.features.workers"|trans({}, "actions") }}</th>
@@ -73,7 +73,7 @@
 							{% if complete < 1 %}
 								<td align="right" id="done_{{ feature.id }}">{{ 'today'|trans }}</td>
 							{% else %}
-								<td align="right" id="done_{{ feature.id }}">{{ complete|number_format }} {{ 'day'|transchoice(complete) }}</td>
+								<td align="right" id="done_{{ feature.id }}">{{ complete|number_format }} {{ 'day'|trans({'count':complete} }}</td>
 							{% endif %}
 						{% else %}
 							<td align="right" id="done_{{ feature.id }}">{{ "economy.features.never"|trans({}, "actions")}}</td>

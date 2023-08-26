@@ -29,11 +29,11 @@
 
 {% if log.events|length > shown %}
 	{% if research is defined and research.assignedEntourage is defined %}
-		<p>{{ 'events.research.ongoing'|transchoice(research.assignedEntourage|length, {"%amount%":research.assignedEntourage|length}) }}</p>
+		<p>{{ 'events.research.ongoing'|trans({"count":research.assignedEntourage|length, "%amount%":research.assignedEntourage|length}) }}</p>
 	{% else %}
 		<p class="possible">{{ 'events.research.intro'|trans }}</p>
 		{% if scholars > 0 %}
-			<p>{{ 'events.research.can'|transchoice(scholars, {"%amount%":scholars}) }}</p>			
+			<p>{{ 'events.research.can'|trans({"count":scholars, "%amount%":scholars}) }}</p>
 		{% endif %}
 	{% endif %}
 	{% if form %}

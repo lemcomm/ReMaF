@@ -3,10 +3,10 @@
 {% block content %}
 	{% if equipmenttype.icon %}
 		<div class="artviewer withbg">
-			<img class="clipart" src="{{ asset('bundles/bm2site/images/'~equipmenttype.icon) }}" />
+			<img class="clipart" src="{{ asset('images/'~equipmenttype.icon) }}" />
 		</div>
 	{% endif %}
-	<h2>{{ ('item.'~equipmenttype.name)|transchoice(1)|title }}</h2>
+	<h2>{{ ('item.'~equipmenttype.name)|trans({"count":1})|title }}</h2>
 
 	{{ ('description.'~equipmenttype.name)|trans|raw }}
 

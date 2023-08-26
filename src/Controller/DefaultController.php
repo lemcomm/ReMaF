@@ -146,7 +146,7 @@ class DefaultController extends AbstractController {
 
 
 	#Route Annotation deliberately omitted in order to enable auto-localization. Route defined in config/routes.yaml.
-	public function localeRedirectAction(CommonService $common, $url): RedirectResponse {
+	public function localeRedirectAction(CommonService $common, $url, Request $request): RedirectResponse {
 		if ($url=="-") $url="";
 		if (preg_match('/^[a-z]{2}\//', $url)===1) {
 			if (substr($url, 0, 2)=='en') {
@@ -161,7 +161,7 @@ class DefaultController extends AbstractController {
 				$locale = $user->getLanguage();
 			}
 			if (!isset($locale) || !$locale) {
-				$locale = substr($this->getRequest()->getPreferredLanguage(),0,2);
+				$locale = substr($request->getPreferredLanguage(),0,2);
 			}
 			if ($locale) {
 				$languages = $common->availableTranslations();

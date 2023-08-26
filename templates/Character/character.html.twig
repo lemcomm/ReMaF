@@ -31,9 +31,9 @@
 {% endif %}
 {% if character.prisoner %}
 <p class="inactive">
-	<img src="{{ asset('images/nicubunu_chain.svg') }}" alt="{{ 'prisoner'|transchoice(1) }}" height="16px" align="bottom" />
+	<img src="{{ asset('images/nicubunu_chain.svg') }}" alt="{{ 'prisoner'|trans({"count":1}) }}" height="16px" align="bottom" />
 	{{ 'character.prisoner2'|trans({"%captor%":link(character.prisonerof)})|raw }}
-	<img src="{{ asset('images/nicubunu_chain.svg') }}" alt="{{ 'prisoner'|transchoice(1) }}" height="16px" align="bottom" />
+	<img src="{{ asset('images/nicubunu_chain.svg') }}" alt="{{ 'prisoner'|trans({"count":1}) }}" height="16px" align="bottom" />
 </p>
 {% endif %}
 
@@ -57,7 +57,7 @@
 		{% include "element/hierarchy.html.twig" with {"character":character, "who":'self'} only %}
 
 		<div id="myestates">
-		<h2>{{ 'estate'|transchoice(character.ownedSettlements|length)|title }}{% if character.ownedSettlements|length > 0%} <button id="expandestates">expand</button>{% endif %}</h2>
+		<h2>{{ 'estate'|trans({"count":character.ownedSettlements|length})|title }}{% if character.ownedSettlements|length > 0%} <button id="expandestates">expand</button>{% endif %}</h2>
 		<ul>
 		{% for settlement in character.ownedSettlements %}
 			<li>
@@ -104,7 +104,7 @@
 	{% endif %}
 
 	{% if character.prisoners is not empty %}
-		<h2>{{ 'prisoner'|transchoice(character.prisoners.count)|capitalize }}</h2>
+		<h2>{{ 'prisoner'|trans({"count":character.prisoners.count})|capitalize }}</h2>
 		<ul class="shortlist">
 			{% for prisoner in character.prisoners %}
 				<li>{{ link(prisoner) }}</li>
@@ -113,7 +113,7 @@
 	{% endif %}
 
 	{% if units is not empty %}
-		<h2>{{ 'npc.units'|transchoice(units.count)|capitalize }}</h2>
+		<h2>{{ 'npc.units'|trans({"count":units.count})|capitalize }}</h2>
 		<ul>
 		{% for unit in units %}
 			{% if unit.settlement %}
@@ -126,10 +126,10 @@
 	{% endif %}
 
 	{% if entourage is not empty %}
-		<h2>{{ 'npc.entourage'|transchoice(10)|capitalize }}</h2>
+		<h2>{{ 'npc.entourage'|trans({"count":10})|capitalize }}</h2>
 		<ul>
 		{% for type,number in entourage %}
-			<li>{{number}} {{ ("npc."~type)|transchoice(number) }}</li>
+			<li>{{number}} {{ ("npc."~type)|trans({'count':number}) }}</li>
 		{% endfor %}
 		{% if dead_entourage > 0 %}
 			<li>{{ dead_entourage }} {{ "dead"|trans }}</li>

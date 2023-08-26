@@ -40,7 +40,7 @@
 	<dd>{{ ('realm.type.'~realm.type)|trans({},"politics") }}</dd>
 	<dt>{{ 'realm.capital.name0'|trans({},"politics") }}</dt>
 	<dd>{% if realm.capital %}{{ link(realm.capital) }}{% else %}-{% endif %}</dd>
-	<dt>{{ 'realm.ruler'|transchoice(realm.findrulers.count, {},"politics") }}</dt>
+	<dt>{{ 'realm.ruler'|trans({'count':realm.findrulers.count},"politics") }}</dt>
 	<dd><ul class="shortlist">
 		{% for ruler in realm.findrulers %}
 			<li>{{ link(ruler) }}</li>
@@ -89,13 +89,13 @@
 
 <h3>{{ 'realm.details'|trans({},"politics")|title }}</h3>
 <dl>
-	<dt>{{ 'estate'|transchoice(settlements) }}</dt>
+	<dt>{{ 'estate'|trans({'count':settlements}) }}</dt>
 	<dd>{{ settlements }}</dd>
 	<dt>{{ 'settlement.population'|trans }}</dt>
 	<dd>{{ population }}</dd>
 	<dt>{{ 'realm.size'|trans({},"politics") }}</dt>
 	<dd>{{ area|area }}</dd>
-	<dt>{{ 'soldier.noble'|transchoice(nobles) }}</dt>
+	<dt>{{ 'soldier.noble'|trans({'count':nobles}) }}</dt>
 	<dd>{{ nobles }}</dd>
 </dl>
 
@@ -113,7 +113,7 @@
 		<dd>	<br />
 			{{ position.description|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 			<br />
-			{{ 'realm.positions.holder'|transchoice(position.holders.count, {},"politics") }}:
+			{{ 'realm.positions.holder'|trans({'count':position.holders.count},"politics") }}:
 			<ul class="shortlist" style="display:inline">
 				{% for holder in position.holders %}
 					<li>{{ link(holder) }}</li>
@@ -164,10 +164,10 @@
 
 {% if realm.description is not null and realm.description.text is not null %}
 	<h3>{{ 'realm.description.title'|trans({},"politics")|title }}</h3>
-	{{ realm.description.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+	{{ realm.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 {% elseif realm.description is null and realm.oldDescription is not null %}
 	<h3>{{ 'realm.description.title'|trans({},"politics")|title }}</h3>
-	{{ realm.oldDescription|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+	{{ realm.oldDescription|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 {% endif %}
 
 {% endblock %}

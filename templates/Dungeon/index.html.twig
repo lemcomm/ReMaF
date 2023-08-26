@@ -143,7 +143,7 @@
 					<li>{{ 'target.monsterlink'|trans({
 							"%amount%": monster.amount,
 							"%size%": ('size.'~monster.size)|trans({},"dungeons"),
-							"%type%": ('monster.'~monster.type.name)|transchoice(monster.amount, {}, "dungeons"),
+							"%type%": ('monster.'~monster.type.name)|trans({'count':monster.amount}, "dungeons"),
 							"%url%": path("maf_dungeon_monster", {"type":monster.type.id})
 							}, "dungeons")|raw
 						}}</li>
