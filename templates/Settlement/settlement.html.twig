@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-	<img src="{{ asset('bundles/bm2site/images/settlement/'~settlement.pic~'.jpg') }}" width="50%" style="float:right"/>
+	<img src="{{ asset('images/settlement/'~settlement.pic~'.jpg') }}" width="50%" style="float:right"/>
 	<div style="float:right;clear:right">
 		&nbsp;<ul id="loadlist" class="shortlist" style="display:inline"></ul>
 		<div id="map" style="min-width:30em;min-height:30em;margin-left:2em"></div>
@@ -213,6 +213,7 @@
 						{% if details.merchant or isowner or issteward %}
 							<li class="bar_trade_out">{{ 'settlement.resources.trade.name'|trans|title }}<br /><small>{{ 'settlement.resources.trade.out'|trans }}</li>
 						{% endif %}
+						</ul>
 					{% else %}
 						<th class="bar"><ul>
 						<li class="bar_prod_base">{{ 'settlement.resources.current'|trans|title }}</li>
@@ -223,8 +224,8 @@
 						{% if details.merchant or isowner or issteward %}
 							<li class="bar_trade_out">{{ 'settlement.resources.trade.name'|trans|title }}<br /><small>{{ 'settlement.resources.trade.out'|trans }}</li>
 						{% endif %}
-					{% endif %}
-					</ul></th>
+						</ul>
+					{% endif %}</th>
 					{% if details.merchant or isowner or issteward %}
 						<th>{{ 'settlement.resources.balance'|trans|title }}</th>
 					{% endif %}
@@ -268,8 +269,6 @@
 							{% if (details.merchant or isowner or issteward) and eco.tradebalance > 0 %}
 								<li class="data bar_trade_in" style="width:{{ (100*eco.tradebalance/my_div)|number_format }}%">{{ eco.tradebalance }}</li>
 							{% endif %}
-							</ul>
-							<ul>
 							{% if eco.base_demand > 0 %}
 								<li class="data bar_dem_base" style="width:{{ (100*eco.base_demand/my_div)|number_format }}%">{{ eco.base_demand }}</li>
 							{% endif %}
@@ -285,6 +284,7 @@
 							{% if (details.merchant or isowner or issteward) and eco.tradebalance < 0 %}
 								<li class="data bar_trade_out" style="width:{{ (-100*eco.tradebalance/my_div)|number_format }}%">{{ -eco.tradebalance }}</li>
 							{% endif %}
+							</ul>
 						{% else %}
 							<td class="bar"><ul>
 							<li class="data bar_prod_base" style="width:{{ (100*eco.total_production/my_div)|number_format }}%">{{ eco.total_production }}</li>
@@ -297,8 +297,9 @@
 							{% if (details.merchant or isowner or issteward) and eco.tradebalance < 0 %}
 								<li class="data bar_trade_out" style="width:{{ (-100*eco.tradebalance/my_div)|number_format }}%">{{ -eco.tradebalance }}</li>
 							{% endif %}
+							</ul>
 						{% endif %}
-						</ul></td>
+						</td>
 						{% if details.merchant or isowner or issteward %}
 							{% set balance = eco.total_production + eco.tradebalance - eco.total_demand %}
 							<td align="right">{{ balance }}</td>

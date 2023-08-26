@@ -53,7 +53,7 @@ class DataController extends AbstractController {
 		$query->setParameter('cycle', $cycle);
 		$result['active_players'] = $query->getArrayResult()[0];
 		$result['name'] = "Might & Fealty";
-		$result['image_url'] = 'https://mightandfealty.com/bundles/bm2site/images/logo-transparent.png';
+		$result['image_url'] = 'https://mightandfealty.com/images/logo-transparent.png';
 		$result['description'] = 'An entirely player driven medieval sandbox game about politics and war set in a low-ish-fantasy world.';
 		$result['tags'] = ['RPG', 'medieval', 'fantasy', 'politics', 'sandbox', 'PvP', 'persistent', 'free', 'browser', 'custom'];
 		$result['last_updated'] = strtotime($this->common->getGlobal('game-updated'));

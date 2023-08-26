@@ -77,10 +77,10 @@
 {% if not app.request.isXmlHttpRequest %}
 	{% block includes %}
 		{{ parent() }}
-		<script src="{{ asset('bundles/bm2site/tablesorter/jquery.tablesorter.min.js') }}"></script>
-		<script src="{{ asset('bundles/bm2site/tablesorter/parsers/parser-input-select.js') }}"></script>
-		<script src="{{ asset('bundles/bm2site/map/OpenLayers.js') }}"></script>
-		<script src="{{ asset('bundles/bm2site/map/map.js') }}"></script>
+		<script src="{{ asset('tablesorter/jquery.tablesorter.min.js') }}"></script>
+		<script src="{{ asset('tablesorter/parsers/parser-input-select.js') }}"></script>
+		<script src="{{ asset('map/OpenLayers.js') }}"></script>
+		<script src="{{ asset('map/map.js') }}"></script>
 	{% endblock %}
 	{% block jquery %}
 		$("#estates").tablesorter({

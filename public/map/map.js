@@ -44,14 +44,14 @@ if (location.protocol === 'https:') {
 var urlExplode = url.split("/");
 var host = urlExplode[0];
 
-if (env == 'prod')  {
+if (env === 'prod')  {
 	var basepath = security+"//"+host+"/en/map/";
 } else {
 	var basepath = security+"//"+host+"/app_"+env+".php/en/map/";
 }
 
 var tilecache_url = security+"//maps.mightandfealty.com/tilecache";
-var imgpath = security+"//"+host+"/bundles/bm2site/images/";
+var imgpath = security+"//"+host+"/images/";
 var loadimg = imgpath+'loader.png';
 var tooltip;
 // FIXME: these should be taken from the database!
