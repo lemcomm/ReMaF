@@ -48,7 +48,7 @@ class CommonService {
 		return (int)($this->getGlobal('cycle', 0));
 	}
 
-	public function getDate($cycle=null): array {
+	public function getDate($cycle=null, $percents=false): array {
 		// our in-game date - 6 days a week, 60 weeks a year = 1 year about 2 months
 		if (null===$cycle) {
 			$cycle = $this->getCycle();
@@ -57,7 +57,11 @@ class CommonService {
 		$year = floor($cycle/360)+1;
 		$week = floor($cycle%360/6)+1;
 		$day = ($cycle%6)+1;
-		return array('year'=>$year, 'week'=>$week, 'day'=>$day);
+		if (!$percents) {
+			return array('year'=>$year, 'week'=>$week, 'day'=>$day);
+		} else {
+			return array('%year%'=>$year, '%week%'=>$week, '%day%'=>$day);
+		}
 	}
 	public function getGlobal($name, $default=false) {
 		$setting = $this->em->getRepository(Setting::class)->findOneBy(['name'=>$name]);

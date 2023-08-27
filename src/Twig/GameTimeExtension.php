@@ -55,7 +55,7 @@ class GameTimeExtension extends AbstractExtension {
 		if ($cycle===false) {
 			$cycle = $this->common->getCycle();
 		}
-		return $this->trans->trans("gametime.".$format, $this->common->getDate($cycle));
+		return $this->trans->trans("gametime.".$format, $this->common->getDate($cycle, true));
 	}
 
 	public function untilTurnFunction() {
