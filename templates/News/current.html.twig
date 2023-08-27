@@ -1,7 +1,7 @@
 {% extends "layout.html.twig" %}
 
 {% block content %}
-	<h2>{{ "news.title"|transchoice(10, {},"communication")|title }}</h2>
+	<h2>{{ "news.title"|trans({'count':10},"communication")|title }}</h2>
 
 	{% include "element/newslist.html.twig" with {"title":"news.local"|trans({},"communication"), "list":local_list} only %}
 
@@ -9,7 +9,7 @@
 	<ul>
 		{% for reader in reader_list %}
 			<li>
-				<a href="{{ path('bm2_site_news_read', {'edition':reader.edition.id}) }}"><b>{{ reader.edition.paper.name }}</b>, {{ "news.number"|trans({"%number%":reader.edition.number},"communication") }}, {{ reader.edition.published|date }}</a>
+				<a href="{{ path('maf_news_read', {'edition':reader.edition.id}) }}"><b>{{ reader.edition.paper.name }}</b>, {{ "news.number"|trans({"%number%":reader.edition.number},"communication") }}, {{ reader.edition.published|date }}</a>
 				{% if reader.updated %}
 					updated since you last read it
 				{% endif %}
@@ -27,7 +27,7 @@
 	<table class="newseditors">
 		<thead>
 			<tr>
-				<th>{{ "news.title"|transchoice(1, {},"communication") }}</th>
+				<th>{{ "news.title"|trans({'count':1}, "communication") }}</th>
 				<th>{{ "news.owner"|trans({},"communication") }}</th>
 				<th>{{ "news.editor"|trans({},"communication") }}</th>
 				<th>{{ "news.author"|trans({},"communication") }}</th>
@@ -37,7 +37,7 @@
 		<tbody>
 			{% for editor in editor_list %}
 			<tr>
-				<td><a href="{{ path('bm2_site_news_editor', {'paper':editor.paper.id}) }}">{{ editor.paper.name }}</a></td>
+				<td><a href="{{ path('maf_news_editor', {'paper':editor.paper.id}) }}">{{ editor.paper.name }}</a></td>
 				<td align="center">{% if editor.owner %}*{% endif %}</td>
 				<td align="center">{% if editor.editor %}*{% endif %}</td>
 				<td align="center">{% if editor.author %}*{% endif %}</td>
@@ -49,7 +49,7 @@
 	{% endif %}
 
 	{% if can_create %}
-	<a href="{{ path('bm2_site_news_create') }}">create new paper</a>
+	<a href="{{ path('maf_news_create') }}">create new paper</a>
 	{% endif %}
 
 {% endblock %}

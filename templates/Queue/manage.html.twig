@@ -77,7 +77,7 @@ $(".action").click(function(){
 	var prio = $(".priority", row);
 	var prio_value = prio.html();
 
-	$.post('{{ path("bm2_site_queue_update") }}', {'id':id, 'option':action}, function(data) {
+	$.post('{{ path("maf_queue_update") }}', {'id':id, 'option':action}, function(data) {
 		if (action == "up") {
 			var other = row.prev();
 			other.before(row);

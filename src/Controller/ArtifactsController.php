@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Artifact;
 use App\Entity\MapPOI;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\Geography;
 use App\Service\History;
 use App\Form\CharacterSelectType;
@@ -24,9 +25,12 @@ class ArtifactsController extends AbstractController {
 	private EntityManagerInterface $em;
 	private Geography $geo;
 	private History $history;
+	private Dispatcher $disp;
 
-	public function __construct(EntityManagerInterface $em, Geography $geo, History $history) {
+	public function __construct(Dispatcher $disp, EntityManagerInterface $em, Geography $geo, History $history) {
+		$this->disp = $disp;
 		$this->em = $em;
+		$this->geo = $geo;
 		$this->history = $history;
 	}
 
@@ -56,7 +60,7 @@ class ArtifactsController extends AbstractController {
 				->add('submit', SubmitType::class, array('label'=>'artifact.create.submit'))
 				->getForm();
 			$form->handleRequest($request);
-			if ($form->isValid()) {
+			if ($form->isSubmitted() && $form->isValid()) {
 				$data = $form->getData();
 				$name = trim($data['name']);
 				$desc = trim($data['description']);
@@ -81,7 +85,7 @@ class ArtifactsController extends AbstractController {
 				$artifact->setCreator($user);
 				$this->em->persist($artifact);
 
-				$this->get('history')->logEvent(
+				$this->history->logEvent(
 					$artifact,
 					'event.artifact.created',
 					array(),
@@ -127,9 +131,9 @@ class ArtifactsController extends AbstractController {
 				$characters[] = $char->getId();
 			}
 		}
-		$form = $this->createForm(CharacterSelectType($characters, 'form.choose', 'choose target', 'assign artifact', 'messages'));
+		$form = $this->createForm(CharacterSelectType::class, null, ['characters'=>$characters, 'empty'=>'form.choose', 'label'=>'choose target', 'submit'=>'assign artifact', 'domain'=>'messages']);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$artifact->setOwner($data['target']);
@@ -176,7 +180,7 @@ class ArtifactsController extends AbstractController {
 			->add('submit', SubmitType::class, array('label'=>'create'))
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			list($x, $y, $geodata) = $this->geo->findRandomPointInsidePOI($data['poi']);
@@ -202,11 +206,11 @@ class ArtifactsController extends AbstractController {
 
 	#[Route ('/artifact/give', name:'maf_artifact_give')]
 	public function giveAction(Request $request) {
-		$character = $this->get('dispatcher')->gateway('locationGiveArtifactTest');
+		$character = $this->disp->gateway('locationGiveArtifactTest');
 
-		$form = $this->createForm(InteractionType('giveartifact', $this->get('geography')->calculateInteractionDistance($character), $character));
+		$form = $this->createForm(InteractionType::class, null, ['action'=>'giveartifact', 'maxdistance'=>$this->geo->calculateInteractionDistance($character), 'me'=>$character]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$artifact = $data['artifact'];
 			$target = $data['target'];

@@ -4,12 +4,12 @@ namespace App\Service;
 
 use App\Entity\Action;
 
+use App\Service\Dispatcher\Dispatcher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ActionResolution {
 
-	private CharacterManager $charman;
 	private CommonService $common;
 	private EntityManagerInterface $em;
 	private History $history;
@@ -27,10 +27,9 @@ class ActionResolution {
 	private int $debug=100;
 
 
-	public function __construct(EntityManagerInterface $em, CharacterManager $charman, CommonService $common, History $history, Dispatcher $dispatcher, Geography $geography, Interactions $interactions, MilitaryManager $milman, Politics $politics, PermissionManager $permissions, WarManager $warman, ActionManager $actman) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, History $history, Dispatcher $dispatcher, Geography $geography, Interactions $interactions, MilitaryManager $milman, Politics $politics, PermissionManager $permissions, WarManager $warman, ActionManager $actman) {
 		$this->em = $em;
 		$this->common = $common;
-		$this->charman = $charman;
 		$this->history = $history;
 		$this->dispatcher = $dispatcher;
 		$this->geography = $geography;
@@ -640,10 +639,10 @@ class ActionResolution {
 			}
 			if (rand(0,99) < $chance) {
 				// escaped!
-				$this->charman->addAchievement($captor, 'escapees', 1);
+				$this->common->addAchievement($captor, 'escapees', 1);
 				$captor->removePrisoner($char);
 				$char->setPrisonerOf(null);
-				$this->charman->addAchievement($char, 'escaped', 1);
+				$this->common->addAchievement($char, 'escaped', 1);
 				$this->history->logEvent(
 					$char,
 					'resolution.escape.success',
@@ -658,7 +657,7 @@ class ActionResolution {
 				);
 			} else {
 				// failed
-				$this->charman->addAchievement($char, 'failedescapes', 1);
+				$this->common->addAchievement($char, 'failedescapes', 1);
 				$this->history->logEvent(
 					$char,
 					'resolution.escape.failed',

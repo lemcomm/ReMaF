@@ -14,7 +14,7 @@
 
 	{% if form is defined %}
 	{{ form_errors(form) }}
-	<form id="realmjoinform" class="wide" action="{{ path('bm2_site_realm_join', {'realm':realm.id}) }}" method="post">
+	<form id="realmjoinform" class="wide" action="{{ path('maf_realm_join', {'realm':realm.id}) }}" method="post">
 		{{ form_widget(form._token) }}
 		<table>
 			<thead><tr>
@@ -22,7 +22,7 @@
 				<th>{{ 'realm.name'|trans({}, "politics") }}</th>
 				<th>{{ 'realm.formalname'|trans({}, "politics") }}</th>
 				<th>{{ 'realm.designation'|trans({}, "politics") }}</th>
-				<th>{{ 'realm.ruler'|transchoice(10, {}, "politics") }}</th>
+				<th>{{ 'realm.ruler'|trans({'count':10}, "politics") }}</th>
 				<th>{{ 'diplomacy.join.via'|trans({}, "politics") }}</th>
 			</tr></thead>
 			<tbody>

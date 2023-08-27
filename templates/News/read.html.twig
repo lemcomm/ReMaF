@@ -2,8 +2,8 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/js/jquery.gridster.min.js') }}"></script>
-	<link rel="stylesheet" href="{{ asset('bundles/bm2site/css/jquery.gridster.css') }}" />
+	<script src="{{ asset('js/jquery.gridster.min.js') }}"></script>
+	<link rel="stylesheet" href="{{ asset('css/jquery.gridster.css') }}" />
 {% endblock %}
 
 {% block content %}
@@ -20,7 +20,7 @@
 			<li data-article="{{ article.id }}" data-row="{{ article.row }}" data-col="{{ article.col }}" data-sizex="{{ article.sizex }}" data-sizey="{{ article.sizey}}">
 				<h2>{{ article.title }}</h2>
 				<div class="author">{{ "news.article.author"|trans({"%name%":link(article.author)},"communication")|raw }}</div>
-				{{ article.content|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+				{{ article.content|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 			</li>
 		{% endfor %}
 		</ul>
@@ -31,7 +31,7 @@
 	{% if can_subscribe %}
 		<h2>{{ "news.subscribe.title"|trans({},"communication")|title }}</h2>
 		<p>{{ "news.subscribe.intro"|trans({},"communication")|raw }}</p>
-		<a href="{{ path("bm2_site_news_subscribe", {'edition':edition.id}) }}"><button>{{ "news.subscribe.submit"|trans({},"communication") }}</button></a>
+		<a href="{{ path("maf_news_subscribe", {'edition':edition.id}) }}"><button>{{ "news.subscribe.submit"|trans({},"communication") }}</button></a>
 	{% endif %}
 
 

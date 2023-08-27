@@ -2,14 +2,17 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class Dungeon {
 
 	public function getCurrentLevel() {
-            		if (!$this->getParty()) return null;
-            		return $this->getParty()->getCurrentLevel();
-            	}
+                     		if (!$this->getParty()) return null;
+                     		return $this->getParty()->getCurrentLevel();
+                     	}
 
     /**
      * @var string

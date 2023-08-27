@@ -4,7 +4,7 @@
 	<h2>{{ 'loadout.title'|trans({},"settings")|title }}</h2>
 	<p>{{ 'loadout.description'|trans({},"settings")|raw }}</p>
 
-<form id="characterloadout" class="wide" action="{{ path('maf_character_loadout') }}" method="post" {{ form_start(form) }}
+<form id="characterloadout" class="wide" action="{{ path('maf_char_loadout') }}" method="post" {{ form_start(form) }}
 	{{ form_errors(form) }}
 	{{ form_widget(form._token) }}
 	{{ form_row (form.weapon) }}<br><br>

@@ -3,7 +3,13 @@ twig:
     globals:
             site_name: '%env(SITE_NAME)%'
             site_short: '%env(SITE_SHORT)%'
+            activityDispatcher: '@App\Service\Dispatcher\ActivityDispatcher'
+            associationDispatcher: '@App\Service\Dispatcher\AssociationDispatcher'
             appstate: '@App\Service\AppState'
+            common: '@App\Service\CommonService'
+            dispatcher: '@App\Service\Dispatcher\Dispatcher'
+            unitDispatcher: '@App\Service\Dispatcher\UnitDispatcher'
+            warDispatcher: '@App\Service\Dispatcher\WarDispatcher'
 
 when@test:
     twig:

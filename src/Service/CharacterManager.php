@@ -22,7 +22,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class CharacterManager {
 
 	protected EntityManagerInterface $em;
-	protected AppState $appstate;
 	protected CommonService $common;
 	protected MilitaryManager $milman;
 	protected History $history;
@@ -36,9 +35,8 @@ class CharacterManager {
 
 	private ?ArrayCollection $seen;
 
-	public function __construct(EntityManagerInterface $em, AppState $appstate, CommonService $common, History $history, MilitaryManager $milman, Politics $politics, RealmManager $realmmanager, ConversationManager $convman, DungeonMaster $dm, WarManager $warman, AssociationManager $assocman, HelperService $helper) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, History $history, MilitaryManager $milman, Politics $politics, RealmManager $realmmanager, ConversationManager $convman, DungeonMaster $dm, WarManager $warman, AssociationManager $assocman, HelperService $helper) {
 		$this->em = $em;
-		$this->appstate = $appstate;
 		$this->common = $common;
 		$this->history = $history;
 		$this->milman = $milman;
@@ -771,7 +769,7 @@ class CharacterManager {
 						if ($liege instanceof Collection) {
 							$liege = $liege->first();
 						}
-						if ($liege->isActive()) {
+						if ($liege && $liege->isActive()) {
 							$this->$bequeath($thing, $liege, $char, null);
 							break;
 						}
@@ -927,7 +925,7 @@ class CharacterManager {
 		}
 	}
 
-	public function assocInheritance(AssociationMember $mbr, Character $heir=null, Character $via=null): void {
+	public function assocInheritance(AssociationMember $mbr, $heir=null): void {
 		if ($rank = $mbr->getRank()) {
 			if ($rank->isOwner() && $rank->getMembers()->count() == 1) {
 				$assoc = $rank->getAssociation();
@@ -947,31 +945,73 @@ class CharacterManager {
 						break;
 					case 'senior':
 						$seniors = new ArrayCollection;
+						$searched = new ArrayCollection;
+						$last = new ArrayCollection;
+						$searched->add($rank);
+						/*
+						Simple foreach loop to get all the top level ranks (the owner rank, and all ranks subordinate to it or subordinate to none.
+						Then we get their members and add them to list.
+						*/
 						foreach($assoc->getRanks() as $aRank) {
-							if ($aRank->getSuperior() == null) {
+							if ($aRank->getSuperior() == null || $aRank->getSuperior() === $rank) {
 								foreach ($aRank->getMembers() as $each) {
 									$seniors->add($each);
 								}
+								$searched->add($aRank);
+								$last->add($aRank);
+							}
+						}
+						$allCount = $assoc->getRanks()->count();
+						while ($seniors->count() == 0) {
+							/* List is empty, beginning a much more arduous hunt for members.
+							This time in a while loop, every time checking if we're still at zero.
+							*/
+							$found = false;
+							$loop = new ArrayCollection;
+							foreach ($last as $aRank) {
+								foreach ($aRank->getSubordinates() as $each){
+									foreach ($each->getMembers() as $member) {
+										# Found someone! Yay! Add them to a list and set the found flag to true.
+										$seniors->add($member);
+										$found = true;
+									}
+								}
+								$searched->add($aRank);
+								$loop->add($aRank);
+							}
+							if (!$found) {
+								if ($searched->count() === $allCount) {
+									# No ranks left to search. Break out, declare this a failure.
+									break;
+								}
+								# Still have ranks. Set this loop to the last, and let it start again.
+								$last = $loop;
 							}
 						}
 						$mostSenior = null;
 						foreach ($seniors as $each) {
 							if (!$mostSenior) {
 								$mostSenior = $each;
+								continue;
 							}
-							if ($each->getRankDate() > $mostSenior->getRankDate()) {
+							if ($each->getRankDate() < $mostSenior->getRankDate()) {
 								$mostSenior = $each;
 							}
 						}
-						$this->assocman->updateMember($assoc, $rank, $mostSenior->getCharacter(), false);
-						$this->bequeathAssoc($assoc, $mostSenior->getCharacter(), $mbr->getCharacter());
+						if ($mostSenior) {
+							$this->assocman->updateMember($assoc, $rank, $mostSenior->getCharacter(), false);
+							$this->bequeathAssoc($assoc, $mostSenior->getCharacter(), $mbr->getCharacter());
+						}
 						break;
 					case 'oldest':
-						$query = $this->em->createQuery('SELECT m, c FROM App:AssociationMember m JOIN m.character c WHERE m.association = :assoc ORDER BY m.join_date ASC LIMIT 1');
-						$query->setParameters(['assoc'=>$assoc]);
-						$oldest = $query->getResult();
-						$this->assocman->updateMember($assoc, $rank, $oldest->getCharacter(), false);
-						$this->bequeathAssoc($assoc, $oldest->getCharacter(), $mbr->getCharacter());
+						$query = $this->em->createQuery('SELECT m FROM BM2SiteBundle:AssociationMember m WHERE m.association = :assoc and m.id != :rank ORDER BY m.join_date ASC')
+							->setParameters(['assoc'=>$assoc, 'rank'=>$mbr->getId()])
+							->setMaxResults(1);
+						$oldest = $query->getOneOrNullResult();
+						if ($oldest) {
+							$this->assocman->updateMember($assoc, $rank, $oldest->getCharacter(), false);
+							$this->bequeathAssoc($assoc, $oldest->getCharacter(), $mbr->getCharacter());
+						}
 						break;
 				}
 				$this->em->flush();
@@ -1265,28 +1305,6 @@ class CharacterManager {
 		$query = $this->em->createQuery('SELECT e, l, m FROM App:Event e JOIN e.log l JOIN l.metadatas m WHERE m.reader = :me AND e.ts > m.last_access AND (m.access_until IS NULL OR e.cycle <= m.access_until) AND (m.access_from IS NULL OR e.cycle >= m.access_from) ORDER BY e.ts DESC');
 		$query->setParameter('me', $character);
 		return $query->getResult();
-	}
-
-
-	/* achievements */
-	public function getAchievement(Character $character, $key) {
-		return $this->common->getAchievement($character, $key);
-	}
-
-	public function getAchievementValue(Character $character, $key) {
-		return $this->common->getAchievementValue($character, $key);
-	}
-
-	public function setAchievement(Character $character, $key, $value): void {
-		$this->common->setMaxAchievement($character, $key, $value, false);
-	}
-
-	public function setMaxAchievement(Character $character, $key, $value, $only_raise=true): void {
-		$this->common->setMaxAchievement($character, $key, $value, $only_raise);
-	}
-
-	public function addAchievement(Character $character, $key, $value=1): void {
-		$this->common->addAchievement($character, $key, $value);
 	}
 
 	public function Reputation(Character $char, User $me=null): array {

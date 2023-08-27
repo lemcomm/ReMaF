@@ -27,6 +27,7 @@ class BattleRunner {
 	private History $history;
 	private Geography $geo;
 	private CharacterManager $character_manager;
+	private CommonService $common;
 	private MilitaryManager $milman;
 	private Interactions $interactions;
 	private WarManager $warman;
@@ -65,12 +66,13 @@ class BattleRunner {
 	private int $defenseBonus=0;
 
 
-	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, History $history, Geography $geo, CharacterManager $character_manager, Interactions $interactions, WarManager $war_manager, Politics $politics, MilitaryManager $milman, HelperService $helper, CombatManager $combat) {
+	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, History $history, Geography $geo, CharacterManager $character_manager, CommonService $common, Interactions $interactions, WarManager $war_manager, Politics $politics, MilitaryManager $milman, HelperService $helper, CombatManager $combat) {
 		$this->em = $em;
 		$this->logger = $logger;
 		$this->history = $history;
 		$this->geo = $geo;
 		$this->character_manager = $character_manager;
+		$this->common = $common;
 		$this->interactions = $interactions;
 		$this->warman = $war_manager;
 		$this->politics = $politics;
@@ -494,7 +496,7 @@ class BattleRunner {
 				$this->battlesize = min($mysize, $enemysize);
 
 				foreach ($group->getCharacters() as $char) {
-					$this->character_manager->addAchievement($char, 'battlesize', $this->battlesize);
+					$this->common->addAchievement($char, 'battlesize', $this->battlesize);
 					$charReport = new BattleReportCharacter();
 					$this->em->persist($charReport);
 					$charReport->setGroupReport($group->getActiveReport());
@@ -523,7 +525,7 @@ class BattleRunner {
 						$soldier->setFortified(true);
 					}
 					if ($soldier->isNoble()) {
-						$this->character_manager->addAchievement($soldier->getCharacter(), 'battles');
+						$this->common->addAchievement($soldier->getCharacter(), 'battles');
 						$morale = $base_morale * 1.5;
 					} else {
 						$this->history->addToSoldierLog($soldier, 'battle', array("%link-battle%"=>$this->report->getId()));
@@ -818,12 +820,16 @@ class BattleRunner {
 			$routed = 0;
 			$capture = 0;
 			$chargeCapture = 0;
+			$lightShieldCapture = 0;
 			$wound = 0;
 			$chargeWound = 0;
+			$lightShieldWound = 0;
 			$kill = 0;
 			$chargeKill = 0;
+			$lightShieldKill = 0;
 			$fail = 0;
 			$chargeFail =0;
+			$lightShieldFail = 0;
 			$missed = 0;
 			$crowded = 0;
 			$staredDeath = 0;
@@ -882,14 +888,14 @@ class BattleRunner {
 			if ($type == 'ranged') {
 				$bonus = sqrt($enemies); // easier to hit if there are many enemies
 				foreach ($group->getFightingSoldiers() as $soldier) {
-					if ($this->combat->RangedPower($soldier, true) > 0) {
+					if ($this->combat->RangedPower($soldier, true, null, $attackers) > 0) {
 						// ranged soldier - fire!
 						$result=false;
 						$this->log(10, $soldier->getName()." (".$soldier->getType().") fires - ");
 						$target = $this->getRandomSoldier($enemyCollection);
 						if ($target) {
 							$shots++;
-							$rPower = $this->combat->RangedPower($soldier, true);
+							$rPower = $this->combat->RangedPower($soldier, true, null, $attackers);
 							if ($this->combat->RangedRoll($defBonus, $rangedPenalty, $bonus, 95)) {
 								// target hit
 								$rangedHits++;
@@ -962,14 +968,16 @@ class BattleRunner {
 							$this->log(50, $soldier->getName()." (".$soldier->getType()."): morale ".round($soldier->getMorale()));
 							if ($soldier->getMorale()*2 < rand(0,100)) {
 								if ($soldier->isNoble()) {
-									$this->log(50, " - has no fear");
+									$this->log(50, " - has no fear\n");
 									$staredDeath++;
 								} else {
-									$this->log(50, " - panics");
+									$this->log(50, " - panics\n");
 									$soldier->setRouted(true);
 									$this->history->addToSoldierLog($soldier, 'routed.ranged');
 									$routed++;
 								}
+							} else {
+								$this->log(50, " - has resolve\n");
 							}
 							$this->log(50, "\n");
 						}
@@ -994,11 +1002,13 @@ class BattleRunner {
 				foreach ($group->getFightingSoldiers() as $soldier) {
 					$result = false;
 					$target = false;
+					$counter = null;
 					if ($doRanged && $phase == 2 && $soldier->isLancer() && $this->battle->getType() == 'field') {
 						// Lancers will always perform a cavalry charge in the opening melee phase!
 						// A cavalry charge can only happen if there is a ranged phase (meaning, there is ground to fire/charge across)
 						$this->log(10, $soldier->getName()." (Lancer) attacks ");
 						$target = $this->getRandomSoldier($enemyCollection);
+						$counter = 'charge';
 						if ($target) {
 							$strikes++;
 							$noTargets = 0;
@@ -1020,7 +1030,7 @@ class BattleRunner {
 						if ($target) {
 							$shots++;
 							$noTargets = 0;
-							$rPower = $this->combat->RangedPower($soldier, true);
+							$rPower = $this->combat->RangedPower($soldier, true, null, $attackers);
 							if ($this->combat->RangedRoll($defBonus, $rangedPenalty, $bonus)) {
 								$rangedHits++;
 								list($result, $logs) = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
@@ -1040,10 +1050,11 @@ class BattleRunner {
 						// We are either in a siege assault and we have contact points left, OR we are not in a siege assault. We are a melee unit or ranged unit with melee capabilities in final siege battle.
 						$this->log(10, $soldier->getName()." (".$soldier->getType().") attacks ");
 						$target = $this->getRandomSoldier($enemyCollection);
+						$counter = 'melee';
 						if ($target) {
 							$strikes++;
 							$noTargets = 0;
-							$mPower = $this->combat->MeleePower($soldier, true);
+							$mPower = $this->combat->MeleePower($soldier, true, null, $attackers);
 							list($result, $logs) = $this->combat->MeleeAttack($soldier, $target, $mPower, false, true, $this->xpMod, $this->defenseBonus); // Basically, an attack of opportunity.
 							foreach ($logs as $each) {
 								$this->log(10, $each);
@@ -1066,10 +1077,10 @@ class BattleRunner {
 							$noTargets++;
 						}
 					}
-					if (strpos($result, ' ') !== false) {
+					if ($counter && strpos($result, ' ') !== false) {
 						$results = explode(' ', $result);
 						$result = $results[0];
-						$result2 = 'charge' . $results[1];
+						$result2 = $counter . $results[1];
 					} else {
 						$result2 = false;
 					}
@@ -1113,12 +1124,22 @@ class BattleRunner {
 						*/
 					}
 					if ($result2) {
-						if ($result2=='chargewound') {
+						if($result2==='chargefail') {
+							$chargeFail++;
+						} elseif ($result2==='chargewound') {
 							$chargeWound++;
-						} elseif ($result2=='chargecapture') {
+						} elseif ($result2==='chargecapture') {
 							$chargeCapture++;
-						} elseif ($result2=='chargekill') {
+						} elseif ($result2==='chargekill') {
 							$chargeKill++;
+						} elseif ($result2==='lightShieldfail') {
+							$lightShieldFail++;
+						} elseif ($result2==='lightShieldwound') {
+							$lightShieldWound++;
+						} elseif ($result2==='lightShieldcapture') {
+							$lightShieldCapture++;
+						} elseif ($result2==='lightShieldkill') {
+							$lightShieldKill++;
 						}
 					}
 					if ($noTargets > 4) {
@@ -1126,7 +1147,27 @@ class BattleRunner {
 						break;
 					}
 				}
-				$stageResult = array('alive'=>$attackers, 'shots'=>$shots, 'rangedHits'=>$rangedHits, 'strikes'=>$strikes, 'misses'=>$missed, 'notarget'=>$noTargets, 'crowded'=>$crowded, 'fail'=>$fail, 'wound'=>$wound, 'capture'=>$capture, 'kill'=>$kill, 'chargefail' => $chargeFail, 'chargewound'=>$chargeWound, 'chargecapture'=>$chargeCapture, 'chargekill'=>$chargeKill);
+				$stageResult = [
+					'alive'=>$attackers,
+					'shots'=>$shots,
+					'rangedHits'=>$rangedHits,
+					'strikes'=>$strikes,
+					'misses'=>$missed,
+					'notarget'=>$noTargets,
+					'crowded'=>$crowded,
+					'fail'=>$fail,
+					'wound'=>$wound,
+					'capture'=>$capture,
+					'kill'=>$kill,
+					'chargefail' => $chargeFail,
+					'chargewound'=>$chargeWound,
+					'chargecapture'=>$chargeCapture,
+					'chargekill'=>$chargeKill,
+					'lightShieldfail'=>$lightShieldFail,
+					'lightShieldwound'=>$lightShieldWound,
+					'lightShieldcapture'=>$lightShieldCapture,
+					'lightShieldkill'=>$lightShieldKill,
+				];
 			}
 			if ($type != 'hunt') { # Check that we're in either Ranged or Melee Phase
 				$stageReport->setData($stageResult); # Commit this stage's results to the combat report.
@@ -1198,17 +1239,6 @@ class BattleRunner {
 						$mod = min(0.99, $mod+0.1);
 					}
 					$soldier->setMorale($soldier->getMorale() * $mod);
-					if ($soldier->getMorale()*2 < rand(0,100)) {
-						if ($soldier->isNoble()) {
-							$this->log(50, " - has no fear");
-							$staredDeath++;
-						} else {
-							$this->log(50, " - panics");
-							$soldier->setRouted(true);
-							$this->history->addToSoldierLog($soldier, 'routed.ranged');
-							$routed++;
-						}
-					}
 					if ($soldier->getMorale() < rand(0,100)) {
 						if ($soldier->isNoble()) {
 							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." - has no fear\n");

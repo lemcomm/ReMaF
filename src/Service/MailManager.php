@@ -15,16 +15,16 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class MailManager {
 
 	protected EntityManagerInterface $em;
-	protected AppState $appstate;
+	protected UserManager $um;
 	protected TranslatorInterface $trans;
 	protected Address $mail_from;
 	protected mixed $mail_reply_to;
 	protected mixed $optOut;
 	private MailerInterface $mailer;
 
-	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, MailerInterface $mailer, AppState $appstate) {
+	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, MailerInterface $mailer, UserManager $um) {
 		$this->em = $em;
-		$this->appstate = $appstate;
+		$this->um = $um;
 		$this->trans = $translator;
 		$this->mailer = $mailer;
 		$this->mail_from = new Address($_ENV['FROM_EMAIL'], $_ENV['FROM_NAME']);
@@ -115,7 +115,7 @@ class MailManager {
 				break; #Not time to send anything, skip this user.
 			}
 			$text .= "<br>\n";
-			$token = $this->appstate->findEmailOptOutToken($user);
+			$token = $this->um->findEmailOptOutToken($user);
 			$link = $this->optOut.'/'.$user->getId().'/'.$token;
 			$footer = $this->trans->trans('mail.event.footer', ['%link%'=>$link], "communication");
 

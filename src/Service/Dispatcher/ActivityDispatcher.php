@@ -1,11 +1,17 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Dispatcher;
+
+use App\Service\AppState;
+use App\Service\CommonService;
+use App\Service\Geography;
+use App\Service\Interactions;
+use App\Service\PermissionManager;
 
 class ActivityDispatcher extends Dispatcher {
 
-	public function __construct(AppState $appstate, PermissionManager $pm, Geography $geo, Interactions $interactions, AssociationManager $assocman) {
-		parent::__construct($appstate, $pm, $geo, $interactions, $assocman);
+	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions) {
+		parent::__construct($appstate, $common, $pm, $geo, $interactions);
 	}
 
 	public function activityActions(): array {

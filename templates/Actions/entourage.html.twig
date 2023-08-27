@@ -15,7 +15,7 @@
 	{% else %}
 		<p>{{ "recruit.entourage.limit"|trans({"%max%":settlement.recruitlimit},"actions") }}</p>
 		{{ form_errors(form) }}
-		<form action="{{ path('bm2_site_actions_entourage') }}" method="post">
+		<form action="{{ path('maf_actions_entourage') }}" method="post">
 		{{ form_widget(form._token) }}
 		<table>
 			<thead><tr>

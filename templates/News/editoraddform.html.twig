@@ -1,6 +1,6 @@
 {% block content %}
 	<p>{{ "news.addintro"|trans({},"communication") }}</p>
-	<form id="adder" class="wide" action="{{ path('bm2_site_news_editoradd') }}" method="post">
+	<form id="adder" class="wide" action="{{ path('maf_news_editor_add') }}" method="post">
 		<input type="hidden" name="paper" value="{{ paperid }}"/>
 		{{ form_widget(form) }}
 	</form>

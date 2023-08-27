@@ -17,7 +17,7 @@
 {% endif %}
 
 {% if realm.superior or realm.inferiors is not empty %}
-	<p><a href="{{ path('bm2_site_realm_hierarchy', {'realm':realm.id}) }}">{{ 'viewdetails'|trans|title }}</a></p>
+	<p><a href="{{ path('maf_realm_hierarchy', {'realm':realm.id}) }}">{{ 'viewdetails'|trans|title }}</a></p>
 {% endif %}
 
 {% include "element/buttonlist.html.twig" with {"list":dispatcher.diplomacyActions, "domain":'politics', "who":'self'} %}

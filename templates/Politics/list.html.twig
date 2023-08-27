@@ -28,8 +28,8 @@
 {% import _self as macros %}
 
 {% block content %}
-<h2><a href="{{ path("bm2_lists") }}">{{ "lists.name"|trans({},"politics")|title }}</a></h2>
-<p>{{ "lists.description"|trans({"%listsurl%":path('bm2_lists')},"politics")|raw }}</p>
+<h2><a href="{{ path("maf_politics_lists") }}">{{ "lists.name"|trans({},"politics")|title }}</a></h2>
+<p>{{ "lists.description"|trans({"%listsurl%":path('maf_politics_lists')},"politics")|raw }}</p>
 
 {{ form_errors(form) }}
 <table style="display:none">
@@ -37,7 +37,7 @@
 	{{ macros.member_row(form.members.vars.prototype) }}
 </tr>
 </table>
-<form class="wide" action="{{ path('bm2_site_politics_list', {'id':listing.id?listing.id:0}) }}" method="post" {{ form_start(form) }}
+<form class="wide" action="{{ path('maf_politics_list', {'id':listing.id?listing.id:0}) }}" method="post" {{ form_start(form) }}
 	{{ form_widget(form._token) }}
 	{{ form_row(form.name) }}
 	{{ form_row(form.public) }}

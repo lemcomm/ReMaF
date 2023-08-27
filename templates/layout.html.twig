@@ -14,15 +14,15 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>{% block title %}{% if 'mightandfealty.com' in app.request.host %}Might &amp; Fealty{% elseif 'iungard' in app.request.host %}Might &amp; Fealty{% elseif 'valengard' in app.request.host %}Valengard Test Server{% else %}M&amp;F Dev Build{% endif %}{% endblock %}</title>
-	<link rel="icon" sizes="16x16" href="/favicon.ico" />
-	<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/favicon.ico">
-	<link rel="icon" type="image/png" sizes="129x129" href="/apple-touch-icon.png">
-	<link rel="apple-touch-icon" type="image/png" sizes="129x129" href="/apple-touch-icon.png">
-	<link rel="apple-touch-icon" type="image/png" sizes="144x144" href="/apple-touch-icon-144.png">
-	<link rel="apple-touch-icon" type="image/png" sizes="114x114" href="/apple-touch-icon-114.png">
-	<link rel="apple-touch-icon" type="image/png" sizes="72x72" href="/apple-touch-icon-72.png">
-	<link rel="apple-touch-icon" type="image/png" sizes="57x57" href="/apple-touch-icon-57.png">
-	<link rel="apple-touch-icon" type="image/png" href="/apple-touch-icon.png">
+	<link rel="icon" sizes="16x16" href="{{ asset('favicon.ico') }}" />
+	<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="{{ asset('favicon.ico') }}">
+	<link rel="icon" type="image/png" sizes="129x129" href="{{ asset('apple-touch-icon.png') }}">
+	<link rel="apple-touch-icon" type="image/png" sizes="129x129" href="{{ asset('apple-touch-icon.png') }}">
+	<link rel="apple-touch-icon" type="image/png" sizes="144x144" href="{{ asset('apple-touch-icon-144.png') }}">
+	<link rel="apple-touch-icon" type="image/png" sizes="114x114" href="{{ asset('apple-touch-icon-114.png') }}">
+	<link rel="apple-touch-icon" type="image/png" sizes="72x72" href="{{ asset('apple-touch-icon-72.png') }}">
+	<link rel="apple-touch-icon" type="image/png" sizes="57x57" href="{{ asset('apple-touch-icon-57.png') }}">
+	<link rel="apple-touch-icon" type="image/png" href="{{ asset('apple-touch-icon.png') }}">
 	{% block includes %}
 		<link rel="stylesheet" href="{{ asset('/css/'~theme~'.css') }}" title="Office Style"/>
 		{% block jqueryuitheme %}
@@ -170,14 +170,14 @@
 	<div class="symfony-shortcuts" data-role="navbar">
 		<ul>
 			{% if app.session.get('soldiers') > 0 %}
-				<li><a href="{{ path('maf_char_soldiers') }}"><span class="value">{{ app.session.get('soldiers') }}</span>{{ 'npc.soldier'|transchoice(app.session.get('soldiers')) }}</a></li>
+				<li><a href="{{ path('maf_char_soldiers') }}"><span class="value">{{ app.session.get('soldiers') }}</span>{{ 'npc.soldier'|trans({'count':app.session.get('soldiers')}) }}</a></li>
 			{% endif %}
 			{% if app.session.get('entourage') > 0 %}
-				<li><a href="{{ path('maf_char_entourage') }}"><span class="value">{{ app.session.get('entourage') }}</span>{{ 'npc.entourage2'|transchoice(app.session.get('entourage')) }}</a></li>
+				<li><a href="{{ path('maf_char_entourage') }}"><span class="value">{{ app.session.get('entourage') }}</span>{{ 'npc.entourage2'|trans({'count':app.session.get('entourage')}) }}</a></li>
 			{% endif %}
 			{% if app.session.get('settlements') is not empty %}
 				<li class="drawer">
-					<a href="{{ path('maf_char_estates') }}"><span class="value">{{ app.session.get('settlements')|length }}</span>{{ 'estate'|transchoice(app.session.get('settlements')|length) }}</a>
+					<a href="{{ path('maf_char_estates') }}"><span class="value">{{ app.session.get('settlements')|length }}</span>{{ 'estate'|trans({'count':app.session.get('settlements')|length}) }}</a>
 					<ul>
 						{% for id,name in app.session.get('settlements') %}
 						<li>{{ settlement_link(id, name) }}</li>
@@ -187,7 +187,7 @@
 			{% endif %}
 			{% if app.session.get('realms') is not empty %}
 				<li class="drawer">
-					<a href="{{ path('maf_politics') }}"><span class="value">{{ app.session.get('realms')|length }}</span>{{ 'realm'|transchoice(app.session.get('realms')|length) }}</a>
+					<a href="{{ path('maf_politics') }}"><span class="value">{{ app.session.get('realms')|length }}</span>{{ 'realm'|trans({'count':app.session.get('realms')|length}) }}</a>
 					<ul>
 						{% for id,name in app.session.get('realms') %}
 						<li>{{ realm_link(id, name) }}</li>
@@ -230,7 +230,7 @@
 			{{ gametime(false, 'current') }}<br />
 			{{ untilturn() }}<br />
 			Server time: {{ "now"|date("H:i") }}<br />
-			{{ 'game.version'|trans({"%version%":appstate.getGlobal('game-version'), "%updated%":appstate.getGlobal('game-updated')}) }}
+			{{ 'game.version'|trans({"%version%":common.getGlobal('game-version'), "%updated%":common.getGlobal('game-updated')}) }}
 		</div>
 		<hr />
 		{% endif %}
@@ -245,7 +245,7 @@
 		<div><button
 			class="termly-cookie-preference-button"
 			type="button"
-			style="background: black; width: 150px; height: 20px; border-radius: 3px; border: 1px solid black; font-family: Roboto, Arial; font-size: 10px; color: white; font-weight: 600; box-sizing: border-box; cursor: pointer; padding: 0; outline: none;"
+			style="background: black; width: 150px; height: 20px; border-radius: 3px; border: 1px solid black; font-family: Roboto, Arial, serif; font-size: 10px; color: white; font-weight: 600; box-sizing: border-box; cursor: pointer; padding: 0; outline: none;"
 			onclick="displayPreferenceModal()">
 			Manage Cookie Preferences
 		</button></div>

@@ -78,69 +78,97 @@ class Settlement {
          	}
 
 	public function getTimeToTake(Character $taker, $supporters = null, $opposers = null) {
-         		$supportCount = 1;
-         		$opposeCount = 1;
-         		if ($supporters) {
-         			$supportCount = $supporters->count();
-         		}
-         		if ($opposers) {
-         			$opposeCount = $opposers->count();
-         		}
-         		$enforce_claim = false;
-         		foreach ($this->getClaims() as $claim) {
-         			if ($claim->getEnforceable() && $claim->getCharacter() == $taker) {
-         				$enforce_claim = true;
-         				break;
-         			}
-         		}
-         		// time to take a settlement depends on its size
-         		// formula: 12 + log( (1+x/400)^20 ) - in hours (source of this formula: eyeballed in grapher)
-         		// 500 = 19h / 1000 = 23h / 2000 = 28h / 5000 = 35h / 10000 = 40h
-         		$time_to_take = 3600 * (12 + log10(pow(1+$this->getPopulation()/400, 20)));
-         
-         		// inactive lord = half time, in addition to the change above (which also includes inactive ones)
-         		if ($owner = $this->getOwner() && $this->getOwner()->getAlive()) {
-         			if ($this->getOwner()->getSlumbering() || $this->getOwner()->getUser()->isBanned()) {
-         				$mod = 0.5;
-         				if (!$enforce_claim) {
-         					if ($realm = $this->getRealm()) {
-         						if ($law = $realm->findLaw('slumberingClaims')) {
-         							$value = $law->getValue();
-         							$members = false;
-         							if ($value == 'all') {
-         								$enforce_claim = true;
-         							} elseif ($value == 'direct') {
-         								$members = $realm->findMembers(false);
-         							} elseif ($value == 'internal') {
-         								$members = $realm->findMembers();
-         							}
-         							if ($members && $members->contains($taker)) {
-         								$enforce_claim = true;
-         							}
-         						}
-         					}
-         				}
-         			} else {
-         				if ($opposers && $opposers->contains($owner)) {
-         					$mod = 25; # Very hard to take from current lord while he's around and actively opposing it.
-         				} else {
-         					$mod = 10;
-         				}
-         			}
-         		}
-         
-         		// enforcing an enforceable claim makes things a lot faster
-         		if ($enforce_claim) {
-         			$time_to_take *= 0.2;
-         		}
-         		$time_to_take *= $mod;
-         
-         		$ratio = ($opposeCount/$supportCount);
-         
-         		$time_to_take *= $ratio;
-         
-         		return round($time_to_take);
-         	}
+		$supportCount = 1;
+		$opposeCount = 1;
+		$militia = 0;
+		if (!$supporters) {
+			$supporters = new ArrayCollection();
+		}
+		$supporters->add($taker);
+		foreach ($supporters as $each) {
+			if ($each instanceof Character) {
+				$supportCount += $each->countSoldiers();
+				$supportCount += 10; # Player Characters matter.
+			}
+		}
+		if (!$opposers) {
+			$opposers = new ArrayCollection();
+		}
+		foreach ($opposers as $each) {
+			if ($each instanceof Character) {
+				$opposeCount += $each->countSoldiers();
+				$opposeCount += 10; # Player characters matter.
+			}
+		}
+		foreach ($this->getUnits() as $unit) {
+			if ($unit->isLocal()) {
+				$militia += $unit->getActiveSoldiers()->count();
+			}
+		}
+		$enforce_claim = false;
+		foreach ($this->getClaims() as $claim) {
+			if ($claim->getEnforceable() && $claim->getCharacter() == $taker) {
+				$enforce_claim = true;
+				break;
+			}
+		}
+		// time to take a settlement depends on its size
+		// formula: 12 + log( (1+x/400)^20 ) - in hours (source of this formula: eyeballed in grapher)
+		// 500 = 19h / 1000 = 23h / 2000 = 28h / 5000 = 35h / 10000 = 40h
+		$time_to_take = 3600 * (12 + log10(pow(1+$this->getPopulation()/400, 20)));
+
+		// inactive lord = half time, in addition to the change above (which also includes inactive ones)
+		if ($owner = $this->getOwner() && $this->getOwner()->getAlive()) {
+			if ($this->getOwner()->getSlumbering() || $this->getOwner()->getUser()->isBanned()) {
+				$mod = 0.5;
+				if (!$enforce_claim) {
+					if ($realm = $this->getRealm()) {
+						if ($law = $realm->findLaw('slumberingClaims')) {
+							$value = $law->getValue();
+							$members = false;
+							if ($value == 'all') {
+								$enforce_claim = true;
+							} elseif ($value == 'direct') {
+								$members = $realm->findMembers(false);
+							} elseif ($value == 'internal') {
+								$members = $realm->findMembers();
+							}
+							if ($members && $members->contains($taker)) {
+								$enforce_claim = true;
+							}
+						}
+					}
+				}
+			} else {
+				if ($opposers->contains($owner)) {
+					$mod = 25; # Very hard to take from current lord while he's around and actively opposing it.
+				} else {
+					$mod = 2.5;
+				}
+			}
+		} else {
+			$mod = 0.2;
+		}
+
+		// enforcing an enforceable claim makes things a lot faster
+		if ($enforce_claim) {
+			$time_to_take *= 0.2;
+		}
+		if ($this->getOwner()) {
+			if ($this->getOccupant() && ($this->getOccupant() === $taker || $supporters->contains($this->getOccupant()))) {
+				$supportCount += $militia;
+			} else {
+				$opposeCount += $militia;
+			}
+		}
+		$time_to_take *= $mod;
+
+		$ratio = (($opposeCount*5)/$supportCount);
+
+		$time_to_take *= $ratio;
+
+		return round($time_to_take);
+	}
 
 	public function getRecruitLimit($ignore_recruited = false) {
          		// TODO: this should take population density, etc. into account, I think, which means it would have to be moved into the military service
@@ -189,9 +217,9 @@ class Settlement {
          			}
          		}
          		foreach ($this->getUnits() as $unit) {
-         			if ($unit->isLocal()) {
-         				$militia += $unit->getActiveSoldiers()->count();
-         			}
+				if ($unit->isLocal()) {
+					$militia += $unit->getMilitiaCount();
+				}
          		}
          		return $militia + $defenders;
          	}
@@ -239,7 +267,7 @@ class Settlement {
          		$walls = $this->getBuildings()->filter(
          			function($entry) {
          				if (!$entry->isActive() && abs($entry->getCondition())/$entry->getType()->getBuildHours() < 0.3) return false;
-         				return in_array($entry->getType()->getName(), array('Palisade', 'Wood Wall', 'Stone Wall'));
+					return in_array($entry->getType()->getName(), array('Palisade', 'Wood Wall', 'Stone Wall', 'Fortress', 'Citadel'));
          			}
          		);
          		if (!$walls->isEmpty() && $this->isDefended()) return true;

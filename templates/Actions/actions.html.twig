@@ -13,7 +13,7 @@
 		</ol>
 		<hr />
 		<div class="center">
-			<a href="{{ path('bm2_site_queue_manage') }}">{{ 'queue.manage'|trans({}, "actions") }}</a>
+			<a href="{{ path('maf_queue') }}">{{ 'queue.manage'|trans({}, "actions") }}</a>
 		</div>
 	</div>
 	{% endif %}
@@ -27,9 +27,9 @@
 		{% include "element/linklist.html.twig" with {"list":dispatcher.placeActions(character.insidePlace), "domain":'places'} only %}
 	{% endif %}
 	{% if siege %}
-		{% include "element/linklist.html.twig" with {"list":dispatcher.siegeActions, "domain":'actions'} only %}
+		{% include "element/linklist.html.twig" with {"list":warDispatcher.siegeActions, "domain":'actions'} only %}
 	{% endif %}
-	{% include "element/linklist.html.twig" with {"list":dispatcher.militaryActions, "domain":'actions'} only %}
+	{% include "element/linklist.html.twig" with {"list":warDispatcher.militaryActions, "domain":'actions'} only %}
 	{% include "element/linklist.html.twig" with {"list":dispatcher.buildingActions, "domain":'actions'} only %}
 	{% include "element/linklist.html.twig" with {"list":dispatcher.controlActions, "domain":'actions'} only %}
 	{% include "element/linklist.html.twig" with {"list":dispatcher.economyActions, "domain":'actions'} only %}

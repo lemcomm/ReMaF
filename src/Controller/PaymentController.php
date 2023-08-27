@@ -109,7 +109,7 @@ class PaymentController extends AbstractController {
 		}
 	}
 
-	#[Route ('/payment/stripe_success}', name:'maf_stripe_success')]
+	#Route Annotation deliberately omitted in order to bypass auto-localization. Route defined in config/routes.yaml.
 	public function stripeSuccessAction(NotificationManager $noteman, Request $request): RedirectResponse {
 		$user = $this->getUser();
 		$user_id = $user->getId();
@@ -234,7 +234,7 @@ class PaymentController extends AbstractController {
 		return $this->redirectToRoute('maf_account');
 	}
 
-	#[Route ('/payment/patreon/{creator}', name:'maf_patreon', requirements:['creator'=>'[A-Za-z]+'])]
+	#Route Annotation deliberately omitted in order to bypass auto-localization. Route defined in config/routes.yaml.
 	public function patreonAction(Request $request, $creator): RedirectResponse {
 		$user = $this->getUser();
 		if ($user->isBanned()) {

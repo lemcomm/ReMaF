@@ -2,11 +2,11 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/tablesorter/jquery.tablesorter.min.js') }}"></script>
+	<script src="{{ asset('tablesorter/jquery.tablesorter.min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
-<h2>{{ 'npc.entourage'|transchoice(10)|capitalize }}</h2>
+<h2>{{ 'npc.entourage'|trans({'count':10})|capitalize }}</h2>
 <p>
 {# FIXME: translate #}
 {% if can_resupply %}
@@ -53,15 +53,15 @@
 			<td{% if not man.alive %} class="disabled"{% endif %}>{{ man.name }}</td>
 			<td>
 				{% if not man.alive %}
-					<img src="{{ asset('bundles/bm2site/images/cybergedeon_skull.svg') }}" alt="{{ 'dead'|trans }}" title="{{ 'dead'|trans }}" height="16px" />
+					<img src="{{ asset('images/cybergedeon_skull.svg') }}" alt="{{ 'dead'|trans }}" title="{{ 'dead'|trans }}" height="16px" />
 				{% else %}
 					{% if man.wounded %}
-						<img src="{{ asset('bundles/bm2site/images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" />
+						<img src="{{ asset('images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" />
 					{% endif %}
 					{% if man.hungry > 80 %}
-						<img class="tt" src="{{ asset('bundles/bm2site/images/cutlery_red.svg') }}" alt="{{ 'veryhungry'|trans }}" title="{{ 'veryhungry'|trans }}" height="16px" />
+						<img class="tt" src="{{ asset('images/cutlery_red.svg') }}" alt="{{ 'veryhungry'|trans }}" title="{{ 'veryhungry'|trans }}" height="16px" />
 					{% elseif man.hungry > 40 %}
-						<img class="tt" src="{{ asset('bundles/bm2site/images/cutlery.svg') }}" alt="{{ 'hungry'|trans }}" title="{{ 'hungry'|trans }}" height="16px" />
+						<img class="tt" src="{{ asset('images/cutlery.svg') }}" alt="{{ 'hungry'|trans }}" title="{{ 'hungry'|trans }}" height="16px" />
 					{% endif %}
 				{% endif %}
 			</td>

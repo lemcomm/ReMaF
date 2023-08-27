@@ -10,7 +10,17 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 
-
+/**
+ * Form for selecting a character for something.
+ *
+ * Accepts the following options:
+ * * 'characters' - array - Characters to present as options.
+ * * 'empty' - string - Empty box translation string.
+ * * 'label' - string - Target field translation string label.
+ * * 'submit' - string - Submit button translation string.
+ * * 'domain' - string - Translation domain.
+ * * 'required' - boolean - Sets target field as required or not.
+ */
 class CharacterSelectType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver) {

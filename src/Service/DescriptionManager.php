@@ -11,20 +11,13 @@ use Doctrine\ORM\EntityManagerInterface;
 class DescriptionManager {
 
 	protected EntityManagerInterface $em;
-	protected AppState $appstate;
+	protected CommonService $common;
 	protected History $history;
 
-	public function __construct(EntityManagerInterface $em, AppState $appstate, History $history) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, History $history) {
 		$this->em = $em;
-		$this->appstate = $appstate;
+		$this->common = $common;
 		$this->history = $history;
-	}
-
-	#TODO: Move this getClassName method, and similar methods, into a single HelperService file.
-	private function getClassName($entity): false|int|string {
-		$classname = get_class($entity);
-		if ($pos = strrpos($classname, '\\')) return substr($classname, $pos + 1);
-		return $pos;
 	}
 
 	public function newDescription($entity, $text, Character $character=null, $new=false): Description {
@@ -33,7 +26,7 @@ class DescriptionManager {
 		if ($entity->getDescription()) {
 			$olddesc = $entity->getDescription();
 		}
-		$eClass = $this->getClassName($entity);
+		$eClass = $this->common->getClassName($entity);
 		/* If we don't unset these and commit those changes, we create a unique key constraint violation when we commit the new ones. */
 		if ($olddesc) {
 			/* NOTE: If other things get descriptions, this needs updating with the new logic. */
@@ -135,7 +128,7 @@ class DescriptionManager {
 			$desc->setUpdater($character);
 		}
 		$desc->setTs(new DateTime("now"));
-		$desc->setCycle($this->appstate->getCycle());
+		$desc->setCycle($this->common->getCycle());
 		if (!$new) {
 			/* No need to tell the people that just made the thing that they updated the descriptions. */
 			/* Association Ranks deliberately ommitted. */
@@ -207,7 +200,7 @@ class DescriptionManager {
 		if ($entity->getSpawnDescription()) {
 			$olddesc = $entity->getSpawnDescription();
 		}
-		$eClass = $this->getClassName($entity);
+		$eClass = $this->common->getClassName($entity);
 		/* If we don't unset these and commit those changes, we create a unique key constraint violation when we commit the new ones. */
 		if ($olddesc) {
 			/* NOTE: If other things get descriptions, this needs updating with the new logic. */
@@ -249,7 +242,7 @@ class DescriptionManager {
 		$desc->setText($text);
 		$desc->setUpdater($character);
 		$desc->setTs(new DateTime("now"));
-		$desc->setCycle($this->appstate->getCycle());
+		$desc->setCycle($this->common->getCycle());
 		$this->em->flush($desc);
 		return $desc;
 	}

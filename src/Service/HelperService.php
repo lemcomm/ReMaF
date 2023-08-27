@@ -18,19 +18,17 @@ class HelperService {
 	/*
 	This service exists purely to prevent code duplication and circlic service requiremenets.
 	Things that should exist in multiple services but can't due to circlic loading should be here.
-	If it is something that has absolutely no dependencies on other game services (Symfony services are fine), put it in CommonService instead.
+	If it is something that has absolutely no dependencies on other game services (vendor services are fine), put it in CommonService instead.
 	*/
 
 	private CommonService $common;
 	private EntityManagerInterface $em;
 	private Geography $geo;
-	private PermissionManager $pm;
 
-	public function __construct(CommonService $common, EntityManagerInterface $em, Geography $geo, PermissionManager $pm) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, Geography $geo) {
 		$this->common = $common;
 		$this->em = $em;
 		$this->geo = $geo;
-		$this->pm = $pm;
 	}
 
 	private function newObserver($type): true|BattleReportObserver|ActivityReportObserver {
@@ -115,36 +113,6 @@ class HelperService {
 				}
 			}
 		}
-	}
-
-	public function acquireItem(Settlement $settlement, EquipmentType $item=null, $test_trainer=false, $reduce_supply=true, Character $character=null): bool {
-		if ($item==null) return true;
-
-		$provider = $settlement->getBuildingByType($item->getProvider());
-		if (!$provider) return false;
-		if (!$provider->isActive()) return false;
-
-		if ($test_trainer) {
-			$trainer = $settlement->getBuildingByType($item->getTrainer());
-			if (!$trainer) return false;
-			if (!$trainer->isActive()) return false;
-		}
-
-		if ($item->getResupplyCost() > $provider->getResupply()) return false;
-
-		if ($reduce_supply) {
-			$left = $provider->getResupply() - $item->getResupplyCost();
-			if ($character) {
-				$perm = $this->pm->checkSettlementPermission($settlement, $character, 'resupply', true)[3];
-				if ($perm) {
-					if ($item->getResupplyCost() > $perm->getValueRemaining()) return false;
-					if ($perm->getReserve()!==null && $left < $perm->getReserve()) return false;
-					$perm->setValueRemaining($perm->getValueRemaining() - $item->getResupplyCost());
-				}
-			}
-			$provider->setResupply($left);
-		}
-		return true;
 	}
 
 }

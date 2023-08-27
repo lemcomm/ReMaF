@@ -2,14 +2,14 @@
 
 {% block content %}
 	<h2>{{ 'newcharacter.title'|trans }}</h2>
-	<img id="charimg" src="{{ asset('bundles/bm2site/images/char_m.png') }}" />
-	<p>{{ 'newcharacter.intro'|trans({"%firstoneurl%":path('bm2_fiction', {'page':'creation'})})|raw }}</p>
+	<img id="charimg" src="{{ asset('images/char_m.png') }}" />
+	<p>{{ 'newcharacter.intro'|trans({"%firstoneurl%":path('maf_fiction', {'page':'creation'})})|raw }}</p>
 	<p>{{ 'newcharacter.accountlimit'|trans({"%active%":characters_active, "%limit%":characters_allowed}) }}</p>
 
 	{% if limit <= 0 %}
 		<div class="warning">{{ 'newcharacter.limited'|trans }}</div>
 	{% elseif limit < 6 %}
-		<p>{{ 'newcharacter.limit'|transchoice(limit, {"%limit%":limit}) }}</p>
+		<p>{{ 'newcharacter.limit'|trans({"count":limit, "%limit%":limit}) }}</p>
 	{% endif %}
 	{% if spawnlimit %}
 		<div class="error">{{ 'newcharacter.spawnlimit'|trans|raw }}</div>
@@ -131,15 +131,15 @@ function updateImage() {
 
 	if (gender == "m") {
 		if (dead) {
-			$("#charimg").attr("src", "{{ asset('bundles/bm2site/images/char_dead_m.png') }}");
+			$("#charimg").attr("src", "{{ asset('images/char_dead_m.png') }}");
 		} else {
-			$("#charimg").attr("src", "{{ asset('bundles/bm2site/images/char_m.png') }}");
+			$("#charimg").attr("src", "{{ asset('images/char_m.png') }}");
 		}
 	} else {
 		if (dead) {
-			$("#charimg").attr("src", "{{ asset('bundles/bm2site/images/char_dead_f.png') }}");
+			$("#charimg").attr("src", "{{ asset('images/char_dead_f.png') }}");
 		} else {
-			$("#charimg").attr("src", "{{ asset('bundles/bm2site/images/char_f.png') }}");
+			$("#charimg").attr("src", "{{ asset('images/char_f.png') }}");
 		}
 
 	}

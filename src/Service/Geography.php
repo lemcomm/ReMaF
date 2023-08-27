@@ -16,10 +16,6 @@ use App\Entity\Setting;
 use App\Entity\Ship;
 use App\Entity\Settlement;
 
-use App\Service\AppState;
-use App\Service\CommonService;
-use App\Service\PermissionManager;
-
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -30,7 +26,6 @@ class Geography {
 	private CommonService $common;
 	private EntityManagerInterface $em;
 	private PermissionManager $pm;
-	private AppState $appstate;
 	private bool $biomes_water=false;
 	private bool $biomes_invalid=false;
 
@@ -55,23 +50,22 @@ class Geography {
 		'y_max' => 512000,
 	);
 
-	public function __construct(CommonService $common, EntityManagerInterface $em, PermissionManager $pm, AppState $appstate) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, PermissionManager $pm) {
 		$this->common = $common;
 		$this->em = $em;
 		$this->pm = $pm;
-		$this->appstate = $appstate;
 	}
 
 	private function getSpotBase() {
 		if ($this->spotBase == -1) {
-			$this->spotBase = $this->appstate->getGlobal('spot.basedistance');
+			$this->spotBase = $this->common->getGlobal('spot.basedistance');
 		}
 		return $this->spotBase;
 	}
 
 	private function getSpotScout() {
 		if ($this->spotScout == -1) {
-			$this->spotScout = $this->appstate->getGlobal('spot.scoutmod');
+			$this->spotScout = $this->common->getGlobal('spot.scoutmod');
 		}
 		return $this->spotScout;
 	}
@@ -296,7 +290,6 @@ class Geography {
 
 	public function findNearestSettlement(Character $character) {
 		return $this->common->findNearestSettlement($character);
-		# Moved so we can also have AppState use this code.
 	}
 
 	public function findNearestPlace(Character $character) {
@@ -542,7 +535,7 @@ class Geography {
 		$qb = $this->em->createQueryBuilder();
 		$qb->select('d as dungeon, ST_Distance(me.location, d.location) AS distance, ST_Azimuth(me.location, d.location) AS direction')
 			->from('App\Entity\Character', 'me')
-			->from('DungeonBundle:Dungeon', 'd')
+			->from('App:Dungeon', 'd')
 			->where('me = :me')
 			->andWhere('ST_Distance(me.location, d.location) < :maxdistance')
 			->setParameters(['me'=>$character, 'maxdistance'=>$maxdistance]);
@@ -629,8 +622,8 @@ class Geography {
 
 	public function databaseSpottingDistance(Character $character=null, $with_biome=true) {
 		// the distance at which we see things
-		$spotBase = $this->appstate->getGlobal('spot.basedistance');
-		$spotScout = $this->appstate->getGlobal('spot.scoutmod');
+		$spotBase = $this->common->getGlobal('spot.basedistance');
+		$spotScout = $this->common->getGlobal('spot.scoutmod');
 
 		$scout = $this->em->getRepository('App\Entity\EntourageType')->findOneByName('scout');
 		// database magic below:
@@ -674,8 +667,8 @@ class Geography {
 
 	public function calculateInteractionDistance(Character $character) {
 		// the distance at which we can interact with others
-		$actBase = $this->appstate->getGlobal('act.basedistance');
-		$actScout = $this->appstate->getGlobal('act.scoutmod');
+		$actBase = $this->common->getGlobal('act.basedistance');
+		$actScout = $this->common->getGlobal('act.scoutmod');
 
 		$act = $actBase; // base distance a noble on his own has
 		$count = 0;

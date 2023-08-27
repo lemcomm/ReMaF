@@ -16,11 +16,11 @@ use Psr\Log\LoggerInterface;
 
 class LinksExtension extends AbstractExtension {
 
-	private $em;
-	private $generator;
-	private $translator;
-	private $logger;
-	private $request_stack; // for debugging until I've fixed the bug below where it is used
+	private EntityManagerInterface $em;
+	private UrlGeneratorInterface $generator;
+	private TranslatorInterface $translator;
+	private LoggerInterface $logger;
+	private RequestStack $request_stack; // for debugging until I've fixed the bug below where it is used
 
 	// FIXME: type hinting for $translator removed because the addition of LoggingTranslator is breaking it
 	public function __construct(EntityManagerInterface $em, UrlGeneratorInterface $generator, TranslatorInterface $translator, LoggerInterface $logger, RequestStack $rs) {
@@ -31,28 +31,27 @@ class LinksExtension extends AbstractExtension {
 		$this->request_stack = $rs;
 	}
 
-	public function getFunctions() {
+	public function getFunctions(): array {
 		return array(
 			'objectlink' => new TwigFunction('link', array($this, 'ObjectLink'), array('is_safe' => array('html'))),
 			'idnamelink' => new TwigFunction('*_link', array($this, 'IdNameLink'), array('is_safe' => array('html'))),
 		);
 	}
 
-	public function getFilters() {
+	public function getFilters(): array {
 		return array(
 			new TwigFilter('wikilinks', array($this, 'wikilinksFilter'), array('is_safe' => array('html'))),
 			new TwigFilter('manuallinks', array($this, 'manuallinksFilter'), array('is_safe' => array('html'))),
 			);
 	}
 
-	public function wikilinksFilter($input) {
-		$pattern = '/\[[a-zA-Z]+:[0-9]+\]/';
-		$output = preg_replace_callback($pattern, array(get_class($this), "wikilinksReplacer"), $input);
-		return $output;
+	public function wikilinksFilter($input): array|string|null {
+		$pattern = '/\[[a-zA-Z]+:[0-9]+]/';
+		return preg_replace_callback($pattern, array(get_class($this), "wikilinksReplacer"), $input);
 	}
 
     /** @noinspection PhpUnusedPrivateMethodInspection */
-    private function wikilinksReplacer($matches) {
+    private function wikilinksReplacer($matches): string {
 		$link = '';
 		foreach ($matches as $match) {
 			$data = explode(':', trim($match, "[]"));
@@ -84,7 +83,6 @@ class LinksExtension extends AbstractExtension {
 				case 'order':
 				case 'faith':
 				case 'g':
-				case 'f':
 					$type = 'Association';
 					break;
 				case 'act':
@@ -198,13 +196,12 @@ class LinksExtension extends AbstractExtension {
 		return $link;
 	}
 
-	public function manuallinksFilter($input) {
-		$pattern = '/\[[a-zA-Z_]+\]/';
-		$output = preg_replace_callback($pattern, array(get_class($this), "manuallinksReplacer"), $input);
-		return $output;
+	public function manuallinksFilter($input): array|string|null {
+		$pattern = '/\[[a-zA-Z_]+]/';
+		return preg_replace_callback($pattern, array(get_class($this), "manuallinksReplacer"), $input);
 	}
 
-	private function manuallinksReplacer($matches) {
+	private function manuallinksReplacer($matches): string {
 		$link = '';
 		foreach ($matches as $match) {
 			// FIXME: this makes sure the translation string fits, but it should restore at least first-letter case
@@ -216,46 +213,42 @@ class LinksExtension extends AbstractExtension {
 		return $link;
 	}
 
-	private function getLink($name) {
-		switch (strtolower($name)) {
-			case 'activity':    	return 'maf_activity';
-			case 'activityreport':  return 'maf_activity_report';
-			case 'character':       return 'maf_char_view';
-			case 'settlement':      return 'maf_settlement';
-			case 'battle':    	return 'maf_battle';
-			case 'battlereport':    return 'maf_battlereport';
-			case 'realm':           return 'maf_realm';
-			case 'realmposition':   return 'maf_position';
-			case 'eventlog':        return 'maf_eventlog';
-			case 'feature':
-			case 'featuretype':     return 'maf_info_featuretype';
-			case 'building':
-			case 'buildingtype':    return 'maf_info_buildingtype';
-			case 'entourage':
-			case 'entouragetype':   return 'bm2_site_info_entouragetype';
-			case 'equipmenttype':   return 'bm2_site_info_equipmenttype';
-			case 'action':		return 'maf_action_details';
-			case 'election':	return 'maf_realm_vote';
-			case 'mercenaries':	return 'maf_mercenaries';
-			case 'quest':		return 'maf_quests_details';
-			case 'artifact':	return 'maf_artifact_details';
-			case 'war':		return 'maf_war_view';
-			case 'newsedition':	return 'maf_news_read';
-			case 'house':		return 'maf_house';
-			case 'place':		return 'maf_place';
-			case 'unit':		return 'maf_units_info';
-			case 'conversation':	return 'maf_conv_read';
-			case 'assoc':
-			case 'association':	return 'maf_assoc';
-			case 'law':		return 'maf_law';
-			case 'deity':		return 'maf_deity';
-			case 'journal':		return 'maf_journal';
-		}
-		return 'invalid link entity "'.$name.'", this should never happen!';
+	private function getLink($name): string {
+		return match (strtolower($name)) {
+			'activity' => 'maf_activity',
+			'activityreport' => 'maf_activity_report',
+			'character' => 'maf_char_view',
+			'settlement' => 'maf_settlement',
+			'battle' => 'maf_queue_battle',
+			'battlereport' => 'maf_battlereport',
+			'realm' => 'maf_realm',
+			'realmposition' => 'maf_position',
+			'eventlog' => 'maf_events_log',
+			'feature', 'featuretype' => 'maf_info_featuretype',
+			'building', 'buildingtype' => 'maf_info_buildingtype',
+			'entourage', 'entouragetype' => 'maf_info_entouragetype',
+			'equipmenttype' => 'maf_info_equipmenttype',
+			'action' => 'maf_queue_details',
+			'election' => 'maf_realm_vote',
+			'mercenaries' => 'maf_mercenaries',
+			'quest' => 'maf_quests_details',
+			'artifact' => 'maf_artifact_details',
+			'war' => 'maf_war_view',
+			'newsedition' => 'maf_news_read',
+			'house' => 'maf_house',
+			'place' => 'maf_place',
+			'unit' => 'maf_unit_info',
+			'conversation' => 'maf_conv_read',
+			'assoc', 'association' => 'maf_assoc',
+			'law' => 'maf_law',
+			'deity' => 'maf_deity',
+			'journal' => 'maf_journal',
+			default => 'invalid link entity "' . $name . '", this should never happen!',
+		};
 	}
 
 	// TODO: pluralization!
-	public function ObjectLink($entity, $raw=false, $absolute=false, $number=1) {
+	public function ObjectLink($entity, $raw=false, $absolute=false, $number=1): string {
 		if (!is_object($entity)) {
 			$this->logger->error("link() called without object - $entity"); // fuck, it's impossible to get a backtrace! - out of memory
 			$this->logger->error("dump: ".\Doctrine\Common\Util\Debug::dump($entity, 1, true, false));
@@ -352,7 +345,7 @@ class LinksExtension extends AbstractExtension {
 		return $this->linkhelper($this->getLink($classname), $id, $name, $linktype, $raw, $absolute);
 	}
 
-	public function IdNameLink($type, $id, $name = null, $raw=false, $absolute=false) {
+	public function IdNameLink($type, $id, $name = null, $raw=false, $absolute=false): string {
 		$linktype = null;
 		switch (strtolower($type)) {
 			case 'character':
@@ -379,29 +372,29 @@ class LinksExtension extends AbstractExtension {
 
 
 
-	private function featurename($name) {
+	private function featurename($name): string {
 		return $this->translator->trans("feature.".$name, array(), "economy");
 	}
 
-	private function buildingname($name) {
+	private function buildingname($name): string {
 		return $this->translator->trans("building.".$name, array(), "economy");
 	}
 
-	private function npcname($name, $number=1) {
-		return $this->translator->transchoice("npc.".$name, $number);
+	private function npcname($name, $number=1): string {
+		return $this->translator->trans("npc.".$name, ['count'=>$number]);
 	}
 
-	private function actionname($type) {
+	private function actionname($type): string {
 		return $this->translator->trans("queue.".$type, array(), "actions");
 	}
 
-	private function equipmentname($name) {
+	private function equipmentname($name): string {
 		return $this->translator->trans("item.".$name);
 	}
 
 
 
-	private function linkhelper($path, $id, $name, $class=null, $raw=false, $absolute=false) {
+	private function linkhelper($path, $id, $name, $class=null, $raw=false, $absolute=false): string {
 		if ($absolute) {
 			$type = UrlGeneratorInterface::ABSOLUTE_URL;
 		} else {
@@ -426,7 +419,7 @@ class LinksExtension extends AbstractExtension {
 	}
 
 
-	public function getName() {
+	public function getName(): string {
 		return 'links_extension';
 	}
 }

@@ -18,13 +18,13 @@
 				<tr>
 					<td>{{ quest.summary }}</td>
 					<td><ul class="shortlist">{% for quester in quest.questers %}<li>{{ link(quester.character) }}</li>{% endfor %}</ul></td>
-					<td><a href="{{ path('bm2_site_quests_details', {'id':quest.id}) }}">{{ "quests.details"|trans({},"actions") }}</a></td>
+					<td><a href="{{ path('maf_quests_details', {'id':quest.id}) }}">{{ "quests.details"|trans({},"actions") }}</a></td>
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
 
-	<a href="{{ path('bm2_site_quests_create', {'settlement':settlement.id}) }}"><button>{{ 'control.quests.new'|trans({},"actions") }}</button></a>
+	<a href="{{ path('maf_quests_create', {'settlement':settlement.id}) }}"><button>{{ 'control.quests.new'|trans({},"actions") }}</button></a>
 
 	<h3>{{ "quests.past"|trans({},"actions")|title }}</h3>
 	<table>

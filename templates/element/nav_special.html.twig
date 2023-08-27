@@ -1,25 +1,14 @@
 <ul>
-	<li><a href="{{ path('bm2_map') }}">{{ 'menu.travel'|trans }}</a></li>
+	<li><a href="{{ path('maf_map') }}">{{ 'menu.travel'|trans }}</a></li>
 	<li>
-		<a href="{{ path('bm2_character') }}">{{ 'menu.status'|trans }}</a>
+		<a href="{{ path('maf_char') }}">{{ 'menu.status'|trans }}</a>
 		<div class="sub">
 			<ul class="row">
 				<li class="part">
 					<h3>Your Status</h3>
 					<ul>
-						<li><a href="{{ path('bm2_character') }}">{{ 'menu.status'|trans }}</a></li>
-						<li><a href="{{ path('bm2_recent') }}">{{ 'menu.recent'|trans }}</a></li>
-					</ul>
-				</li>
-				<li class="part">
-					<h3>Your Party</h3>
-					<ul>
-						{% if character.soldiers is not empty %}
-							<li><a href="{{ path('bm2_site_character_soldiers') }}">{{ 'npc.soldier'|transchoice(10) }}</a></li>
-						{% endif %}
-						{% if character.entourage is not empty %}
-							<li><a href="{{ path('bm2_site_character_entourage') }}">{{ 'np.entourage2'|transchoice(10) }}</a></li>
-						{% endif %}
+						<li><a href="{{ path('maf_char') }}">{{ 'menu.status'|trans }}</a></li>
+						<li><a href="{{ path('maf_char_recent') }}">{{ 'menu.recent'|trans }}</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -27,7 +16,7 @@
 	</li>
 
 	<li>
-		<a href="{{ path('bm2_events') }}"{% if character.hasnewevents %} class="new"{% endif %}>{{ 'menu.events'|trans }}</a>
+		<a href="{{ path('maf_events') }}"{% if character.hasnewevents %} class="new"{% endif %}>{{ 'menu.events'|trans }}</a>
 	</li>
 
 	<li>
@@ -35,7 +24,7 @@
 		<div class="sub">
 			<ul class="row">
 				<li><a href="{{ path('maf_conv_summary') }}">{{ 'summary.title'|trans({}, "conversations")|title }}</a></li>
-				<li><a href="{{ path('bm2_news') }}">{{ 'menu.news'|trans }}</a></li>
+				<li><a href="{{ path('maf_news') }}">{{ 'menu.news'|trans }}</a></li>
 				<hr>
 				<li class="part">
 					<h3>{{ 'menu.messages2'|trans|title }}</h3>
@@ -56,7 +45,7 @@
 					<ul>
 						<li><a href="{{ path('maf_conv_unread') }}">{{ 'unread.short'|trans({}, "conversations") }}</a></li>
 						<li><a href="{{ path('maf_convs') }}">{{ 'index.title'|trans({}, "conversations") }}</a></li>
-						<li><a href="{{ path('maf_convs_orgs') }}">{{ 'orgs.title'|trans({}, "conversations") }}</a></li>
+						<li><a href="{{ path('maf_conv_orgs') }}">{{ 'orgs.title'|trans({}, "conversations") }}</a></li>
 						<li><a href="{{ path('maf_conv_new') }}">{{ 'conversation.new.title'|trans({}, "conversations") }}</a></li>
 					</ul>
 				</li>
@@ -76,25 +65,25 @@
 			<ul class="row">
 				<li class="part">
 					<ul>
-						<li><a href="{{ path('bm2_site_quests_myquests') }}">{{ 'menu.quests'|trans }}</a></li>
-						<li><a href="{{ path('bm2_politics') }}">{{ 'menu.politics'|trans }}</a></li>
-						<li><a href="{{ path('bm2_relations') }}">{{ 'menu.relations'|trans }}</a></li>
-						<li><a href="{{ path("bm2_lists") }}">{{ 'lists.name'|trans({},"politics") }}</a></li>
+						<li><a href="{{ path('maf_quests_my') }}">{{ 'menu.quests'|trans }}</a></li>
+						<li><a href="{{ path('maf_politics') }}">{{ 'menu.politics'|trans }}</a></li>
+						<li><a href="{{ path('maf_politics_relations') }}">{{ 'menu.relations'|trans }}</a></li>
+						<li><a href="{{ path("maf_politics_lists") }}">{{ 'lists.name'|trans({},"politics") }}</a></li>
 					</ul>
 				</li>
 			</ul>
 		</div>
 	</li>
 	<li>
-		<a href="{{ path('bm2_dungeon_dungeon_index') }}">{{ 'menu.dungeon'|trans }}</a>
+		<a href="{{ path('maf_dungeon') }}">{{ 'menu.dungeon'|trans }}</a>
 		<div class="sub">
 			<ul class="row">
 				<li class="part">
 					<ul>
-						<li><a href="{{ path('bm2_dungeon_dungeon_index') }}">{{ 'dungeon.title'|trans({}, "dungeons") }}</a></li>
-						<li><a href="{{ path('bm2_dungeon_dungeon_events') }}">{{ 'dungeon.events.title'|trans({}, "dungeons") }}</a></li>
-						<li><a href="{{ path('bm2_dungeon_dungeon_chat') }}">{{ 'dungeon.chat.title'|trans({}, "dungeons") }}</a></li>
-						<li><a href="{{ path('dungeons_cards') }}">{{ 'cards.title'|trans({}, "dungeons") }}</a></li>
+						<li><a href="{{ path('maf_dungeon') }}">{{ 'dungeon.title'|trans({}, "dungeons") }}</a></li>
+						<li><a href="{{ path('maf_dungeon_events') }}">{{ 'dungeon.events.title'|trans({}, "dungeons") }}</a></li>
+						<li><a href="{{ path('maf_dungeon_chat') }}">{{ 'dungeon.chat.title'|trans({}, "dungeons") }}</a></li>
+						<li><a href="{{ path('maf_dungeon_cards') }}">{{ 'cards.title'|trans({}, "dungeons") }}</a></li>
 					</ul>
 				</li>
 			</ul>

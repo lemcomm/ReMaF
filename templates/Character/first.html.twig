@@ -3,7 +3,7 @@
 {% block content %}
 	<h2>{{ 'first.title'|trans|title }}</h2>
 	{% if place.spawnDescription %}
-		<p>{{ place.spawnDescription.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}</p>
+		<p>{{ place.spawnDescription.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}</p>
 	{% else %}
 		<p>{{ "first.intro.nodesc"|trans|raw }}</p>
 	{% endif %}
@@ -16,5 +16,5 @@
 			{{ "first.intro.subrealm"|trans({"%conv%":path("maf_conv_read", {"conv":conv.id}), "%conv2%":path("maf_conv_read", {"conv":supConv.id})})|raw }}
 		{% endif %}
 	{% endif %}
-	<p>{{ "first.intro.final"|trans({"%manual%":path('bm2_manual'), "%discord%":"https://discord.gg/7YpAhEh"})|raw }}
+	<p>{{ "first.intro.final"|trans({"%manual%":path('maf_manual'), "%discord%":"https://discord.gg/7YpAhEh"})|raw }}
 {% endblock %}

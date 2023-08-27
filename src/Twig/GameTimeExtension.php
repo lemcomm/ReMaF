@@ -4,6 +4,7 @@ namespace App\Twig;
 
 use App\Service\AppState;
 
+use App\Service\CommonService;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -11,11 +12,11 @@ use Twig\TwigFunction;
 
 class GameTimeExtension extends AbstractExtension {
 
-	protected $appstate;
-	protected $trans;
+	protected CommonService $common;
+	protected TranslatorInterface $trans;
 
-	public function __construct(AppState $appstate, TranslatorInterface $trans) {
-		$this->appstate = $appstate;
+	public function __construct(CommonService $common, TranslatorInterface $trans) {
+		$this->common = $common;
 		$this->trans = $trans;
 	}
 
@@ -52,16 +53,9 @@ class GameTimeExtension extends AbstractExtension {
 
 	public function gametimeFilter($cycle=false, $format='normal') {
 		if ($cycle===false) {
-			$cycle = $this->appstate->getCycle();
+			$cycle = $this->common->getCycle();
 		}
-
-		// our in-game date - 6 days a week, 60 weeks a year = 1 year about 2 months
-		// FIXME: lots of hardcoded values, including the hour counter that is regulated in crontab
-		$year = floor($cycle/360)+1;
-		$week = floor($cycle%360/6)+1;
-		$day = ($cycle%6)+1;
-
-		return $this->trans->trans("gametime.".$format, array('%year%'=>$year, '%week%'=>$week, '%day%'=>$day));
+		return $this->trans->trans("gametime.".$format, $this->common->getDate($cycle, true));
 	}
 
 	public function untilTurnFunction() {

@@ -2,8 +2,8 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/map/OpenLayers.js') }}"></script>
-	<script src="{{ asset('bundles/bm2site/map/map.js') }}"></script>
+	<script src="{{ asset('map/OpenLayers.js') }}"></script>
+	<script src="{{ asset('map/map.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -33,8 +33,8 @@
 			{{ 'character.start.players'|trans|raw }}: {{ realm.findActivePlayers.count }}<br>
 			{{ 'character.start.nobles'|trans|raw }}: {{ realm.findActiveMembers.count }}<br>
 			{{ 'character.start.regions'|trans|raw }}: {{ realm.findTerritory.count }}<br></p>
-			<p>{{ realm.spawnDescription.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}<br /><br />
-			<a href="{{ path('maf_spawn_realm', {"realm":realm.id}) }}">{{ 'character.start.join.realm'|trans({"%name%":realm.name})|raw }}</a></p>
+			<p>{{ realm.spawnDescription.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}<br /><br />
+			<a href="{{ path('maf_char_spawn_realm', {"realm":realm.id}) }}">{{ 'character.start.join.realm'|trans({"%name%":realm.name})|raw }}</a></p>
 		{% endfor %}
 	{% endif %}
 	{% if not houses.isEmpty %}
@@ -51,8 +51,8 @@
 			{% endif %}</i><br>
 			{{ 'character.start.players'|trans|raw }}: {{ house.findActivePlayers.count }}<br>
 			{{ 'character.start.nobles'|trans|raw }}: {{ house.findAllActive.count }}<br>
-			<p>{{ house.spawnDescription.text|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}<br><br>
-			<a href="{{ path('maf_spawn_house', {"house":house.id}) }}">{{ 'character.start.join.house'|trans({"%name%":house.name})|raw }}</a></p>
+			<p>{{ house.spawnDescription.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}<br><br>
+			<a href="{{ path('maf_char_spawn_house', {"house":house.id}) }}">{{ 'character.start.join.house'|trans({"%name%":house.name})|raw }}</a></p>
 		{% endfor %}
 	{% endif %}
 {% endblock %}

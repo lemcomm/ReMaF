@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Dispatcher;
 
 use App\Entity\Settlement;
 use App\Entity\Unit;
+use App\Service\AppState;
+use App\Service\CommonService;
+use App\Service\Geography;
+use App\Service\Interactions;
+use App\Service\MilitaryManager;
+use App\Service\PermissionManager;
 
 class UnitDispatcher extends Dispatcher {
 
-	protected AppState $appstate;
-	protected PermissionManager $pm;
-	protected Geography $geography;
 	protected MilitaryManager $milman;
-	protected Interactions $interactions;
-	protected AssociationManager $assocman;
+	protected PermissionManager $pm;
 
-	public function __construct(AppState $appstate, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, AssociationManager $assocman) {
-		$this->pm = $pm;
+	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions) {
+		parent::__construct($appstate, $common, $pm, $geo, $interactions);
 		$this->milman = $milman;
-		$this->interactions = $interactions;
-		parent::__construct($appstate, $pm, $geo, $interactions, $assocman);
+		$this->pm = $pm;
 	}
 
 	/* =========== Tests ========== */

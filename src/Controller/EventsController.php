@@ -29,7 +29,7 @@ class EventsController extends AbstractController {
 	private AppState $app;
 	private EntityManagerInterface $em;
 
-	public function __consutrct(AppState $app, EntityManagerInterface $em) {
+	public function __construct(AppState $app, EntityManagerInterface $em) {
 		$this->app = $app;
 		$this->em = $em;
 	}
@@ -129,7 +129,7 @@ class EventsController extends AbstractController {
 			$form = $this->createForm(EntourageAssignType::class, null, ['actions'=>'research', 'entourage'=>$myscholars]);
 			$formView = $form->createView();
 			$form->handleRequest($request);
-			if ($form->isValid()) {
+			if ($form->isSubmitted() && $form->isValid()) {
 				$data = $form->getData();
 				if (!$research) {
 					$act = new Action;

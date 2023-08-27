@@ -9,7 +9,7 @@ use App\Entity\FeatureType;
 use App\Entity\Journal;
 
 use App\Entity\User;
-use App\Service\AppState;
+use App\Service\CommonService;
 use App\Twig\LinksExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +22,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DataController extends AbstractController {
 
-	private AppState $app;
+	private CommonService $common;
 	private EntityManagerInterface $em;
 	private TranslatorInterface $trans;
 	private LinksExtension $linkExt;
@@ -32,8 +32,8 @@ class DataController extends AbstractController {
 	private float $start;
 	private array $starters = ['/api', '/data', '/gsgp'];
 
-	function __construct(AppState $app, EntityManagerInterface $em, TranslatorInterface $trans, LinksExtension $linkExt) {
-		$this->app = $app;
+	function __construct(CommonService $common, EntityManagerInterface $em, TranslatorInterface $trans, LinksExtension $linkExt) {
+		$this->common = $common;
 		$this->em = $em;
 		$this->trans = $trans;
 		$this->linkExt = $linkExt;
@@ -48,15 +48,15 @@ class DataController extends AbstractController {
 			return $reqType;
 		}
 		$em = $this->em;
-		$cycle = $this->app->getCycle()-1;
+		$cycle = $this->common->getCycle()-1;
 		$query = $em->createQuery('SELECT s.today_users as active_users FROM App:StatisticGlobal s WHERE s.cycle = :cycle');
 		$query->setParameter('cycle', $cycle);
 		$result['active_players'] = $query->getArrayResult()[0];
 		$result['name'] = "Might & Fealty";
-		$result['image_url'] = 'https://mightandfealty.com/bundles/bm2site/images/logo-transparent.png';
+		$result['image_url'] = 'https://mightandfealty.com/images/logo-transparent.png';
 		$result['description'] = 'An entirely player driven medieval sandbox game about politics and war set in a low-ish-fantasy world.';
 		$result['tags'] = ['RPG', 'medieval', 'fantasy', 'politics', 'sandbox', 'PvP', 'persistent', 'free', 'browser', 'custom'];
-		$result['last_updated'] = strtotime($this->app->getGlobal('game-updated'));
+		$result['last_updated'] = strtotime($this->common->getGlobal('game-updated'));
 
 		return $this->outputHandler($reqType, $result);
 	}
@@ -221,7 +221,7 @@ class DataController extends AbstractController {
 		return $this->outputHandler($reqType, $result);
 	}
 
-	#[Route ('/data/journal/{id}', name:'maf_data_characters_active', requirements:['id'=>'\d+'])]
+	#[Route ('/data/journal/{id}', name:'maf_data_journal', requirements:['id'=>'\d+'])]
 	public function journalAction(Request $request, Journal $id): Response {
 		$reqType = $this->validateRequest($request, 'journal');
 		if ($reqType instanceof Response) {
@@ -257,7 +257,7 @@ class DataController extends AbstractController {
 		if ($reqType instanceof Response) {
 			return $reqType;
 		}
-		$cycle = $this->app->getCycle()-1;
+		$cycle = $this->common->getCycle()-1;
 
 		$em = $this->em;
 		$query = $em->createQuery('SELECT s.today_users as active_users FROM App:StatisticGlobal s WHERE s.cycle = :cycle');
@@ -546,8 +546,8 @@ class DataController extends AbstractController {
 		$data['metadata'] = [
 			'system' => 'Might & Fealty API',
 			'api-version' => '1.0.3.0',
-			'game-version' => $this->app->getGlobal('game-version'),
-			'game-updated' => $this->app->getGlobal('game-updated'),
+			'game-version' => $this->common->getGlobal('game-version'),
+			'game-updated' => $this->common->getGlobal('game-updated'),
 			'timestamp' => $time->format('Y-m-d H:i:s'),
 			'timing' => $spent
 		];

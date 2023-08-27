@@ -76,7 +76,7 @@ security:
         - { path: ^/(../)?heraldry, roles: ROLE_USER }
         - { path: ^/(../)?payment, roles: ROLE_USER }
         - { path: ^/(../)?publications, roles: ROLE_USER }
-        - { path: ^/(../)?character, roles: ROLE_USER }
+        - { path: ^/(../)?char, roles: ROLE_USER }
         - { path: ^/(../)?journal/[0-9]+, roles: PUBLIC_ACCESS }
         - { path: ^/(../)?journal, roles: ROLE_USER }
         - { path: ^/(../)?actions, roles: ROLE_USER }

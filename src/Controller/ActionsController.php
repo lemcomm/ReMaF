@@ -16,7 +16,8 @@ use App\Form\TradeType;
 use App\Service\ActionManager;
 use App\Service\ActionResolution;
 use App\Service\AppState;
-use App\Service\Dispatcher;
+use App\Service\CommonService;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\Economy;
 use App\Service\Generator;
 use App\Service\Geography;
@@ -25,7 +26,7 @@ use App\Service\Interactions;
 use App\Service\LawManager;
 use App\Service\PermissionManager;
 use App\Service\Politics;
-use App\Service\UnitDispatcher;
+use App\Service\Dispatcher\UnitDispatcher;
 use App\Twig\LinksExtension;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,9 +40,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route("/actions")
- */
 class ActionsController extends AbstractController {
 
 	private ActionManager $actman;
@@ -85,7 +83,7 @@ class ActionsController extends AbstractController {
 	}
 
 	#[Route ('/actions/', name:'maf_actions')]
-	public function indexAction(): RedirectResponse|Response {
+	public function indexAction(CommonService $common): RedirectResponse|Response {
 		list($character, $settlement) = $this->dispatcher->gateway(false, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -96,7 +94,7 @@ class ActionsController extends AbstractController {
 				'%type%' => $this->trans->trans($settlement->getType()),
 				'%name%' => $this->links->ObjectLink($settlement) ));
 		} else {
-			$nearest = $this->geo->findNearestSettlement($character);
+			$nearest = $common->findNearestSettlement($character);
 			$settlement=array_shift($nearest);
 			$pagetitle = $this->trans->trans('settlement.area', array(
 				'%name%' => $this->links->ObjectLink($settlement) ));
@@ -251,9 +249,6 @@ class ActionsController extends AbstractController {
 		return $this->redirectToRoute('maf_actions');
 	}
 
-	   /**
-	     * @Route("/embark")
-	     */
 	#[Route ('/actions/embark', name:'maf_actions_embark')]
 	public function embarkAction(): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('locationEmbarkTest');
@@ -349,7 +344,7 @@ class ActionsController extends AbstractController {
 	}
 
 	#[Route ('/actions/giveship', name:'maf_actions_giveship')]
-	public function giveShipAction(Request $request): RedirectResponse|Response {
+	public function giveShipAction(CommonService $common, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('locationGiveShipTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -373,7 +368,7 @@ class ActionsController extends AbstractController {
 			$ship = $query->getOneOrNullResult();
 			if ($ship) {
 				$ship->setOwner($data['target']);
-				$current_cycle = intval($this->app->getGlobal('cycle'));
+				$current_cycle = intval($common->getGlobal('cycle'));
 				$this->hist->logEvent(
 					$data['target'],
 					'event.character.gotship',
@@ -638,7 +633,7 @@ class ActionsController extends AbstractController {
 		]);
 
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['target'] != $character) {
 				$settlement->setSteward($data['target']);
@@ -694,7 +689,7 @@ class ActionsController extends AbstractController {
 				))
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$newname=$data['name'];
 
@@ -737,7 +732,7 @@ class ActionsController extends AbstractController {
 			'old_culture' => $settlement->getCulture()
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$culture=$data['culture'];
 			// this is a meta action and thus executed immediately
@@ -858,7 +853,7 @@ class ActionsController extends AbstractController {
 
 		if ($request->isMethod('POST') && $request->request->has('trade')) {
 	                $form->handleRequest($request);
-                	if ($form->isValid()) {
+                	if ($form->isSubmitted() && $form->isValid()) {
 				if ($manageable->contains($trade->getSource())) {
 					if ($trade->getAmount()>0) {
 						if ($trade->getSource()!=$settlement && $trade->getDestination()!=$settlement) {
@@ -890,7 +885,7 @@ class ActionsController extends AbstractController {
 			}
 		} elseif ($request->isMethod('POST') && $request->request->has('tradecancel')) {
 			$cancelform->handleRequest($request);
-			if ($cancelform->isValid()) {
+			if ($cancelform->isSubmitted() && $cancelform->isValid()) {
 				$data = $cancelform->getData();
 				$trade = $data['trade'];
 				$source = $trade->getSource();
@@ -984,7 +979,7 @@ class ActionsController extends AbstractController {
 
 		$form = $this->createForm(EntourageRecruitType::class, null, ['entourage' => $entourage]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$total = 0;
@@ -1079,7 +1074,7 @@ class ActionsController extends AbstractController {
 		]);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['target']) {
 				$act = new Action;
@@ -1114,7 +1109,7 @@ class ActionsController extends AbstractController {
 			'type' => 'changeoccupier'
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$targetrealm = $data['target'];
 
@@ -1144,7 +1139,7 @@ class ActionsController extends AbstractController {
 			'type' => 'occupy'
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$targetrealm = $data['target'];
 
@@ -1167,7 +1162,7 @@ class ActionsController extends AbstractController {
 
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
 			$type = 'manual';
 			if ($character !== $settlement->getOccupant()) {
 				$type = 'forced';

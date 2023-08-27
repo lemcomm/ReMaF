@@ -9,8 +9,6 @@ use App\Entity\EventLog;
 use App\Entity\EventMetadata;
 use App\Entity\Soldier;
 use App\Entity\SoldierLog;
-use App\Service\AppState;
-use App\Service\NotificationManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 
@@ -24,13 +22,13 @@ class History {
 	const NOTIFY = 20;
 
 	protected EntityManagerInterface $em;
-	protected AppState $appstate;
+	protected CommonService $common;
 	protected NotificationManager $noteman;
 
 
-	public function __construct(EntityManagerInterface $em, AppState $appstate, NotificationManager $noteman) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, NotificationManager $noteman) {
 		$this->em = $em;
-		$this->appstate = $appstate;
+		$this->common = $common;
 		$this->noteman = $noteman;
 	}
 
@@ -49,7 +47,7 @@ class History {
 		$event->setPriority($priority);
 		$event->setLifetime($limited);
 		$event->setTs(new \DateTime("now"));
-		$event->setCycle($this->appstate->getCycle());
+		$event->setCycle($this->common->getCycle());
 		$this->em->persist($event);
 
 		// notify player by mail of important events
@@ -69,7 +67,7 @@ class History {
 			$event->setContent('soldier.'.$translationKey);
 			$event->setData($data);
 			$event->setTs(new \DateTime("now"));
-			$event->setCycle($this->appstate->getCycle());
+			$event->setCycle($this->common->getCycle());
 			$this->em->persist($event);
 			$soldier->addEvent($event);
 
@@ -91,22 +89,31 @@ class History {
 		// no more access to new events in this log, but can still read old entries
 		$metadata = $this->em->getRepository(EventMetadata::class)->findBy(['log'=>$log, 'reader'=>$reader, 'access_until'=>null]);
 		foreach ($metadata as $meta) {
-			$meta->setAccessUntil($this->appstate->getCycle());
+			$meta->setAccessUntil($this->common->getCycle());
 		}
 	}
 
 	public function openLog($entity, Character $reader): EventMetadata|array {
+		$self = false;
+		if ($entity === $reader) {
+			$self = true;
+		}
 		$log = $this->findLog($entity);
 		$exists = $this->em->getRepository(EventMetadata::class)->findBy(['log'=>$log, 'reader'=>$reader, 'access_until'=>null]);
 		if (!$exists) {
 			$meta = new EventMetadata();
 			// we get all events from the past 5 days automatically. Older events we will have to research
-			$meta->setAccessFrom(max(1, $this->appstate->getCycle() - 5));
+			$meta->setAccessFrom(max(1, $this->common->getCycle() - 5));
 			$meta->setLastAccess(new \DateTime("now"));
 			$meta->setLog($log);
 			$meta->setReader($reader);
 			$this->em->persist($meta);
 			return $meta;
+		} elseif ($self) {
+			$last = $log->getMetadatas()->last();
+			if ($last instanceof EventMetadata) {
+				$last->setAccessUntil(null);
+			}
 		}
 		return $exists;
 	}
@@ -114,7 +121,7 @@ class History {
 	public function visitLog($entity, Character $reader): void {
 		$log = $this->findLog($entity);
 		$metadata = new EventMetadata();
-		$metadata->setAccessFrom($this->appstate->getCycle());
+		$metadata->setAccessFrom($this->common->getCycle());
 		$metadata->setLastAccess(new \DateTime("now"));
 		$metadata->setLog($log);
 		$metadata->setReader($reader);

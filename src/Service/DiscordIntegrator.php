@@ -8,16 +8,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class DiscordIntegrator {
 
 	protected EntityManagerInterface $em;
-	protected AppState $appstate;
 	protected TranslatorInterface $trans;
 	protected mixed $generalHook;
 	protected mixed $olympusHook;
 	protected mixed $paymentsHook;
 	protected mixed $errorsHook;
 
-	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, AppState $appstate) {
+	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator) {
 		$this->em = $em;
-		$this->appstate = $appstate;
 		$this->trans = $translator;
 		$this->generalHook = $_ENV['DISCORD_WEBHOOK_GENERAL'];
 		$this->olympusHook = $_ENV['DISCORD_WEBHOOK_OLYMPUS'];

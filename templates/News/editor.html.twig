@@ -38,7 +38,7 @@
 		<div id="add_dialog" title="{{ "news.addmember"|trans({},"communication") }}"></div>
 
 		<div id="change_dialog">
-			<form id="changer" class="wide" action="{{ path('bm2_site_news_editorchange') }}" method="post">
+			<form id="changer" class="wide" action="{{ path('maf_news_editor_change') }}" method="post">
 				<input type="hidden" name="paper" value="{{ paper.id }}"/>
 				<input type="hidden" id="changer_character" name="character" value=""/>
 				{{ form_widget(form) }}
@@ -48,7 +48,7 @@
 		</div>
 	{% endif %}
 
-	<h3>{{ "news.edition"|transchoice(10, {},"communication")|title }}</h3>
+	<h3>{{ "news.edition"|trans({'count':10},"communication")|title }}</h3>
 	<table>
 		<thead><tr>
 		</tr></thead>
@@ -56,7 +56,7 @@
 		{% for edition in paper.editions %}
 		<tr>
 			<td>
-			<a href="{{ path('bm2_site_news_edition', {'edition':edition.id}) }}">
+			<a href="{{ path('maf_news_edition', {'edition':edition.id}) }}">
 			{% if edition.collection %}
 				{{ "news.collection"|trans({},"communication")|title }}
 			{% else %}
@@ -70,7 +70,7 @@
 				{% if edition.published %}
 					<td>{{ gametime(edition.publishedcycle, 'long') }}</td>
 					<td>{{ edition.published|date }}</td>
-					<td align="right">{{ "news.readers"|transchoice(edition.readers.count,{"%count%":edition.readers.count},"communication") }}</td>
+					<td align="right">{{ "news.readers"|trans({'count':edition.readers.count, "%count%":edition.readers.count},"communication") }}</td>
 				{% else %}
 					<td colspan="3">({{ "news.create.unpublished"|trans({},"communication") }})</td>
 				{% endif %}
@@ -82,7 +82,7 @@
 
 	{% if editor.editor %}
 	<p>
-		<a href="{{ path('bm2_site_news_createedition', {'paper':paper.id}) }}">create new edition</a>
+		<a href="{{ path('maf_news_edition_create', {'paper':paper.id}) }}">create new edition</a>
 	</p>
 	{% endif %}
 
@@ -209,8 +209,8 @@ $("#add_member").click(function(){
 	$("#add_dialog").dialog("open");
 	if (!is_loaded) {
 		is_loaded = true;
-		$("#add_dialog").html('<center><img src="{{ asset('bundles/bm2site/images/loader.png') }}"/></center>');
-		$('#add_dialog').load('{{ path("bm2_site_news_editoraddform", {"paperId":paper.id}) }}');
+		$("#add_dialog").html('<center><img src="{{ asset('images/loader.png') }}"/></center>');
+		$('#add_dialog').load('{{ path("maf_news_editor_add", {"paperId":paper.id}) }}');
 	}
 });
 {% endblock %}

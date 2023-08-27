@@ -6,6 +6,7 @@ use App\Entity\Achievement;
 use App\Entity\ActivityReportObserver;
 use App\Entity\BattleReportObserver;
 use App\Entity\Character;
+use App\Entity\Setting;
 use App\Entity\Skill;
 use App\Entity\SkillType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,14 +16,57 @@ class CommonService {
 
 	/*
 	This service exists purely to prevent code duplication and circlic service requiremenets.
-	Things that should exist in multiple services but can't due to circlic loading should be here.
-	If it is something that has absolutely no dependencies on other game services (Symfony services are fine), put it in CommonService instead.
+	Things that provide core game functions (besides security), that are not handled in a more concise service should be here.
+	Security is handled by AppState.
 	*/
 
 	protected EntityManagerInterface $em;
 
+	private array $languages = array(
+		'en' => 'english',
+		'de' => 'deutsch',
+		'es' => 'español',
+		'fr' => 'français',
+		'it' => 'italiano'
+	);
+
 	public function __construct(EntityManagerInterface $em) {
 		$this->em = $em;
+	}
+
+	public function availableTranslations(): array {
+		return $this->languages;
+	}
+
+	public function getClassName($entity): false|int|string {
+		$classname = get_class($entity);
+		if ($pos = strrpos($classname, '\\')) return substr($classname, $pos + 1);
+		return $pos;
+	}
+
+	public function getCycle(): int {
+		return (int)($this->getGlobal('cycle', 0));
+	}
+
+	public function getDate($cycle=null, $percents=false): array {
+		// our in-game date - 6 days a week, 60 weeks a year = 1 year about 2 months
+		if (null===$cycle) {
+			$cycle = $this->getCycle();
+		}
+
+		$year = floor($cycle/360)+1;
+		$week = floor($cycle%360/6)+1;
+		$day = ($cycle%6)+1;
+		if (!$percents) {
+			return array('year'=>$year, 'week'=>$week, 'day'=>$day);
+		} else {
+			return array('%year%'=>$year, '%week%'=>$week, '%day%'=>$day);
+		}
+	}
+	public function getGlobal($name, $default=false) {
+		$setting = $this->em->getRepository(Setting::class)->findOneBy(['name'=>$name]);
+		if (!$setting) return $default;
+		return $setting->getValue();
 	}
 
 	public function newObserver($type): true|BattleReportObserver|ActivityReportObserver {
@@ -33,6 +77,17 @@ class CommonService {
 			return new ActivityReportObserver;
 		}
 		return true;
+	}
+
+	public function setGlobal($name, $value): void {
+		$setting = $this->em->getRepository(Setting::class)->findOneBy(['name'=>$name]);
+		if (!$setting) {
+			$setting = new Setting();
+			$setting->setName($name);
+			$this->em->persist($setting);
+		}
+		$setting->setValue($value);
+		$this->em->flush($setting);
 	}
 
 	public function trainSkill(Character $char, SkillType $type=null, $pract = 0, $theory = 0): bool {

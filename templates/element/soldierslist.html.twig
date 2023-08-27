@@ -26,24 +26,24 @@
 				<td{% if not man.alive %} class="disabled"{% endif %}>{{ man.name }}</td>
 				<td>
 					{% if not man.alive %}
-						<img class="tt" src="{{ asset('bundles/bm2site/images/cybergedeon_skull.svg') }}" alt="{{ 'dead'|trans }}" title="{{ 'dead'|trans }}" height="16px" />
+						<img class="tt" src="{{ asset('images/cybergedeon_skull.svg') }}" alt="{{ 'dead'|trans }}" title="{{ 'dead'|trans }}" height="16px" />
 					{% else %}
 						{% if man.wounded %}
-							<img class="tt" src="{{ asset('bundles/bm2site/images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" />
+							<img class="tt" src="{{ asset('images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" />
 							{% if man.wounded > 10 %}
-								<img class="tt" src="{{ asset('bundles/bm2site/images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" style="margin-left:-12px"/>
+								<img class="tt" src="{{ asset('images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" style="margin-left:-12px"/>
 							{% endif %}
 							{% if man.wounded > 25 %}
-								<img class="tt" src="{{ asset('bundles/bm2site/images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" style="margin-left:-12px"/>
+								<img class="tt" src="{{ asset('images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" style="margin-left:-12px"/>
 							{% endif %}
 						{% endif %}
 						{% if man.routed %}
-							<img class="tt" src="{{ asset('bundles/bm2site/images/runner4.svg') }}" alt="{{ 'routed'|trans }}" title="{{ 'routed'|trans }}" height="16px" />
+							<img class="tt" src="{{ asset('images/runner4.svg') }}" alt="{{ 'routed'|trans }}" title="{{ 'routed'|trans }}" height="16px" />
 						{% endif %}
 						{% if man.hungry > 90 %}
-							<img class="tt" src="{{ asset('bundles/bm2site/images/cutlery_red.svg') }}" alt="{{ 'veryhungry'|trans }}" title="{{ 'veryhungry'|trans }}" height="16px" />
+							<img class="tt" src="{{ asset('images/cutlery_red.svg') }}" alt="{{ 'veryhungry'|trans }}" title="{{ 'veryhungry'|trans }}" height="16px" />
 						{% elseif man.hungry > 50 %}
-							<img class="tt" src="{{ asset('bundles/bm2site/images/cutlery.svg') }}" alt="{{ 'hungry'|trans }}" title="{{ 'hungry'|trans }}" height="16px" />
+							<img class="tt" src="{{ asset('images/cutlery.svg') }}" alt="{{ 'hungry'|trans }}" title="{{ 'hungry'|trans }}" height="16px" />
 						{% endif %}
 					{% endif %}
 				</td>
@@ -90,7 +90,7 @@
 				{% endif %}
 				<td>{% if man.home %}{{ link(man.home) }}{% endif %}</td>
 				<td>
-					<a href="{{ path('bm2_site_events_soldierlog', {'soldier':man.id}) }}">log</a>
+					<a href="{{ path('maf_events_soldierlog', {'soldier':man.id}) }}">log</a>
 				</td>
 			</tr>
 		{% endif %}
@@ -212,16 +212,16 @@ $(document).ready(function() {
 		sortList: [[0,0]],
 	});
 
-	if ($("#soldierslist select[id$=_action] option[value='disband']").length == 0) {
+	if ($("#soldierslist select[id$=_action] option[value='disband']").length === 0) {
 		$("#group_option option[value='disband']").remove();
 	}
-	if ($("#soldierslist select[id$=_action] option[value='assignto']").length == 0) {
+	if ($("#soldierslist select[id$=_action] option[value='assignto']").length === 0) {
 		$("#group_option option[value='assignto']").remove();
 	}
-	if ($("#soldierslist select[id$=_action] option[value='retrain']").length == 0) {
+	if ($("#soldierslist select[id$=_action] option[value='retrain']").length === 0) {
 		$("#group_option option[value='retrain']").remove();
 	}
-	if ($("#soldierslist select[id$=_action] option[value='resupply']").length == 0) {
+	if ($("#soldierslist select[id$=_action] option[value='resupply']").length === 0) {
 		$("#group_option option[value='resupply']").remove();
 	}
 
@@ -252,9 +252,9 @@ $(document).ready(function() {
 
 	function UpdateSoldierRow(actionselect) {
 		actionselect.closest("tr").attr("has_changed", "true");
-		if (actionselect.val() == "assignto") {
+		if (actionselect.val() === "assignto") {
 			$("#assigntarget").show();
-		} else if (actionselect.val() == "retrain") {
+		} else if (actionselect.val() === "retrain") {
 			$("#retrain").show();
 		}
 

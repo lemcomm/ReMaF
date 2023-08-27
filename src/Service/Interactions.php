@@ -7,18 +7,19 @@ use App\Entity\Place;
 use App\Entity\Settlement;
 use Doctrine\ORM\EntityManagerInterface;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
-use Psr\Log\LoggerInterface;
 
 
 class Interactions {
 
+	private CommonService $common;
 	private EntityManagerInterface $em;
 	private Geography $geo;
 	private History $history;
 	private PermissionManager $pm;
 	private Politics $pol;
 
-	public function __construct(EntityManagerInterface $em, Geography $geo, History $history, PermissionManager $pm, Politics $pol) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, Geography $geo, History $history, PermissionManager $pm, Politics $pol) {
+		$this->common = $common;
 		$this->em = $em;
 		$this->geo = $geo;
 		$this->history = $history;
@@ -181,13 +182,6 @@ class Interactions {
 		return true;
 	}
 
-	#TODO: Move this getClassName method, and it's siblings in other files, into a single HelperService file.
-	private function getClassName($entity): false|int|string {
-		$classname = get_class($entity);
-		if ($pos = strrpos($classname, '\\')) return substr($classname, $pos + 1);
-		return $pos;
-	}
-
 	// no type-hinting because target can be either a settlement, character, or place
 	public function characterViewDetails(Character $character=null, $target=null): array {
 		$details=array('spot'=>false, 'spotmore'=>false, 'merchant'=>false, 'prospector'=>false, 'spy'=>false);
@@ -199,7 +193,7 @@ class Interactions {
 			return $details;
 		}
 		// FIXME: This does NOT take watchtowers into account - I should probably create a checkSpotted() method or something
-		switch ($this->getClassName($target)) {
+		switch ($this->common->getClassName($target)) {
 			case 'Settlement':
 				$distance = $this->geo->calculateDistanceToSettlement($character, $target);
 				$spot = $this->geo->calculateSpottingDistance($character);

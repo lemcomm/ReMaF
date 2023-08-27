@@ -28,7 +28,7 @@
 				</td>
 				<td align="right">{{ election.votes.count }}</td>
 				<td>
-					<a href="{{ path('bm2_site_realm_vote', {'id':election.id}) }}">
+					<a href="{{ path('maf_realm_vote', {'id':election.id}) }}">
 						{% if election.closed %}
 							{{ 'votes.link2'|trans({},"politics") }}
 						{% else %}
@@ -49,7 +49,7 @@
 {% if nopriest %}
 	<p>{{ "elections.nopriest"|trans({}, "politics") }}</p>
 {% else %}
-	<a href="{{ path('bm2_site_realm_election', {'realm':realm.id, 'election':0}) }}">{{ 'elections.new'|trans({},"politics") }}</a>
+	<a href="{{ path('maf_realm_election', {'realm':realm.id, 'election':0}) }}">{{ 'elections.new'|trans({},"politics") }}</a>
 {% endif %}
 
 

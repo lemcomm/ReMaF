@@ -43,10 +43,10 @@ class CombatManager {
 		$defense = $this->DefensePower($target, $battle)*0.75;
 
 		$eWep = $target->getWeapon();
-		if ($eWep->getType()->getSkill()->getCategory()->getName() == 'polearms') {
-			$antiCav = True;
+		if ($eWep->getSkill()?->getCategory()->getName() === 'polearms') {
+			$counterType = 'antiCav';
 		} else {
-			$antiCav = False;
+			$counterType = False;
 		}
 
 
@@ -54,7 +54,7 @@ class CombatManager {
 		$logs[] = (round($attack*10)/10)." vs. ".(round($defense*10)/10)." - ";
 		if (rand(0,$attack) > rand(0,$defense)) {
 			// defense penetrated
-			$result = $this->resolveDamage($me, $target, $attack, $type, 'charge', $antiCav, $xpMod, $defBonus);
+			$result = $this->resolveDamage($me, $target, $attack, $type, 'charge', $counterType, $xpMod, $defBonus);
 			if ($me->isNoble() && $me->getWeapon()) {
 				$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
 			} else {
@@ -122,15 +122,15 @@ class CombatManager {
 		$eqpt = $me->getEquipment();
 		if ($noble) {
 			# Only for battles.
-			$power = 100;
+			$power = 120;
 			if ($me->getMount()) {
-				$power += 38;
+				$power += 48;
 			}
 			if ($eqpt && $eqpt->getName() != 'Pavise') {
 				$power += 32;
 			} elseif ($me->getMount()) {
 				$power += 7;
-			}  elseif ($melee) {
+			} elseif ($melee) {
 				$power += 13;
 			} else {
 				$power += 63;
@@ -151,9 +151,9 @@ class CombatManager {
 			if ($me->getEquipment()->getName() != 'Pavise') {
 				$power += $me->getEquipment()->getDefense();
 			} elseif ($me->getMount()) {
-				$power += $me->getEquipment()->getDefense()/10; #It isn't worthless, but it can't be used effectively.
+				$power += 0; #It's basically a portable wall. Not usable on horseback.
 			} elseif ($melee) {
-				$power += $me->getEquipment()->getDefense()/5;
+				$power += $me->getEquipment()->getDefense()/10;
 			} else {
 				$power += $me->getEquipment()->getDefense();
 			}
@@ -203,8 +203,20 @@ class CombatManager {
 				}
 			}
 		}
-		if (rand(0,100)<25) {
-			if ($target->getEquipment() && $target->getEquipment()->getDefense()>0) {
+		if ($attacker->getWeapon()) {
+			$wpnSkill = $attacker->getWeapon()->getSkill()->getCategory()->getName();
+		} else {
+			$wpnSkill = false;
+		}
+		if ($target->getEquipment() && (rand(0,100)<25 || $wpnSkill === 'axes')) {
+			$eqpName = $target->getEquipment()->getName();
+			if ($eqpName === 'shield') {
+				$target->dropEquipment();
+				$logs[] = "equipment damaged\n";
+			} elseif ($eqpName === 'pavise' && rand(1,8) < 2) {
+				$target->dropEquipment();
+				$logs[] = "equipment damaged\n";
+			} elseif ($target->getEquipment() && $target->getEquipment()->getDefense()>0) {
 				$resilience = sqrt($target->getEquipment()->getDefense());
 				if (rand(0,100)<$resilience) {
 					$target->dropEquipment();
@@ -215,7 +227,7 @@ class CombatManager {
 		return $logs;
 	}
 
-	public function MeleeAttack($me, $target, $mPower, $act=false, $battle=false, $xpMod = 1, $defBonus = 0): array {
+	public function MeleeAttack($me, $target, $mPower, $act=false, $battle=false, $xpMod = 1, $defBonus = 0, $enableCounter = true): array {
 		if ($battle) {
 			if ($me->isNoble() && $me->getWeapon()) {
 				$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
@@ -235,6 +247,7 @@ class CombatManager {
 		}
 		$attack = $mPower;
 
+		$counterType = false;
 		if ($battle) {
 			if ($target->isFortified()) {
 				$defense += $defBonus;
@@ -242,13 +255,17 @@ class CombatManager {
 			if ($me->isFortified()) {
 				$attack += ($defBonus/2);
 			}
+			$eqpt = $target->getEquipment();
+			if (!$target->getMount() && $eqpt && $eqpt->getName() === 'shield') {
+				$counterType = 'lightShield';
+			}
 		}
 
 		$logs[] = $target->getName()." (".$target->getType().") - ";
 		$logs[] = (round($attack*10)/10)." vs. ".(round($defense*10)/10)." - ";
 		if (rand(0,$attack) > rand(0,$defense)) {
 			// defense penetrated
-			list($result, $sublogs) = $this->resolveDamage($me, $target, $attack, $type, 'melee');
+			list($result, $sublogs) = $this->resolveDamage($me, $target, $attack, $type, 'melee', $counterType);
 			foreach ($sublogs as $each) {
 				$logs[] = $each;
 			}
@@ -261,6 +278,15 @@ class CombatManager {
 			// armour saved our target
 			$logs[] = "no damage\n";
 			$result='fail';
+			// out attack failed, do they get a counter?
+			if ($enableCounter && $counterType) {
+				$tPower = $this->MeleePower($target, true);
+				list($innerResult, $sublogs) = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus, false);
+				foreach ($sublogs as $each) {
+					$logs[] = $each;
+				}
+				$result = $result . " " . $counterType . $innerResult;
+			}
 		}
 		if ($battle) {
 			$target->addAttack(5);
@@ -270,7 +296,7 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-	public function MeleePower($me, $sol = false, EquipmentType $weapon = null) {
+	public function MeleePower($me, $sol = false, EquipmentType $weapon = null, $groupSize = 1) {
 		$noble = false;
 		$act = false;
 		# $sol is just a bypass for "Is this a soldier instance" or not.
@@ -344,9 +370,8 @@ class CombatManager {
 
 		// TODO: heavy armour should reduce this a little
 		if ($sol) {
-			$fighters = $me->getAllInUnit()->count();
-			if ($fighters>1) {
-				$me->updateMeleePower($power * pow($fighters, 0.96)/$fighters);
+			if ($groupSize>1) {
+				$me->updateMeleePower($power * pow($groupSize, 0.96)/$groupSize);
 			} else {
 				$me->updateMeleePower($power);
 			}
@@ -419,7 +444,7 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-	public function RangedPower($me, $sol = false, EquipmentType $weapon = null) {
+	public function RangedPower($me, $sol = false, EquipmentType $weapon = null, $groupSize = 1) {
 		$noble = false;
 		# $sol is just a bypass for "Is this a soldier instance" or not.
 		if ($sol) {
@@ -441,13 +466,19 @@ class CombatManager {
 		$power = 0;
 		$hasW = false;
 		$hasE = false;
+		$recurve = false;
 		if ($weapon === null) {
 			$weapon = $me->getWeapon();
 		}
 		if ($weapon !== null) {
 			if ($rPower = $weapon->getRanged()) {
 				$hasW = true;
-				$power += $rPower;
+				if ($me->getMount() && $weapon->getName() === 'recurve bow') {
+					$power = $rPower*2;
+					$recurve = true;
+				} else {
+					$power = $rPower;
+				}
 			}
 		}
 		if ($me->getEquipment()) {
@@ -477,6 +508,9 @@ class CombatManager {
 			} elseif ($hasE) {
 				$power += 81;
 			}
+			if ($recurve) {
+				$power += 50;
+			}
 			return $power;
 		}
 		# If either above the above ifs compare as true we don't get here, so this is technically an else/if regardless.
@@ -485,9 +519,8 @@ class CombatManager {
 		// TODO: heavy armour should reduce this quite a bit
 
 		if ($sol) {
-			$fighters = $me->getAllInUnit()->count();
-			if ($fighters>1) {
-				$me->updateRangedPower($power * pow($fighters, 0.96)/$fighters);
+			if ($groupSize>1) {
+				$me->updateRangedPower($power * pow($groupSize, 0.96)/$groupSize);
 			} else {
 				$me->updateRangedPower($power);
 			}
@@ -504,7 +537,7 @@ class CombatManager {
 		}
 	}
 
-	public function resolveDamage($me, $target, $power, $type, $phase = null, $antiCav = false, $xpMod = 1, $defBonus = null): array {
+	public function resolveDamage($me, $target, $power, $type, $phase = null, $counterType = false, $xpMod = 1, $defBonus = null): array {
 		// this checks for penetration again AND low-damage weapons have lower lethality AND wounded targets die more easily
 		// TODO: attacks on mounted soldiers could kill the horse instead
 		$logs = [];
@@ -513,34 +546,36 @@ class CombatManager {
 		} else {
 			$battle = false;
 		}
-		if (rand(0,$power) > rand(0,max(1,$this->DefensePower($target, $battle) - $target->getWounded(true)))) {
+		$attScore = rand(0,$power);
+		if ($attScore > rand(0,max(1,$this->DefensePower($target, $battle) - $target->getWounded(true)))) {
 			// penetrated again = kill
 			$surrender = match ($phase) {
-				'charge' => 90,
+				'charge' => 85,
 				'ranged' => 60,
-				'hunt' => 85,
-				default => 75,
+				'hunt' => 95,
+				default => 90,
 			};
 			// nobles can surrender and be captured instead of dying - if their attacker belongs to a noble
-			if ($battle && (($me->getMount() && $target->getMount() && rand(0,100) < 50) || $me->getMount() && !$target->getMount() && rand(0,100) < 70)) {
+			$random = rand(1,100);
+			if ($battle && $target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
 				$logs[] = "killed mount & wounded\n";
-				$target->wound(rand(max(1, round($power/10)), $power));
+				#$target->wound($this->calculateWound($power));
 				$target->dropMount();
 				$this->history->addToSoldierLog($target, 'wounded.'.$phase);
 				$result='wound';
-			} elseif ($battle && $target->isNoble() && !$target->getCharacter()->isNPC() && rand(0,100) < $surrender && $me->getCharacter()) {
+			} elseif ($battle && $target->isNoble() && !$target->getCharacter()->isNPC() && $random < $surrender && $me->getCharacter()) {
 				$logs[] = "captured\n";
 				$this->charMan->imprison_prepare($target->getCharacter(), $me->getCharacter());
 				$this->history->logEvent($target->getCharacter(), 'event.character.capture', array('%link-character%'=>$me->getCharacter()->getId()), History::HIGH, true);
 				$result='capture';
-				$this->charMan->addAchievement($me->getCharacter(), 'captures');
+				$this->common->addAchievement($me->getCharacter(), 'captures');
 			} else {
 				if ($battle) {
 					if ($me->isNoble()) {
 						if ($target->isNoble()) {
-							$this->charMan->addAchievement($me->getCharacter(), 'kills.nobles');
+							$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
 						} else {
-							$this->charMan->addAchievement($me->getCharacter(), 'kills.soldiers');
+							$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
 						}
 					}
 					$logs[] = "killed\n";
@@ -552,19 +587,22 @@ class CombatManager {
 		} else {
 			if ($battle) {
 				$logs[] = "wounded\n";
-				$target->wound(rand(max(1, round($power/10)), $power));
+				$target->wound($this->calculateWound($power));
 				$this->history->addToSoldierLog($target, 'wounded.'.$phase);
 				$target->gainExperience(1*$xpMod); // it hurts, but it is a teaching experience...
 			}
 			$result='wound';
 		}
-		if ($battle && $antiCav) {
-			$tPower = $this->MeleePower($target, true);
-			list($innerResult, $sublogs) = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus); // Basically, an attack of opportunity.
-			foreach ($sublogs as $each) {
-				$logs[] = $each;
+		if ($battle && $counterType) {
+			# Attacks of opportunity, to make some gear more interesting to use. :D
+			if ($counterType === 'antiCav') {
+				$tPower = $this->MeleePower($target, true);
+				list($innerResult, $sublogs) = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus);
+				foreach ($sublogs as $each) {
+					$logs[] = $each;
+				}
+				$result = $result . " " . $innerResult;
 			}
-			$result = $result . " " . $innerResult;
 		}
 		if ($battle) {
 			$me->addCasualty();
@@ -583,6 +621,7 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-
-
+	public function calculateWound($power): int {
+		return intval(round(rand(max(1, round($power/10)), $power)/3));
+	}
 }

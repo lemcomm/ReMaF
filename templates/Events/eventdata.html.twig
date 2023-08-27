@@ -16,7 +16,7 @@
 	{% if visible %}
 		{% set shown = shown + 1 %}
 		{% set gap = false %}
-{# TODO: being able to use the History:: consts here would be really cool #}
+		{# TODO: being able to use the History:: consts here would be really cool #}
 		<dt class="prio_{{ event.priority }}">{{ event.cycle|gametime('short') }}</dt>
 		<dd class="prio_{{ event.priority }}">{{ event|eventtranslate }}</dd>
 	{% elseif gap == false %}
@@ -29,15 +29,15 @@
 
 {% if log.events|length > shown %}
 	{% if research is defined and research.assignedEntourage is defined %}
-		<p>{{ 'events.research.ongoing'|transchoice(research.assignedEntourage|length, {"%amount%":research.assignedEntourage|length}) }}</p>
+		<p>{{ 'events.research.ongoing'|trans({"count":research.assignedEntourage|length, "%amount%":research.assignedEntourage|length}) }}</p>
 	{% else %}
 		<p class="possible">{{ 'events.research.intro'|trans }}</p>
 		{% if scholars > 0 %}
-			<p>{{ 'events.research.can'|transchoice(scholars, {"%amount%":scholars}) }}</p>			
+			<p>{{ 'events.research.can'|trans({"count":scholars, "%amount%":scholars}) }}</p>
 		{% endif %}
 	{% endif %}
 	{% if form %}
-		<form class="wide" action="{{ path('bm2_eventlog', {'id':log.id}) }}" method="post" {{ form_start(form) }}
+		<form class="wide" action="{{ path('maf_events_log', {'id':log.id}) }}" method="post" {{ form_start(form) }}
 			{{ form_widget(form) }}
 			<button name="submit">{{ 'entourage.assign.submit'|trans({},"actions") }}</button>
 		</form>

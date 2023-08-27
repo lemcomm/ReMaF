@@ -21,11 +21,11 @@ use Doctrine\ORM\EntityManagerInterface;
 class ConversationManager {
 
         private EntityManagerInterface $em;
-        private AppState $appstate;
+        private CommonService $common;
 
-        public function __construct(EntityManagerInterface $em, AppState $appstate) {
+        public function __construct(EntityManagerInterface $em, CommonService $common) {
                 $this->em = $em;
-		$this->appstate = $appstate;
+		$this->common = $common;
         }
 
         public function getConversations(Character $char) {
@@ -83,7 +83,7 @@ class ConversationManager {
         }
 
         public function getLegacyContacts(Character $char) {
-                $query = $this->em->createQuery('SELECT c FROM App:Character c JOIN c.conv_permissions p JOIN p.conversation t WHERE t IN (SELECT conv FROM App:Conversation conv JOIN conv.permissions perm WHERE perm.character = :me AND perm.active = TRUE)');
+                $query = $this->em->createQuery('SELECT c FROM App:Character c JOIN c.conv_permissions p JOIN p.conversation t WHERE t IN (SELECT conv FROM App:Conversation conv JOIN conv.permissions perm WHERE perm.character = :me AND perm.active = TRUE) and c.alive = true and (c.retired = false OR c.retired is null)');
                 $query->setParameter('me', $char);
                 return $query->getResult();
 	}
@@ -313,7 +313,7 @@ class ConversationManager {
                         $new = new Message();
                         $this->em->persist($new);
                         $new->setType($type);
-                        $new->setCycle($this->appstate->getCycle());
+                        $new->setCycle($this->common->getCycle());
                         $new->setSent($now);
                         $new->setContent($text);
                         if ($type != 'system') {
@@ -365,7 +365,7 @@ class ConversationManager {
                 $conv->setCreated($now);
                 $conv->setActive(true);
                 if (!$cycle) {
-                        $cycle = $this->appstate->getCycle();
+                        $cycle = $this->common->getCycle();
                 }
                 $conv->setCycle($cycle);
                 $conv->setUpdated($now);
@@ -387,7 +387,7 @@ class ConversationManager {
                 }
 
                 $now = new \DateTime("now");
-                $cycle = $this->appstate->getCycle();
+                $cycle = $this->common->getCycle();
                 if ($replyTo) {
                         $origTarget = $this->em->getRepository('App\Entity\Message')->findOneById($replyTo);
                         if (!$topic && $origTarget) {
@@ -452,7 +452,7 @@ class ConversationManager {
                         }
                 }
                 $now = new \DateTime("now");
-                $cycle = $this->appstate->getCycle();
+                $cycle = $this->common->getCycle();
 
                 $conv = new Conversation();
                 $this->em->persist($conv);

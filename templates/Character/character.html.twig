@@ -2,7 +2,7 @@
 
 {% block includes %}
 	{{ parent() }}
-	<script src="{{ asset('bundles/bm2site/tablesorter/jquery.tablesorter.min.js') }}"></script>
+	<script src="{{ asset('tablesorter/jquery.tablesorter.min.js') }}"></script>
 {% endblock %}
 
 {% block content %}
@@ -22,7 +22,7 @@
 {% endif %}
 {% if character.crest %}
 <div class="heraldry">
-	<img src="{{ path("bm2_site_heraldry_crest", {"id":character.crest.id}) }}"/>
+	<img src="{{ path("maf_heraldry_crest", {"id":character.crest.id}) }}"/>
 </div>
 {% endif %}
 <h2>{{ 'character.status'|trans({'%name%':character.purename})|title }}</h2>
@@ -31,9 +31,9 @@
 {% endif %}
 {% if character.prisoner %}
 <p class="inactive">
-	<img src="{{ asset('bundles/bm2site/images/nicubunu_chain.svg') }}" alt="{{ 'prisoner'|transchoice(1) }}" height="16px" align="bottom" />
+	<img src="{{ asset('images/nicubunu_chain.svg') }}" alt="{{ 'prisoner'|trans({"count":1}) }}" height="16px" align="bottom" />
 	{{ 'character.prisoner2'|trans({"%captor%":link(character.prisonerof)})|raw }}
-	<img src="{{ asset('bundles/bm2site/images/nicubunu_chain.svg') }}" alt="{{ 'prisoner'|transchoice(1) }}" height="16px" align="bottom" />
+	<img src="{{ asset('images/nicubunu_chain.svg') }}" alt="{{ 'prisoner'|trans({"count":1}) }}" height="16px" align="bottom" />
 </p>
 {% endif %}
 
@@ -48,7 +48,7 @@
 		{% else %}
 			{{ 'character.mother'|trans|title }}
 		{% endif %}:
-		<a href="{{ path('bm2_site_character_view', {'id':parent.id}) }}">{{ parent.name }}</a></li>
+		<a href="{{ path('maf_char_view', {'id':parent.id}) }}">{{ parent.name }}</a></li>
 	{% endfor %}
 	</ul>
 
@@ -57,7 +57,7 @@
 		{% include "element/hierarchy.html.twig" with {"character":character, "who":'self'} only %}
 
 		<div id="myestates">
-		<h2>{{ 'estate'|transchoice(character.ownedSettlements|length)|title }}{% if character.ownedSettlements|length > 0%} <button id="expandestates">expand</button>{% endif %}</h2>
+		<h2>{{ 'estate'|trans({"count":character.ownedSettlements|length})|title }}{% if character.ownedSettlements|length > 0%} <button id="expandestates">expand</button>{% endif %}</h2>
 		<ul>
 		{% for settlement in character.ownedSettlements %}
 			<li>
@@ -104,7 +104,7 @@
 	{% endif %}
 
 	{% if character.prisoners is not empty %}
-		<h2>{{ 'prisoner'|transchoice(character.prisoners.count)|capitalize }}</h2>
+		<h2>{{ 'prisoner'|trans({"count":character.prisoners.count})|capitalize }}</h2>
 		<ul class="shortlist">
 			{% for prisoner in character.prisoners %}
 				<li>{{ link(prisoner) }}</li>
@@ -113,7 +113,7 @@
 	{% endif %}
 
 	{% if units is not empty %}
-		<h2>{{ 'npc.units'|transchoice(units.count)|capitalize }}</h2>
+		<h2>{{ 'npc.units'|trans({"count":units.count})|capitalize }}</h2>
 		<ul>
 		{% for unit in units %}
 			{% if unit.settlement %}
@@ -126,25 +126,25 @@
 	{% endif %}
 
 	{% if entourage is not empty %}
-		<h2>{{ 'npc.entourage'|transchoice(10)|capitalize }}</h2>
+		<h2>{{ 'npc.entourage'|trans({"count":10})|capitalize }}</h2>
 		<ul>
 		{% for type,number in entourage %}
-			<li>{{number}} {{ ("npc."~type)|transchoice(number) }}</li>
+			<li>{{number}} {{ ("npc."~type)|trans({'count':number}) }}</li>
 		{% endfor %}
 		{% if dead_entourage > 0 %}
 			<li>{{ dead_entourage }} {{ "dead"|trans }}</li>
 		{% endif %}
 		</ul>
-		<a href="{{ path('bm2_site_character_entourage') }}">{{ 'viewdetails'|trans|title }}</a>
+		<a href="{{ path('maf_char_entourage') }}">{{ 'viewdetails'|trans|title }}</a>
 	{% endif %}
 </div>
 {% endblock %}
 
 {% block jquery %}
 $("#expandscouting").click(function(){
-	$("#expandscouting").parent().after('<img src="{{ asset('bundles/bm2site/images/loader.png') }}"/>');
+	$("#expandscouting").parent().after('<img src="{{ asset('images/loader.png') }}"/>');
 	$("#expandscouting").remove();
-	$.get("{{ path('bm2_scouting') }}", function(data) {
+	$.get("{{ path('maf_char_scouting') }}", function(data) {
 		$("#nearbyothers").replaceWith(data);
 		$("#scouting").tablesorter({
 			sortList: [[0,0]],
@@ -153,9 +153,9 @@ $("#expandscouting").click(function(){
 
 });
 $("#expandestates").click(function(){
-	$("#expandestates").parent().after('<img src="{{ asset('bundles/bm2site/images/loader.png') }}"/>');
+	$("#expandestates").parent().after('<img src="{{ asset('images/loader.png') }}"/>');
 	$("#expandestates").remove();
-	$.get("{{ path('bm2_estates') }}", function(data) {
+	$.get("{{ path('maf_char_estates') }}", function(data) {
 		$("#myestates").replaceWith(data);
 		$("#estates").tablesorter({
 			sortList: [[0,0]],

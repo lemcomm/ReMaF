@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Libraries\MovingAverage;
+use App\Service\CommonService;
 use App\Service\Economy;
 use App\Service\GameRunner;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,13 +18,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class GameController extends AbstractController {
 
+	private CommonService $common;
 	private EntityManagerInterface $em;
 	private GameRunner $gr;
 	private int $start_cycle = 2200;
 	private int $low_moving_average_cycles = 6; // game week
 	private int $high_moving_average_cycles = 24; // 4 game weeks
 
-	public function __construct(EntityManagerInterface $em, GameRunner $gr) {
+	public function __construct(CommonService $common, EntityManagerInterface $em, GameRunner $gr) {
+		$this->common = $common;
 		$this->em = $em;
 		$this->gr = $gr;
 	}
@@ -31,7 +34,7 @@ class GameController extends AbstractController {
 	public function indexAction($time_spent=0): Response {
 		$status = array();
 
-		$cycle = $this->gr->getCycle();
+		$cycle = $this->common->getCycle();
 
 		$parts = array(
 			'action'=>'Actions',
@@ -55,6 +58,16 @@ class GameController extends AbstractController {
 			'cycle' => $cycle,
 			'status' => $status,
 			'time_spent' => $time_spent
+		]);
+	}
+
+	#[Route ('/game/bestiary', name:'maf_game_bestiary')]
+	public function bestiaryAction() {
+		$query = $this->em->createQuery('SELECT t FROM DungeonBundle:DungeonMonsterType t ORDER BY t.name ASC');
+		$types = $query->getResult();
+
+		return $this->render('Game/bestiary.html.twig', [
+			'beastiary' => $types
 		]);
 	}
 
@@ -304,7 +317,7 @@ class GameController extends AbstractController {
 	
 	#[Route ('/game/stats/battles', name:'maf_game_stats_battles')]
 	public function battlestatisticsAction(): Response {
-		$cycle = $this->gr->getCycle();
+		$cycle = $this->common->getCycle();
 		$data = array(
 			"rabble"		=> array("label" => "rabble", "data" => array()),
 			"light infantry"	=> array("label" => "light infantry", "data" => array()),

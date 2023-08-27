@@ -2,10 +2,16 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
+use DateTime;
 
 class EventMetadata {
 
+	private ?int $access_from;
+	private ?int $access_until;
+	private ?DateTime $last_access;
+	private int $id;
+	private EventLog $log;
+	private Character $reader;
 
 	public function countNewEvents() {
    		$count = 0;
@@ -28,159 +34,118 @@ class EventMetadata {
    		return false;		
    	}
 
-    /**
-     * @var integer
-     */
-    private $access_from;
+	/**
+	 * Set access_from
+	 *
+	 * @param int|null $accessFrom
+	 * @return EventMetadata
+	 */
+	public function setAccessFrom(?int $accessFrom)
+	{
+		$this->access_from = $accessFrom;
 
-    /**
-     * @var integer
-     */
-    private $access_until;
+		return $this;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $last_access;
+	/**
+	* Get access_from
+	*
+	* @return integer
+	*/
+	public function getAccessFrom() {
+		return $this->access_from;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set access_until
+	 *
+	 * @param int|null $accessUntil
+	 * @return EventMetadata
+	 */
+	public function setAccessUntil(?int $accessUntil) {
+		$this->access_until = $accessUntil;
 
-    /**
-     * @var \App\Entity\EventLog
-     */
-    private $log;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $reader;
+	/**
+	* Get access_until
+	*
+	* @return integer
+	*/
+	public function getAccessUntil() {
+		return $this->access_until;
+	}
 
+	/**
+	 * Set last_access
+	 *
+	 * @param DateTime|null $lastAccess
+	 * @return EventMetadata
+	 */
+	public function setLastAccess(?DateTime $lastAccess) {
+		$this->last_access = $lastAccess;
 
-    /**
-     * Set access_from
-     *
-     * @param integer $accessFrom
-     * @return EventMetadata
-     */
-    public function setAccessFrom($accessFrom)
-    {
-        $this->access_from = $accessFrom;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	* Get last_access
+	*
+	* @return DateTime
+	*/
+	public function getLastAccess() {
+		return $this->last_access;
+	}
 
-    /**
-     * Get access_from
-     *
-     * @return integer 
-     */
-    public function getAccessFrom()
-    {
-        return $this->access_from;
-    }
+	/**
+	* Get id
+	*
+	* @return integer
+	*/
+	public function getId() {
+		return $this->id;
+	}
 
-    /**
-     * Set access_until
-     *
-     * @param integer $accessUntil
-     * @return EventMetadata
-     */
-    public function setAccessUntil($accessUntil)
-    {
-        $this->access_until = $accessUntil;
+	/**
+	* Set log
+	*
+	* @param EventLog $log
+	* @return EventMetadata
+	*/
+	public function setLog(EventLog $log = null) {
+		$this->log = $log;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get access_until
-     *
-     * @return integer 
-     */
-    public function getAccessUntil()
-    {
-        return $this->access_until;
-    }
+	/**
+	* Get log
+	*
+	* @return EventLog
+	*/
+	public function getLog() {
+		return $this->log;
+	}
 
-    /**
-     * Set last_access
-     *
-     * @param \DateTime $lastAccess
-     * @return EventMetadata
-     */
-    public function setLastAccess($lastAccess)
-    {
-        $this->last_access = $lastAccess;
+	/**
+	 * Set reader
+	 *
+	 * @param Character|null $reader
+	 * @return EventMetadata
+	 */
+	public function setReader(Character $reader = null) {
+		$this->reader = $reader;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get last_access
-     *
-     * @return \DateTime 
-     */
-    public function getLastAccess()
-    {
-        return $this->last_access;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set log
-     *
-     * @param \App\Entity\EventLog $log
-     * @return EventMetadata
-     */
-    public function setLog(\App\Entity\EventLog $log = null)
-    {
-        $this->log = $log;
-
-        return $this;
-    }
-
-    /**
-     * Get log
-     *
-     * @return \App\Entity\EventLog 
-     */
-    public function getLog()
-    {
-        return $this->log;
-    }
-
-    /**
-     * Set reader
-     *
-     * @param \App\Entity\Character $reader
-     * @return EventMetadata
-     */
-    public function setReader(\App\Entity\Character $reader = null)
-    {
-        $this->reader = $reader;
-
-        return $this;
-    }
-
-    /**
-     * Get reader
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getReader()
-    {
-        return $this->reader;
-    }
+	/**
+	* Get reader
+	*
+	* @return Character
+	*/
+	public function getReader() {
+		return $this->reader;
+	}
 }

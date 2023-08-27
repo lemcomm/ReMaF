@@ -122,6 +122,20 @@ class UserManager {
 		return $limits;
 	}
 
+	public function findEmailOptOutToken(User $user): string {
+		return $user->getEmailOptOutToken()?:$this->generateEmailOptOutToken($user);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function generateEmailOptOutToken(User $user): string {
+		$token = $this->generateToken();
+		$user->setEmailOptOutToken($token);
+		$this->em->flush();
+		return $token;
+	}
+
 	public function legacyPasswordCheck(User $user): bool {
 		if (str_starts_with($user->getPassword(), '$argon2')) {
 			return false;

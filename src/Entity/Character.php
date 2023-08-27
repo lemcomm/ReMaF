@@ -757,13 +757,17 @@ class Character {
 	public function findControlledSettlements() {
 		$all = new ArrayCollection;
 		foreach ($this->getOwnedSettlements() as $each) {
-			$all->add($each);
+			if (!$each->getOccupant() && !$each->getOccupier()) {
+				$all->add($each);
+			}
 		}
 		foreach ($this->getOccupiedSettlements() as $each) {
 			$all->add($each);
 		}
 		foreach ($this->getStewardingSettlements() as $each) {
-			$all->add($each);
+			if (!$each->getOccupant() && !$each->getOccupier()) {
+				$all->add($each);
+			}
 		}
 		return $all;
 	}

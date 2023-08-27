@@ -64,9 +64,9 @@ class GeographyExtension extends AbstractExtension {
 			} else {
 				$unit = 'yard';
 			}
-			return $this->trans->transchoice("dist.".$unit, $yards, array('%value%' => $yards));
+			return $this->trans->trans("dist.".$unit,array('count'=>$yards, '%value%' => $yards));
 		}
-		$tt = $this->trans->transchoice("dist.yard", $yards, array('%value%' => $yards));
+		$tt = $this->trans->trans("dist.yard", array('count'=>$yards, '%value%' => $yards));
 		$miles = $value = round(($distance/$this->mile)*10)/10;
 
 		if ($distance < $this->league * 2.5) {
@@ -77,7 +77,7 @@ class GeographyExtension extends AbstractExtension {
 				$unit = 'mile';
 			}
 		} else {
-			$tt.=" / ".$this->trans->transchoice("dist.mile", $miles, array('%value%' => $miles));
+			$tt.=" / ".$this->trans->trans("dist.mile", array('count'=> $miles, '%value%' => $miles));
 			if ($distance < $this->league * 10) {
 				$value = round(($distance/$this->league)*10)/10;
 				$unit = 'league';
@@ -87,14 +87,14 @@ class GeographyExtension extends AbstractExtension {
 			}
 		}
 
-		$result = $this->trans->transchoice("dist.".$unit, $value, array('%value%' => $value));
+		$result = $this->trans->trans("dist.".$unit, array('count'=> $value, '%value%' => $value));
 
 		return '<span class="tt" title="'.$tt.'">'.$result.'</span>';
 	}
 
 	public function areaFilter($area) {
 		$hectares = round($area / $this->hectare);
-		$tt = $this->trans->transchoice("area.hectare", $hectares, array('%value%' => $hectares));
+		$tt = $this->trans->trans("area.hectare", array('count' => $hectares, '%value%' => $hectares));
 
 		if ($area < $this->sqm * 1.5) {
 			return $tt;
@@ -105,7 +105,7 @@ class GeographyExtension extends AbstractExtension {
 			$value = $sqm;
 			$unit = 'sqm';
 		} else {
-			$tt.=" / ".$this->trans->transchoice("area.sqm", $sqm, array('%value%' => $sqm));
+			$tt.=" / ".$this->trans->trans("area.sqm", array('count'=>$sqm, '%value%' => $sqm));
 			if ($area < $this->sql * 10) {
 				$value = round(($area/$this->sql)*10)/10;
 				$unit = 'sql';
@@ -115,7 +115,7 @@ class GeographyExtension extends AbstractExtension {
 			}
 		}
 
-		$result = $this->trans->transchoice("area.".$unit, $value, array('%value%' => $value));
+		$result = $this->trans->trans("area.".$unit, array('count'=>$value, '%value%' => $value));
 		return '<span class="tt" title="'.$tt.'">'.$result.'</span>';
 	}
 

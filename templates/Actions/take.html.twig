@@ -44,8 +44,8 @@
 					{% elseif have == "support" %}
 						- {{ "support.already"|trans({},"actions") }}
 					{% else %}
-						<form action="{{ path('bm2_actionsupport') }}" method="post"><input type="hidden" name="id" value="{{ other.id }}" /><button type="submit">{{ "support.submit"|trans({},"actions") }}</button></form>
-						<form action="{{ path('bm2_actionoppose') }}" method="post"><input type="hidden" name="id" value="{{ other.id }}" /><button type="submit">{{ "oppose.submit"|trans({},"actions") }}</button></form>
+						<form action="{{ path('maf_actions_support') }}" method="post"><input type="hidden" name="id" value="{{ other.id }}" /><button type="submit">{{ "support.submit"|trans({},"actions") }}</button></form>
+						<form action="{{ path('maf_actions_oppose') }}" method="post"><input type="hidden" name="id" value="{{ other.id }}" /><button type="submit">{{ "oppose.submit"|trans({},"actions") }}</button></form>
 					{% endif %}
 				</li>
 			{% endfor %}

@@ -4,14 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Character;
 use App\Entity\GameRequest;
-use App\Entity\House;
 
 use App\Form\SoldierFoodType;
 
 use App\Service\AppState;
 use App\Service\AssociationManager;
 use App\Service\ConversationManager;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
 use App\Service\History;
 use App\Service\Politics;

@@ -507,4 +507,34 @@ class Journal {
     {
         return $this->activity_report;
     }
+
+    public function isPublic(): ?bool
+    {
+        return $this->public;
+    }
+
+    public function isOoc(): ?bool
+    {
+        return $this->ooc;
+    }
+
+    public function isPendingReview(): ?bool
+    {
+        return $this->pending_review;
+    }
+
+    public function isGMReviewed(): ?bool
+    {
+        return $this->GM_reviewed;
+    }
+
+    public function isGMPrivate(): ?bool
+    {
+        return $this->GM_private;
+    }
+
+    public function isGMGraphic(): ?bool
+    {
+        return $this->GM_graphic;
+    }
 }

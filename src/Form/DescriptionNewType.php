@@ -7,6 +7,12 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Form for updating entity descriptions.
+ *
+ * Accepts the following options (in their legacy order):
+ * * 'text' - string (null) - type of action
+ */
 class DescriptionNewType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver) {

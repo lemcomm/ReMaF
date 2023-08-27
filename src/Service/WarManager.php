@@ -76,6 +76,39 @@ class WarManager {
 						array('%link-character%'=>$character->getId()),
 						History::MEDIUM, false, 60
 					);
+					if ($owner = $settlement->getOwner()) {
+						$this->history->logEvent(
+							$owner,
+							'event.settlement.siege.assault2',
+							[
+								'%link-settlement%'=>$settlement->getId(),
+								'%link-character%'=>$character->getId()
+							],
+							History::MEDIUM, false, 60
+						);
+					}
+					if ($steward = $settlement->getSteward()) {
+						$this->history->logEvent(
+							$steward,
+							'event.settlement.siege.assault2',
+							[
+								'%link-settlement%'=>$settlement->getId(),
+								'%link-character%'=>$character->getId()
+							],
+							History::MEDIUM, false, 60
+						);
+					}
+					if ($occupant = $settlement->getOccupant()) {
+						$this->history->logEvent(
+							$occupant,
+							'event.settlement.siege.assault2',
+							[
+								'%link-settlement%'=>$settlement->getId(),
+								'%link-character%'=>$character->getId()
+							],
+							History::MEDIUM, false, 60
+						);
+					}
 				} elseif ($place && $place->getSettlement()) {
 					$this->history->logEvent(
 						$place->getSettlement(),
@@ -89,6 +122,17 @@ class WarManager {
 						array('%link-character%'=>$character->getId()),
 						History::MEDIUM, false, 60
 					);
+					if ($owner = $place->getOwner()) {
+						$this->history->logEvent(
+							$owner,
+							'event.place.siege.assault2',
+							[
+								'%link-place%'=>$place->getId(),
+								'%link-character%'=>$character->getId()
+							],
+							History::MEDIUM, false, 60
+						);
+					}
 				} else {
 					$this->history->logEvent(
 						$place,
@@ -96,6 +140,17 @@ class WarManager {
 						array('%link-character%'=>$character->getId()),
 						History::MEDIUM, false, 60
 					);
+					if ($owner = $place->getOwner()) {
+						$this->history->logEvent(
+							$owner,
+							'event.place.siege.assault2',
+							[
+								'%link-place%'=>$place->getId(),
+								'%link-character%'=>$character->getId()
+							],
+							History::MEDIUM, false, 60
+						);
+					}
 				}
 			} else {
 				$battle->setType('siegesortie');
@@ -624,7 +679,7 @@ class WarManager {
 				// If we're dealing with a battle, we have an empty group, we have 2 or less groups in this battle, we remove any actions relating to the battle and call the battle as failed..
 				foreach ($focus->getGroups() as $group) {
 					foreach ($group->getRelatedActions() as $act) {
-						if ($act->getType == 'military.battle') {
+						if ($act->getType() == 'military.battle') {
 							$this->em->remove($act);
 						}
 					}

@@ -15,7 +15,7 @@ use App\Form\PartnershipsType;
 use App\Form\PrisonersManageType;
 use App\Service\ActionManager;
 use App\Service\CharacterManager;
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
 use App\Service\History;
 use App\Service\Politics;
@@ -168,7 +168,7 @@ class PoliticsController extends AbstractController {
 				->add('submit', 'submit', array('label'=>$this->trans->trans('vassals.disown.submit', array(), "politics")))
 				->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$this->pol->disown($vassal);
 			$em = $this->em;
 			$em->flush();
@@ -291,7 +291,7 @@ class PoliticsController extends AbstractController {
 		])->getForm();
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$grm->newOathOffer($character, $data['message'], $data['liege']);
 			$this->addFlash('success', $this->trans->trans('oath.offered', array(), 'politics'));
@@ -354,7 +354,7 @@ class PoliticsController extends AbstractController {
 			'domain' => 'politics'
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$successor = $data['target'];
 
@@ -628,7 +628,7 @@ class PoliticsController extends AbstractController {
 
 		$form = $this->createForm(ListingType::class, $listing, ['em'=>$em, 'available'=>$available]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			if ($id==0) {
@@ -676,7 +676,7 @@ class PoliticsController extends AbstractController {
 					))
 				->getForm();
 			$form_delete->handleRequest($request);
-			if ($form_delete->isValid()) {
+			if ($form_delete->isSubmitted() && $form_delete->isValid()) {
 				$name = $listing->getName();
 				foreach ($listing->getMembers() as $member) {
 					$em->remove($member);
@@ -737,7 +737,7 @@ class PoliticsController extends AbstractController {
 		$prisoners = $character->getPrisoners();
 		$form = $this->createForm(PrisonersManageType::class, null, ['prisoners' => $prisoners, 'others' => $others]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$change_others = false;
 

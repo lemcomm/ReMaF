@@ -16,7 +16,6 @@ use App\Entity\EventLog;
 use App\Entity\FeatureType;
 use App\Entity\House;
 use App\Entity\Law;
-use App\Entity\Mercenaries;
 use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\RealmPosition;
@@ -149,91 +148,91 @@ class MessageTranslateExtension extends AbstractExtension {
 			if (preg_match('/%link-([^-]+)(-.*)?%/', $key, $matches)) {
 				// link elements, syntax %link-(type)%
 				$subkey = $matches[1];
-				if (isset($matches[2])) $index = $matches[2]; else $index='';
+				if (isset($matches[2])) {
+					$index = str_replace('-', '_', $matches[2]);
+				} else {
+					$index = '';
+				}
 				switch ($subkey) {
 					case 'war':
 						$war = $this->em->getRepository(War::class)->find($value);
-						$data['%war'.$index.'%'] = $this->links->ObjectLink($war, false, $this->absolute);
+						$data['{war'.$index.'}'] = $this->links->ObjectLink($war, false, $this->absolute);
 						break;
 					case 'artifact':
 						$artifact = $this->em->getRepository(Artifact::class)->find($value);
-						$data['%artifact'.$index.'%'] = $this->links->ObjectLink($artifact, false, $this->absolute);
-						break;
-					case 'mercenaries':
-						$mercenaries = $this->em->getRepository(Mercenaries::class)->find($value);
-						$data['%mercenaries'.$index.'%'] = $this->links->ObjectLink($mercenaries, false, $this->absolute);
+						$data['{artifact'.$index.'}'] = $this->links->ObjectLink($artifact, false, $this->absolute);
 						break;
 					case 'place':
 						$place = $this->em->getRepository(Place::class)->find($value);
-						$data['%place'.$index.'%'] = $this->links->ObjectLink($place, false, $this->absolute);
+						$data['{place'.$index.'}'] = $this->links->ObjectLink($place, false, $this->absolute);
 					case 'battle':
 						$battle = $this->em->getRepository(BattleReport::class)->find($value);
-						$data['%battle'.$index.'%'] = $this->links->ObjectLink($battle, false, $this->absolute);
+						$data['{battle'.$index.'}'] = $this->links->ObjectLink($battle, false, $this->absolute);
 						break;
 					case 'activityreport':
 						$report = $this->em->getRepository(ActivityReport::class)->find($value);
-						$data['%activityreport'.$index.'%'] = $this->links->ObjectLink($report, false, $this->absolute);
+						$data['{activityreport'.$index.'}'] = $this->links->ObjectLink($report, false, $this->absolute);
 						break;
 					case 'log':
 						$log = $this->em->getRepository(EventLog::class)->find($value);
-						$data['%log'.$index.'%'] = $this->links->ObjectLink($log, false, $this->absolute);
+						$data['{log'.$index.'}'] = $this->links->ObjectLink($log, false, $this->absolute);
 						break;
 					case 'realm':
 						$realm = $this->em->getRepository(Realm::class)->find($value);
-						$data['%realm'.$index.'%'] = $this->links->ObjectLink($realm, false, $this->absolute);
+						$data['{realm'.$index.'}'] = $this->links->ObjectLink($realm, false, $this->absolute);
 						break;
 					case 'realmposition':
 						$position = $this->em->getRepository(RealmPosition::class)->find($value);
-						$data['%realmposition'.$index.'%'] = $this->links->ObjectLink($position, false, $this->absolute);
+						$data['{realmposition'.$index.'}'] = $this->links->ObjectLink($position, false, $this->absolute);
 						break;
 					case 'settlement':
 						$settlement = $this->em->getRepository(Settlement::class)->find($value);
-						$data['%settlement'.$index.'%'] = $this->links->ObjectLink($settlement, false, $this->absolute);
+						$data['{settlement'.$index.'}'] = $this->links->ObjectLink($settlement, false, $this->absolute);
 						break;
 					case 'character':
 						$character = $this->em->getRepository(Character::class)->find($value);
-						$data['%character'.$index.'%'] = $this->links->ObjectLink($character, false, $this->absolute);
+						$data['{character'.$index.'}'] = $this->links->ObjectLink($character, false, $this->absolute);
 						break;
 					case 'buildingtype':
 						$type = $this->em->getRepository(BuildingType::class)->find($value);
-						$data['%buildingtype'.$index.'%'] = $this->links->ObjectLink($type, false, $this->absolute);
+						$data['{buildingtype'.$index.'}'] = $this->links->ObjectLink($type, false, $this->absolute);
 						break;
 					case 'featuretype':
 						$type = $this->em->getRepository(FeatureType::class)->find($value);
-						$data['%featuretype'.$index.'%'] = $this->links->ObjectLink($type, false, $this->absolute);
+						$data['{featuretype'.$index.'}'] = $this->links->ObjectLink($type, false, $this->absolute);
 						break;
 					case 'item':
 						// this can be 0
 						if ($value==0) {
-							$data['%item'.$index.'%'] = '-';
+							$data['%item'.$index.'}'] = '-';
 						} else {
 							$type = $this->em->getRepository(EquipmentType::class)->find($value);
-							$data['%item'.$index.'%'] = $this->links->ObjectLink($type, false, $this->absolute);
+							$data['%item'.$index.'}'] = $this->links->ObjectLink($type, false, $this->absolute);
 						}
 						break;
 					case 'house':
 						$house = $this->em->getRepository(House::class)->find($value);
-						$data['%house'.$index.'%'] = $this->links->ObjectLink($house, false, $this->absolute);
+						$data['{house'.$index.'}'] = $this->links->ObjectLink($house, false, $this->absolute);
 						break;
 					case 'unit':
 						$unit = $this->em->getRepository(Unit::class)->find($value);
-						$data['%unit'.$index.'%'] = $this->links->ObjectLink($unit, false, $this->absolute);
+						$data['{unit'.$index.'}'] = $this->links->ObjectLink($unit, false, $this->absolute);
 						break;
 					case 'assoc':
 						$assoc = $this->em->getRepository(Association::class)->find($value);
-						$data['%assoc'.$index.'%'] = $this->links->ObjectLink($assoc, false, $this->absolute);
+						$data['{assoc'.$index.'}'] = $this->links->ObjectLink($assoc, false, $this->absolute);
 						break;
 					case 'deity':
 						$deity = $this->em->getRepository(Deity::class)->find($value);
-						$data['%deity'.$index.'%'] = $this->links->ObjectLink($deity, false, $this->absolute);
+						$data['{deity'.$index.'}'] = $this->links->ObjectLink($deity, false, $this->absolute);
 						break;
 					case 'law':
 						$law = $this->em->getRepository(Law::class)->find($value);
-						$data['%law'.$index.'%'] = $this->links->ObjectLink($law, false, $this->absolute);
+						$data['{law'.$index.'}'] = $this->links->ObjectLink($law, false, $this->absolute);
 						break;
 					default:
 						if (is_array($value)) {
-							$data[$key]=$this->translator->trans($value['key'], $value);
+							$data[$key]=$this->trans->trans($value['key'], $value);
 						} else {
 							$data[$key]=$value;
 						}
@@ -245,13 +244,13 @@ class MessageTranslateExtension extends AbstractExtension {
 				switch ($subkey) {
 					case 'card':
 						$card = $this->em->getRepository(DungeonCardType::class)->find($value);
-						$data['%card'.$index.'%'] = "<em>".$this->translator->trans('card.'.$card->getName().'.title', array(), $domain)."</em>";
+						$data['%card'.$index.'%'] = "<em>".$this->trans->trans('card.'.$card->getName().'.title', array(), $domain)."</em>";
 						break;
 					case 'distance':
 						$data['%distance'.$index.'%'] = $this->geo->distanceFilter($value);
 						break;
 					case 'direction':
-						$data['%direction'.$index.'%'] = $this->translator->trans($this->geo->directionFilter($value, true));
+						$data['%direction'.$index.'%'] = $this->trans->trans($this->geo->directionFilter($value, true));
 						break;
 				}
 			} else {

@@ -24,7 +24,7 @@
 <dt>{{ "queue.block"|trans({}, "actions") }}</dt>
 <dd>{% if action.blocktravel %}{{ 'yes'|trans }}{% else %}{{ 'no'|trans }}{% endif %}</dd>
 {% if action.targetrealm %}
-	<dt>{{ "realm"|transchoice(1) }}</dt>
+	<dt>{{ "realm"|trans({'count':1}) }}</dt>
 	<dd>{{ link(action.targetrealm) }}</dd>
 {% endif %}
 {% if action.targetsettlement %}
@@ -54,7 +54,7 @@
 {% endif %}
 {% if action.targetlisting %}
 	<dt>{{ "queue.target.list"|trans({}, "actions") }}</dt>
-	<dd>{{ ("military.block.mode."~action.stringvalue)|trans({}, "actions") }}: <a href="{{ path('bm2_lists') }}">{{ action.targetlisting.name }}</a></dd>
+	<dd>{{ ("military.block.mode."~action.stringvalue)|trans({}, "actions") }}: <a href="{{ path('maf_politics_lists') }}">{{ action.targetlisting.name }}</a></dd>
 {% endif %}
 
 {% if action.supportedaction %}
@@ -105,7 +105,7 @@ $(".progress_value_dummy").addClass("progress_value").removeClass("progress_valu
 
 $("#cancelaction").click(function(){
 
-	$.post('{{ path("bm2_site_queue_update") }}', {'id':{{ action.id }}, 'option':'cancel'}, function(data) {
+	$.post('{{ path("maf_queue_update") }}', {'id':{{ action.id }}, 'option':'cancel'}, function(data) {
 		$("#actiondetails").html('{{ "queue.cancelled"|trans({}, "actions") }}');
 	});
 });

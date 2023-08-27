@@ -10,9 +10,9 @@
 		<td align="center">
 		{% for i in 1..3 %}
 			{% if i <= build.focus %}
-				<img class="editable setfocus" src="{{ asset('bundles/bm2site/images/sivvus_tools.svg') }}" height="16px" data-id="{{ build.id }}" data-set="{{ i - 1 }}"/>
+				<img class="editable setfocus" src="{{ asset('images/sivvus_tools.svg') }}" height="16px" data-id="{{ build.id }}" data-set="{{ i - 1 }}"/>
 			{% else %}
-				<img class="editable setfocus" src="{{ asset('bundles/bm2site/images/sivvus_tools2.svg') }}" height="16px" data-id="{{ build.id }}" data-set="{{ i }}"/>
+				<img class="editable setfocus" src="{{ asset('images/sivvus_tools2.svg') }}" height="16px" data-id="{{ build.id }}" data-set="{{ i }}"/>
 			{% endif %}
 		{% endfor %}
 		</td>
@@ -35,6 +35,6 @@
 		{% endif %}
 	</td>
 
-	<td><form method="post" action="{{ path('bm2_site_construction_abandonbuilding', {'building':build.id}) }}"><button>{{ 'economy.build.abandon'|trans({},"actions") }}</button></form></td>
+	<td><form method="post" action="{{ path('maf_construction_abandon', {'building':build.id}) }}"><button>{{ 'economy.build.abandon'|trans({},"actions") }}</button></form></td>
 
 </tr>

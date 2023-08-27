@@ -24,21 +24,24 @@ class Soldier extends NPC {
                      		return "soldier #{$this->id} ({$this->getName()}, {$this->getType()}, base $base, char $char)";
                      	}
 
-	public function isActive($include_routed=false) {
-                     		if (!$this->isAlive() || $this->getTrainingRequired() > 0 || $this->getTravelDays() > 0) return false;
-                     		if ($this->getType()=='noble') {
-                     			// nobles have their own active check
-                     			return $this->getCharacter()->isActive($include_routed, true);
-                     		}
-                     		// we can take a few wounds before we go inactive
-                     		$can_take = 1;
-                     		if ($this->getExperience() > 10) $can_take++;
-                     		if ($this->getExperience() > 30) $can_take++;
-                     		if ($this->getExperience() > 100) $can_take++;
-                     		if (parent::getWounded() > $can_take) return false;
-                     		if (!$include_routed && $this->isRouted()) return false;
-                     		return true;
-                     	}
+	public function isActive($include_routed=false, $militia=false): bool {
+		if (!$this->isAlive() || $this->getTrainingRequired() > 0 || $this->getTravelDays() > 0) return false;
+		if ($this->getType() == 'noble') {
+			// nobles have their own active check
+			return $this->getCharacter()->isActive($include_routed, true);
+		}
+		// we can take a few wounds before we go inactive
+		$can_take = 1;
+		if ($this->getExperience() > 10) $can_take++;
+		if ($this->getExperience() > 30) $can_take++;
+		if ($this->getExperience() > 100) $can_take++;
+		if ($militia) {
+			$can_take = $can_take * 10; # Militia are usually willing to fight, even wounded.
+		}
+		if (parent::getWounded() > $can_take) return false;
+		if (!$include_routed && $this->isRouted()) return false;
+		return true;
+	}
 
 	public function wound($value=1) {
                      		parent::wound($value);
@@ -109,7 +112,7 @@ class Soldier extends NPC {
                      			if ($this->weapon && $this->weapon->getRanged() > 0) {
                      				return 'mounted archer';
                      			} else {
-                     				if ($def >= 80) {
+                     				if ($def >= 90) {
                      					return 'heavy cavalry';
                      				} else {
                      					return 'light cavalry';
@@ -123,11 +126,11 @@ class Soldier extends NPC {
                      				return 'archer';
                      			}
                      		}
-                     		if ($this->armour && $this->armour->getDefense() >= 60) {
+                     		if ($this->armour && $this->armour->getDefense() >= 70) {
                      			return 'heavy infantry';
                      		}
                      
-                     		if ($def >= 40) {
+                     		if ($def >= 60) {
                      			return 'medium infantry';
                      		}
                      		return 'light infantry';

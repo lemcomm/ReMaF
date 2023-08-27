@@ -12,7 +12,7 @@ use App\Form\AreYouSureType;
 use App\Form\LawTypeSelectType;
 use App\Form\LawEditType;
 
-use App\Service\Dispatcher;
+use App\Service\Dispatcher\Dispatcher;
 use App\Service\LawManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -129,7 +129,7 @@ class LawController extends AbstractController {
 
 		$form = $this->createForm(LawTypeSelectType::class, null, ['types' => $this->em->getRepository(LawType::class)->findBy(['category'=>$type])]);
 		$form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($realm) {
 				return $this->redirectToRoute('maf_realm_laws_finalize', ['realm'=>$realm->getId(), 'type'=>$data['target']->getId()]);
@@ -156,7 +156,7 @@ class LawController extends AbstractController {
 
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['sure']) {
 				$this->lawMan->repealLaw($law, $char);
@@ -222,7 +222,7 @@ class LawController extends AbstractController {
 
 		$form = $this->createForm(LawEditType::class, null, ['type' => $type, 'law' => $law, 'choices' => $lawMan->choices, 'settlements' => $settlements]);
 		$form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			#updateLaw($org, $type, $setting, $title, $description = null, Character $character, $allowed, $mandatory, $cascades, $sol, $flush=true)
 			$result = $this->lawMan->updateLaw($org, $type, $data['value'], $data['title'], $data['description'], $char, $data['mandatory'], $data['cascades'], $data['sol'], $data['settlement'], $law);

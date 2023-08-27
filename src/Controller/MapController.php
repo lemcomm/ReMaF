@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Character;
 use App\Entity\MapMarker;
 use App\Service\AppState;
+use App\Service\CommonService;
 use App\Service\Geography;
 use App\Form\SetMarkerType;
 
@@ -26,9 +27,11 @@ class MapController extends AbstractController {
 	private EntityManagerInterface $em;
 	private Geography $geo;
 	private TranslatorInterface $trans;
-	
-	public function __construct(AppState $app, EntityManagerInterface $em, Geography $geo, TranslatorInterface $trans) {
+	private CommonService $common;
+
+	public function __construct(AppState $app, CommonService $common, EntityManagerInterface $em, Geography $geo, TranslatorInterface $trans) {
 		$this->app = $app;
+		$this->common = $common;
 		$this->em = $em;
 		$this->geo = $geo;
 		$this->trans = $trans;
@@ -84,14 +87,14 @@ class MapController extends AbstractController {
 
 		$form = $this->createForm(SetMarkerType::class, null, ['realms' => $my_realms]);
 		$form->handleRequest($request);
-		if ($form->isValid() && !$limit) {
+		if ($form->isSubmitted() && $form->isValid() && !$limit) {
 			$data = $form->getData();
 
 			$marker = new MapMarker;
 			$marker->setName($data['name']);
 			$marker->setType($data['type']);
 			$marker->setLocation(new Point($data['new_location_x'], $data['new_location_y']));
-			$marker->setPlaced(intval($this->app->getGlobal('cycle')));
+			$marker->setPlaced(intval($this->common->getGlobal('cycle')));
 			$marker->setOwner($character);
 			$marker->setRealm($data['realm']);
 			$em->persist($marker);
@@ -119,7 +122,7 @@ class MapController extends AbstractController {
 		return new Response("failed");
 	}
 	
-	#[Route ('/map/data', defaults:['_format'=>'json'])]
+	#[Route ('/map/data', name:'maf_map_data', defaults:['_format'=>'json'])]
 	public function dataAction(Request $request): JsonResponse|Response {
 		$type = $request->query->get('type');
 		$bbox_raw = $request->query->get('bbox');
@@ -302,7 +305,7 @@ class MapController extends AbstractController {
 				$qb->where('ST_Distance(c.location, me.location) < :spotting OR ST_Distance(c.location, f.location) < :towerspot');
 				$qb->andWhere('f in (:towers)');
 				$qb->setParameter('towers', $towers)
-					->setParameter('towerspot', $this->app->getGlobal('spot.towerdistance', 2500));
+					->setParameter('towerspot', $this->common->getGlobal('spot.towerdistance', 2500));
 			} else {
 				$qb->where('ST_Distance(c.location, me.location) < :spotting');
 			}

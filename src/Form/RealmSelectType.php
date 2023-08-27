@@ -11,7 +11,13 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 
-
+/**
+ * Form for selecting a realm.
+ *
+ * Accepts the following options (in their legacy order):
+ * * 'realms' - Realm Entities - Realms to present as option
+ * * 'type' - string - Controls the type of form and translations to present.
+ */
 class RealmSelectType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver) {
@@ -69,10 +75,9 @@ class RealmSelectType extends AbstractType {
 				$domain	= 'actions';
 				break;
 		}
-		// Note: I refuse to change these variable names. --Andrew 20230326
-		$bloodystupidunnecessarynonsense = array();
-		foreach ($realms as $fuckingcrap) {
-			$bloodystupidunnecessarynonsense[] = $fuckingcrap->getId();
+		$realmIDs = array();
+		foreach ($realms as $each) {
+			$realmIDs[] = $each->getId();
 		}
 
 		$builder->add('target', EntityType::class, array(
@@ -81,10 +86,10 @@ class RealmSelectType extends AbstractType {
 			'required' => $req,
 			'class'=>Realm::class,
 			'choice_label'=>'name',
-			'query_builder'=>function(EntityRepository $er) use ($bloodystupidunnecessarynonsense) {
+			'query_builder'=>function(EntityRepository $er) use ($realmIDs) {
 				$qb = $er->createQueryBuilder('r');
 				$qb->where('r IN (:realms)');
-				$qb->setParameter('realms', $bloodystupidunnecessarynonsense);
+				$qb->setParameter('realms', $realmIDs);
 				return $qb;
 			},
 		));

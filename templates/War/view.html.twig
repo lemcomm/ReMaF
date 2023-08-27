@@ -2,7 +2,7 @@
 
 {% block content %}
 <h2>{{ war.summary }}</h2>
-<p>{{ war.description|markdown|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}</p>
+<p>{{ war.description|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}</p>
 
 {% if war.timer <= 0 %}
 	<p>{{ 'war.over'}}</p>
