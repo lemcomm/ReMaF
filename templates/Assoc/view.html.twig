@@ -5,10 +5,7 @@
 		<div class="queue">
 			<h3>{{ 'assoc.route.view.history.name'|trans({},"orgs")|title }}</h3>
 			<dl>
-			{% for event in assoc.log.events if event.public %}
-				<dt>{{ event.cycle|gametime('short') }}</dt>
-				<dd>{{ event|eventtranslate }}</dd>
-			{% endfor %}
+			{% include "Events/shortLog.html.twig" with {'events':assoc.log.events} %}
 			</dl>
 		</div>
 		<h2>{{ assoc.formalName }}</h2>

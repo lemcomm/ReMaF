@@ -56,26 +56,6 @@ class AssociationDispatcher extends Dispatcher {
 
 	/* ========== Association Actions ========== */
 
-	public function assocCreateTest(): array {
-		if (($check = $this->politicsActionsGenericTests()) !== true) {
-			return array("name"=>"assoc.new.name", "description"=>"unavailable.$check");
-		}
-		$character = $this->getCharacter();
-		if (!$character->getInsidePlace()) {
-			return array("name"=>"assoc.new.name", "description"=>"unavailable.outsideplace");
-		} else {
-			$place = $character->getInsidePlace();
-		}
-		if (!$place->getType()->getAssociations()) {
-			return array("name"=>"assoc.new.name", "description"=>"unavailable.noassociationsallowed");
-		}
-		if ($place->getOwner() !== $character) {
-			#TODO: Rework this for permissions when we add House permissions (if we do).
-			return array("name"=>"assoc.new.name", "description"=>"unavailable.notowner");
-		}
-		return $this->action('assoc.new', 'maf_assoc_create', true);
-	}
-
 	public function assocUpdateTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.update.name", "description"=>"unavailable.$check");

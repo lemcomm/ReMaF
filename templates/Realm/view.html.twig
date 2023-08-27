@@ -10,10 +10,7 @@
 <div class="queue">
 	<h3>{{ 'realm.history'|trans({},"politics")|title }}</h3>
 	<dl>
-	{% for event in realm.log.events if event.public %}
-		<dt>{{ event.cycle|gametime('short') }}</dt>
-		<dd>{{ event|eventtranslate }}</dd>
-	{% endfor %}
+	{% include "Events/shortLog.html.twig" with {'events':realm.log.events} %}
 	</dl>
 </div>
 

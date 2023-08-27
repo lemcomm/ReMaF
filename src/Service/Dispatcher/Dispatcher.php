@@ -1188,7 +1188,7 @@ class Dispatcher {
 			return array("name"=>"relations", "description"=>"unavailable.npc");
 		}
 
-		return $this->action("relations", "maf_relations");
+		return $this->action("relations", "maf_politics_relations");
 
 	}
 	public function personalPrisonersTest(): array {
@@ -1772,6 +1772,30 @@ class Dispatcher {
 	/* ========== Unit Actions ========== */
 
 	# Moved to UnitDispatcher.php
+
+	/* ========== Association Actions ========= */
+
+	public function assocCreateTest(): array {
+		if (($check = $this->politicsActionsGenericTests()) !== true) {
+			return array("name"=>"assoc.new.name", "description"=>"unavailable.$check");
+		}
+		$character = $this->getCharacter();
+		if (!$character->getInsidePlace()) {
+			return array("name"=>"assoc.new.name", "description"=>"unavailable.outsideplace");
+		} else {
+			$place = $character->getInsidePlace();
+		}
+		if (!$place->getType()->getAssociations()) {
+			return array("name"=>"assoc.new.name", "description"=>"unavailable.noassociationsallowed");
+		}
+		if ($place->getOwner() !== $character) {
+			#TODO: Rework this for permissions when we add House permissions (if we do).
+			return array("name"=>"assoc.new.name", "description"=>"unavailable.notowner");
+		}
+		return $this->action('assoc.new', 'maf_assoc_create', true);
+	}
+
+	# Rest moved to AssociationDispatcher.php
 
 	/* ========== Political Actions ========== */
 

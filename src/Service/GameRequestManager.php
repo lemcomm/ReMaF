@@ -82,6 +82,24 @@ class GameRequestManager {
 		$this->em = $em;
 	}
 
+	public function findHouseApplicationRequests(Character $char) {
+		if ($char->getHouse() && $char->getHouse()->getHead() === $char) {
+			$params = [];
+			$queryString = 'SELECT r FROM App:GameRequest r WHERE r.to_house = :house';
+			$query = $this->em->createQuery($queryString);
+			$query->setParameters(['house'=>$char->getHouse()->getId()]);
+			try {
+				# We try/catch this because doctrine doesn't like to return null. By not like, I mean it won't return null on this type of query.
+				return $query->getResult();
+			} catch(Exception) {
+				# If there's an exception, we drop it--an exception here is Doctrine complaining it can't return null--and return null.
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
 	public function findAllManageableRequests(Character $char, $accepted = false) {
 		# TODO: When we have multiple ranks/roles within a single org that can manage different requests, we'll have to build that analysis into the SQL query we make here.
 

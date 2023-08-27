@@ -1,7 +1,7 @@
 {% extends "layout.html.twig" %}
 
 {% block content %}
-	<h2>{{ "news.title"|transchoice(10, {},"communication")|title }}</h2>
+	<h2>{{ "news.title"|trans({'count':10},"communication")|title }}</h2>
 
 	{% include "element/newslist.html.twig" with {"title":"news.local"|trans({},"communication"), "list":local_list} only %}
 

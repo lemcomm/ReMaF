@@ -9,10 +9,7 @@
 	<div class="queue">
 		<h3>{{ 'house.history.name'|trans({},"politics")|title }}</h3>
 		<dl>
-		{% for event in house.log.events if event.public %}
-			<dt>{{ event.cycle|gametime('short') }}</dt>
-			<dd>{{ event|eventtranslate }}</dd>
-		{% endfor %}
+			{% include "Events/shortLog.html.twig" with {'events':house.log.events} %}
 		</dl>
 	</div>
 	<h2>{{ house.name }}</h2>

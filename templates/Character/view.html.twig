@@ -24,12 +24,7 @@
 		<h3>{{ 'character.history'|trans|title }}</h3>
 		<dl>
 		{# FIXME: this can get very long - cut it after x entries and display a "show full history" link? #}
-		{% for event in char.log.events %}
-			{% if event.public  %}
-				<dt>{{ event.cycle|gametime('short') }}</dt>
-				<dd>{{ event|eventtranslate }}</dd>
-			{% endif %}
-		{% endfor %}
+		{% include "Events/shortLog.html.twig" with {'events':char.log.events} %}
 		</dl>
 	</div>
 {% endmacro %}

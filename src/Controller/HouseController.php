@@ -222,15 +222,17 @@ class HouseController extends AbstractController {
 	}
 	
 	#[Route ('/house/{house}/applicants', name:'maf_house_applicants', requirements:['house'=>'\d+'])]
-	public function applicantsAction(House $house): RedirectResponse|Response {
+	public function applicantsAction(GameRequestManager $gm, House $house): RedirectResponse|Response {
 		# TODO: Make this a sub-route of the manage GameRequests route.
 		$character = $this->dispatcher->gateway('houseManageApplicantsTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
+		$requests = $gm->findHouseApplicationRequests($character); # Not accepted/rejected
 
 		return $this->render('House/applicants.html.twig', [
 			'name' => $house->getName(),
+			'joinrequests'=>$requests
 		]);
 	}
 

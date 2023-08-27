@@ -1,0 +1,6 @@
+{% for event in events %}
+    {% if event.public %}
+        <dt>{{ event.cycle|gametime('short') }}</dt>
+        <dd>{{ event|eventtranslate }}</dd>
+    {% endif %}
+{% endfor %}
