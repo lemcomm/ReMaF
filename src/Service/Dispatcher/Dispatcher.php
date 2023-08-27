@@ -627,7 +627,7 @@ class Dispatcher {
 		if ($myrealms->isEmpty()) {
 			return array("name"=>"location.marker.name", "description"=>"unavailable.norealms");
 		}
-		return $this->action("location.marker", "maf_setmarker");
+		return $this->action("location.marker", "maf_map_setmarker");
 	}
 
 	public function locationEnterTest($check_duplicate=false): array {
@@ -706,7 +706,7 @@ class Dispatcher {
 		if (!$this->getActionableRegion()) {
 			return array("name"=>"location.quests.name", "description"=>"unavailable.noregion");
 		}
-		return array("name"=>"location.quests.name", "url"=>"maf_quests_localquests", "description"=>"location.quests.description", "long"=>"location.quests.longdesc");
+		return array("name"=>"location.quests.name", "url"=>"maf_quests_local", "description"=>"location.quests.description", "long"=>"location.quests.longdesc");
 	}
 
 	public function locationEmbarkTest(): array {
@@ -765,7 +765,7 @@ class Dispatcher {
 		if ($this->getCharacter()->getArtifacts()->isEmpty()) {
 			return array("name"=>"location.giveartifact.name", "description"=>"unavailable.noartifacts");
 		}
-		return array("name"=>"location.giveartifact.name", "url"=>"maf_artifacts_give", "description"=>"location.giveartifact.description");
+		return array("name"=>"location.giveartifact.name", "url"=>"maf_artifact_give", "description"=>"location.giveartifact.description");
 	}
 
 	public function locationGiveShipTest(): array {
@@ -833,7 +833,7 @@ class Dispatcher {
 		if (!$this->getCharacter()->getDungeoneer()) {
 			return array("name"=>"personal.party.name", "description"=>"unavailable.nocards");
 		}
-		return $this->action("personal.dungeoncards", "dungeons_cards");
+		return $this->action("personal.dungeoncards", "maf_dungeon_cards");
 	}
 
 

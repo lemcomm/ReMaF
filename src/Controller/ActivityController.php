@@ -154,10 +154,6 @@ class ActivityController extends AbstractController {
 		return $this->redirectToRoute('maf_actions');
 	}
 
-	/**
-	  * @Route("/activity/report/{report}", name="maf_activity_report", requirements={"report"="\d+"})
-	  */
-
 	#[Route ('/activity/report/{report}', name:'maf_activity_report', requirements:['report'=>'\d+'])]
         public function activityReport(AppState $app, Security $sec, ActivityReport $report): RedirectResponse|Response {
 		$char = $app->getCharacter(true,true,true);
@@ -195,11 +191,7 @@ class ActivityController extends AbstractController {
 		return $this->render('Activity/viewReport.html.twig', ['report'=>$report, 'place'=>$place, 'settlement'=>$settlement, 'inside'=>$inside, 'access'=>$check, 'admin'=>$admin, 'roundcount'=>$totalRounds]);
         }
 
-	/**
-	  * @Route("/train/{skill}", name="maf_train_skill", requirements={"id"="[A-Za-z_-]+"})
-	  */
-
-	#[Route ('/activity/train/{skill}', name:'maf_activity_duel_challenge', requirements:['skill'=>'[A-Za-z_-]'])]
+	#[Route ('/activity/train/{skill}', name:'maf_train_skill', requirements:['skill'=>'[A-Za-z_\- ]*'])]
 	public function trainSkillAction(ActionManager $actionman, $skill): RedirectResponse {
 		$character = $this->gateway('activityTrainTest', $skill);
 		if (! $character instanceof Character) {

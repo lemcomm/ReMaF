@@ -219,7 +219,7 @@ class WarDispatcher extends Dispatcher {
 		if ($this->getCharacter()->isInBattle()) {
 			return array("name"=>"military.settlement.defend.name", "description"=>"unavailable.inbattle");
 		}
-		return $this->action("military.settlement.defend", "maf_war_defendsettlement");
+		return $this->action("military.settlement.defend", "maf_war_settlement_defend");
 	}
 
 	public function militaryDefendPlaceTest($check_duplicate=false): array {
@@ -857,7 +857,7 @@ class WarDispatcher extends Dispatcher {
 		if ($this->getCharacter()->DaysInGame()<2) {
 			return array("name"=>"military.settlement.loot.name", "description"=>"unavailable.fresh");
 		}
-		return $this->action("military.settlement.loot", "maf_war_lootsettlement");
+		return $this->action("military.settlement.loot", "maf_war_settlement_loot");
 	}
 
 	public function militaryAttackNoblesTest($check_duplicate=false): array {
@@ -882,7 +882,7 @@ class WarDispatcher extends Dispatcher {
 		if ($this->getCharacter()->DaysInGame()<2) {
 			return array("name"=>"military.battles.initiate.name", "description"=>"unavailable.fresh");
 		}
-		return $this->action("military.battles.initiate", "maf_war_attackothers");
+		return $this->action("military.battles.initiate", "maf_war_nobles_attack");
 	}
 
 	public function militaryAidTest(): array {
@@ -895,7 +895,7 @@ class WarDispatcher extends Dispatcher {
 		if ($this->getCharacter()->isDoingAction('military.evade')) {
 			return array("name"=>"military.aid.name", "description"=>"unavailable.evading");
 		}
-		return $this->action("military.aid", "maf_war_aid");
+		return $this->action("military.aid", "maf_war_nobles_aid");
 	}
 
 	public function militaryJoinBattleTest(): array {
@@ -914,7 +914,7 @@ class WarDispatcher extends Dispatcher {
 		if ($this->getCharacter()->isDoingAction('military.evade')) {
 			return array("name"=>"military.battles.join.name", "description"=>"unavailable.evading");
 		}
-		return $this->action("military.battles.join", "maf_war_battlejoin");
+		return $this->action("military.battles.join", "maf_war_battles_join");
 	}
 
 }

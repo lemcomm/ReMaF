@@ -3,7 +3,7 @@ twig:
     globals:
             site_name: '%env(SITE_NAME)%'
             site_short: '%env(SITE_SHORT)%'
-            activityDispathcer: '@App\Service\Dispatcher\ActivityDispatcher'
+            activityDispatcher: '@App\Service\Dispatcher\ActivityDispatcher'
             associationDispatcher: '@App\Service\Dispatcher\AssociationDispatcher'
             appstate: '@App\Service\AppState'
             common: '@App\Service\CommonService'

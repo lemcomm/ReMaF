@@ -237,7 +237,7 @@ class LinksExtension extends AbstractExtension {
 			'newsedition' => 'maf_news_read',
 			'house' => 'maf_house',
 			'place' => 'maf_place',
-			'unit' => 'maf_units_info',
+			'unit' => 'maf_unit_info',
 			'conversation' => 'maf_conv_read',
 			'assoc', 'association' => 'maf_assoc',
 			'law' => 'maf_law',
