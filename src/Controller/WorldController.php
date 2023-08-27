@@ -30,7 +30,7 @@ class WorldController extends AbstractController {
 	public function regionEditAction(Request $request, GeoData $region) {
 		$form = $this->createForm(new EditGeoDataType(), $region);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			# TODO: Need to add logic for handling resources here.
 			#$this->getDoctrine()->getManager()->flush();
 			return new RedirectResponse($this->generateUrl('maf_world_regions').'#'.$region->getId());

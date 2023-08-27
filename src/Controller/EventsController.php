@@ -129,7 +129,7 @@ class EventsController extends AbstractController {
 			$form = $this->createForm(EntourageAssignType::class, null, ['actions'=>'research', 'entourage'=>$myscholars]);
 			$formView = $form->createView();
 			$form->handleRequest($request);
-			if ($form->isValid()) {
+			if ($form->isSubmitted() && $form->isValid()) {
 				$data = $form->getData();
 				if (!$research) {
 					$act = new Action;

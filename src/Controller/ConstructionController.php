@@ -74,7 +74,7 @@ class ConstructionController extends AbstractController {
 		}
 		$form = $this->createForm(RoadconstructionType::class, null, ['settlement' => $settlement, 'roads' => $roadsdata]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$existing = $data['existing'];
 			$new = $data['new'];
@@ -197,7 +197,7 @@ class ConstructionController extends AbstractController {
 		$form = $this->createForm(FeatureconstructionType::class, null, ['features' => $features, 'river' => $settlement->getGeoData()->getRiver(), 'coast' => $settlement->getGeoData()->getCoast()]);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$existing = $data['existing'];
 			$new = $data['new'];
@@ -381,7 +381,7 @@ class ConstructionController extends AbstractController {
 
 		$form = $this->createForm(BuildingconstructionType::class, null, ['existing'=>$settlement->getBuildings(), 'available'=>$available]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$totalworkers=0;
 

@@ -60,7 +60,7 @@ class ArtifactsController extends AbstractController {
 				->add('submit', SubmitType::class, array('label'=>'artifact.create.submit'))
 				->getForm();
 			$form->handleRequest($request);
-			if ($form->isValid()) {
+			if ($form->isSubmitted() && $form->isValid()) {
 				$data = $form->getData();
 				$name = trim($data['name']);
 				$desc = trim($data['description']);
@@ -133,7 +133,7 @@ class ArtifactsController extends AbstractController {
 		}
 		$form = $this->createForm(CharacterSelectType::class, null, ['characters'=>$characters, 'empty'=>'form.choose', 'label'=>'choose target', 'submit'=>'assign artifact', 'domain'=>'messages']);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$artifact->setOwner($data['target']);
@@ -180,7 +180,7 @@ class ArtifactsController extends AbstractController {
 			->add('submit', SubmitType::class, array('label'=>'create'))
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			list($x, $y, $geodata) = $this->geo->findRandomPointInsidePOI($data['poi']);
@@ -210,7 +210,7 @@ class ArtifactsController extends AbstractController {
 
 		$form = $this->createForm(InteractionType::class, null, ['action'=>'giveartifact', 'maxdistance'=>$this->geo->calculateInteractionDistance($character), 'me'=>$character]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$artifact = $data['artifact'];
 			$target = $data['target'];

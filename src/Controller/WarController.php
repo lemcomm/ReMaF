@@ -91,7 +91,7 @@ class WarController extends AbstractController {
 
 		$form = $this->createForm(WarType::class, $war, ['me'=>$me]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$em = $this->em;
 			$em->persist($war);
 			$targets = $form->get('targets')->getData();
@@ -152,7 +152,7 @@ class WarController extends AbstractController {
 			])
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$act = new Action;
 			$act->setType('settlement.defend')->setCharacter($character)->setTargetSettlement($settlement);
 			$act->setBlockTravel(false);
@@ -179,7 +179,7 @@ class WarController extends AbstractController {
 			])
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$act = new Action;
 			$act->setType('place.defend')->setCharacter($character)->setTargetPlace($place);
 			$act->setBlockTravel(false);
@@ -746,7 +746,7 @@ class WarController extends AbstractController {
 		# TODO: Check if we can autowire services in transformers. This would mean no more passing the EM around.
 		$form = $this->createForm(LootType::class, null, ['settlement'=>$settlement, 'em'=>$em, 'inside'=>$inside]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 
 		// FIXME: shouldn't militia defend against looting?
 			$my_soldiers = 0;
@@ -1132,7 +1132,7 @@ class WarController extends AbstractController {
 		$form = $form->getForm();
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$results = array();
@@ -1190,7 +1190,7 @@ class WarController extends AbstractController {
 			->getForm();
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$act = new Action;
 			$act->setType('military.evade')->setCharacter($character);
 			$act->setBlockTravel(false);
@@ -1233,7 +1233,7 @@ class WarController extends AbstractController {
 			->add('submit', SubmitType::class, ['label'=>'military.block.submit', 'translation_domain'=>'actions'])
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$act = new Action;
 			$act->setType('military.block')->setCharacter($character)
@@ -1266,7 +1266,7 @@ class WarController extends AbstractController {
 		$features = $this->geo->findFeaturesNearMe($character);
 		$form = $this->createForm(DamageFeatureType::class, null ,['features'=>$features]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$em = $this->em;
 
@@ -1339,7 +1339,7 @@ class WarController extends AbstractController {
 			'settlementcheck'=>true
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$em = $this->em;
 
@@ -1377,7 +1377,7 @@ class WarController extends AbstractController {
 			->getForm();
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$complete = new DateTime("now");
@@ -1414,7 +1414,7 @@ class WarController extends AbstractController {
 
 		$form = $this->createForm(BattleParticipateType::class, null, ['battles'=>$battles]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$character->setInsideSettlement();
 			if (isset($data['group'])) {

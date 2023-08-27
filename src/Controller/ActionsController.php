@@ -633,7 +633,7 @@ class ActionsController extends AbstractController {
 		]);
 
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['target'] != $character) {
 				$settlement->setSteward($data['target']);
@@ -689,7 +689,7 @@ class ActionsController extends AbstractController {
 				))
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$newname=$data['name'];
 
@@ -732,7 +732,7 @@ class ActionsController extends AbstractController {
 			'old_culture' => $settlement->getCulture()
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$culture=$data['culture'];
 			// this is a meta action and thus executed immediately
@@ -853,7 +853,7 @@ class ActionsController extends AbstractController {
 
 		if ($request->isMethod('POST') && $request->request->has('trade')) {
 	                $form->handleRequest($request);
-                	if ($form->isValid()) {
+                	if ($form->isSubmitted() && $form->isValid()) {
 				if ($manageable->contains($trade->getSource())) {
 					if ($trade->getAmount()>0) {
 						if ($trade->getSource()!=$settlement && $trade->getDestination()!=$settlement) {
@@ -885,7 +885,7 @@ class ActionsController extends AbstractController {
 			}
 		} elseif ($request->isMethod('POST') && $request->request->has('tradecancel')) {
 			$cancelform->handleRequest($request);
-			if ($cancelform->isValid()) {
+			if ($cancelform->isSubmitted() && $cancelform->isValid()) {
 				$data = $cancelform->getData();
 				$trade = $data['trade'];
 				$source = $trade->getSource();
@@ -979,7 +979,7 @@ class ActionsController extends AbstractController {
 
 		$form = $this->createForm(EntourageRecruitType::class, null, ['entourage' => $entourage]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$total = 0;
@@ -1074,7 +1074,7 @@ class ActionsController extends AbstractController {
 		]);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['target']) {
 				$act = new Action;
@@ -1109,7 +1109,7 @@ class ActionsController extends AbstractController {
 			'type' => 'changeoccupier'
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$targetrealm = $data['target'];
 
@@ -1139,7 +1139,7 @@ class ActionsController extends AbstractController {
 			'type' => 'occupy'
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$targetrealm = $data['target'];
 
@@ -1162,7 +1162,7 @@ class ActionsController extends AbstractController {
 
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
 			$type = 'manual';
 			if ($character !== $settlement->getOccupant()) {
 				$type = 'forced';

@@ -367,7 +367,7 @@ class AccountController extends AbstractController {
 
 		if ($request->isMethod('POST') && $request->request->has("charactercreation")) {
 			$form->handleRequest($request);
-			if ($form->isValid()) {
+			if ($form->isSubmitted() && $form->isValid()) {
 				$data = $form->getData();
 				if ($user->getNewCharsLimit() <= 0) { $data['dead']=true; } // validation doesn't catch this because the field is disabled
 
@@ -514,17 +514,15 @@ class AccountController extends AbstractController {
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
-			if ($form->isValid() && $form->isSubmitted()) {
-				$data = $form->getData();
+			$data = $form->getData();
 
-				$user->setLanguage($data['language']);
-				$user->setNotifications($data['notifications']);
-				$user->setEmailDelay($data['emailDelay']);
-				$user->setNewsletter($data['newsletter']);
-				$em->flush();
-				$this->addFlash('notice', $trans->trans('account.settings.saved'));
-				return $this->redirectToRoute('maf_account');
-			}
+			$user->setLanguage($data['language']);
+			$user->setNotifications($data['notifications']);
+			$user->setEmailDelay($data['emailDelay']);
+			$user->setNewsletter($data['newsletter']);
+			$em->flush();
+			$this->addFlash('notice', $trans->trans('account.settings.saved'));
+			return $this->redirectToRoute('maf_account');
 		}
 
 		return $this->render('Account/settings.html.twig', [
@@ -562,7 +560,7 @@ class AccountController extends AbstractController {
 		$user = $this->getUser();
 		$list_form = $this->createForm(ListSelectType::class);
 		$list_form->handleRequest($request);
-		if ($list_form->isValid()) {
+		if ($list_form->isSubmitted() && $list_form->isValid()) {
 			$data = $list_form->getData();
 			echo "---";
 			var_dump($data);

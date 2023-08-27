@@ -54,7 +54,7 @@ class ActivityController extends AbstractController {
 
 		$form = $this->createForm(ActivitySelectType::class, null, ['action'=>'duel', 'maxdistance'=>$geo->calculateInteractionDistance($char), 'me'=>$char, 'subselect'=>$opts]);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
                         $duel = $this->actman->createDuel($char, $data['target'], $data['name'], $data['context'], $data['sameWeapon'], $data['weapon'], $data['weaponOnly']);
                         if ($duel instanceof Activity) {

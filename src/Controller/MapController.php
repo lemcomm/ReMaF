@@ -87,7 +87,7 @@ class MapController extends AbstractController {
 
 		$form = $this->createForm(SetMarkerType::class, null, ['realms' => $my_realms]);
 		$form->handleRequest($request);
-		if ($form->isValid() && !$limit) {
+		if ($form->isSubmitted() && $form->isValid() && !$limit) {
 			$data = $form->getData();
 
 			$marker = new MapMarker;

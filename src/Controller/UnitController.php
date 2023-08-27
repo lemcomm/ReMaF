@@ -156,7 +156,7 @@ class UnitController extends AbstractController {
 		$form = $this->createForm(UnitSettingsType::class, null, ['supply'=>true, 'settlements'=>$settlements, 'settings'=>null, 'lord'=>true]);
 
                 $form->handleRequest($request);
-                if ($form->isValid()) {
+                if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
                         if (in_array($data['supplier']->getId(), $settlements)) {
                                	$this->mm->newUnit($character, $character->getInsideSettlement(), $data);
@@ -207,7 +207,7 @@ class UnitController extends AbstractController {
 		$form = $this->createForm(UnitSettingsType::class, null, ['supply'=>true, 'settlements'=>$settlements, 'settings'=>null, 'lord'=>true]);
 
                 $form->handleRequest($request);
-                if ($form->isValid()) {
+                if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
                         $success = $this->mm->updateSettings($unit, $data, $character, $lord);
                         if ($success) {
@@ -303,7 +303,7 @@ class UnitController extends AbstractController {
 		]);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$this->mm->manageUnit($unit->getSoldiers(), $data, $settlement, $character, $canResupply, $canRecruit, $canReassign);
@@ -397,7 +397,7 @@ class UnitController extends AbstractController {
 		]);
 
                 $form->handleRequest($request);
-                if ($form->isValid()) {
+                if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
                         $em = $this->em;
                         if ($unit->getCharacter()) {
@@ -463,7 +463,7 @@ class UnitController extends AbstractController {
 		]);
 
                 $form->handleRequest($request);
-                if ($form->isValid()) {
+                if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
                         $em = $this->em;
                         if ($unit->getMarshal() && $unit->getMarshal() !== $data['target']) {
@@ -527,7 +527,7 @@ class UnitController extends AbstractController {
 
 		$form = $this->createForm(UnitRebaseType::class, null, ['settlements'=>$options]);
                 $form->handleRequest($request);
-                if ($form->isValid()) {
+                if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
                         $success = $this->mm->rebaseUnit($data, $options, $unit);
                         if ($success) {
@@ -556,7 +556,7 @@ class UnitController extends AbstractController {
                 $form = $this->createForm(AreYouSureType::class);
 
                 $form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
                         $success = $this->mm->disbandUnit($unit);
                         if ($success) {
                                 $this->addFlash('notice', $this->trans->trans('unit.disband.success', array(), 'actions'));
@@ -581,7 +581,7 @@ class UnitController extends AbstractController {
                 $form = $this->createForm(AreYouSureType::class);
 
                 $form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
                         $success = $this->mm->returnUnitHome($unit, 'returned', $character);
                         $this->em->flush();
                         if ($success) {
@@ -608,7 +608,7 @@ class UnitController extends AbstractController {
                 $form = $this->createForm(AreYouSureType::class);
 
                 $form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
                         $leader = $unit->getCharacter();
                         $success = $this->mm->returnUnitHome($unit, 'recalled', $leader);
                         if ($success) {
@@ -671,7 +671,7 @@ class UnitController extends AbstractController {
                         'form'=>$form->createView(),
                 ];
 
-     		if ($form->isValid()) {
+     		if ($form->isSubmitted() && $form->isValid()) {
      			$data = $form->getData();
                         if ($data['unit']->getSettlement() != $settlement) {
                                 $form->addError(new FormError("recruit.troops.unitnothere"));

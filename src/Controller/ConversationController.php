@@ -189,7 +189,7 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(NewConversationType::class, null, ['contacts' => $contacts, 'distance' => $distance, 'char' => $char, 'settlement' => $settlement, 'org' => $org]);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if (!$org) {
 				$recipients = new ArrayCollection;
@@ -293,7 +293,7 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(RecentMessageReplyType::class, null, ['settlement' => $char->getInsideSettlement(), 'place' => $char->getInsidePlace()]);
 
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$allNearby = $this->allNearby($char);
 			if ($data['target'] == 'local') {
@@ -646,7 +646,7 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(AddParticipantType::class, null, ['contacts' => $contacts]);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$em = $this->em;
 			foreach($data['contacts'] as $new) {
@@ -752,7 +752,7 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
 
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			if ($form->getData()['sure']) {
 				$perm = $conv->findActiveCharPermission($char);
 				if ($perm) {
@@ -795,7 +795,7 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
 
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			if ($form->getData()['sure']) {
 				$perms = $conv->findCharPermissions($char);
 				if ($perms) {
@@ -848,7 +848,7 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(MessageReplyType::class);
 
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$replyTo = $data['reply_to'];
 
@@ -881,7 +881,7 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(NewLocalMessageType::class, null, ['settlement' => $char->getInsideSettlement(), 'place' => $char->getInsidePlace(), 'reply' => true]);
 
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['target'] == 'local') {
 				$target = new ArrayCollection();

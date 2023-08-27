@@ -158,7 +158,7 @@ class DungeonController extends AbstractController {
 
 		$chat = $this->createForm(ChatType::class);
 		$chat->handleRequest($request);
-		if ($chat->isValid()) {
+		if ($chat->isSubmitted() && $chat->isValid()) {
 			$msg = $chat->getData();
 			if (strlen($msg->getContent())>200) {
 				$chat->addError(new FormError("chat.long"));
@@ -218,7 +218,7 @@ class DungeonController extends AbstractController {
 
 		$cardselect = $this->createForm(CardSelectType::class);
 		$cardselect->handleRequest($request);
-		if ($cardselect->isValid()) {
+		if ($cardselect->isSubmitted() && $cardselect->isValid()) {
 			$data = $cardselect->getData();
 			$card_id = $data['card'];
 
@@ -312,7 +312,7 @@ class DungeonController extends AbstractController {
 			default => throw $this->createNotFoundException("invalid target request"),
 		};
 		$target->handleRequest($request);
-		if ($target->isValid()) {
+		if ($target->isSubmitted() && $target->isValid()) {
 			$data = $target->getData();
 
 			switch ($data['type']) {

@@ -183,7 +183,7 @@ class PlaceController extends AbstractController {
 		$form = $this->createForm(PlacePermissionsSetType::class, $place, ['me'=>$character, 'owner'=>$owner, 'p'=>$place]);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			# TODO: This can be combined with the code in SettlementController as part of a service function.
 			if ($owner) {
 				foreach ($place->getPermissions() as $permission) {
@@ -357,7 +357,7 @@ class PlaceController extends AbstractController {
 
 		$form = $this->createForm(PlaceNewType::class, null, ['types'=>$query->getResult(), 'realms' => $character->findRealms()]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$em = $this->em;
 			$data = $form->getData();
 			$fail = $this->checkPlaceNames($form, $data['name'], $data['formal_name']);
@@ -459,7 +459,7 @@ class PlaceController extends AbstractController {
 		]);
 		$form->handleRequest($request);
 
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['target'] != $character) {
 				$place->setOwner($data['target']);
@@ -526,7 +526,7 @@ class PlaceController extends AbstractController {
 
 		$form = $this->createForm(PlaceManageType::class, null, ['description'=> $oldDescription, 'me'=>$place, 'char'=>$character]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$fail = $this->checkPlaceNames($form, $data['name'], $data['formal_name'], $place);
 			if (!$fail) {
@@ -606,7 +606,7 @@ class PlaceController extends AbstractController {
 		]);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['target']) {
 				$act = new Action;
@@ -637,7 +637,7 @@ class PlaceController extends AbstractController {
 
 		$form = $this->createForm(RealmSelectType::class, null, ['realms' => $character->findRealms(), 'type' => 'changeoccupier']);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$targetrealm = $data['target'];
 
@@ -666,7 +666,7 @@ class PlaceController extends AbstractController {
 
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
                         $pol->endOccupation($place, 'manual');
 			$this->em->flush();
                         $this->addFlash('notice', $this->trans->trans('control.occupation.ended', array(), 'actions'));
@@ -688,7 +688,7 @@ class PlaceController extends AbstractController {
 		$text = $desc?->getText();
 		$form = $this->createForm(DescriptionNewType::class, null, ['text'=>$text]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($text != $data['text']) {
 				$dm->newSpawnDescription($place, $data['text'], $character);
@@ -750,7 +750,7 @@ class PlaceController extends AbstractController {
 
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
 			$em = $this->em;
                         $place->setDestroyed(true);
 			if ($spawn = $place->getSpawn()) {
@@ -790,7 +790,7 @@ class PlaceController extends AbstractController {
 
 		$form = $this->createForm(AssocSelectType::class, null, ['assocs' => $assocs, 'type' => 'addToPlace', 'me' => $character]);
 		$form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$am->newLocation($data['target'], $place);
 			$hist->logEvent(
@@ -825,7 +825,7 @@ class PlaceController extends AbstractController {
 
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
-                if ($form->isValid() && $form->isSubmitted()) {
+                if ($form->isSubmitted() && $form->isValid()) {
 			$am->removeLocation($assoc, $place);
 			$hist->logEvent(
 				$place,

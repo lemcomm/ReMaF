@@ -124,8 +124,7 @@ class NewsController extends AbstractController {
 				))
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
-			// TODO: validation ?
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$newspaper = $this->news->newPaper($data['name'], $character);
@@ -182,7 +181,7 @@ class NewsController extends AbstractController {
 
 			$form = $this->createForm(NewsEditorType::class, null, ['paper'=>$paper]);
 			$form->handleRequest($request);
-			if ($form->isValid()) {
+			if ($form->isSubmitted() && $form->isValid()) {
 				$data = $form->getData();
 
 				$target = $em->getRepository(Character::class)->find($targetId);
@@ -263,7 +262,7 @@ class NewsController extends AbstractController {
 				'multiple'=>true
 			]);
 			$form->handleRequest($request);
-			if ($form->isValid()) {
+			if ($form->isSubmitted() && $form->isValid()) {
 				$data = $form->getData();
 
 				foreach ($data['target'] as $target) {
@@ -417,7 +416,7 @@ class NewsController extends AbstractController {
 		$article = new NewsArticle;
 		$form = $this->createForm(NewsArticleType::class, $article);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$article = $form->getData();
 			$paper = $article->getEdition()->getPaper();
 			if (!$paper) {
@@ -447,7 +446,7 @@ class NewsController extends AbstractController {
 
 		$form = $this->createForm(NewsArticleType::class, $article);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$article = $form->getData();
 			$paper = $article->getEdition()->getPaper();
 			if (!$paper) {

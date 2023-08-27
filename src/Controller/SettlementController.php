@@ -199,7 +199,7 @@ class SettlementController extends AbstractController {
 		//			 something should happen - set them free? most should vanish, but some stay as peasants?
 		//			 but do we want large numbers of people to simply disappear? where will they go?
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			# TODO: This can be combined with the code in PlaceController as part of a service function.
 			if ($lord) {
 				foreach ($settlement->getPermissions() as $permission) {
@@ -266,7 +266,7 @@ class SettlementController extends AbstractController {
 		$text = $desc?->getText();
 		$form = $this->createForm(DescriptionNewType::class, null, ['text'=>$text]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($text != $data['text']) {
 				$dm->newDescription($settlement, $data['text'], $character);
@@ -290,7 +290,7 @@ class SettlementController extends AbstractController {
 
 		$form = $this->createForm(SettlementAbandonType::class);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$result = $this->interactions->abandonSettlement($character, $id, $data['keep']);
 			if ($result) {

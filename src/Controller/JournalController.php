@@ -80,7 +80,7 @@ class JournalController extends AbstractController {
 		$form = $this->createForm(JournalType::class);
 		$form->handleRequest($request);
 
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$journal = $this->newJournal($character, $data);
 
@@ -127,7 +127,7 @@ class JournalController extends AbstractController {
 		$form = $this->createForm(JournalType::class);
 		$form->handleRequest($request);
 
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$journal = $this->newJournal($character, $data);
 			$journal->setBattleReport($report);
@@ -155,7 +155,7 @@ class JournalController extends AbstractController {
 		$form = $this->createForm(JournalType::class);
   		$form->handleRequest($request);
 
-  		if ($form->isValid() && $form->isSubmitted()) {
+  		if ($form->isSubmitted() && $form->isValid()) {
   			$data = $form->getData();
   			$journal = $this->newJournal($character, $data);
   			$journal->setActivityReport($report);
@@ -197,7 +197,7 @@ class JournalController extends AbstractController {
 		if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$form = $this->createForm(UserReportType::class);
 			$form->handleRequest($request);
-			if ($form->isValid() && $form->isSubmitted()) {
+			if ($form->isSubmitted() && $form->isValid()) {
 				$em = $this->em;
 				$user = $this->getUser();
 				$report = new UserReport();

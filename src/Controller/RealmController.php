@@ -170,7 +170,7 @@ class RealmController extends AbstractController {
 		$form = $this->createForm(RealmCreationType::class);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$fail = $this->checkRealmNames($form, $data['name'], $data['formal_name']);
 			if (!$fail) {
@@ -232,7 +232,7 @@ class RealmController extends AbstractController {
 		}
 		$form = $this->createForm(RealmManageType::class, $realm, ['min'=>$min, 'max'=>$max]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			if (isset($matches[3])) {
@@ -279,7 +279,7 @@ class RealmController extends AbstractController {
 		}
 		$form = $this->createForm(DescriptionNewType::class, null, ['text'=>$text]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($text != $data['text']) {
 				$dm->newDescription($realm, $data['text'], $character);
@@ -305,7 +305,7 @@ class RealmController extends AbstractController {
 		$text = $desc?->getText();
 		$form = $this->createForm(DescriptionNewType::class, null, ['text'=>$text]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($text != $data['text']) {
 				$dm->newSpawnDescription($realm, $data['text'], $character);
@@ -366,7 +366,7 @@ class RealmController extends AbstractController {
 			'settlementcheck'=>true,
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			if (isset($data['target']) && $data['target']->isNPC()) {
@@ -401,7 +401,7 @@ class RealmController extends AbstractController {
 				))
 			->getForm();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$fail = false;
 			$data = $form->getData();
 			$em = $this->em;
@@ -538,7 +538,7 @@ class RealmController extends AbstractController {
 		$original_permissions = clone $position->getPermissions();
 		$form = $this->createForm(RealmPositionType::class, $position);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$fail = false;
 			$data = $form->getData();
 			$year = $data->getYear();
@@ -618,7 +618,7 @@ class RealmController extends AbstractController {
 		}
 		$form = $this->createForm(RealmOfficialsType::class, null, ['candidates'=>$candidates, 'holders'=>$position->getHolders()]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			// TODO: to prevent spam and other abuses, put a time limit on this or make it a timed action
 			$nodemoruler=false; $ok=false;
 			foreach ($candidates as $candidate) {
@@ -853,7 +853,7 @@ class RealmController extends AbstractController {
 
 		$form = $this->createForm(SubrealmType::class, null, ['realm'=>$realm]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$fail = false;
 
@@ -921,7 +921,7 @@ class RealmController extends AbstractController {
 
 		$form = $this->createForm(RealmCapitalType::class, null, ['realm'=>$realm]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$fail = false;
 
@@ -1079,7 +1079,7 @@ class RealmController extends AbstractController {
 
 		$form = $this->createForm(RealmRelationType::class, $relation);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$data->setSourceRealm($realm);
 			$data->setLastChange(new DateTime("now"));
@@ -1211,7 +1211,7 @@ class RealmController extends AbstractController {
 		if (!$election->getClosed()) {
 			$form = $this->createForm(ElectionType::class, $election);
 			$form->handleRequest($request);
-			if ($form->isValid()) {
+			if ($form->isSubmitted() && $form->isValid()) {
 				// FIXME: only ruler or those with appropriate permissions should be able to start an election for a position
 				$complete = new DateTime("now");
 				$duration = $form->get('duration')->getData();
@@ -1287,7 +1287,7 @@ class RealmController extends AbstractController {
 
 		if ($addform) {
 			$form->handleRequest($request);
-			if ($form->isValid()) {
+			if ($form->isSubmitted() && $form->isValid()) {
 				$data = $form->getData();
 				$em = $this->em;
 				if ($data['vote']==-1) {
@@ -1328,7 +1328,7 @@ class RealmController extends AbstractController {
 
 		if ($voteform) {
 			$form_votes->handleRequest($request);
-			if ($form_votes->isValid()) {
+			if ($form_votes->isSubmitted() && $form_votes->isValid()) {
 				$data = $form_votes->getData();
 				foreach ($data['targets'] as $id=>$procontra) {
 					$myvote = $em->getRepository(Vote::class)->findOneBy(array('character'=>$character, 'election'=>$election, 'target_character'=>$id));

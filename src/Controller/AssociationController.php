@@ -94,7 +94,7 @@ class AssociationController extends AbstractController {
 
 		$form = $this->createForm(AssocCreationType::class, null, ['types'=>$this->em->getRepository(AssociationType::class)->findAll(), 'assocs'=>$char->findSubcreateableAssociations()]);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$place = $char->getInsidePlace();
@@ -118,7 +118,7 @@ class AssociationController extends AbstractController {
 
 		$form = $this->createForm(AssocUpdateType::class, null, ['types'=>$this->em->getRepository(AssociationType::class)->findAll(), 'assocs'=>$char->findSubcreateableAssociations(), 'me'=>$assoc]);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$this->am->update($assoc, $form->getData(), $char);
 			$this->em->flush();
 			$this->addFlash('notice', $this->trans->trans('assoc.route.updated.success', [], 'orgs'));
@@ -183,7 +183,7 @@ class AssociationController extends AbstractController {
 		
 		$form = $this->createForm(AssocDeityType::class, null, ['aspects'=>$this->em->getRepository(AspectType::class)->findAll()]);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$this->am->newDeity($assoc, $char, $data);
@@ -207,7 +207,7 @@ class AssociationController extends AbstractController {
 		
 		$form = $this->createForm(AssocDeityUpdateType::class, null, ['deity'=>$deity, 'aspects'=>$this->em->getRepository(AspectType::class)->findAll()]);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$this->am->updateDeity($deity, $char, $data);
@@ -246,7 +246,7 @@ class AssociationController extends AbstractController {
 		
 		$form = $this->createForm(AssocDeityWordsType::class, null, ['deity'=>$deity]);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($deity->getWords() !== $data['words']) {
 				$deity->setWords($data['words']);
@@ -452,7 +452,7 @@ class AssociationController extends AbstractController {
 
 		$form = $this->createForm(AssocCreateRankType::class, null, ['ranks'=>$ranks, 'me'=>false]);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
 			$rank = $this->am->newRank($assoc, $myRank, $data['name'], $data['viewAll'], $data['viewUp'], $data['viewDown'], $data['viewSelf'], $data['superior'], $data['build'], $data['createSubs'], $data['manager'], $data['createAssocs']);
@@ -487,7 +487,7 @@ class AssociationController extends AbstractController {
 
 		$form = $this->createForm(AssocCreateRankType::class, null, ['ranks'=>$ranks, 'me'=>$rank]);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($rank === $myRank && $myRank->getOwner()) {
 				$owner = true;
@@ -522,7 +522,7 @@ class AssociationController extends AbstractController {
 
 		$form = $this->createForm(AssocManageMemberType::class, null, ['ranks'=>$subordinates, 'me'=>$mbr]);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$newRank = $data['rank'];
 			if ($newRank !== $mbr->getRank() && $subordinates->contains($newRank)) {
@@ -547,7 +547,7 @@ class AssociationController extends AbstractController {
 
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['sure']) {
 				$this->am->removeMember($assoc, $mbr->getCharacter());
@@ -570,7 +570,7 @@ class AssociationController extends AbstractController {
 
 		$form = $this->createForm(AssocJoinType::class);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['sure']) {
 				$grm->newRequestFromCharacterToAssociation('assoc.join', null, null, null, $data['subject'], $data['text'], $char, $assoc);
@@ -596,7 +596,7 @@ class AssociationController extends AbstractController {
 
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['sure']) {
 				$this->am->removeMember($assoc, $char);

@@ -94,7 +94,7 @@ class QuestsController extends AbstractController {
 		$quest = new Quest;
 		$form = $this->createForm(QuestType::class, $quest);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$quest->setCompleted(false);
 			$quest->setNotes('');
 			$quest->setHome($settlement);

@@ -3,7 +3,7 @@
 # Authors: Tom Vogt, Andrew Gwynn
 # Contact: mafteam@lemuriacommunity.org
 game:
- version:     "Version %version% (Updated: %updated%)"
+ version:     "Version {version} (Updated: {updated})"
 dateformat:   Y-m-d
 gametime:
  current:     It is year {year}, week {week}, day {day} in the world of Might & Fealty
@@ -11,9 +11,9 @@ gametime:
  short:       "{year}-{week}-{day}"
 realtime:
  forever:     eternity
- day:         "%d% day (real time)|%d% days (real time)"
- hour:        "%h% hour (real time)|%h% hours (real time)"
- minute:      "%m% minute (real time)|%m% minutes (real time)"
+ day:         "{d} day (real time)|{d} days (real time)"
+ hour:        "{h} hour (real time)|{h} hours (real time)"
+ minute:      "{m} minute (real time)|{m} minutes (real time)"
 
 menu:
  login:     Login
@@ -22,7 +22,7 @@ menu:
  your:      Your...
  economy:   Economy
  recruitment: Recruitment
- playing:   Playing %name%
+ playing:   Playing {name}
  profile:   Profile
  characters:  Characters
  homepage:  Homepage
@@ -97,7 +97,7 @@ user:
    retired: Retired
    dead: Dead
    rogue: (Rogue)
-   knownas: (AKA %name%)
+   knownas: (AKA {name})
 
 
 contact:
@@ -131,7 +131,7 @@ registration:
    Please supply the required information below.<br />
    You will then receive an e-mail with an activation link. We apologize for that additional step,
    but it keeps spammers and bots out.
- toslink: By registering, you agree to our <a href="%url%" target="_blank">Terms of Service</a>.
+ toslink: By registering, you agree to our <a href="{url}" target="_blank">Terms of Service</a>.
  complete:
   name: Complete Registration
   intro: Please verify or correct the data we have received from your identity provider below and confirm.
@@ -139,14 +139,14 @@ registration:
   title: First Steps
   intro: >
     Welcome to Might & Fealty.<br />
-    To start playing, <a href="%charpage%">create a character</a> on the character page, also accessible in the navigation menu.<br />
+    To start playing, <a href="{charpage}">create a character</a> on the character page, also accessible in the navigation menu.<br />
     <br />
     We also strongly recommend the <a href="https://www.youtube.com/watch?v=YWC6n9CnB3U">tutorial video</a> and the rest of the manual.
 login:
  intro: "Provide the username or e-mail you used to register below to log in:"
 
 pager:
- showing:       Showing %from% to %to%, %total% total
+ showing:       Showing {from} to {to}, {total} total
  prev:          Previous
  next:          Next
 
@@ -205,11 +205,11 @@ map:
  rmlast:    Remove last
  enter:     Enter destination
  clear:     Clear
- newroute:  Your new route has been set. It will take you about %duration% game days, about %days% real day(s) and %hours% hour(s), to complete.
- disembark: Your new route has been set. It crosses into land, so you will disembark at the red dot.<br /><small>The travel time estimate of %duration% game days, about %days% real day(s) and %hours% hour(s), considers the route until that point. Red lines show the invalid travel section.</small>
+ newroute:  Your new route has been set. It will take you about {duration} game days, about {days} real day(s) and {hours} hour(s), to complete.
+ disembark: Your new route has been set. It crosses into land, so you will disembark at the red dot.<br /><small>The travel time estimate of {duration} game days, about {days} real day(s) and {hours} hour(s), considers the route until that point. Red lines show the invalid travel section.</small>
  crossings:
   title:    River crossings
-  river:    The %river% at the bridge "%bridge%" near %nearby%.
+  river:    The {river} at the bridge "{bridge}" near {nearby}.
  cleared:   Route cleared.
  error:
   impassable: Route contains impassible sections marked on the map now.<br /><small>Red lines go through impassable areas, red/black points show river crossings without a nearby bridge or cliffs/mountain sides too sheer to cross.</small>
@@ -239,12 +239,12 @@ account:
    messages and check your characters in order to decide which to retire and do so in a proper way, but you will not be able to
    really play them.
  list:          Click to move this character to a different list
- created:       "Created: %date%"
- lastlogin:     "Last login: %date%"
+ created:       "Created: {date}"
+ lastlogin:     "Last login: {date}"
  identities:    Authentication
  authmail:      Username/email and password
  locked:        Your characters are currently locked because you have run out of game-time. Please renew your subscription on the profile page.
- patronizing:   Your patronage ($%entitlement%) has been updated in our database.
+ patronizing:   Your patronage (${entitlement}) has been updated in our database.
  patronfailure: Update has failed. Try again later.
  level:
   0: Locked
@@ -271,7 +271,7 @@ account:
   title:  Change Password
   desc:   Tired of your old one? Feel like a new one? Change it here.
   short:  "Password:"
-  legacy: It looks like your account is using a legacy password. You should update it <a href="%link%">here</a>. You can reuse your current password if you want, we just need you to confirm your password.
+  legacy: It looks like your account is using a legacy password. You should update it <a href="{link}">here</a>. You can reuse your current password if you want, we just need you to confirm your password.
  settings:
   link:   Edit settings
   title:  Settings
@@ -314,7 +314,7 @@ account:
   disable:  Disable
  payment:
   title:    Account Balance
-  credits:  You have %amount% credits in your account.
+  credits:  You have {amount} credits in your account.
   link:     Get More Credits
   shop:     Buying Credits
   intro: >
@@ -350,14 +350,14 @@ account:
   intro:    If you have a code from a friend or the crowdfunding campaign, you can redeem it here.
   label:    "Code:"
   submit:   Redeem
-  redeemed:   A code for %credits% game credits was found for your e-mail and automatically redeemed.
-  redeemed2:  A code was found for your e-mail and automatically redeemed into %credits% game credits and a VIP status of "%vip%".
-  redeemed3:  The code you have entered is valid and has been redeemed for %credits% game credits.
-  redeemed4:  The code you have entered is valid and has been redeemed for %credits% game credits and a VIP status of "%vip%".
+  redeemed:   A code for {credits} game credits was found for your e-mail and automatically redeemed.
+  redeemed2:  A code was found for your e-mail and automatically redeemed into {credits} game credits and a VIP status of "{vip}".
+  redeemed3:  The code you have entered is valid and has been redeemed for {credits} game credits.
+  redeemed4:  The code you have entered is valid and has been redeemed for {credits} game credits and a VIP status of "{vip}".
  credits:
   name:     Credits
-  sum:      "%amount% credits"
-  sum1:     "%amount% credits + %per%%<br>(%total% Total)"
+  sum:      "{amount} credits"
+  sum1:     "{amount} credits + {per}%<br>({total} Total)"
   title:    Credits & Gifts
   link:     Credits and Gifts
   short:    Spend credits on additional content or make gifts to friends.
@@ -377,24 +377,24 @@ account:
  sub:
   title:     Subscription
   summary: >
-    At your current subscription level of <b>%mylevel%</b>, you are paying %myfee% credits per month.<br />
-    Your next renewal is due on %until%.
-  short:      Your current subscription level is <b>%mylevel%</b>, your next renewal is due on %until%.
+    At your current subscription level of <b>{mylevel}</b>, you are paying {myfee} credits per month.<br />
+    Your next renewal is due on {until}.
+  short:      Your current subscription level is <b>{mylevel}</b>, your next renewal is due on {until}.
   description: >
     If you have not accessed your account for more than 3 weeks, your characters be set to inactive automatically. After more than
     2 months, we automatically put your account into storage and keep it, for free.<br />
-    Read more about our <a href="%url%" class="link_ajax">payment concept</a>.
+    Read more about our <a href="{url}" class="link_ajax">payment concept</a>.
   description2: >
     Developing and running Might & Fealty is not free, so we charge a small monthly fee to play.<br />
     We believe in using a transparent, simple payment system instead of the various "Free2Play" or "Pay2Win" models that nag you about
     "premium features" constantly. In Might & Fealty, we want you to enjoy the game to the max without hiding features away into
     parts you have to pay extra for. There are, however, a few small limitations on free accounts.<br />
-    Read more about our <a href="%url%" class="link_ajax">payment concept</a>.
+    Read more about our <a href="{url}" class="link_ajax">payment concept</a>.
   description3: >
     The price for 100 credits is 1 &euro; or the <a href="https://www.xe.com/currency/eur-euro">equivalent in your local currency</a> (our payment providers will automatically convert currencies for you).
   link:      Change subscription level
   submit:    Change subscription
-  remaining: Your new subscription will start today, the first month subscription fee will automatically be reduced by %refund% credits remaining from your current subscription.
+  remaining: Your new subscription will start today, the first month subscription fee will automatically be reduced by {refund} credits remaining from your current subscription.
   changed:   Your subscription level has been changed.
  play:        Play
  place:       Place
@@ -439,7 +439,7 @@ account:
   notenoughcredits:   You do not have enough credits for this purchase.
   bought:
    title:   Culture Pack Bought|Culture Packs Bought
-   intro:   "Congratulations, you have bought a culture pack:|Congratulations, you have bought %amount% culture packs:"
+   intro:   "Congratulations, you have bought a culture pack:|Congratulations, you have bought {amount} culture packs:"
    contains:  "this pack contains:"
  gift:
   link:     Gift to existing player
@@ -455,7 +455,7 @@ account:
   invite:   Invite your friend
   gift:     Make this gift
   success: >
-    Your gift of %credits% credits has been sent to your friends account, and an e-mail with the text you
+    Your gift of {credits} credits has been sent to your friends account, and an e-mail with the text you
     entered should be in their mailbox in some moments. We will also send a copy to your e-mail address.
   error:
    self:      You can make gifts to yourself, of course, but not in Might & Fealty credits.
@@ -464,10 +464,10 @@ account:
   mail:
    subject:   Might & Fealty Gift
    body: >
-     <p>Your friend (cc'ed in this e-mail) has given you a gift of <b>%credits% credits</b> in Might & Fealty.</p>
+     <p>Your friend (cc'ed in this e-mail) has given you a gift of <b>{credits} credits</b> in Might & Fealty.</p>
      <p>They also send this message:</p>
      <hr />
-     <p>%message%</p>
+     <p>{message}</p>
  invite:
   link:     Invite with a gift
   title:    Invite a friend
@@ -482,28 +482,28 @@ account:
     <small>(You will get half of your gift or half of your friends' first subscription, whatever is lower. Limit of one code per new subscriber.)</small>
   success: >
     An invitation e-mail has been sent to your friend (and you in cc).<br />
-    When the code for %credits% credits gets redeemed and your friend later subscribes, you will get half of either it or the subscription value
+    When the code for {credits} credits gets redeemed and your friend later subscribes, you will get half of either it or the subscription value
     of your friend credited to your account automatically.<br />
     You can also redeem the code yourself to cancel the invite.
   mail:
    subject:   Might & Fealty Friend Invite
    body: >
      <p>Your friend (cc'ed in this e-mail) has invited you to play Might & Fealty. And to sweeten the deal, or maybe as a
-     bribe to support some in-game ambitions, who knows, this invite comes with a code for <b>%credits% credits</b>. They also sent this message:</p>
-     <hr /><p>%message%</p><hr />
+     bribe to support some in-game ambitions, who knows, this invite comes with a code for <b>{credits} credits</b>. They also sent this message:</p>
+     <hr /><p>{message}</p><hr />
      <p>Join your friend in creating history, check out the game here:</p>
      <p><a href="https://mightandfealty.com/">Might & Fealty</a></p>
      <p>or sign up directly through this link:</p>
      <p><a href="https://mightandfealty.com/register/">registration</a></p>
      <p>If you register with this e-mail address, the game will automatically redeem the invite gift code for you. If not,
      simply enter the code below under "get more credits" after registration.</p>
-     <p><b>%code%</b></p>
+     <p><b>{code}</b></p>
      <p>Welcome to Might & Fealty - come and create history with us!</p>
   mail2:
    subject:   Might & Fealty Friend Subscription
    body: >
-     <p>Your friend with the e-mail address %mail% has made their first subscription. Since your invite helped win this new player to the game,
-     we have credited your account with %credits% credits, as promised.<p>
+     <p>Your friend with the e-mail address {mail} has made their first subscription. Since your invite helped win this new player to the game,
+     we have credited your account with {credits} credits, as promised.<p>
      <p>Thank you so much for helping the game become bigger and better.</p>
  patreon:
   title: Support Development via Patreon
@@ -512,7 +512,7 @@ account:
    name: "Support Andrew through Patreon:"
    connect: Login with Patreon.
   title2: Patron Status
-  current: You are an active patron of %name% and are contributing $%amount% per month. Thank you!
+  current: You are an active patron of {name} and are contributing ${amount} per month. Thank you!
   link: Update Your Patronage
  key:
   reset:
@@ -539,14 +539,14 @@ newcharacter:
    Choosing a father and mother is optional, if you leave it empty then one or both of the parents will simply be
    people that don't exist as characters in the game. If you want to create a family tree, make sure to start
    with the oldest generations.<br />
-   All characters are <a href="%firstoneurl%">First Ones</a> and begin the game as fully trained and equipped knights.
- limit:     You can create %limit% more living characters today.|You can create %limit% more living characters today.
+   All characters are <a href="{firstoneurl}">First Ones</a> and begin the game as fully trained and equipped knights.
+ limit:     You can create {limit} more living characters today.|You can create {limit} more living characters today.
  limited:   You cannot create new living characters anymore today. You will get more available character slots every real-life day.
  spawnlimit:  You currently have several unspawned characters. Please start playing them first, before you create more characters.
- accountlimit:  You are currently playing %active% of %limit% possible characters.
+ accountlimit:  You are currently playing {active} of {limit} possible characters.
  overlimit: You already have as many characters as your current subscription level allows. If you want to create additional characters, you will need to raise your subcription level first.
- overspawn: Living character spawning or unretiring is restricted to only happen as often as the number of currently living characters you have. First four characters aren't limited. Characters 5-10 have a three day cooldown. 11 through 25 have a week cooldown. Anything past that is a 15 day cooldown. You can next spawn a character at %date% (server time).
- overspawn2: Living character spawning or unretiring is restricted to only happen as often as the number of currently living characters you have. First four characters aren't limited. Characters 5-10 have a three day cooldown. 11 through 25 have a week cooldown. Anything past that is a 15 day cooldown. You can next spawn a character at %date% (server time). While you can still make characters, you won't be able to place them in game.
+ overspawn: Living character spawning or unretiring is restricted to only happen as often as the number of currently living characters you have. First four characters aren't limited. Characters 5-10 have a three day cooldown. 11 through 25 have a week cooldown. Anything past that is a 15 day cooldown. You can next spawn a character at {date} (server time).
+ overspawn2: Living character spawning or unretiring is restricted to only happen as often as the number of currently living characters you have. First four characters aren't limited. Characters 5-10 have a three day cooldown. 11 through 25 have a week cooldown. Anything past that is a 15 day cooldown. You can next spawn a character at {date} (server time). While you can still make characters, you won't be able to place them in game.
  help:
   name:      The full name of your character, including given and family name, but not including any titles. required
   gender:    Required
@@ -594,21 +594,21 @@ summary:
 first:
  title:     Welcome to Might & Fealty
  intro:
-  realm: With the formal affiar of joining %realm% out of the way, the first thing you will probably want to do is introduce yourself to your new comrades in arms.
+  realm: With the formal affiar of joining {realm} out of the way, the first thing you will probably want to do is introduce yourself to your new comrades in arms.
   subrealm: >
-    That can be done either here in the subrealm, <a href="%conv%">here</a>, or sovereign realm, <a href="%conv2%">here</a>, where the local bureaucrats have already announced your arrival.
+    That can be done either here in the subrealm, <a href="{conv}">here</a>, or sovereign realm, <a href="{conv2}">here</a>, where the local bureaucrats have already announced your arrival.
   sovrealm: >
-    That can be done <a href="%conv%">here</a>, where the local bureaucrats have already announced your arrival.
+    That can be done <a href="{conv}">here</a>, where the local bureaucrats have already announced your arrival.
   house: >
-    With the formal affair of joining %house% out of the way, the first thing you will probably want to do is introduce yourself to your new comrades in arms. That can be done <a href="%conv-2%">here</a>.<br /><br />As you are starting in a House rather than a Realm, you may wish to ask for recommendations for which realm you should seek to join. It's quite likely that your fellows will have suggestions.
+    With the formal affair of joining {house} out of the way, the first thing you will probably want to do is introduce yourself to your new comrades in arms. That can be done <a href="{conv-2}">here</a>.<br /><br />As you are starting in a House rather than a Realm, you may wish to ask for recommendations for which realm you should seek to join. It's quite likely that your fellows will have suggestions.
   nodesc: The staff wish you well on your travels and glory in your life. May your actions bring you and those they server renown.
-  final: It is important to note that Might & Fealty tends to be a slow game, so don't expect much action in your first days. That said, it can be quite complex, as it tries to emulate the possibilities of real life as well as it can given the setting, so we do recommend reading the <a href="%manual%">the game manual</a> if you haven't already. Alternatively, <a href="%discord%">the community discord</a> can also be a great help.
+  final: It is important to note that Might & Fealty tends to be a slow game, so don't expect much action in your first days. That said, it can be quite complex, as it tries to emulate the possibilities of real life as well as it can given the setting, so we do recommend reading the <a href="{manual}">the game manual</a> if you haven't already. Alternatively, <a href="{discord}">the community discord</a> can also be a great help.
 
 character:
  name:    Name
- knownas: Known as "%name%"
+ knownas: Known as "{name}"
  gender:  Gender
- gold:    "Gold: %gold% gold"
+ gold:    "Gold: {gold} gold"
  health:
   perfect:    You are in perfect health.
   lightly:    You are lightly injured.
@@ -623,7 +623,7 @@ character:
  none:    (no character)
  child:   "Child{count, plural, other {ren}}"
  resupply: "Resupply from camp followers:"
- status:  Status of %name%
+ status:  Status of {name}
  history: Character history
  inactive:  This character has not been played in a while
  banned:    This user has been banned.
@@ -631,9 +631,9 @@ character:
  notstarted:
   title:    Rumours
   text:     Only rumours about this First One have been heard, as this character has not yet been started (placed in the world).
- prisoner:  this character is currently a captive of %captor%.
- prisoner2: You are currently a captive of %captor%.
- captorinactive: Your captor has not been seen in quite a while. You should <a href="%url%">try to escape</a>.
+ prisoner:  this character is currently a captive of {captor}.
+ prisoner2: You are currently a captive of {captor}.
+ captorinactive: Your captor has not been seen in quite a while. You should <a href="{url}">try to escape</a>.
  full:    View full details
  journals: "View journals they've written"
  list:
@@ -663,16 +663,16 @@ character:
   150: Ancestors
  start:
   title:      Character Arrival Organizations
-  intro:      Select the arrival organization for %name%. You can either choose to start in a Realm, a House, or, if your character has one already through their lineage, their own House. Realms can offer a variety of locations to start the game in, while Houses will only let you start at their Home. Houses do offer you the chance to start outside of a regular realm organization though, but <b>are very hard to leave</b>--generally requiring your character's death to do so.<br /><br />If you're unsure what whether to start in a Realm or a House, we suggest starting in a Realm.
+  intro:      Select the arrival organization for {name}. You can either choose to start in a Realm, a House, or, if your character has one already through their lineage, their own House. Realms can offer a variety of locations to start the game in, while Houses will only let you start at their Home. Houses do offer you the chance to start outside of a regular realm organization though, but <b>are very hard to leave</b>--generally requiring your character's death to do so.<br /><br />If you're unsure what whether to start in a Realm or a House, we suggest starting in a Realm.
   offer:      Accept fealty offer
   offerintro: >
     Many landed nobles offer a contingent of troops for loyal knights to fight in their name. Accepting one of these offers
     is the easiest way to start out.<br />
     Your character will automatically be placed in the estate of your new lord and receive the promised amount of troops. In
-    addition, %he% will have an initial oath of fealty to the lord that made the offer.
+    addition, {he} will have an initial oath of fealty to the lord that made the offer.
   offerchoice: Offer
-  offersummary: "%name%, %count% soldiers"
-  offersummary2: "%name%, lordship"
+  offersummary: "{name}, {count} soldiers"
+  offersummary2: "{name}, lordship"
   family:     Place with Family
   existing: >
     Your character can begin the game in the estate of any of your existing characters, and get help to start their career from relatives.
@@ -695,20 +695,20 @@ character:
   myhouse:    Start at your House's Home
   myhouseintro: As you already have a House, you can always join it.
   join:
-   realm:     Start your career in the realm of %name%
-   house:     Start your career in the house of %name%
-   myhouse:   "Start in your house: %name%"
+   realm:     Start your career in the realm of {name}
+   house:     Start your career in the house of {name}
+   myhouse:   "Start in your house: {name}"
   players:    Active Players
   nobles:     Active Characters
   regions:    Held Settlements
  spawn:
   realm:
-   title:     Arriving in %name%
-   intro:     "As one of the many realms of the game, joining %name% will immediately start you as part of their realm as a member but otherwise unaligned First One. This will get you in their conversations, announce your arrival, and, hopefully, get you towards something to do fairly quickly. Even though your presence is announced, it is suggested that you also introduce yourself as well.<br /><br />Note: Might & Fealty is a slower game, so it's entirely possible you won't get a response for several hours."
-  join:      Make your debut at %name%
+   title:     Arriving in {name}
+   intro:     "As one of the many realms of the game, joining {name} will immediately start you as part of their realm as a member but otherwise unaligned First One. This will get you in their conversations, announce your arrival, and, hopefully, get you towards something to do fairly quickly. Even though your presence is announced, it is suggested that you also introduce yourself as well.<br /><br />Note: Might & Fealty is a slower game, so it's entirely possible you won't get a response for several hours."
+  join:      Make your debut at {name}
   house:
-   title:     Arriving in %name%
-   intro:     "As one of the many houses of the game, joining %name% will immediately start you as part of their house as a member but otherwise unaligned First One. This will get you in their conversations, announce your arrival, and, hopefully, get you towards something to do fairly quickly. Even though your presence is announced, it is suggested that you also introduce yourself as well.<br /><br />Note: Might & Fealty is a slower game, so it's entirely possible you won't get a response for several hours."
+   title:     Arriving in {name}
+   intro:     "As one of the many houses of the game, joining {name} will immediately start you as part of their house as a member but otherwise unaligned First One. This will get you in their conversations, announce your arrival, and, hopefully, get you towards something to do fairly quickly. Even though your presence is announced, it is suggested that you also introduce yourself as well.<br /><br />Note: Might & Fealty is a slower game, so it's entirely possible you won't get a response for several hours."
  details:
   realm:      Realm(s)
   ultimate:   Sovereign realm(s)
@@ -751,7 +751,7 @@ gender:
 form:
  username:    Username
  displayname: Public Name
- aka:         aka <b>%name%</b>
+ aka:         aka <b>{name}</b>
  email:       E-Mail
  password:    Password
  password_confirmation: Repeat password
@@ -776,11 +776,11 @@ form:
 
 settlement:
  name:  Settlement
- title: "%type% of %name%"
+ title: "{type} of {name}"
  capital: Local Capital(s)
  details: Settlement Details
  dummy:   Click a settlement on the map to show its details here.
- area:  "%name% area"
+ area:  "{name} area"
  type:  Type
  fortified: Fortified
  size:
@@ -822,12 +822,12 @@ settlement:
  independent: This is an independent settlement
  unowned:     Independent
  owner:       Owner
- ownedby:     This settlement is ruled by %owner%.
+ ownedby:     This settlement is ruled by {owner}.
  occupation:  Occupation?
- occupier:    Contrary to ownership, it is flying the colors of %realm%.
- occupant:    "%char% appears to be directing an occupation here."
- stewardedby: "%steward% is serving as steward."
- realm:       This settlement is part of %realm%.
+ occupier:    Contrary to ownership, it is flying the colors of {realm}.
+ occupant:    "{char} appears to be directing an occupation here."
+ stewardedby: "{steward} is serving as steward."
+ realm:       This settlement is part of {realm}.
  realm2:      Realm
  sovereignty: Sovereignty
  ultimate:    Sovereign Realm
@@ -842,9 +842,9 @@ settlement:
   4:  Suffering from starvation
   5:  Suffering from severe starvation
  shortage:
-  1:  Minor shortage of %resource%
-  2:  Shortage of %resource%
-  3:  Dramatic shortage of %resource%
+  1:  Minor shortage of {resource}
+  2:  Shortage of {resource}
+  3:  Dramatic shortage of {resource}
   effect:   Production and construction requiring this resource are slowed down.|Production and construction requiring these resources are slowed down.
   none:     All resource demands are satisfied.
  security:
@@ -857,16 +857,16 @@ settlement:
  corruption:
   name: Corruption
   tt:   Slowly rises with the number of estates you personally hold across all your characters. Give estates to vassals to reduce corruption. See manual for details.
- militia:   Soldiers stationed in %name%
+ militia:   Soldiers stationed in {name}
  militia2:  Militia
- recruits:  Soldiers in training in %name%
+ recruits:  Soldiers in training in {name}
  recruits2: Recruits
  resupply:  Equipment available for resupply
  retrain:   Equipment available for re-training
  train:     Equipment available for training
  traintotal: (Numbers provided assume 100% usage of that facility's available equipment hours.<br>If you have 200 axes available and you train 100 infantry with axes, this will use half of your available machetes and halberds, since they are all supplied by the blacksmith.)
- militiacount:  "%count% combat-ready local militia"
- recruitscount: "%count% recruits in training"
+ militiacount:  "{count} combat-ready local militia"
+ recruitscount: "{count} recruits in training"
  resources:
   type:     Type
   yield:    Source
@@ -886,11 +886,11 @@ settlement:
   balance:    Total balance
   prospector: A prospector could supply a more detailed report.
  workforce:
-  atroads:      "%number% assigned to road construction"
-  atbuildings:  "%number% assigned to building construction"
-  atfeatures:   "%number% assigned to features construction"
-  employed:     "%number% employed in various buildings"
-  available:    "%number% available for farming and the local economy"
+  atroads:      "{number} assigned to road construction"
+  atbuildings:  "{number} assigned to building construction"
+  atfeatures:   "{number} assigned to features construction"
+  employed:     "{number} employed in various buildings"
+  available:    "{number} available for farming and the local economy"
  description:   Settlement Description
 
 road:
@@ -945,20 +945,20 @@ hungry:       Hungry
 veryhungry:   Starving
 routed:       Routed
 offered:      Included in a knight offer
-assigned:     Assigned from %from%, could still be reclaimed
+assigned:     Assigned from {from}, could still be reclaimed
 lastbattle:   Last battle
 islocked:     Currently being reassigned to you
 hour:         hour|hours
 minute:       minute|minutes
-untilturn:    "%h% %hours%, %m% %minutes% until next day change"
-untilturn2:   "%m% %minutes% until next day change"
+untilturn:    "{h} {hours}, {m} {minutes} until next day change"
+untilturn2:   "{m} {minutes} until next day change"
 location:     Location
 coordinates:  Coordinates
 spotdistance: Spotting distance
 actdistance:  Interaction distance
 travelspeed:  Travel speed
 travellocked: Your recent travel was blocked by local actions or battles.
-base:         "(base: %distance%)"
+base:         "(base: {distance})"
 nearest:      Nearest settlement
 nothingnear:  No nearby settlement
 nearbyothers: Nearby First Ones
@@ -980,40 +980,40 @@ charstatus:
  renaming:     rename
  reclaiming:   reclaim
  sieging:     sieging
-newevents:    "%number% event|%number% events"
-newmessages:  "%number% message|%number% messages"
-requests:     "%number% request|%number% requests"
-inside:       inside %settlement%
-inside2:      inside %place%, in %settlement%
-inside3:      inside %place%, near %settlement%
-near:         near %settlement%
+newevents:    "{number} event|{number} events"
+newmessages:  "{number} message|{number} messages"
+requests:     "{number} request|{number} requests"
+inside:       inside {settlement}
+inside2:      inside {place}, in {settlement}
+inside3:      inside {place}, near {settlement}
+near:         near {settlement}
 familiarity:
  0:           You are new to this region and not familiar with the environment.
  1:           You are not very familiar with this region.
  2:           You have become somewhat familiar with this region.
  3:           You know this region fairly well.
  4:           You know this region very well.
-prisonerof:   prisoner of %captor%
+prisonerof:   prisoner of {captor}
 atsea:        at sea
 tradename:    name (optional)
 zoom:         zoom to fit
 expand:       expand
-fewoffers:    There are only %count% knight offers open at this time. Creating more knight offers now has a very good chance of giving you new knights.
+fewoffers:    There are only {count} knight offers open at this time. Creating more knight offers now has a very good chance of giving you new knights.
 
 distance:    distance
 length:      length
 dist:
- m:          "%value% m|%value% m"
- metre:      "%value% metre|%value% metres"
- y:          "%value% y|%value% y"
- yard:       "%value% yard|%value% yards"
- mi:         "%value% mi|%value% mi"
- mile:       "%value% mile|%value% miles"
- league:     "%value% league|%value% leagues"
+ m:          "{value} m|{value} m"
+ metre:      "{value} metre|{value} metres"
+ y:          "{value} y|{value} y"
+ yard:       "{value} yard|{value} yards"
+ mi:         "{value} mi|{value} mi"
+ mile:       "{value} mile|{value} miles"
+ league:     "{value} league|{value} leagues"
 area:
- hectare:    "%value% hectare|%value% hectares"
- sqm:        "%value% square mile|%value% square miles"
- sql:        "%value% square league|%value% square leagues"
+ hectare:    "{value} hectare|{value} hectares"
+ sqm:        "{value} square mile|{value} square miles"
+ sql:        "{value} square league|{value} square leagues"
 metre_abr:   m
 popdensity:  People per square mile
 day:         day|days
@@ -1035,7 +1035,7 @@ building:    building|buildings
 feature:     feature|features
 build:
  workers:    workers
- available:  "%number% (%percent% %) workers available"
+ available:  "{number} ({percent} %) workers available"
  employees:  employed
  underway:   under construction
 workforce:   workforce
@@ -1117,7 +1117,7 @@ error:
   already:      This code has already been redeemed, maybe automatically as you logged in. Check your credit history, please. If you believe this to be an error, please contact tom@mightandfealty.com for details.
   notforyou:    This code is locked to a specific e-mail address, different from yours.
 
- iseditor:      Could not add %character%, who is already a member.
+ iseditor:      Could not add {character}, who is already a member.
 
 selectall:    select all
 withall:      with all selected...
@@ -1148,7 +1148,7 @@ npc:
  translator:   translator|translators
  scholar:      scholar|scholars
  soldier:      soldier|soldiers
- soldiers:     Soldiers of %name%
+ soldiers:     Soldiers of {name}
  soldiershere: soldiers present
  intraining:   recruits in training
  units:        Your unit|Your units
@@ -1232,7 +1232,7 @@ events:
  title:     Event Journals
  log:       Journal
  type:      type
- logtitle:  Event Journal of %subject%
+ logtitle:  Event Journal of {subject}
  from:      Available from
  until:     Available until
  events:    Events
@@ -1242,9 +1242,9 @@ events:
  alldone:   Marked as read for all your characters
  alldone2:  Marked as read for this character
  research:
-  ongoing:  A scholar of yours is currently researching older records in this journal.|%amount% of your scholars are currently researching older records in this journal.
+  ongoing:  A scholar of yours is currently researching older records in this journal.|{amount} of your scholars are currently researching older records in this journal.
   intro:    There are more events in older records, a scholar will be able to research them.
-  can:      You have a scholar available for research work.|You have %amount% scholars available for research work.
+  can:      You have a scholar available for research work.|You have {amount} scholars available for research work.
  filter:
   all:      All events
   medium:   Only interesting
@@ -1309,82 +1309,82 @@ battle:
  title:         Battle Report
  upcoming:      Upcoming Battle
  participants:  participants
- journal:       "%journal%, by %character%"
+ journal:       "{journal}, by {character}"
  journals:      "It seems that people have shared stories about this battle. You could read one if you'd like."
  journalwrite:  "You're always welcome to write your own words about this, perhaps even publicly if you'd like."
  location:
   nowhere:      neverwhere battle
-  of:           The battle of %location%
-  siege:        The siege of %location%
-  assault:      The assault on %location%
-  sortie:       The sortie from %location%
-  near:         A battle near %location%
-  around:       A battle in the vicinity of %location%
-  castle:       A battle at the castle of %location%
+  of:           The battle of {location}
+  siege:        The siege of {location}
+  assault:      The assault on {location}
+  sortie:       The sortie from {location}
+  near:         A battle near {location}
+  around:       A battle in the vicinity of {location}
+  castle:       A battle at the castle of {location}
  defenses:      An assault against a defended position with
  initial:       initial troops
  combat:        combat
  ranged:
   title:        ranged phase
-  shots:        "%i% shot fired|%i% shots fired"
-  hits:         "%i% hit|%i% hits"
-  kill:         "%i% enemy killed|%i% enemies killed"
-  wound:        "%i% enemy wounded|%i% enemies wounded"
-  routed:       "%i% enemy routed|%i% enemies routed"
-  capture:      "%i% enemy First One surrendered|%i% enemy First Ones surrendered"
+  shots:        "{i} shot fired|{i} shots fired"
+  hits:         "{i} hit|{i} hits"
+  kill:         "{i} enemy killed|{i} enemies killed"
+  wound:        "{i} enemy wounded|{i} enemies wounded"
+  routed:       "{i} enemy routed|{i} enemies routed"
+  capture:      "{i} enemy First One surrendered|{i} enemy First Ones surrendered"
  melee:
-  title:        melee phase %i%
-  alive:        "%i% soldier fighting|%i% soldiers fighting"
-  kill:         "%i% enemy killed|%i% enemies killed"
-  wound:        "%i% enemy wounded|%i% enemies wounded"
-  panic:        "%i% enemy routed|%i% enemies routed"
-  capture:      "%i% enemy First One captured|%i% enemy First Ones captured"
+  title:        melee phase {i}
+  alive:        "{i} soldier fighting|{i} soldiers fighting"
+  kill:         "{i} enemy killed|{i} enemies killed"
+  wound:        "{i} enemy wounded|{i} enemies wounded"
+  panic:        "{i} enemy routed|{i} enemies routed"
+  capture:      "{i} enemy First One captured|{i} enemy First Ones captured"
  round:
-  title: Combat Phase %i%
-  alive: "%i% soldier fighting|%i% soldiers fighting"
-  shots:        "%i% shot fired|%i% shots fired"
-  rangedHits:   "%i% ranged hit|%i% ranged hits"
-  kill:         "%i% enemy killed|%i% enemies killed"
-  wound:        "%i% enemy wounded|%i% enemies wounded"
-  panic:        "%i% enemy routed|%i% enemies routed"
-  capture:      "%i% enemy First One captured|%i% enemy First Ones captured"
-  fail:         "%i% was unable to do any damage|%i% were unable to do any damage"
-  misses:       "%i% missed their target|%i% missed their targets"
-  crowded:      "%i% was unable to reach a target|%i% were unable to reach thier targets"
-  routed:       "%i% soldier was routed|%i% soldiers were routed"
-  strikes:      "%i% melee hit|%i% melee hits"
-  notarget:     "%i% was unable to find a target|%i% were unable to find a target"
-  chargefail:   "%i% was counter-attacked in the charge, but took no damage|%i% were counter-attacked in the charge, but took no damage"
-  chargewound:  "%i% was wounded by the enemy in the charge|%i% were wounded by the enemy in the charge"
-  chargecapture: "%i% was captured by the enemy in the carge|%i% were captured by the enemy in the carge"
-  chargekill:   "%i% was killed by the enemy in the charge|%i% were killed by the enemy in the charge"
-  lightShieldfail:    "%i% was counter-attacked, but took no damage|%i% were counter-attacked but took no damage"
-  lightShieldwound:   "%i% was wounded by an enemy counter-attack|%i% were wounded by enemy counter-attacks"
-  lightShieldcapture: "%i% was captured by the enemy a counter-attack|%i% were captured by the enemy in counter-attacks"
-  lightShieldkill:   "%i% was killed by the enemy in a counter-attack|%i% were killed by the enemy in counter-attacks"
-  stared:       "%i% First One refused to reteat|%i% First Ones refused to retreat"
+  title: Combat Phase {i}
+  alive: "{i} soldier fighting|{i} soldiers fighting"
+  shots:        "{i} shot fired|{i} shots fired"
+  rangedHits:   "{i} ranged hit|{i} ranged hits"
+  kill:         "{i} enemy killed|{i} enemies killed"
+  wound:        "{i} enemy wounded|{i} enemies wounded"
+  panic:        "{i} enemy routed|{i} enemies routed"
+  capture:      "{i} enemy First One captured|{i} enemy First Ones captured"
+  fail:         "{i} was unable to do any damage|{i} were unable to do any damage"
+  misses:       "{i} missed their target|{i} missed their targets"
+  crowded:      "{i} was unable to reach a target|{i} were unable to reach thier targets"
+  routed:       "{i} soldier was routed|{i} soldiers were routed"
+  strikes:      "{i} melee hit|{i} melee hits"
+  notarget:     "{i} was unable to find a target|{i} were unable to find a target"
+  chargefail:   "{i} was counter-attacked in the charge, but took no damage|{i} were counter-attacked in the charge, but took no damage"
+  chargewound:  "{i} was wounded by the enemy in the charge|{i} were wounded by the enemy in the charge"
+  chargecapture: "{i} was captured by the enemy in the carge|{i} were captured by the enemy in the carge"
+  chargekill:   "{i} was killed by the enemy in the charge|{i} were killed by the enemy in the charge"
+  lightShieldfail:    "{i} was counter-attacked, but took no damage|{i} were counter-attacked but took no damage"
+  lightShieldwound:   "{i} was wounded by an enemy counter-attack|{i} were wounded by enemy counter-attacks"
+  lightShieldcapture: "{i} was captured by the enemy a counter-attack|{i} were captured by the enemy in counter-attacks"
+  lightShieldkill:   "{i} was killed by the enemy in a counter-attack|{i} were killed by the enemy in counter-attacks"
+  stared:       "{i} First One refused to reteat|{i} First Ones refused to retreat"
  hunt:
   title:        hunt
-  killed:       "%i% enemy was killed or wounded while fleeing.|%i% enemies were killed or wounded while fleeing."
-  entkilled:    "%i% enemy entourage member was killed during the rout.|%i% enemy entourage members were killed during the rout."
-  dropped:      "%i% soldier dropped their equipment to run away faster.|%i% soldiers dropped their equipment to run faster."
+  killed:       "{i} enemy was killed or wounded while fleeing.|{i} enemies were killed or wounded while fleeing."
+  entkilled:    "{i} enemy entourage member was killed during the rout.|{i} enemy entourage members were killed during the rout."
+  dropped:      "{i} soldier dropped their equipment to run away faster.|{i} soldiers dropped their equipment to run faster."
  extras:
   noble:
-   kill:        "%who% was killed by %by%."
-   capture:     "%who% was captured by %by%."
+   kill:        "{who} was killed by {by}."
+   capture:     "{who} was captured by {by}."
   mortal:
-   kill:        "%who% was killed by a mortal."
+   kill:        "{who} was killed by a mortal."
   ranged:
-   kill:        "%who% was killed."
-   capture:     "%who% surrendered to %by%."
+   kill:        "{who} was killed."
+   capture:     "{who} surrendered to {by}."
  finish:        Survivors
  fate:
   title:        fate of First Ones
-  killed:       "%character% was killed."
-  wounded:      "%character% was wounded."
-  victory:      "%character% was victorious."
-  retreat:      "%character% retreated."
-  captured:     "%character% was captured by the enemy."
+  killed:       "{character} was killed."
+  wounded:      "{character} was wounded."
+  victory:      "{character} was victorious."
+  retreat:      "{character} retreated."
+  captured:     "{character} was captured by the enemy."
 
 description:
  scout: >
@@ -1722,7 +1722,7 @@ unavailable:
  leader:        As the ruler of a realm, you cannot do this. Manage the allegiance of your realm instead.
  notleader:     You are not the ruler of this realm.
  notcommander:  You are not in command of this battlegroup.
- notholder:     You do not hold the position of %name%.
+ notholder:     You do not hold the position of {name}.
  notdiplomat:   You do not hold a position with diplomacy permissions in this realm.
  noothers:      There are no other characters nearby.
  vassal:        You cannot do this as long as you are the vassal of someone else.
@@ -1821,7 +1821,7 @@ artifact:
  title:     Artifacts
  create:
   title:    Create Artifact
-  limit:    You can create a total of %amount% artifacts on this account.
+  limit:    You can create a total of {amount} artifacts on this account.
   intro: >
     Here you can forge or create artifacts, unique items with a personal history.<br />
     Artifacts can be used for many purposes, from legendary weapons to hereditary crown jewels to items of
@@ -1847,11 +1847,11 @@ artifact:
   intro: >
     You can give artifacts to other nearby First Ones, simply by handing them over. Note that these transfers
     are permanent and there is absolutely no way to reverse it once it is done.
-  success:  You have given the %artifact% to %character%.
+  success:  You have given the {artifact} to {character}.
 
 house:
  member:
-  exile:       You have exiled %character% from the House.
+  exile:       You have exiled {character} from the House.
   join:        You have applied to join the House.
   successor:   You have successfully updated your successor.
  updated:
@@ -1878,7 +1878,7 @@ journal:
   header:      Read a Journal Entry
   redirect:    This journal is private and you don't have access to read it.
   intro:       Journals are player created messages about things in game. Most of the time these can be considered to be known things, as somethig your character heard via rumor, though they can also be flagged as out of character information that is really only meant for your enjoyment as a player rather than for use by your characters (unless they happen to know of it some other way.)
-  by:          <i>Written by %character% on %day% (%ts%)</i>
+  by:          <i>Written by {character} on {day} ({ts})</i>
   report:     If you feel this post shares content that is not safe for public viewing, you are encouraged to report it with the link below.
   others:     "If this was to your liking, perhaps there are other things they've written..."
  ooc:         The author of this Journal has flagged it as "Out of Character Content", so it is meant for your enjoyment as a player rather than as something you can have your characters know about.
@@ -1889,7 +1889,7 @@ journal:
  write:
   header:      New Journal Entry
   intro:       Your journal is a place for you to write down your thoughts or record events from your view. It can also be used for other things, like as a repository of world information for your character's settings. Best of all, you can share these with others if you want, through the magic of the Lendan Stone network!<br><br>Be advsised that all content shared publicly MUST be safe for viewing for a teenager (13 years of age or older). Light swearing, is fine, but if you want to record your fantasies, make it private and/or graphic. Misuse of or failure to properly mark your journal entries may see all future entries forced to be marked private through GM action.
-  intro2:       Your journal is a place for you to write down your thoughts or record events from your view. It can also be used for other things, like as a repository of world information for your character's settings. Best of all, you can share these with others if you want, through the magic of the Lendan Stone network!<br><br>Be advsised that all content shared publicly MUST be safe for viewing for a teenager (13 years of age or older). Light swearing, is fine, but if you want to record your fantasies, make it private and/or graphic. Misuse of or failure to properly mark your journal entries may see all future entries forced to be marked private through GM action.<br><br>If this journal is public it'll also be visible for anyone looking at this %report%.
+  intro2:       Your journal is a place for you to write down your thoughts or record events from your view. It can also be used for other things, like as a repository of world information for your character's settings. Best of all, you can share these with others if you want, through the magic of the Lendan Stone network!<br><br>Be advsised that all content shared publicly MUST be safe for viewing for a teenager (13 years of age or older). Light swearing, is fine, but if you want to record your fantasies, make it private and/or graphic. Misuse of or failure to properly mark your journal entries may see all future entries forced to be marked private through GM action.<br><br>If this journal is public it'll also be visible for anyone looking at this {report}.
   success:     A new entry in your journal has been recorded.
  form:
   topic:
@@ -1908,7 +1908,7 @@ journal:
   failure:     You must be logged in to M&F to submit a report.
  mine:
   header:      Your Journal Entries
-  header2:     "%name%'s Journal Entries"
+  header2:     "{name}'s Journal Entries"
   gamedate:    Game Date
   realdate:    Real World Date
   topic:       Topic

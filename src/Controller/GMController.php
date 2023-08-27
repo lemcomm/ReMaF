@@ -59,7 +59,7 @@ class GMController extends AbstractController {
 		$form = $this->createForm(UpdateNoteType::class, null, ['note'=>$id]);
 		$form->handleRequest($request);
 
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if (!$id) {
 				$note = new UpdateNote();

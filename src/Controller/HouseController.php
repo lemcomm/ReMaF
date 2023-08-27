@@ -86,7 +86,7 @@ class HouseController extends AbstractController {
 		}
 		$form = $this->createForm(HouseCreationType::class);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			// FIXME: this causes the (valid markdown) like "> and &" to be converted - maybe strip-tags is better?;
 			// FIXME: need to apply this here - maybe data transformers or something?
@@ -123,7 +123,7 @@ class HouseController extends AbstractController {
 		$form = $this->createForm(HouseSubcreateType::class);
 		$form->handleRequest($request);
 
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$this->gr->newRequestFromCharacterToHouse('house.subcreate', null, null, null, $data['subject'], $data['text'], $character, $character->getHouse());
 			$this->addFlash('notice', $this->trans->trans('house.member.createrequested', array(), 'actions'));
@@ -150,7 +150,7 @@ class HouseController extends AbstractController {
 
 		$form = $this->createForm(HouseCreationType::class, null, ['name' => $name, 'motto' => $motto, 'desc' => $desc, 'priv' => $priv, 'secret' => $secret]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$change = FALSE;
 			if ($data['name'] != $name) {
@@ -202,7 +202,7 @@ class HouseController extends AbstractController {
 
 		$form = $this->createForm(HouseJoinType::class);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$fail = true;
 			$data = $form->getData();
 			if ($data['sure']) {
@@ -245,7 +245,7 @@ class HouseController extends AbstractController {
 
 		$form = $this->createForm(HouseMembersType::class, null, ['members' => $members]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$exile = $data['member'];
 			if ($exile) {
@@ -290,7 +290,7 @@ class HouseController extends AbstractController {
 
 		$form = $this->createForm(HouseMembersType::class, null, ['members' => $members]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$member = $data['member'];
 			if ($member) {
@@ -321,7 +321,7 @@ class HouseController extends AbstractController {
 		$em = $this->em;
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$fail = true;
 			if ($data['sure']) {
@@ -373,7 +373,7 @@ class HouseController extends AbstractController {
 		$text = $desc?->getText();
 		$form = $this->createForm(DescriptionNewType::class, null, ['text' => $text]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($text != $data['text']) {
 				$this->desc->newSpawnDescription($house, $data['text'], $character);
@@ -424,7 +424,7 @@ class HouseController extends AbstractController {
 		$myHouse = $character->getHouse();
 		$form = $this->createForm(HouseCadetType::class);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$yes = $data['sure'];
 			if ($yes) {
@@ -455,7 +455,7 @@ class HouseController extends AbstractController {
 
 		$form = $this->createForm(HouseUncadetType::class);
 		$form->handleRequest($request);
-		if ($form->isValid() && $form->isSubmitted()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$yes = $data['sure'];
 			if ($yes) {
@@ -483,7 +483,7 @@ class HouseController extends AbstractController {
 		$form = $this->createForm(AreYouSureType::class);
 		$house = $character->getHouse();
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['sure']) {
 				$house->setActive(true);
