@@ -37,7 +37,15 @@ class CharacterTransformer implements DataTransformerInterface {
 		} else {
 			# Presumably, that wasn't an ID. Assume it's just a name. Strip out parantheses and numbers.
 			$name = trim(preg_replace('/[123456790()]*/', '', $input));
-			$character = $this->em->getRepository('BM2SiteBundle:Character')->findOneBy(['name' => $name, 'alive' => TRUE], ['id' => 'ASC']);
+			$potentials = $this->em->getRepository('BM2SiteBundle:Character')->findBy(array('name' => $name, 'alive' => TRUE), array('id' => 'ASC'));
+			foreach ($potentials as $each) {
+				if ($each->getRetired()) {
+					continue;
+				} else {
+					$character = $each;
+					break;
+				}
+			}
 			if (!$character) {
 				$name = preg_replace('/(<\/i>)+/', '', preg_replace('/(<i>)+/', '', $name));
 				$character = $this->em->getRepository('BM2SiteBundle:Character')->findOneBy(['known_as' => $name, 'alive' => TRUE], ['id' => 'ASC']);
