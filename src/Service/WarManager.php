@@ -661,9 +661,10 @@ class WarManager {
 		return true;
 	}
 
-	public function removeCharacterFromBattlegroup(Character $character, BattleGroup $bg, $disbandSiege = false, $source = 'battlerunner'): void {
+	public function removeCharacterFromBattlegroup(Character $character, BattleGroup $bg, $disbandSiege = false, $skip = null): void {
+		$total = $bg->getCharacters()->count();
 		$bg->removeCharacter($character);
-		if ($bg->getCharacters()->count()==0) {
+		if ($total <= 1) {
 			// there are no more participants in this battlegroup
 			if ($bg->getBattle()) {
 				$focus = $bg->getBattle();
@@ -684,15 +685,17 @@ class WarManager {
 						}
 					}
 					foreach ($group->getCharacters() as $char) {
-						$this->history->logEvent(
-							$char,
-							'battle.failed',
-							array(),
-							History::HIGH, false, 25
-						);
+						if ($char !== $skip) {
+							$this->history->logEvent(
+								$char,
+								'battle.failed',
+								array(),
+								History::HIGH, false, 25
+							);
+						}
 						if ($group->getLeader() == $char) {
 							$group->setLeader(null);
-							$char->removeLeadingBattlegroup($bg);
+							$char->removeLeadingBattlegroup($group);
 						}
 					}
 				}

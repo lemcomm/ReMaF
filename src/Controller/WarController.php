@@ -22,6 +22,7 @@ use App\Form\SiegeStartType;
 use App\Form\WarType;
 
 use App\Service\ActionManager;
+use App\Service\CharacterManager;
 use App\Service\CommonService;
 use App\Service\Geography;
 use App\Service\History;
@@ -1323,7 +1324,7 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/nobles/attack', name:'maf_war_nobles_attack')]
-	public function attackOthersAction(Request $request): RedirectResponse|Response {
+	public function attackOthersAction(CharacterManager $cm, Request $request): RedirectResponse|Response {
 		$character = $this->warDisp->gateway('militaryAttackNoblesTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -1346,12 +1347,39 @@ class WarController extends AbstractController {
 			if (count($data['target']) == 0) {
 				$form->addError(new FormError("attack.nobody"));
 			} else {
-				$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target']);
-				if ($result['outside'] && $character->getInsideSettlement()) {
-					// leave settlement if we attack targets outside
-					$character->setInsideSettlement();
+				$mine = 5;
+				foreach ($character->getUnits() as $unit) {
+					$mine += $unit->getVisualSize();
 				}
-
+				$force = 0;
+				foreach ($data['target'] as $target) {
+					$force += 5;
+					foreach ($target->getUnits() as $unit) {
+						$force += $unit->getVisualSize();
+					}
+				}
+				if ($mine*100<=$force) {
+					# The enemy force overwhelms you and immediately captures you.
+					$cm->imprison($character, $target);
+					$this->hist->logEvent(
+						$character,
+						'event.character.overwhelmedby',
+						array('%link-character%'=>$data['target']->getId()),
+						History::HIGH, true
+					);
+					$this->hist->logEvent(
+						$data['target'],
+						'event.character.overwhelmed',
+						array('%link-character%'=>$character->getId()),
+						History::HIGH, true
+					);
+				} else {
+					$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target']);
+					if ($result['outside'] && $character->getInsideSettlement()) {
+						// leave settlement if we attack targets outside
+						$character->setInsideSettlement(null);
+					}
+				}
 				$em->flush();
 			}
 		}

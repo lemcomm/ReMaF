@@ -197,11 +197,15 @@ class CharacterManager {
 		}
 		$enemies = false;
 		foreach ($character->getBattlegroups() as $bg) {
-			if ($bg->getLeader() === $character) {
-				$bg->setLeader(null);
+			if ($bg->getCharacters()->count() === 1 && $bg->getBattle()->getGroups()->count() == 2) {
+				# Just us, we can short-circuit this battle.
+				foreach ($bg->getBattle()->getGroups() as $group) {
+					$this->warman->disbandGroup($group);
+				}
+			} else {
+				$this->warman->removeCharacterFromBattlegroup($character, $bg);
 			}
 			$enemies = $bg->getEnemies()->first()->getCharacters();
-			$this->warman->removeCharacterFromBattlegroup($character, $bg);
 		}
 
 		// remove all votes
@@ -518,11 +522,15 @@ class CharacterManager {
 		}
 		$enemies = false;
 		foreach ($character->getBattlegroups() as $bg) {
-			if ($bg->getLeader() === $character) {
-				$bg->setLeader(null);
+			if ($bg->getCharacters()->count() === 1 && $bg->getBattle()->getGroups()->count() == 2) {
+				# Just us, we can short-circuit this battle.
+				foreach ($bg->getBattle()->getGroups() as $group) {
+					$this->warman->disbandGroup($group);
+				}
+			} else {
+				$this->warman->removeCharacterFromBattlegroup($character, $bg);
 			}
 			$enemies = $bg->getEnemies()->first()->getCharacters();
-			$this->warman->removeCharacterFromBattlegroup($character, $bg);
 		}
 
 		// remove all votes

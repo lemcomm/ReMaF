@@ -13,7 +13,9 @@ class Unit {
 	public function getVisualSize() {
             		$size = 0;
             		foreach ($this->soldiers as $soldier) {
-            			$size += $soldier->getVisualSize();
+				if ($soldier->isActive()) {
+					$size += $soldier->getVisualSize();
+				}
             		}
             		return $size;
             	}
