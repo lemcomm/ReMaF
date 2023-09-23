@@ -782,6 +782,9 @@ class CharacterManager {
 		foreach ($character->getBattlegroups() as $bg) {
 			$this->warman->removeCharacterFromBattlegroup($character, $bg);
 		}
+		foreach ($character->getUnits() as $unit) {
+			$this->milman->returnUnitHome($unit, 'surrender', $character);
+		}
 		$captor = $character->getPrisonerOf();
 		$character->setLocation($captor->getLocation());
 		$character->setInsideSettlement($captor->getInsideSettlement());

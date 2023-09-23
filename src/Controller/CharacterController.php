@@ -347,7 +347,7 @@ class CharacterController extends AbstractController {
 		}
 		if ($character->getHouse() && $character->getHouse()->getHome()) {
 			$myHouse = $character->getHouse();
-		} else {
+		} elseif (!$character->getHouse()) {
 			switch(rand(0,5)) {
 				case 0:
 					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.id DESC');
