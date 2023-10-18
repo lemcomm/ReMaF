@@ -422,7 +422,7 @@ class ConversationController extends AbstractController {
 
 		if ($conv->findType() == 'org') {
 			if ($assoc = $conv->getAssociation()) {
-				if ($law = $assoc->findLaw('rankVisibility')) {
+				if ($law = $assoc->findActiveLaw('rankVisibility')) {
 					if ($law->getValue() == 'all') {
 						$known = null;
 						$privacy = false;
@@ -553,7 +553,7 @@ class ConversationController extends AbstractController {
 			]);
 		} elseif ($org) {
 			if ($assoc = $conv->getAssociation()) {
-				if ($law = $assoc->findLaw('rankVisibility')) {
+				if ($law = $assoc->findActiveLaw('rankVisibility')) {
 					if ($law->getValue() == 'all') {
 						$known = null;
 						$privacy = false;

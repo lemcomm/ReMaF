@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Association;
 use App\Entity\Settlement;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -23,6 +24,7 @@ class LawEditType extends AbstractType {
 			'law'			=> null,
 			'choices'		=> [],
 			'settlements'		=> [],
+			'faiths'		=> [],
 		));
 		$resolver->setRequired(['type']);
 	}
@@ -74,7 +76,35 @@ class LawEditType extends AbstractType {
 			'data'=>$law?$law->getCascades():false,
 			'required'=>false,
 		));
-		if ($type != 'freeform') {
+		if ($type !== 'freeform') {
+			if ($type === 'realmFaith') {
+				$builder->add('value', ChoiceType::class, array(
+					'label'=>'law.form.edit.value',
+					'required'=>true,
+					'choices'=>$choices[$type],
+					'placeholder'=>'law.form.type.empty',
+					'choice_translation_domain'=>'orgs',
+					'choice_label'=>function($choice, $key, $value) {
+						return 'law.info.'.$choice.'.desc';
+					},
+					'data'=>$law?$law->getValue():null
+				));
+				$builder->add('settlement', HiddenType::class, array(
+					'data'=>null
+				));
+				$builder->add('faith', EntityType::class, array(
+					'label' => 'law.form.edit.faith',
+					'multiple'=>false,
+					'expanded'=>false,
+					'required'=>true,
+					'class'=>Association::class,
+					'choice_label'=>function($choice, $key, $value) {
+						return $choice->getFaithName().' ('.$choice->getName().')';
+					},
+					'choices'=>$options['faiths'],
+					'data'=>$law?$law->getFaith():null,
+				));
+			}
 			if (!in_array($type, $taxes)) {
 				$builder->add('value', ChoiceType::class, array(
 					'label'=>'law.form.edit.value',
@@ -88,6 +118,9 @@ class LawEditType extends AbstractType {
 					'data'=>$law?$law->getValue():null
 				));
 				$builder->add('settlement', HiddenType::class, array(
+					'data'=>null
+				));
+				$builder->add('faith', HiddenType::class, array(
 					'data'=>null
 				));
 			} else {
@@ -105,6 +138,9 @@ class LawEditType extends AbstractType {
 					'choice_label'=>'name',
 					'choices'=>$options['settlements'],
 					'data'=>$law?$law->getSettlement():null,
+				));
+				$builder->add('faith', HiddenType::class, array(
+					'data'=>null
 				));
 			}
 		} else {

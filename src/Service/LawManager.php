@@ -59,7 +59,19 @@ class LawManager {
 			'slumberingClaims.direct'=>'direct',
 			'slumberingClaims.none'=>'none'
 		],
+		'realmPlaceMembership' => [
+			'realmPlaceMembership.none'=>'none',
+			'realmPlaceMembership.owners'=>'owners',
+			'realmPlaceMembership.all'=>'all',
+		],
+		'realmFaith' => [
+			'realmFaith.outlawed'=>'outlawed',
+			'realmFaith.accepted'=>'accepted',
+			'realmFaith.enforced'=>'enforced',
+		],
 	];
+
+	public array $allowDuplicates = ['freeform', 'realmFaith', 'taxesFood', 'taxesWood', 'taxesMetal', 'taxesWealth'];
 
 	public array $taxLaws = ['taxesFood', 'taxesWood', 'taxesMetal', 'taxesWealth'];
 
@@ -69,7 +81,7 @@ class LawManager {
 		$this->history = $history;
 	}
 
-	public function updateLaw($org, LawType $type, $setting, $title, $desc, Character $character, $mandatory, $cascades, $sol, Settlement $settlement = null, Law $oldLaw=null, $flush=true): array|Law {
+	public function updateLaw($org, LawType $type, $setting, $title, $desc, Character $character, $mandatory, $cascades, $sol, Settlement $settlement = null, Law $oldLaw=null, $flush=true, Association $faith = null): array|Law {
 		# All laws are kept eternal, new laws are made whenever a law is changed, the old is inactivated.
 
 		if ($org instanceof Association) {
@@ -119,6 +131,13 @@ class LawManager {
 				if ($settlement) {
 					$law->setSettlement($settlement);
 				}
+				if ($faith) {
+					$law->setFaith($faith);
+				}
+				if (!$oldLaw && !in_array($tName, $this->allowDuplicates)) {
+					# No old law passed. Is this one allowed to have duplicates? If not, see if there already is one.
+					$oldLaw = $org->findLaw($tName);
+				}
 				if ($oldLaw) {
 					$this->lawSequenceUpdater($oldLaw, $law, $tName);
 					$this->history->logEvent(
@@ -159,6 +178,8 @@ class LawManager {
 			'settlementInheritance',
 			'placeInheritance',
 			'slumberingClaims',
+			'realmPlaceMembership',
+			'realmFaith',
 		];
 		if (in_array($type, $simpleLaws)) {
 			$old->setInvalidatedBy($law);
@@ -177,9 +198,4 @@ class LawManager {
 		);
 		$this->em->flush();
 	}
-
-	public function findTaxLaws(Realm $org): array {
-		return $org->findMultipleLaws($this->taxLaws);
-	}
-
 }

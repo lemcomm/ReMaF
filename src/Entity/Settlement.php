@@ -123,7 +123,7 @@ class Settlement {
 				$mod = 0.5;
 				if (!$enforce_claim) {
 					if ($realm = $this->getRealm()) {
-						if ($law = $realm->findLaw('slumberingClaims')) {
+						if ($law = $realm->findActiveLaw('slumberingClaims')) {
 							$value = $law->getValue();
 							$members = false;
 							if ($value == 'all') {

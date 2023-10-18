@@ -54,56 +54,69 @@ class Realm extends Faction {
          	}
 
 	public function findMembers($with_subs=true, $forceupdate = false) {
-         		if ($this->all_characters && $forceupdate == false) return $this->all_characters;
-         		$this->all_characters = new ArrayCollection;
+		if ($this->all_characters && $forceupdate == false) return $this->all_characters;
+		$this->all_characters = new ArrayCollection;
+
+		foreach ($this->findTerritory(false) as $settlement) {
+			$owner = $settlement->getOwner();
+			if ($owner) {
+				$this->addRealmMember($owner);
+			}
+			$steward = $settlement->getSteward();
+			if ($steward) {
+				$this->addRealmMember($steward);
+			}
+			foreach ($settlement->getVassals() as $knight) {
+				$this->addRealmMember($knight);
+			}
+		}
+
+		foreach ($this->getPositions() as $pos) {
+			foreach ($pos->getHolders() as $official) {
+				$this->addRealmMember($official);
+			}
+			foreach ($pos->getVassals() as $knight) {
+				$this->addRealmMember($knight);
+			}
+		}
+
+		if ($law = $this->findActiveLaw('realmPlaceMembership')) {
+			foreach ($this->getPlaces() as $place) {
+				# These deliberately cascade into each other.
+				switch($law->getValue()) {
+					case 'all':
+						foreach ($place->getVassals() as $knight) {
+							$this->addRealmMember($knight);
+						}
+					case 'owner':
+						$owner = $place->getOwner();
+						if ($owner) {
+							$this->addRealmMember($owner);
+						}
+				}
+			}
+		}
          
-         		foreach ($this->findTerritory(false) as $settlement) {
-         			$owner = $settlement->getOwner();
-         			if ($owner) {
-         				$this->addRealmMember($owner);
-         			}
-         			$steward = $settlement->getSteward();
-         			if ($steward) {
-         				$this->addRealmMember($steward);
-         			}
-         			foreach ($settlement->getVassals() as $knight) {
-         				$this->addRealmMember($knight);
-         			}
-         		}
-         
-         		foreach ($this->getPositions() as $pos) {
-         			foreach ($pos->getHolders() as $official) {
-         				$this->addRealmMember($official);
-         			}
-         			foreach ($pos->getVassals() as $knight) {
-         				$this->addRealmMember($knight);
-         			}
-         		}
-         
-         		foreach ($this->getPlaces() as $place) {
-         			$owner = $place->getOwner();
-         			if ($owner) {
-         				$this->addRealmMember($owner);
-         			}
-         			foreach ($place->getVassals() as $knight) {
-         				$this->addRealmMember($knight);
-         			}
-         		}
-         
-         		foreach ($this->getVassals() as $knight) {
-         			$this->addRealmMember($knight);
-         		}
-         
-         		if ($with_subs) {
-         			foreach ($this->getInferiors() as $sub) {
-         				foreach ($sub->findMembers() as $submember) {
-         					$this->addRealmMember($submember);
-         				}
-         			}
-         		}
-         
-         		return $this->all_characters;
-         	}
+		foreach ($this->getVassals() as $knight) {
+			$this->addRealmMember($knight);
+		}
+
+		foreach ($this->getHostedEmbassies() as $embassy) {
+			if ($ambassador = $embassy->getAmbassador()) {
+				$this->addRealmMember($ambassador);
+			}
+		}
+
+		if ($with_subs) {
+			foreach ($this->getInferiors() as $sub) {
+				foreach ($sub->findMembers() as $submember) {
+					$this->addRealmMember($submember);
+				}
+			}
+		}
+
+		return $this->all_characters;
+	}
 
 	public function findActiveMembers($with_subs=true, $forceupdate = false) {
          		if ($this->all_active_characters && $forceupdate == false) return $this->all_active_characters;

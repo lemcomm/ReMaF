@@ -14,6 +14,7 @@ use App\Form\LawEditType;
 
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\LawManager;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -219,8 +220,23 @@ class LawController extends AbstractController {
 			$org = $assoc;
 		}
 		$lawMan = $this->lawMan;
+		if ($type->getName() == 'realmFaith') {
+			$faiths = new ArrayCollection();
+			$query = $this->em->createQuery('SELECT a FROM BM2SiteBundle:Association a WHERE a.faith_name is not null and a.follower_name is not null');
+			$all = $query->getResult();
+			foreach ($all as $each) {
+				if ($each->isPublic()) {
+					$faiths->add($each);
+				}
+			}
+			if ($char->getFaith() && !$faiths->contains($char->getFaith())) {
+				$faiths->add($char->getFaith());
+			}
+		} else {
+			$faiths = null;
+		}
 
-		$form = $this->createForm(LawEditType::class, null, ['type' => $type, 'law' => $law, 'choices' => $lawMan->choices, 'settlements' => $settlements]);
+		$form = $this->createForm(LawEditType::class, null, ['type' => $type, 'law' => $law, 'choices' => $lawMan->choices, 'settlements' => $settlements, 'faiths'=>$faiths]);
 		$form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();

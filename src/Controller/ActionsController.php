@@ -827,8 +827,12 @@ class ActionsController extends AbstractController {
 
 			# Add law based destinations.
 			foreach ($character->findRealms() as $realm) {
-				foreach ($lawman->findTaxLaws($realm) as $law) {
-					if ($law->getSettlement()) {
+				$results = false;
+				foreach ($lawman->taxLaws as $type) {
+					$results = $realm->findActiveLaw($type, true, true);
+				}
+				if ($results) {
+					foreach ($results as $law) {
 						$dests[] = $law->getSettlement()->getId();
 					}
 				}
