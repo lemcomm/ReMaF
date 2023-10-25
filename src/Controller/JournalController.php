@@ -203,6 +203,7 @@ class JournalController extends AbstractController {
 				$report = new UserReport();
 				$report->setUser($this->getUser());
 				$report->setJournal($id);
+				$report->setText($form->getData()['text']);
 				$report->setType('Journal');
 				$report->setDate(new DateTime('now'));
 				if ($id->getPendingReview()) {

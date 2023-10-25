@@ -80,7 +80,6 @@ user:
   isAdmin: (Might & Fealty Administrator)
   joined: 'Date Joined:'
   profile: 'User Comment:'
-  override: Access to this private profile has been granted by your GM status!
   private: This user has not chosen to make their information public.
   empty: It seems nothing has been written here.
   patron:
@@ -99,6 +98,10 @@ user:
    rogue: (Rogue)
    knownas: (AKA {name})
 
+override:
+  user:
+    profile: Access to this private profile has been granted by your GM status!
+  conversation: Access to this conversation may have been (at least in part) granted by your GM status! If you can send a message, you're in this conversation with this character. If you can't, you still might've been in this conversation, but no longer actively.
 
 contact:
  title:     Contact
@@ -1874,7 +1877,9 @@ unit:
   link:        View Soldiers
 
 journal:
- report:       Report this Journal to the GMs for review.
+ report:
+  header: Report this journal for GM review
+  intro: From here you can report this journal entry to the GMs for review and action.
  view:
   header:      Read a Journal Entry
   redirect:    This journal is private and you don't have access to read it.

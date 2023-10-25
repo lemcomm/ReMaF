@@ -408,3 +408,6 @@ law:
    outlawed:
     name:    Outlawed
     desc:    This religion is outlawed within the realm.
+  realmVotingAge:
+   label:    Mininum Days Required in Realm to Vote
+   desc:     Sets (or unsets) the minimum required days in the realm to vote on elections or other matters. The default is everyone can vote.
