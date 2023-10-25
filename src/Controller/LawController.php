@@ -251,7 +251,7 @@ class LawController extends AbstractController {
 					return new RedirectResponse($this->generateUrl('maf_assoc_laws', ['assoc'=>$assoc->getId()]).'#'.$result->getId());
 				}
 			} else {
-				$this->addFlash('error', $this->trans->trans('law.form.edit.fail'.$result['error'], [], 'orgs'));
+				$this->addFlash('error', $this->trans->trans('law.form.edit.fail'.$result[1], [], 'orgs'));
 			}
 		}
 

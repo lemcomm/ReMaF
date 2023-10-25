@@ -305,11 +305,12 @@ class RealmManager {
 						}
 					}
 				}
+				break;
 			case 'banner':
 			default:
 				$weight = 1;
 		}
-		if ($character->getCreated() >= $joinBy) {
+		if ($character->getCreated() <= $joinBy) {
 			return 0;
 		} else {
 			return $weight;

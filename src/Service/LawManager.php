@@ -78,6 +78,7 @@ class LawManager {
 	public array $allowDuplicates = ['freeform', 'realmFaith', 'taxesFood', 'taxesWood', 'taxesMetal', 'taxesWealth'];
 
 	public array $taxLaws = ['taxesFood', 'taxesWood', 'taxesMetal', 'taxesWealth'];
+	public $stringLaws = ['realmVotingAge'];
 
 	public function __construct(EntityManagerInterface $em, CommonService $common, History $history) {
 		$this->em = $em;
@@ -101,10 +102,11 @@ class LawManager {
 		$tName = $type->getName();
 		$freeform = $tName==='freeform';
 		$taxes = in_array($tName, $this->taxLaws);
+		$stringLaw = in_array($tName, $this->stringLaws);
 		# Validate that this is a type we can set.
 		if ($freeform || $taxes || $choices[$tName] !== null) {
 			# Validate the setting (value) is a valid one.
-			if ($freeform || $taxes || ($choices[$tName] && $choices[$tName][$setting] !== null)) {
+			if ($freeform || $taxes || $stringLaw || ($choices[$tName] && $choices[$tName][$setting] !== null)) {
 				#Looks valid. Process the change.
 				$law = new Law;
 				$this->em->persist($law);
