@@ -18,7 +18,7 @@
         "longitude-one/doctrine-spatial": "^3.0",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.15",
-        "stripe/stripe-php": "^10.3",
+        "stripe/stripe-php": "^13.2",
         "symfony/asset": "6.3.*",
         "symfony/console": "6.3.*",
         "symfony/doctrine-messenger": "6.3.*",
