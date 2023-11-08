@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Command;
+
+use App\Service\CommonService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
+
+class ProcessExpiresCommand extends Command {
+
+	private CommonService $common;
+	private EntityManagerInterface $em;
+	private OutputInterface $output;
+	private int $cycle;
+	private int $marker_lifetime = 36;
+
+	public function __construct(CommonService $common, EntityManagerInterface $em) {
+		$this->common = $common;
+		$this->em = $em;
+		parent::__construct();
+	}
+
+
+	protected function configure() {
+		$this
+			->setName('maf:process:expires')
+			->setDescription('Run various expiration routines')
+		;
+	}
+
+	protected function execute(InputInterface $input, OutputInterface $output) {
+		$this->output = $output;
+		$this->cycle = $this->common->getCycle();
+
+		$this->expireEvents();
+		$this->expireMarkers();
+		$this->expireShips();
+
+		$this->em->flush();
+		$this->output->writeln("...expires complete");
+	}
+
+	public function expireEvents() {
+		$this->output->writeln("expiring events...");
+		$query = $this->em->createQuery('SELECT e FROM App:Event e WHERE e.lifetime IS NOT NULL AND e.cycle + e.lifetime < :cycle');
+		$query->setParameter('cycle', $this->cycle);
+		$all = $query->getResult();
+		foreach ($all as $each) {
+			if ($each->getMailEntries()->count() < 1) {
+				$this->em->remove($each);
+			}
+		}
+		$this->em->flush();
+
+		$query = $this->em->createQuery('DELETE FROM App:SoldierLog l WHERE l.soldier IS NULL');
+		$query->execute();
+	}
+
+	public function expireMarkers() {
+		$this->output->writeln("expiring markers...");
+		$query = $this->em->createQuery('DELETE FROM App:MapMarker m WHERE m.placed < :cycle');
+		$query->setParameter('cycle', $this->cycle - $this->marker_lifetime);
+		$query->execute();
+	}
+
+	public function expireShips() {
+		$this->output->writeln("ships cleanup...");
+
+		$query = $this->em->createQuery('DELETE FROM App:Ship s WHERE s.cycle < :before');
+		$query->setParameters(array('before'=>$this->cycle-60));
+		$query->execute();
+	}
+
+
+}

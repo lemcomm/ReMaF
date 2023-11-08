@@ -15,7 +15,7 @@ class AbstractProcessCommand extends Command {
 	protected EntityManagerInterface $em;
 	protected OutputInterface $output;
 	protected Stopwatch $stopwatch;
-	protected $opt_time;
+	protected string $opt_time;
 
 	public function __construct(EntityManagerInterface $em) {
 		$this->em = $em;
