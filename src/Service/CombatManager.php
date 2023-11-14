@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\ActivityParticipant;
 use App\Entity\EquipmentType;
+use App\Entity\Settlement;
 use Doctrine\ORM\EntityManagerInterface;
 
 
@@ -265,7 +266,7 @@ class CombatManager {
 		$logs[] = (round($attack*10)/10)." vs. ".(round($defense*10)/10)." - ";
 		if (rand(0,$attack) > rand(0,$defense)) {
 			// defense penetrated
-			list($result, $sublogs) = $this->resolveDamage($me, $target, $attack, $type, 'melee', $counterType);
+			[$result, $sublogs] = $this->resolveDamage($me, $target, $attack, $type, 'melee', $counterType);
 			foreach ($sublogs as $each) {
 				$logs[] = $each;
 			}
@@ -281,7 +282,7 @@ class CombatManager {
 			// out attack failed, do they get a counter?
 			if ($enableCounter && $counterType) {
 				$tPower = $this->MeleePower($target, true);
-				list($innerResult, $sublogs) = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus, false);
+				[$innerResult, $sublogs] = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus, false);
 				foreach ($sublogs as $each) {
 					$logs[] = $each;
 				}
@@ -427,7 +428,7 @@ class CombatManager {
 
 		if (rand(0,$attack) > rand(0,$defense)) {
 			// defense penetrated
-			list($result, $sublogs) = $this->resolveDamage($me, $target, $attack, $type, 'ranged');
+			[$result, $sublogs] = $this->resolveDamage($me, $target, $attack, $type, 'ranged');
 			foreach ($sublogs as $each) {
 				$logs[] = $each;
 			}
@@ -557,20 +558,47 @@ class CombatManager {
 			};
 			// nobles can surrender and be captured instead of dying - if their attacker belongs to a noble
 			$random = rand(1,100);
-			if ($battle && $target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
+			$resolved = false;
+			if ($target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
 				$logs[] = "killed mount & wounded\n";
 				#$target->wound($this->calculateWound($power));
 				$target->dropMount();
-				$this->history->addToSoldierLog($target, 'wounded.'.$phase);
-				$result='wound';
-			} elseif ($battle && $target->isNoble() && !$target->getCharacter()->isNPC() && $random < $surrender && $me->getCharacter()) {
-				$logs[] = "captured\n";
-				$this->charMan->imprison_prepare($target->getCharacter(), $me->getCharacter());
-				$this->history->logEvent($target->getCharacter(), 'event.character.capture', array('%link-character%'=>$me->getCharacter()->getId()), History::HIGH, true);
-				$result='capture';
-				$this->common->addAchievement($me->getCharacter(), 'captures');
-			} else {
-				if ($battle) {
+				$this->history->addToSoldierLog($target, 'wounded.' . $phase);
+				$result = 'wound';
+				$resolved = true;
+			}
+			if (!$resolved) {
+				$myNoble = false;
+				if ($me->getCharacter()) {
+					# We are our noble.
+					$myNoble = $me->getCharacter();
+				} elseif ($me->getUnit()) {
+					# If you're not a character you should have a unit but...
+					$unit = $me->getUnit();
+					if ($unit->getCharacter()) {
+						$myNoble = $unit->getCharacter();
+					} elseif ($unit->getSettlement()) {
+						/** @var Settlement $loc */
+						$loc = $unit->getSettlement();
+						if ($loc->getOccupant()) {
+							# Settlement is occupied.
+							$myNoble = $loc->getOccupant();
+						} elseif ($loc->getOwner()) {
+							# Settlement is not occupied, has owner.
+							$myNoble = $loc->getOwner();
+						} elseif ($loc->getSteward()) {
+							# Settlement is not occupied, no owner, has steward.
+							$myNoble = $loc->getSteward();
+						}
+					}
+				}
+				if ($target->isNoble() && $random < $surrender && $myNoble) {
+					$logs[] = "captured\n";
+					$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
+					$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
+					$result = 'capture';
+					$this->common->addAchievement($myNoble, 'captures');
+				} else {
 					if ($me->isNoble()) {
 						if ($target->isNoble()) {
 							$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
@@ -581,8 +609,8 @@ class CombatManager {
 					$logs[] = "killed\n";
 					$target->kill();
 					$this->history->addToSoldierLog($target, 'killed');
+					$result = 'kill';
 				}
-				$result='kill';
 			}
 		} else {
 			if ($battle) {
@@ -597,7 +625,7 @@ class CombatManager {
 			# Attacks of opportunity, to make some gear more interesting to use. :D
 			if ($counterType === 'antiCav') {
 				$tPower = $this->MeleePower($target, true);
-				list($innerResult, $sublogs) = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus);
+				[$innerResult, $sublogs] = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus);
 				foreach ($sublogs as $each) {
 					$logs[] = $each;
 				}
