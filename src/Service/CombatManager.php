@@ -538,6 +538,33 @@ class CombatManager {
 		}
 	}
 
+	public function findNobleFromSoldier(Soldier $soldier) {
+		$myNoble = false;
+		if ($soldier->getCharacter()) {
+			# We are our noble.
+			$myNoble = $soldier->getCharacter();
+		} elseif ($soldier->getUnit()) {
+			# If you're not a character you should have a unit but...
+			$unit = $soldier->getUnit();
+			if ($unit->getCharacter()) {
+				$myNoble = $unit->getCharacter();
+			} elseif ($unit->getSettlement()) {
+				$loc = $unit->getSettlement();
+				if ($loc->getOccupant()) {
+					# Settlement is occupied.
+					$myNoble = $loc->getOccupant();
+				} elseif ($loc->getOwner()) {
+					# Settlement is not occupied, has owner.
+					$myNoble = $loc->getOwner();
+				} elseif ($loc->getSteward()) {
+					# Settlement is not occupied, no owner, has steward.
+					$myNoble = $loc->getSteward();
+				}
+			}
+		}
+		return $myNoble;
+	}
+
 	public function resolveDamage($me, $target, $power, $type, $phase = null, $counterType = false, $xpMod = 1, $defBonus = null): array {
 		// this checks for penetration again AND low-damage weapons have lower lethality AND wounded targets die more easily
 		// TODO: attacks on mounted soldiers could kill the horse instead
@@ -568,30 +595,7 @@ class CombatManager {
 				$resolved = true;
 			}
 			if (!$resolved) {
-				$myNoble = false;
-				if ($me->getCharacter()) {
-					# We are our noble.
-					$myNoble = $me->getCharacter();
-				} elseif ($me->getUnit()) {
-					# If you're not a character you should have a unit but...
-					$unit = $me->getUnit();
-					if ($unit->getCharacter()) {
-						$myNoble = $unit->getCharacter();
-					} elseif ($unit->getSettlement()) {
-						/** @var Settlement $loc */
-						$loc = $unit->getSettlement();
-						if ($loc->getOccupant()) {
-							# Settlement is occupied.
-							$myNoble = $loc->getOccupant();
-						} elseif ($loc->getOwner()) {
-							# Settlement is not occupied, has owner.
-							$myNoble = $loc->getOwner();
-						} elseif ($loc->getSteward()) {
-							# Settlement is not occupied, no owner, has steward.
-							$myNoble = $loc->getSteward();
-						}
-					}
-				}
+				$myNoble = $this->findNobleFromSoldier($me);
 				if ($target->isNoble() && $random < $surrender && $myNoble) {
 					$logs[] = "captured\n";
 					$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);

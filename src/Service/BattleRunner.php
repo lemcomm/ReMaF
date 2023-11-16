@@ -915,10 +915,11 @@ class BattleRunner {
 								}
 								// special results for nobles
 								if ($target->isNoble() && in_array($result, array('kill','capture'))) {
+									$noble = $this->combat->findNobleFromSoldier($soldier);
 									if ($result=='capture') {
 										$extra = array(
 											'what' => 'ranged.'.$result,
-											'by' => $soldier->getCharacter()->getId()
+											'by' => $noble->getId()
 										);
 									} else {
 										$extra = array('what'=>'ranged.'.$result);
@@ -1098,10 +1099,11 @@ class BattleRunner {
 
 						// special results for nobles
 						if ($target->isNoble() && in_array($result, array('kill','capture'))) {
+							$noble = $this->combat->findNobleFromSoldier($soldier);
 							if ($result=='capture' || $soldier->isNoble()) {
 								$extra = array(
 									'what' => 'noble.'.$result,
-									'by' => $soldier->getCharacter()->getId()
+									'by' => $noble->getId()
 								);
 							} else {
 								$extra = array('what'=>'mortal.'.$result);
