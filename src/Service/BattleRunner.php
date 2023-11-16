@@ -331,12 +331,9 @@ class BattleRunner {
 		# TODO: Adapt this for when sieges have reached their conclusion, and pass which side was victorious to a different function to closeout the siege properly.
 		if (!$battle->getSiege()) {
 			$this->log(15, "Regular battle detected, Nulling primary battle groups...\n");
-			if ($battle->getPrimaryDefender()) {
-				$battle->setPrimaryDefender(NULL);
-			}
-			if ($battle->getPrimaryAttacker()) {
-				$battle->setPrimaryAttacker(NULL);
-			}
+			$battle->setPrimaryDefender(NULL);
+			$battle->setPrimaryAttacker(NULL);
+			$this->em->flush(); #Commit the above two.
 			$this->log(15, "Jittering characters and disbanding groups...\n");
 			foreach ($battle->getGroups() as $group) {
 				// to avoid people being trapped by overlapping battles - we move a tiny bit after a battle if travel is set
