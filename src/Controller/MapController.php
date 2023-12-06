@@ -577,10 +577,10 @@ class MapController extends AbstractController {
 				$realms = $query->getResult();
 				break;
 			case '1': case '2': case '3': case '4': case '5': case '6': case '7':
-				$realms = $em->getRepository('App:Realm')->findByType($mode);
+				$realms = $em->getRepository('App:Realm')->findBy(['type'=>$mode]);
 				break;
 			default:
-				$realms = $em->getRepository('App:Realm')->findBySuperior(null);
+				$realms = $em->getRepository('App:Realm')->findBy(['superior'=>null]);
 		}
 		foreach ($realms as $realm) {
 			$data = $this->geo->findRealmDataPolygons($realm);
@@ -651,14 +651,14 @@ class MapController extends AbstractController {
 		$features = array();
 		$em = $this->em;
 		if ($resource) {
-			$resource = $em->getRepository('App:ResourceType')->findOneByName($resource);
+			$resource = $em->getRepository('App:ResourceType')->findOneBy(['name'=>$resource]);
 			$query = $em->createQuery('SELECT t.id, t.amount, r.name, ST_AsGeoJSON(ST_MakeLine(aa.center, bb.center)) as geometry FROM App:Trade t JOIN t.resource_type r JOIN t.source a JOIN a.geo_data aa JOIN t.destination b JOIN b.geo_data bb WHERE r = :resource');
 			$query->setParameters(['resource' => $resource]);
 		} else {
 			$query = $em->createQuery('SELECT t.id, t.amount, r.name, ST_AsGeoJSON(ST_MakeLine(aa.center, bb.center)) as geometry FROM App:Trade t JOIN t.resource_type r JOIN t.source a JOIN a.geo_data aa JOIN t.destination b JOIN b.geo_data bb');
 		}
 		$iterableResult = $query->toIterable();
-		while (($row = $iterableResult->next()) !== false) {
+		foreach ($iterableResult as $row) {
 			$r = array_shift($row);
 
 			$features[] = array(

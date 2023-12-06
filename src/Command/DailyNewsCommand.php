@@ -34,14 +34,13 @@ class DailyNewsCommand extends Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$query = $this->em->createQuery('SELECT u FROM BM2SiteBundle:User u WHERE u.newsletter=true');
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 		$i=1; $batchsize=500;
-		while ($row = $iterableResult->next()) {
+		foreach ($iterableResult as $user) {
 			/* because we REALLY don't want these sending a billion emails at once (because we don't use a spooler anymore)
 			we tell it immediately to sleep this execution a random full second value between 1 and 3 seconds.
 			We don't usually send many of these anyways, so this should never end up taking very long. */
 			sleep(rand(1,3));
-			$user = $row[0];
 			$days = $user->getCreated()->diff(new \DateTime("now"), true)->days;
 			$fakestart = new \DateTime("2015-10-30");
 			$fakedays = $fakestart->diff(new \DateTime("now"), true)->days;

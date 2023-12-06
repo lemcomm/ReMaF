@@ -33,7 +33,7 @@ class CharacterManager {
 	protected AssociationManager $assocman;
 	protected HelperService $helper;
 
-	private ?ArrayCollection $seen;
+	public ?ArrayCollection $seen; # Used by findHeir, which is called both locally and by GameRunner, which need this to be controlled.
 
 	public function __construct(EntityManagerInterface $em, CommonService $common, History $history, MilitaryManager $milman, Politics $politics, RealmManager $realmmanager, ConversationManager $convman, DungeonMaster $dm, WarManager $warman, AssociationManager $assocman, HelperService $helper) {
 		$this->em = $em;
@@ -379,7 +379,7 @@ class CharacterManager {
           		$via = null;
 		} else {
 			$this->seen = new ArrayCollection;
-			list($heir, $via) = $this->findHeir($character);
+			[$heir, $via] = $this->findHeir($character);
 		}
 
 		// TODO: if no heir set, check if I have a family (need to determine who inherits - partner - children - parents - or a different order ?)
@@ -650,7 +650,7 @@ class CharacterManager {
 
 		// inheritance
 		$this->seen = new ArrayCollection;
-		list($heir, $via) = $this->findHeir($character);
+		[$heir, $via] = $this->findHeir($character);
 
 		// TODO: if no heir set, check if I have a family (need to determine who inherits - partner - children - parents - or a different order ?)
 		// TODO: check for realm laws and decide if inheritance allowed
@@ -1243,6 +1243,12 @@ class CharacterManager {
 		// TODO - quite a bit here, the new lord could be a different realm and all
 	}
 
+	/**
+	 * @param Character      $character
+	 * @param Character|null $from
+	 *
+	 * @return array
+	 */
 	public function findHeir(Character $character, Character $from=null): array {
 		// NOTE: This should match the implemenation on GameRunner.php
 		if (!$from) {
@@ -1428,7 +1434,7 @@ class CharacterManager {
 	}
 
 	public function SimpleReputation(Character $char, User $me=null): array {
-		list($respect, $honor, $trust, $data) = $this->Reputation($char, $me);
+		[$respect, $honor, $trust, $data] = $this->Reputation($char, $me);
 
 		$max=0;
 		if ($respect['yes'] > $max) { $max = $respect['yes']; }

@@ -205,6 +205,10 @@ class NotificationManager {
 		$this->discord->pushToGeneral($txt);
 	}
 
+	public function spoolError($txt) {
+		$this->discord->pushToErrors($txt);
+	}
+
 	private function dLink($name, $url): string {
 		return "[".$name."](".$url.")";
 	}

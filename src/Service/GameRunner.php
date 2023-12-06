@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Character;
 use App\Entity\Election;
 use App\Entity\RealmPosition;
 use App\Entity\Siege;
@@ -10,6 +9,9 @@ use App\Entity\Supply;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use LongitudeOne\Spatial\Exception\InvalidValueException;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
@@ -17,8 +19,6 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class GameRunner {
 
-	private int $batchsize=200;
-	private int $maxtime=2400;
 	private EntityManagerInterface $em;
 	private CommonService $common;
 	private LoggerInterface $logger;
@@ -34,12 +34,9 @@ class GameRunner {
 	private WarManager $wm;
 
 	private int $cycle;
-	private bool $output=false;
-	private bool $debug=false;
-	private bool $limited=false;
-
 	private int $bandits_ok_distance = 50000;
-	private ArrayCollection $seen;
+	private int $batchsize=200;
+	private int $maxtime=2400;
 
 	public function __construct(EntityManagerInterface $em, CommonService $common, LoggerInterface $logger, ActionResolution $resolver, History $history, MilitaryManager $milman, Geography $geography, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm, WarManager $wm) {
 		$this->em = $em;
@@ -58,11 +55,8 @@ class GameRunner {
 		$this->cycle = $this->common->getCycle();
 	}
 
-	public function runCycle($type, $maxtime=1200, $timing=false, $debug=false, $output=false, $limited=false): bool {
+	public function runCycle($type, $maxtime=1200, $timing=false): int {
 		$this->maxtime=$maxtime;
-		$this->output=$output;
-		$this->debug=$debug;
-		$this->limited=$limited;
 
 		if ($timing) {
 			$stopwatch = new Stopwatch();
@@ -73,14 +67,10 @@ class GameRunner {
 		$query->setParameter('old', $old);
 		$query->execute();
 
-		switch ($type) {
-			case 'update':
-				$pattern = '/^update(.+)$/';
-				break;
-			case 'turn':
-			default:
-				$pattern = '/^run(.+)Cycle$/';
-		}
+		$pattern = match ($type) {
+			'update' => '/^update(.+)$/',
+			default => '/^run(.+)Cycle$/',
+		};
 
 		foreach (get_class_methods(__CLASS__) as $method_name) {
 			if (preg_match($pattern, $method_name, $match)) {
@@ -92,11 +82,11 @@ class GameRunner {
 					$event = $stopwatch->stop($match[1]);
 					$this->logger->info($match[1].": ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
 				}
-				if (!$complete) return false;
+				if (!$complete) return 0;
 			}
 		}
 
-		return true;
+		return 1;
 	}
 
 	public function nextCycle($next_day=true): true {
@@ -124,24 +114,29 @@ class GameRunner {
 	*/
 
 	# Due to the nature of GameRequests, we need them to be checked before anything else, as they can invalidate the results of other turn/update checks. Hence, theyr'e first in the list.
-	public function runGameRequestCycle(): true {
+
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function runGameRequestCycle(): int {
 		$last = $this->common->getGlobal('cycle.gamerequest', 0);
-		if ($last==='complete') return true;
+		if ($last==='complete') return 1;
 		$this->logger->info("Game Request Cycle...");
 
 		$now = new \DateTime("now");
-		$query = $this->em->createQuery('SELECT r FROM App:GameRequest r WHERE r.expires <= :now')->setParameter('now', $now);
-		$result = $query->iterate();
-		while ($row = $result->next()) {
-			$allUnits = array();
-			foreach($row[0]->getFromCharacter()->getUnits() as $unit) {
-				if ($unit->getSupplier()==$row[0]->getToSettlement()) {
-					$char = $row[0]->getFromCharacter();
+		$query = $this->em->createQuery('SELECT r FROM App:GameRequest r WHERE r.expires <= :now and r.id > :last ORDER BY r.id ASC')->setParameters(['now'=> $now, 'last'=>$last]);
+		$result = $query->toIterable();
+		$i = 1;
+		foreach ($result as $row) {
+			$last = $row->getId();
+			foreach($row->getFromCharacter()->getUnits() as $unit) {
+				if ($unit->getSupplier()==$row->getToSettlement()) {
+					$char = $row->getFromCharacter();
 					$this->logger->info("  Character ".$char->getName()." (".$char->getId().") may be using request for food...");
 					# Character supplier matches target settlement, we need to see if this is still a valid food source.
 
 					# Get all character realms.
-					$myRealms = $char->findRealms();
 					$settlements = new ArrayCollection;
 					foreach ($char->getOwnedSettlements() as $settlement) {
 						$settlements->add($settlement);
@@ -163,13 +158,18 @@ class GameRunner {
 							}
 						}
 					}
-					if (!$settlements->contains($row[0]->getToSettlement())) {
-						$row[0]->getToSettlement()->getSuppliedUnits()->remove($unit);
+					if (!$settlements->contains($row->getToSettlement())) {
+						$row->getToSettlement()->getSuppliedUnits()->remove($unit);
 						$unit->setSupplier(null);
 					}
 				}
 			}
-			$this->em->remove($row[0]);
+			$this->em->remove($row);
+			if (($i++ % $this->batchsize) == 0) {
+				$this->common->setGlobal('cycle.gamerequest', $last);
+				$this->em->flush();
+				$this->em->clear();
+			}
 			# We're doing it this way as a direct delete request skips a lot of the doctrine cascades and relation updates.
 			# Yes, this is slower than just a DQL delete, but it's also a bit more resilient and less likely to break things down the line.
 		}
@@ -177,12 +177,16 @@ class GameRunner {
 		$this->em->clear();
 
 		$this->common->setGlobal('cycle.gamerequest', 'complete');
-		return true;
+		return 1;
 	}
 
-	public function runCharactersUpdatesCycle(): true {
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function runCharactersUpdatesCycle(): int {
 		$last = $this->common->getGlobal('cycle.characters', 0);
-		if ($last==='complete') return true;
+		if ($last==='complete') return 1;
 		$this->logger->info("Characters Cycle...");
 
 		// healing
@@ -209,20 +213,23 @@ class GameRunner {
 		$knownslumber = 0;
 		$keeponslumbercount = 0;
 		foreach ($result as $character) {
-			$this->seen = new ArrayCollection;
-			list($heir, $via) = $this->findHeir($character);
+			$this->cm->seen = new ArrayCollection;
+			[$heir, $via] = $this->cm->findHeir($character);
 			if (!$character->isAlive()) {
 				$deadcount++;
-				$dead[] = $character;
+				$dead[] = ['obj' => $character, 'heir'=>$heir, 'via'=>$via];
 			} else if ($character->getSlumbering()) {
 				$slumbercount++;
-				$slumbered[] = $character;
+				$slumbered[] = ['obj' => $character, 'heir'=>$heir, 'via'=>$via];
 			}
 		}
 		if ($deadcount+$slumbercount != 0) {
 			$this->logger->info("  Sorting $deadcount dead and $slumbercount slumbering");
 		}
-		foreach ($dead as $character) {
+		foreach ($dead as $charArray) {
+			$character = $charArray['obj'];
+			$heir = $charArray['heir'];
+			$via = $charArray['via'];
 			if ($character->getSystem() != 'procd_inactive') {
 				$this->logger->info("  ".$character->getName().", ".$character->getId()." is under review, as dead.");
 				$character->setLocation(NULL)->setInsideSettlement(null)->setTravel(null)->setProgress(null)->setSpeed(null);
@@ -283,7 +290,10 @@ class GameRunner {
 			}
 			$this->em->flush();
 		}
-		foreach ($slumbered as $character) {
+		foreach ($slumbered as $charArray) {
+			$character = $charArray['obj'];
+			$heir = $charArray['heir'];
+			$via = $charArray['via'];
 			if ($character->getSystem() != 'procd_inactive') {
 				$this->logger->info("  ".$character->getName().", ".$character->getId()." is under review, as slumbering.");
 				$this->logger->info("    Heir: ".($heir?$heir->getName():"(nobody)"));
@@ -356,12 +366,18 @@ class GameRunner {
 		$this->common->setGlobal('cycle.characters', 'complete');
 		$this->em->flush();
 		$this->em->clear();
-		return true;
+		return 1;
 	}
 
-	public function runNPCCycle(): true {
+	/**
+	 * @return int
+	 * @throws NoResultException
+	 * @throws NonUniqueResultException
+	 * @noinspection PhpUnused
+	 */
+	public function runNPCCycle(): int {
 		$last = $this->common->getGlobal('cycle.npcs', 0);
-		if ($last==='complete') return true;
+		if ($last==='complete') return 1;
 		$this->logger->info("NPC Cycle...");
 
 		$query = $this->em->createQuery('SELECT count(u.id) FROM App:User u WHERE u.account_level > 0');
@@ -434,7 +450,7 @@ class GameRunner {
 				//$chance = sqrt($chance); // because this runs every turn, leaving it high would lead to immediate loss
 				$chance = sqrt($chance/10); // because this runs every turn, leaving it high would lead to immediate loss
 				if (rand(0,100)<$chance) {
-					$this->milman->disband($row['soldier'], $row['soldier']->getCharacter());
+					$this->milman->disband($row['soldier']);
 					$deserters[$index]['gone']++;
 				}
 			}
@@ -464,12 +480,16 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 
-		return true;
+		return 1;
 	}
 
-	public function runSoldierCycle(): true {
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function runSoldierCycle(): int {
 		$last = $this->common->getGlobal('cycle.soldiers', 0);
-		if ($last==='complete') return true;
+		if ($last==='complete') return 1;
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date -- Soldiers update...");
 
@@ -509,12 +529,10 @@ class GameRunner {
 		// militia auto-resupply
 		$query = $this->em->createQuery('SELECT s FROM App:Soldier s WHERE s.base IS NOT NULL AND s.alive=true AND s.wounded=0 AND s.routed=false AND
 			(s.has_weapon=false OR s.has_armour=false OR s.has_equipment=false)');
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 		$i=1;
-		while ($row = $iterableResult->next()) {
-			$soldier = $row[0];
+		foreach ($iterableResult as $soldier) {
 			$this->milman->resupply($soldier, $soldier->getBase());
-
 			if (($i++ % $this->batchsize) == 0) {
 				$this->em->flush();
 				$this->em->clear();
@@ -527,10 +545,9 @@ class GameRunner {
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date --   Heal or die...");
 		$query = $this->em->createQuery('SELECT s FROM App:Soldier s WHERE s.wounded > 0');
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 		$i=1;
-		while ($row = $iterableResult->next()) {
-			$soldier = $row[0];
+		foreach ($iterableResult as $soldier) {
 			$soldier->HealOrDie();
 			if (($i++ % $this->batchsize) == 0) {
 				$this->em->flush();
@@ -560,9 +577,14 @@ class GameRunner {
 		$this->logger->info("$date --   Checking for disbandable entourage.");
 		$disband_entourage = 0;
 		$query = $this->em->createQuery('SELECT e, c, DATE_DIFF(CURRENT_DATE(), c.last_access) as days FROM App:Entourage e JOIN e.character c WHERE c.slumbering = true');
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 		$i=1;
-		while ($row = $iterableResult->next()) {
+		/*
+		 * TODO: Test that this works.
+		 * It used to be ->iterate rather than ->toIterable, which used to return a straight array with the objects at key 0.
+		 * It's still an iterable, but toIterable attempts to hydrate AND will populate the objects automatically.
+		 */
+		foreach ($iterableResult as $row) {
 			// meet the most stupid array return data setup imaginable - first return row is different, yeay!
 			$e = array_shift($row);
 			$entourage = $e[0];
@@ -649,7 +671,7 @@ class GameRunner {
 		}
 		if ($count) {
 			foreach ($units as $each) {
-				$unit = $this->em->getRepository('App:Unit')->findOneById($each);
+				$unit = $this->em->getRepository('App:Unit')->findOneBy(['id'=>$each]);
 				if ($unit && ($character = $unit->getCharacter())) {
 					$this->history->logEvent(
 						$character,
@@ -678,6 +700,7 @@ class GameRunner {
 		$count = 0;
 		$query = $this->em->createQuery('SELECT u FROM App:Unit u WHERE u.travel_days <= 0');
 		$units = [];
+		unset($unit);
 		foreach ($query->getResult() as $unit) {
 			$here = null;
 			if ($unit->getDefendingSettlement()) {
@@ -711,7 +734,7 @@ class GameRunner {
 			$unit->setDestination(null);
 		}
 		if ($count) {
-			foreach ($units as $each) {
+			foreach ($units as $unit) {
 				if ($settlement = $unit->getSettlement()) {
 					$this->history->logEvent(
 						$settlement,
@@ -740,16 +763,9 @@ class GameRunner {
 
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date --   Checking if units have gotten supplies...");
-		$done = false;
 		$query = $this->em->createQuery('SELECT r FROM App:Resupply r WHERE r.travel_days <= 1');
-		$iterableResult = $query->iterate();
-		while (!$done) {
-			$this->em->clear();
-			$row = $iterableResult->next();
-			if ($row===false) {
-				break;
-			}
-			$resupply = $row[0];
+		$iterableResult = $query->toIterable();
+		foreach ($iterableResult as $resupply) {
 			$unit = $resupply->getUnit();
 			$encircled = false;
 			if ($unit->getCharacter()) {
@@ -801,22 +817,16 @@ class GameRunner {
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date --   Checking if units have food to eat...");
 		$query = $this->em->createQuery('SELECT u FROM App:Unit u WHERE u.id > 0');
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 		$fed = 0;
 		$starved = 0;
 		$killed = 0;
-		$done = false;
-		while (!$done) {
-			$this->em->clear();
-			$row = $iterableResult->next();
-			if ($row===false) {
-				break;
-			}
-			$unit = $row[0];
+		foreach ($iterableResult as $unit) {
 			$living = $unit->getLivingSoldiers();
 			$count = $living->count();
 			if ($count < 1) {
 				# No soldiers to feed. Skip!
+				$this->em->detach($unit); # Release this one from memory now that we're done with it.
 				continue;
 			}
 			$char = $unit->getCharacter();
@@ -961,20 +971,20 @@ class GameRunner {
 					$myfed++;
 				}
 			}
-			$left = 0;
 			if ($fsupply) {
 				$left = $food-$count;
 				if ($left < 0) {
 					$fsupply->setQuantity(0);
-					$left = 0;
+					#$left = 0;
 				} else {
 					$fsupply->setQuantity($left);
 				}
 			}
 			$this->em->flush();
-			$date = date("Y-m-d H:i:s");
-			$id = $unit->getId();
-			$this->logger->info("$date --     Unit $id - Soldiers $count - Var $var - Food $food - Leftover of $left - Fed $myfed - Starved $mystarved - Killed $dead");
+			#$date = date("Y-m-d H:i:s");
+			#$id = $unit->getId();
+			#$this->logger->info("$date --     Unit $id - Soldiers $count - Var $var - Food $food - Leftover of $left - Fed $myfed - Starved $mystarved - Killed $dead");
+			$this->em->detach($unit); # Release this one from memory now that we're done with it.
 		}
 		$date = date("Y-m-d H:i:s");
 		$this->logger->info("$date --     Fed $fed - Starved $starved - Killed $killed");
@@ -988,10 +998,14 @@ class GameRunner {
 		$this->common->setGlobal('cycle.soldiers', 'complete');
 		$this->em->flush();
 		$this->em->clear();
-		return true;
+		return 1;
 	}
 
-	public function updateSieges(): true  {
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function updateSieges(): int  {
 		$this->logger->info("Sieges cleanup..");
 		$all = $this->em->getRepository(Siege::class)->findAll();
 		foreach ($all as $siege) {
@@ -1027,20 +1041,33 @@ class GameRunner {
 				}
 			}
 		}
-		return true;
+		return 1;
 	}
 
-	public function updateActions(): bool {
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function updateActions(): int {
 		return $this->abstractActionsCycle(true);
 	}
 
-	public function runActionsCycle(): bool {
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function runActionsCycle(): int {
 		return $this->abstractActionsCycle(false);
 	}
 
-	private function abstractActionsCycle($hourly): bool {
+	/**
+	 * @param $hourly
+	 *
+	 * @return int
+	 */
+	private function abstractActionsCycle($hourly): int {
 		$last = $this->common->getGlobal('cycle.action', 0);
-		if ($last==='complete') return true;
+		if ($last==='complete') return 1;
 		$last=(int)$last;
 		$this->logger->info("Actions Cycle...");
 
@@ -1051,20 +1078,11 @@ class GameRunner {
 		}
 		$query = $this->em->createQuery($querystring);
 		$query->setParameter('last', $last);
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 
 		$time_start = microtime(true);
-		$done = false;
-		$complete = false;
 		$i=1;
-		while (!$done) {
-			$row = $iterableResult->next();
-			if ($row===false) {
-				$done=true;
-				$complete=true;
-				break;
-			}
-			$action = $row[0];
+		foreach ($iterableResult as $action) {
 			$lastid=$action->getId();
 			$this->resolver->update($action);
 
@@ -1075,24 +1093,21 @@ class GameRunner {
 			$time_spent = microtime(true)-$time_start;
 			if ($time_spent > $this->maxtime) {
 				$this->logger->alert("maximum execution time reached");
-				$done=true;
 			}
 		}
-
-		if ($complete) {
-			$this->common->setGlobal('cycle.action', 'complete');
-		} else {
-			$this->common->setGlobal('cycle.action', $lastid);
-		}
-
 		$this->em->flush();
 		$this->em->clear();
-		return $complete;
+		$this->common->setGlobal('cycle.action', 'complete');
+		return 1;
 	}
 
-	public function runResupplyCycle(): bool {
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function runResupplyCycle(): int {
 		$last = $this->common->getGlobal('cycle.resupply', 0);
-		if ($last==='complete') return true;
+		if ($last==='complete') return 1;
         	$last=(int)$last;
 		$this->logger->info("Resupply Cycle...");
 
@@ -1101,23 +1116,12 @@ class GameRunner {
 		$max_food = $this->common->getGlobal('supply.max_food', 100);
 
 		$query = $this->em->createQuery('SELECT e FROM App:Entourage e JOIN e.type t JOIN e.character c JOIN c.inside_settlement s WHERE c.prisoner_of IS NULL AND c.slumbering = false and c.travel is null and e.id>:last ORDER BY e.id ASC');
-		$query->setParameter('last', 0);
-		$iterableResult = $query->iterate();
-
-		$time_start = microtime(true);
-		$done = false;
-		$complete = false;
-		while (!$done) {
-			$row = $iterableResult->next();
-			if ($row===false) {
-				$done=true;
-				$complete=true;
-				break;
-			}
-			$follower = $row[0];
+		$query->setParameter('last', $last);
+		$iterableResult = $query->toIterable();
+		$i = 1;
+		foreach ($iterableResult as $follower) {
 			$lastid=$follower->getId();
 			$settlement = $follower->getCharacter()->getInsideSettlement();
-
 			if ($follower->getEquipment()) {
 				// check if our equipment available here and we have resupply permission
 				$provider = $settlement->getBuildingByType($follower->getEquipment()->getProvider());
@@ -1158,23 +1162,25 @@ class GameRunner {
 					}
 				}
 			}
+			if (($i++ % $this->batchsize) == 0) {
+				$this->common->setGlobal('cycle.resupply', $lastid);
+				$this->em->flush();
+				$this->em->clear();
+			}
 		}
-
-		if ($complete) {
-			$this->common->setGlobal('cycle.resupply', 'complete');
-		} else {
-			$this->common->setGlobal('cycle.resupply', $lastid);
-		}
-
 		$this->em->flush();
 		$this->em->clear();
-		return $complete;
+		$this->common->setGlobal('cycle.resupply', 'complete');
+		return 1;
 	}
 
-	public function runRealmsCycle(): true {
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function runRealmsCycle(): int {
 		$last = $this->common->getGlobal('cycle.realm', 0);
-		if ($last==='complete') return true;
-        	$last=(int)$last;
+		if ($last==='complete') return 1;
 		$this->logger->info("Realms Cycle...");
 
 		$timeout = new \DateTime("now");
@@ -1244,7 +1250,7 @@ class GameRunner {
 				}
 				if ($msguser) {
 					$topic = $realm->getName().' Announcements';
-					$conversation = $this->convman->newConversation(null, $members, $topic, null, null, $realm, 'announcements');
+					$this->convman->newConversation(null, $members, $topic, null, null, $realm, 'announcements');
 					$this->logger->notice("  ".$realm->getName()." announcements created");
 				}
 			}
@@ -1269,7 +1275,7 @@ class GameRunner {
 				}
 				if ($msguser) {
 					$topic = $realm->getName().' General Discussion';
-					$conversation = $this->convman->newConversation(null, $members, $topic, null, null, $realm, 'general');
+					$this->convman->newConversation(null, $members, $topic, null, null, $realm, 'general');
 					$this->logger->notice("  ".$realm->getName()." discussion created");
 				}
 			}
@@ -1278,22 +1284,28 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 
-		return true;
+		return 1;
 	}
 
-	public function runHousesCycle(): true {
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function runHousesCycle(): int {
 		$last = $this->common->getGlobal('cycle.houses', 0);
-		if ($last==='complete') return true;
+		if ($last==='complete') return 1;
         	$last=(int)$last;
 		$this->logger->info("Houses Cycle...");
 
 		$this->logger->info("  Checking for missing House conversations...");
 
-		$query = $this->em->createQuery('SELECT h FROM App:House h WHERE h.active = true OR h.active IS NULL');
-
-		foreach ($query->getResult() as $house) {
+		$query = $this->em->createQuery('SELECT h FROM App:House h WHERE h.id > :last AND (h.active = true OR h.active IS NULL)');
+		$query->setParameters(['last'=>$last]);
+		$i = 1;
+		foreach ($query->toIterable() as $house) {
 			$anno = false;
 			$gen = false;
+			$last = $house->getId();
 
                 	$criteria = Criteria::create()->where(Criteria::expr()->eq("system", "announcements"))->orWhere(Criteria::expr()->eq("system", "general"));
 			$convs = $house->getConversations()->matching($criteria);
@@ -1314,13 +1326,18 @@ class GameRunner {
 			}
 			if (!$anno) {
 				$topic = $house->getName().' Announcements';
-				$conversation = $this->convman->newConversation(null, null, $topic, null, null, $house, 'announcements');
+				$this->convman->newConversation(null, null, $topic, null, null, $house, 'announcements');
 				$this->logger->notice("  ".$house->getName()." announcements created");
 			}
 			if (!$gen) {
 				$topic = $house->getName().' General Discussion';
-				$conversation = $this->convman->newConversation(null, null, $topic, null, null, $house, 'general');
+				$this->convman->newConversation(null, null, $topic, null, null, $house, 'general');
 				$this->logger->notice("  ".$house->getName()." general discussion created");
+			}
+			if (($i++ % ($this->batchsize/5)) == 0) {
+				$this->common->setGlobal('cycle.houses', $last);
+				$this->em->flush();
+				$this->em->clear();
 			}
 		}
 
@@ -1328,22 +1345,28 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 
-		return true;
+		return 1;
 	}
 
-	public function runAssociationsCycle(): true {
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function runAssociationsCycle(): int {
 		$last = $this->common->getGlobal('cycle.assocs', 0);
-		if ($last==='complete') return true;
+		if ($last==='complete') return 1;
         	$last=(int)$last;
 		$this->logger->info("Associations Cycle...");
 
 		$this->logger->info("  Checking for missing Assoc conversations...");
 
-		$query = $this->em->createQuery('SELECT a FROM App:Association a WHERE a.active = true OR a.active IS NULL');
-
+		$query = $this->em->createQuery('SELECT a FROM App:Association a WHERE a.id > :last AND (a.active = true OR a.active IS NULL)');
+		$query->setParameters(['last'=>$last]);
+		$i = 1;
 		foreach ($query->getResult() as $assoc) {
 			$anno = false;
 			$gen = false;
+			$last = $assoc->getId();
 
                 	$criteria = Criteria::create()->where(Criteria::expr()->eq("system", "announcements"))->orWhere(Criteria::expr()->eq("system", "general"));
 			$convs = $assoc->getConversations()->matching($criteria);
@@ -1364,13 +1387,18 @@ class GameRunner {
 			}
 			if (!$anno) {
 				$topic = $assoc->getName().' Announcements';
-				$conversation = $this->convman->newConversation(null, null, $topic, null, null, $assoc, 'announcements');
+				$this->convman->newConversation(null, null, $topic, null, null, $assoc, 'announcements');
 				$this->logger->notice("  ".$assoc->getName()." announcements created");
 			}
 			if (!$gen) {
 				$topic = $assoc->getName().' General Discussion';
-				$conversation = $this->convman->newConversation(null, null, $topic, null, null, $assoc, 'general');
+				$this->convman->newConversation(null, null, $topic, null, null, $assoc, 'general');
 				$this->logger->notice("  ".$assoc->getName()." general discussion created");
+			}
+			if (($i++ % ($this->batchsize/5)) == 0) {
+				$this->common->setGlobal('cycle.assocs', $last);
+				$this->em->flush();
+				$this->em->clear();
 			}
 		}
 
@@ -1378,18 +1406,17 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 
-		return true;
+		return 1;
 	}
 
-	public function runConversationsCleanup(): true {
+	/**
+	 * @return int
+	 */
+	public function runConversationsCleanup(): int {
 		# This is run separately from the main turn command, and runs after it. It remains here because it is still primarily turn logic.
 		# Ideally, this does nothing. If it does something though, it just means we caught a character that should or shouldn't be part of a conversation and fixed it.
 		$lastRealm = $this->common->getGlobal('cycle.convs.realm', 0);
-		$lastHouse = $this->common->getGlobal('cycle.convs.house', 0);
-		$lastAssoc = $this->common->getGlobal('cycle.convs.assoc', 0);
 		$lastRealm=(int)$lastRealm;
-		$lastHouse=(int)$lastHouse;
-		$lastAssoc=(int)$lastAssoc;
 		$this->logger->info("Conversation Cycle...");
 		$this->logger->info("  Updating realm conversation permissions...");
 		$query = $this->em->createQuery("SELECT r from App:Realm r WHERE r.active = TRUE AND r.id > :last ORDER BY r.id ASC");
@@ -1398,18 +1425,10 @@ class GameRunner {
 		$total = 0;
 		$removed = 0;
 		$convs = 0;
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 
-		$done = false;
-		$complete = false;
-		while (!$done) {
-			$row = $iterableResult->next();
-			if ($row===false) {
-				$done=true;
-				$complete=true;
-				break;
-			}
-			$realm = $row[0];
+		$i = 1;
+		foreach ($iterableResult as $realm) {
 			$lastRealm = $realm->getId();
 			$this->logger->info("  -- Updating ".$realm->getName()."...");
 			$total++;
@@ -1420,37 +1439,29 @@ class GameRunner {
 				$removed += $rtn['removed']->count();
 				$added += $rtn['added']->count();
 			}
+			if (($i++ % ($this->batchsize/5)) == 0) {
+				$this->common->setGlobal('cycle.convs.realm', $lastRealm);
+				$this->em->flush();
+				$this->em->clear();
+			}
 		}
-
-		if ($complete) {
-			$this->common->setGlobal('cycle.convs.realm', 'complete');
-		} else {
-			$this->common->setGlobal('cycle.convs.realm', $lastRealm);
-		}
+		$this->common->setGlobal('cycle.convs.realm', 'complete');
 		$this->logger->info("  Result: ".$total." realms, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 		$this->em->flush();
 		$this->em->clear();
 
+		$lastHouse = $this->common->getGlobal('cycle.convs.house', 0);
+		$lastHouse=(int)$lastHouse;
 		$this->logger->info("  Updating house conversation permissions...");
 		$query = $this->em->createQuery("SELECT h from App:House h WHERE (h.active = TRUE OR h.active IS NULL) AND h.id > :last ORDER BY h.id ASC");
 		$query->setParameters(['last'=>$lastHouse]);
-		$houses = $query->getResult();
 		$added = 0;
 		$total = 0;
 		$removed = 0;
 		$convs = 0;
-		$iterableResult = $query->iterate();
-
-		$done = false;
-		$complete = false;
-		while (!$done) {
-			$row = $iterableResult->next();
-			if ($row===false) {
-				$done=true;
-				$complete=true;
-				break;
-			}
-			$house = $row[0];
+		$iterableResult = $query->toIterable();
+		$i = 1;
+		foreach ($iterableResult as $house) {
 			$lastHouse = $house->getId();
 			$this->logger->info("  -- Updating ".$house->getName()."...");
 			$total++;
@@ -1461,37 +1472,30 @@ class GameRunner {
 				$removed += $rtn['removed']->count();
 				$added += $rtn['added']->count();
 			}
+			if (($i++ % ($this->batchsize/5)) == 0) {
+				$this->common->setGlobal('cycle.convs.house', $lastHouse);
+				$this->em->flush();
+				$this->em->clear();
+			}
 		}
-
-		if ($complete) {
-			$this->common->setGlobal('cycle.convs.house', 'complete');
-		} else {
-			$this->common->setGlobal('cycle.convs.house', $lastHouse);
-		}
-		$this->logger->info("  Result: ".$total." houses, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 		$this->em->flush();
 		$this->em->clear();
+		$this->common->setGlobal('cycle.convs.house', 'complete');
+		$this->logger->info("  Result: ".$total." houses, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 
+		$lastAssoc = $this->common->getGlobal('cycle.convs.assoc', 0);
+		$lastAssoc=(int)$lastAssoc;
 		$this->logger->info("  Updating association conversation permissions...");
 		$query = $this->em->createQuery("SELECT a from App:Association a WHERE (a.active = TRUE OR a.active IS NULL) AND a.id > :last ORDER BY a.id ASC");
 		$query->setParameters(['last'=>$lastAssoc]);
-		$assocs = $query->getResult();
 		$added = 0;
 		$total = 0;
 		$removed = 0;
 		$convs = 0;
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 
-		$done = false;
-		$complete = false;
-		while (!$done) {
-			$row = $iterableResult->next();
-			if ($row===false) {
-				$done=true;
-				$complete=true;
-				break;
-			}
-			$assoc = $row[0];
+		$i = 1;
+		foreach ($iterableResult as $assoc) {
 			$lastAssoc = $assoc->getId();
 			$this->logger->info("  -- Updating ".$assoc->getName()."...");
 			$total++;
@@ -1502,30 +1506,31 @@ class GameRunner {
 				$removed += $rtn['removed']->count();
 				$added += $rtn['added']->count();
 			}
+			if (($i++ % ($this->batchsize/5)) == 0) {
+				$this->common->setGlobal('cycle.convs.house', $lastAssoc);
+				$this->em->flush();
+				$this->em->clear();
+			}
 		}
-		$this->logger->info("  Result: ".$total." assocs, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 		$this->em->flush();
 		$this->em->clear();
-
-		if ($complete) {
-			$this->common->setGlobal('cycle.convs.assoc', 'complete');
-		} else {
-			$this->common->setGlobal('cycle.convs.assoc', $lastAssoc);
-		}
+		$this->common->setGlobal('cycle.convs.assoc', 'complete');
 		$this->logger->info("  Result: ".$total." associations, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
-		$this->em->flush();
-		$this->em->clear();
 
 		$query = $this->em->createQuery('UPDATE App:Setting s SET s.value=0 WHERE s.name LIKE :cycle');
 		$query->setParameter('cycle', 'cycle.convs.'.'%');
 		$query->execute();
-		return true;
+		return 1;
 	}
 
-	public function runPositionsCycle(): true {
+	/**
+	 * @return int
+	 * @noinspection PhpUnused
+	 */
+	public function runPositionsCycle(): int {
 		$last = $this->common->getGlobal('cycle.positions', 0);
-		if ($last==='complete') return true;
-        	$last=(int)$last;
+		if ($last==='complete') return 1;
+        	$last=(int)$last; #TODO: Low priority, but rewrite this as iterable.
 		$this->logger->info("Positions Cycle...");
 
 		$this->logger->info("  Processing Finished Elections...");
@@ -1691,36 +1696,31 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 
-		return true;
+		return 1;
 	}
 
-	public function runSeaFoodCycle(): bool {
+	/**
+	 * @return int
+	 * @throws InvalidValueException
+	 * @noinspection PhpUnused
+	 */
+	public function runSeaFoodCycle(): int {
 		$last = $this->common->getGlobal('cycle.seafood', 0);
-		if ($last==='complete') return true;
+		if ($last==='complete') return 1;
 		$this->logger->info("Sea Food Cycle...");
 
 		$query = $this->em->createQuery("SELECT c FROM App:Character c, App:GeoData g JOIN g.biome b WHERE c.id > :last AND ST_Contains(g.poly, c.location) = true AND b.name IN ('ocean', 'water') ORDER BY c.id");
-		$query->setParameter('last', 0);
-		$iterableResult = $query->iterate();
-
-		$time_start = microtime(true);
-		$done = false;
-		$complete = false;
-		while (!$done) {
-			$row = $iterableResult->next();
-			if ($row===false) {
-				$done=true;
-				$complete=true;
-				break;
-			}
-
-			$character = $row[0];
-
-			//	a) troops eat food from camp followers
+		$query->setParameter('last', $last);
+		$iterableResult = $query->toIterable();
+		$complete = 0;
+		$i = 1;
+		foreach ($iterableResult as $character ) {
+			$lastChar = $character->getId();
+			// a) troops eat food from camp followers
 			// b) small chance of shipwreck and landing at nearby random beach (to prevent the eternal hiding at sea exploit I use myself)
 			if (rand(0,100) == 25) {
 				// shipwrecked !
-				list($land_location, $ship_location) = $this->geography->findLandPoint($character->getLocation());
+				[$land_location, $ship_location] = $this->geography->findLandPoint($character->getLocation());
 				if ($land_location) {
 					$near = $this->geography->findNearestSettlementToPoint(new Point($land_location->getX(), $land_location->getY()));
 					if ($near) {
@@ -1737,58 +1737,27 @@ class GameRunner {
 					}
 				}
 			}
+			if (($i++ % ($this->batchsize/5)) == 0) {
+				$this->common->setGlobal('cycle.seafood', $lastChar);
+				$this->em->flush();
+				$this->em->clear();
+			}
 		}
-
-		if ($complete) {
-			$this->common->setGlobal('cycle.seafood', 'complete');
-		} else {
-			$this->common->setGlobal('cycle.seafood', 0);
-		}
-
 		$this->em->flush();
 		$this->em->clear();
+		$this->common->setGlobal('cycle.seafood', 'complete');
 		return $complete;
 	}
 
-	public function findHeir(Character $character, Character $from=null): array {
-		// NOTE: This should match the implemenation on CharacterManager.php
-		if (!$from) {
-			$from = $character;
-		}
-
-		if ($this->seen->contains($character)) {
-			// loops back to someone we've already checked
-			return array(false, false);
-		} else {
-			$this->seen->add($character);
-		}
-
-		if ($heir = $character->getSuccessor()) {
-			if ($heir->isActive()) {
-				return array($heir, $from);
-			} else {
-				return $this->findHeir($heir, $from);
-			}
-		}
-		return array(false, false);
-	}
-
+	/**
+	 * @return void
+	 */
 	public function eventNewYear(): void {
 		$query = $this->em->createQuery('SELECT s FROM App:Settlement s ORDER BY s.id ASC');
-		$iterableResult = $query->iterate();
+		$iterableResult = $query->toIterable();
 
-		$done = false;
-		$complete = false;
 		$i=1;
-		while (!$done) {
-			$row = $iterableResult->next();
-			if ($row===false) {
-				$done=true;
-				$complete=true;
-				break;
-			}
-			$settlement = $row[0];
-
+		foreach ($iterableResult as $settlement) {
 			$peasant_kids = ceil($settlement->getPopulation()*0.02);
 			$thrall_kids = round($settlement->getThralls()*0.01);
 			$this->history->logEvent(
@@ -1802,11 +1771,19 @@ class GameRunner {
 
 			if (($i++ % $this->batchsize) == 0) {
 				$this->em->flush();
+				$this->em->clear();
 			}
 		}
 		$this->em->flush();
 	}
 
+	/**
+	 * @param RealmPosition $position
+	 * @param               $systemflag
+	 * @param               $msg
+	 *
+	 * @return void
+	 */
 	public function postToRealm(RealmPosition $position, $systemflag, $msg): void {
 		$query = $this->em->createQuery('SELECT c FROM App:Conversation c WHERE c.realm = :realm AND c.system = :system');
 		switch ($systemflag) {
@@ -1826,6 +1803,14 @@ class GameRunner {
 
 	}
 
+	/**
+	 * @param RealmPosition $position
+	 * @param               $electiontype
+	 * @param               $routine
+	 * @param               $counter
+	 *
+	 * @return Election
+	 */
 	public function setupElection(RealmPosition $position, $electiontype=null, $routine=false, $counter=null): Election {
 		$election = new Election;
 		$election->setRealm($position->getRealm());
@@ -1861,6 +1846,13 @@ class GameRunner {
 		return $election;
 	}
 
+	/**
+	 * @param $part
+	 *
+	 * @return int[]
+	 * @throws NoResultException
+	 * @throws NonUniqueResultException
+	 */
 	public function Progress($part): array {
 		$entity = 'App\Entity\\'.ucfirst($part);
 		$last = $this->common->getGlobal('cycle.'.$part);
