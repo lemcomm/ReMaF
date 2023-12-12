@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
+
 class NetExit
 {
     private ?\DateTimeInterface $ts = null;

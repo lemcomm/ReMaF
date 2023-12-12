@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 
 class Association extends Faction {
 	private string $name;
@@ -45,105 +46,105 @@ class Association extends Faction {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->inferiors = new ArrayCollection();
-		$this->laws = new ArrayCollection();
-		$this->elections = new ArrayCollection();
-		$this->ranks = new ArrayCollection();
-		$this->members = new ArrayCollection();
-		$this->my_relations = new ArrayCollection();
-		$this->foreign_relations = new ArrayCollection();
-		$this->descriptions = new ArrayCollection();
-		$this->spawn_descriptions = new ArrayCollection();
-		$this->requests = new ArrayCollection();
-		$this->related_requests = new ArrayCollection();
-		$this->part_of_requests = new ArrayCollection();
-		$this->places = new ArrayCollection();
-		$this->spawns = new ArrayCollection();
-		$this->conversations = new ArrayCollection();
-		$this->deities = new ArrayCollection();
-		$this->recognized_deities = new ArrayCollection();
-		$this->followers = new ArrayCollection();
-		$this->followed_in = new ArrayCollection();
-	}
+   		$this->inferiors = new ArrayCollection();
+   		$this->laws = new ArrayCollection();
+   		$this->elections = new ArrayCollection();
+   		$this->ranks = new ArrayCollection();
+   		$this->members = new ArrayCollection();
+   		$this->my_relations = new ArrayCollection();
+   		$this->foreign_relations = new ArrayCollection();
+   		$this->descriptions = new ArrayCollection();
+   		$this->spawn_descriptions = new ArrayCollection();
+   		$this->requests = new ArrayCollection();
+   		$this->related_requests = new ArrayCollection();
+   		$this->part_of_requests = new ArrayCollection();
+   		$this->places = new ArrayCollection();
+   		$this->spawns = new ArrayCollection();
+   		$this->conversations = new ArrayCollection();
+   		$this->deities = new ArrayCollection();
+   		$this->recognized_deities = new ArrayCollection();
+   		$this->followers = new ArrayCollection();
+   		$this->followed_in = new ArrayCollection();
+   	}
 
 	public function findAllMemberCharacters($include_myself = true) {
-		$all_chars = new ArrayCollection;
-		$all_infs = $this->findAllInferiors($include_myself);
-		foreach ($all_infs as $inf) {
-			foreach ($inf->getMembers() as $infMember) {
-				$all_chars->add($infMember->getCharacter());
-			}
-		}
-		return $all_chars;
-	}
+   		$all_chars = new ArrayCollection;
+   		$all_infs = $this->findAllInferiors($include_myself);
+   		foreach ($all_infs as $inf) {
+   			foreach ($inf->getMembers() as $infMember) {
+   				$all_chars->add($infMember->getCharacter());
+   			}
+   		}
+   		return $all_chars;
+   	}
 
 	public function findAllMembers($include_myself = true) {
-		$all_members = new ArrayCollection;
-		$all_infs = $this->findAllInferiors($include_myself);
-		foreach ($all_infs as $inf) {
-			foreach ($inf->getMembers() as $infMember) {
-				$all_members->add($infMember);
-			}
-		}
-		return $all_members;
-	}
+   		$all_members = new ArrayCollection;
+   		$all_infs = $this->findAllInferiors($include_myself);
+   		foreach ($all_infs as $inf) {
+   			foreach ($inf->getMembers() as $infMember) {
+   				$all_members->add($infMember);
+   			}
+   		}
+   		return $all_members;
+   	}
 
 	public function findActiveMembers($with_subs = true, $forceupdate = false) {
-		$all_members = new ArrayCollection;
-		$all_infs = $this->findAllInferiors(true);
-		foreach ($all_infs as $inf) {
-			foreach ($inf->getMembers() as $infMember) {
-				if ($infMember->isActive()) {
-					$all_members->add($infMember);
-				}
-			}
-		}
-		return $all_members;
-	}
+   		$all_members = new ArrayCollection;
+   		$all_infs = $this->findAllInferiors(true);
+   		foreach ($all_infs as $inf) {
+   			foreach ($inf->getMembers() as $infMember) {
+   				if ($infMember->isActive()) {
+   					$all_members->add($infMember);
+   				}
+   			}
+   		}
+   		return $all_members;
+   	}
 
 	public function findMember(Character $char, $all = false) {
-		if ($all) {
-			$all = $this->findAllMembers(true);
-		} else {
-			$all = $this->getMembers();
-		}
-		foreach ($all as $mbr) {
-			if ($mbr->getCharacter() === $char) {
-				return $mbr;
-			}
-		}
-		return false;
-	}
+   		if ($all) {
+   			$all = $this->findAllMembers(true);
+   		} else {
+   			$all = $this->getMembers();
+   		}
+   		foreach ($all as $mbr) {
+   			if ($mbr->getCharacter() === $char) {
+   				return $mbr;
+   			}
+   		}
+   		return false;
+   	}
 
 	public function isPublic() {
-		$law = $this->findActiveLaw('assocVisibility', false);
-		if ($law && $law->getValue() === 'yes') {
-			return true;
-		} else {
-			return false;
-		}
-	}
+   		$law = $this->findActiveLaw('assocVisibility', false);
+   		if ($law && $law->getValue() === 'yes') {
+   			return true;
+   		} else {
+   			return false;
+   		}
+   	}
 
 	public function findPubliclyVisibleRanks() {
-		if ($this->isPublic() && $this->findActiveLaw('rankVisibility', false)->getValue() === 'all') {
-			$all = $this->ranks;
-		} else {
-			$all = new ArrayCollection();
-		}
-		return $all;
-	}
+   		if ($this->isPublic() && $this->findActiveLaw('rankVisibility', false)->getValue() === 'all') {
+   			$all = $this->ranks;
+   		} else {
+   			$all = new ArrayCollection();
+   		}
+   		return $all;
+   	}
 
 	public function findOwners() {
-		$all = new ArrayCollection();
-		foreach ($this->ranks as $rank) {
-			if ($rank->isOwner()) {
-				foreach ($rank->getMembers() as $mbr) {
-					$all->add($mbr->getCharacter());
-				}
-			}
-		}
-		return $all;
-	}
+   		$all = new ArrayCollection();
+   		foreach ($this->ranks as $rank) {
+   			if ($rank->isOwner()) {
+   				foreach ($rank->getMembers() as $mbr) {
+   					$all->add($mbr->getCharacter());
+   				}
+   			}
+   		}
+   		return $all;
+   	}
 
 	/**
 	 * Set name
@@ -153,10 +154,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setName($name) {
-		$this->name = $name;
-
-		return $this;
-	}
+   		$this->name = $name;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get name
@@ -164,8 +165,8 @@ class Association extends Faction {
 	 * @return string
 	 */
 	public function getName() {
-		return $this->name;
-	}
+   		return $this->name;
+   	}
 
 	/**
 	 * Set formal_name
@@ -175,10 +176,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setFormalName($formalName) {
-		$this->formal_name = $formalName;
-
-		return $this;
-	}
+   		$this->formal_name = $formalName;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get formal_name
@@ -186,8 +187,8 @@ class Association extends Faction {
 	 * @return string
 	 */
 	public function getFormalName() {
-		return $this->formal_name;
-	}
+   		return $this->formal_name;
+   	}
 
 	/**
 	 * Set faith_name
@@ -197,10 +198,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setFaithName($faithName) {
-		$this->faith_name = $faithName;
-
-		return $this;
-	}
+   		$this->faith_name = $faithName;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get faith_name
@@ -208,8 +209,8 @@ class Association extends Faction {
 	 * @return string
 	 */
 	public function getFaithName() {
-		return $this->faith_name;
-	}
+   		return $this->faith_name;
+   	}
 
 	/**
 	 * Set follower_name
@@ -219,10 +220,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setFollowerName($followerName) {
-		$this->follower_name = $followerName;
-
-		return $this;
-	}
+   		$this->follower_name = $followerName;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get follower_name
@@ -230,8 +231,8 @@ class Association extends Faction {
 	 * @return string
 	 */
 	public function getFollowerName() {
-		return $this->follower_name;
-	}
+   		return $this->follower_name;
+   	}
 
 	/**
 	 * Set motto
@@ -241,10 +242,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setMotto($motto) {
-		$this->motto = $motto;
-
-		return $this;
-	}
+   		$this->motto = $motto;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get motto
@@ -252,8 +253,8 @@ class Association extends Faction {
 	 * @return string
 	 */
 	public function getMotto() {
-		return $this->motto;
-	}
+   		return $this->motto;
+   	}
 
 	/**
 	 * Set active
@@ -263,10 +264,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setActive($active) {
-		$this->active = $active;
-
-		return $this;
-	}
+   		$this->active = $active;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get active
@@ -274,8 +275,8 @@ class Association extends Faction {
 	 * @return boolean
 	 */
 	public function getActive() {
-		return $this->active;
-	}
+   		return $this->active;
+   	}
 
 	/**
 	 * Set public
@@ -285,10 +286,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setPublic($public) {
-		$this->public = $public;
-
-		return $this;
-	}
+   		$this->public = $public;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get public
@@ -296,8 +297,8 @@ class Association extends Faction {
 	 * @return boolean
 	 */
 	public function getPublic() {
-		return $this->public;
-	}
+   		return $this->public;
+   	}
 
 	/**
 	 * Set short_description
@@ -307,10 +308,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setShortDescription($shortDescription) {
-		$this->short_description = $shortDescription;
-
-		return $this;
-	}
+   		$this->short_description = $shortDescription;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get short_description
@@ -318,8 +319,8 @@ class Association extends Faction {
 	 * @return string
 	 */
 	public function getShortDescription() {
-		return $this->short_description;
-	}
+   		return $this->short_description;
+   	}
 
 	/**
 	 * Get id
@@ -327,8 +328,8 @@ class Association extends Faction {
 	 * @return integer
 	 */
 	public function getId() {
-		return $this->id;
-	}
+   		return $this->id;
+   	}
 
 	/**
 	 * Set description
@@ -338,10 +339,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setDescription(Description $description = null) {
-		$this->description = $description;
-
-		return $this;
-	}
+   		$this->description = $description;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get description
@@ -349,8 +350,8 @@ class Association extends Faction {
 	 * @return Description
 	 */
 	public function getDescription() {
-		return $this->description;
-	}
+   		return $this->description;
+   	}
 
 	/**
 	 * Set spawn_description
@@ -360,10 +361,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setSpawnDescription(SpawnDescription $spawnDescription = null) {
-		$this->spawn_description = $spawnDescription;
-
-		return $this;
-	}
+   		$this->spawn_description = $spawnDescription;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get spawn_description
@@ -371,8 +372,8 @@ class Association extends Faction {
 	 * @return SpawnDescription
 	 */
 	public function getSpawnDescription() {
-		return $this->spawn_description;
-	}
+   		return $this->spawn_description;
+   	}
 
 	/**
 	 * Set log
@@ -382,10 +383,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setLog(EventLog $log = null) {
-		$this->log = $log;
-
-		return $this;
-	}
+   		$this->log = $log;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get log
@@ -393,8 +394,8 @@ class Association extends Faction {
 	 * @return EventLog
 	 */
 	public function getLog() {
-		return $this->log;
-	}
+   		return $this->log;
+   	}
 
 	/**
 	 * Add inferiors
@@ -404,10 +405,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addInferior(Association $inferiors) {
-		$this->inferiors[] = $inferiors;
-
-		return $this;
-	}
+   		$this->inferiors[] = $inferiors;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove inferiors
@@ -415,8 +416,8 @@ class Association extends Faction {
 	 * @param Association $inferiors
 	 */
 	public function removeInferior(Association $inferiors) {
-		$this->inferiors->removeElement($inferiors);
-	}
+   		$this->inferiors->removeElement($inferiors);
+   	}
 
 	/**
 	 * Get inferiors
@@ -424,8 +425,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getInferiors() {
-		return $this->inferiors;
-	}
+   		return $this->inferiors;
+   	}
 
 	/**
 	 * Add laws
@@ -435,10 +436,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addLaw(Law $laws) {
-		$this->laws[] = $laws;
-
-		return $this;
-	}
+   		$this->laws[] = $laws;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove laws
@@ -446,8 +447,8 @@ class Association extends Faction {
 	 * @param Law $laws
 	 */
 	public function removeLaw(Law $laws) {
-		$this->laws->removeElement($laws);
-	}
+   		$this->laws->removeElement($laws);
+   	}
 
 	/**
 	 * Get laws
@@ -455,8 +456,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getLaws() {
-		return $this->laws;
-	}
+   		return $this->laws;
+   	}
 
 	/**
 	 * Add elections
@@ -466,10 +467,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addElection(Election $elections) {
-		$this->elections[] = $elections;
-
-		return $this;
-	}
+   		$this->elections[] = $elections;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove elections
@@ -477,8 +478,8 @@ class Association extends Faction {
 	 * @param Election $elections
 	 */
 	public function removeElection(Election $elections) {
-		$this->elections->removeElement($elections);
-	}
+   		$this->elections->removeElement($elections);
+   	}
 
 	/**
 	 * Get elections
@@ -486,8 +487,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getElections() {
-		return $this->elections;
-	}
+   		return $this->elections;
+   	}
 
 	/**
 	 * Add ranks
@@ -497,10 +498,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addRank(AssociationRank $ranks) {
-		$this->ranks[] = $ranks;
-
-		return $this;
-	}
+   		$this->ranks[] = $ranks;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove ranks
@@ -508,8 +509,8 @@ class Association extends Faction {
 	 * @param AssociationRank $ranks
 	 */
 	public function removeRank(AssociationRank $ranks) {
-		$this->ranks->removeElement($ranks);
-	}
+   		$this->ranks->removeElement($ranks);
+   	}
 
 	/**
 	 * Get ranks
@@ -517,8 +518,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getRanks() {
-		return $this->ranks;
-	}
+   		return $this->ranks;
+   	}
 
 	/**
 	 * Add members
@@ -528,10 +529,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addMember(AssociationMember $members) {
-		$this->members[] = $members;
-
-		return $this;
-	}
+   		$this->members[] = $members;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove members
@@ -539,8 +540,8 @@ class Association extends Faction {
 	 * @param AssociationMember $members
 	 */
 	public function removeMember(AssociationMember $members) {
-		$this->members->removeElement($members);
-	}
+   		$this->members->removeElement($members);
+   	}
 
 	/**
 	 * Get members
@@ -548,8 +549,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getMembers() {
-		return $this->members;
-	}
+   		return $this->members;
+   	}
 
 	/**
 	 * Add my_relations
@@ -559,10 +560,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addMyRelation(RealmRelation $myRelations) {
-		$this->my_relations[] = $myRelations;
-
-		return $this;
-	}
+   		$this->my_relations[] = $myRelations;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove my_relations
@@ -570,8 +571,8 @@ class Association extends Faction {
 	 * @param RealmRelation $myRelations
 	 */
 	public function removeMyRelation(RealmRelation $myRelations) {
-		$this->my_relations->removeElement($myRelations);
-	}
+   		$this->my_relations->removeElement($myRelations);
+   	}
 
 	/**
 	 * Get my_relations
@@ -579,8 +580,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getMyRelations() {
-		return $this->my_relations;
-	}
+   		return $this->my_relations;
+   	}
 
 	/**
 	 * Add foreign_relations
@@ -590,10 +591,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addForeignRelation(RealmRelation $foreignRelations) {
-		$this->foreign_relations[] = $foreignRelations;
-
-		return $this;
-	}
+   		$this->foreign_relations[] = $foreignRelations;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove foreign_relations
@@ -601,8 +602,8 @@ class Association extends Faction {
 	 * @param RealmRelation $foreignRelations
 	 */
 	public function removeForeignRelation(RealmRelation $foreignRelations) {
-		$this->foreign_relations->removeElement($foreignRelations);
-	}
+   		$this->foreign_relations->removeElement($foreignRelations);
+   	}
 
 	/**
 	 * Get foreign_relations
@@ -610,8 +611,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getForeignRelations() {
-		return $this->foreign_relations;
-	}
+   		return $this->foreign_relations;
+   	}
 
 	/**
 	 * Add descriptions
@@ -621,10 +622,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addDescription(Description $descriptions) {
-		$this->descriptions[] = $descriptions;
-
-		return $this;
-	}
+   		$this->descriptions[] = $descriptions;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove descriptions
@@ -632,8 +633,8 @@ class Association extends Faction {
 	 * @param Description $descriptions
 	 */
 	public function removeDescription(Description $descriptions) {
-		$this->descriptions->removeElement($descriptions);
-	}
+   		$this->descriptions->removeElement($descriptions);
+   	}
 
 	/**
 	 * Get descriptions
@@ -641,8 +642,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getDescriptions() {
-		return $this->descriptions;
-	}
+   		return $this->descriptions;
+   	}
 
 	/**
 	 * Add spawn_descriptions
@@ -652,10 +653,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addSpawnDescription(SpawnDescription $spawnDescriptions) {
-		$this->spawn_descriptions[] = $spawnDescriptions;
-
-		return $this;
-	}
+   		$this->spawn_descriptions[] = $spawnDescriptions;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove spawn_descriptions
@@ -663,8 +664,8 @@ class Association extends Faction {
 	 * @param SpawnDescription $spawnDescriptions
 	 */
 	public function removeSpawnDescription(SpawnDescription $spawnDescriptions) {
-		$this->spawn_descriptions->removeElement($spawnDescriptions);
-	}
+   		$this->spawn_descriptions->removeElement($spawnDescriptions);
+   	}
 
 	/**
 	 * Get spawn_descriptions
@@ -672,8 +673,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getSpawnDescriptions() {
-		return $this->spawn_descriptions;
-	}
+   		return $this->spawn_descriptions;
+   	}
 
 	/**
 	 * Add requests
@@ -683,10 +684,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addRequest(GameRequest $requests) {
-		$this->requests[] = $requests;
-
-		return $this;
-	}
+   		$this->requests[] = $requests;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove requests
@@ -694,8 +695,8 @@ class Association extends Faction {
 	 * @param GameRequest $requests
 	 */
 	public function removeRequest(GameRequest $requests) {
-		$this->requests->removeElement($requests);
-	}
+   		$this->requests->removeElement($requests);
+   	}
 
 	/**
 	 * Get requests
@@ -703,8 +704,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getRequests() {
-		return $this->requests;
-	}
+   		return $this->requests;
+   	}
 
 	/**
 	 * Add related_requests
@@ -714,10 +715,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addRelatedRequest(GameRequest $relatedRequests) {
-		$this->related_requests[] = $relatedRequests;
-
-		return $this;
-	}
+   		$this->related_requests[] = $relatedRequests;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove related_requests
@@ -725,8 +726,8 @@ class Association extends Faction {
 	 * @param GameRequest $relatedRequests
 	 */
 	public function removeRelatedRequest(GameRequest $relatedRequests) {
-		$this->related_requests->removeElement($relatedRequests);
-	}
+   		$this->related_requests->removeElement($relatedRequests);
+   	}
 
 	/**
 	 * Get related_requests
@@ -734,8 +735,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getRelatedRequests() {
-		return $this->related_requests;
-	}
+   		return $this->related_requests;
+   	}
 
 	/**
 	 * Add part_of_requests
@@ -745,10 +746,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addPartOfRequest(GameRequest $partOfRequests) {
-		$this->part_of_requests[] = $partOfRequests;
-
-		return $this;
-	}
+   		$this->part_of_requests[] = $partOfRequests;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove part_of_requests
@@ -756,8 +757,8 @@ class Association extends Faction {
 	 * @param GameRequest $partOfRequests
 	 */
 	public function removePartOfRequest(GameRequest $partOfRequests) {
-		$this->part_of_requests->removeElement($partOfRequests);
-	}
+   		$this->part_of_requests->removeElement($partOfRequests);
+   	}
 
 	/**
 	 * Get part_of_requests
@@ -765,8 +766,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getPartOfRequests() {
-		return $this->part_of_requests;
-	}
+   		return $this->part_of_requests;
+   	}
 
 	/**
 	 * Add places
@@ -776,10 +777,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addPlace(AssociationPlace $places) {
-		$this->places[] = $places;
-
-		return $this;
-	}
+   		$this->places[] = $places;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove places
@@ -787,8 +788,8 @@ class Association extends Faction {
 	 * @param AssociationPlace $places
 	 */
 	public function removePlace(AssociationPlace $places) {
-		$this->places->removeElement($places);
-	}
+   		$this->places->removeElement($places);
+   	}
 
 	/**
 	 * Get places
@@ -796,8 +797,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getPlaces() {
-		return $this->places;
-	}
+   		return $this->places;
+   	}
 
 	/**
 	 * Add spawns
@@ -807,10 +808,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addSpawn(Spawn $spawns) {
-		$this->spawns[] = $spawns;
-
-		return $this;
-	}
+   		$this->spawns[] = $spawns;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove spawns
@@ -818,8 +819,8 @@ class Association extends Faction {
 	 * @param Spawn $spawns
 	 */
 	public function removeSpawn(Spawn $spawns) {
-		$this->spawns->removeElement($spawns);
-	}
+   		$this->spawns->removeElement($spawns);
+   	}
 
 	/**
 	 * Get spawns
@@ -827,8 +828,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getSpawns() {
-		return $this->spawns;
-	}
+   		return $this->spawns;
+   	}
 
 	/**
 	 * Add conversations
@@ -838,10 +839,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addConversation(Conversation $conversations) {
-		$this->conversations[] = $conversations;
-
-		return $this;
-	}
+   		$this->conversations[] = $conversations;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove conversations
@@ -849,8 +850,8 @@ class Association extends Faction {
 	 * @param Conversation $conversations
 	 */
 	public function removeConversation(Conversation $conversations) {
-		$this->conversations->removeElement($conversations);
-	}
+   		$this->conversations->removeElement($conversations);
+   	}
 
 	/**
 	 * Get conversations
@@ -858,8 +859,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getConversations() {
-		return $this->conversations;
-	}
+   		return $this->conversations;
+   	}
 
 	/**
 	 * Add deities
@@ -869,10 +870,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addDeity(AssociationDeity $deities) {
-		$this->deities[] = $deities;
-
-		return $this;
-	}
+   		$this->deities[] = $deities;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove deities
@@ -880,8 +881,8 @@ class Association extends Faction {
 	 * @param AssociationDeity $deities
 	 */
 	public function removeDeity(AssociationDeity $deities) {
-		$this->deities->removeElement($deities);
-	}
+   		$this->deities->removeElement($deities);
+   	}
 
 	/**
 	 * Get deities
@@ -889,8 +890,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getDeities() {
-		return $this->deities;
-	}
+   		return $this->deities;
+   	}
 
 	/**
 	 * Add recognized_deities
@@ -900,10 +901,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addRecognizedDeity(Deity $recognizedDeities) {
-		$this->recognized_deities[] = $recognizedDeities;
-
-		return $this;
-	}
+   		$this->recognized_deities[] = $recognizedDeities;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove recognized_deities
@@ -911,8 +912,8 @@ class Association extends Faction {
 	 * @param Deity $recognizedDeities
 	 */
 	public function removeRecognizedDeity(Deity $recognizedDeities) {
-		$this->recognized_deities->removeElement($recognizedDeities);
-	}
+   		$this->recognized_deities->removeElement($recognizedDeities);
+   	}
 
 	/**
 	 * Get recognized_deities
@@ -920,8 +921,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getRecognizedDeities() {
-		return $this->recognized_deities;
-	}
+   		return $this->recognized_deities;
+   	}
 
 	/**
 	 * Add followers
@@ -931,10 +932,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addFollower(\App\Entity\Character $followers) {
-		$this->followers[] = $followers;
-
-		return $this;
-	}
+   		$this->followers[] = $followers;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove followers
@@ -942,8 +943,8 @@ class Association extends Faction {
 	 * @param \App\Entity\Character $followers
 	 */
 	public function removeFollower(\App\Entity\Character $followers) {
-		$this->followers->removeElement($followers);
-	}
+   		$this->followers->removeElement($followers);
+   	}
 
 	/**
 	 * Get followers
@@ -951,8 +952,8 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getFollowers() {
-		return $this->followers;
-	}
+   		return $this->followers;
+   	}
 
 	/**
 	 * Set type
@@ -962,10 +963,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setType(AssociationType $type = null) {
-		$this->type = $type;
-
-		return $this;
-	}
+   		$this->type = $type;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get type
@@ -973,8 +974,8 @@ class Association extends Faction {
 	 * @return AssociationType
 	 */
 	public function getType() {
-		return $this->type;
-	}
+   		return $this->type;
+   	}
 
 	/**
 	 * Set superior
@@ -984,10 +985,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setSuperior(Association $superior = null) {
-		$this->superior = $superior;
-
-		return $this;
-	}
+   		$this->superior = $superior;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get superior
@@ -995,8 +996,8 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function getSuperior() {
-		return $this->superior;
-	}
+   		return $this->superior;
+   	}
 
 	/**
 	 * Set founder
@@ -1006,10 +1007,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function setFounder(\App\Entity\Character $founder = null) {
-		$this->founder = $founder;
-
-		return $this;
-	}
+   		$this->founder = $founder;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Get founder
@@ -1017,12 +1018,12 @@ class Association extends Faction {
 	 * @return \App\Entity\Character
 	 */
 	public function getFounder() {
-		return $this->founder;
-	}
+   		return $this->founder;
+   	}
 
 	public function isActive(): ?bool {
-		return $this->active;
-	}
+   		return $this->active;
+   	}
 
 	/**
 	 * Add followers
@@ -1032,10 +1033,10 @@ class Association extends Faction {
 	 * @return Association
 	 */
 	public function addFollowedIn(\App\Entity\Character $followed_in) {
-		$this->followed_in[] = $followed_in;
-
-		return $this;
-	}
+   		$this->followed_in[] = $followed_in;
+   
+   		return $this;
+   	}
 
 	/**
 	 * Remove followers
@@ -1043,8 +1044,8 @@ class Association extends Faction {
 	 * @param \App\Entity\Realm $followed_in
 	 */
 	public function removeFollowedIn(\App\Entity\Character $followed_in) {
-		$this->followed_in->removeElement($followed_in);
-	}
+   		$this->followed_in->removeElement($followed_in);
+   	}
 
 	/**
 	 * Get followers
@@ -1052,6 +1053,6 @@ class Association extends Faction {
 	 * @return Collection
 	 */
 	public function getFollowedIn() {
-		return $this->followed_in;
-	}
+   		return $this->followed_in;
+   	}
 }

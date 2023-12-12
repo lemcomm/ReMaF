@@ -5,11 +5,13 @@
     "prefer-stable": true,
     "require": {
         "php": ">=8.2",
-        "ext-curl": "*",
         "ext-ctype": "*",
+        "ext-curl": "*",
+        "ext-dom": "*",
         "ext-iconv": "*",
         "doctrine/annotations": "^1.0",
         "doctrine/doctrine-bundle": "^2.7",
+        "doctrine/doctrine-fixtures-bundle": "^3.5",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.13",
         "kagurati/patreon": "^1.1",
@@ -48,8 +50,7 @@
         "symfony/yaml": "6.3.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/markdown-extra": "^3.4",
-        "twig/twig": "^2.12|^3.0",
-      "ext-dom": "*"
+        "twig/twig": "^2.12|^3.0"
     },
     "config": {
         "allow-plugins": {

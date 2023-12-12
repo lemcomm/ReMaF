@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\ReadableCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Security\Core\User\LegacyPasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -78,127 +79,127 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	private ?DateTimeInterface $last_password;
 
 	public function __construct() {
-                                    		$this->payments = new ArrayCollection();
-                                    		$this->credit_history = new ArrayCollection();
-                                    		$this->characters = new ArrayCollection();
-                                    		$this->crests = new ArrayCollection();
-                                    		$this->cultures = new ArrayCollection();
-                                    		$this->artifacts = new ArrayCollection();
-                                    		$this->descriptions = new ArrayCollection();
-                                    		$this->ratings_given = new ArrayCollection();
-                                    		$this->rating_votes = new ArrayCollection();
-                                    		$this->listings = new ArrayCollection();
-                                    		$this->patronizing = new ArrayCollection();
-                                    		$this->reports = new ArrayCollection();
-                                    		$this->reports_against = new ArrayCollection();
-                                    		$this->added_report_notes = new ArrayCollection();
-                                    		$this->mail_entries = new ArrayCollection();
-                                    		$this->keys = new ArrayCollection();
-                                    		$this->logs = new ArrayCollection();
-                                    		$this->security_logs = new ArrayCollection();
-                                    	}
+                                             		$this->payments = new ArrayCollection();
+                                             		$this->credit_history = new ArrayCollection();
+                                             		$this->characters = new ArrayCollection();
+                                             		$this->crests = new ArrayCollection();
+                                             		$this->cultures = new ArrayCollection();
+                                             		$this->artifacts = new ArrayCollection();
+                                             		$this->descriptions = new ArrayCollection();
+                                             		$this->ratings_given = new ArrayCollection();
+                                             		$this->rating_votes = new ArrayCollection();
+                                             		$this->listings = new ArrayCollection();
+                                             		$this->patronizing = new ArrayCollection();
+                                             		$this->reports = new ArrayCollection();
+                                             		$this->reports_against = new ArrayCollection();
+                                             		$this->added_report_notes = new ArrayCollection();
+                                             		$this->mail_entries = new ArrayCollection();
+                                             		$this->keys = new ArrayCollection();
+                                             		$this->logs = new ArrayCollection();
+                                             		$this->security_logs = new ArrayCollection();
+                                             	}
 
 
 	public function getLivingCharacters(): ArrayCollection|ReadableCollection {
-      		return $this->getCharacters()->filter(
-      			function($entry) {
-      				return ($entry->isAlive()==true && $entry->isNPC()==false);
-      			}
-      		);
-      	}
+               		return $this->getCharacters()->filter(
+               			function($entry) {
+               				return ($entry->isAlive()==true && $entry->isNPC()==false);
+               			}
+               		);
+               	}
 
 	public function getActiveCharacters(): ArrayCollection|ReadableCollection {
-      		return $this->getCharacters()->filter(
-      			function($entry) {
-      				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==false);
-      			}
-      		);
-      	}
+               		return $this->getCharacters()->filter(
+               			function($entry) {
+               				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==false);
+               			}
+               		);
+               	}
 
 	public function getRetiredCharacters(): ArrayCollection|ReadableCollection {
-      		return $this->getCharacters()->filter(
-      			function($entry) {
-      				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==true);
-      			}
-      		);
-      	}
+               		return $this->getCharacters()->filter(
+               			function($entry) {
+               				return ($entry->isAlive()==true && $entry->isNPC()==false && $entry->getRetired()==true);
+               			}
+               		);
+               	}
 
 	public function getDeadCharacters(): ArrayCollection|ReadableCollection {
-      		return $this->getCharacters()->filter(
-      			function($entry) {
-      				return ($entry->isAlive()==false && $entry->isNPC()==false);
-      			}
-      		);
-      	}
+               		return $this->getCharacters()->filter(
+               			function($entry) {
+               				return ($entry->isAlive()==false && $entry->isNPC()==false);
+               			}
+               		);
+               	}
 
 
 	public function getNonNPCCharacters(): ArrayCollection|ReadableCollection {
-      		return $this->getCharacters()->filter(
-      			function($entry) {
-      				return ($entry->isNPC()==false);
-      			}
-      		);
-      	}
+               		return $this->getCharacters()->filter(
+               			function($entry) {
+               				return ($entry->isNPC()==false);
+               			}
+               		);
+               	}
 
 	public function isTrial(): bool {
-      		// trial/free accounts cannot do some things
-      		if ($this->account_level <= 10) return true; else return false;
-      	}
+               		// trial/free accounts cannot do some things
+               		if ($this->account_level <= 10) return true; else return false;
+               	}
 
 	public function isNewPlayer(): bool {
-      		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
-      		if ($days < 30) {
-      			return true;
-      		} else {
-      			return false;
-      		}
-      	}
+               		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
+               		if ($days < 30) {
+               			return true;
+               		} else {
+               			return false;
+               		}
+               	}
 
 	public function isVeryNewPlayer(): bool {
-      		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
-      		if ($days < 7) {
-      			return true;
-      		} else {
-      			return false;
-      		}
-      	}
+               		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
+               		if ($days < 7) {
+               			return true;
+               		} else {
+               			return false;
+               		}
+               	}
 
 	public function getFreePlaces(): int {
-      		$limit = $this->getLimits()->getPlaces();
-      		$count = 0;
-      		foreach ($this->getCharacters() as $character) {
-      			foreach ($character->getCreatedPlaces() as $place) {
-      				if (!$place->getDestroyed()) {
-      					$count++;
-      				}
-      			}
-      		}
-      		return $limit - $count;
-      	}
+               		$limit = $this->getLimits()->getPlaces();
+               		$count = 0;
+               		foreach ($this->getCharacters() as $character) {
+               			foreach ($character->getCreatedPlaces() as $place) {
+               				if (!$place->getDestroyed()) {
+               					$count++;
+               				}
+               			}
+               		}
+               		return $limit - $count;
+               	}
 
 	public function getFreeArtifacts(): int {
-      		$limit = $this->getLimits()->getArtifacts();
-      		$count = 0;
-      		foreach ($this->getArtifacts() as $art) {
-      			$count++;
-      		}
-      		return $limit - $count;
-      	}
+               		$limit = $this->getLimits()->getArtifacts();
+               		$count = 0;
+               		foreach ($this->getArtifacts() as $art) {
+               			$count++;
+               		}
+               		return $limit - $count;
+               	}
 
 	public function isBanned(): bool {
-      		$roles = $this->getRoles();
-      		if (in_array(['ROLE_BANNED_TOS'], $roles)) {
-      			return 'error.banned.tos';
-      		}
-      		if (in_array(['ROLE_BANNED_MULTI'], $roles)) {
-      			return 'error.banned.multi';
-      		}
-      		return false;
-      	}
+               		$roles = $this->getRoles();
+               		if (in_array(['ROLE_BANNED_TOS'], $roles)) {
+               			return 'error.banned.tos';
+               		}
+               		if (in_array(['ROLE_BANNED_MULTI'], $roles)) {
+               			return 'error.banned.multi';
+               		}
+               		return false;
+               	}
 
 	public function getUserIdentifier(): string {
-      		return strtolower($this->username);
-      	}
+               		return strtolower($this->username);
+               	}
 
         public function getRoles(): array {
 		$roles = $this->roles;
@@ -213,13 +214,13 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         }
 
 	public function getPassword(): string {
-      		return $this->password;
-      	}
+               		return $this->password;
+               	}
 
 	public function setPassword(string $password): self {
-      		$this->password = $password;
-      		return $this;
-      	}
+               		$this->password = $password;
+               		return $this;
+               	}
 
         public function getSalt(): ?string {
             return $this->salt;
@@ -232,9 +233,9 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         }
 
 	public function eraseCredentials() {
-      		// If you store any temporary, sensitive data on the user, clear it here
-      		// $this->plainPassword = null;
-      	}
+               		// If you store any temporary, sensitive data on the user, clear it here
+               		// $this->plainPassword = null;
+               	}
 
     /**
      * Set ip
@@ -1410,16 +1411,16 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
     }
 
 	public function getLastPassword(): ?DateTimeInterface
-	{
-		return $this->last_password;
-	}
+         	{
+         		return $this->last_password;
+         	}
 
 	public function setLastPassword(?DateTimeInterface $last_password): self
-	{
-		$this->last_password = $last_password;
-
-		return $this;
-	}
+         	{
+         		$this->last_password = $last_password;
+         
+         		return $this;
+         	}
 
     public function getResetTime(): ?DateTimeInterface
     {
@@ -1539,5 +1540,15 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
         $this->bypass_exits = $bypass_exits;
 
         return $this;
+    }
+
+    public function isWatched(): ?bool
+    {
+        return $this->watched;
+    }
+
+    public function isBypassExits(): ?bool
+    {
+        return $this->bypass_exits;
     }
 }

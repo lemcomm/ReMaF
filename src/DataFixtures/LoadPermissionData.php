@@ -1,0 +1,60 @@
+<?php
+
+namespace App\DataFixtures;
+
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\Persistence\ObjectManager;
+
+use App\Entity\Permission;
+
+
+class LoadPermissionData extends Fixture {
+
+	private array $permissions = array(
+		'settlement' => array(
+			'visit'    	=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.visit', 'desc'=>'perm.desc.visit'),
+			'docks'    	=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.docks', 'desc'=>'perm.desc.docks'),
+			'describe'	=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.describe', 'desc'=>'perm.desc.describe'),
+			'resupply'	=> array('use_value'=>true, 'reserve'=>false, 'translation'=>'perm.resupply', 'desc'=>'perm.desc.resupply'),
+			'mobilize'	=> array('use_value'=>true, 'reserve'=>true, 'translation'=>'perm.mobilize', 'desc'=>'perm.desc.mobilize'),
+			'construct'	=> array('use_value'=>false, 'reserve'=>true, 'translation'=>'perm.construct', 'desc'=>'perm.desc.construct'),
+			'recruit'	=> array('use_value'=>true, 'reserve'=>false, 'translation'=>'perm.recruit', 'desc'=>'perm.desc.recruit'),
+			'trade'    	=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.trade', 'desc'=>'perm.desc.trade'),
+			'placeinside'	=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.placeinside', 'desc'=>'perm.desc.placeinside'),
+			'placeoutside'	=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.placeoutside', 'desc'=>'perm.desc.placeoutside'),
+			'units'		=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.units', 'desc'=>'perm.desc.units')
+		),
+		'place' => array(
+			'see'		=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.see', 'desc'=>'perm.desc.see'),
+			'manage'	=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.manage', 'desc'=>'perm.desc.manage'),
+			'visit'		=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.placevisit', 'desc'=>'perm.desc.placevisit'),
+			'docks'		=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.placedocks', 'desc'=>'perm.desc.placedocks'),
+			'describe'	=> array('use_value'=>false, 'reserve'=>false, 'translation'=>'perm.placedescribe', 'desc'=>'perm.desc.placedescribe'),
+			'resupply'	=> array('use_value'=>true, 'reserve'=>false, 'translation'=>'perm.placeresupply', 'desc'=>'perm.desc.placeresupply'),
+			'mobilize'	=> array('use_value'=>true, 'reserve'=>true, 'translation'=>'perm.placemobilize', 'desc'=>'perm.desc.placemobilize'),
+			'construct'	=> array('use_value'=>false, 'reserve'=>true, 'translation'=>'perm.placeconstruct', 'desc'=>'perm.desc.placeconstruct')
+		)
+	);
+
+	public function load(ObjectManager $manager): void {
+		foreach ($this->permissions as $class=>$members) {
+			foreach ($members as $name=>$data) {
+				$perm = $manager->getRepository(Permission::class)->findOneBy(['name'=>$name, 'class'=>$class]);
+				if (!$perm) {
+					$perm = new Permission();
+					$manager->persist($perm);
+				}
+				$perm->setName($name);
+				$perm->setTranslationString($data['translation']);
+				$perm->setDescription($data['desc']);
+				$perm->setClass($class);
+				$perm->setUseValue($data['use_value']);
+				$perm->setUseReserve($data['reserve']);
+				$manager->persist($perm);
+			}
+		}
+		$manager->flush();
+	}
+}
