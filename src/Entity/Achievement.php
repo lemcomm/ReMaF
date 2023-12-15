@@ -4,36 +4,21 @@ namespace App\Entity;
 
 class Achievement {
 
+	private string $type;
+	private int $value;
+	private int $id;
+	private Character $character;
+
 	public function __toString() {
-		return "achievement {$this->key} ({$this->value})";
+		return "achievement $this->type ($this->value)";
 	}
 
 	public function getValue() {
-		switch ($this->getType()) {
-			case 'battlesize':	return floor(sqrt($this->value));
-			default:
-				return $this->value;
-		}
+		return match ($this->getType()) {
+			'battlesize' => floor(sqrt($this->value)),
+			default => $this->value,
+		};
 	}
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var integer
-     */
-    private $value;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
 
 
     /**
@@ -85,10 +70,11 @@ class Achievement {
     /**
      * Set character
      *
-     * @param \App\Entity\Character $character
+     * @param Character $character
+     *
      * @return Achievement
      */
-    public function setCharacter(\App\Entity\Character $character = null)
+    public function setCharacter(Character $character = null)
     {
         $this->character = $character;
 
@@ -98,7 +84,7 @@ class Achievement {
     /**
      * Get character
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
     public function getCharacter()
     {

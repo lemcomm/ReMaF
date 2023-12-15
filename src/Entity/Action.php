@@ -4,171 +4,55 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 
 class Action {
 
+	private string $type;
+	private \DateTime $started;
+	private \DateTime $complete;
+	private bool $hidden;
+	private bool $hourly;
+	private bool $can_cancel;
+	private bool $block_travel;
+	private int $priority;
+	private float $number_value;
+	private string $string_value;
+	private int $id;
+	private Collection|ArrayCollection $assigned_entourage;
+	private Collection|ArrayCollection $supporting_actions;
+	private Collection|ArrayCollection $opposing_actions;
+	private ?Character $character;
+	private ?Realm $target_realm;
+	private ?Settlement $target_settlement;
+	private ?Place $target_place;
+	private ?Character $target_character;
+	private ?Soldier $target_soldier;
+	private ?EntourageType $target_entourage_type;
+	private ?EquipmentType $target_equipment_type;
+	private ?BattleGroup $target_battlegroup;
+	private ?Listing $target_listing;
+	private ?SkillType $target_skill;
+	private ?Action $supported_action;
+	private ?Action $opposed_action;
+
+	public function __construct()
+	{
+		$this->assigned_entourage = new ArrayCollection();
+		$this->supporting_actions = new ArrayCollection();
+		$this->opposing_actions = new ArrayCollection();
+	}
+
 	public function __toString() {
-                     		return "action {$this->id} - {$this->type}";
-                     	}
+		return "action $this->id - $this->type";
+	}
 
 
-	public function onPreRemove() {
-                     		// this doesn't work with cascade
-                     		if ($this->character) {
-                     			$this->character->removeAction($this);
-                     		}
-                     		if ($this->target_settlement) {
-                     			$this->target_settlement->removeRelatedAction($this);
-                     		}
-                     		if ($this->target_battlegroup) {
-                     			$this->target_battlegroup->removeRelatedAction($this);
-                     		}
-                     	}
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var \DateTime
-     */
-    private $started;
-
-    /**
-     * @var \DateTime
-     */
-    private $complete;
-
-    /**
-     * @var boolean
-     */
-    private $hidden;
-
-    /**
-     * @var boolean
-     */
-    private $hourly;
-
-    /**
-     * @var boolean
-     */
-    private $can_cancel;
-
-    /**
-     * @var boolean
-     */
-    private $block_travel;
-
-    /**
-     * @var integer
-     */
-    private $priority;
-
-    /**
-     * @var float
-     */
-    private $number_value;
-
-    /**
-     * @var string
-     */
-    private $string_value;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $assigned_entourage;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $supporting_actions;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $opposing_actions;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
-
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $target_realm;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $target_settlement;
-
-    /**
-     * @var \App\Entity\Place
-     */
-    private $target_place;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $target_character;
-
-    /**
-     * @var \App\Entity\Soldier
-     */
-    private $target_soldier;
-
-    /**
-     * @var \App\Entity\EntourageType
-     */
-    private $target_entourage_type;
-
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $target_equipment_type;
-
-    /**
-     * @var \App\Entity\BattleGroup
-     */
-    private $target_battlegroup;
-
-    /**
-     * @var \App\Entity\Listing
-     */
-    private $target_listing;
-
-    /**
-     * @var \App\Entity\SkillType
-     */
-    private $target_skill;
-
-    /**
-     * @var \App\Entity\Action
-     */
-    private $supported_action;
-
-    /**
-     * @var \App\Entity\Action
-     */
-    private $opposed_action;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->assigned_entourage = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->supporting_actions = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->opposing_actions = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	public function onPreRemove(): void {
+		// this doesn't work with cascade
+		$this->character?->removeAction($this);
+		$this->target_settlement?->removeRelatedAction($this);
+		$this->target_battlegroup?->removeRelatedAction($this);
+	}
 
     /**
      * Set type
@@ -413,10 +297,11 @@ class Action {
     /**
      * Add assigned_entourage
      *
-     * @param \App\Entity\Entourage $assignedEntourage
+     * @param Entourage $assignedEntourage
+     *
      * @return Action
      */
-    public function addAssignedEntourage(\App\Entity\Entourage $assignedEntourage)
+    public function addAssignedEntourage(Entourage $assignedEntourage)
     {
         $this->assigned_entourage[] = $assignedEntourage;
 
@@ -426,9 +311,9 @@ class Action {
     /**
      * Remove assigned_entourage
      *
-     * @param \App\Entity\Entourage $assignedEntourage
+     * @param Entourage $assignedEntourage
      */
-    public function removeAssignedEntourage(\App\Entity\Entourage $assignedEntourage)
+    public function removeAssignedEntourage(Entourage $assignedEntourage)
     {
         $this->assigned_entourage->removeElement($assignedEntourage);
     }
@@ -436,7 +321,7 @@ class Action {
     /**
      * Get assigned_entourage
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getAssignedEntourage()
     {
@@ -446,10 +331,11 @@ class Action {
     /**
      * Add supporting_actions
      *
-     * @param \App\Entity\Action $supportingActions
+     * @param Action $supportingActions
+     *
      * @return Action
      */
-    public function addSupportingAction(\App\Entity\Action $supportingActions)
+    public function addSupportingAction(Action $supportingActions)
     {
         $this->supporting_actions[] = $supportingActions;
 
@@ -459,9 +345,9 @@ class Action {
     /**
      * Remove supporting_actions
      *
-     * @param \App\Entity\Action $supportingActions
+     * @param Action $supportingActions
      */
-    public function removeSupportingAction(\App\Entity\Action $supportingActions)
+    public function removeSupportingAction(Action $supportingActions)
     {
         $this->supporting_actions->removeElement($supportingActions);
     }
@@ -469,7 +355,7 @@ class Action {
     /**
      * Get supporting_actions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getSupportingActions()
     {
@@ -479,10 +365,11 @@ class Action {
     /**
      * Add opposing_actions
      *
-     * @param \App\Entity\Action $opposingActions
+     * @param Action $opposingActions
+     *
      * @return Action
      */
-    public function addOpposingAction(\App\Entity\Action $opposingActions)
+    public function addOpposingAction(Action $opposingActions)
     {
         $this->opposing_actions[] = $opposingActions;
 
@@ -492,9 +379,9 @@ class Action {
     /**
      * Remove opposing_actions
      *
-     * @param \App\Entity\Action $opposingActions
+     * @param Action $opposingActions
      */
-    public function removeOpposingAction(\App\Entity\Action $opposingActions)
+    public function removeOpposingAction(Action $opposingActions)
     {
         $this->opposing_actions->removeElement($opposingActions);
     }
@@ -502,7 +389,7 @@ class Action {
     /**
      * Get opposing_actions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getOpposingActions()
     {
@@ -512,10 +399,11 @@ class Action {
     /**
      * Set character
      *
-     * @param \App\Entity\Character $character
+     * @param Character $character
+     *
      * @return Action
      */
-    public function setCharacter(\App\Entity\Character $character = null)
+    public function setCharacter(Character $character = null)
     {
         $this->character = $character;
 
@@ -525,7 +413,7 @@ class Action {
     /**
      * Get character
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
     public function getCharacter()
     {
@@ -535,10 +423,11 @@ class Action {
     /**
      * Set target_realm
      *
-     * @param \App\Entity\Realm $targetRealm
+     * @param Realm $targetRealm
+     *
      * @return Action
      */
-    public function setTargetRealm(\App\Entity\Realm $targetRealm = null)
+	public function setTargetRealm(Realm $targetRealm = null)
     {
         $this->target_realm = $targetRealm;
 
@@ -548,7 +437,7 @@ class Action {
     /**
      * Get target_realm
      *
-     * @return \App\Entity\Realm 
+     * @return Realm
      */
     public function getTargetRealm()
     {
@@ -558,10 +447,11 @@ class Action {
     /**
      * Set target_settlement
      *
-     * @param \App\Entity\Settlement $targetSettlement
+     * @param Settlement $targetSettlement
+     *
      * @return Action
      */
-    public function setTargetSettlement(\App\Entity\Settlement $targetSettlement = null)
+	public function setTargetSettlement(Settlement $targetSettlement = null)
     {
         $this->target_settlement = $targetSettlement;
 
@@ -571,7 +461,7 @@ class Action {
     /**
      * Get target_settlement
      *
-     * @return \App\Entity\Settlement 
+     * @return Settlement
      */
     public function getTargetSettlement()
     {
@@ -581,10 +471,11 @@ class Action {
     /**
      * Set target_place
      *
-     * @param \App\Entity\Place $targetPlace
+     * @param Place $targetPlace
+     *
      * @return Action
      */
-    public function setTargetPlace(\App\Entity\Place $targetPlace = null)
+    public function setTargetPlace(Place $targetPlace = null)
     {
         $this->target_place = $targetPlace;
 
@@ -594,7 +485,7 @@ class Action {
     /**
      * Get target_place
      *
-     * @return \App\Entity\Place 
+     * @return Place
      */
     public function getTargetPlace()
     {
@@ -604,89 +495,93 @@ class Action {
     /**
      * Set target_character
      *
-     * @param \App\Entity\Character $targetCharacter
+     * @param Character $targetCharacter
+     *
      * @return Action
      */
-    public function setTargetCharacter(\App\Entity\Character $targetCharacter = null)
+    public function setTargetCharacter(Character $targetCharacter = null)
     {
         $this->target_character = $targetCharacter;
 
         return $this;
     }
 
-    /**
-     * Get target_character
+	/**
+	 * Get target_character
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
     public function getTargetCharacter()
     {
         return $this->target_character;
     }
 
-    /**
+	/**
      * Set target_soldier
      *
-     * @param \App\Entity\Soldier $targetSoldier
-     * @return Action
+     * @param Soldier $targetSoldier
+     *
+	 * @return Action
      */
-    public function setTargetSoldier(\App\Entity\Soldier $targetSoldier = null)
+    public function setTargetSoldier(Soldier $targetSoldier = null)
     {
         $this->target_soldier = $targetSoldier;
 
         return $this;
     }
 
-    /**
+	/**
      * Get target_soldier
      *
-     * @return \App\Entity\Soldier 
+     * @return Soldier
      */
     public function getTargetSoldier()
     {
         return $this->target_soldier;
     }
 
-    /**
-     * Set target_entourage_type
+	/**
+	 * Set target_entourage_type
      *
-     * @param \App\Entity\EntourageType $targetEntourageType
-     * @return Action
+     * @param EntourageType $targetEntourageType
+     *
+	 * @return Action
      */
-    public function setTargetEntourageType(\App\Entity\EntourageType $targetEntourageType = null)
+    public function setTargetEntourageType(EntourageType $targetEntourageType = null)
     {
         $this->target_entourage_type = $targetEntourageType;
 
         return $this;
     }
 
-    /**
+	/**
      * Get target_entourage_type
      *
-     * @return \App\Entity\EntourageType 
+     * @return EntourageType
      */
     public function getTargetEntourageType()
     {
         return $this->target_entourage_type;
     }
 
-    /**
+	/**
      * Set target_equipment_type
      *
-     * @param \App\Entity\EquipmentType $targetEquipmentType
-     * @return Action
+     * @param EquipmentType $targetEquipmentType
+	 *
+	 * @return Action
      */
-    public function setTargetEquipmentType(\App\Entity\EquipmentType $targetEquipmentType = null)
+    public function setTargetEquipmentType(EquipmentType $targetEquipmentType = null)
     {
         $this->target_equipment_type = $targetEquipmentType;
 
         return $this;
     }
 
-    /**
+	/**
      * Get target_equipment_type
      *
-     * @return \App\Entity\EquipmentType 
+     * @return EquipmentType
      */
     public function getTargetEquipmentType()
     {
@@ -696,20 +591,21 @@ class Action {
     /**
      * Set target_battlegroup
      *
-     * @param \App\Entity\BattleGroup $targetBattlegroup
+     * @param BattleGroup $targetBattlegroup
+     *
      * @return Action
      */
-    public function setTargetBattlegroup(\App\Entity\BattleGroup $targetBattlegroup = null)
+    public function setTargetBattlegroup(BattleGroup $targetBattlegroup = null)
     {
         $this->target_battlegroup = $targetBattlegroup;
 
-        return $this;
+	    return $this;
     }
 
     /**
      * Get target_battlegroup
      *
-     * @return \App\Entity\BattleGroup 
+     * @return BattleGroup
      */
     public function getTargetBattlegroup()
     {
@@ -719,33 +615,35 @@ class Action {
     /**
      * Set target_listing
      *
-     * @param \App\Entity\Listing $targetListing
+     * @param Listing $targetListing
+     *
      * @return Action
      */
-    public function setTargetListing(\App\Entity\Listing $targetListing = null)
+    public function setTargetListing(Listing $targetListing = null)
     {
         $this->target_listing = $targetListing;
 
-        return $this;
+	    return $this;
     }
 
     /**
      * Get target_listing
      *
-     * @return \App\Entity\Listing 
+     * @return Listing
      */
     public function getTargetListing()
     {
-        return $this->target_listing;
+	    return $this->target_listing;
     }
 
     /**
      * Set target_skill
      *
-     * @param \App\Entity\SkillType $targetSkill
+     * @param SkillType $targetSkill
+     *
      * @return Action
      */
-    public function setTargetSkill(\App\Entity\SkillType $targetSkill = null)
+    public function setTargetSkill(SkillType $targetSkill = null)
     {
         $this->target_skill = $targetSkill;
 
@@ -755,20 +653,21 @@ class Action {
     /**
      * Get target_skill
      *
-     * @return \App\Entity\SkillType 
+     * @return SkillType
      */
     public function getTargetSkill()
     {
-        return $this->target_skill;
+	    return $this->target_skill;
     }
 
     /**
      * Set supported_action
      *
-     * @param \App\Entity\Action $supportedAction
+     * @param Action $supportedAction
+     *
      * @return Action
      */
-    public function setSupportedAction(\App\Entity\Action $supportedAction = null)
+    public function setSupportedAction(Action $supportedAction = null)
     {
         $this->supported_action = $supportedAction;
 
@@ -778,20 +677,20 @@ class Action {
     /**
      * Get supported_action
      *
-     * @return \App\Entity\Action 
+     * @return Action
      */
-    public function getSupportedAction()
-    {
-        return $this->supported_action;
+    public function getSupportedAction() {
+	    return $this->supported_action;
     }
 
     /**
      * Set opposed_action
      *
-     * @param \App\Entity\Action $opposedAction
+     * @param Action $opposedAction
+     *
      * @return Action
      */
-    public function setOpposedAction(\App\Entity\Action $opposedAction = null)
+    public function setOpposedAction(Action $opposedAction = null)
     {
         $this->opposed_action = $opposedAction;
 
@@ -801,7 +700,7 @@ class Action {
     /**
      * Get opposed_action
      *
-     * @return \App\Entity\Action 
+     * @return Action
      */
     public function getOpposedAction()
     {

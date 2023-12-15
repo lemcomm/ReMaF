@@ -2,29 +2,26 @@
 
 namespace App\Entity;
 
-/**
- * Law
- */
 class Law {
 	private string $title;
 	private string $description;
 	private bool $mandatory;
 	private bool $cascades;
 	private string $value;
-	private \DateTime $enacted;
+	private ?\DateTime $enacted;
 	private int $cycle;
-	private \DateTime $repealed_on;
-	private \DateTime $invalidated_on;
+	private ?\DateTime $repealed_on;
+	private ?\DateTime $invalidated_on;
 	private int $sol_cycles;
 	private int $id;
-	private Law $invalidated_by;
-	private Law $invalidates;
-	private Character $enacted_by;
-	private Character $repealed_by;
-	private Association $association;
-	private Settlement $settlement;
-	private Realm $realm;
-	private LawType $type;
+	private ?Law $invalidated_by;
+	private ?Law $invalidates;
+	private ?Character $enacted_by;
+	private ?Character $repealed_by;
+	private ?Association $association;
+	private ?Settlement $settlement;
+	private ?Realm $realm;
+	private ?LawType $type;
 	private ?Association $faith;
 
 	public function getOrg() {
@@ -274,11 +271,11 @@ class Law {
 	/**
 	 * Set invalidated_by
 	 *
-	 * @param \App\Entity\Law $invalidatedBy
+	 * @param Law $invalidatedBy
 	 *
 	 * @return Law
 	 */
-	public function setInvalidatedBy(\App\Entity\Law $invalidatedBy = null) {
+	public function setInvalidatedBy(Law $invalidatedBy = null) {
 		$this->invalidated_by = $invalidatedBy;
 
 		return $this;
@@ -287,7 +284,7 @@ class Law {
 	/**
 	 * Get invalidated_by
 	 *
-	 * @return \App\Entity\Law
+	 * @return Law
 	 */
 	public function getInvalidatedBy() {
 		return $this->invalidated_by;
@@ -296,11 +293,11 @@ class Law {
 	/**
 	 * Set invalidates
 	 *
-	 * @param \App\Entity\Law $invalidates
+	 * @param Law $invalidates
 	 *
 	 * @return Law
 	 */
-	public function setInvalidates(\App\Entity\Law $invalidates = null) {
+	public function setInvalidates(Law $invalidates = null) {
 		$this->invalidates = $invalidates;
 
 		return $this;
@@ -309,7 +306,7 @@ class Law {
 	/**
 	 * Get invalidates
 	 *
-	 * @return \App\Entity\Law
+	 * @return Law
 	 */
 	public function getInvalidates() {
 		return $this->invalidates;
@@ -318,11 +315,11 @@ class Law {
 	/**
 	 * Set enacted_by
 	 *
-	 * @param \App\Entity\Character $enactedBy
+	 * @param Character $enactedBy
 	 *
 	 * @return Law
 	 */
-	public function setEnactedBy(\App\Entity\Character $enactedBy = null) {
+	public function setEnactedBy(Character $enactedBy = null) {
 		$this->enacted_by = $enactedBy;
 
 		return $this;
@@ -331,7 +328,7 @@ class Law {
 	/**
 	 * Get enacted_by
 	 *
-	 * @return \App\Entity\Character
+	 * @return Character
 	 */
 	public function getEnactedBy() {
 		return $this->enacted_by;
@@ -340,11 +337,11 @@ class Law {
 	/**
 	 * Set repealed_by
 	 *
-	 * @param \App\Entity\Character $repealedBy
+	 * @param Character $repealedBy
 	 *
 	 * @return Law
 	 */
-	public function setRepealedBy(\App\Entity\Character $repealedBy = null) {
+	public function setRepealedBy(Character $repealedBy = null) {
 		$this->repealed_by = $repealedBy;
 
 		return $this;
@@ -353,7 +350,7 @@ class Law {
 	/**
 	 * Get repealed_by
 	 *
-	 * @return \App\Entity\Character
+	 * @return Character
 	 */
 	public function getRepealedBy() {
 		return $this->repealed_by;
@@ -362,11 +359,11 @@ class Law {
 	/**
 	 * Set association
 	 *
-	 * @param \App\Entity\Association $association
+	 * @param Association $association
 	 *
 	 * @return Law
 	 */
-	public function setAssociation(\App\Entity\Association $association = null) {
+	public function setAssociation(Association $association = null) {
 		$this->association = $association;
 
 		return $this;
@@ -375,7 +372,7 @@ class Law {
 	/**
 	 * Get association
 	 *
-	 * @return \App\Entity\Association
+	 * @return Association
 	 */
 	public function getAssociation() {
 		return $this->association;
@@ -384,11 +381,11 @@ class Law {
 	/**
 	 * Set settlement
 	 *
-	 * @param \App\Entity\Settlement $settlement
+	 * @param Settlement $settlement
 	 *
 	 * @return Law
 	 */
-	public function setSettlement(\App\Entity\Settlement $settlement = null) {
+	public function setSettlement(Settlement $settlement = null) {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -397,7 +394,7 @@ class Law {
 	/**
 	 * Get settlement
 	 *
-	 * @return \App\Entity\Settlement
+	 * @return Settlement
 	 */
 	public function getSettlement() {
 		return $this->settlement;
@@ -406,11 +403,11 @@ class Law {
 	/**
 	 * Set realm
 	 *
-	 * @param \App\Entity\Realm $realm
+	 * @param Realm $realm
 	 *
 	 * @return Law
 	 */
-	public function setRealm(\App\Entity\Realm $realm = null) {
+	public function setRealm(Realm $realm = null) {
 		$this->realm = $realm;
 
 		return $this;
@@ -419,7 +416,7 @@ class Law {
 	/**
 	 * Get realm
 	 *
-	 * @return \App\Entity\Realm
+	 * @return Realm
 	 */
 	public function getRealm() {
 		return $this->realm;
@@ -428,11 +425,11 @@ class Law {
 	/**
 	 * Set type
 	 *
-	 * @param \App\Entity\LawType $type
+	 * @param LawType $type
 	 *
 	 * @return Law
 	 */
-	public function setType(\App\Entity\LawType $type = null) {
+	public function setType(LawType $type = null) {
 		$this->type = $type;
 
 		return $this;
@@ -441,7 +438,7 @@ class Law {
 	/**
 	 * Get type
 	 *
-	 * @return \App\Entity\LawType
+	 * @return LawType
 	 */
 	public function getType() {
 		return $this->type;
