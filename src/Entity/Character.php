@@ -565,12 +565,21 @@ class Character {
 		return $assocs;
 	}
 
-	public function findSubcreateableAssociations() {
+	public function findSubcreateableAssociations($except = null) {
+		$avoid = new ArrayCollection;
+		if ($except) {
+			$avoid->add($except);
+			foreach ($except->findAllInferoriors(false) as $minor) {
+				$avoid->add($minor);
+			}
+		}
 		$assocs = new ArrayCollection;
 		foreach ($this->getAssociationMemberships() as $mbr) {
-			$rank = $mbr->getRank();
-			if ($rank->getOwner() || $rank->getCreateAssocs()) {
-				$assocs->add($mbr->getAssociation());
+			if ($rank = $mbr->getRank()) {
+				$possible = $mbr->getAssociation();
+				if (($rank->getOwner() || $rank->getCreateAssocs()) && !$avoid->contains($possible)) {
+					$assocs->add($possible);
+				}
 			}
 		}
 		return $assocs;

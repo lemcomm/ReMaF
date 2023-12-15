@@ -116,7 +116,7 @@ class AssociationController extends AbstractController {
 			return $this->redirectToRoute($char);
 		}
 
-		$form = $this->createForm(AssocUpdateType::class, null, ['types'=>$this->em->getRepository(AssociationType::class)->findAll(), 'assocs'=>$char->findSubcreateableAssociations(), 'me'=>$assoc]);
+		$form = $this->createForm(AssocUpdateType::class, null, ['types'=>$this->em->getRepository(AssociationType::class)->findAll(), 'assocs'=>$char->findSubcreateableAssociations($assoc), 'me'=>$assoc]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$this->am->update($assoc, $form->getData(), $char);
