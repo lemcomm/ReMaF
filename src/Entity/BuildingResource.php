@@ -2,54 +2,24 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class BuildingResource {
-
-    /**
-     * @var integer
-     */
-    private $requires_construction;
-
-    /**
-     * @var integer
-     */
-    private $requires_operation;
-
-    /**
-     * @var integer
-     */
-    private $provides_operation;
-
-    /**
-     * @var integer
-     */
-    private $provides_operation_bonus;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\BuildingType
-     */
-    private $building_type;
-
-    /**
-     * @var \App\Entity\ResourceType
-     */
-    private $resource_type;
+	private int $requires_construction;
+	private int $requires_operation;
+	private int $provides_operation;
+	private int $provides_operation_bonus;
+	private int $id;
+	private BuildingType $building_type;
+	private ResourceType $resource_type;
 
 
     /**
      * Set requires_construction
      *
      * @param integer $requiresConstruction
+     *
      * @return BuildingResource
      */
-    public function setRequiresConstruction($requiresConstruction)
-    {
+    public function setRequiresConstruction(int $requiresConstruction): static {
         $this->requires_construction = $requiresConstruction;
 
         return $this;
@@ -60,8 +30,7 @@ class BuildingResource {
      *
      * @return integer 
      */
-    public function getRequiresConstruction()
-    {
+    public function getRequiresConstruction(): int {
         return $this->requires_construction;
     }
 
@@ -69,10 +38,10 @@ class BuildingResource {
      * Set requires_operation
      *
      * @param integer $requiresOperation
+     *
      * @return BuildingResource
      */
-    public function setRequiresOperation($requiresOperation)
-    {
+    public function setRequiresOperation(int $requiresOperation): static {
         $this->requires_operation = $requiresOperation;
 
         return $this;
@@ -83,8 +52,7 @@ class BuildingResource {
      *
      * @return integer 
      */
-    public function getRequiresOperation()
-    {
+    public function getRequiresOperation(): int {
         return $this->requires_operation;
     }
 
@@ -92,10 +60,10 @@ class BuildingResource {
      * Set provides_operation
      *
      * @param integer $providesOperation
+     *
      * @return BuildingResource
      */
-    public function setProvidesOperation($providesOperation)
-    {
+    public function setProvidesOperation(int $providesOperation): static {
         $this->provides_operation = $providesOperation;
 
         return $this;
@@ -106,8 +74,7 @@ class BuildingResource {
      *
      * @return integer 
      */
-    public function getProvidesOperation()
-    {
+    public function getProvidesOperation(): int {
         return $this->provides_operation;
     }
 
@@ -115,10 +82,10 @@ class BuildingResource {
      * Set provides_operation_bonus
      *
      * @param integer $providesOperationBonus
+     *
      * @return BuildingResource
      */
-    public function setProvidesOperationBonus($providesOperationBonus)
-    {
+    public function setProvidesOperationBonus(int $providesOperationBonus): static {
         $this->provides_operation_bonus = $providesOperationBonus;
 
         return $this;
@@ -129,8 +96,7 @@ class BuildingResource {
      *
      * @return integer 
      */
-    public function getProvidesOperationBonus()
-    {
+    public function getProvidesOperationBonus(): int {
         return $this->provides_operation_bonus;
     }
 
@@ -139,19 +105,18 @@ class BuildingResource {
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set building_type
-     *
-     * @param \App\Entity\BuildingType $buildingType
-     * @return BuildingResource
-     */
-    public function setBuildingType(\App\Entity\BuildingType $buildingType = null)
-    {
+	/**
+	 * Set building_type
+	 *
+	 * @param BuildingType|null $buildingType
+	 *
+	 * @return BuildingResource
+	 */
+    public function setBuildingType(BuildingType $buildingType = null): static {
         $this->building_type = $buildingType;
 
         return $this;
@@ -160,21 +125,19 @@ class BuildingResource {
     /**
      * Get building_type
      *
-     * @return \App\Entity\BuildingType 
+     * @return BuildingType
      */
-    public function getBuildingType()
-    {
+    public function getBuildingType(): BuildingType {
         return $this->building_type;
     }
 
-    /**
-     * Set resource_type
-     *
-     * @param \App\Entity\ResourceType $resourceType
-     * @return BuildingResource
-     */
-    public function setResourceType(\App\Entity\ResourceType $resourceType = null)
-    {
+	/**
+	 * Set resource_type
+	 *
+	 * @param ResourceType|null $resourceType
+	 * @return BuildingResource
+	 */
+    public function setResourceType(ResourceType $resourceType = null): static {
         $this->resource_type = $resourceType;
 
         return $this;
@@ -183,10 +146,9 @@ class BuildingResource {
     /**
      * Get resource_type
      *
-     * @return \App\Entity\ResourceType 
+     * @return ResourceType
      */
-    public function getResourceType()
-    {
+    public function getResourceType(): ResourceType {
         return $this->resource_type;
     }
 }

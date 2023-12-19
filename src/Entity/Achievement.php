@@ -4,16 +4,16 @@ namespace App\Entity;
 
 class Achievement {
 
+	private int $id;
 	private string $type;
 	private int $value;
-	private int $id;
 	private Character $character;
 
 	public function __toString() {
 		return "achievement $this->type ($this->value)";
 	}
 
-	public function getValue() {
+	public function getValue(): float|int {
 		return match ($this->getType()) {
 			'battlesize' => floor(sqrt($this->value)),
 			default => $this->value,
@@ -21,73 +21,33 @@ class Achievement {
 	}
 
 
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return Achievement
-     */
-    public function setType($type)
-    {
+    public function setType(string $type): static {
         $this->type = $type;
 
         return $this;
     }
 
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
+    public function getType(): string {
         return $this->type;
     }
 
-    /**
-     * Set value
-     *
-     * @param integer $value
-     * @return Achievement
-     */
-    public function setValue($value)
-    {
+    public function setValue(int $value): static {
         $this->value = $value;
 
         return $this;
     }
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set character
-     *
-     * @param Character $character
-     *
-     * @return Achievement
-     */
-    public function setCharacter(Character $character = null)
-    {
+    public function setCharacter(Character $character): static {
         $this->character = $character;
 
         return $this;
     }
 
-    /**
-     * Get character
-     *
-     * @return Character
-     */
-    public function getCharacter()
-    {
+    public function getCharacter(): Character {
         return $this->character;
     }
 }

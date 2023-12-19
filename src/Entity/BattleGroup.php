@@ -4,14 +4,40 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Exception;
 
 
 class BattleGroup {
 
-	protected $soldiers=null;
-	protected $enemy;
+	private bool $attacker;
+	private bool $engaged;
+	private int $id;
+	private Siege $attacking_in_siege;
+	private BattleReportGroup $active_report;
+	private Collection|ArrayCollection $related_actions;
+	private Collection|ArrayCollection $reinforced_by;
+	private Collection|ArrayCollection $attacking_in_battles;
+	private Collection|ArrayCollection $defending_in_battles;
+	private Battle $battle;
+	private Character $leader;
+	private Siege $siege;
+	private BattleGroup $reinforcing;
+	private Collection|ArrayCollection $characters;
+	protected ArrayCollection $soldiers;
 
-	public function setupSoldiers() {
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		$this->related_actions = new ArrayCollection();
+		$this->reinforced_by = new ArrayCollection();
+		$this->attacking_in_battles = new ArrayCollection();
+		$this->defending_in_battles = new ArrayCollection();
+		$this->characters = new ArrayCollection();
+	}
+
+	public function setupSoldiers(): void {
       		$this->soldiers = new ArrayCollection;
       		foreach ($this->getCharacters() as $char) {
       			foreach ($char->getUnits() as $unit) {
@@ -38,7 +64,7 @@ class BattleGroup {
 		}
       	}
 
-	public function getTroopsSummary() {
+	public function getTroopsSummary(): array {
       		$types=array();
       		foreach ($this->getSoldiers() as $soldier) {
       			$type = $soldier->getType();
@@ -59,7 +85,7 @@ class BattleGroup {
       		return $size;
       	}
 
-	public function getSoldiers() {
+	public function getSoldiers(): ArrayCollection {
       		if (null === $this->soldiers) {
       			$this->setupSoldiers();
       		}
@@ -67,7 +93,7 @@ class BattleGroup {
       		return $this->soldiers;
       	}
 
-	public function getActiveSoldiers() {
+	public function getActiveSoldiers(): ArrayCollection {
       		return $this->getSoldiers()->filter(
       			function($entry) {
       				return ($entry->isActive());
@@ -75,7 +101,7 @@ class BattleGroup {
       		);
       	}
 
-	public function getActiveMeleeSoldiers() {
+	public function getActiveMeleeSoldiers(): ArrayCollection {
       		return $this->getActiveSoldiers()->filter(
       			function($entry) {
       				return (!$entry->isRanged());
@@ -83,7 +109,7 @@ class BattleGroup {
       		);
       	}
 
-	public function getFightingSoldiers() {
+	public function getFightingSoldiers(): ArrayCollection {
       		return $this->getSoldiers()->filter(
       			function($entry) {
       				return ($entry->isFighting());
@@ -91,7 +117,7 @@ class BattleGroup {
       		);
       	}
 
-	public function getRoutedSoldiers() {
+	public function getRoutedSoldiers(): ArrayCollection {
       		return $this->getSoldiers()->filter(
       			function($entry) {
       				return ($entry->isActive(true) && ($entry->isRouted() || $entry->isNoble()) );
@@ -99,7 +125,7 @@ class BattleGroup {
       		);
       	}
 
-	public function getLivingNobles() {
+	public function getLivingNobles(): ArrayCollection {
       		return $this->getSoldiers()->filter(
       			function($entry) {
       				return ($entry->isNoble() && $entry->isAlive());
@@ -107,11 +133,11 @@ class BattleGroup {
       		);
       	}
 
-	public function isAttacker() {
+	public function isAttacker(): bool {
       		return $this->attacker;
       	}
 
-	public function isDefender() {
+	public function isDefender(): bool {
       		return !$this->attacker;
       	}
 
@@ -125,12 +151,10 @@ class BattleGroup {
       			}
       			$enemies = new ArrayCollection;
       			foreach ($this->battle->getGroups() as $group) {
-      				if ($group == $primary || $group->getReinforcing() == $primary) {
-      					# Do nothing, those are allies!
-      				} else {
-      					$enemies->add($group);
-      				}
-      			}
+      				if ($group != $primary && $group->getReinforcing() != $primary) {
+					$enemies->add($group);
+				}
+			}
       		} else if ($this->siege) {
       			# Sieges are a lot easier, as they're always 2 sided.
 			foreach ($this->siege->getGroups() as $enemies) {
@@ -142,104 +166,23 @@ class BattleGroup {
       		if (!empty($enemies)) {
       			return $enemies;
       		} else {
-      			throw new \Exception('battle group '.$this->id.' has no enemies');
+      			throw new Exception('battle group '.$this->id.' has no enemies');
       		}
       	}
 
-	public function getLocalId() {
+	public function getLocalId(): int {
       		return intval($this->isDefender());
       	}
-	
-    /**
-     * @var boolean
-     */
-    private $attacker;
 
-    /**
-     * @var boolean
-     */
-    private $engaged;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\Siege
-     */
-    private $attacking_in_siege;
-
-    /**
-     * @var \App\Entity\BattleReportGroup
-     */
-    private $active_report;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $related_actions;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $reinforced_by;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $attacking_in_battles;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $defending_in_battles;
-
-    /**
-     * @var \App\Entity\Battle
-     */
-    private $battle;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $leader;
-
-    /**
-     * @var \App\Entity\Siege
-     */
-    private $siege;
-
-    /**
-     * @var \App\Entity\BattleGroup
-     */
-    private $reinforcing;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $characters;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->related_actions = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->reinforced_by = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->attacking_in_battles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->defending_in_battles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->characters = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Set attacker
      *
      * @param boolean $attacker
+     *
      * @return BattleGroup
      */
-    public function setAttacker($attacker)
-    {
+    public function setAttacker(bool $attacker): static {
         $this->attacker = $attacker;
 
         return $this;
@@ -250,19 +193,18 @@ class BattleGroup {
      *
      * @return boolean 
      */
-    public function getAttacker()
-    {
+    public function getAttacker(): bool {
         return $this->attacker;
     }
 
     /**
      * Set engaged
      *
-     * @param boolean $engaged
+     * @param boolean|null $engaged
+     *
      * @return BattleGroup
      */
-    public function setEngaged($engaged)
-    {
+    public function setEngaged(bool $engaged = null): static {
         $this->engaged = $engaged;
 
         return $this;
@@ -273,8 +215,7 @@ class BattleGroup {
      *
      * @return boolean 
      */
-    public function getEngaged()
-    {
+    public function getEngaged(): bool {
         return $this->engaged;
     }
 
@@ -283,19 +224,18 @@ class BattleGroup {
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set attacking_in_siege
-     *
-     * @param \App\Entity\Siege $attackingInSiege
-     * @return BattleGroup
-     */
-    public function setAttackingInSiege(\App\Entity\Siege $attackingInSiege = null)
-    {
+	/**
+	 * Set attacking_in_siege
+	 *
+	 * @param Siege|null $attackingInSiege
+	 *
+	 * @return BattleGroup
+	 */
+    public function setAttackingInSiege(Siege $attackingInSiege = null): static {
         $this->attacking_in_siege = $attackingInSiege;
 
         return $this;
@@ -304,21 +244,20 @@ class BattleGroup {
     /**
      * Get attacking_in_siege
      *
-     * @return \App\Entity\Siege 
+     * @return Siege
      */
-    public function getAttackingInSiege()
-    {
+    public function getAttackingInSiege(): Siege {
         return $this->attacking_in_siege;
     }
 
-    /**
-     * Set active_report
-     *
-     * @param \App\Entity\BattleReportGroup $activeReport
-     * @return BattleGroup
-     */
-    public function setActiveReport(\App\Entity\BattleReportGroup $activeReport = null)
-    {
+	/**
+	 * Set active_report
+	 *
+	 * @param BattleReportGroup|null $activeReport
+	 *
+	 * @return BattleGroup
+	 */
+    public function setActiveReport(BattleReportGroup $activeReport = null): static {
         $this->active_report = $activeReport;
 
         return $this;
@@ -327,21 +266,20 @@ class BattleGroup {
     /**
      * Get active_report
      *
-     * @return \App\Entity\BattleReportGroup 
+     * @return BattleReportGroup
      */
-    public function getActiveReport()
-    {
+    public function getActiveReport(): BattleReportGroup {
         return $this->active_report;
     }
 
     /**
      * Add related_actions
      *
-     * @param \App\Entity\Action $relatedActions
+     * @param Action $relatedActions
+     *
      * @return BattleGroup
      */
-    public function addRelatedAction(\App\Entity\Action $relatedActions)
-    {
+    public function addRelatedAction(Action $relatedActions): static {
         $this->related_actions[] = $relatedActions;
 
         return $this;
@@ -350,31 +288,29 @@ class BattleGroup {
     /**
      * Remove related_actions
      *
-     * @param \App\Entity\Action $relatedActions
+     * @param Action $relatedActions
      */
-    public function removeRelatedAction(\App\Entity\Action $relatedActions)
-    {
+    public function removeRelatedAction(Action $relatedActions): void {
         $this->related_actions->removeElement($relatedActions);
     }
 
     /**
      * Get related_actions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection|Collection
      */
-    public function getRelatedActions()
-    {
+	public function getRelatedActions(): ArrayCollection|Collection {
         return $this->related_actions;
     }
 
     /**
      * Add reinforced_by
      *
-     * @param \App\Entity\BattleGroup $reinforcedBy
+     * @param BattleGroup $reinforcedBy
+     *
      * @return BattleGroup
      */
-    public function addReinforcedBy(\App\Entity\BattleGroup $reinforcedBy)
-    {
+    public function addReinforcedBy(BattleGroup $reinforcedBy): static {
         $this->reinforced_by[] = $reinforcedBy;
 
         return $this;
@@ -383,31 +319,29 @@ class BattleGroup {
     /**
      * Remove reinforced_by
      *
-     * @param \App\Entity\BattleGroup $reinforcedBy
+     * @param BattleGroup $reinforcedBy
      */
-    public function removeReinforcedBy(\App\Entity\BattleGroup $reinforcedBy)
-    {
+    public function removeReinforcedBy(BattleGroup $reinforcedBy): void {
         $this->reinforced_by->removeElement($reinforcedBy);
     }
 
     /**
      * Get reinforced_by
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection|Collection
      */
-    public function getReinforcedBy()
-    {
+	public function getReinforcedBy(): ArrayCollection|Collection {
         return $this->reinforced_by;
     }
 
     /**
      * Add attacking_in_battles
      *
-     * @param \App\Entity\Battle $attackingInBattles
+     * @param Battle $attackingInBattles
+     *
      * @return BattleGroup
      */
-    public function addAttackingInBattle(\App\Entity\Battle $attackingInBattles)
-    {
+    public function addAttackingInBattle(Battle $attackingInBattles): static {
         $this->attacking_in_battles[] = $attackingInBattles;
 
         return $this;
@@ -416,31 +350,29 @@ class BattleGroup {
     /**
      * Remove attacking_in_battles
      *
-     * @param \App\Entity\Battle $attackingInBattles
+     * @param Battle $attackingInBattles
      */
-    public function removeAttackingInBattle(\App\Entity\Battle $attackingInBattles)
-    {
+    public function removeAttackingInBattle(Battle $attackingInBattles): void {
         $this->attacking_in_battles->removeElement($attackingInBattles);
     }
 
     /**
      * Get attacking_in_battles
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection|Collection
      */
-    public function getAttackingInBattles()
-    {
+	public function getAttackingInBattles(): ArrayCollection|Collection {
         return $this->attacking_in_battles;
     }
 
     /**
      * Add defending_in_battles
      *
-     * @param \App\Entity\Battle $defendingInBattles
+     * @param Battle $defendingInBattles
+     *
      * @return BattleGroup
      */
-    public function addDefendingInBattle(\App\Entity\Battle $defendingInBattles)
-    {
+	public function addDefendingInBattle(Battle $defendingInBattles): static {
         $this->defending_in_battles[] = $defendingInBattles;
 
         return $this;
@@ -449,77 +381,73 @@ class BattleGroup {
     /**
      * Remove defending_in_battles
      *
-     * @param \App\Entity\Battle $defendingInBattles
+     * @param Battle $defendingInBattles
      */
-    public function removeDefendingInBattle(\App\Entity\Battle $defendingInBattles)
-    {
+	public function removeDefendingInBattle(Battle $defendingInBattles): void {
         $this->defending_in_battles->removeElement($defendingInBattles);
     }
 
     /**
      * Get defending_in_battles
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection|Collection
      */
-    public function getDefendingInBattles()
-    {
+	public function getDefendingInBattles(): ArrayCollection|Collection {
         return $this->defending_in_battles;
     }
 
     /**
      * Set battle
      *
-     * @param \App\Entity\Battle $battle
+     * @param Battle|null $battle
+     *
      * @return BattleGroup
      */
-    public function setBattle(\App\Entity\Battle $battle = null)
-    {
+	public function setBattle(Battle $battle = null): static {
         $this->battle = $battle;
 
         return $this;
     }
 
-    /**
+	/**
      * Get battle
      *
-     * @return \App\Entity\Battle 
+     * @return Battle
      */
-    public function getBattle()
-    {
+    public function getBattle(): Battle {
         return $this->battle;
     }
 
-    /**
-     * Set leader
-     *
-     * @param \App\Entity\Character $leader
-     * @return BattleGroup
-     */
-    public function setLeader(\App\Entity\Character $leader = null)
-    {
+	/**
+	 * Set leader
+	 *
+	 * @param Character|null $leader
+	 *
+	 * @return BattleGroup
+	 */
+	public function setLeader(Character $leader = null): static {
         $this->leader = $leader;
 
         return $this;
     }
 
-    /**
+	/**
      * Get leader
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
-    public function getLeader()
-    {
+    public function getLeader(): Character {
         return $this->leader;
     }
 
     /**
      * Set siege
      *
-     * @param \App\Entity\Siege $siege
+     * @param Siege|null $siege
+     *
      * @return BattleGroup
      */
-    public function setSiege(\App\Entity\Siege $siege = null)
-    {
+	public function setSiege(Siege $siege = null): static {
         $this->siege = $siege;
 
         return $this;
@@ -528,21 +456,20 @@ class BattleGroup {
     /**
      * Get siege
      *
-     * @return \App\Entity\Siege 
+     * @return Siege
      */
-    public function getSiege()
-    {
+    public function getSiege(): Siege {
         return $this->siege;
     }
 
-    /**
-     * Set reinforcing
-     *
-     * @param \App\Entity\BattleGroup $reinforcing
-     * @return BattleGroup
-     */
-    public function setReinforcing(\App\Entity\BattleGroup $reinforcing = null)
-    {
+	/**
+	 * Set reinforcing
+	 *
+	 * @param BattleGroup|null $reinforcing
+	 *
+	 * @return BattleGroup
+	 */
+	public function setReinforcing(BattleGroup $reinforcing = null): static {
         $this->reinforcing = $reinforcing;
 
         return $this;
@@ -551,48 +478,40 @@ class BattleGroup {
     /**
      * Get reinforcing
      *
-     * @return \App\Entity\BattleGroup 
+     * @return BattleGroup
      */
-    public function getReinforcing()
-    {
+    public function getReinforcing(): BattleGroup {
         return $this->reinforcing;
     }
 
     /**
      * Add characters
      *
-     * @param \App\Entity\Character $characters
+     * @param Character $characters
+     *
      * @return BattleGroup
      */
-    public function addCharacter(\App\Entity\Character $characters)
-    {
+    public function addCharacter(Character $characters): static {
         $this->characters[] = $characters;
 
-        return $this;
+	    return $this;
     }
 
     /**
      * Remove characters
      *
-     * @param \App\Entity\Character $characters
+     * @param Character $characters
      */
-    public function removeCharacter(\App\Entity\Character $characters)
-    {
+    public function removeCharacter(Character $characters): void {
         $this->characters->removeElement($characters);
     }
 
     /**
      * Get characters
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection|Collection
      */
-    public function getCharacters()
-    {
+	public function getCharacters(): ArrayCollection|Collection {
         return $this->characters;
-    }
-
-    public function isEngaged(): ?bool
-    {
-        return $this->engaged;
     }
 }

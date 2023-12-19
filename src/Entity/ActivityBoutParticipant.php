@@ -2,82 +2,66 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ActivityBoutParticipant
  */
-class ActivityBoutParticipant
-{
-    /**
-     * @var integer
-     */
-    private $id;
+class ActivityBoutParticipant {
 
-    /**
-     * @var \App\Entity\ActivityBout
-     */
-    private $bout;
+	private int $id;
+	private ActivityBout $bout;
+	private ActivityParticipant $participant;
 
-    /**
-     * @var \App\Entity\ActivityParticipant
-     */
-    private $participant;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
+	/**
+	 * Set bout
+	 *
+	 * @param ActivityBout|null $bout
+	 *
+	 * @return ActivityBoutParticipant
+	 */
+	public function setBout(ActivityBout $bout = null): static {
+		$this->bout = $bout;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Set bout
-     *
-     * @param \App\Entity\ActivityBout $bout
-     * @return ActivityBoutParticipant
-     */
-    public function setBout(\App\Entity\ActivityBout $bout = null)
-    {
-        $this->bout = $bout;
+	/**
+	 * Get bout
+	 *
+	 * @return ActivityBout
+	 */
+	public function getBout(): ActivityBout {
+		return $this->bout;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set participant
+	 *
+	 * @param ActivityParticipant|null $participant
+	 *
+	 * @return ActivityBoutParticipant
+	 */
+	public function setParticipant(ActivityParticipant $participant = null): static {
+		$this->participant = $participant;
 
-    /**
-     * Get bout
-     *
-     * @return \App\Entity\ActivityBout 
-     */
-    public function getBout()
-    {
-        return $this->bout;
-    }
+		return $this;
+	}
 
-    /**
-     * Set participant
-     *
-     * @param \App\Entity\ActivityParticipant $participant
-     * @return ActivityBoutParticipant
-     */
-    public function setParticipant(\App\Entity\ActivityParticipant $participant = null)
-    {
-        $this->participant = $participant;
-
-        return $this;
-    }
-
-    /**
-     * Get participant
-     *
-     * @return \App\Entity\ActivityParticipant 
-     */
-    public function getParticipant()
-    {
-        return $this->participant;
-    }
+	/**
+	 * Get participant
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function getParticipant(): ActivityParticipant {
+		return $this->participant;
+	}
 }

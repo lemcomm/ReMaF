@@ -2,43 +2,27 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 /**
  * AppKey
  */
 class AppKey
 {
-    /**
-     * @var \DateTime
-     */
-    private $ts;
-
-    /**
-     * @var string
-     */
-    private $token;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\User
-     */
-    private $user;
+	private DateTime $ts;
+	private string $token;
+	private int $id;
+	private User $user;
 
 
     /**
      * Set ts
      *
-     * @param \DateTime $ts
+     * @param DateTime $ts
+     *
      * @return AppKey
      */
-    public function setTs($ts)
-    {
+    public function setTs(DateTime $ts): static {
         $this->ts = $ts;
 
         return $this;
@@ -47,10 +31,9 @@ class AppKey
     /**
      * Get ts
      *
-     * @return \DateTime 
+     * @return DateTime
      */
-    public function getTs()
-    {
+    public function getTs(): DateTime {
         return $this->ts;
     }
 
@@ -58,10 +41,10 @@ class AppKey
      * Set token
      *
      * @param string $token
+     *
      * @return AppKey
      */
-    public function setToken($token)
-    {
+    public function setToken(string $token): static {
         $this->token = $token;
 
         return $this;
@@ -72,8 +55,7 @@ class AppKey
      *
      * @return string 
      */
-    public function getToken()
-    {
+    public function getToken(): string {
         return $this->token;
     }
 
@@ -82,19 +64,18 @@ class AppKey
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set user
-     *
-     * @param \App\Entity\User $user
-     * @return AppKey
-     */
-    public function setUser(\App\Entity\User $user = null)
-    {
+	/**
+	 * Set user
+	 *
+	 * @param User|null $user
+	 *
+	 * @return AppKey
+	 */
+    public function setUser(User $user = null): static {
         $this->user = $user;
 
         return $this;
@@ -103,10 +84,9 @@ class AppKey
     /**
      * Get user
      *
-     * @return \App\Entity\User 
+     * @return User
      */
-    public function getUser()
-    {
+    public function getUser(): User {
         return $this->user;
     }
 }

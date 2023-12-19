@@ -4,61 +4,36 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ActivityReportGroup
  */
 class ActivityReportGroup
 {
-    /**
-     * @var array
-     */
-    private $start;
-
-    /**
-     * @var array
-     */
-    private $finish;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $stages;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $characters;
-
-    /**
-     * @var \App\Entity\ActivityReport
-     */
-    private $activity_report;
+	private array $start;
+	private array $finish;
+	private int $id;
+	private Collection|ArrayCollection $stages;
+	private Collection|ArrayCollection $characters;
+	private ActivityReport $activity_report;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->stages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->characters = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->stages = new ArrayCollection();
+        $this->characters = new ArrayCollection();
     }
 
     /**
      * Set start
      *
      * @param array $start
+     *
      * @return ActivityReportGroup
      */
-    public function setStart($start)
-    {
+    public function setStart(array $start): static {
         $this->start = $start;
 
         return $this;
@@ -69,8 +44,7 @@ class ActivityReportGroup
      *
      * @return array 
      */
-    public function getStart()
-    {
+    public function getStart(): array {
         return $this->start;
     }
 
@@ -78,10 +52,10 @@ class ActivityReportGroup
      * Set finish
      *
      * @param array $finish
+     *
      * @return ActivityReportGroup
      */
-    public function setFinish($finish)
-    {
+    public function setFinish(array $finish): static {
         $this->finish = $finish;
 
         return $this;
@@ -92,8 +66,7 @@ class ActivityReportGroup
      *
      * @return array 
      */
-    public function getFinish()
-    {
+    public function getFinish(): array {
         return $this->finish;
     }
 
@@ -102,19 +75,18 @@ class ActivityReportGroup
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
     /**
      * Add stages
      *
-     * @param \App\Entity\ActivityReportStage $stages
+     * @param ActivityReportStage $stages
+     *
      * @return ActivityReportGroup
      */
-    public function addStage(\App\Entity\ActivityReportStage $stages)
-    {
+    public function addStage(ActivityReportStage $stages): static {
         $this->stages[] = $stages;
 
         return $this;
@@ -123,31 +95,29 @@ class ActivityReportGroup
     /**
      * Remove stages
      *
-     * @param \App\Entity\ActivityReportStage $stages
+     * @param ActivityReportStage $stages
      */
-    public function removeStage(\App\Entity\ActivityReportStage $stages)
-    {
+    public function removeStage(ActivityReportStage $stages): void {
         $this->stages->removeElement($stages);
     }
 
-    /**
-     * Get stages
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getStages()
-    {
+	/**
+	 * Get stages
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+    public function getStages(): ArrayCollection|Collection {
         return $this->stages;
     }
 
     /**
      * Add characters
      *
-     * @param \App\Entity\ActivityReportCharacter $characters
+     * @param ActivityReportCharacter $characters
+     *
      * @return ActivityReportGroup
      */
-    public function addCharacter(\App\Entity\ActivityReportCharacter $characters)
-    {
+    public function addCharacter(ActivityReportCharacter $characters): static {
         $this->characters[] = $characters;
 
         return $this;
@@ -156,31 +126,29 @@ class ActivityReportGroup
     /**
      * Remove characters
      *
-     * @param \App\Entity\ActivityReportCharacter $characters
+     * @param ActivityReportCharacter $characters
      */
-    public function removeCharacter(\App\Entity\ActivityReportCharacter $characters)
-    {
+    public function removeCharacter(ActivityReportCharacter $characters): void {
         $this->characters->removeElement($characters);
     }
 
-    /**
-     * Get characters
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getCharacters()
-    {
+	/**
+	 * Get characters
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+    public function getCharacters(): ArrayCollection|Collection {
         return $this->characters;
     }
 
-    /**
-     * Set activity_report
-     *
-     * @param \App\Entity\ActivityReport $activityReport
-     * @return ActivityReportGroup
-     */
-    public function setActivityReport(\App\Entity\ActivityReport $activityReport = null)
-    {
+	/**
+	 * Set activity_report
+	 *
+	 * @param ActivityReport|null $activityReport
+	 *
+	 * @return ActivityReportGroup
+	 */
+    public function setActivityReport(ActivityReport $activityReport = null): static {
         $this->activity_report = $activityReport;
 
         return $this;
@@ -189,10 +157,9 @@ class ActivityReportGroup
     /**
      * Get activity_report
      *
-     * @return \App\Entity\ActivityReport 
+     * @return ActivityReport
      */
-    public function getActivityReport()
-    {
+    public function getActivityReport(): ActivityReport {
         return $this->activity_report;
     }
 }

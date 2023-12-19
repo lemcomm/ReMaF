@@ -2,37 +2,24 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * ActivitySubType
  */
 class ActivitySubType
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\ActivityType
-     */
-    private $type;
+	private string $name;
+	private int $id;
+	private ActivityType $type;
 
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return ActivitySubType
      */
-    public function setName($name)
-    {
+    public function setName(string $name): static {
         $this->name = $name;
 
         return $this;
@@ -43,8 +30,7 @@ class ActivitySubType
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName(): string {
         return $this->name;
     }
 
@@ -53,19 +39,18 @@ class ActivitySubType
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set type
-     *
-     * @param \App\Entity\ActivityType $type
-     * @return ActivitySubType
-     */
-    public function setType(\App\Entity\ActivityType $type = null)
-    {
+	/**
+	 * Set type
+	 *
+	 * @param ActivityType|null $type
+	 *
+	 * @return ActivitySubType
+	 */
+    public function setType(ActivityType $type = null): static {
         $this->type = $type;
 
         return $this;
@@ -74,10 +59,9 @@ class ActivitySubType
     /**
      * Get type
      *
-     * @return \App\Entity\ActivityType 
+     * @return ActivityType
      */
-    public function getType()
-    {
+    public function getType(): ActivityType {
         return $this->type;
     }
 }

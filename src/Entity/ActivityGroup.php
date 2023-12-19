@@ -4,166 +4,137 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ActivityGroup
  */
-class ActivityGroup
-{
-    /**
-     * @var string
-     */
-    private $name;
+class ActivityGroup {
+	private int $id;
+	private string $name;
+	private Collection|ArrayCollection $participants;
+	private Collection|ArrayCollection $bout_participation;
+	private Activity $activity;
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->participants = new ArrayCollection();
+		$this->bout_participation = new ArrayCollection();
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $participants;
+	/**
+	 * Set name
+	 *
+	 * @param string|null $name
+	 *
+	 * @return ActivityGroup
+	 */
+	public function setName(string $name = null): static {
+		$this->name = $name;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $bout_participation;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Activity
-     */
-    private $activity;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->participants = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->bout_participation = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return ActivityGroup
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Add participants
+	 *
+	 * @param ActivityParticipant $participants
+	 *
+	 * @return ActivityGroup
+	 */
+	public function addParticipant(ActivityParticipant $participants): static {
+		$this->participants[] = $participants;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Remove participants
+	 *
+	 * @param ActivityParticipant $participants
+	 */
+	public function removeParticipant(ActivityParticipant $participants): void {
+		$this->participants->removeElement($participants);
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get participants
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getParticipants(): ArrayCollection|Collection {
+		return $this->participants;
+	}
 
-    /**
-     * Add participants
-     *
-     * @param \App\Entity\ActivityParticipant $participants
-     * @return ActivityGroup
-     */
-    public function addParticipant(\App\Entity\ActivityParticipant $participants)
-    {
-        $this->participants[] = $participants;
+	/**
+	 * Add bout_participation
+	 *
+	 * @param ActivityBoutGroup $boutParticipation
+	 *
+	 * @return ActivityGroup
+	 */
+	public function addBoutParticipation(ActivityBoutGroup $boutParticipation): static {
+		$this->bout_participation[] = $boutParticipation;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove participants
-     *
-     * @param \App\Entity\ActivityParticipant $participants
-     */
-    public function removeParticipant(\App\Entity\ActivityParticipant $participants)
-    {
-        $this->participants->removeElement($participants);
-    }
+	/**
+	 * Remove bout_participation
+	 *
+	 * @param ActivityBoutGroup $boutParticipation
+	 */
+	public function removeBoutParticipation(ActivityBoutGroup $boutParticipation): void {
+		$this->bout_participation->removeElement($boutParticipation);
+	}
 
-    /**
-     * Get participants
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getParticipants()
-    {
-        return $this->participants;
-    }
+	/**
+	 * Get bout_participation
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getBoutParticipation(): ArrayCollection|Collection {
+		return $this->bout_participation;
+	}
 
-    /**
-     * Add bout_participation
-     *
-     * @param \App\Entity\ActivityBoutGroup $boutParticipation
-     * @return ActivityGroup
-     */
-    public function addBoutParticipation(\App\Entity\ActivityBoutGroup $boutParticipation)
-    {
-        $this->bout_participation[] = $boutParticipation;
+	/**
+	 * Set activity
+	 *
+	 * @param Activity|null $activity
+	 *
+	 * @return ActivityGroup
+	 */
+	public function setActivity(Activity $activity = null): static {
+		$this->activity = $activity;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove bout_participation
-     *
-     * @param \App\Entity\ActivityBoutGroup $boutParticipation
-     */
-    public function removeBoutParticipation(\App\Entity\ActivityBoutGroup $boutParticipation)
-    {
-        $this->bout_participation->removeElement($boutParticipation);
-    }
-
-    /**
-     * Get bout_participation
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getBoutParticipation()
-    {
-        return $this->bout_participation;
-    }
-
-    /**
-     * Set activity
-     *
-     * @param \App\Entity\Activity $activity
-     * @return ActivityGroup
-     */
-    public function setActivity(\App\Entity\Activity $activity = null)
-    {
-        $this->activity = $activity;
-
-        return $this;
-    }
-
-    /**
-     * Get activity
-     *
-     * @return \App\Entity\Activity 
-     */
-    public function getActivity()
-    {
-        return $this->activity;
-    }
+	/**
+	 * Get activity
+	 *
+	 * @return Activity
+	 */
+	public function getActivity(): Activity {
+		return $this->activity;
+	}
 }

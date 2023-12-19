@@ -4,166 +4,137 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ActivityBout
  */
-class ActivityBout
-{
-    /**
-     * @var integer
-     */
-    private $id;
+class ActivityBout {
+	private int $id;
+	private Collection|ArrayCollection $participants;
+	private Collection|ArrayCollection $groups;
+	private ActivitySubType $type;
+	private Activity $activity;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $participants;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->participants = new ArrayCollection();
+		$this->groups = new ArrayCollection();
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $groups;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * @var \App\Entity\ActivitySubType
-     */
-    private $type;
+	/**
+	 * Add participants
+	 *
+	 * @param ActivityBoutParticipant $participants
+	 *
+	 * @return ActivityBout
+	 */
+	public function addParticipant(ActivityBoutParticipant $participants): static {
+		$this->participants[] = $participants;
 
-    /**
-     * @var \App\Entity\Activity
-     */
-    private $activity;
+		return $this;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->participants = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Remove participants
+	 *
+	 * @param ActivityBoutParticipant $participants
+	 */
+	public function removeParticipant(ActivityBoutParticipant $participants): void {
+		$this->participants->removeElement($participants);
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get participants
+	 *
+	 * @return Collection
+	 */
+	public function getParticipants(): ArrayCollection|Collection {
+		return $this->participants;
+	}
 
-    /**
-     * Add participants
-     *
-     * @param \App\Entity\ActivityBoutParticipant $participants
-     * @return ActivityBout
-     */
-    public function addParticipant(\App\Entity\ActivityBoutParticipant $participants)
-    {
-        $this->participants[] = $participants;
+	/**
+	 * Add groups
+	 *
+	 * @param ActivityBoutGroup $groups
+	 *
+	 * @return ActivityBout
+	 */
+	public function addGroup(ActivityBoutGroup $groups): static {
+		$this->groups[] = $groups;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove participants
-     *
-     * @param \App\Entity\ActivityBoutParticipant $participants
-     */
-    public function removeParticipant(\App\Entity\ActivityBoutParticipant $participants)
-    {
-        $this->participants->removeElement($participants);
-    }
+	/**
+	 * Remove groups
+	 *
+	 * @param ActivityBoutGroup $groups
+	 */
+	public function removeGroup(ActivityBoutGroup $groups): void {
+		$this->groups->removeElement($groups);
+	}
 
-    /**
-     * Get participants
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getParticipants()
-    {
-        return $this->participants;
-    }
+	/**
+	 * Get groups
+	 *
+	 * @return Collection
+	 */
+	public function getGroups(): ArrayCollection|Collection {
+		return $this->groups;
+	}
 
-    /**
-     * Add groups
-     *
-     * @param \App\Entity\ActivityBoutGroup $groups
-     * @return ActivityBout
-     */
-    public function addGroup(\App\Entity\ActivityBoutGroup $groups)
-    {
-        $this->groups[] = $groups;
+	/**
+	 * Set type
+	 *
+	 * @param ActivitySubType|null $type
+	 *
+	 * @return ActivityBout
+	 */
+	public function setType(ActivitySubType $type = null): static {
+		$this->type = $type;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove groups
-     *
-     * @param \App\Entity\ActivityBoutGroup $groups
-     */
-    public function removeGroup(\App\Entity\ActivityBoutGroup $groups)
-    {
-        $this->groups->removeElement($groups);
-    }
+	/**
+	 * Get type
+	 *
+	 * @return ActivitySubType
+	 */
+	public function getType(): ActivitySubType {
+		return $this->type;
+	}
 
-    /**
-     * Get groups
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGroups()
-    {
-        return $this->groups;
-    }
+	/**
+	 * Set activity
+	 *
+	 * @param Activity|null $activity
+	 *
+	 * @return ActivityBout
+	 */
+	public function setActivity(Activity $activity = null): static {
+		$this->activity = $activity;
 
-    /**
-     * Set type
-     *
-     * @param \App\Entity\ActivitySubType $type
-     * @return ActivityBout
-     */
-    public function setType(\App\Entity\ActivitySubType $type = null)
-    {
-        $this->type = $type;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return \App\Entity\ActivitySubType 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set activity
-     *
-     * @param \App\Entity\Activity $activity
-     * @return ActivityBout
-     */
-    public function setActivity(\App\Entity\Activity $activity = null)
-    {
-        $this->activity = $activity;
-
-        return $this;
-    }
-
-    /**
-     * Get activity
-     *
-     * @return \App\Entity\Activity 
-     */
-    public function getActivity()
-    {
-        return $this->activity;
-    }
+	/**
+	 * Get activity
+	 *
+	 * @return Activity
+	 */
+	public function getActivity(): Activity {
+		return $this->activity;
+	}
 }

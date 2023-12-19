@@ -2,53 +2,29 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 /**
  * AssociationDeity
  */
 class AssociationDeity
 {
-    /**
-     * @var string
-     */
-    private $words;
-
-    /**
-     * @var \DateTime
-     */
-    private $words_timestamp;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\Association
-     */
-    private $association;
-
-    /**
-     * @var \App\Entity\Deity
-     */
-    private $deity;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $words_from;
+	private string $words;
+	private DateTime $words_timestamp;
+	private int $id;
+	private Association $association;
+	private Deity $deity;
+	private Character $words_from;
 
 
     /**
      * Set words
      *
-     * @param string $words
+     * @param string|null $words
+     *
      * @return AssociationDeity
      */
-    public function setWords($words)
-    {
+    public function setWords(string $words = null): static {
         $this->words = $words;
 
         return $this;
@@ -59,19 +35,18 @@ class AssociationDeity
      *
      * @return string 
      */
-    public function getWords()
-    {
+    public function getWords(): string {
         return $this->words;
     }
 
     /**
      * Set words_timestamp
      *
-     * @param \DateTime $wordsTimestamp
+     * @param DateTime|null $wordsTimestamp
+     *
      * @return AssociationDeity
      */
-    public function setWordsTimestamp($wordsTimestamp)
-    {
+    public function setWordsTimestamp(DateTime $wordsTimestamp = null): static {
         $this->words_timestamp = $wordsTimestamp;
 
         return $this;
@@ -80,10 +55,9 @@ class AssociationDeity
     /**
      * Get words_timestamp
      *
-     * @return \DateTime 
+     * @return DateTime
      */
-    public function getWordsTimestamp()
-    {
+    public function getWordsTimestamp(): DateTime {
         return $this->words_timestamp;
     }
 
@@ -92,19 +66,18 @@ class AssociationDeity
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set association
-     *
-     * @param \App\Entity\Association $association
-     * @return AssociationDeity
-     */
-    public function setAssociation(\App\Entity\Association $association = null)
-    {
+	/**
+	 * Set association
+	 *
+	 * @param Association|null $association
+	 *
+	 * @return AssociationDeity
+	 */
+    public function setAssociation(Association $association = null): static {
         $this->association = $association;
 
         return $this;
@@ -113,21 +86,19 @@ class AssociationDeity
     /**
      * Get association
      *
-     * @return \App\Entity\Association 
+     * @return Association
      */
-    public function getAssociation()
-    {
+    public function getAssociation(): Association {
         return $this->association;
     }
 
-    /**
-     * Set deity
-     *
-     * @param \App\Entity\Deity $deity
-     * @return AssociationDeity
-     */
-    public function setDeity(\App\Entity\Deity $deity = null)
-    {
+	/**
+	 * Set deity
+	 *
+	 * @param Deity|null $deity
+	 * @return AssociationDeity
+	 */
+    public function setDeity(Deity $deity = null): static {
         $this->deity = $deity;
 
         return $this;
@@ -136,21 +107,19 @@ class AssociationDeity
     /**
      * Get deity
      *
-     * @return \App\Entity\Deity 
+     * @return Deity
      */
-    public function getDeity()
-    {
+    public function getDeity(): Deity {
         return $this->deity;
     }
 
-    /**
-     * Set words_from
-     *
-     * @param \App\Entity\Character $wordsFrom
-     * @return AssociationDeity
-     */
-    public function setWordsFrom(\App\Entity\Character $wordsFrom = null)
-    {
+	/**
+	 * Set words_from
+	 *
+	 * @param Character|null $wordsFrom
+	 * @return AssociationDeity
+	 */
+    public function setWordsFrom(Character $wordsFrom = null): static {
         $this->words_from = $wordsFrom;
 
         return $this;
@@ -159,10 +128,9 @@ class AssociationDeity
     /**
      * Get words_from
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
-    public function getWordsFrom()
-    {
+    public function getWordsFrom(): Character {
         return $this->words_from;
     }
 }

@@ -2,52 +2,37 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * BattleReportObserver
  */
 class BattleReportObserver {
 
-        public function setReport($battleReport = null) {
-                return $this->setBattleReport($battleReport);
-        }
-        
-    /**
-     * @var integer
-     */
-    private $id;
 
-    /**
-     * @var \App\Entity\BattleReport
-     */
-    private $battle_report;
+	private int $id;
+	private BattleReport $battle_report;
+	private Character $character;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
-
+	public function setReport($battleReport = null): BattleReportObserver|static {
+		return $this->setBattleReport($battleReport);
+	}
 
     /**
      * Get id
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set battle_report
-     *
-     * @param \App\Entity\BattleReport $battleReport
-     * @return BattleReportObserver
-     */
-    public function setBattleReport(\App\Entity\BattleReport $battleReport = null)
-    {
+	/**
+	 * Set battle_report
+	 *
+	 * @param BattleReport|null $battleReport
+	 *
+	 * @return BattleReportObserver
+	 */
+    public function setBattleReport(BattleReport $battleReport = null): static {
         $this->battle_report = $battleReport;
 
         return $this;
@@ -56,21 +41,20 @@ class BattleReportObserver {
     /**
      * Get battle_report
      *
-     * @return \App\Entity\BattleReport 
+     * @return BattleReport
      */
-    public function getBattleReport()
-    {
+    public function getBattleReport(): BattleReport {
         return $this->battle_report;
     }
 
     /**
      * Set character
      *
-     * @param \App\Entity\Character $character
+     * @param Character|null $character
+     *
      * @return BattleReportObserver
      */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
+	public function setCharacter(Character $character = null): static {
         $this->character = $character;
 
         return $this;
@@ -79,10 +63,9 @@ class BattleReportObserver {
     /**
      * Get character
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
-    public function getCharacter()
-    {
+    public function getCharacter(): Character {
         return $this->character;
     }
 }

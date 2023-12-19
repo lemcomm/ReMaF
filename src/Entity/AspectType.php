@@ -2,32 +2,23 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * AspectType
  */
 class AspectType
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var integer
-     */
-    private $id;
+    private string $name;
+    private int $id;
 
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return AspectType
      */
-    public function setName($name)
-    {
+    public function setName(string $name): static {
         $this->name = $name;
 
         return $this;
@@ -38,8 +29,7 @@ class AspectType
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName(): string {
         return $this->name;
     }
 
@@ -48,8 +38,7 @@ class AspectType
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 }

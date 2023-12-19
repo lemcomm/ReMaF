@@ -4,66 +4,33 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 
 class Artifact {
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $old_description;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\Description
-     */
-    private $description;
-
-    /**
-     * @var \App\Entity\EventLog
-     */
-    private $log;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $descriptions;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $owner;
-
-    /**
-     * @var \App\Entity\User
-     */
-    private $creator;
+	private string $name;
+	private string $old_description;
+	private int $id;
+	private Description $description;
+	private EventLog $log;
+	private Collection|ArrayCollection $descriptions;
+	private Character $owner;
+	private User $creator;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->descriptions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->descriptions = new ArrayCollection();
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return Artifact
      */
-    public function setName($name)
-    {
+    public function setName(string $name): static {
         $this->name = $name;
 
         return $this;
@@ -74,8 +41,7 @@ class Artifact {
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName(): string {
         return $this->name;
     }
 
@@ -83,10 +49,10 @@ class Artifact {
      * Set old_description
      *
      * @param string $oldDescription
+     *
      * @return Artifact
      */
-    public function setOldDescription($oldDescription)
-    {
+    public function setOldDescription(string $oldDescription): static {
         $this->old_description = $oldDescription;
 
         return $this;
@@ -97,8 +63,7 @@ class Artifact {
      *
      * @return string 
      */
-    public function getOldDescription()
-    {
+    public function getOldDescription(): string {
         return $this->old_description;
     }
 
@@ -107,19 +72,18 @@ class Artifact {
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set description
-     *
-     * @param \App\Entity\Description $description
-     * @return Artifact
-     */
-    public function setDescription(\App\Entity\Description $description = null)
-    {
+	/**
+	 * Set description
+	 *
+	 * @param Description|null $description
+	 *
+	 * @return Artifact
+	 */
+    public function setDescription(Description $description = null): static {
         $this->description = $description;
 
         return $this;
@@ -128,21 +92,19 @@ class Artifact {
     /**
      * Get description
      *
-     * @return \App\Entity\Description 
+     * @return Description
      */
-    public function getDescription()
-    {
+    public function getDescription(): Description {
         return $this->description;
     }
 
-    /**
-     * Set log
-     *
-     * @param \App\Entity\EventLog $log
-     * @return Artifact
-     */
-    public function setLog(\App\Entity\EventLog $log = null)
-    {
+	/**
+	 * Set log
+	 *
+	 * @param EventLog|null $log
+	 * @return Artifact
+	 */
+    public function setLog(EventLog $log = null): static {
         $this->log = $log;
 
         return $this;
@@ -151,21 +113,20 @@ class Artifact {
     /**
      * Get log
      *
-     * @return \App\Entity\EventLog 
+     * @return EventLog
      */
-    public function getLog()
-    {
+    public function getLog(): EventLog {
         return $this->log;
     }
 
     /**
      * Add descriptions
      *
-     * @param \App\Entity\Description $descriptions
+     * @param Description $descriptions
+     *
      * @return Artifact
      */
-    public function addDescription(\App\Entity\Description $descriptions)
-    {
+    public function addDescription(Description $descriptions): static {
         $this->descriptions[] = $descriptions;
 
         return $this;
@@ -174,31 +135,28 @@ class Artifact {
     /**
      * Remove descriptions
      *
-     * @param \App\Entity\Description $descriptions
+     * @param Description $descriptions
      */
-    public function removeDescription(\App\Entity\Description $descriptions)
-    {
+    public function removeDescription(Description $descriptions): void {
         $this->descriptions->removeElement($descriptions);
     }
 
-    /**
-     * Get descriptions
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getDescriptions()
-    {
+	/**
+	 * Get descriptions
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+    public function getDescriptions(): ArrayCollection|Collection {
         return $this->descriptions;
     }
 
-    /**
-     * Set owner
-     *
-     * @param \App\Entity\Character $owner
-     * @return Artifact
-     */
-    public function setOwner(\App\Entity\Character $owner = null)
-    {
+	/**
+	 * Set owner
+	 *
+	 * @param Character|null $owner
+	 * @return Artifact
+	 */
+    public function setOwner(Character $owner = null): static {
         $this->owner = $owner;
 
         return $this;
@@ -207,21 +165,19 @@ class Artifact {
     /**
      * Get owner
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
-    public function getOwner()
-    {
+    public function getOwner(): Character {
         return $this->owner;
     }
 
-    /**
-     * Set creator
-     *
-     * @param \App\Entity\User $creator
-     * @return Artifact
-     */
-    public function setCreator(\App\Entity\User $creator = null)
-    {
+	/**
+	 * Set creator
+	 *
+	 * @param User|null $creator
+	 * @return Artifact
+	 */
+    public function setCreator(User $creator = null): static {
         $this->creator = $creator;
 
         return $this;
@@ -230,10 +186,9 @@ class Artifact {
     /**
      * Get creator
      *
-     * @return \App\Entity\User 
+     * @return User
      */
-    public function getCreator()
-    {
+    public function getCreator(): User {
         return $this->creator;
     }
 }

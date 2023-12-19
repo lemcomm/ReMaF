@@ -4,55 +4,35 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ActivityType
  */
 class ActivityType
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var boolean
-     */
-    private $enabled;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $requires;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $subtypes;
+	private string $name;
+	private bool $enabled;
+	private int $id;
+	private Collection|ArrayCollection $requires;
+	private Collection|ArrayCollection $subtypes;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->requires = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->subtypes = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->requires = new ArrayCollection();
+        $this->subtypes = new ArrayCollection();
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return ActivityType
      */
-    public function setName($name)
-    {
+    public function setName(string $name): static {
         $this->name = $name;
 
         return $this;
@@ -63,8 +43,7 @@ class ActivityType
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName(): string {
         return $this->name;
     }
 
@@ -72,10 +51,10 @@ class ActivityType
      * Set enabled
      *
      * @param boolean $enabled
+     *
      * @return ActivityType
      */
-    public function setEnabled($enabled)
-    {
+    public function setEnabled(bool $enabled): static {
         $this->enabled = $enabled;
 
         return $this;
@@ -86,8 +65,7 @@ class ActivityType
      *
      * @return boolean 
      */
-    public function getEnabled()
-    {
+    public function getEnabled(): bool {
         return $this->enabled;
     }
 
@@ -96,19 +74,18 @@ class ActivityType
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
     /**
      * Add requires
      *
-     * @param \App\Entity\ActivityRequirement $requires
+     * @param ActivityRequirement $requires
+     *
      * @return ActivityType
      */
-    public function addRequire(\App\Entity\ActivityRequirement $requires)
-    {
+    public function addRequire(ActivityRequirement $requires): static {
         $this->requires[] = $requires;
 
         return $this;
@@ -117,31 +94,29 @@ class ActivityType
     /**
      * Remove requires
      *
-     * @param \App\Entity\ActivityRequirement $requires
+     * @param ActivityRequirement $requires
      */
-    public function removeRequire(\App\Entity\ActivityRequirement $requires)
-    {
+    public function removeRequire(ActivityRequirement $requires): void {
         $this->requires->removeElement($requires);
     }
 
-    /**
-     * Get requires
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getRequires()
-    {
+	/**
+	 * Get requires
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+    public function getRequires(): ArrayCollection|Collection {
         return $this->requires;
     }
 
     /**
      * Add subtypes
      *
-     * @param \App\Entity\ActivitySubType $subtypes
+     * @param ActivitySubType $subtypes
+     *
      * @return ActivityType
      */
-    public function addSubtype(\App\Entity\ActivitySubType $subtypes)
-    {
+    public function addSubtype(ActivitySubType $subtypes): static {
         $this->subtypes[] = $subtypes;
 
         return $this;
@@ -150,20 +125,18 @@ class ActivityType
     /**
      * Remove subtypes
      *
-     * @param \App\Entity\ActivitySubType $subtypes
+     * @param ActivitySubType $subtypes
      */
-    public function removeSubtype(\App\Entity\ActivitySubType $subtypes)
-    {
+    public function removeSubtype(ActivitySubType $subtypes): void {
         $this->subtypes->removeElement($subtypes);
     }
 
-    /**
-     * Get subtypes
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getSubtypes()
-    {
+	/**
+	 * Get subtypes
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+    public function getSubtypes(): ArrayCollection|Collection {
         return $this->subtypes;
     }
 

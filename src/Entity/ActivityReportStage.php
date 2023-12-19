@@ -2,53 +2,27 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * ActivityReportStage
  */
 class ActivityReportStage
 {
-    /**
-     * @var integer
-     */
-    private $round;
-
-    /**
-     * @var array
-     */
-    private $data;
-
-    /**
-     * @var array
-     */
-    private $extra;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\ActivityReportGroup
-     */
-    private $group;
-
-    /**
-     * @var \App\Entity\ActivityReportCharacter
-     */
-    private $character;
+	private int $round;
+	private array $data;
+	private array $extra;
+	private int $id;
+	private ActivityReportGroup $group;
+	private ActivityReportCharacter $character;
 
 
     /**
      * Set round
      *
      * @param integer $round
+     *
      * @return ActivityReportStage
      */
-    public function setRound($round)
-    {
+    public function setRound(int $round): static {
         $this->round = $round;
 
         return $this;
@@ -59,8 +33,7 @@ class ActivityReportStage
      *
      * @return integer 
      */
-    public function getRound()
-    {
+    public function getRound(): int {
         return $this->round;
     }
 
@@ -68,10 +41,10 @@ class ActivityReportStage
      * Set data
      *
      * @param array $data
+     *
      * @return ActivityReportStage
      */
-    public function setData($data)
-    {
+    public function setData(array $data): static {
         $this->data = $data;
 
         return $this;
@@ -82,19 +55,18 @@ class ActivityReportStage
      *
      * @return array 
      */
-    public function getData()
-    {
+    public function getData(): array {
         return $this->data;
     }
 
     /**
      * Set extra
      *
-     * @param array $extra
+     * @param array|null $extra
+     *
      * @return ActivityReportStage
      */
-    public function setExtra($extra)
-    {
+    public function setExtra(array $extra = null): static {
         $this->extra = $extra;
 
         return $this;
@@ -105,8 +77,7 @@ class ActivityReportStage
      *
      * @return array 
      */
-    public function getExtra()
-    {
+    public function getExtra(): array {
         return $this->extra;
     }
 
@@ -115,19 +86,18 @@ class ActivityReportStage
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set group
-     *
-     * @param \App\Entity\ActivityReportGroup $group
-     * @return ActivityReportStage
-     */
-    public function setGroup(\App\Entity\ActivityReportGroup $group = null)
-    {
+	/**
+	 * Set group
+	 *
+	 * @param ActivityReportGroup|null $group
+	 *
+	 * @return ActivityReportStage
+	 */
+    public function setGroup(ActivityReportGroup $group = null): static {
         $this->group = $group;
 
         return $this;
@@ -136,21 +106,20 @@ class ActivityReportStage
     /**
      * Get group
      *
-     * @return \App\Entity\ActivityReportGroup 
+     * @return ActivityReportGroup
      */
-    public function getGroup()
-    {
+    public function getGroup(): ActivityReportGroup {
         return $this->group;
     }
 
     /**
      * Set character
      *
-     * @param \App\Entity\ActivityReportCharacter $character
+     * @param ActivityReportCharacter|null $character
+     *
      * @return ActivityReportStage
      */
-    public function setCharacter(\App\Entity\ActivityReportCharacter $character = null)
-    {
+	public function setCharacter(ActivityReportCharacter $character = null): static {
         $this->character = $character;
 
         return $this;
@@ -159,10 +128,9 @@ class ActivityReportStage
     /**
      * Get character
      *
-     * @return \App\Entity\ActivityReportCharacter 
+     * @return ActivityReportCharacter
      */
-    public function getCharacter()
-    {
+    public function getCharacter(): ActivityReportCharacter {
         return $this->character;
     }
 }

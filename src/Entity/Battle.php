@@ -2,20 +2,35 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
+use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 
 class Battle {
 
-	private $nobles = null;
-	private $soldiers = null;
-	private $attackers = null;
-	private $defenders = null;
-	private $defense_bonus = -1;
+	private Point $location;
+	private bool $is_siege;
+	private DateTime $started;
+	private DateTime $complete;
+	private DateTime $initial_complete;
+	private string $type;
+	private int $id;
+	private Collection|ArrayCollection $groups;
+	private BattleGroup $primary_attacker;
+	private BattleGroup $primary_defender;
+	private Settlement $settlement;
+	private Place $place;
+	private War $war;
+	private Siege $siege;
 
-	public function getName() {
+	private ?int $nobles = null;
+	private ?int $soldiers = null;
+	private ?int $attackers = null;
+	private ?int $defenders = null;
+
+	public function getName(): string {
          		$name = '';
          		foreach ($this->getGroups() as $group) {
          			if ($name!='') {
@@ -25,8 +40,6 @@ class Battle {
          				case 0: // no characters, so it's an attack on a settlement, right?
          					if ($this->getSettlement()) {
          						$name.=$this->getSettlement()->getName();
-         					} else {
-         						// this should never happen
          					}
          					break;
          				case 1:
@@ -41,12 +54,11 @@ class Battle {
          					// FIXME: improve this, e.g. check realms shared and use that
          					$name.='various';
          			}
-         			if ($group->getAttacker()==false && $this->getSettlement() && count($group->getCharacters()) > 0) {
+         			if (!$group->getAttacker() && $this->getSettlement() && count($group->getCharacters()) > 0) {
          				$name.=', '.$this->getSettlement()->getName();
          			}
          		}
          		return $name;
-         		return "battle"; // TODO: something better? this is used for links
          	}
 
 	public function getAttacker() {
@@ -75,7 +87,7 @@ class Battle {
          		return null;
          	}
 
-	public function getDefenseBuildings() {
+	public function getDefenseBuildings(): ArrayCollection {
          		$def = new ArrayCollection();
          		if ($this->getSettlement()) {
          			foreach ($this->getSettlement()->getBuildings() as $building) {
@@ -123,95 +135,27 @@ class Battle {
          		return $this->soldiers;
          	}
 
-	public function isSiege() {
+	public function isSiege(): bool {
          		return $this->is_siege;
          	}
-    /**
-     * @var point
-     */
-    private $location;
 
-    /**
-     * @var boolean
-     */
-    private $is_siege;
-
-    /**
-     * @var \DateTime
-     */
-    private $started;
-
-    /**
-     * @var \DateTime
-     */
-    private $complete;
-
-    /**
-     * @var \DateTime
-     */
-    private $initial_complete;
-
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $groups;
-
-    /**
-     * @var \App\Entity\BattleGroup
-     */
-    private $primary_attacker;
-
-    /**
-     * @var \App\Entity\BattleGroup
-     */
-    private $primary_defender;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
-
-    /**
-     * @var \App\Entity\Place
-     */
-    private $place;
-
-    /**
-     * @var \App\Entity\War
-     */
-    private $war;
-
-    /**
-     * @var \App\Entity\Siege
-     */
-    private $siege;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     /**
      * Set location
      *
      * @param point $location
+     *
      * @return Battle
      */
-    public function setLocation($location)
-    {
+    public function setLocation(point $location): static {
         $this->location = $location;
 
         return $this;
@@ -222,8 +166,7 @@ class Battle {
      *
      * @return point 
      */
-    public function getLocation()
-    {
+    public function getLocation(): Point {
         return $this->location;
     }
 
@@ -231,10 +174,10 @@ class Battle {
      * Set is_siege
      *
      * @param boolean $isSiege
+     *
      * @return Battle
      */
-    public function setIsSiege($isSiege)
-    {
+    public function setIsSiege(bool $isSiege): static {
         $this->is_siege = $isSiege;
 
         return $this;
@@ -245,19 +188,18 @@ class Battle {
      *
      * @return boolean 
      */
-    public function getIsSiege()
-    {
+    public function getIsSiege(): bool {
         return $this->is_siege;
     }
 
     /**
      * Set started
      *
-     * @param \DateTime $started
+     * @param DateTime $started
+     *
      * @return Battle
      */
-    public function setStarted($started)
-    {
+    public function setStarted(DateTime $started): static {
         $this->started = $started;
 
         return $this;
@@ -266,21 +208,20 @@ class Battle {
     /**
      * Get started
      *
-     * @return \DateTime 
+     * @return DateTime
      */
-    public function getStarted()
-    {
+    public function getStarted(): DateTime {
         return $this->started;
     }
 
     /**
      * Set complete
      *
-     * @param \DateTime $complete
+     * @param DateTime $complete
+     *
      * @return Battle
      */
-    public function setComplete($complete)
-    {
+    public function setComplete(DateTime $complete): static {
         $this->complete = $complete;
 
         return $this;
@@ -289,21 +230,20 @@ class Battle {
     /**
      * Get complete
      *
-     * @return \DateTime 
+     * @return DateTime
      */
-    public function getComplete()
-    {
+    public function getComplete(): DateTime {
         return $this->complete;
     }
 
     /**
      * Set initial_complete
      *
-     * @param \DateTime $initialComplete
+     * @param DateTime $initialComplete
+     *
      * @return Battle
      */
-    public function setInitialComplete($initialComplete)
-    {
+    public function setInitialComplete(DateTime $initialComplete): static {
         $this->initial_complete = $initialComplete;
 
         return $this;
@@ -312,21 +252,20 @@ class Battle {
     /**
      * Get initial_complete
      *
-     * @return \DateTime 
+     * @return DateTime
      */
-    public function getInitialComplete()
-    {
+    public function getInitialComplete(): DateTime {
         return $this->initial_complete;
     }
 
     /**
      * Set type
      *
-     * @param string $type
+     * @param string|null $type
+     *
      * @return Battle
      */
-    public function setType($type)
-    {
+    public function setType(string $type = null): static {
         $this->type = $type;
 
         return $this;
@@ -337,8 +276,7 @@ class Battle {
      *
      * @return string 
      */
-    public function getType()
-    {
+    public function getType(): string {
         return $this->type;
     }
 
@@ -347,19 +285,18 @@ class Battle {
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
     /**
      * Add groups
      *
-     * @param \App\Entity\BattleGroup $groups
+     * @param BattleGroup $groups
+     *
      * @return Battle
      */
-    public function addGroup(\App\Entity\BattleGroup $groups)
-    {
+    public function addGroup(BattleGroup $groups): static {
         $this->groups[] = $groups;
 
         return $this;
@@ -368,31 +305,29 @@ class Battle {
     /**
      * Remove groups
      *
-     * @param \App\Entity\BattleGroup $groups
+     * @param BattleGroup $groups
      */
-    public function removeGroup(\App\Entity\BattleGroup $groups)
-    {
+    public function removeGroup(BattleGroup $groups): void {
         $this->groups->removeElement($groups);
     }
 
-    /**
-     * Get groups
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGroups()
-    {
+	/**
+	 * Get groups
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+    public function getGroups(): ArrayCollection|Collection {
         return $this->groups;
     }
 
-    /**
-     * Set primary_attacker
-     *
-     * @param \App\Entity\BattleGroup $primaryAttacker
-     * @return Battle
-     */
-    public function setPrimaryAttacker(\App\Entity\BattleGroup $primaryAttacker = null)
-    {
+	/**
+	 * Set primary_attacker
+	 *
+	 * @param BattleGroup|null $primaryAttacker
+	 *
+	 * @return Battle
+	 */
+    public function setPrimaryAttacker(BattleGroup $primaryAttacker = null): static {
         $this->primary_attacker = $primaryAttacker;
 
         return $this;
@@ -401,21 +336,20 @@ class Battle {
     /**
      * Get primary_attacker
      *
-     * @return \App\Entity\BattleGroup 
+     * @return BattleGroup
      */
-    public function getPrimaryAttacker()
-    {
+    public function getPrimaryAttacker(): BattleGroup {
         return $this->primary_attacker;
     }
 
     /**
      * Set primary_defender
      *
-     * @param \App\Entity\BattleGroup $primaryDefender
+     * @param BattleGroup|null $primaryDefender
+     *
      * @return Battle
      */
-    public function setPrimaryDefender(\App\Entity\BattleGroup $primaryDefender = null)
-    {
+	public function setPrimaryDefender(BattleGroup $primaryDefender = null): static {
         $this->primary_defender = $primaryDefender;
 
         return $this;
@@ -424,21 +358,20 @@ class Battle {
     /**
      * Get primary_defender
      *
-     * @return \App\Entity\BattleGroup 
+     * @return BattleGroup
      */
-    public function getPrimaryDefender()
-    {
+    public function getPrimaryDefender(): BattleGroup {
         return $this->primary_defender;
     }
 
     /**
      * Set settlement
      *
-     * @param \App\Entity\Settlement $settlement
+     * @param Settlement|null $settlement
+     *
      * @return Battle
      */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
+	public function setSettlement(Settlement $settlement = null): static {
         $this->settlement = $settlement;
 
         return $this;
@@ -447,21 +380,20 @@ class Battle {
     /**
      * Get settlement
      *
-     * @return \App\Entity\Settlement 
+     * @return Settlement
      */
-    public function getSettlement()
-    {
+    public function getSettlement(): Settlement {
         return $this->settlement;
     }
 
     /**
      * Set place
      *
-     * @param \App\Entity\Place $place
+     * @param Place|null $place
+     *
      * @return Battle
      */
-    public function setPlace(\App\Entity\Place $place = null)
-    {
+	public function setPlace(Place $place = null): static {
         $this->place = $place;
 
         return $this;
@@ -470,56 +402,53 @@ class Battle {
     /**
      * Get place
      *
-     * @return \App\Entity\Place 
+     * @return Place
      */
-    public function getPlace()
-    {
+    public function getPlace(): Place {
         return $this->place;
     }
 
     /**
      * Set war
      *
-     * @param \App\Entity\War $war
+     * @param War|null $war
+     *
      * @return Battle
      */
-    public function setWar(\App\Entity\War $war = null)
-    {
+	public function setWar(War $war = null): static {
         $this->war = $war;
 
         return $this;
     }
 
-    /**
+	/**
      * Get war
      *
-     * @return \App\Entity\War 
+     * @return War
      */
-    public function getWar()
-    {
+    public function getWar(): War {
         return $this->war;
     }
 
-    /**
-     * Set siege
-     *
-     * @param \App\Entity\Siege $siege
-     * @return Battle
-     */
-    public function setSiege(\App\Entity\Siege $siege = null)
-    {
+	/**
+	 * Set siege
+	 *
+	 * @param Siege|null $siege
+	 *
+	 * @return Battle
+	 */
+	public function setSiege(Siege $siege = null): static {
         $this->siege = $siege;
 
         return $this;
     }
 
-    /**
+	/**
      * Get siege
      *
-     * @return \App\Entity\Siege 
+     * @return Siege
      */
-    public function getSiege()
-    {
+    public function getSiege(): Siege {
         return $this->siege;
     }
 

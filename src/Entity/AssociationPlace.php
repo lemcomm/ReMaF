@@ -9,35 +9,20 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class AssociationPlace
 {
-    /**
-     * @var boolean
-     */
-    private $headquarters;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\Association
-     */
-    private $association;
-
-    /**
-     * @var \App\Entity\Place
-     */
-    private $place;
+	private bool $headquarters;
+	private int $id;
+	private Association $association;
+	private Place $place;
 
 
     /**
      * Set headquarters
      *
-     * @param boolean $headquarters
+     * @param boolean|null $headquarters
+     *
      * @return AssociationPlace
      */
-    public function setHeadquarters($headquarters)
-    {
+    public function setHeadquarters(bool $headquarters = null): static {
         $this->headquarters = $headquarters;
 
         return $this;
@@ -48,8 +33,7 @@ class AssociationPlace
      *
      * @return boolean 
      */
-    public function getHeadquarters()
-    {
+    public function getHeadquarters(): bool {
         return $this->headquarters;
     }
 
@@ -58,19 +42,18 @@ class AssociationPlace
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set association
-     *
-     * @param \App\Entity\Association $association
-     * @return AssociationPlace
-     */
-    public function setAssociation(\App\Entity\Association $association = null)
-    {
+	/**
+	 * Set association
+	 *
+	 * @param Association|null $association
+	 *
+	 * @return AssociationPlace
+	 */
+    public function setAssociation(Association $association = null): static {
         $this->association = $association;
 
         return $this;
@@ -79,21 +62,19 @@ class AssociationPlace
     /**
      * Get association
      *
-     * @return \App\Entity\Association 
+     * @return Association
      */
-    public function getAssociation()
-    {
+    public function getAssociation(): Association {
         return $this->association;
     }
 
-    /**
-     * Set place
-     *
-     * @param \App\Entity\Place $place
-     * @return AssociationPlace
-     */
-    public function setPlace(\App\Entity\Place $place = null)
-    {
+	/**
+	 * Set place
+	 *
+	 * @param Place|null $place
+	 * @return AssociationPlace
+	 */
+    public function setPlace(Place $place = null): static {
         $this->place = $place;
 
         return $this;
@@ -102,10 +83,9 @@ class AssociationPlace
     /**
      * Get place
      *
-     * @return \App\Entity\Place 
+     * @return Place
      */
-    public function getPlace()
-    {
+    public function getPlace(): Place {
         return $this->place;
     }
 

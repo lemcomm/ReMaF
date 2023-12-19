@@ -2,32 +2,15 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * ActivityRequirement
  */
 class ActivityRequirement
 {
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\ActivityType
-     */
-    private $type;
-
-    /**
-     * @var \App\Entity\BuildingType
-     */
-    private $building;
-
-    /**
-     * @var \App\Entity\PlaceType
-     */
-    private $place;
+	private int $id;
+	private ActivityType $type;
+	private BuildingType $building;
+	private PlaceType $place;
 
 
     /**
@@ -35,19 +18,18 @@ class ActivityRequirement
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set type
-     *
-     * @param \App\Entity\ActivityType $type
-     * @return ActivityRequirement
-     */
-    public function setType(\App\Entity\ActivityType $type = null)
-    {
+	/**
+	 * Set type
+	 *
+	 * @param ActivityType|null $type
+	 *
+	 * @return ActivityRequirement
+	 */
+    public function setType(ActivityType $type = null): static {
         $this->type = $type;
 
         return $this;
@@ -56,21 +38,20 @@ class ActivityRequirement
     /**
      * Get type
      *
-     * @return \App\Entity\ActivityType 
+     * @return ActivityType
      */
-    public function getType()
-    {
+    public function getType(): ActivityType {
         return $this->type;
     }
 
     /**
      * Set building
      *
-     * @param \App\Entity\BuildingType $building
+     * @param BuildingType|null $building
+     *
      * @return ActivityRequirement
      */
-    public function setBuilding(\App\Entity\BuildingType $building = null)
-    {
+	public function setBuilding(BuildingType $building = null): static {
         $this->building = $building;
 
         return $this;
@@ -79,21 +60,20 @@ class ActivityRequirement
     /**
      * Get building
      *
-     * @return \App\Entity\BuildingType 
+     * @return BuildingType
      */
-    public function getBuilding()
-    {
+    public function getBuilding(): BuildingType {
         return $this->building;
     }
 
     /**
      * Set place
      *
-     * @param \App\Entity\PlaceType $place
+     * @param PlaceType|null $place
+     *
      * @return ActivityRequirement
      */
-    public function setPlace(\App\Entity\PlaceType $place = null)
-    {
+	public function setPlace(PlaceType $place = null): static {
         $this->place = $place;
 
         return $this;
@@ -102,10 +82,9 @@ class ActivityRequirement
     /**
      * Get place
      *
-     * @return \App\Entity\PlaceType 
+     * @return PlaceType
      */
-    public function getPlace()
-    {
+    public function getPlace(): PlaceType {
         return $this->place;
     }
 }

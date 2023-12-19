@@ -2,46 +2,23 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\DBAL\Types\Types;
-
 
 class BattleReportStage {
-
-    /**
-     * @var integer
-     */
-    private $round;
-
-    /**
-     * @var array
-     */
-    private $data;
-
-    /**
-     * @var array
-     */
-    private $extra;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\BattleReportGroup
-     */
-    private $group_report;
+	private int $round;
+	private array $data;
+	private array $extra;
+	private int $id;
+	private BattleReportGroup $group_report;
 
 
     /**
      * Set round
      *
      * @param integer $round
+     *
      * @return BattleReportStage
      */
-    public function setRound($round)
-    {
+    public function setRound(int $round): static {
         $this->round = $round;
 
         return $this;
@@ -52,8 +29,7 @@ class BattleReportStage {
      *
      * @return integer 
      */
-    public function getRound()
-    {
+    public function getRound(): int {
         return $this->round;
     }
 
@@ -61,10 +37,10 @@ class BattleReportStage {
      * Set data
      *
      * @param array $data
+     *
      * @return BattleReportStage
      */
-    public function setData($data)
-    {
+    public function setData(array $data): static {
         $this->data = $data;
 
         return $this;
@@ -75,19 +51,18 @@ class BattleReportStage {
      *
      * @return array 
      */
-    public function getData()
-    {
+    public function getData(): array {
         return $this->data;
     }
 
     /**
      * Set extra
      *
-     * @param array $extra
+     * @param array|null $extra
+     *
      * @return BattleReportStage
      */
-    public function setExtra($extra)
-    {
+    public function setExtra(array $extra = null): static {
         $this->extra = $extra;
 
         return $this;
@@ -98,8 +73,7 @@ class BattleReportStage {
      *
      * @return array 
      */
-    public function getExtra()
-    {
+    public function getExtra(): array {
         return $this->extra;
     }
 
@@ -108,19 +82,18 @@ class BattleReportStage {
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set group_report
-     *
-     * @param \App\Entity\BattleReportGroup $groupReport
-     * @return BattleReportStage
-     */
-    public function setGroupReport(\App\Entity\BattleReportGroup $groupReport = null)
-    {
+	/**
+	 * Set group_report
+	 *
+	 * @param BattleReportGroup|null $groupReport
+	 *
+	 * @return BattleReportStage
+	 */
+    public function setGroupReport(BattleReportGroup $groupReport = null): static {
         $this->group_report = $groupReport;
 
         return $this;
@@ -129,10 +102,9 @@ class BattleReportStage {
     /**
      * Get group_report
      *
-     * @return \App\Entity\BattleReportGroup 
+     * @return BattleReportGroup
      */
-    public function getGroupReport()
-    {
+    public function getGroupReport(): BattleReportGroup {
         return $this->group_report;
     }
 }

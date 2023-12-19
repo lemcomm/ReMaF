@@ -2,78 +2,32 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * BattleParticipant
  */
 class BattleParticipant
 {
-    /**
-     * @var integer
-     */
-    private $group_id;
-
-    /**
-     * @var boolean
-     */
-    private $standing;
-
-    /**
-     * @var boolean
-     */
-    private $wounded;
-
-    /**
-     * @var boolean
-     */
-    private $killed;
-
-    /**
-     * @var array
-     */
-    private $start;
-
-    /**
-     * @var array
-     */
-    private $combat;
-
-    /**
-     * @var array
-     */
-    private $finish;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\BattleReport
-     */
-    private $battle_report;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $captured_by;
+	private int $group_id;
+	private bool $standing;
+	private bool $wounded;
+	private bool $killed;
+	private array $start;
+	private array $combat;
+	private array $finish;
+	private int $id;
+	private BattleReport $battle_report;
+	private Character $character;
+	private Character $captured_by;
 
 
     /**
      * Set group_id
      *
      * @param integer $groupId
+     *
      * @return BattleParticipant
      */
-    public function setGroupId($groupId)
-    {
+    public function setGroupId(int $groupId): static {
         $this->group_id = $groupId;
 
         return $this;
@@ -84,8 +38,7 @@ class BattleParticipant
      *
      * @return integer 
      */
-    public function getGroupId()
-    {
+    public function getGroupId(): int {
         return $this->group_id;
     }
 
@@ -93,10 +46,10 @@ class BattleParticipant
      * Set standing
      *
      * @param boolean $standing
+     *
      * @return BattleParticipant
      */
-    public function setStanding($standing)
-    {
+    public function setStanding(bool $standing): static {
         $this->standing = $standing;
 
         return $this;
@@ -107,8 +60,7 @@ class BattleParticipant
      *
      * @return boolean 
      */
-    public function getStanding()
-    {
+    public function getStanding(): bool {
         return $this->standing;
     }
 
@@ -116,10 +68,10 @@ class BattleParticipant
      * Set wounded
      *
      * @param boolean $wounded
+     *
      * @return BattleParticipant
      */
-    public function setWounded($wounded)
-    {
+    public function setWounded(bool $wounded): static {
         $this->wounded = $wounded;
 
         return $this;
@@ -130,8 +82,7 @@ class BattleParticipant
      *
      * @return boolean 
      */
-    public function getWounded()
-    {
+    public function getWounded(): bool {
         return $this->wounded;
     }
 
@@ -139,10 +90,10 @@ class BattleParticipant
      * Set killed
      *
      * @param boolean $killed
+     *
      * @return BattleParticipant
      */
-    public function setKilled($killed)
-    {
+    public function setKilled(bool $killed): static {
         $this->killed = $killed;
 
         return $this;
@@ -153,8 +104,7 @@ class BattleParticipant
      *
      * @return boolean 
      */
-    public function getKilled()
-    {
+    public function getKilled(): bool {
         return $this->killed;
     }
 
@@ -162,10 +112,10 @@ class BattleParticipant
      * Set start
      *
      * @param array $start
+     *
      * @return BattleParticipant
      */
-    public function setStart($start)
-    {
+    public function setStart(array $start): static {
         $this->start = $start;
 
         return $this;
@@ -176,8 +126,7 @@ class BattleParticipant
      *
      * @return array 
      */
-    public function getStart()
-    {
+    public function getStart(): array {
         return $this->start;
     }
 
@@ -185,10 +134,10 @@ class BattleParticipant
      * Set combat
      *
      * @param array $combat
+     *
      * @return BattleParticipant
      */
-    public function setCombat($combat)
-    {
+    public function setCombat(array $combat): static {
         $this->combat = $combat;
 
         return $this;
@@ -199,8 +148,7 @@ class BattleParticipant
      *
      * @return array 
      */
-    public function getCombat()
-    {
+    public function getCombat(): array {
         return $this->combat;
     }
 
@@ -208,10 +156,10 @@ class BattleParticipant
      * Set finish
      *
      * @param array $finish
+     *
      * @return BattleParticipant
      */
-    public function setFinish($finish)
-    {
+    public function setFinish(array $finish): static {
         $this->finish = $finish;
 
         return $this;
@@ -222,8 +170,7 @@ class BattleParticipant
      *
      * @return array 
      */
-    public function getFinish()
-    {
+    public function getFinish(): array {
         return $this->finish;
     }
 
@@ -232,19 +179,18 @@ class BattleParticipant
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set battle_report
-     *
-     * @param \App\Entity\BattleReport $battleReport
-     * @return BattleParticipant
-     */
-    public function setBattleReport(\App\Entity\BattleReport $battleReport = null)
-    {
+	/**
+	 * Set battle_report
+	 *
+	 * @param BattleReport|null $battleReport
+	 *
+	 * @return BattleParticipant
+	 */
+    public function setBattleReport(BattleReport $battleReport = null): static {
         $this->battle_report = $battleReport;
 
         return $this;
@@ -253,21 +199,19 @@ class BattleParticipant
     /**
      * Get battle_report
      *
-     * @return \App\Entity\BattleReport 
+     * @return BattleReport
      */
-    public function getBattleReport()
-    {
+    public function getBattleReport(): BattleReport {
         return $this->battle_report;
     }
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return BattleParticipant
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 * @return BattleParticipant
+	 */
+    public function setCharacter(Character $character = null): static {
         $this->character = $character;
 
         return $this;
@@ -276,21 +220,19 @@ class BattleParticipant
     /**
      * Get character
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
-    public function getCharacter()
-    {
+    public function getCharacter(): Character {
         return $this->character;
     }
 
-    /**
-     * Set captured_by
-     *
-     * @param \App\Entity\Character $capturedBy
-     * @return BattleParticipant
-     */
-    public function setCapturedBy(\App\Entity\Character $capturedBy = null)
-    {
+	/**
+	 * Set captured_by
+	 *
+	 * @param Character|null $capturedBy
+	 * @return BattleParticipant
+	 */
+    public function setCapturedBy(Character $capturedBy = null): static {
         $this->captured_by = $capturedBy;
 
         return $this;
@@ -299,10 +241,9 @@ class BattleParticipant
     /**
      * Get captured_by
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
-    public function getCapturedBy()
-    {
+    public function getCapturedBy(): Character {
         return $this->captured_by;
     }
 

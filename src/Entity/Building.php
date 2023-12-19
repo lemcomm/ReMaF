@@ -2,20 +2,27 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class Building {
 
-	private $defMin = 0.30;
+	private float $workers;
+	private bool $active;
+	private int $focus;
+	private int $condition;
+	private int $resupply;
+	private float $current_speed;
+	private int $id;
+	private Settlement $settlement;
+	private Place $place;
+	private BuildingType $type;
 
-	public function startConstruction($workers) {
+	public function startConstruction($workers): static {
    		$this->setActive(false);
    		$this->setWorkers($workers);
    		$this->setCondition(-$this->getType()->getBuildHours()); // negative value - if we reach 0 the construction is complete
    		return $this;
    	}
 
-	public function getEmployees() {
+	public function getEmployees(): float|int {
    		// only active buildings use employees
    		if ($this->isActive()) {
    			$employees =
@@ -34,11 +41,11 @@ class Building {
    		}
    	}
 
-	public function isActive() {
+	public function isActive(): bool {
    		return $this->getActive();
    	}
 
-	public function abandon($damage = 1) {
+	public function abandon($damage = 1): static {
    		if ($this->isActive()) {
    			$this->setActive(false);
    			$this->setCondition(-$damage);
@@ -47,7 +54,7 @@ class Building {
    		return $this;
    	}
 
-	public function getDefenseScore() {
+	public function getDefenseScore(): float|int {
    		if ($this->getType()->getDefenses() <= 0) {
    			return 0;
    		} else  {
@@ -61,65 +68,16 @@ class Building {
    		}
    	}
 
-    /**
-     * @var float
-     */
-    private $workers;
-
-    /**
-     * @var boolean
-     */
-    private $active;
-
-    /**
-     * @var integer
-     */
-    private $focus;
-
-    /**
-     * @var integer
-     */
-    private $condition;
-
-    /**
-     * @var integer
-     */
-    private $resupply;
-
-    /**
-     * @var float
-     */
-    private $current_speed;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
-
-    /**
-     * @var \App\Entity\Place
-     */
-    private $place;
-
-    /**
-     * @var \App\Entity\BuildingType
-     */
-    private $type;
 
 
     /**
      * Set workers
      *
      * @param float $workers
+     *
      * @return Building
      */
-    public function setWorkers($workers)
-    {
+    public function setWorkers(float $workers): static {
         $this->workers = $workers;
 
         return $this;
@@ -130,8 +88,7 @@ class Building {
      *
      * @return float 
      */
-    public function getWorkers()
-    {
+    public function getWorkers(): float {
         return $this->workers;
     }
 
@@ -139,10 +96,10 @@ class Building {
      * Set active
      *
      * @param boolean $active
+     *
      * @return Building
      */
-    public function setActive($active)
-    {
+    public function setActive(bool $active): static {
         $this->active = $active;
 
         return $this;
@@ -153,8 +110,7 @@ class Building {
      *
      * @return boolean 
      */
-    public function getActive()
-    {
+    public function getActive(): bool {
         return $this->active;
     }
 
@@ -162,10 +118,10 @@ class Building {
      * Set focus
      *
      * @param integer $focus
+     *
      * @return Building
      */
-    public function setFocus($focus)
-    {
+    public function setFocus(int $focus): static {
         $this->focus = $focus;
 
         return $this;
@@ -176,8 +132,7 @@ class Building {
      *
      * @return integer 
      */
-    public function getFocus()
-    {
+    public function getFocus(): int {
         return $this->focus;
     }
 
@@ -185,10 +140,10 @@ class Building {
      * Set condition
      *
      * @param integer $condition
+     *
      * @return Building
      */
-    public function setCondition($condition)
-    {
+    public function setCondition(int $condition): static {
         $this->condition = $condition;
 
         return $this;
@@ -199,8 +154,7 @@ class Building {
      *
      * @return integer 
      */
-    public function getCondition()
-    {
+    public function getCondition(): int {
         return $this->condition;
     }
 
@@ -208,10 +162,10 @@ class Building {
      * Set resupply
      *
      * @param integer $resupply
+     *
      * @return Building
      */
-    public function setResupply($resupply)
-    {
+    public function setResupply(int $resupply): static {
         $this->resupply = $resupply;
 
         return $this;
@@ -222,8 +176,7 @@ class Building {
      *
      * @return integer 
      */
-    public function getResupply()
-    {
+    public function getResupply(): int {
         return $this->resupply;
     }
 
@@ -231,10 +184,10 @@ class Building {
      * Set current_speed
      *
      * @param float $currentSpeed
+     *
      * @return Building
      */
-    public function setCurrentSpeed($currentSpeed)
-    {
+    public function setCurrentSpeed(float $currentSpeed): static {
         $this->current_speed = $currentSpeed;
 
         return $this;
@@ -245,8 +198,7 @@ class Building {
      *
      * @return float 
      */
-    public function getCurrentSpeed()
-    {
+    public function getCurrentSpeed(): float {
         return $this->current_speed;
     }
 
@@ -255,19 +207,18 @@ class Building {
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set settlement
-     *
-     * @param \App\Entity\Settlement $settlement
-     * @return Building
-     */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return Building
+	 */
+    public function setSettlement(Settlement $settlement = null): static {
         $this->settlement = $settlement;
 
         return $this;
@@ -276,21 +227,19 @@ class Building {
     /**
      * Get settlement
      *
-     * @return \App\Entity\Settlement 
+     * @return Settlement
      */
-    public function getSettlement()
-    {
+    public function getSettlement(): Settlement {
         return $this->settlement;
     }
 
-    /**
-     * Set place
-     *
-     * @param \App\Entity\Place $place
-     * @return Building
-     */
-    public function setPlace(\App\Entity\Place $place = null)
-    {
+	/**
+	 * Set place
+	 *
+	 * @param Place|null $place
+	 * @return Building
+	 */
+    public function setPlace(Place $place = null): static {
         $this->place = $place;
 
         return $this;
@@ -299,21 +248,19 @@ class Building {
     /**
      * Get place
      *
-     * @return \App\Entity\Place 
+     * @return Place
      */
-    public function getPlace()
-    {
+    public function getPlace(): Place {
         return $this->place;
     }
 
-    /**
-     * Set type
-     *
-     * @param \App\Entity\BuildingType $type
-     * @return Building
-     */
-    public function setType(\App\Entity\BuildingType $type = null)
-    {
+	/**
+	 * Set type
+	 *
+	 * @param BuildingType|null $type
+	 * @return Building
+	 */
+    public function setType(BuildingType $type = null): static {
         $this->type = $type;
 
         return $this;
@@ -322,10 +269,9 @@ class Building {
     /**
      * Get type
      *
-     * @return \App\Entity\BuildingType 
+     * @return BuildingType
      */
-    public function getType()
-    {
+    public function getType(): BuildingType {
         return $this->type;
     }
 }

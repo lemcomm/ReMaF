@@ -2,82 +2,64 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * ActivityBoutGroup
  */
-class ActivityBoutGroup
-{
-    /**
-     * @var integer
-     */
-    private $id;
+class ActivityBoutGroup {
+	private int $id;
+	private ActivityBout $bout;
+	private ActivityGroup $group;
 
-    /**
-     * @var \App\Entity\ActivityBout
-     */
-    private $bout;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * @var \App\Entity\ActivityGroup
-     */
-    private $group;
+	/**
+	 * Set bout
+	 *
+	 * @param ActivityBout|null $bout
+	 *
+	 * @return ActivityBoutGroup
+	 */
+	public function setBout(ActivityBout $bout = null): static {
+		$this->bout = $bout;
 
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get bout
+	 *
+	 * @return ActivityBout
+	 */
+	public function getBout(): ActivityBout {
+		return $this->bout;
+	}
 
-    /**
-     * Set bout
-     *
-     * @param \App\Entity\ActivityBout $bout
-     * @return ActivityBoutGroup
-     */
-    public function setBout(\App\Entity\ActivityBout $bout = null)
-    {
-        $this->bout = $bout;
+	/**
+	 * Set group
+	 *
+	 * @param ActivityGroup|null $group
+	 *
+	 * @return ActivityBoutGroup
+	 */
+	public function setGroup(ActivityGroup $group = null): static {
+		$this->group = $group;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get bout
-     *
-     * @return \App\Entity\ActivityBout 
-     */
-    public function getBout()
-    {
-        return $this->bout;
-    }
-
-    /**
-     * Set group
-     *
-     * @param \App\Entity\ActivityGroup $group
-     * @return ActivityBoutGroup
-     */
-    public function setGroup(\App\Entity\ActivityGroup $group = null)
-    {
-        $this->group = $group;
-
-        return $this;
-    }
-
-    /**
-     * Get group
-     *
-     * @return \App\Entity\ActivityGroup 
-     */
-    public function getGroup()
-    {
-        return $this->group;
-    }
+	/**
+	 * Get group
+	 *
+	 * @return ActivityGroup
+	 */
+	public function getGroup(): ActivityGroup {
+		return $this->group;
+	}
 }

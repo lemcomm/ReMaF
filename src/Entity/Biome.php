@@ -4,64 +4,36 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Biome
  */
 class Biome
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var float
-     */
-    private $spot;
-
-    /**
-     * @var float
-     */
-    private $travel;
-
-    /**
-     * @var float
-     */
-    private $road_construction;
-
-    /**
-     * @var float
-     */
-    private $feature_construction;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $geo_data;
+	private string $name;
+	private float $spot;
+	private float $travel;
+	private float $road_construction;
+	private float $feature_construction;
+	private int $id;
+	private Collection|ArrayCollection $geo_data;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->geo_data = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->geo_data = new ArrayCollection();
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return Biome
      */
-    public function setName($name)
-    {
+    public function setName(string $name): static {
         $this->name = $name;
 
         return $this;
@@ -72,8 +44,7 @@ class Biome
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName(): string {
         return $this->name;
     }
 
@@ -81,10 +52,10 @@ class Biome
      * Set spot
      *
      * @param float $spot
+     *
      * @return Biome
      */
-    public function setSpot($spot)
-    {
+    public function setSpot(float $spot): static {
         $this->spot = $spot;
 
         return $this;
@@ -95,8 +66,7 @@ class Biome
      *
      * @return float 
      */
-    public function getSpot()
-    {
+    public function getSpot(): float {
         return $this->spot;
     }
 
@@ -104,10 +74,10 @@ class Biome
      * Set travel
      *
      * @param float $travel
+     *
      * @return Biome
      */
-    public function setTravel($travel)
-    {
+    public function setTravel(float $travel): static {
         $this->travel = $travel;
 
         return $this;
@@ -118,8 +88,7 @@ class Biome
      *
      * @return float 
      */
-    public function getTravel()
-    {
+    public function getTravel(): float {
         return $this->travel;
     }
 
@@ -127,10 +96,10 @@ class Biome
      * Set road_construction
      *
      * @param float $roadConstruction
+     *
      * @return Biome
      */
-    public function setRoadConstruction($roadConstruction)
-    {
+    public function setRoadConstruction(float $roadConstruction): static {
         $this->road_construction = $roadConstruction;
 
         return $this;
@@ -141,8 +110,7 @@ class Biome
      *
      * @return float 
      */
-    public function getRoadConstruction()
-    {
+    public function getRoadConstruction(): float {
         return $this->road_construction;
     }
 
@@ -150,10 +118,10 @@ class Biome
      * Set feature_construction
      *
      * @param float $featureConstruction
+     *
      * @return Biome
      */
-    public function setFeatureConstruction($featureConstruction)
-    {
+    public function setFeatureConstruction(float $featureConstruction): static {
         $this->feature_construction = $featureConstruction;
 
         return $this;
@@ -164,8 +132,7 @@ class Biome
      *
      * @return float 
      */
-    public function getFeatureConstruction()
-    {
+    public function getFeatureConstruction(): float {
         return $this->feature_construction;
     }
 
@@ -174,19 +141,18 @@ class Biome
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
     /**
      * Add geo_data
      *
-     * @param \App\Entity\GeoData $geoData
+     * @param GeoData $geoData
+     *
      * @return Biome
      */
-    public function addGeoDatum(\App\Entity\GeoData $geoData)
-    {
+    public function addGeoDatum(GeoData $geoData): static {
         $this->geo_data[] = $geoData;
 
         return $this;
@@ -195,20 +161,18 @@ class Biome
     /**
      * Remove geo_data
      *
-     * @param \App\Entity\GeoData $geoData
+     * @param GeoData $geoData
      */
-    public function removeGeoDatum(\App\Entity\GeoData $geoData)
-    {
+    public function removeGeoDatum(GeoData $geoData): void {
         $this->geo_data->removeElement($geoData);
     }
 
-    /**
-     * Get geo_data
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGeoData()
-    {
+	/**
+	 * Get geo_data
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+    public function getGeoData(): ArrayCollection|Collection {
         return $this->geo_data;
     }
 
@@ -227,7 +191,7 @@ class Biome
         if ($this->geo_data->removeElement($geoData)) {
             // set the owning side to null (unless already changed)
             if ($geoData->getBiome() === $this) {
-                $geoData->setBiome(null);
+                $geoData->setBiome();
             }
         }
 

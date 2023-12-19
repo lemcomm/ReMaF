@@ -2,52 +2,37 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * ActivityReportObserver
  */
 class ActivityReportObserver {
 
-        public function setReport($report = null) {
-                return $this->setActivityReport($report);
-        }
-        
-    /**
-     * @var integer
-     */
-    private $id;
 
-    /**
-     * @var \App\Entity\ActivityReport
-     */
-    private $activity_report;
+	private int $id;
+	private ActivityReport $activity_report;
+	private Character $character;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
-
+	public function setReport($report = null): ActivityReportObserver|static {
+		return $this->setActivityReport($report);
+	}
 
     /**
      * Get id
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set activity_report
-     *
-     * @param \App\Entity\ActivityReport $activityReport
-     * @return ActivityReportObserver
-     */
-    public function setActivityReport(\App\Entity\ActivityReport $activityReport = null)
-    {
+	/**
+	 * Set activity_report
+	 *
+	 * @param ActivityReport|null $activityReport
+	 *
+	 * @return ActivityReportObserver
+	 */
+    public function setActivityReport(ActivityReport $activityReport = null): static {
         $this->activity_report = $activityReport;
 
         return $this;
@@ -56,21 +41,20 @@ class ActivityReportObserver {
     /**
      * Get activity_report
      *
-     * @return \App\Entity\ActivityReport 
+     * @return ActivityReport
      */
-    public function getActivityReport()
-    {
+    public function getActivityReport(): ActivityReport {
         return $this->activity_report;
     }
 
     /**
      * Set character
      *
-     * @param \App\Entity\Character $character
+     * @param Character|null $character
+     *
      * @return ActivityReportObserver
      */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
+	public function setCharacter(Character $character = null): static {
         $this->character = $character;
 
         return $this;
@@ -79,10 +63,9 @@ class ActivityReportObserver {
     /**
      * Get character
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
-    public function getCharacter()
-    {
+    public function getCharacter(): Character {
         return $this->character;
     }
 }

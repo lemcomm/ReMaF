@@ -1,15 +1,16 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class Action {
-
+	private int $id;
 	private string $type;
-	private \DateTime $started;
-	private \DateTime $complete;
+	private DateTime $started;
+	private DateTime $complete;
 	private bool $hidden;
 	private bool $hourly;
 	private bool $can_cancel;
@@ -17,26 +18,24 @@ class Action {
 	private int $priority;
 	private float $number_value;
 	private string $string_value;
-	private int $id;
 	private Collection|ArrayCollection $assigned_entourage;
 	private Collection|ArrayCollection $supporting_actions;
 	private Collection|ArrayCollection $opposing_actions;
-	private ?Character $character;
-	private ?Realm $target_realm;
-	private ?Settlement $target_settlement;
-	private ?Place $target_place;
-	private ?Character $target_character;
-	private ?Soldier $target_soldier;
-	private ?EntourageType $target_entourage_type;
-	private ?EquipmentType $target_equipment_type;
-	private ?BattleGroup $target_battlegroup;
-	private ?Listing $target_listing;
-	private ?SkillType $target_skill;
-	private ?Action $supported_action;
-	private ?Action $opposed_action;
+	private Character $character;
+	private Realm $target_realm;
+	private Settlement $target_settlement;
+	private Place $target_place;
+	private Character $target_character;
+	private Soldier $target_soldier;
+	private EntourageType $target_entourage_type;
+	private EquipmentType $target_equipment_type;
+	private BattleGroup $target_battlegroup;
+	private Listing $target_listing;
+	private SkillType $target_skill;
+	private Action $supported_action;
+	private Action $opposed_action;
 
-	public function __construct()
-	{
+	public function __construct() {
 		$this->assigned_entourage = new ArrayCollection();
 		$this->supporting_actions = new ArrayCollection();
 		$this->opposing_actions = new ArrayCollection();
@@ -46,7 +45,6 @@ class Action {
 		return "action $this->id - $this->type";
 	}
 
-
 	public function onPreRemove(): void {
 		// this doesn't work with cascade
 		$this->character?->removeAction($this);
@@ -54,676 +52,279 @@ class Action {
 		$this->target_battlegroup?->removeRelatedAction($this);
 	}
 
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return Action
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set started
-     *
-     * @param \DateTime $started
-     * @return Action
-     */
-    public function setStarted($started)
-    {
-        $this->started = $started;
-
-        return $this;
-    }
-
-    /**
-     * Get started
-     *
-     * @return \DateTime 
-     */
-    public function getStarted()
-    {
-        return $this->started;
-    }
-
-    /**
-     * Set complete
-     *
-     * @param \DateTime $complete
-     * @return Action
-     */
-    public function setComplete($complete)
-    {
-        $this->complete = $complete;
-
-        return $this;
-    }
-
-    /**
-     * Get complete
-     *
-     * @return \DateTime 
-     */
-    public function getComplete()
-    {
-        return $this->complete;
-    }
-
-    /**
-     * Set hidden
-     *
-     * @param boolean $hidden
-     * @return Action
-     */
-    public function setHidden($hidden)
-    {
-        $this->hidden = $hidden;
-
-        return $this;
-    }
-
-    /**
-     * Get hidden
-     *
-     * @return boolean 
-     */
-    public function getHidden()
-    {
-        return $this->hidden;
-    }
-
-    /**
-     * Set hourly
-     *
-     * @param boolean $hourly
-     * @return Action
-     */
-    public function setHourly($hourly)
-    {
-        $this->hourly = $hourly;
-
-        return $this;
-    }
-
-    /**
-     * Get hourly
-     *
-     * @return boolean 
-     */
-    public function getHourly()
-    {
-        return $this->hourly;
-    }
-
-    /**
-     * Set can_cancel
-     *
-     * @param boolean $canCancel
-     * @return Action
-     */
-    public function setCanCancel($canCancel)
-    {
-        $this->can_cancel = $canCancel;
-
-        return $this;
-    }
-
-    /**
-     * Get can_cancel
-     *
-     * @return boolean 
-     */
-    public function getCanCancel()
-    {
-        return $this->can_cancel;
-    }
-
-    /**
-     * Set block_travel
-     *
-     * @param boolean $blockTravel
-     * @return Action
-     */
-    public function setBlockTravel($blockTravel)
-    {
-        $this->block_travel = $blockTravel;
-
-        return $this;
-    }
-
-    /**
-     * Get block_travel
-     *
-     * @return boolean 
-     */
-    public function getBlockTravel()
-    {
-        return $this->block_travel;
-    }
-
-    /**
-     * Set priority
-     *
-     * @param integer $priority
-     * @return Action
-     */
-    public function setPriority($priority)
-    {
-        $this->priority = $priority;
-
-        return $this;
-    }
-
-    /**
-     * Get priority
-     *
-     * @return integer 
-     */
-    public function getPriority()
-    {
-        return $this->priority;
-    }
-
-    /**
-     * Set number_value
-     *
-     * @param float $numberValue
-     * @return Action
-     */
-    public function setNumberValue($numberValue)
-    {
-        $this->number_value = $numberValue;
-
-        return $this;
-    }
-
-    /**
-     * Get number_value
-     *
-     * @return float 
-     */
-    public function getNumberValue()
-    {
-        return $this->number_value;
-    }
-
-    /**
-     * Set string_value
-     *
-     * @param string $stringValue
-     * @return Action
-     */
-    public function setStringValue($stringValue)
-    {
-        $this->string_value = $stringValue;
-
-        return $this;
-    }
-
-    /**
-     * Get string_value
-     *
-     * @return string 
-     */
-    public function getStringValue()
-    {
-        return $this->string_value;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Add assigned_entourage
-     *
-     * @param Entourage $assignedEntourage
-     *
-     * @return Action
-     */
-    public function addAssignedEntourage(Entourage $assignedEntourage)
-    {
-        $this->assigned_entourage[] = $assignedEntourage;
-
-        return $this;
-    }
-
-    /**
-     * Remove assigned_entourage
-     *
-     * @param Entourage $assignedEntourage
-     */
-    public function removeAssignedEntourage(Entourage $assignedEntourage)
-    {
-        $this->assigned_entourage->removeElement($assignedEntourage);
-    }
-
-    /**
-     * Get assigned_entourage
-     *
-     * @return Collection
-     */
-    public function getAssignedEntourage()
-    {
-        return $this->assigned_entourage;
-    }
-
-    /**
-     * Add supporting_actions
-     *
-     * @param Action $supportingActions
-     *
-     * @return Action
-     */
-    public function addSupportingAction(Action $supportingActions)
-    {
-        $this->supporting_actions[] = $supportingActions;
-
-        return $this;
-    }
-
-    /**
-     * Remove supporting_actions
-     *
-     * @param Action $supportingActions
-     */
-    public function removeSupportingAction(Action $supportingActions)
-    {
-        $this->supporting_actions->removeElement($supportingActions);
-    }
-
-    /**
-     * Get supporting_actions
-     *
-     * @return Collection
-     */
-    public function getSupportingActions()
-    {
-        return $this->supporting_actions;
-    }
-
-    /**
-     * Add opposing_actions
-     *
-     * @param Action $opposingActions
-     *
-     * @return Action
-     */
-    public function addOpposingAction(Action $opposingActions)
-    {
-        $this->opposing_actions[] = $opposingActions;
-
-        return $this;
-    }
-
-    /**
-     * Remove opposing_actions
-     *
-     * @param Action $opposingActions
-     */
-    public function removeOpposingAction(Action $opposingActions)
-    {
-        $this->opposing_actions->removeElement($opposingActions);
-    }
-
-    /**
-     * Get opposing_actions
-     *
-     * @return Collection
-     */
-    public function getOpposingActions()
-    {
-        return $this->opposing_actions;
-    }
-
-    /**
-     * Set character
-     *
-     * @param Character $character
-     *
-     * @return Action
-     */
-    public function setCharacter(Character $character = null)
-    {
-        $this->character = $character;
-
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return Character
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set target_realm
-     *
-     * @param Realm $targetRealm
-     *
-     * @return Action
-     */
-	public function setTargetRealm(Realm $targetRealm = null)
-    {
-        $this->target_realm = $targetRealm;
-
-        return $this;
-    }
-
-    /**
-     * Get target_realm
-     *
-     * @return Realm
-     */
-    public function getTargetRealm()
-    {
-        return $this->target_realm;
-    }
-
-    /**
-     * Set target_settlement
-     *
-     * @param Settlement $targetSettlement
-     *
-     * @return Action
-     */
-	public function setTargetSettlement(Settlement $targetSettlement = null)
-    {
-        $this->target_settlement = $targetSettlement;
-
-        return $this;
-    }
-
-    /**
-     * Get target_settlement
-     *
-     * @return Settlement
-     */
-    public function getTargetSettlement()
-    {
-        return $this->target_settlement;
-    }
-
-    /**
-     * Set target_place
-     *
-     * @param Place $targetPlace
-     *
-     * @return Action
-     */
-    public function setTargetPlace(Place $targetPlace = null)
-    {
-        $this->target_place = $targetPlace;
-
-        return $this;
-    }
-
-    /**
-     * Get target_place
-     *
-     * @return Place
-     */
-    public function getTargetPlace()
-    {
-        return $this->target_place;
-    }
-
-    /**
-     * Set target_character
-     *
-     * @param Character $targetCharacter
-     *
-     * @return Action
-     */
-    public function setTargetCharacter(Character $targetCharacter = null)
-    {
-        $this->target_character = $targetCharacter;
-
-        return $this;
-    }
-
-	/**
-	 * Get target_character
-     *
-     * @return Character
-     */
-    public function getTargetCharacter()
-    {
-        return $this->target_character;
-    }
-
-	/**
-     * Set target_soldier
-     *
-     * @param Soldier $targetSoldier
-     *
-	 * @return Action
-     */
-    public function setTargetSoldier(Soldier $targetSoldier = null)
-    {
-        $this->target_soldier = $targetSoldier;
-
-        return $this;
-    }
-
-	/**
-     * Get target_soldier
-     *
-     * @return Soldier
-     */
-    public function getTargetSoldier()
-    {
-        return $this->target_soldier;
-    }
-
-	/**
-	 * Set target_entourage_type
-     *
-     * @param EntourageType $targetEntourageType
-     *
-	 * @return Action
-     */
-    public function setTargetEntourageType(EntourageType $targetEntourageType = null)
-    {
-        $this->target_entourage_type = $targetEntourageType;
-
-        return $this;
-    }
-
-	/**
-     * Get target_entourage_type
-     *
-     * @return EntourageType
-     */
-    public function getTargetEntourageType()
-    {
-        return $this->target_entourage_type;
-    }
-
-	/**
-     * Set target_equipment_type
-     *
-     * @param EquipmentType $targetEquipmentType
-	 *
-	 * @return Action
-     */
-    public function setTargetEquipmentType(EquipmentType $targetEquipmentType = null)
-    {
-        $this->target_equipment_type = $targetEquipmentType;
-
-        return $this;
-    }
-
-	/**
-     * Get target_equipment_type
-     *
-     * @return EquipmentType
-     */
-    public function getTargetEquipmentType()
-    {
-        return $this->target_equipment_type;
-    }
-
-    /**
-     * Set target_battlegroup
-     *
-     * @param BattleGroup $targetBattlegroup
-     *
-     * @return Action
-     */
-    public function setTargetBattlegroup(BattleGroup $targetBattlegroup = null)
-    {
-        $this->target_battlegroup = $targetBattlegroup;
-
-	    return $this;
-    }
-
-    /**
-     * Get target_battlegroup
-     *
-     * @return BattleGroup
-     */
-    public function getTargetBattlegroup()
-    {
-        return $this->target_battlegroup;
-    }
-
-    /**
-     * Set target_listing
-     *
-     * @param Listing $targetListing
-     *
-     * @return Action
-     */
-    public function setTargetListing(Listing $targetListing = null)
-    {
-        $this->target_listing = $targetListing;
-
-	    return $this;
-    }
-
-    /**
-     * Get target_listing
-     *
-     * @return Listing
-     */
-    public function getTargetListing()
-    {
-	    return $this->target_listing;
-    }
-
-    /**
-     * Set target_skill
-     *
-     * @param SkillType $targetSkill
-     *
-     * @return Action
-     */
-    public function setTargetSkill(SkillType $targetSkill = null)
-    {
-        $this->target_skill = $targetSkill;
-
-        return $this;
-    }
-
-    /**
-     * Get target_skill
-     *
-     * @return SkillType
-     */
-    public function getTargetSkill()
-    {
-	    return $this->target_skill;
-    }
-
-    /**
-     * Set supported_action
-     *
-     * @param Action $supportedAction
-     *
-     * @return Action
-     */
-    public function setSupportedAction(Action $supportedAction = null)
-    {
-        $this->supported_action = $supportedAction;
-
-        return $this;
-    }
-
-    /**
-     * Get supported_action
-     *
-     * @return Action
-     */
-    public function getSupportedAction() {
-	    return $this->supported_action;
-    }
-
-    /**
-     * Set opposed_action
-     *
-     * @param Action $opposedAction
-     *
-     * @return Action
-     */
-    public function setOpposedAction(Action $opposedAction = null)
-    {
-        $this->opposed_action = $opposedAction;
-
-        return $this;
-    }
-
-    /**
-     * Get opposed_action
-     *
-     * @return Action
-     */
-    public function getOpposedAction()
-    {
-        return $this->opposed_action;
-    }
-
-    public function isHidden(): ?bool
-    {
-        return $this->hidden;
-    }
-
-    public function isHourly(): ?bool
-    {
-        return $this->hourly;
-    }
-
-    public function isCanCancel(): ?bool
-    {
-        return $this->can_cancel;
-    }
-
-    public function isBlockTravel(): ?bool
-    {
-        return $this->block_travel;
-    }
+	public function setType($type): static {
+		$this->type = $type;
+
+		return $this;
+	}
+
+	public function getType(): string {
+		return $this->type;
+	}
+
+	public function setStarted($started = null): static {
+		$this->started = $started;
+
+		return $this;
+	}
+
+	public function getStarted(): DateTime {
+		return $this->started;
+	}
+
+	public function setComplete($complete = null): static {
+		$this->complete = $complete;
+
+		return $this;
+	}
+
+	public function getComplete(): DateTime {
+		return $this->complete;
+	}
+
+	public function setHidden($hidden): static {
+		$this->hidden = $hidden;
+
+		return $this;
+	}
+
+	public function getHidden(): bool {
+		return $this->hidden;
+	}
+
+	public function setHourly($hourly): static {
+		$this->hourly = $hourly;
+
+		return $this;
+	}
+
+	public function getHourly(): bool {
+		return $this->hourly;
+	}
+
+	public function setCanCancel($canCancel): static {
+		$this->can_cancel = $canCancel;
+
+		return $this;
+	}
+
+	public function getCanCancel(): bool {
+		return $this->can_cancel;
+	}
+
+	public function setBlockTravel($blockTravel): static {
+		$this->block_travel = $blockTravel;
+
+		return $this;
+	}
+
+	public function getBlockTravel(): bool {
+		return $this->block_travel;
+	}
+
+	public function setPriority($priority = null): static {
+		$this->priority = $priority;
+
+		return $this;
+	}
+
+	public function getPriority(): int {
+		return $this->priority;
+	}
+
+	public function setNumberValue($numberValue = null): static {
+		$this->number_value = $numberValue;
+
+		return $this;
+	}
+
+	public function getNumberValue(): float {
+		return $this->number_value;
+	}
+
+	public function setStringValue($stringValue = null): static {
+		$this->string_value = $stringValue;
+
+		return $this;
+	}
+
+	public function getStringValue(): string {
+		return $this->string_value;
+	}
+
+	public function getId(): int {
+		return $this->id;
+	}
+
+	public function addAssignedEntourage(Entourage $assignedEntourage): static {
+		$this->assigned_entourage[] = $assignedEntourage;
+
+		return $this;
+	}
+
+	public function removeAssignedEntourage(Entourage $assignedEntourage): void {
+		$this->assigned_entourage->removeElement($assignedEntourage);
+	}
+
+	public function getAssignedEntourage(): ArrayCollection|Collection {
+		return $this->assigned_entourage;
+	}
+
+	public function addSupportingAction(Action $supportingActions): static {
+		$this->supporting_actions[] = $supportingActions;
+
+		return $this;
+	}
+
+	public function removeSupportingAction(Action $supportingActions): void {
+		$this->supporting_actions->removeElement($supportingActions);
+	}
+
+	public function getSupportingActions(): ArrayCollection|Collection {
+		return $this->supporting_actions;
+	}
+
+	public function addOpposingAction(Action $opposingActions): static {
+		$this->opposing_actions[] = $opposingActions;
+
+		return $this;
+	}
+
+	public function removeOpposingAction(Action $opposingActions): void {
+		$this->opposing_actions->removeElement($opposingActions);
+	}
+
+	public function getOpposingActions(): ArrayCollection|Collection {
+		return $this->opposing_actions;
+	}
+
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
+
+		return $this;
+	}
+
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
+
+	public function setTargetRealm(Realm $targetRealm = null): static {
+		$this->target_realm = $targetRealm;
+
+		return $this;
+	}
+
+	public function getTargetRealm(): ?Realm {
+		return $this->target_realm;
+	}
+
+	public function setTargetSettlement(Settlement $targetSettlement = null): static {
+		$this->target_settlement = $targetSettlement;
+
+		return $this;
+	}
+
+	public function getTargetSettlement(): ?Settlement {
+		return $this->target_settlement;
+	}
+
+	public function setTargetPlace(Place $targetPlace = null): static {
+		$this->target_place = $targetPlace;
+
+		return $this;
+	}
+
+	public function getTargetPlace(): ?Place {
+		return $this->target_place;
+	}
+
+	public function setTargetCharacter(Character $targetCharacter = null): static {
+		$this->target_character = $targetCharacter;
+
+		return $this;
+	}
+
+	public function getTargetCharacter(): ?Character {
+		return $this->target_character;
+	}
+
+	public function setTargetSoldier(Soldier $targetSoldier = null): static {
+		$this->target_soldier = $targetSoldier;
+
+		return $this;
+	}
+
+	public function getTargetSoldier(): ?Soldier {
+		return $this->target_soldier;
+	}
+
+	public function setTargetEntourageType(EntourageType $targetEntourageType = null): static {
+		$this->target_entourage_type = $targetEntourageType;
+
+		return $this;
+	}
+
+	public function getTargetEntourageType(): ?EntourageType {
+		return $this->target_entourage_type;
+	}
+
+	public function setTargetEquipmentType(EquipmentType $targetEquipmentType = null): static {
+		$this->target_equipment_type = $targetEquipmentType;
+
+		return $this;
+	}
+
+	public function getTargetEquipmentType(): ?EquipmentType {
+		return $this->target_equipment_type;
+	}
+
+	public function setTargetBattlegroup(BattleGroup $targetBattlegroup = null): static {
+		$this->target_battlegroup = $targetBattlegroup;
+
+		return $this;
+	}
+
+	public function getTargetBattlegroup(): ?BattleGroup {
+		return $this->target_battlegroup;
+	}
+
+	public function setTargetListing(Listing $targetListing = null): static {
+		$this->target_listing = $targetListing;
+
+		return $this;
+	}
+
+	public function getTargetListing(): ?Listing {
+		return $this->target_listing;
+	}
+
+	public function setTargetSkill(SkillType $targetSkill = null): static {
+		$this->target_skill = $targetSkill;
+
+		return $this;
+	}
+
+	public function getTargetSkill(): ?SkillType {
+		return $this->target_skill;
+	}
+
+	public function setSupportedAction(Action $supportedAction = null): static {
+		$this->supported_action = $supportedAction;
+
+		return $this;
+	}
+
+	public function getSupportedAction(): ?Action {
+		return $this->supported_action;
+	}
+
+	public function setOpposedAction(Action $opposedAction = null): static {
+		$this->opposed_action = $opposedAction;
+
+		return $this;
+	}
+
+	public function getOpposedAction(): ?Action {
+		return $this->opposed_action;
+	}
 }

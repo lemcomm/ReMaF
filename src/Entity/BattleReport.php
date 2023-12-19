@@ -4,15 +4,15 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
+use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class BattleReport {
 
-	public function getName() {
+	public function getName(): string {
                      		return "battle"; // TODO: something better? this is used for links
                      	}
 
-	public function checkForObserver(Character $char) {
+	public function checkForObserver(Character $char): bool {
                      		foreach ($this->observers as $each) {
                      			if ($each->getCharacter() === $char) {
                      				return true;
@@ -21,7 +21,7 @@ class BattleReport {
                      		return false;
                      	}
 
-	public function countPublicJournals() {
+	public function countPublicJournals(): int {
                      		$i = 0;
                      		foreach ($this->journals as $each) {
                      			if ($each->getPublic()) {
@@ -31,161 +31,54 @@ class BattleReport {
                      		return $i;
                      	}
 
-    /**
-     * @var integer
-     */
-    private $cycle;
-
-    /**
-     * @var point
-     */
-    private $location;
-
-    /**
-     * @var array
-     */
-    private $location_name;
-
-    /**
-     * @var boolean
-     */
-    private $assault;
-
-    /**
-     * @var boolean
-     */
-    private $sortie;
-
-    /**
-     * @var boolean
-     */
-    private $urban;
-
-    /**
-     * @var integer
-     */
-    private $defender_group_id;
-
-    /**
-     * @var array
-     */
-    private $start;
-
-    /**
-     * @var array
-     */
-    private $combat;
-
-    /**
-     * @var array
-     */
-    private $hunt;
-
-    /**
-     * @var array
-     */
-    private $finish;
-
-    /**
-     * @var boolean
-     */
-    private $completed;
-
-    /**
-     * @var integer
-     */
-    private $count;
-
-    /**
-     * @var integer
-     */
-    private $epicness;
-
-    /**
-     * @var string
-     */
-    private $debug;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\BattleReportGroup
-     */
-    private $primary_attacker;
-
-    /**
-     * @var \App\Entity\BattleReportGroup
-     */
-    private $primary_defender;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $participants;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $groups;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $observers;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $journals;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
-
-    /**
-     * @var \App\Entity\Place
-     */
-    private $place;
-
-    /**
-     * @var \App\Entity\War
-     */
-    private $war;
-
-    /**
-     * @var \App\Entity\Siege
-     */
-    private $siege;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $defense_buildings;
+	private int $cycle;
+	private Point $location;
+	private array $location_name;
+	private bool $assault;
+	private bool $sortie;
+	private bool $urban;
+	private int $defender_group_id;
+	private array $start;
+	private array $combat;
+	private array $hunt;
+	private array $finish;
+	private bool $completed;
+	private int $count;
+	private int $epicness;
+	private string $debug;
+	private int $id;
+	private BattleReportGroup $primary_attacker;
+	private BattleReportGroup $primary_defender;
+	private Collection|ArrayCollection $participants;
+	private Collection|ArrayCollection $groups;
+	private Collection|ArrayCollection $observers;
+	private Collection|ArrayCollection $journals;
+	private Settlement $settlement;
+	private Place $place;
+	private War $war;
+	private Siege $siege;
+	private Collection|ArrayCollection $defense_buildings;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->participants = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->observers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->journals = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->defense_buildings = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->participants = new ArrayCollection();
+        $this->groups = new ArrayCollection();
+        $this->observers = new ArrayCollection();
+        $this->journals = new ArrayCollection();
+        $this->defense_buildings = new ArrayCollection();
     }
 
     /**
      * Set cycle
      *
      * @param integer $cycle
+     *
      * @return BattleReport
      */
-    public function setCycle($cycle)
-    {
+    public function setCycle(int $cycle): static {
         $this->cycle = $cycle;
 
         return $this;
@@ -196,8 +89,7 @@ class BattleReport {
      *
      * @return integer 
      */
-    public function getCycle()
-    {
+    public function getCycle(): int {
         return $this->cycle;
     }
 
@@ -205,10 +97,10 @@ class BattleReport {
      * Set location
      *
      * @param point $location
+     *
      * @return BattleReport
      */
-    public function setLocation($location)
-    {
+    public function setLocation(Point $location): static {
         $this->location = $location;
 
         return $this;
@@ -219,19 +111,18 @@ class BattleReport {
      *
      * @return point 
      */
-    public function getLocation()
-    {
+    public function getLocation(): Point {
         return $this->location;
     }
 
     /**
      * Set location_name
      *
-     * @param array $locationName
+     * @param array|null $locationName
+     *
      * @return BattleReport
      */
-    public function setLocationName($locationName)
-    {
+    public function setLocationName(array $locationName = null): static {
         $this->location_name = $locationName;
 
         return $this;
@@ -242,8 +133,7 @@ class BattleReport {
      *
      * @return array 
      */
-    public function getLocationName()
-    {
+    public function getLocationName(): array {
         return $this->location_name;
     }
 
@@ -251,10 +141,10 @@ class BattleReport {
      * Set assault
      *
      * @param boolean $assault
+     *
      * @return BattleReport
      */
-    public function setAssault($assault)
-    {
+    public function setAssault(bool $assault): static {
         $this->assault = $assault;
 
         return $this;
@@ -265,8 +155,7 @@ class BattleReport {
      *
      * @return boolean 
      */
-    public function getAssault()
-    {
+    public function getAssault(): bool {
         return $this->assault;
     }
 
@@ -274,10 +163,10 @@ class BattleReport {
      * Set sortie
      *
      * @param boolean $sortie
+     *
      * @return BattleReport
      */
-    public function setSortie($sortie)
-    {
+    public function setSortie(bool $sortie): static {
         $this->sortie = $sortie;
 
         return $this;
@@ -288,8 +177,7 @@ class BattleReport {
      *
      * @return boolean 
      */
-    public function getSortie()
-    {
+    public function getSortie(): bool {
         return $this->sortie;
     }
 
@@ -297,10 +185,10 @@ class BattleReport {
      * Set urban
      *
      * @param boolean $urban
+     *
      * @return BattleReport
      */
-    public function setUrban($urban)
-    {
+    public function setUrban(bool $urban): static {
         $this->urban = $urban;
 
         return $this;
@@ -311,19 +199,18 @@ class BattleReport {
      *
      * @return boolean 
      */
-    public function getUrban()
-    {
+    public function getUrban(): bool {
         return $this->urban;
     }
 
     /**
      * Set defender_group_id
      *
-     * @param integer $defenderGroupId
+     * @param integer|null $defenderGroupId
+     *
      * @return BattleReport
      */
-    public function setDefenderGroupId($defenderGroupId)
-    {
+    public function setDefenderGroupId(int $defenderGroupId = null): static {
         $this->defender_group_id = $defenderGroupId;
 
         return $this;
@@ -334,8 +221,7 @@ class BattleReport {
      *
      * @return integer 
      */
-    public function getDefenderGroupId()
-    {
+    public function getDefenderGroupId(): int {
         return $this->defender_group_id;
     }
 
@@ -343,10 +229,10 @@ class BattleReport {
      * Set start
      *
      * @param array $start
+     *
      * @return BattleReport
      */
-    public function setStart($start)
-    {
+    public function setStart(array $start): static {
         $this->start = $start;
 
         return $this;
@@ -357,8 +243,7 @@ class BattleReport {
      *
      * @return array 
      */
-    public function getStart()
-    {
+    public function getStart(): array {
         return $this->start;
     }
 
@@ -366,10 +251,10 @@ class BattleReport {
      * Set combat
      *
      * @param array $combat
+     *
      * @return BattleReport
      */
-    public function setCombat($combat)
-    {
+    public function setCombat(array $combat): static {
         $this->combat = $combat;
 
         return $this;
@@ -380,8 +265,7 @@ class BattleReport {
      *
      * @return array 
      */
-    public function getCombat()
-    {
+    public function getCombat(): array {
         return $this->combat;
     }
 
@@ -389,10 +273,10 @@ class BattleReport {
      * Set hunt
      *
      * @param array $hunt
+     *
      * @return BattleReport
      */
-    public function setHunt($hunt)
-    {
+    public function setHunt(array $hunt): static {
         $this->hunt = $hunt;
 
         return $this;
@@ -403,8 +287,7 @@ class BattleReport {
      *
      * @return array 
      */
-    public function getHunt()
-    {
+    public function getHunt(): array {
         return $this->hunt;
     }
 
@@ -412,10 +295,10 @@ class BattleReport {
      * Set finish
      *
      * @param array $finish
+     *
      * @return BattleReport
      */
-    public function setFinish($finish)
-    {
+    public function setFinish(array $finish): static {
         $this->finish = $finish;
 
         return $this;
@@ -426,8 +309,7 @@ class BattleReport {
      *
      * @return array 
      */
-    public function getFinish()
-    {
+    public function getFinish(): array {
         return $this->finish;
     }
 
@@ -435,10 +317,10 @@ class BattleReport {
      * Set completed
      *
      * @param boolean $completed
+     *
      * @return BattleReport
      */
-    public function setCompleted($completed)
-    {
+    public function setCompleted(bool $completed): static {
         $this->completed = $completed;
 
         return $this;
@@ -449,19 +331,18 @@ class BattleReport {
      *
      * @return boolean 
      */
-    public function getCompleted()
-    {
+    public function getCompleted(): bool {
         return $this->completed;
     }
 
     /**
      * Set count
      *
-     * @param integer $count
+     * @param integer|null $count
+     *
      * @return BattleReport
      */
-    public function setCount($count)
-    {
+    public function setCount(int $count = null): static {
         $this->count = $count;
 
         return $this;
@@ -472,19 +353,18 @@ class BattleReport {
      *
      * @return integer 
      */
-    public function getCount()
-    {
+    public function getCount(): int {
         return $this->count;
     }
 
     /**
      * Set epicness
      *
-     * @param integer $epicness
+     * @param integer|null $epicness
+     *
      * @return BattleReport
      */
-    public function setEpicness($epicness)
-    {
+    public function setEpicness(int $epicness = null): static {
         $this->epicness = $epicness;
 
         return $this;
@@ -495,8 +375,7 @@ class BattleReport {
      *
      * @return integer 
      */
-    public function getEpicness()
-    {
+    public function getEpicness(): int {
         return $this->epicness;
     }
 
@@ -504,10 +383,10 @@ class BattleReport {
      * Set debug
      *
      * @param string $debug
+     *
      * @return BattleReport
      */
-    public function setDebug($debug)
-    {
+    public function setDebug(string $debug): static {
         $this->debug = $debug;
 
         return $this;
@@ -518,8 +397,7 @@ class BattleReport {
      *
      * @return string 
      */
-    public function getDebug()
-    {
+    public function getDebug(): string {
         return $this->debug;
     }
 
@@ -528,19 +406,18 @@ class BattleReport {
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set primary_attacker
-     *
-     * @param \App\Entity\BattleReportGroup $primaryAttacker
-     * @return BattleReport
-     */
-    public function setPrimaryAttacker(\App\Entity\BattleReportGroup $primaryAttacker = null)
-    {
+	/**
+	 * Set primary_attacker
+	 *
+	 * @param BattleReportGroup|null $primaryAttacker
+	 *
+	 * @return BattleReport
+	 */
+    public function setPrimaryAttacker(BattleReportGroup $primaryAttacker = null): static {
         $this->primary_attacker = $primaryAttacker;
 
         return $this;
@@ -549,21 +426,20 @@ class BattleReport {
     /**
      * Get primary_attacker
      *
-     * @return \App\Entity\BattleReportGroup 
+     * @return BattleReportGroup
      */
-    public function getPrimaryAttacker()
-    {
+    public function getPrimaryAttacker(): BattleReportGroup {
         return $this->primary_attacker;
     }
 
     /**
      * Set primary_defender
      *
-     * @param \App\Entity\BattleReportGroup $primaryDefender
+     * @param BattleReportGroup|null $primaryDefender
+     *
      * @return BattleReport
      */
-    public function setPrimaryDefender(\App\Entity\BattleReportGroup $primaryDefender = null)
-    {
+	public function setPrimaryDefender(BattleReportGroup $primaryDefender = null): static {
         $this->primary_defender = $primaryDefender;
 
         return $this;
@@ -572,21 +448,20 @@ class BattleReport {
     /**
      * Get primary_defender
      *
-     * @return \App\Entity\BattleReportGroup 
+     * @return BattleReportGroup
      */
-    public function getPrimaryDefender()
-    {
+    public function getPrimaryDefender(): BattleReportGroup {
         return $this->primary_defender;
     }
 
     /**
      * Add participants
      *
-     * @param \App\Entity\BattleParticipant $participants
+     * @param BattleParticipant $participants
+     *
      * @return BattleReport
      */
-    public function addParticipant(\App\Entity\BattleParticipant $participants)
-    {
+    public function addParticipant(BattleParticipant $participants): static {
         $this->participants[] = $participants;
 
         return $this;
@@ -595,31 +470,29 @@ class BattleReport {
     /**
      * Remove participants
      *
-     * @param \App\Entity\BattleParticipant $participants
+     * @param BattleParticipant $participants
      */
-    public function removeParticipant(\App\Entity\BattleParticipant $participants)
-    {
+    public function removeParticipant(BattleParticipant $participants): void {
         $this->participants->removeElement($participants);
     }
 
     /**
      * Get participants
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection|Collection
      */
-    public function getParticipants()
-    {
+	public function getParticipants(): ArrayCollection|Collection {
         return $this->participants;
     }
 
     /**
      * Add groups
      *
-     * @param \App\Entity\BattleReportGroup $groups
+     * @param BattleReportGroup $groups
+     *
      * @return BattleReport
      */
-    public function addGroup(\App\Entity\BattleReportGroup $groups)
-    {
+	public function addGroup(BattleReportGroup $groups): static {
         $this->groups[] = $groups;
 
         return $this;
@@ -628,31 +501,29 @@ class BattleReport {
     /**
      * Remove groups
      *
-     * @param \App\Entity\BattleReportGroup $groups
+     * @param BattleReportGroup $groups
      */
-    public function removeGroup(\App\Entity\BattleReportGroup $groups)
-    {
+	public function removeGroup(BattleReportGroup $groups): void {
         $this->groups->removeElement($groups);
     }
 
     /**
      * Get groups
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection|Collection
      */
-    public function getGroups()
-    {
+	public function getGroups(): ArrayCollection|Collection {
         return $this->groups;
     }
 
     /**
      * Add observers
      *
-     * @param \App\Entity\BattleReportObserver $observers
+     * @param BattleReportObserver $observers
+     *
      * @return BattleReport
      */
-    public function addObserver(\App\Entity\BattleReportObserver $observers)
-    {
+	public function addObserver(BattleReportObserver $observers): static {
         $this->observers[] = $observers;
 
         return $this;
@@ -661,31 +532,29 @@ class BattleReport {
     /**
      * Remove observers
      *
-     * @param \App\Entity\BattleReportObserver $observers
+     * @param BattleReportObserver $observers
      */
-    public function removeObserver(\App\Entity\BattleReportObserver $observers)
-    {
+	public function removeObserver(BattleReportObserver $observers): void {
         $this->observers->removeElement($observers);
     }
 
     /**
      * Get observers
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection|Collection
      */
-    public function getObservers()
-    {
+	public function getObservers(): ArrayCollection|Collection {
         return $this->observers;
     }
 
     /**
      * Add journals
      *
-     * @param \App\Entity\Journal $journals
+     * @param Journal $journals
+     *
      * @return BattleReport
      */
-    public function addJournal(\App\Entity\Journal $journals)
-    {
+    public function addJournal(Journal $journals): static {
         $this->journals[] = $journals;
 
         return $this;
@@ -694,54 +563,51 @@ class BattleReport {
     /**
      * Remove journals
      *
-     * @param \App\Entity\Journal $journals
+     * @param Journal $journals
      */
-    public function removeJournal(\App\Entity\Journal $journals)
-    {
+	public function removeJournal(Journal $journals): void {
         $this->journals->removeElement($journals);
     }
 
     /**
      * Get journals
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection|Collection
      */
-    public function getJournals()
-    {
+	public function getJournals(): ArrayCollection|Collection {
         return $this->journals;
     }
 
     /**
      * Set settlement
      *
-     * @param \App\Entity\Settlement $settlement
+     * @param Settlement|null $settlement
+     *
      * @return BattleReport
      */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
+	public function setSettlement(Settlement $settlement = null): static {
         $this->settlement = $settlement;
 
         return $this;
     }
 
-    /**
-     * Get settlement
+	/**
+	 * Get settlement
      *
-     * @return \App\Entity\Settlement 
+     * @return Settlement
      */
-    public function getSettlement()
-    {
+    public function getSettlement(): Settlement {
         return $this->settlement;
     }
 
-    /**
-     * Set place
-     *
-     * @param \App\Entity\Place $place
-     * @return BattleReport
-     */
-    public function setPlace(\App\Entity\Place $place = null)
-    {
+	/**
+	 * Set place
+	 *
+	 * @param Place|null $place
+	 *
+	 * @return BattleReport
+	 */
+	public function setPlace(Place $place = null): static {
         $this->place = $place;
 
         return $this;
@@ -750,21 +616,20 @@ class BattleReport {
     /**
      * Get place
      *
-     * @return \App\Entity\Place 
+     * @return Place
      */
-    public function getPlace()
-    {
+    public function getPlace(): Place {
         return $this->place;
     }
 
     /**
      * Set war
      *
-     * @param \App\Entity\War $war
+     * @param War|null $war
+     *
      * @return BattleReport
      */
-    public function setWar(\App\Entity\War $war = null)
-    {
+	public function setWar(War $war = null): static {
         $this->war = $war;
 
         return $this;
@@ -773,44 +638,42 @@ class BattleReport {
     /**
      * Get war
      *
-     * @return \App\Entity\War 
+     * @return War
      */
-    public function getWar()
-    {
+    public function getWar(): War {
         return $this->war;
     }
 
     /**
      * Set siege
      *
-     * @param \App\Entity\Siege $siege
+     * @param Siege|null $siege
+     *
      * @return BattleReport
      */
-    public function setSiege(\App\Entity\Siege $siege = null)
-    {
+	public function setSiege(Siege $siege = null): static {
         $this->siege = $siege;
 
-        return $this;
+	    return $this;
     }
 
     /**
      * Get siege
      *
-     * @return \App\Entity\Siege 
+     * @return Siege
      */
-    public function getSiege()
-    {
+    public function getSiege(): Siege {
         return $this->siege;
     }
 
-    /**
+	/**
      * Add defense_buildings
      *
-     * @param \App\Entity\BuildingType $defenseBuildings
-     * @return BattleReport
+     * @param BuildingType $defenseBuildings
+	 *
+	 * @return BattleReport
      */
-    public function addDefenseBuilding(\App\Entity\BuildingType $defenseBuildings)
-    {
+    public function addDefenseBuilding(BuildingType $defenseBuildings): static {
         $this->defense_buildings[] = $defenseBuildings;
 
         return $this;
@@ -819,20 +682,18 @@ class BattleReport {
     /**
      * Remove defense_buildings
      *
-     * @param \App\Entity\BuildingType $defenseBuildings
+     * @param BuildingType $defenseBuildings
      */
-    public function removeDefenseBuilding(\App\Entity\BuildingType $defenseBuildings)
-    {
+    public function removeDefenseBuilding(BuildingType $defenseBuildings): void {
         $this->defense_buildings->removeElement($defenseBuildings);
     }
 
     /**
      * Get defense_buildings
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection|Collection
      */
-    public function getDefenseBuildings()
-    {
+	public function getDefenseBuildings(): ArrayCollection|Collection {
         return $this->defense_buildings;
     }
 

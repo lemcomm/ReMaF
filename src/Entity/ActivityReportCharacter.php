@@ -4,125 +4,48 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ActivityReportCharacter
  */
 class ActivityReportCharacter
 {
-    /**
-     * @var array
-     */
-    private $start;
-
-    /**
-     * @var array
-     */
-    private $finish;
-
-    /**
-     * @var boolean
-     */
-    private $standing;
-
-    /**
-     * @var boolean
-     */
-    private $wounded;
-
-    /**
-     * @var boolean
-     */
-    private $surrender;
-
-    /**
-     * @var boolean
-     */
-    private $killed;
-
-    /**
-     * @var integer
-     */
-    private $attacks;
-
-    /**
-     * @var integer
-     */
-    private $hits_taken;
-
-    /**
-     * @var integer
-     */
-    private $hits_made;
-
-    /**
-     * @var integer
-     */
-    private $wounds;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $stages;
-
-    /**
-     * @var \App\Entity\ActivityReport
-     */
-    private $activity_report;
-
-    /**
-     * @var \App\Entity\ActivityReportGroup
-     */
-    private $group_report;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
-
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $weapon;
-
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $armour;
-
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $equipment;
-
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $mount;
+	private array $start;
+	private array $finish;
+	private bool $standing;
+	private bool $wounded;
+	private bool $surrender;
+	private bool $killed;
+	private int $attacks;
+	private int $hits_taken;
+	private int $hits_made;
+	private int $wounds;
+	private int $id;
+	private Collection|ArrayCollection $stages;
+	private ActivityReport $activity_report;
+	private ActivityReportGroup $group_report;
+	private Character $character;
+	private EquipmentType $weapon;
+	private EquipmentType $armour;
+	private EquipmentType $equipment;
+	private EquipmentType $mount;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->stages = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->stages = new ArrayCollection();
     }
 
     /**
      * Set start
      *
      * @param array $start
+     *
      * @return ActivityReportCharacter
      */
-    public function setStart($start)
-    {
+    public function setStart(array $start): static {
         $this->start = $start;
 
         return $this;
@@ -133,8 +56,7 @@ class ActivityReportCharacter
      *
      * @return array 
      */
-    public function getStart()
-    {
+    public function getStart(): array {
         return $this->start;
     }
 
@@ -142,10 +64,10 @@ class ActivityReportCharacter
      * Set finish
      *
      * @param array $finish
+     *
      * @return ActivityReportCharacter
      */
-    public function setFinish($finish)
-    {
+    public function setFinish(array $finish): static {
         $this->finish = $finish;
 
         return $this;
@@ -156,8 +78,7 @@ class ActivityReportCharacter
      *
      * @return array 
      */
-    public function getFinish()
-    {
+    public function getFinish(): array {
         return $this->finish;
     }
 
@@ -165,10 +86,10 @@ class ActivityReportCharacter
      * Set standing
      *
      * @param boolean $standing
+     *
      * @return ActivityReportCharacter
      */
-    public function setStanding($standing)
-    {
+    public function setStanding(bool $standing): static {
         $this->standing = $standing;
 
         return $this;
@@ -179,8 +100,7 @@ class ActivityReportCharacter
      *
      * @return boolean 
      */
-    public function getStanding()
-    {
+    public function getStanding(): bool {
         return $this->standing;
     }
 
@@ -188,10 +108,10 @@ class ActivityReportCharacter
      * Set wounded
      *
      * @param boolean $wounded
+     *
      * @return ActivityReportCharacter
      */
-    public function setWounded($wounded)
-    {
+    public function setWounded(bool $wounded): static {
         $this->wounded = $wounded;
 
         return $this;
@@ -202,8 +122,7 @@ class ActivityReportCharacter
      *
      * @return boolean 
      */
-    public function getWounded()
-    {
+    public function getWounded(): bool {
         return $this->wounded;
     }
 
@@ -211,10 +130,10 @@ class ActivityReportCharacter
      * Set surrender
      *
      * @param boolean $surrender
+     *
      * @return ActivityReportCharacter
      */
-    public function setSurrender($surrender)
-    {
+    public function setSurrender(bool $surrender): static {
         $this->surrender = $surrender;
 
         return $this;
@@ -225,8 +144,7 @@ class ActivityReportCharacter
      *
      * @return boolean 
      */
-    public function getSurrender()
-    {
+    public function getSurrender(): bool {
         return $this->surrender;
     }
 
@@ -234,10 +152,10 @@ class ActivityReportCharacter
      * Set killed
      *
      * @param boolean $killed
+     *
      * @return ActivityReportCharacter
      */
-    public function setKilled($killed)
-    {
+    public function setKilled(bool $killed): static {
         $this->killed = $killed;
 
         return $this;
@@ -248,19 +166,18 @@ class ActivityReportCharacter
      *
      * @return boolean 
      */
-    public function getKilled()
-    {
+    public function getKilled(): bool {
         return $this->killed;
     }
 
     /**
      * Set attacks
      *
-     * @param integer $attacks
+     * @param integer|null $attacks
+     *
      * @return ActivityReportCharacter
      */
-    public function setAttacks($attacks)
-    {
+    public function setAttacks(int $attacks = null): static {
         $this->attacks = $attacks;
 
         return $this;
@@ -271,19 +188,18 @@ class ActivityReportCharacter
      *
      * @return integer 
      */
-    public function getAttacks()
-    {
+    public function getAttacks(): int {
         return $this->attacks;
     }
 
     /**
      * Set hits_taken
      *
-     * @param integer $hitsTaken
+     * @param integer|null $hitsTaken
+     *
      * @return ActivityReportCharacter
      */
-    public function setHitsTaken($hitsTaken)
-    {
+    public function setHitsTaken(int $hitsTaken = null): static {
         $this->hits_taken = $hitsTaken;
 
         return $this;
@@ -294,19 +210,18 @@ class ActivityReportCharacter
      *
      * @return integer 
      */
-    public function getHitsTaken()
-    {
+    public function getHitsTaken(): int {
         return $this->hits_taken;
     }
 
     /**
      * Set hits_made
      *
-     * @param integer $hitsMade
+     * @param integer|null $hitsMade
+     *
      * @return ActivityReportCharacter
      */
-    public function setHitsMade($hitsMade)
-    {
+    public function setHitsMade(int $hitsMade = null): static {
         $this->hits_made = $hitsMade;
 
         return $this;
@@ -317,19 +232,18 @@ class ActivityReportCharacter
      *
      * @return integer 
      */
-    public function getHitsMade()
-    {
+    public function getHitsMade(): int {
         return $this->hits_made;
     }
 
     /**
      * Set wounds
      *
-     * @param integer $wounds
+     * @param integer|null $wounds
+     *
      * @return ActivityReportCharacter
      */
-    public function setWounds($wounds)
-    {
+    public function setWounds(int $wounds = null): static {
         $this->wounds = $wounds;
 
         return $this;
@@ -340,8 +254,7 @@ class ActivityReportCharacter
      *
      * @return integer 
      */
-    public function getWounds()
-    {
+    public function getWounds(): int {
         return $this->wounds;
     }
 
@@ -350,19 +263,18 @@ class ActivityReportCharacter
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
     /**
      * Add stages
      *
-     * @param \App\Entity\ActivityReportStage $stages
+     * @param ActivityReportStage $stages
+     *
      * @return ActivityReportCharacter
      */
-    public function addStage(\App\Entity\ActivityReportStage $stages)
-    {
+    public function addStage(ActivityReportStage $stages): static {
         $this->stages[] = $stages;
 
         return $this;
@@ -371,31 +283,29 @@ class ActivityReportCharacter
     /**
      * Remove stages
      *
-     * @param \App\Entity\ActivityReportStage $stages
+     * @param ActivityReportStage $stages
      */
-    public function removeStage(\App\Entity\ActivityReportStage $stages)
-    {
+    public function removeStage(ActivityReportStage $stages): void {
         $this->stages->removeElement($stages);
     }
 
-    /**
-     * Get stages
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getStages()
-    {
+	/**
+	 * Get stages
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+    public function getStages(): ArrayCollection|Collection {
         return $this->stages;
     }
 
-    /**
-     * Set activity_report
-     *
-     * @param \App\Entity\ActivityReport $activityReport
-     * @return ActivityReportCharacter
-     */
-    public function setActivityReport(\App\Entity\ActivityReport $activityReport = null)
-    {
+	/**
+	 * Set activity_report
+	 *
+	 * @param ActivityReport|null $activityReport
+	 *
+	 * @return ActivityReportCharacter
+	 */
+    public function setActivityReport(ActivityReport $activityReport = null): static {
         $this->activity_report = $activityReport;
 
         return $this;
@@ -404,21 +314,20 @@ class ActivityReportCharacter
     /**
      * Get activity_report
      *
-     * @return \App\Entity\ActivityReport 
+     * @return ActivityReport
      */
-    public function getActivityReport()
-    {
+    public function getActivityReport(): ActivityReport {
         return $this->activity_report;
     }
 
     /**
      * Set group_report
      *
-     * @param \App\Entity\ActivityReportGroup $groupReport
+     * @param ActivityReportGroup|null $groupReport
+     *
      * @return ActivityReportCharacter
      */
-    public function setGroupReport(\App\Entity\ActivityReportGroup $groupReport = null)
-    {
+	public function setGroupReport(ActivityReportGroup $groupReport = null): static {
         $this->group_report = $groupReport;
 
         return $this;
@@ -427,21 +336,20 @@ class ActivityReportCharacter
     /**
      * Get group_report
      *
-     * @return \App\Entity\ActivityReportGroup 
+     * @return ActivityReportGroup
      */
-    public function getGroupReport()
-    {
+    public function getGroupReport(): ActivityReportGroup {
         return $this->group_report;
     }
 
     /**
      * Set character
      *
-     * @param \App\Entity\Character $character
+     * @param Character|null $character
+     *
      * @return ActivityReportCharacter
      */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
+	public function setCharacter(Character $character = null): static {
         $this->character = $character;
 
         return $this;
@@ -450,21 +358,20 @@ class ActivityReportCharacter
     /**
      * Get character
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
-    public function getCharacter()
-    {
+    public function getCharacter(): Character {
         return $this->character;
     }
 
     /**
      * Set weapon
      *
-     * @param \App\Entity\EquipmentType $weapon
+     * @param EquipmentType|null $weapon
+     *
      * @return ActivityReportCharacter
      */
-    public function setWeapon(\App\Entity\EquipmentType $weapon = null)
-    {
+	public function setWeapon(EquipmentType $weapon = null): static {
         $this->weapon = $weapon;
 
         return $this;
@@ -473,21 +380,20 @@ class ActivityReportCharacter
     /**
      * Get weapon
      *
-     * @return \App\Entity\EquipmentType 
+     * @return EquipmentType
      */
-    public function getWeapon()
-    {
+    public function getWeapon(): EquipmentType {
         return $this->weapon;
     }
 
     /**
      * Set armour
      *
-     * @param \App\Entity\EquipmentType $armour
+     * @param EquipmentType|null $armour
+     *
      * @return ActivityReportCharacter
      */
-    public function setArmour(\App\Entity\EquipmentType $armour = null)
-    {
+	public function setArmour(EquipmentType $armour = null): static {
         $this->armour = $armour;
 
         return $this;
@@ -496,56 +402,53 @@ class ActivityReportCharacter
     /**
      * Get armour
      *
-     * @return \App\Entity\EquipmentType 
+     * @return EquipmentType
      */
-    public function getArmour()
-    {
+    public function getArmour(): EquipmentType {
         return $this->armour;
     }
 
     /**
      * Set equipment
      *
-     * @param \App\Entity\EquipmentType $equipment
+     * @param EquipmentType|null $equipment
+     *
      * @return ActivityReportCharacter
      */
-    public function setEquipment(\App\Entity\EquipmentType $equipment = null)
-    {
+	public function setEquipment(EquipmentType $equipment = null): static {
         $this->equipment = $equipment;
 
         return $this;
     }
 
-    /**
-     * Get equipment
+	/**
+	 * Get equipment
      *
-     * @return \App\Entity\EquipmentType 
+     * @return EquipmentType
      */
-    public function getEquipment()
-    {
+    public function getEquipment(): EquipmentType {
         return $this->equipment;
     }
 
-    /**
-     * Set mount
-     *
-     * @param \App\Entity\EquipmentType $mount
-     * @return ActivityReportCharacter
-     */
-    public function setMount(\App\Entity\EquipmentType $mount = null)
-    {
+	/**
+	 * Set mount
+	 *
+	 * @param EquipmentType|null $mount
+	 *
+	 * @return ActivityReportCharacter
+	 */
+	public function setMount(EquipmentType $mount = null): static {
         $this->mount = $mount;
 
         return $this;
     }
 
-    /**
+	/**
      * Get mount
      *
-     * @return \App\Entity\EquipmentType 
+     * @return EquipmentType
      */
-    public function getMount()
-    {
+    public function getMount(): EquipmentType {
         return $this->mount;
     }
 

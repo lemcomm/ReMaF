@@ -2,53 +2,29 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 /**
  * AssociationMember
  */
 class AssociationMember
 {
-    /**
-     * @var \DateTime
-     */
-    private $join_date;
-
-    /**
-     * @var \DateTime
-     */
-    private $rank_date;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\Association
-     */
-    private $association;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
-
-    /**
-     * @var \App\Entity\AssociationRank
-     */
-    private $rank;
+	private DateTime $join_date;
+	private DateTime $rank_date;
+	private int $id;
+	private Association $association;
+	private Character $character;
+	private AssociationRank $rank;
 
 
     /**
      * Set join_date
      *
-     * @param \DateTime $joinDate
+     * @param DateTime $joinDate
+     *
      * @return AssociationMember
      */
-    public function setJoinDate($joinDate)
-    {
+    public function setJoinDate(DateTime $joinDate): static {
         $this->join_date = $joinDate;
 
         return $this;
@@ -57,21 +33,20 @@ class AssociationMember
     /**
      * Get join_date
      *
-     * @return \DateTime 
+     * @return DateTime
      */
-    public function getJoinDate()
-    {
+    public function getJoinDate(): DateTime {
         return $this->join_date;
     }
 
-    /**
-     * Set rank_date
-     *
-     * @param \DateTime $rankDate
-     * @return AssociationMember
-     */
-    public function setRankDate($rankDate)
-    {
+	/**
+	 * Set rank_date
+	 *
+	 * @param DateTime|null $rankDate
+	 *
+	 * @return AssociationMember
+	 */
+    public function setRankDate(DateTime $rankDate = null): static {
         $this->rank_date = $rankDate;
 
         return $this;
@@ -80,10 +55,9 @@ class AssociationMember
     /**
      * Get rank_date
      *
-     * @return \DateTime 
+     * @return DateTime
      */
-    public function getRankDate()
-    {
+    public function getRankDate(): DateTime {
         return $this->rank_date;
     }
 
@@ -92,19 +66,18 @@ class AssociationMember
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set association
-     *
-     * @param \App\Entity\Association $association
-     * @return AssociationMember
-     */
-    public function setAssociation(\App\Entity\Association $association = null)
-    {
+	/**
+	 * Set association
+	 *
+	 * @param Association|null $association
+	 *
+	 * @return AssociationMember
+	 */
+    public function setAssociation(Association $association = null): static {
         $this->association = $association;
 
         return $this;
@@ -113,21 +86,20 @@ class AssociationMember
     /**
      * Get association
      *
-     * @return \App\Entity\Association 
+     * @return Association
      */
-    public function getAssociation()
-    {
+    public function getAssociation(): Association {
         return $this->association;
     }
 
     /**
      * Set character
      *
-     * @param \App\Entity\Character $character
+     * @param Character|null $character
+     *
      * @return AssociationMember
      */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
+	public function setCharacter(Character $character = null): static {
         $this->character = $character;
 
         return $this;
@@ -136,21 +108,20 @@ class AssociationMember
     /**
      * Get character
      *
-     * @return \App\Entity\Character 
+     * @return Character
      */
-    public function getCharacter()
-    {
+    public function getCharacter(): Character {
         return $this->character;
     }
 
     /**
      * Set rank
      *
-     * @param \App\Entity\AssociationRank $rank
+     * @param AssociationRank|null $rank
+     *
      * @return AssociationMember
      */
-    public function setRank(\App\Entity\AssociationRank $rank = null)
-    {
+	public function setRank(AssociationRank $rank = null): static {
         $this->rank = $rank;
 
         return $this;
@@ -159,10 +130,9 @@ class AssociationMember
     /**
      * Get rank
      *
-     * @return \App\Entity\AssociationRank 
+     * @return AssociationRank
      */
-    public function getRank()
-    {
+    public function getRank(): AssociationRank {
         return $this->rank;
     }
 }

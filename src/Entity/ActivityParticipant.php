@@ -4,319 +4,264 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ActivityParticipant
  */
 class ActivityParticipant {
+	private string $role;
+	private bool $accepted;
+	private bool $organizer;
+	private int $id;
+	private Collection|ArrayCollection $bout_participation;
+	private Activity $activity;
+	private Character $character;
+	private Style $style;
+	private EquipmentType $weapon;
+	private ActivityGroup $group;
 
-        public function isChallenger() {
-                if ($this->getOrganizer()) {
-                        return true;
-                }
-                return false;
-        }
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->bout_participation = new ArrayCollection();
+	}
 
-        public function isChallenged() {
-                if (!$this->getOrganizer()) {
-                        return true;
-                }
-                return false;
-        }
-  
-    /**
-     * @var string
-     */
-    private $role;
+	public function isChallenger(): bool {
+		if ($this->getOrganizer()) {
+			return true;
+		}
+		return false;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $accepted;
+	public function isChallenged(): bool {
+		if (!$this->getOrganizer()) {
+			return true;
+		}
+		return false;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $organizer;
+	/**
+	 * Set role
+	 *
+	 * @param string|null $role
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setRole(string $role = null): static {
+		$this->role = $role;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $bout_participation;
+	/**
+	 * Get role
+	 *
+	 * @return string
+	 */
+	public function getRole(): string {
+		return $this->role;
+	}
 
-    /**
-     * @var \App\Entity\Activity
-     */
-    private $activity;
+	/**
+	 * Set accepted
+	 *
+	 * @param boolean|null $accepted
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setAccepted(bool $accepted = null): static {
+		$this->accepted = $accepted;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Style
-     */
-    private $style;
+	/**
+	 * Get accepted
+	 *
+	 * @return boolean
+	 */
+	public function getAccepted(): bool {
+		return $this->accepted;
+	}
 
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $weapon;
+	/**
+	 * Set organizer
+	 *
+	 * @param boolean|null $organizer
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setOrganizer(bool $organizer = null): static {
+		$this->organizer = $organizer;
 
-    /**
-     * @var \App\Entity\ActivityGroup
-     */
-    private $group;
+		return $this;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->bout_participation = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Get organizer
+	 *
+	 * @return boolean
+	 */
+	public function getOrganizer(): bool {
+		return $this->organizer;
+	}
 
-    /**
-     * Set role
-     *
-     * @param string $role
-     * @return ActivityParticipant
-     */
-    public function setRole($role)
-    {
-        $this->role = $role;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Add bout_participation
+	 *
+	 * @param ActivityBoutParticipant $boutParticipation
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function addBoutParticipation(ActivityBoutParticipant $boutParticipation): static {
+		$this->bout_participation[] = $boutParticipation;
 
-    /**
-     * Get role
-     *
-     * @return string 
-     */
-    public function getRole()
-    {
-        return $this->role;
-    }
+		return $this;
+	}
 
-    /**
-     * Set accepted
-     *
-     * @param boolean $accepted
-     * @return ActivityParticipant
-     */
-    public function setAccepted($accepted)
-    {
-        $this->accepted = $accepted;
+	/**
+	 * Remove bout_participation
+	 *
+	 * @param ActivityBoutParticipant $boutParticipation
+	 */
+	public function removeBoutParticipation(ActivityBoutParticipant $boutParticipation): void {
+		$this->bout_participation->removeElement($boutParticipation);
+	}
 
-        return $this;
-    }
+	/**
+	 * Get bout_participation
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getBoutParticipation(): ArrayCollection|Collection {
+		return $this->bout_participation;
+	}
 
-    /**
-     * Get accepted
-     *
-     * @return boolean 
-     */
-    public function getAccepted()
-    {
-        return $this->accepted;
-    }
+	/**
+	 * Set activity
+	 *
+	 * @param Activity|null $activity
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setActivity(Activity $activity = null): static {
+		$this->activity = $activity;
 
-    /**
-     * Set organizer
-     *
-     * @param boolean $organizer
-     * @return ActivityParticipant
-     */
-    public function setOrganizer($organizer)
-    {
-        $this->organizer = $organizer;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get activity
+	 *
+	 * @return Activity
+	 */
+	public function getActivity(): Activity {
+		return $this->activity;
+	}
 
-    /**
-     * Get organizer
-     *
-     * @return boolean 
-     */
-    public function getOrganizer()
-    {
-        return $this->organizer;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Add bout_participation
-     *
-     * @param \App\Entity\ActivityBoutParticipant $boutParticipation
-     * @return ActivityParticipant
-     */
-    public function addBoutParticipation(\App\Entity\ActivityBoutParticipant $boutParticipation)
-    {
-        $this->bout_participation[] = $boutParticipation;
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set style
+	 *
+	 * @param Style|null $style
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setStyle(Style $style = null): static {
+		$this->style = $style;
 
-    /**
-     * Remove bout_participation
-     *
-     * @param \App\Entity\ActivityBoutParticipant $boutParticipation
-     */
-    public function removeBoutParticipation(\App\Entity\ActivityBoutParticipant $boutParticipation)
-    {
-        $this->bout_participation->removeElement($boutParticipation);
-    }
+		return $this;
+	}
 
-    /**
-     * Get bout_participation
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getBoutParticipation()
-    {
-        return $this->bout_participation;
-    }
+	/**
+	 * Get style
+	 *
+	 * @return Style
+	 */
+	public function getStyle(): Style {
+		return $this->style;
+	}
 
-    /**
-     * Set activity
-     *
-     * @param \App\Entity\Activity $activity
-     * @return ActivityParticipant
-     */
-    public function setActivity(\App\Entity\Activity $activity = null)
-    {
-        $this->activity = $activity;
+	/**
+	 * Set weapon
+	 *
+	 * @param EquipmentType|null $weapon
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setWeapon(EquipmentType $weapon = null): static {
+		$this->weapon = $weapon;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get activity
-     *
-     * @return \App\Entity\Activity 
-     */
-    public function getActivity()
-    {
-        return $this->activity;
-    }
+	/**
+	 * Get weapon
+	 *
+	 * @return EquipmentType
+	 */
+	public function getWeapon(): EquipmentType {
+		return $this->weapon;
+	}
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return ActivityParticipant
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
+	/**
+	 * Set group
+	 *
+	 * @param ActivityGroup|null $group
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setGroup(ActivityGroup $group = null): static {
+		$this->group = $group;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
+	/**
+	 * Get group
+	 *
+	 * @return ActivityGroup
+	 */
+	public function getGroup(): ActivityGroup {
+		return $this->group;
+	}
 
-    /**
-     * Set style
-     *
-     * @param \App\Entity\Style $style
-     * @return ActivityParticipant
-     */
-    public function setStyle(\App\Entity\Style $style = null)
-    {
-        $this->style = $style;
+	public function isAccepted(): ?bool {
+		return $this->accepted;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get style
-     *
-     * @return \App\Entity\Style 
-     */
-    public function getStyle()
-    {
-        return $this->style;
-    }
-
-    /**
-     * Set weapon
-     *
-     * @param \App\Entity\EquipmentType $weapon
-     * @return ActivityParticipant
-     */
-    public function setWeapon(\App\Entity\EquipmentType $weapon = null)
-    {
-        $this->weapon = $weapon;
-
-        return $this;
-    }
-
-    /**
-     * Get weapon
-     *
-     * @return \App\Entity\EquipmentType 
-     */
-    public function getWeapon()
-    {
-        return $this->weapon;
-    }
-
-    /**
-     * Set group
-     *
-     * @param \App\Entity\ActivityGroup $group
-     * @return ActivityParticipant
-     */
-    public function setGroup(\App\Entity\ActivityGroup $group = null)
-    {
-        $this->group = $group;
-
-        return $this;
-    }
-
-    /**
-     * Get group
-     *
-     * @return \App\Entity\ActivityGroup 
-     */
-    public function getGroup()
-    {
-        return $this->group;
-    }
-
-    public function isAccepted(): ?bool
-    {
-        return $this->accepted;
-    }
-
-    public function isOrganizer(): ?bool
-    {
-        return $this->organizer;
-    }
+	public function isOrganizer(): ?bool {
+		return $this->organizer;
+	}
 }
