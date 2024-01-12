@@ -11,55 +11,24 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Deity
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\Description
-     */
-    private $description;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $associations;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $followers;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $descriptions;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $aspects;
-
-    /**
-     * @var \App\Entity\Association
-     */
-    private $main_recognizer;
+	private string $name;
+	private int $id;
+	private ?Description $description;
+	private Collection $associations;
+	private Collection $followers;
+	private Collection $descriptions;
+	private Collection $aspects;
+	private ?Association $main_recognizer;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->associations = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->followers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->descriptions = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->aspects = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->associations = new ArrayCollection();
+        $this->followers = new ArrayCollection();
+        $this->descriptions = new ArrayCollection();
+        $this->aspects = new ArrayCollection();
     }
 
     /**
@@ -98,10 +67,11 @@ class Deity
     /**
      * Set description
      *
-     * @param \App\Entity\Description $description
+     * @param Description $description
+     *
      * @return Deity
      */
-    public function setDescription(\App\Entity\Description $description = null)
+    public function setDescription(Description $description = null)
     {
         $this->description = $description;
 
@@ -111,7 +81,7 @@ class Deity
     /**
      * Get description
      *
-     * @return \App\Entity\Description 
+     * @return Description
      */
     public function getDescription()
     {
@@ -121,10 +91,11 @@ class Deity
     /**
      * Add associations
      *
-     * @param \App\Entity\AssociationDeity $associations
+     * @param AssociationDeity $associations
+     *
      * @return Deity
      */
-    public function addAssociation(\App\Entity\AssociationDeity $associations)
+    public function addAssociation(AssociationDeity $associations)
     {
         $this->associations[] = $associations;
 
@@ -134,9 +105,9 @@ class Deity
     /**
      * Remove associations
      *
-     * @param \App\Entity\AssociationDeity $associations
+     * @param AssociationDeity $associations
      */
-    public function removeAssociation(\App\Entity\AssociationDeity $associations)
+    public function removeAssociation(AssociationDeity $associations)
     {
         $this->associations->removeElement($associations);
     }
@@ -144,7 +115,7 @@ class Deity
     /**
      * Get associations
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getAssociations()
     {
@@ -154,10 +125,11 @@ class Deity
     /**
      * Add followers
      *
-     * @param \App\Entity\CharacterDeity $followers
+     * @param CharacterDeity $followers
+     *
      * @return Deity
      */
-    public function addFollower(\App\Entity\CharacterDeity $followers)
+    public function addFollower(CharacterDeity $followers)
     {
         $this->followers[] = $followers;
 
@@ -167,9 +139,9 @@ class Deity
     /**
      * Remove followers
      *
-     * @param \App\Entity\CharacterDeity $followers
+     * @param CharacterDeity $followers
      */
-    public function removeFollower(\App\Entity\CharacterDeity $followers)
+    public function removeFollower(CharacterDeity $followers)
     {
         $this->followers->removeElement($followers);
     }
@@ -177,7 +149,7 @@ class Deity
     /**
      * Get followers
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getFollowers()
     {
@@ -187,10 +159,11 @@ class Deity
     /**
      * Add descriptions
      *
-     * @param \App\Entity\Description $descriptions
+     * @param Description $descriptions
+     *
      * @return Deity
      */
-    public function addDescription(\App\Entity\Description $descriptions)
+    public function addDescription(Description $descriptions)
     {
         $this->descriptions[] = $descriptions;
 
@@ -200,9 +173,9 @@ class Deity
     /**
      * Remove descriptions
      *
-     * @param \App\Entity\Description $descriptions
+     * @param Description $descriptions
      */
-    public function removeDescription(\App\Entity\Description $descriptions)
+    public function removeDescription(Description $descriptions)
     {
         $this->descriptions->removeElement($descriptions);
     }
@@ -210,7 +183,7 @@ class Deity
     /**
      * Get descriptions
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getDescriptions()
     {
@@ -220,10 +193,11 @@ class Deity
     /**
      * Add aspects
      *
-     * @param \App\Entity\DeityAspect $aspects
+     * @param DeityAspect $aspects
+     *
      * @return Deity
      */
-    public function addAspect(\App\Entity\DeityAspect $aspects)
+	public function addAspect(DeityAspect $aspects)
     {
         $this->aspects[] = $aspects;
 
@@ -233,9 +207,9 @@ class Deity
     /**
      * Remove aspects
      *
-     * @param \App\Entity\DeityAspect $aspects
+     * @param DeityAspect $aspects
      */
-    public function removeAspect(\App\Entity\DeityAspect $aspects)
+	public function removeAspect(DeityAspect $aspects)
     {
         $this->aspects->removeElement($aspects);
     }
@@ -243,7 +217,7 @@ class Deity
     /**
      * Get aspects
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return Collection
      */
     public function getAspects()
     {
@@ -253,10 +227,11 @@ class Deity
     /**
      * Set main_recognizer
      *
-     * @param \App\Entity\Association $mainRecognizer
+     * @param Association $mainRecognizer
+     *
      * @return Deity
      */
-    public function setMainRecognizer(\App\Entity\Association $mainRecognizer = null)
+	public function setMainRecognizer(Association $mainRecognizer = null)
     {
         $this->main_recognizer = $mainRecognizer;
 
@@ -266,7 +241,7 @@ class Deity
     /**
      * Get main_recognizer
      *
-     * @return \App\Entity\Association 
+     * @return Association
      */
     public function getMainRecognizer()
     {

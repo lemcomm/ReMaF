@@ -11,7 +11,7 @@ class Artifact {
 	private int $id;
 	private Description $description;
 	private EventLog $log;
-	private Collection|ArrayCollection $descriptions;
+	private Collection $descriptions;
 	private Character $owner;
 	private User $creator;
 

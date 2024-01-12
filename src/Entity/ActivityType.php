@@ -13,8 +13,8 @@ class ActivityType
 	private string $name;
 	private bool $enabled;
 	private int $id;
-	private Collection|ArrayCollection $requires;
-	private Collection|ArrayCollection $subtypes;
+	private Collection $requires;
+	private Collection $subtypes;
 
     /**
      * Constructor

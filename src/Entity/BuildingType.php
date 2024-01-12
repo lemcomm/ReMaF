@@ -16,13 +16,13 @@ class BuildingType {
 	private bool $special_conditions;
 	private array $built_in;
 	private int $id;
-	private Collection|ArrayCollection $resources;
-	private Collection|ArrayCollection $provides_entourage;
-	private Collection|ArrayCollection $provides_equipment;
-	private Collection|ArrayCollection $provides_training;
-	private Collection|ArrayCollection $buildings;
-	private Collection|ArrayCollection $requires;
-	private Collection|ArrayCollection $enables;
+	private Collection $resources;
+	private Collection $provides_entourage;
+	private Collection $provides_equipment;
+	private Collection $provides_training;
+	private Collection $buildings;
+	private Collection $requires;
+	private Collection $enables;
 
 	/**
 	 * Constructor

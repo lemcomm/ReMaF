@@ -49,15 +49,15 @@ class BattleReport {
 	private int $id;
 	private BattleReportGroup $primary_attacker;
 	private BattleReportGroup $primary_defender;
-	private Collection|ArrayCollection $participants;
-	private Collection|ArrayCollection $groups;
-	private Collection|ArrayCollection $observers;
-	private Collection|ArrayCollection $journals;
+	private Collection $participants;
+	private Collection $groups;
+	private Collection $observers;
+	private Collection $journals;
 	private Settlement $settlement;
 	private Place $place;
 	private War $war;
 	private Siege $siege;
-	private Collection|ArrayCollection $defense_buildings;
+	private Collection $defense_buildings;
 
     /**
      * Constructor

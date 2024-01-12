@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Character;
+use App\Entity\Code;
 use App\Entity\NetExit;
 use App\Entity\SecurityLog;
 use App\Entity\User;
@@ -123,8 +124,11 @@ class AppState {
 	 * @throws Exception
 	 */
 	public function generateToken($length = 128, $method = 'trimbase64'): string {
-		if ($method = 'trimbase64') {
+		if ($method == 'trimbase64') {
 			$token = rtrim(strtr(base64_encode(random_bytes($length)), '+/', '-_'), '=');
+		}
+		if ($method == 'bin2hex') {
+			$token = bin2hex(random_bytes($length));
 		}
 		return $token;
 	}
@@ -141,7 +145,15 @@ class AppState {
                                         $valid = true;
                                 }
                         }
-                }
+                } elseif ($check == 'Code') {
+			while (!$valid) {
+				$token = $this->generateToken([$length, 'bin2hex']);
+				$result = $em->getRepository(Code::class)->findOneBy([$against => $token]);
+				if (!$result) {
+					$valid = true;
+				}
+			}
+		}
                 return $token;
         }
 

@@ -23,9 +23,9 @@ class AssociationRank {
 	private bool $subcreate;
 	private bool $createAssocs;
 	private Description $description;
-	private Collection|ArrayCollection $subordinates;
-	private Collection|ArrayCollection $members;
-	private Collection|ArrayCollection $descriptions;
+	private Collection $subordinates;
+	private Collection $members;
+	private Collection $descriptions;
 	private AssociationRank $superior;
 	private Association $association;
 

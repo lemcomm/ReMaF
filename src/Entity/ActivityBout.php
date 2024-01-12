@@ -10,8 +10,8 @@ use Doctrine\Common\Collections\Collection;
  */
 class ActivityBout {
 	private int $id;
-	private Collection|ArrayCollection $participants;
-	private Collection|ArrayCollection $groups;
+	private Collection $participants;
+	private Collection $groups;
 	private ActivitySubType $type;
 	private Activity $activity;
 

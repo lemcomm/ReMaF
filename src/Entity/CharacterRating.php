@@ -1,267 +1,220 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 
 class CharacterRating {
+	private string $content;
+	private int $trust;
+	private int $honor;
+	private int $respect;
+	private DateTime $last_change;
+	private int $id;
+	private Collection $votes;
+	private ?Character $character;
+	private ?User $given_by_user;
 
-    /**
-     * @var string
-     */
-    private $content;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->votes = new ArrayCollection();
+	}
 
-    /**
-     * @var integer
-     */
-    private $trust;
+	/**
+	 * Set content
+	 *
+	 * @param string $content
+	 *
+	 * @return CharacterRating
+	 */
+	public function setContent(string $content): static {
+		$this->content = $content;
 
-    /**
-     * @var integer
-     */
-    private $honor;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $respect;
+	/**
+	 * Get content
+	 *
+	 * @return string
+	 */
+	public function getContent(): string {
+		return $this->content;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $last_change;
+	/**
+	 * Set trust
+	 *
+	 * @param integer $trust
+	 *
+	 * @return CharacterRating
+	 */
+	public function setTrust(int $trust): static {
+		$this->trust = $trust;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $votes;
+	/**
+	 * Get trust
+	 *
+	 * @return integer
+	 */
+	public function getTrust(): int {
+		return $this->trust;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Set honor
+	 *
+	 * @param integer $honor
+	 *
+	 * @return CharacterRating
+	 */
+	public function setHonor(int $honor): static {
+		$this->honor = $honor;
 
-    /**
-     * @var \App\Entity\User
-     */
-    private $given_by_user;
+		return $this;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->votes = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Get honor
+	 *
+	 * @return integer
+	 */
+	public function getHonor(): int {
+		return $this->honor;
+	}
 
-    /**
-     * Set content
-     *
-     * @param string $content
-     * @return CharacterRating
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
+	/**
+	 * Set respect
+	 *
+	 * @param integer $respect
+	 *
+	 * @return CharacterRating
+	 */
+	public function setRespect(int $respect): static {
+		$this->respect = $respect;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get content
-     *
-     * @return string 
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
+	/**
+	 * Get respect
+	 *
+	 * @return integer
+	 */
+	public function getRespect(): int {
+		return $this->respect;
+	}
 
-    /**
-     * Set trust
-     *
-     * @param integer $trust
-     * @return CharacterRating
-     */
-    public function setTrust($trust)
-    {
-        $this->trust = $trust;
+	/**
+	 * Set last_change
+	 *
+	 * @param DateTime $lastChange
+	 *
+	 * @return CharacterRating
+	 */
+	public function setLastChange(DateTime $lastChange): static {
+		$this->last_change = $lastChange;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get trust
-     *
-     * @return integer 
-     */
-    public function getTrust()
-    {
-        return $this->trust;
-    }
+	/**
+	 * Get last_change
+	 *
+	 * @return DateTime
+	 */
+	public function getLastChange(): DateTime {
+		return $this->last_change;
+	}
 
-    /**
-     * Set honor
-     *
-     * @param integer $honor
-     * @return CharacterRating
-     */
-    public function setHonor($honor)
-    {
-        $this->honor = $honor;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Add votes
+	 *
+	 * @param CharacterRatingVote $votes
+	 *
+	 * @return CharacterRating
+	 */
+	public function addVote(CharacterRatingVote $votes): static {
+		$this->votes[] = $votes;
 
-    /**
-     * Get honor
-     *
-     * @return integer 
-     */
-    public function getHonor()
-    {
-        return $this->honor;
-    }
+		return $this;
+	}
 
-    /**
-     * Set respect
-     *
-     * @param integer $respect
-     * @return CharacterRating
-     */
-    public function setRespect($respect)
-    {
-        $this->respect = $respect;
+	/**
+	 * Remove votes
+	 *
+	 * @param CharacterRatingVote $votes
+	 */
+	public function removeVote(CharacterRatingVote $votes): void {
+		$this->votes->removeElement($votes);
+	}
 
-        return $this;
-    }
+	/**
+	 * Get votes
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getVotes(): ArrayCollection|Collection {
+		return $this->votes;
+	}
 
-    /**
-     * Get respect
-     *
-     * @return integer 
-     */
-    public function getRespect()
-    {
-        return $this->respect;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return CharacterRating
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Set last_change
-     *
-     * @param \DateTime $lastChange
-     * @return CharacterRating
-     */
-    public function setLastChange($lastChange)
-    {
-        $this->last_change = $lastChange;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
 
-    /**
-     * Get last_change
-     *
-     * @return \DateTime 
-     */
-    public function getLastChange()
-    {
-        return $this->last_change;
-    }
+	/**
+	 * Set given_by_user
+	 *
+	 * @param User|null $givenByUser
+	 *
+	 * @return CharacterRating
+	 */
+	public function setGivenByUser(User $givenByUser = null): static {
+		$this->given_by_user = $givenByUser;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Add votes
-     *
-     * @param \App\Entity\CharacterRatingVote $votes
-     * @return CharacterRating
-     */
-    public function addVote(\App\Entity\CharacterRatingVote $votes)
-    {
-        $this->votes[] = $votes;
-
-        return $this;
-    }
-
-    /**
-     * Remove votes
-     *
-     * @param \App\Entity\CharacterRatingVote $votes
-     */
-    public function removeVote(\App\Entity\CharacterRatingVote $votes)
-    {
-        $this->votes->removeElement($votes);
-    }
-
-    /**
-     * Get votes
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getVotes()
-    {
-        return $this->votes;
-    }
-
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return CharacterRating
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
-
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set given_by_user
-     *
-     * @param \App\Entity\User $givenByUser
-     * @return CharacterRating
-     */
-    public function setGivenByUser(\App\Entity\User $givenByUser = null)
-    {
-        $this->given_by_user = $givenByUser;
-
-        return $this;
-    }
-
-    /**
-     * Get given_by_user
-     *
-     * @return \App\Entity\User 
-     */
-    public function getGivenByUser()
-    {
-        return $this->given_by_user;
-    }
+	/**
+	 * Get given_by_user
+	 *
+	 * @return User|null
+	 */
+	public function getGivenByUser(): ?User {
+		return $this->given_by_user;
+	}
 }

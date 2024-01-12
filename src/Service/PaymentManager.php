@@ -21,17 +21,19 @@ class PaymentManager {
 	private TranslatorInterface $translator;
 	private LoggerInterface $logger;
 	private MailManager $mailer;
+	private AppState $app;
 	private mixed $ruleset;
 	private mixed $stripeSecret;
 	private array $stripePrices;
 	private array $patreonAlikes = ['patreon'];
 
-	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, LoggerInterface $logger, MailManager $mailer, UserManager $usermanager) {
+	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, LoggerInterface $logger, MailManager $mailer, UserManager $usermanager, AppState $app) {
 		$this->em = $em;
 		$this->usermanager = $usermanager;
 		$this->mailer = $mailer;
 		$this->translator = $translator;
 		$this->logger = $logger;
+		$this->app = $app;
 		$this->ruleset = $_ENV['RULESET'];
 		$this->stripeSecret = $_ENV['STRIPE_SECRET'];
 		$this->stripePrices = [
@@ -656,7 +658,8 @@ class PaymentManager {
 
 	public function createCode($credits, $vip_status=0, $sent_to=null, User $sent_from=null, $limit=false): Code {
 		$code = new Code;
-		$code->setCode(sha1(time()."mafcode".mt_rand(0,1000000)));
+		$code->setCode($this->app->generateAndCheckToken(40, 'Code', 'code'));
+		#$code->setCode(sha1(time()."mafcode".mt_rand(0,1000000)));
 		$code->setCredits($credits);
 		$code->setVipStatus($vip_status);
 		$code->setUsed(false);

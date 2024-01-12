@@ -2,222 +2,176 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class Condition {
+	private string $type;
+	private float $number_value;
+	private string $string_value;
+	private int $id;
+	private ?Character $character;
+	private ?Realm $target_realm;
+	private ?Character $target_character;
+	private ?Trade $target_trade;
 
-/**
- * Condition
- */
-class Condition
-{
-    /**
-     * @var string
-     */
-    private $type;
+	/**
+	 * Set type
+	 *
+	 * @param string $type
+	 *
+	 * @return Condition
+	 */
+	public function setType(string $type): static {
+		$this->type = $type;
 
-    /**
-     * @var float
-     */
-    private $number_value;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $string_value;
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set number_value
+	 *
+	 * @param float $numberValue
+	 *
+	 * @return Condition
+	 */
+	public function setNumberValue(float $numberValue): static {
+		$this->number_value = $numberValue;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $target_realm;
+	/**
+	 * Get number_value
+	 *
+	 * @return float
+	 */
+	public function getNumberValue(): float {
+		return $this->number_value;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $target_character;
+	/**
+	 * Set string_value
+	 *
+	 * @param string $stringValue
+	 *
+	 * @return Condition
+	 */
+	public function setStringValue(string $stringValue): static {
+		$this->string_value = $stringValue;
 
-    /**
-     * @var \App\Entity\Trade
-     */
-    private $target_trade;
+		return $this;
+	}
 
+	/**
+	 * Get string_value
+	 *
+	 * @return string
+	 */
+	public function getStringValue(): string {
+		return $this->string_value;
+	}
 
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return Condition
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return Condition
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
+		return $this;
+	}
 
-    /**
-     * Set number_value
-     *
-     * @param float $numberValue
-     * @return Condition
-     */
-    public function setNumberValue($numberValue)
-    {
-        $this->number_value = $numberValue;
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set target_realm
+	 *
+	 * @param Realm|null $targetRealm
+	 *
+	 * @return Condition
+	 */
+	public function setTargetRealm(Realm $targetRealm = null): static {
+		$this->target_realm = $targetRealm;
 
-    /**
-     * Get number_value
-     *
-     * @return float 
-     */
-    public function getNumberValue()
-    {
-        return $this->number_value;
-    }
+		return $this;
+	}
 
-    /**
-     * Set string_value
-     *
-     * @param string $stringValue
-     * @return Condition
-     */
-    public function setStringValue($stringValue)
-    {
-        $this->string_value = $stringValue;
+	/**
+	 * Get target_realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getTargetRealm(): ?Realm {
+		return $this->target_realm;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set target_character
+	 *
+	 * @param Character|null $targetCharacter
+	 *
+	 * @return Condition
+	 */
+	public function setTargetCharacter(Character $targetCharacter = null): static {
+		$this->target_character = $targetCharacter;
 
-    /**
-     * Get string_value
-     *
-     * @return string 
-     */
-    public function getStringValue()
-    {
-        return $this->string_value;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get target_character
+	 *
+	 * @return Character|null
+	 */
+	public function getTargetCharacter(): ?Character {
+		return $this->target_character;
+	}
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return Condition
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
+	/**
+	 * Set target_trade
+	 *
+	 * @param Trade|null $targetTrade
+	 *
+	 * @return Condition
+	 */
+	public function setTargetTrade(Trade $targetTrade = null): static {
+		$this->target_trade = $targetTrade;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set target_realm
-     *
-     * @param \App\Entity\Realm $targetRealm
-     * @return Condition
-     */
-    public function setTargetRealm(\App\Entity\Realm $targetRealm = null)
-    {
-        $this->target_realm = $targetRealm;
-
-        return $this;
-    }
-
-    /**
-     * Get target_realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getTargetRealm()
-    {
-        return $this->target_realm;
-    }
-
-    /**
-     * Set target_character
-     *
-     * @param \App\Entity\Character $targetCharacter
-     * @return Condition
-     */
-    public function setTargetCharacter(\App\Entity\Character $targetCharacter = null)
-    {
-        $this->target_character = $targetCharacter;
-
-        return $this;
-    }
-
-    /**
-     * Get target_character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getTargetCharacter()
-    {
-        return $this->target_character;
-    }
-
-    /**
-     * Set target_trade
-     *
-     * @param \App\Entity\Trade $targetTrade
-     * @return Condition
-     */
-    public function setTargetTrade(\App\Entity\Trade $targetTrade = null)
-    {
-        $this->target_trade = $targetTrade;
-
-        return $this;
-    }
-
-    /**
-     * Get target_trade
-     *
-     * @return \App\Entity\Trade 
-     */
-    public function getTargetTrade()
-    {
-        return $this->target_trade;
-    }
+	/**
+	 * Get target_trade
+	 *
+	 * @return Trade|null
+	 */
+	public function getTargetTrade(): ?Trade {
+		return $this->target_trade;
+	}
 }

@@ -2,111 +2,86 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * CharacterDeity
- */
-class CharacterDeity
-{
-    /**
-     * @var \DateTime
-     */
-    private $start;
+class CharacterDeity {
+	private DateTime $start;
+	private int $id;
+	private ?Character $character;
+	private ?Deity $deity;
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set start
+	 *
+	 * @param DateTime $start
+	 *
+	 * @return CharacterDeity
+	 */
+	public function setStart(DateTime $start): static {
+		$this->start = $start;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Deity
-     */
-    private $deity;
+	/**
+	 * Get start
+	 *
+	 * @return DateTime
+	 */
+	public function getStart(): DateTime {
+		return $this->start;
+	}
 
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set start
-     *
-     * @param \DateTime $start
-     * @return CharacterDeity
-     */
-    public function setStart($start)
-    {
-        $this->start = $start;
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return CharacterDeity
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get start
-     *
-     * @return \DateTime 
-     */
-    public function getStart()
-    {
-        return $this->start;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Set deity
+	 *
+	 * @param Deity|null $deity
+	 *
+	 * @return CharacterDeity
+	 */
+	public function setDeity(Deity $deity = null): static {
+		$this->deity = $deity;
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return CharacterDeity
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set deity
-     *
-     * @param \App\Entity\Deity $deity
-     * @return CharacterDeity
-     */
-    public function setDeity(\App\Entity\Deity $deity = null)
-    {
-        $this->deity = $deity;
-
-        return $this;
-    }
-
-    /**
-     * Get deity
-     *
-     * @return \App\Entity\Deity 
-     */
-    public function getDeity()
-    {
-        return $this->deity;
-    }
+	/**
+	 * Get deity
+	 *
+	 * @return Deity|null
+	 */
+	public function getDeity(): ?Deity {
+		return $this->deity;
+	}
 }

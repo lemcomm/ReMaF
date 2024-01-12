@@ -2,317 +2,255 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * Code
- */
-class Code
-{
-    /**
-     * @var string
-     */
-    private $code;
+class Code {
+	private string $code;
+	private string $sent_to_email;
+	private bool $limit_to_email;
+	private DateTime $sent_on;
+	private int $credits;
+	private int $vip_status;
+	private bool $used;
+	private DateTime $used_on;
+	private int $id;
+	private ?User $sender;
+	private ?User $used_by;
 
-    /**
-     * @var string
-     */
-    private $sent_to_email;
+	/**
+	 * Set code
+	 *
+	 * @param string $code
+	 *
+	 * @return Code
+	 */
+	public function setCode(string $code): static {
+		$this->code = $code;
 
-    /**
-     * @var boolean
-     */
-    private $limit_to_email;
+		return $this;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $sent_on;
+	/**
+	 * Get code
+	 *
+	 * @return string
+	 */
+	public function getCode(): string {
+		return $this->code;
+	}
 
-    /**
-     * @var integer
-     */
-    private $credits;
+	/**
+	 * Set sent_to_email
+	 *
+	 * @param string $sentToEmail
+	 *
+	 * @return Code
+	 */
+	public function setSentToEmail(string $sentToEmail): static {
+		$this->sent_to_email = $sentToEmail;
 
-    /**
-     * @var integer
-     */
-    private $vip_status;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $used;
+	/**
+	 * Get sent_to_email
+	 *
+	 * @return string
+	 */
+	public function getSentToEmail(): string {
+		return $this->sent_to_email;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $used_on;
+	/**
+	 * Set limit_to_email
+	 *
+	 * @param boolean $limitToEmail
+	 *
+	 * @return Code
+	 */
+	public function setLimitToEmail(bool $limitToEmail): static {
+		$this->limit_to_email = $limitToEmail;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\User
-     */
-    private $sender;
+	/**
+	 * Get limit_to_email
+	 *
+	 * @return boolean
+	 */
+	public function getLimitToEmail(): bool {
+		return $this->limit_to_email;
+	}
 
-    /**
-     * @var \App\Entity\User
-     */
-    private $used_by;
+	/**
+	 * Set sent_on
+	 *
+	 * @param DateTime $sentOn
+	 *
+	 * @return Code
+	 */
+	public function setSentOn(DateTime $sentOn): static {
+		$this->sent_on = $sentOn;
 
+		return $this;
+	}
 
-    /**
-     * Set code
-     *
-     * @param string $code
-     * @return Code
-     */
-    public function setCode($code)
-    {
-        $this->code = $code;
+	/**
+	 * Get sent_on
+	 *
+	 * @return DateTime
+	 */
+	public function getSentOn(): DateTime {
+		return $this->sent_on;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set credits
+	 *
+	 * @param integer $credits
+	 *
+	 * @return Code
+	 */
+	public function setCredits(int $credits): static {
+		$this->credits = $credits;
 
-    /**
-     * Get code
-     *
-     * @return string 
-     */
-    public function getCode()
-    {
-        return $this->code;
-    }
+		return $this;
+	}
 
-    /**
-     * Set sent_to_email
-     *
-     * @param string $sentToEmail
-     * @return Code
-     */
-    public function setSentToEmail($sentToEmail)
-    {
-        $this->sent_to_email = $sentToEmail;
+	/**
+	 * Get credits
+	 *
+	 * @return integer
+	 */
+	public function getCredits(): int {
+		return $this->credits;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set vip_status
+	 *
+	 * @param integer $vipStatus
+	 *
+	 * @return Code
+	 */
+	public function setVipStatus(int $vipStatus): static {
+		$this->vip_status = $vipStatus;
 
-    /**
-     * Get sent_to_email
-     *
-     * @return string 
-     */
-    public function getSentToEmail()
-    {
-        return $this->sent_to_email;
-    }
+		return $this;
+	}
 
-    /**
-     * Set limit_to_email
-     *
-     * @param boolean $limitToEmail
-     * @return Code
-     */
-    public function setLimitToEmail($limitToEmail)
-    {
-        $this->limit_to_email = $limitToEmail;
+	/**
+	 * Get vip_status
+	 *
+	 * @return integer
+	 */
+	public function getVipStatus(): int {
+		return $this->vip_status;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set used
+	 *
+	 * @param boolean $used
+	 *
+	 * @return Code
+	 */
+	public function setUsed(bool $used): static {
+		$this->used = $used;
 
-    /**
-     * Get limit_to_email
-     *
-     * @return boolean 
-     */
-    public function getLimitToEmail()
-    {
-        return $this->limit_to_email;
-    }
+		return $this;
+	}
 
-    /**
-     * Set sent_on
-     *
-     * @param \DateTime $sentOn
-     * @return Code
-     */
-    public function setSentOn($sentOn)
-    {
-        $this->sent_on = $sentOn;
+	/**
+	 * Get used
+	 *
+	 * @return boolean
+	 */
+	public function getUsed(): bool {
+		return $this->used;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set used_on
+	 *
+	 * @param DateTime|null $usedOn
+	 *
+	 * @return Code
+	 */
+	public function setUsedOn(?DateTime $usedOn = null): static {
+		$this->used_on = $usedOn;
 
-    /**
-     * Get sent_on
-     *
-     * @return \DateTime 
-     */
-    public function getSentOn()
-    {
-        return $this->sent_on;
-    }
+		return $this;
+	}
 
-    /**
-     * Set credits
-     *
-     * @param integer $credits
-     * @return Code
-     */
-    public function setCredits($credits)
-    {
-        $this->credits = $credits;
+	/**
+	 * Get used_on
+	 *
+	 * @return DateTime
+	 */
+	public function getUsedOn(): DateTime {
+		return $this->used_on;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get credits
-     *
-     * @return integer 
-     */
-    public function getCredits()
-    {
-        return $this->credits;
-    }
+	/**
+	 * Set sender
+	 *
+	 * @param User|null $sender
+	 *
+	 * @return Code
+	 */
+	public function setSender(User $sender = null): static {
+		$this->sender = $sender;
 
-    /**
-     * Set vip_status
-     *
-     * @param integer $vipStatus
-     * @return Code
-     */
-    public function setVipStatus($vipStatus)
-    {
-        $this->vip_status = $vipStatus;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get sender
+	 *
+	 * @return User|null
+	 */
+	public function getSender(): ?User {
+		return $this->sender;
+	}
 
-    /**
-     * Get vip_status
-     *
-     * @return integer 
-     */
-    public function getVipStatus()
-    {
-        return $this->vip_status;
-    }
+	/**
+	 * Set used_by
+	 *
+	 * @param User|null $usedBy
+	 *
+	 * @return Code
+	 */
+	public function setUsedBy(User $usedBy = null): static {
+		$this->used_by = $usedBy;
 
-    /**
-     * Set used
-     *
-     * @param boolean $used
-     * @return Code
-     */
-    public function setUsed($used)
-    {
-        $this->used = $used;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get used_by
+	 *
+	 * @return User|null
+	 */
+	public function getUsedBy(): ?User {
+		return $this->used_by;
+	}
 
-    /**
-     * Get used
-     *
-     * @return boolean 
-     */
-    public function getUsed()
-    {
-        return $this->used;
-    }
+	public function isLimitToEmail(): ?bool {
+		return $this->limit_to_email;
+	}
 
-    /**
-     * Set used_on
-     *
-     * @param \DateTime $usedOn
-     * @return Code
-     */
-    public function setUsedOn($usedOn)
-    {
-        $this->used_on = $usedOn;
-
-        return $this;
-    }
-
-    /**
-     * Get used_on
-     *
-     * @return \DateTime 
-     */
-    public function getUsedOn()
-    {
-        return $this->used_on;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set sender
-     *
-     * @param \App\Entity\User $sender
-     * @return Code
-     */
-    public function setSender(\App\Entity\User $sender = null)
-    {
-        $this->sender = $sender;
-
-        return $this;
-    }
-
-    /**
-     * Get sender
-     *
-     * @return \App\Entity\User 
-     */
-    public function getSender()
-    {
-        return $this->sender;
-    }
-
-    /**
-     * Set used_by
-     *
-     * @param \App\Entity\User $usedBy
-     * @return Code
-     */
-    public function setUsedBy(\App\Entity\User $usedBy = null)
-    {
-        $this->used_by = $usedBy;
-
-        return $this;
-    }
-
-    /**
-     * Get used_by
-     *
-     * @return \App\Entity\User 
-     */
-    public function getUsedBy()
-    {
-        return $this->used_by;
-    }
-
-    public function isLimitToEmail(): ?bool
-    {
-        return $this->limit_to_email;
-    }
-
-    public function isUsed(): ?bool
-    {
-        return $this->used;
-    }
+	public function isUsed(): ?bool {
+		return $this->used;
+	}
 }

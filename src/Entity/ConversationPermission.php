@@ -2,294 +2,239 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 /**
  * ConversationPermission
  */
-class ConversationPermission
-{
-    /**
-     * @var \DateTime
-     */
-    private $start_time;
+class ConversationPermission {
+	private DateTime $start_time;
+	private ?DateTime $end_time;
+	private ?DateTime $last_access;
+	private bool $active;
+	private ?bool $owner;
+	private ?bool $manager;
+	private int $unread;
+	private int $id;
+	private Conversation $conversation;
+	private Character $character;
 
-    /**
-     * @var \DateTime
-     */
-    private $end_time;
+	/**
+	 * Set start_time
+	 *
+	 * @param DateTime $startTime
+	 *
+	 * @return ConversationPermission
+	 */
+	public function setStartTime(DateTime $startTime): static {
+		$this->start_time = $startTime;
 
-    /**
-     * @var \DateTime
-     */
-    private $last_access;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $active;
+	/**
+	 * Get start_time
+	 *
+	 * @return DateTime
+	 */
+	public function getStartTime(): DateTime {
+		return $this->start_time;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $owner;
+	/**
+	 * Set end_time
+	 *
+	 * @param DateTime|null $endTime
+	 *
+	 * @return ConversationPermission
+	 */
+	public function setEndTime(DateTime $endTime = null): static {
+		$this->end_time = $endTime;
 
-    /**
-     * @var boolean
-     */
-    private $manager;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $unread;
+	/**
+	 * Get end_time
+	 *
+	 * @return DateTime|null
+	 */
+	public function getEndTime(): ?DateTime {
+		return $this->end_time;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set last_access
+	 *
+	 * @param DateTime|null $lastAccess
+	 *
+	 * @return ConversationPermission
+	 */
+	public function setLastAccess(DateTime $lastAccess = null): static {
+		$this->last_access = $lastAccess;
 
-    /**
-     * @var \App\Entity\Conversation
-     */
-    private $conversation;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Get last_access
+	 *
+	 * @return DateTime|null
+	 */
+	public function getLastAccess(): ?DateTime {
+		return $this->last_access;
+	}
 
+	/**
+	 * Set active
+	 *
+	 * @param boolean $active
+	 *
+	 * @return ConversationPermission
+	 */
+	public function setActive(bool $active): static {
+		$this->active = $active;
 
-    /**
-     * Set start_time
-     *
-     * @param \DateTime $startTime
-     * @return ConversationPermission
-     */
-    public function setStartTime($startTime)
-    {
-        $this->start_time = $startTime;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get active
+	 *
+	 * @return boolean
+	 */
+	public function getActive(): bool {
+		return $this->active;
+	}
 
-    /**
-     * Get start_time
-     *
-     * @return \DateTime 
-     */
-    public function getStartTime()
-    {
-        return $this->start_time;
-    }
+	/**
+	 * Set owner
+	 *
+	 * @param boolean|null $owner
+	 *
+	 * @return ConversationPermission
+	 */
+	public function setOwner(bool $owner = null): static {
+		$this->owner = $owner;
 
-    /**
-     * Set end_time
-     *
-     * @param \DateTime $endTime
-     * @return ConversationPermission
-     */
-    public function setEndTime($endTime)
-    {
-        $this->end_time = $endTime;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get owner
+	 *
+	 * @return bool|null
+	 */
+	public function getOwner(): ?bool {
+		return $this->owner;
+	}
 
-    /**
-     * Get end_time
-     *
-     * @return \DateTime 
-     */
-    public function getEndTime()
-    {
-        return $this->end_time;
-    }
+	/**
+	 * Set manager
+	 *
+	 * @param boolean|null $manager
+	 *
+	 * @return ConversationPermission
+	 */
+	public function setManager(bool $manager = null): static {
+		$this->manager = $manager;
 
-    /**
-     * Set last_access
-     *
-     * @param \DateTime $lastAccess
-     * @return ConversationPermission
-     */
-    public function setLastAccess($lastAccess)
-    {
-        $this->last_access = $lastAccess;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get manager
+	 *
+	 * @return bool|null
+	 */
+	public function getManager(): ?bool {
+		return $this->manager;
+	}
 
-    /**
-     * Get last_access
-     *
-     * @return \DateTime 
-     */
-    public function getLastAccess()
-    {
-        return $this->last_access;
-    }
+	/**
+	 * Set unread
+	 *
+	 * @param integer $unread
+	 *
+	 * @return ConversationPermission
+	 */
+	public function setUnread(int $unread): static {
+		$this->unread = $unread;
 
-    /**
-     * Set active
-     *
-     * @param boolean $active
-     * @return ConversationPermission
-     */
-    public function setActive($active)
-    {
-        $this->active = $active;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get unread
+	 *
+	 * @return integer
+	 */
+	public function getUnread(): int {
+		return $this->unread;
+	}
 
-    /**
-     * Get active
-     *
-     * @return boolean 
-     */
-    public function getActive()
-    {
-        return $this->active;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set owner
-     *
-     * @param boolean $owner
-     * @return ConversationPermission
-     */
-    public function setOwner($owner)
-    {
-        $this->owner = $owner;
+	/**
+	 * Set conversation
+	 *
+	 * @param Conversation|null $conversation
+	 *
+	 * @return ConversationPermission
+	 */
+	public function setConversation(Conversation $conversation = null): static {
+		$this->conversation = $conversation;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get owner
-     *
-     * @return boolean 
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
+	/**
+	 * Get conversation
+	 *
+	 * @return Conversation
+	 */
+	public function getConversation(): Conversation {
+		return $this->conversation;
+	}
 
-    /**
-     * Set manager
-     *
-     * @param boolean $manager
-     * @return ConversationPermission
-     */
-    public function setManager($manager)
-    {
-        $this->manager = $manager;
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return ConversationPermission
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get manager
-     *
-     * @return boolean 
-     */
-    public function getManager()
-    {
-        return $this->manager;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-    /**
-     * Set unread
-     *
-     * @param integer $unread
-     * @return ConversationPermission
-     */
-    public function setUnread($unread)
-    {
-        $this->unread = $unread;
+	public function isActive(): ?bool {
+		return $this->active;
+	}
 
-        return $this;
-    }
+	public function isOwner(): ?bool {
+		return $this->owner;
+	}
 
-    /**
-     * Get unread
-     *
-     * @return integer 
-     */
-    public function getUnread()
-    {
-        return $this->unread;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set conversation
-     *
-     * @param \App\Entity\Conversation $conversation
-     * @return ConversationPermission
-     */
-    public function setConversation(\App\Entity\Conversation $conversation = null)
-    {
-        $this->conversation = $conversation;
-
-        return $this;
-    }
-
-    /**
-     * Get conversation
-     *
-     * @return \App\Entity\Conversation 
-     */
-    public function getConversation()
-    {
-        return $this->conversation;
-    }
-
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return ConversationPermission
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
-
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    public function isActive(): ?bool
-    {
-        return $this->active;
-    }
-
-    public function isOwner(): ?bool
-    {
-        return $this->owner;
-    }
-
-    public function isManager(): ?bool
-    {
-        return $this->manager;
-    }
+	public function isManager(): ?bool {
+		return $this->manager;
+	}
 }

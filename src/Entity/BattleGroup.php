@@ -14,15 +14,15 @@ class BattleGroup {
 	private int $id;
 	private Siege $attacking_in_siege;
 	private BattleReportGroup $active_report;
-	private Collection|ArrayCollection $related_actions;
-	private Collection|ArrayCollection $reinforced_by;
-	private Collection|ArrayCollection $attacking_in_battles;
-	private Collection|ArrayCollection $defending_in_battles;
+	private Collection $related_actions;
+	private Collection $reinforced_by;
+	private Collection $attacking_in_battles;
+	private Collection $defending_in_battles;
 	private Battle $battle;
 	private Character $leader;
 	private Siege $siege;
 	private BattleGroup $reinforcing;
-	private Collection|ArrayCollection $characters;
+	private Collection $characters;
 	protected ArrayCollection $soldiers;
 
 	/**

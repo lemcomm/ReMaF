@@ -2,195 +2,153 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+class CharacterBackground {
+	private string $appearance;
+	private string $personality;
+	private string $secrets;
+	private string $retirement;
+	private string $death;
+	private int $id;
+	private Character $character;
 
-/**
- * CharacterBackground
- */
-class CharacterBackground
-{
-    /**
-     * @var string
-     */
-    private $appearance;
+	/**
+	 * Set appearance
+	 *
+	 * @param string|null $appearance
+	 *
+	 * @return CharacterBackground
+	 */
+	public function setAppearance(string $appearance = null): static {
+		$this->appearance = $appearance;
 
-    /**
-     * @var string
-     */
-    private $personality;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $secrets;
+	/**
+	 * Get appearance
+	 *
+	 * @return string
+	 */
+	public function getAppearance(): string {
+		return $this->appearance;
+	}
 
-    /**
-     * @var string
-     */
-    private $retirement;
+	/**
+	 * Set personality
+	 *
+	 * @param string|null $personality
+	 *
+	 * @return CharacterBackground
+	 */
+	public function setPersonality(string $personality = null): static {
+		$this->personality = $personality;
 
-    /**
-     * @var string
-     */
-    private $death;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get personality
+	 *
+	 * @return string
+	 */
+	public function getPersonality(): string {
+		return $this->personality;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Set secrets
+	 *
+	 * @param string|null $secrets
+	 *
+	 * @return CharacterBackground
+	 */
+	public function setSecrets(string $secrets = null): static {
+		$this->secrets = $secrets;
 
+		return $this;
+	}
 
-    /**
-     * Set appearance
-     *
-     * @param string $appearance
-     * @return CharacterBackground
-     */
-    public function setAppearance($appearance)
-    {
-        $this->appearance = $appearance;
+	/**
+	 * Get secrets
+	 *
+	 * @return string
+	 */
+	public function getSecrets(): string {
+		return $this->secrets;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set retirement
+	 *
+	 * @param string|null $retirement
+	 *
+	 * @return CharacterBackground
+	 */
+	public function setRetirement(string $retirement = null): static {
+		$this->retirement = $retirement;
 
-    /**
-     * Get appearance
-     *
-     * @return string 
-     */
-    public function getAppearance()
-    {
-        return $this->appearance;
-    }
+		return $this;
+	}
 
-    /**
-     * Set personality
-     *
-     * @param string $personality
-     * @return CharacterBackground
-     */
-    public function setPersonality($personality)
-    {
-        $this->personality = $personality;
+	/**
+	 * Get retirement
+	 *
+	 * @return string
+	 */
+	public function getRetirement(): string {
+		return $this->retirement;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set death
+	 *
+	 * @param string|null $death
+	 *
+	 * @return CharacterBackground
+	 */
+	public function setDeath(string $death = null): static {
+		$this->death = $death;
 
-    /**
-     * Get personality
-     *
-     * @return string 
-     */
-    public function getPersonality()
-    {
-        return $this->personality;
-    }
+		return $this;
+	}
 
-    /**
-     * Set secrets
-     *
-     * @param string $secrets
-     * @return CharacterBackground
-     */
-    public function setSecrets($secrets)
-    {
-        $this->secrets = $secrets;
+	/**
+	 * Get death
+	 *
+	 * @return string
+	 */
+	public function getDeath(): string {
+		return $this->death;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get secrets
-     *
-     * @return string 
-     */
-    public function getSecrets()
-    {
-        return $this->secrets;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return CharacterBackground
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Set retirement
-     *
-     * @param string $retirement
-     * @return CharacterBackground
-     */
-    public function setRetirement($retirement)
-    {
-        $this->retirement = $retirement;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get retirement
-     *
-     * @return string 
-     */
-    public function getRetirement()
-    {
-        return $this->retirement;
-    }
-
-    /**
-     * Set death
-     *
-     * @param string $death
-     * @return CharacterBackground
-     */
-    public function setDeath($death)
-    {
-        $this->death = $death;
-
-        return $this;
-    }
-
-    /**
-     * Get death
-     *
-     * @return string 
-     */
-    public function getDeath()
-    {
-        return $this->death;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return CharacterBackground
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
-
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 }

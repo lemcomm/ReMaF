@@ -2,223 +2,178 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * CharacterStyle
- */
-class CharacterStyle
-{
-    /**
-     * @var integer
-     */
-    private $theory;
+class CharacterStyle {
+	private int $theory;
+	private int $practice;
+	private int $theory_high;
+	private int $practice_high;
+	private DateTime $updated;
+	private int $id;
+	private ?Character $character;
+	private ?Style $style;
 
-    /**
-     * @var integer
-     */
-    private $practice;
+	/**
+	 * Set theory
+	 *
+	 * @param integer $theory
+	 *
+	 * @return CharacterStyle
+	 */
+	public function setTheory(int $theory): static {
+		$this->theory = $theory;
 
-    /**
-     * @var integer
-     */
-    private $theory_high;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $practice_high;
+	/**
+	 * Get theory
+	 *
+	 * @return integer
+	 */
+	public function getTheory(): int {
+		return $this->theory;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $updated;
+	/**
+	 * Set practice
+	 *
+	 * @param integer $practice
+	 *
+	 * @return CharacterStyle
+	 */
+	public function setPractice(int $practice): static {
+		$this->practice = $practice;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Get practice
+	 *
+	 * @return integer
+	 */
+	public function getPractice(): int {
+		return $this->practice;
+	}
 
-    /**
-     * @var \App\Entity\Style
-     */
-    private $style;
+	/**
+	 * Set theory_high
+	 *
+	 * @param integer $theoryHigh
+	 *
+	 * @return CharacterStyle
+	 */
+	public function setTheoryHigh(int $theoryHigh): static {
+		$this->theory_high = $theoryHigh;
 
+		return $this;
+	}
 
-    /**
-     * Set theory
-     *
-     * @param integer $theory
-     * @return CharacterStyle
-     */
-    public function setTheory($theory)
-    {
-        $this->theory = $theory;
+	/**
+	 * Get theory_high
+	 *
+	 * @return integer
+	 */
+	public function getTheoryHigh(): int {
+		return $this->theory_high;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set practice_high
+	 *
+	 * @param integer $practiceHigh
+	 *
+	 * @return CharacterStyle
+	 */
+	public function setPracticeHigh(int $practiceHigh): static {
+		$this->practice_high = $practiceHigh;
 
-    /**
-     * Get theory
-     *
-     * @return integer 
-     */
-    public function getTheory()
-    {
-        return $this->theory;
-    }
+		return $this;
+	}
 
-    /**
-     * Set practice
-     *
-     * @param integer $practice
-     * @return CharacterStyle
-     */
-    public function setPractice($practice)
-    {
-        $this->practice = $practice;
+	/**
+	 * Get practice_high
+	 *
+	 * @return integer
+	 */
+	public function getPracticeHigh(): int {
+		return $this->practice_high;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set updated
+	 *
+	 * @param DateTime $updated
+	 *
+	 * @return CharacterStyle
+	 */
+	public function setUpdated(DateTime $updated): static {
+		$this->updated = $updated;
 
-    /**
-     * Get practice
-     *
-     * @return integer 
-     */
-    public function getPractice()
-    {
-        return $this->practice;
-    }
+		return $this;
+	}
 
-    /**
-     * Set theory_high
-     *
-     * @param integer $theoryHigh
-     * @return CharacterStyle
-     */
-    public function setTheoryHigh($theoryHigh)
-    {
-        $this->theory_high = $theoryHigh;
+	/**
+	 * Get updated
+	 *
+	 * @return DateTime
+	 */
+	public function getUpdated(): DateTime {
+		return $this->updated;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get theory_high
-     *
-     * @return integer 
-     */
-    public function getTheoryHigh()
-    {
-        return $this->theory_high;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return CharacterStyle
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Set practice_high
-     *
-     * @param integer $practiceHigh
-     * @return CharacterStyle
-     */
-    public function setPracticeHigh($practiceHigh)
-    {
-        $this->practice_high = $practiceHigh;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
 
-    /**
-     * Get practice_high
-     *
-     * @return integer 
-     */
-    public function getPracticeHigh()
-    {
-        return $this->practice_high;
-    }
+	/**
+	 * Set style
+	 *
+	 * @param Style|null $style
+	 *
+	 * @return CharacterStyle
+	 */
+	public function setStyle(Style $style = null): static {
+		$this->style = $style;
 
-    /**
-     * Set updated
-     *
-     * @param \DateTime $updated
-     * @return CharacterStyle
-     */
-    public function setUpdated($updated)
-    {
-        $this->updated = $updated;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get updated
-     *
-     * @return \DateTime 
-     */
-    public function getUpdated()
-    {
-        return $this->updated;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return CharacterStyle
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
-
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set style
-     *
-     * @param \App\Entity\Style $style
-     * @return CharacterStyle
-     */
-    public function setStyle(\App\Entity\Style $style = null)
-    {
-        $this->style = $style;
-
-        return $this;
-    }
-
-    /**
-     * Get style
-     *
-     * @return \App\Entity\Style 
-     */
-    public function getStyle()
-    {
-        return $this->style;
-    }
+	/**
+	 * Get style
+	 *
+	 * @return Style|null
+	 */
+	public function getStyle(): ?Style {
+		return $this->style;
+	}
 }

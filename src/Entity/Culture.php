@@ -1,220 +1,181 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 
 class Culture {
+	private string $name;
+	private string $colour_hex;
+	private bool $free;
+	private int $cost;
+	private array $contains;
+	private int $id;
+	private Collection $users;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->users = new ArrayCollection();
+	}
 
 	public function __toString() {
-            		return "culture.".$this->name;
-            	}
+		return "culture." . $this->name;
+	}
 
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return Culture
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var string
-     */
-    private $colour_hex;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $free;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var integer
-     */
-    private $cost;
+	/**
+	 * Set colour_hex
+	 *
+	 * @param string $colourHex
+	 *
+	 * @return Culture
+	 */
+	public function setColourHex(string $colourHex): static {
+		$this->colour_hex = $colourHex;
 
-    /**
-     * @var array
-     */
-    private $contains;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get colour_hex
+	 *
+	 * @return string
+	 */
+	public function getColourHex(): string {
+		return $this->colour_hex;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $users;
+	/**
+	 * Set free
+	 *
+	 * @param boolean $free
+	 *
+	 * @return Culture
+	 */
+	public function setFree(bool $free): static {
+		$this->free = $free;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+		return $this;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Culture
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Get free
+	 *
+	 * @return boolean
+	 */
+	public function getFree(): bool {
+		return $this->free;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set cost
+	 *
+	 * @param integer $cost
+	 *
+	 * @return Culture
+	 */
+	public function setCost(int $cost): static {
+		$this->cost = $cost;
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+		return $this;
+	}
 
-    /**
-     * Set colour_hex
-     *
-     * @param string $colourHex
-     * @return Culture
-     */
-    public function setColourHex($colourHex)
-    {
-        $this->colour_hex = $colourHex;
+	/**
+	 * Get cost
+	 *
+	 * @return integer
+	 */
+	public function getCost(): int {
+		return $this->cost;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set contains
+	 *
+	 * @param array $contains
+	 *
+	 * @return Culture
+	 */
+	public function setContains(array $contains): static {
+		$this->contains = $contains;
 
-    /**
-     * Get colour_hex
-     *
-     * @return string 
-     */
-    public function getColourHex()
-    {
-        return $this->colour_hex;
-    }
+		return $this;
+	}
 
-    /**
-     * Set free
-     *
-     * @param boolean $free
-     * @return Culture
-     */
-    public function setFree($free)
-    {
-        $this->free = $free;
+	/**
+	 * Get contains
+	 *
+	 * @return array
+	 */
+	public function getContains(): array {
+		return $this->contains;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get free
-     *
-     * @return boolean 
-     */
-    public function getFree()
-    {
-        return $this->free;
-    }
+	/**
+	 * Add users
+	 *
+	 * @param User $users
+	 *
+	 * @return Culture
+	 */
+	public function addUser(User $users): static {
+		$this->users[] = $users;
 
-    /**
-     * Set cost
-     *
-     * @param integer $cost
-     * @return Culture
-     */
-    public function setCost($cost)
-    {
-        $this->cost = $cost;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Remove users
+	 *
+	 * @param User $users
+	 */
+	public function removeUser(User $users): void {
+		$this->users->removeElement($users);
+	}
 
-    /**
-     * Get cost
-     *
-     * @return integer 
-     */
-    public function getCost()
-    {
-        return $this->cost;
-    }
+	/**
+	 * Get users
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getUsers(): ArrayCollection|Collection {
+		return $this->users;
+	}
 
-    /**
-     * Set contains
-     *
-     * @param array $contains
-     * @return Culture
-     */
-    public function setContains($contains)
-    {
-        $this->contains = $contains;
-
-        return $this;
-    }
-
-    /**
-     * Get contains
-     *
-     * @return array 
-     */
-    public function getContains()
-    {
-        return $this->contains;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Add users
-     *
-     * @param \App\Entity\User $users
-     * @return Culture
-     */
-    public function addUser(\App\Entity\User $users)
-    {
-        $this->users[] = $users;
-
-        return $this;
-    }
-
-    /**
-     * Remove users
-     *
-     * @param \App\Entity\User $users
-     */
-    public function removeUser(\App\Entity\User $users)
-    {
-        $this->users->removeElement($users);
-    }
-
-    /**
-     * Get users
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getUsers()
-    {
-        return $this->users;
-    }
-
-    public function isFree(): ?bool
-    {
-        return $this->free;
-    }
+	public function isFree(): ?bool {
+		return $this->free;
+	}
 }

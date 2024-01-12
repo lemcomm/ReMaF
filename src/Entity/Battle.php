@@ -17,7 +17,7 @@ class Battle {
 	private DateTime $initial_complete;
 	private string $type;
 	private int $id;
-	private Collection|ArrayCollection $groups;
+	private Collection $groups;
 	private BattleGroup $primary_attacker;
 	private BattleGroup $primary_defender;
 	private Settlement $settlement;

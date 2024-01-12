@@ -11,8 +11,8 @@ use Doctrine\Common\Collections\Collection;
 class ActivityGroup {
 	private int $id;
 	private string $name;
-	private Collection|ArrayCollection $participants;
-	private Collection|ArrayCollection $bout_participation;
+	private Collection $participants;
+	private Collection $bout_participation;
 	private Activity $activity;
 
 	/**

@@ -1,108 +1,85 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class CharacterRatingVote {
+	private int $value;
+	private int $id;
+	private ?CharacterRating $rating;
+	private ?User $user;
 
-    /**
-     * @var integer
-     */
-    private $value;
+	/**
+	 * Set value
+	 *
+	 * @param integer $value
+	 *
+	 * @return CharacterRatingVote
+	 */
+	public function setValue(int $value): static {
+		$this->value = $value;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\CharacterRating
-     */
-    private $rating;
+	/**
+	 * Get value
+	 *
+	 * @return integer
+	 */
+	public function getValue(): int {
+		return $this->value;
+	}
 
-    /**
-     * @var \App\Entity\User
-     */
-    private $user;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
+	/**
+	 * Set rating
+	 *
+	 * @param CharacterRating|null $rating
+	 *
+	 * @return CharacterRatingVote
+	 */
+	public function setRating(CharacterRating $rating = null): static {
+		$this->rating = $rating;
 
-    /**
-     * Set value
-     *
-     * @param integer $value
-     * @return CharacterRatingVote
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get rating
+	 *
+	 * @return CharacterRating|null
+	 */
+	public function getRating(): ?CharacterRating {
+		return $this->rating;
+	}
 
-    /**
-     * Get value
-     *
-     * @return integer 
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
+	/**
+	 * Set user
+	 *
+	 * @param User|null $user
+	 *
+	 * @return CharacterRatingVote
+	 */
+	public function setUser(User $user = null): static {
+		$this->user = $user;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Set rating
-     *
-     * @param \App\Entity\CharacterRating $rating
-     * @return CharacterRatingVote
-     */
-    public function setRating(\App\Entity\CharacterRating $rating = null)
-    {
-        $this->rating = $rating;
-
-        return $this;
-    }
-
-    /**
-     * Get rating
-     *
-     * @return \App\Entity\CharacterRating 
-     */
-    public function getRating()
-    {
-        return $this->rating;
-    }
-
-    /**
-     * Set user
-     *
-     * @param \App\Entity\User $user
-     * @return CharacterRatingVote
-     */
-    public function setUser(\App\Entity\User $user = null)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \App\Entity\User 
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
+	/**
+	 * Get user
+	 *
+	 * @return User|null
+	 */
+	public function getUser(): ?User {
+		return $this->user;
+	}
 }

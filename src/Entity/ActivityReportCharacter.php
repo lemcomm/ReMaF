@@ -21,7 +21,7 @@ class ActivityReportCharacter
 	private int $hits_made;
 	private int $wounds;
 	private int $id;
-	private Collection|ArrayCollection $stages;
+	private Collection $stages;
 	private ActivityReport $activity_report;
 	private ActivityReportGroup $group_report;
 	private Character $character;

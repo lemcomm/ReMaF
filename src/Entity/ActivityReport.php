@@ -20,10 +20,10 @@ class ActivityReport {
 	private DateTime $ts;
 	private int $id;
 	private Activity $activity;
-	private Collection|ArrayCollection $characters;
-	private Collection|ArrayCollection $groups;
-	private Collection|ArrayCollection $observers;
-	private Collection|ArrayCollection $journals;
+	private Collection $characters;
+	private Collection $groups;
+	private Collection $observers;
+	private Collection $journals;
 	private ActivityType $type;
 	private ActivitySubType $subtype;
 	private Settlement $settlement;

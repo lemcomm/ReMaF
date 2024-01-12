@@ -16,7 +16,7 @@ class Biome
 	private float $road_construction;
 	private float $feature_construction;
 	private int $id;
-	private Collection|ArrayCollection $geo_data;
+	private Collection $geo_data;
 
     /**
      * Constructor

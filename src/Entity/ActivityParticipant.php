@@ -13,7 +13,7 @@ class ActivityParticipant {
 	private bool $accepted;
 	private bool $organizer;
 	private int $id;
-	private Collection|ArrayCollection $bout_participation;
+	private Collection $bout_participation;
 	private Activity $activity;
 	private Character $character;
 	private Style $style;

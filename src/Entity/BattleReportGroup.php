@@ -12,9 +12,9 @@ class BattleReportGroup {
 	private array $fates;
 	private int $count;
 	private int $id;
-	private Collection|ArrayCollection $combat_stages;
-	private Collection|ArrayCollection $characters;
-	private Collection|ArrayCollection $supported_by;
+	private Collection $combat_stages;
+	private Collection $characters;
+	private Collection $supported_by;
 	private BattleReport $battle_report;
 	private BattleReportGroup $supporting;
 

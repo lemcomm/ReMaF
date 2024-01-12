@@ -18,9 +18,9 @@ class Action {
 	private int $priority;
 	private float $number_value;
 	private string $string_value;
-	private Collection|ArrayCollection $assigned_entourage;
-	private Collection|ArrayCollection $supporting_actions;
-	private Collection|ArrayCollection $opposing_actions;
+	private Collection $assigned_entourage;
+	private Collection $supporting_actions;
+	private Collection $opposing_actions;
 	private Character $character;
 	private Realm $target_realm;
 	private Settlement $target_settlement;
