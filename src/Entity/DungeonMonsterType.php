@@ -1,262 +1,212 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class DungeonMonsterType {
+	private string $name;
+	private array $class;
+	private array $areas;
+	private int $min_depth;
+	private int $power;
+	private int $attacks;
+	private int $defense;
+	private int $wounds;
+	private int $id;
 
-	public function getPoints() {
-   		return ($this->power + $this->defense) * $this->wounds * $this->attacks;
-   	}
+	public function getPoints(): float|int {
+		return ($this->power + $this->defense) * $this->wounds * $this->attacks;
+	}
 
+	public function getDanger(): float {
+		return round((($this->power * $this->attacks) + $this->wounds * 10) / 10);
+	}
 
-	public function getDanger() {
-   		return round( ( ($this->power*$this->attacks)  + $this->wounds*10)/10 );
-   	}
+	public function getResilience(): float {
+		return round(($this->defense * $this->wounds) / 10);
+	}
 
-	public function getResilience() {
-   		return round( ($this->defense * $this->wounds)/10 );
-   	}
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return DungeonMonsterType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var array
-     */
-    private $class;
+	/**
+	 * Set class
+	 *
+	 * @param array $class
+	 *
+	 * @return DungeonMonsterType
+	 */
+	public function setClass(array $class): static {
+		$this->class = $class;
 
-    /**
-     * @var array
-     */
-    private $areas;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $min_depth;
+	/**
+	 * Get class
+	 *
+	 * @return array
+	 */
+	public function getClass(): array {
+		return $this->class;
+	}
 
-    /**
-     * @var integer
-     */
-    private $power;
+	/**
+	 * Set areas
+	 *
+	 * @param array $areas
+	 *
+	 * @return DungeonMonsterType
+	 */
+	public function setAreas(array $areas): static {
+		$this->areas = $areas;
 
-    /**
-     * @var integer
-     */
-    private $attacks;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $defense;
+	/**
+	 * Get areas
+	 *
+	 * @return array
+	 */
+	public function getAreas(): array {
+		return $this->areas;
+	}
 
-    /**
-     * @var integer
-     */
-    private $wounds;
+	/**
+	 * Set min_depth
+	 *
+	 * @param integer $minDepth
+	 *
+	 * @return DungeonMonsterType
+	 */
+	public function setMinDepth(int $minDepth): static {
+		$this->min_depth = $minDepth;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
+	/**
+	 * Get min_depth
+	 *
+	 * @return integer
+	 */
+	public function getMinDepth(): int {
+		return $this->min_depth;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return DungeonMonsterType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Set power
+	 *
+	 * @param integer $power
+	 *
+	 * @return DungeonMonsterType
+	 */
+	public function setPower(int $power): static {
+		$this->power = $power;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Get power
+	 *
+	 * @return integer
+	 */
+	public function getPower(): int {
+		return $this->power;
+	}
 
-    /**
-     * Set class
-     *
-     * @param array $class
-     * @return DungeonMonsterType
-     */
-    public function setClass($class)
-    {
-        $this->class = $class;
+	/**
+	 * Set attacks
+	 *
+	 * @param integer $attacks
+	 *
+	 * @return DungeonMonsterType
+	 */
+	public function setAttacks(int $attacks): static {
+		$this->attacks = $attacks;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get class
-     *
-     * @return array 
-     */
-    public function getClass()
-    {
-        return $this->class;
-    }
+	/**
+	 * Get attacks
+	 *
+	 * @return integer
+	 */
+	public function getAttacks(): int {
+		return $this->attacks;
+	}
 
-    /**
-     * Set areas
-     *
-     * @param array $areas
-     * @return DungeonMonsterType
-     */
-    public function setAreas($areas)
-    {
-        $this->areas = $areas;
+	/**
+	 * Set defense
+	 *
+	 * @param integer $defense
+	 *
+	 * @return DungeonMonsterType
+	 */
+	public function setDefense(int $defense): static {
+		$this->defense = $defense;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get areas
-     *
-     * @return array 
-     */
-    public function getAreas()
-    {
-        return $this->areas;
-    }
+	/**
+	 * Get defense
+	 *
+	 * @return integer
+	 */
+	public function getDefense(): int {
+		return $this->defense;
+	}
 
-    /**
-     * Set min_depth
-     *
-     * @param integer $minDepth
-     * @return DungeonMonsterType
-     */
-    public function setMinDepth($minDepth)
-    {
-        $this->min_depth = $minDepth;
+	/**
+	 * Set wounds
+	 *
+	 * @param integer $wounds
+	 *
+	 * @return DungeonMonsterType
+	 */
+	public function setWounds(int $wounds): static {
+		$this->wounds = $wounds;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get min_depth
-     *
-     * @return integer 
-     */
-    public function getMinDepth()
-    {
-        return $this->min_depth;
-    }
+	/**
+	 * Get wounds
+	 *
+	 * @return integer
+	 */
+	public function getWounds(): int {
+		return $this->wounds;
+	}
 
-    /**
-     * Set power
-     *
-     * @param integer $power
-     * @return DungeonMonsterType
-     */
-    public function setPower($power)
-    {
-        $this->power = $power;
-
-        return $this;
-    }
-
-    /**
-     * Get power
-     *
-     * @return integer 
-     */
-    public function getPower()
-    {
-        return $this->power;
-    }
-
-    /**
-     * Set attacks
-     *
-     * @param integer $attacks
-     * @return DungeonMonsterType
-     */
-    public function setAttacks($attacks)
-    {
-        $this->attacks = $attacks;
-
-        return $this;
-    }
-
-    /**
-     * Get attacks
-     *
-     * @return integer 
-     */
-    public function getAttacks()
-    {
-        return $this->attacks;
-    }
-
-    /**
-     * Set defense
-     *
-     * @param integer $defense
-     * @return DungeonMonsterType
-     */
-    public function setDefense($defense)
-    {
-        $this->defense = $defense;
-
-        return $this;
-    }
-
-    /**
-     * Get defense
-     *
-     * @return integer 
-     */
-    public function getDefense()
-    {
-        return $this->defense;
-    }
-
-    /**
-     * Set wounds
-     *
-     * @param integer $wounds
-     * @return DungeonMonsterType
-     */
-    public function setWounds($wounds)
-    {
-        $this->wounds = $wounds;
-
-        return $this;
-    }
-
-    /**
-     * Get wounds
-     *
-     * @return integer 
-     */
-    public function getWounds()
-    {
-        return $this->wounds;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 }

@@ -2,303 +2,246 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 
-/**
- * Event
- */
-class Event
-{
-    /**
-     * @var string
-     */
-    private $content;
+class Event {
+	private string $content;
+	private array $data;
+	private bool $public;
+	private DateTime $ts;
+	private int $cycle;
+	private int $priority;
+	private ?int $lifetime;
+	private int $id;
+	private Collection $mail_entries;
+	private ?EventLog $log;
 
-    /**
-     * @var array
-     */
-    private $data;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->mail_entries = new ArrayCollection();
+	}
 
-    /**
-     * @var boolean
-     */
-    private $public;
+	/**
+	 * Set content
+	 *
+	 * @param string $content
+	 *
+	 * @return Event
+	 */
+	public function setContent(string $content): static {
+		$this->content = $content;
 
-    /**
-     * @var \DateTime
-     */
-    private $ts;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $cycle;
+	/**
+	 * Get content
+	 *
+	 * @return string
+	 */
+	public function getContent(): string {
+		return $this->content;
+	}
 
-    /**
-     * @var integer
-     */
-    private $priority;
+	/**
+	 * Set data
+	 *
+	 * @param array $data
+	 *
+	 * @return Event
+	 */
+	public function setData(array $data): static {
+		$this->data = $data;
 
-    /**
-     * @var integer
-     */
-    private $lifetime;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get data
+	 *
+	 * @return array
+	 */
+	public function getData(): array {
+		return $this->data;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $mail_entries;
+	/**
+	 * Set public
+	 *
+	 * @param boolean $public
+	 *
+	 * @return Event
+	 */
+	public function setPublic(bool $public): static {
+		$this->public = $public;
 
-    /**
-     * @var \App\Entity\EventLog
-     */
-    private $log;
+		return $this;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->mail_entries = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Get public
+	 *
+	 * @return boolean
+	 */
+	public function getPublic(): bool {
+		return $this->public;
+	}
 
-    /**
-     * Set content
-     *
-     * @param string $content
-     * @return Event
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return Event
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get content
-     *
-     * @return string 
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
-    /**
-     * Set data
-     *
-     * @param array $data
-     * @return Event
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
+	/**
+	 * Set cycle
+	 *
+	 * @param integer $cycle
+	 *
+	 * @return Event
+	 */
+	public function setCycle(int $cycle): static {
+		$this->cycle = $cycle;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get data
-     *
-     * @return array 
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
-    /**
-     * Set public
-     *
-     * @param boolean $public
-     * @return Event
-     */
-    public function setPublic($public)
-    {
-        $this->public = $public;
+	/**
+	 * Set priority
+	 *
+	 * @param integer $priority
+	 *
+	 * @return Event
+	 */
+	public function setPriority(int $priority): static {
+		$this->priority = $priority;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get public
-     *
-     * @return boolean 
-     */
-    public function getPublic()
-    {
-        return $this->public;
-    }
+	/**
+	 * Get priority
+	 *
+	 * @return integer
+	 */
+	public function getPriority(): int {
+		return $this->priority;
+	}
 
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return Event
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
+	/**
+	 * Set lifetime
+	 *
+	 * @param int|null $lifetime
+	 *
+	 * @return Event
+	 */
+	public function setLifetime(?int $lifetime): static {
+		$this->lifetime = $lifetime;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
+	/**
+	 * Get lifetime
+	 *
+	 * @return int|null
+	 */
+	public function getLifetime(): ?int {
+		return $this->lifetime;
+	}
 
-    /**
-     * Set cycle
-     *
-     * @param integer $cycle
-     * @return Event
-     */
-    public function setCycle($cycle)
-    {
-        $this->cycle = $cycle;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Add mail_entries
+	 *
+	 * @param MailEntry $mailEntries
+	 *
+	 * @return Event
+	 */
+	public function addMailEntry(MailEntry $mailEntries): static {
+		$this->mail_entries[] = $mailEntries;
 
-    /**
-     * Get cycle
-     *
-     * @return integer 
-     */
-    public function getCycle()
-    {
-        return $this->cycle;
-    }
+		return $this;
+	}
 
-    /**
-     * Set priority
-     *
-     * @param integer $priority
-     * @return Event
-     */
-    public function setPriority($priority)
-    {
-        $this->priority = $priority;
+	/**
+	 * Remove mail_entries
+	 *
+	 * @param MailEntry $mailEntries
+	 */
+	public function removeMailEntry(MailEntry $mailEntries): void {
+		$this->mail_entries->removeElement($mailEntries);
+	}
 
-        return $this;
-    }
+	/**
+	 * Get mail_entries
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMailEntries(): ArrayCollection|Collection {
+		return $this->mail_entries;
+	}
 
-    /**
-     * Get priority
-     *
-     * @return integer 
-     */
-    public function getPriority()
-    {
-        return $this->priority;
-    }
+	/**
+	 * Set log
+	 *
+	 * @param EventLog|null $log
+	 *
+	 * @return Event
+	 */
+	public function setLog(EventLog $log = null): static {
+		$this->log = $log;
 
-    /**
-     * Set lifetime
-     *
-     * @param integer $lifetime
-     * @return Event
-     */
-    public function setLifetime($lifetime)
-    {
-        $this->lifetime = $lifetime;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get log
+	 *
+	 * @return EventLog|null
+	 */
+	public function getLog(): ?EventLog {
+		return $this->log;
+	}
 
-    /**
-     * Get lifetime
-     *
-     * @return integer 
-     */
-    public function getLifetime()
-    {
-        return $this->lifetime;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Add mail_entries
-     *
-     * @param \App\Entity\MailEntry $mailEntries
-     * @return Event
-     */
-    public function addMailEntry(\App\Entity\MailEntry $mailEntries)
-    {
-        $this->mail_entries[] = $mailEntries;
-
-        return $this;
-    }
-
-    /**
-     * Remove mail_entries
-     *
-     * @param \App\Entity\MailEntry $mailEntries
-     */
-    public function removeMailEntry(\App\Entity\MailEntry $mailEntries)
-    {
-        $this->mail_entries->removeElement($mailEntries);
-    }
-
-    /**
-     * Get mail_entries
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getMailEntries()
-    {
-        return $this->mail_entries;
-    }
-
-    /**
-     * Set log
-     *
-     * @param \App\Entity\EventLog $log
-     * @return Event
-     */
-    public function setLog(\App\Entity\EventLog $log = null)
-    {
-        $this->log = $log;
-
-        return $this;
-    }
-
-    /**
-     * Get log
-     *
-     * @return \App\Entity\EventLog 
-     */
-    public function getLog()
-    {
-        return $this->log;
-    }
-
-    public function isPublic(): ?bool
-    {
-        return $this->public;
-    }
+	public function isPublic(): ?bool {
+		return $this->public;
+	}
 }

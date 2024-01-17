@@ -4,195 +4,157 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 
-/**
- * DungeonLevel
- */
-class DungeonLevel
-{
-    /**
-     * @var integer
-     */
-    private $depth;
+class DungeonLevel {
+	private int $depth;
+	private int $scout_level;
+	private int $id;
+	private Collection $monsters;
+	private Collection $treasures;
+	private Dungeon $dungeon;
 
-    /**
-     * @var integer
-     */
-    private $scout_level;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->monsters = new ArrayCollection();
+		$this->treasures = new ArrayCollection();
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set depth
+	 *
+	 * @param integer $depth
+	 *
+	 * @return DungeonLevel
+	 */
+	public function setDepth(int $depth): static {
+		$this->depth = $depth;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $monsters;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $treasures;
+	/**
+	 * Get depth
+	 *
+	 * @return integer
+	 */
+	public function getDepth(): int {
+		return $this->depth;
+	}
 
-    /**
-     * @var \App\Entity\Dungeon
-     */
-    private $dungeon;
+	/**
+	 * Set scout_level
+	 *
+	 * @param integer $scoutLevel
+	 *
+	 * @return DungeonLevel
+	 */
+	public function setScoutLevel(int $scoutLevel): static {
+		$this->scout_level = $scoutLevel;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->monsters = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->treasures = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+		return $this;
+	}
 
-    /**
-     * Set depth
-     *
-     * @param integer $depth
-     * @return DungeonLevel
-     */
-    public function setDepth($depth)
-    {
-        $this->depth = $depth;
+	/**
+	 * Get scout_level
+	 *
+	 * @return integer
+	 */
+	public function getScoutLevel(): int {
+		return $this->scout_level;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get depth
-     *
-     * @return integer 
-     */
-    public function getDepth()
-    {
-        return $this->depth;
-    }
+	/**
+	 * Add monsters
+	 *
+	 * @param DungeonMonster $monsters
+	 *
+	 * @return DungeonLevel
+	 */
+	public function addMonster(DungeonMonster $monsters): static {
+		$this->monsters[] = $monsters;
 
-    /**
-     * Set scout_level
-     *
-     * @param integer $scoutLevel
-     * @return DungeonLevel
-     */
-    public function setScoutLevel($scoutLevel)
-    {
-        $this->scout_level = $scoutLevel;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Remove monsters
+	 *
+	 * @param DungeonMonster $monsters
+	 */
+	public function removeMonster(DungeonMonster $monsters): void {
+		$this->monsters->removeElement($monsters);
+	}
 
-    /**
-     * Get scout_level
-     *
-     * @return integer 
-     */
-    public function getScoutLevel()
-    {
-        return $this->scout_level;
-    }
+	/**
+	 * Get monsters
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMonsters(): ArrayCollection|Collection {
+		return $this->monsters;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Add treasures
+	 *
+	 * @param DungeonTreasure $treasures
+	 *
+	 * @return DungeonLevel
+	 */
+	public function addTreasure(DungeonTreasure $treasures): static {
+		$this->treasures[] = $treasures;
 
-    /**
-     * Add monsters
-     *
-     * @param \App\Entity\DungeonMonster $monsters
-     * @return DungeonLevel
-     */
-    public function addMonster(\App\Entity\DungeonMonster $monsters)
-    {
-        $this->monsters[] = $monsters;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Remove treasures
+	 *
+	 * @param DungeonTreasure $treasures
+	 */
+	public function removeTreasure(DungeonTreasure $treasures): void {
+		$this->treasures->removeElement($treasures);
+	}
 
-    /**
-     * Remove monsters
-     *
-     * @param \App\Entity\DungeonMonster $monsters
-     */
-    public function removeMonster(\App\Entity\DungeonMonster $monsters)
-    {
-        $this->monsters->removeElement($monsters);
-    }
+	/**
+	 * Get treasures
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getTreasures(): ArrayCollection|Collection {
+		return $this->treasures;
+	}
 
-    /**
-     * Get monsters
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getMonsters()
-    {
-        return $this->monsters;
-    }
+	/**
+	 * Set dungeon
+	 *
+	 * @param Dungeon|null $dungeon
+	 *
+	 * @return DungeonLevel
+	 */
+	public function setDungeon(Dungeon $dungeon = null): static {
+		$this->dungeon = $dungeon;
 
-    /**
-     * Add treasures
-     *
-     * @param \App\Entity\DungeonTreasure $treasures
-     * @return DungeonLevel
-     */
-    public function addTreasure(\App\Entity\DungeonTreasure $treasures)
-    {
-        $this->treasures[] = $treasures;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Remove treasures
-     *
-     * @param \App\Entity\DungeonTreasure $treasures
-     */
-    public function removeTreasure(\App\Entity\DungeonTreasure $treasures)
-    {
-        $this->treasures->removeElement($treasures);
-    }
-
-    /**
-     * Get treasures
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getTreasures()
-    {
-        return $this->treasures;
-    }
-
-    /**
-     * Set dungeon
-     *
-     * @param \App\Entity\Dungeon $dungeon
-     * @return DungeonLevel
-     */
-    public function setDungeon(\App\Entity\Dungeon $dungeon = null)
-    {
-        $this->dungeon = $dungeon;
-
-        return $this;
-    }
-
-    /**
-     * Get dungeon
-     *
-     * @return \App\Entity\Dungeon 
-     */
-    public function getDungeon()
-    {
-        return $this->dungeon;
-    }
+	/**
+	 * Get dungeon
+	 *
+	 * @return Dungeon
+	 */
+	public function getDungeon(): Dungeon {
+		return $this->dungeon;
+	}
 }

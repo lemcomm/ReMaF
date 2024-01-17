@@ -1,245 +1,203 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 
 class DungeonParty {
+	private int $counter;
+	private int $id;
+	private ?Dungeon $dungeon;
+	private ?DungeonLevel $current_level;
+	private Collection $members;
+	private Collection $messages;
+	private Collection $events;
 
-	public function countActiveMembers() {
-         		return $this->getActiveMembers()->count();
-         	}
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->members = new ArrayCollection();
+		$this->messages = new ArrayCollection();
+		$this->events = new ArrayCollection();
+	}
 
-	public function getActiveMembers() {
-         		return $this->getMembers()->filter(
-         			function($entry) {
-         				return $entry->isInDungeon();
-         			}
-         		);
-         	}
+	public function countActiveMembers(): int {
+		return $this->getActiveMembers()->count();
+	}
 
-    /**
-     * @var integer
-     */
-    private $counter;
+	public function getActiveMembers(): ArrayCollection|Collection {
+		return $this->getMembers()->filter(function ($entry) {
+			return $entry->isInDungeon();
+		});
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set counter
+	 *
+	 * @param integer $counter
+	 *
+	 * @return DungeonParty
+	 */
+	public function setCounter(int $counter): static {
+		$this->counter = $counter;
 
-    /**
-     * @var \App\Entity\Dungeon
-     */
-    private $dungeon;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\DungeonLevel
-     */
-    private $current_level;
+	/**
+	 * Get counter
+	 *
+	 * @return integer
+	 */
+	public function getCounter(): int {
+		return $this->counter;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $members;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $messages;
+	/**
+	 * Set dungeon
+	 *
+	 * @param Dungeon|null $dungeon
+	 *
+	 * @return DungeonParty
+	 */
+	public function setDungeon(Dungeon $dungeon = null): static {
+		$this->dungeon = $dungeon;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $events;
+		return $this;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->members = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->messages = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->events = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Get dungeon
+	 *
+	 * @return Dungeon|null
+	 */
+	public function getDungeon(): ?Dungeon {
+		return $this->dungeon;
+	}
 
-    /**
-     * Set counter
-     *
-     * @param integer $counter
-     * @return DungeonParty
-     */
-    public function setCounter($counter)
-    {
-        $this->counter = $counter;
+	/**
+	 * Set current_level
+	 *
+	 * @param DungeonLevel|null $currentLevel
+	 *
+	 * @return DungeonParty
+	 */
+	public function setCurrentLevel(DungeonLevel $currentLevel = null): static {
+		$this->current_level = $currentLevel;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get counter
-     *
-     * @return integer 
-     */
-    public function getCounter()
-    {
-        return $this->counter;
-    }
+	/**
+	 * Get current_level
+	 *
+	 * @return DungeonLevel|null
+	 */
+	public function getCurrentLevel(): ?DungeonLevel {
+		return $this->current_level;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Add members
+	 *
+	 * @param Dungeoneer $members
+	 *
+	 * @return DungeonParty
+	 */
+	public function addMember(Dungeoneer $members): static {
+		$this->members[] = $members;
 
-    /**
-     * Set dungeon
-     *
-     * @param \App\Entity\Dungeon $dungeon
-     * @return DungeonParty
-     */
-    public function setDungeon(\App\Entity\Dungeon $dungeon = null)
-    {
-        $this->dungeon = $dungeon;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Remove members
+	 *
+	 * @param Dungeoneer $members
+	 */
+	public function removeMember(Dungeoneer $members): void {
+		$this->members->removeElement($members);
+	}
 
-    /**
-     * Get dungeon
-     *
-     * @return \App\Entity\Dungeon 
-     */
-    public function getDungeon()
-    {
-        return $this->dungeon;
-    }
+	/**
+	 * Get members
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMembers(): ArrayCollection|Collection {
+		return $this->members;
+	}
 
-    /**
-     * Set current_level
-     *
-     * @param \App\Entity\DungeonLevel $currentLevel
-     * @return DungeonParty
-     */
-    public function setCurrentLevel(\App\Entity\DungeonLevel $currentLevel = null)
-    {
-        $this->current_level = $currentLevel;
+	/**
+	 * Add messages
+	 *
+	 * @param DungeonMessage $messages
+	 *
+	 * @return DungeonParty
+	 */
+	public function addMessage(DungeonMessage $messages): static {
+		$this->messages[] = $messages;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get current_level
-     *
-     * @return \App\Entity\DungeonLevel 
-     */
-    public function getCurrentLevel()
-    {
-        return $this->current_level;
-    }
+	/**
+	 * Remove messages
+	 *
+	 * @param DungeonMessage $messages
+	 */
+	public function removeMessage(DungeonMessage $messages): void {
+		$this->messages->removeElement($messages);
+	}
 
-    /**
-     * Add members
-     *
-     * @param \App\Entity\Dungeoneer $members
-     * @return DungeonParty
-     */
-    public function addMember(\App\Entity\Dungeoneer $members)
-    {
-        $this->members[] = $members;
+	/**
+	 * Get messages
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMessages(): ArrayCollection|Collection {
+		return $this->messages;
+	}
 
-        return $this;
-    }
+	/**
+	 * Add events
+	 *
+	 * @param DungeonEvent $events
+	 *
+	 * @return DungeonParty
+	 */
+	public function addEvent(DungeonEvent $events): static {
+		$this->events[] = $events;
 
-    /**
-     * Remove members
-     *
-     * @param \App\Entity\Dungeoneer $members
-     */
-    public function removeMember(\App\Entity\Dungeoneer $members)
-    {
-        $this->members->removeElement($members);
-    }
+		return $this;
+	}
 
-    /**
-     * Get members
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getMembers()
-    {
-        return $this->members;
-    }
+	/**
+	 * Remove events
+	 *
+	 * @param DungeonEvent $events
+	 */
+	public function removeEvent(DungeonEvent $events): void {
+		$this->events->removeElement($events);
+	}
 
-    /**
-     * Add messages
-     *
-     * @param \App\Entity\DungeonMessage $messages
-     * @return DungeonParty
-     */
-    public function addMessage(\App\Entity\DungeonMessage $messages)
-    {
-        $this->messages[] = $messages;
-
-        return $this;
-    }
-
-    /**
-     * Remove messages
-     *
-     * @param \App\Entity\DungeonMessage $messages
-     */
-    public function removeMessage(\App\Entity\DungeonMessage $messages)
-    {
-        $this->messages->removeElement($messages);
-    }
-
-    /**
-     * Get messages
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getMessages()
-    {
-        return $this->messages;
-    }
-
-    /**
-     * Add events
-     *
-     * @param \App\Entity\DungeonEvent $events
-     * @return DungeonParty
-     */
-    public function addEvent(\App\Entity\DungeonEvent $events)
-    {
-        $this->events[] = $events;
-
-        return $this;
-    }
-
-    /**
-     * Remove events
-     *
-     * @param \App\Entity\DungeonEvent $events
-     */
-    public function removeEvent(\App\Entity\DungeonEvent $events)
-    {
-        $this->events->removeElement($events);
-    }
-
-    /**
-     * Get events
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getEvents()
-    {
-        return $this->events;
-    }
+	/**
+	 * Get events
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getEvents(): ArrayCollection|Collection {
+		return $this->events;
+	}
 }

@@ -1,216 +1,175 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class DungeonCardType {
 
-	public function getRareText() {
-            		if ($this->rarity == 0) return 'common'; // exception for leave, etc. cards you can't draw randomly
-            		if ($this->rarity <= 20) return 'legendary';
-            		if ($this->rarity <= 100) return 'rare';
-            		if ($this->rarity <= 400) return 'uncommon';
-            		return 'common';
-            	}
+	private string $name;
+	private int $rarity;
+	private string $monsterclass;
+	private bool $target_monster;
+	private bool $target_treasure;
+	private bool $target_dungeoneer;
+	private int $id;
 
+	public function getRareText(): string {
+		if ($this->rarity == 0) return 'common'; // exception for leave, etc. cards you can't draw randomly
+		if ($this->rarity <= 20) return 'legendary';
+		if ($this->rarity <= 100) return 'rare';
+		if ($this->rarity <= 400) return 'uncommon';
+		return 'common';
+	}
 
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return DungeonCardType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var integer
-     */
-    private $rarity;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $monsterclass;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $target_monster;
+	/**
+	 * Set rarity
+	 *
+	 * @param integer $rarity
+	 *
+	 * @return DungeonCardType
+	 */
+	public function setRarity(int $rarity): static {
+		$this->rarity = $rarity;
 
-    /**
-     * @var boolean
-     */
-    private $target_treasure;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $target_dungeoneer;
+	/**
+	 * Get rarity
+	 *
+	 * @return integer
+	 */
+	public function getRarity(): int {
+		return $this->rarity;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set monsterclass
+	 *
+	 * @param string $monsterclass
+	 *
+	 * @return DungeonCardType
+	 */
+	public function setMonsterclass(string $monsterclass): static {
+		$this->monsterclass = $monsterclass;
 
+		return $this;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return DungeonCardType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Get monsterclass
+	 *
+	 * @return string
+	 */
+	public function getMonsterclass(): string {
+		return $this->monsterclass;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set target_monster
+	 *
+	 * @param boolean $targetMonster
+	 *
+	 * @return DungeonCardType
+	 */
+	public function setTargetMonster(bool $targetMonster): static {
+		$this->target_monster = $targetMonster;
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+		return $this;
+	}
 
-    /**
-     * Set rarity
-     *
-     * @param integer $rarity
-     * @return DungeonCardType
-     */
-    public function setRarity($rarity)
-    {
-        $this->rarity = $rarity;
+	/**
+	 * Get target_monster
+	 *
+	 * @return boolean
+	 */
+	public function getTargetMonster(): bool {
+		return $this->target_monster;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set target_treasure
+	 *
+	 * @param boolean $targetTreasure
+	 *
+	 * @return DungeonCardType
+	 */
+	public function setTargetTreasure(bool $targetTreasure): static {
+		$this->target_treasure = $targetTreasure;
 
-    /**
-     * Get rarity
-     *
-     * @return integer 
-     */
-    public function getRarity()
-    {
-        return $this->rarity;
-    }
+		return $this;
+	}
 
-    /**
-     * Set monsterclass
-     *
-     * @param string $monsterclass
-     * @return DungeonCardType
-     */
-    public function setMonsterclass($monsterclass)
-    {
-        $this->monsterclass = $monsterclass;
+	/**
+	 * Get target_treasure
+	 *
+	 * @return boolean
+	 */
+	public function getTargetTreasure(): bool {
+		return $this->target_treasure;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set target_dungeoneer
+	 *
+	 * @param boolean $targetDungeoneer
+	 *
+	 * @return DungeonCardType
+	 */
+	public function setTargetDungeoneer(bool $targetDungeoneer): static {
+		$this->target_dungeoneer = $targetDungeoneer;
 
-    /**
-     * Get monsterclass
-     *
-     * @return string 
-     */
-    public function getMonsterclass()
-    {
-        return $this->monsterclass;
-    }
+		return $this;
+	}
 
-    /**
-     * Set target_monster
-     *
-     * @param boolean $targetMonster
-     * @return DungeonCardType
-     */
-    public function setTargetMonster($targetMonster)
-    {
-        $this->target_monster = $targetMonster;
+	/**
+	 * Get target_dungeoneer
+	 *
+	 * @return boolean
+	 */
+	public function getTargetDungeoneer(): bool {
+		return $this->target_dungeoneer;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get target_monster
-     *
-     * @return boolean 
-     */
-    public function getTargetMonster()
-    {
-        return $this->target_monster;
-    }
+	public function isTargetMonster(): ?bool {
+		return $this->target_monster;
+	}
 
-    /**
-     * Set target_treasure
-     *
-     * @param boolean $targetTreasure
-     * @return DungeonCardType
-     */
-    public function setTargetTreasure($targetTreasure)
-    {
-        $this->target_treasure = $targetTreasure;
+	public function isTargetTreasure(): ?bool {
+		return $this->target_treasure;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get target_treasure
-     *
-     * @return boolean 
-     */
-    public function getTargetTreasure()
-    {
-        return $this->target_treasure;
-    }
-
-    /**
-     * Set target_dungeoneer
-     *
-     * @param boolean $targetDungeoneer
-     * @return DungeonCardType
-     */
-    public function setTargetDungeoneer($targetDungeoneer)
-    {
-        $this->target_dungeoneer = $targetDungeoneer;
-
-        return $this;
-    }
-
-    /**
-     * Get target_dungeoneer
-     *
-     * @return boolean 
-     */
-    public function getTargetDungeoneer()
-    {
-        return $this->target_dungeoneer;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function isTargetMonster(): ?bool
-    {
-        return $this->target_monster;
-    }
-
-    public function isTargetTreasure(): ?bool
-    {
-        return $this->target_treasure;
-    }
-
-    public function isTargetDungeoneer(): ?bool
-    {
-        return $this->target_dungeoneer;
-    }
+	public function isTargetDungeoneer(): ?bool {
+		return $this->target_dungeoneer;
+	}
 }

@@ -1,304 +1,250 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 
 class DungeonMonster {
+	private int $nr;
+	private int $amount;
+	private int $original_amount;
+	private int $size;
+	private int $wounds;
+	private bool $stunned;
+	private int $id;
+	private Collection $targeted_by;
+	private ?DungeonLevel $level;
+	private ?DungeonMonsterType $type;
 
-	public function getName() {
-            		return $this->amount."x ".$this->type->getName()." (size ".$this->size.")";
-            	}
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->targeted_by = new ArrayCollection();
+	}
 
-    /**
-     * @var integer
-     */
-    private $nr;
+	public function getName(): string {
+		return $this->amount . "x " . $this->type->getName() . " (size " . $this->size . ")";
+	}
 
-    /**
-     * @var integer
-     */
-    private $amount;
+	/**
+	 * Set nr
+	 *
+	 * @param integer $nr
+	 *
+	 * @return DungeonMonster
+	 */
+	public function setNr(int $nr): static {
+		$this->nr = $nr;
 
-    /**
-     * @var integer
-     */
-    private $original_amount;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $size;
+	/**
+	 * Get nr
+	 *
+	 * @return integer
+	 */
+	public function getNr(): int {
+		return $this->nr;
+	}
 
-    /**
-     * @var integer
-     */
-    private $wounds;
+	/**
+	 * Set amount
+	 *
+	 * @param integer $amount
+	 *
+	 * @return DungeonMonster
+	 */
+	public function setAmount(int $amount): static {
+		$this->amount = $amount;
 
-    /**
-     * @var boolean
-     */
-    private $stunned;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get amount
+	 *
+	 * @return integer
+	 */
+	public function getAmount(): int {
+		return $this->amount;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $targeted_by;
+	/**
+	 * Set original_amount
+	 *
+	 * @param integer $originalAmount
+	 *
+	 * @return DungeonMonster
+	 */
+	public function setOriginalAmount(int $originalAmount): static {
+		$this->original_amount = $originalAmount;
 
-    /**
-     * @var \App\Entity\DungeonLevel
-     */
-    private $level;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\DungeonMonsterType
-     */
-    private $type;
+	/**
+	 * Get original_amount
+	 *
+	 * @return integer
+	 */
+	public function getOriginalAmount(): int {
+		return $this->original_amount;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->targeted_by = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Set size
+	 *
+	 * @param integer $size
+	 *
+	 * @return DungeonMonster
+	 */
+	public function setSize(int $size): static {
+		$this->size = $size;
 
-    /**
-     * Set nr
-     *
-     * @param integer $nr
-     * @return DungeonMonster
-     */
-    public function setNr($nr)
-    {
-        $this->nr = $nr;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get size
+	 *
+	 * @return integer
+	 */
+	public function getSize(): int {
+		return $this->size;
+	}
 
-    /**
-     * Get nr
-     *
-     * @return integer 
-     */
-    public function getNr()
-    {
-        return $this->nr;
-    }
+	/**
+	 * Set wounds
+	 *
+	 * @param integer $wounds
+	 *
+	 * @return DungeonMonster
+	 */
+	public function setWounds(int $wounds): static {
+		$this->wounds = $wounds;
 
-    /**
-     * Set amount
-     *
-     * @param integer $amount
-     * @return DungeonMonster
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get wounds
+	 *
+	 * @return integer
+	 */
+	public function getWounds(): int {
+		return $this->wounds;
+	}
 
-    /**
-     * Get amount
-     *
-     * @return integer 
-     */
-    public function getAmount()
-    {
-        return $this->amount;
-    }
+	/**
+	 * Set stunned
+	 *
+	 * @param boolean $stunned
+	 *
+	 * @return DungeonMonster
+	 */
+	public function setStunned(bool $stunned): static {
+		$this->stunned = $stunned;
 
-    /**
-     * Set original_amount
-     *
-     * @param integer $originalAmount
-     * @return DungeonMonster
-     */
-    public function setOriginalAmount($originalAmount)
-    {
-        $this->original_amount = $originalAmount;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get stunned
+	 *
+	 * @return boolean
+	 */
+	public function getStunned(): bool {
+		return $this->stunned;
+	}
 
-    /**
-     * Get original_amount
-     *
-     * @return integer 
-     */
-    public function getOriginalAmount()
-    {
-        return $this->original_amount;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set size
-     *
-     * @param integer $size
-     * @return DungeonMonster
-     */
-    public function setSize($size)
-    {
-        $this->size = $size;
+	/**
+	 * Add targeted_by
+	 *
+	 * @param Dungeoneer $targetedBy
+	 *
+	 * @return DungeonMonster
+	 */
+	public function addTargetedBy(Dungeoneer $targetedBy): static {
+		$this->targeted_by[] = $targetedBy;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get size
-     *
-     * @return integer 
-     */
-    public function getSize()
-    {
-        return $this->size;
-    }
+	/**
+	 * Remove targeted_by
+	 *
+	 * @param Dungeoneer $targetedBy
+	 */
+	public function removeTargetedBy(Dungeoneer $targetedBy): void {
+		$this->targeted_by->removeElement($targetedBy);
+	}
 
-    /**
-     * Set wounds
-     *
-     * @param integer $wounds
-     * @return DungeonMonster
-     */
-    public function setWounds($wounds)
-    {
-        $this->wounds = $wounds;
+	/**
+	 * Get targeted_by
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getTargetedBy(): ArrayCollection|Collection {
+		return $this->targeted_by;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set level
+	 *
+	 * @param DungeonLevel|null $level
+	 *
+	 * @return DungeonMonster
+	 */
+	public function setLevel(DungeonLevel $level = null): static {
+		$this->level = $level;
 
-    /**
-     * Get wounds
-     *
-     * @return integer 
-     */
-    public function getWounds()
-    {
-        return $this->wounds;
-    }
+		return $this;
+	}
 
-    /**
-     * Set stunned
-     *
-     * @param boolean $stunned
-     * @return DungeonMonster
-     */
-    public function setStunned($stunned)
-    {
-        $this->stunned = $stunned;
+	/**
+	 * Get level
+	 *
+	 * @return DungeonLevel|null
+	 */
+	public function getLevel(): ?DungeonLevel {
+		return $this->level;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set type
+	 *
+	 * @param DungeonMonsterType|null $type
+	 *
+	 * @return DungeonMonster
+	 */
+	public function setType(DungeonMonsterType $type = null): static {
+		$this->type = $type;
 
-    /**
-     * Get stunned
-     *
-     * @return boolean 
-     */
-    public function getStunned()
-    {
-        return $this->stunned;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get type
+	 *
+	 * @return DungeonMonsterType|null
+	 */
+	public function getType(): ?DungeonMonsterType {
+		return $this->type;
+	}
 
-    /**
-     * Add targeted_by
-     *
-     * @param \App\Entity\Dungeoneer $targetedBy
-     * @return DungeonMonster
-     */
-    public function addTargetedBy(\App\Entity\Dungeoneer $targetedBy)
-    {
-        $this->targeted_by[] = $targetedBy;
-
-        return $this;
-    }
-
-    /**
-     * Remove targeted_by
-     *
-     * @param \App\Entity\Dungeoneer $targetedBy
-     */
-    public function removeTargetedBy(\App\Entity\Dungeoneer $targetedBy)
-    {
-        $this->targeted_by->removeElement($targetedBy);
-    }
-
-    /**
-     * Get targeted_by
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getTargetedBy()
-    {
-        return $this->targeted_by;
-    }
-
-    /**
-     * Set level
-     *
-     * @param \App\Entity\DungeonLevel $level
-     * @return DungeonMonster
-     */
-    public function setLevel(\App\Entity\DungeonLevel $level = null)
-    {
-        $this->level = $level;
-
-        return $this;
-    }
-
-    /**
-     * Get level
-     *
-     * @return \App\Entity\DungeonLevel 
-     */
-    public function getLevel()
-    {
-        return $this->level;
-    }
-
-    /**
-     * Set type
-     *
-     * @param \App\Entity\DungeonMonsterType $type
-     * @return DungeonMonster
-     */
-    public function setType(\App\Entity\DungeonMonsterType $type = null)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return \App\Entity\DungeonMonsterType 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    public function isStunned(): ?bool
-    {
-        return $this->stunned;
-    }
+	public function isStunned(): ?bool {
+		return $this->stunned;
+	}
 }

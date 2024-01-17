@@ -1,299 +1,247 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class GeoFeature {
+	private string $name;
+	private Point $location;
+	private float $workers;
+	private bool $active;
+	private int $condition;
+	private int $id;
+	private ?Settlement $settlement;
+	private ?Place $place;
+	private ?FeatureType $type;
+	private ?GeoData $geo_data;
 
-	public function ApplyDamage($damage) {
-   		$this->condition -= $damage;
-   
-   		if ($this->condition <= -$this->type->getBuildHours()) {
-   			// destroyed
-   			$this->active = false;
-   			$this->condition = -$this->type->getBuildHours();
-   			return 'destroyed';
-   		} else if ($this->active && $this->condition < -$this->type->getBuildHours()*0.25) {
-   			// disabled / inoperative
-   			$this->active = false;
-   			return 'disabled';
-   		} else {
-   			return 'damaged';
-   		}
-   
-   	}
+	public function ApplyDamage($damage): string {
+		$this->condition -= $damage;
 
-    /**
-     * @var string
-     */
-    private $name;
+		if ($this->condition <= -$this->type->getBuildHours()) {
+			// destroyed
+			$this->active = false;
+			$this->condition = -$this->type->getBuildHours();
+			return 'destroyed';
+		} elseif ($this->active && $this->condition < -$this->type->getBuildHours() * 0.25) {
+			// disabled / inoperative
+			$this->active = false;
+			return 'disabled';
+		} else {
+			return 'damaged';
+		}
 
-    /**
-     * @var point
-     */
-    private $location;
+	}
 
-    /**
-     * @var float
-     */
-    private $workers;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return GeoFeature
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var boolean
-     */
-    private $active;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $condition;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set location
+	 *
+	 * @param point $location
+	 *
+	 * @return GeoFeature
+	 */
+	public function setLocation(Point $location): static {
+		$this->location = $location;
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Place
-     */
-    private $place;
+	/**
+	 * Get location
+	 *
+	 * @return point
+	 */
+	public function getLocation(): Point {
+		return $this->location;
+	}
 
-    /**
-     * @var \App\Entity\FeatureType
-     */
-    private $type;
+	/**
+	 * Set workers
+	 *
+	 * @param float $workers
+	 *
+	 * @return GeoFeature
+	 */
+	public function setWorkers(float $workers): static {
+		$this->workers = $workers;
 
-    /**
-     * @var \App\Entity\GeoData
-     */
-    private $geo_data;
+		return $this;
+	}
 
+	/**
+	 * Get workers
+	 *
+	 * @return float
+	 */
+	public function getWorkers(): float {
+		return $this->workers;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return GeoFeature
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Set active
+	 *
+	 * @param boolean $active
+	 *
+	 * @return GeoFeature
+	 */
+	public function setActive(bool $active): static {
+		$this->active = $active;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Get active
+	 *
+	 * @return boolean
+	 */
+	public function getActive(): bool {
+		return $this->active;
+	}
 
-    /**
-     * Set location
-     *
-     * @param point $location
-     * @return GeoFeature
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
+	/**
+	 * Set condition
+	 *
+	 * @param integer $condition
+	 *
+	 * @return GeoFeature
+	 */
+	public function setCondition(int $condition): static {
+		$this->condition = $condition;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get location
-     *
-     * @return point 
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
+	/**
+	 * Get condition
+	 *
+	 * @return integer
+	 */
+	public function getCondition(): int {
+		return $this->condition;
+	}
 
-    /**
-     * Set workers
-     *
-     * @param float $workers
-     * @return GeoFeature
-     */
-    public function setWorkers($workers)
-    {
-        $this->workers = $workers;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return GeoFeature
+	 */
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
 
-    /**
-     * Get workers
-     *
-     * @return float 
-     */
-    public function getWorkers()
-    {
-        return $this->workers;
-    }
+		return $this;
+	}
 
-    /**
-     * Set active
-     *
-     * @param boolean $active
-     * @return GeoFeature
-     */
-    public function setActive($active)
-    {
-        $this->active = $active;
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement|null
+	 */
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set place
+	 *
+	 * @param Place|null $place
+	 *
+	 * @return GeoFeature
+	 */
+	public function setPlace(Place $place = null): static {
+		$this->place = $place;
 
-    /**
-     * Get active
-     *
-     * @return boolean 
-     */
-    public function getActive()
-    {
-        return $this->active;
-    }
+		return $this;
+	}
 
-    /**
-     * Set condition
-     *
-     * @param integer $condition
-     * @return GeoFeature
-     */
-    public function setCondition($condition)
-    {
-        $this->condition = $condition;
+	/**
+	 * Get place
+	 *
+	 * @return Place|null
+	 */
+	public function getPlace(): ?Place {
+		return $this->place;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set type
+	 *
+	 * @param FeatureType|null $type
+	 *
+	 * @return GeoFeature
+	 */
+	public function setType(FeatureType $type = null): static {
+		$this->type = $type;
 
-    /**
-     * Get condition
-     *
-     * @return integer 
-     */
-    public function getCondition()
-    {
-        return $this->condition;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get type
+	 *
+	 * @return FeatureType|null
+	 */
+	public function getType(): ?FeatureType {
+		return $this->type;
+	}
 
-    /**
-     * Set settlement
-     *
-     * @param \App\Entity\Settlement $settlement
-     * @return GeoFeature
-     */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
-        $this->settlement = $settlement;
+	/**
+	 * Set geo_data
+	 *
+	 * @param GeoData|null $geoData
+	 *
+	 * @return GeoFeature
+	 */
+	public function setGeoData(GeoData $geoData = null): static {
+		$this->geo_data = $geoData;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getSettlement()
-    {
-        return $this->settlement;
-    }
+	/**
+	 * Get geo_data
+	 *
+	 * @return GeoData|null
+	 */
+	public function getGeoData(): ?GeoData {
+		return $this->geo_data;
+	}
 
-    /**
-     * Set place
-     *
-     * @param \App\Entity\Place $place
-     * @return GeoFeature
-     */
-    public function setPlace(\App\Entity\Place $place = null)
-    {
-        $this->place = $place;
-
-        return $this;
-    }
-
-    /**
-     * Get place
-     *
-     * @return \App\Entity\Place 
-     */
-    public function getPlace()
-    {
-        return $this->place;
-    }
-
-    /**
-     * Set type
-     *
-     * @param \App\Entity\FeatureType $type
-     * @return GeoFeature
-     */
-    public function setType(\App\Entity\FeatureType $type = null)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return \App\Entity\FeatureType 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set geo_data
-     *
-     * @param \App\Entity\GeoData $geoData
-     * @return GeoFeature
-     */
-    public function setGeoData(\App\Entity\GeoData $geoData = null)
-    {
-        $this->geo_data = $geoData;
-
-        return $this;
-    }
-
-    /**
-     * Get geo_data
-     *
-     * @return \App\Entity\GeoData 
-     */
-    public function getGeoData()
-    {
-        return $this->geo_data;
-    }
-
-    public function isActive(): ?bool
-    {
-        return $this->active;
-    }
+	public function isActive(): ?bool {
+		return $this->active;
+	}
 }

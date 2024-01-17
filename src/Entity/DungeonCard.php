@@ -2,139 +2,107 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+class DungeonCard {
+	private int $amount;
+	private int $played;
+	private int $id;
+	private ?DungeonCardType $type;
+	private ?Dungeoneer $owner;
 
-/**
- * DungeonCard
- */
-class DungeonCard
-{
-    /**
-     * @var integer
-     */
-    private $amount;
+	/**
+	 * Set amount
+	 *
+	 * @param integer $amount
+	 *
+	 * @return DungeonCard
+	 */
+	public function setAmount(int $amount): static {
+		$this->amount = $amount;
 
-    /**
-     * @var integer
-     */
-    private $played;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get amount
+	 *
+	 * @return integer
+	 */
+	public function getAmount(): int {
+		return $this->amount;
+	}
 
-    /**
-     * @var \App\Entity\DungeonCardType
-     */
-    private $type;
+	/**
+	 * Set played
+	 *
+	 * @param integer $played
+	 *
+	 * @return DungeonCard
+	 */
+	public function setPlayed(int $played): static {
+		$this->played = $played;
 
-    /**
-     * @var \App\Entity\Dungeoneer
-     */
-    private $owner;
+		return $this;
+	}
 
+	/**
+	 * Get played
+	 *
+	 * @return integer
+	 */
+	public function getPlayed(): int {
+		return $this->played;
+	}
 
-    /**
-     * Set amount
-     *
-     * @param integer $amount
-     * @return DungeonCard
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set type
+	 *
+	 * @param DungeonCardType|null $type
+	 *
+	 * @return DungeonCard
+	 */
+	public function setType(DungeonCardType $type = null): static {
+		$this->type = $type;
 
-    /**
-     * Get amount
-     *
-     * @return integer 
-     */
-    public function getAmount()
-    {
-        return $this->amount;
-    }
+		return $this;
+	}
 
-    /**
-     * Set played
-     *
-     * @param integer $played
-     * @return DungeonCard
-     */
-    public function setPlayed($played)
-    {
-        $this->played = $played;
+	/**
+	 * Get type
+	 *
+	 * @return DungeonCardType
+	 */
+	public function getType(): DungeonCardType {
+		return $this->type;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set owner
+	 *
+	 * @param Dungeoneer|null $owner
+	 *
+	 * @return DungeonCard
+	 */
+	public function setOwner(Dungeoneer $owner = null): static {
+		$this->owner = $owner;
 
-    /**
-     * Get played
-     *
-     * @return integer 
-     */
-    public function getPlayed()
-    {
-        return $this->played;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set type
-     *
-     * @param \App\Entity\DungeonCardType $type
-     * @return DungeonCard
-     */
-    public function setType(\App\Entity\DungeonCardType $type = null)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return \App\Entity\DungeonCardType 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set owner
-     *
-     * @param \App\Entity\Dungeoneer $owner
-     * @return DungeonCard
-     */
-    public function setOwner(\App\Entity\Dungeoneer $owner = null)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * Get owner
-     *
-     * @return \App\Entity\Dungeoneer 
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
+	/**
+	 * Get owner
+	 *
+	 * @return Dungeoneer
+	 */
+	public function getOwner(): Dungeoneer {
+		return $this->owner;
+	}
 }

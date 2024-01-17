@@ -2,82 +2,61 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class DeityAspect {
+	private int $id;
+	private ?Deity $deity;
+	private ?AspectType $aspect;
 
-/**
- * DeityAspect
- */
-class DeityAspect
-{
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * @var \App\Entity\Deity
-     */
-    private $deity;
+	/**
+	 * Set deity
+	 *
+	 * @param Deity|null $deity
+	 *
+	 * @return DeityAspect
+	 */
+	public function setDeity(Deity $deity = null): static {
+		$this->deity = $deity;
 
-    /**
-     * @var \App\Entity\AspectType
-     */
-    private $aspect;
+		return $this;
+	}
 
+	/**
+	 * Get deity
+	 *
+	 * @return Deity
+	 */
+	public function getDeity(): Deity {
+		return $this->deity;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Set aspect
+	 *
+	 * @param AspectType|null $aspect
+	 *
+	 * @return DeityAspect
+	 */
+	public function setAspect(AspectType $aspect = null): static {
+		$this->aspect = $aspect;
 
-    /**
-     * Set deity
-     *
-     * @param \App\Entity\Deity $deity
-     * @return DeityAspect
-     */
-    public function setDeity(\App\Entity\Deity $deity = null)
-    {
-        $this->deity = $deity;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get deity
-     *
-     * @return \App\Entity\Deity 
-     */
-    public function getDeity()
-    {
-        return $this->deity;
-    }
-
-    /**
-     * Set aspect
-     *
-     * @param \App\Entity\AspectType $aspect
-     * @return DeityAspect
-     */
-    public function setAspect(\App\Entity\AspectType $aspect = null)
-    {
-        $this->aspect = $aspect;
-
-        return $this;
-    }
-
-    /**
-     * Get aspect
-     *
-     * @return \App\Entity\AspectType 
-     */
-    public function getAspect()
-    {
-        return $this->aspect;
-    }
+	/**
+	 * Get aspect
+	 *
+	 * @return AspectType
+	 */
+	public function getAspect(): AspectType {
+		return $this->aspect;
+	}
 }

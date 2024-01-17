@@ -2,110 +2,84 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class ItemType {
+	private string $name;
+	private string $type;
+	private string $slot;
+	private int $id;
 
-/**
- * ItemType
- */
-class ItemType
-{
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return ItemType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var string
-     */
-    private $type;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $slot;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set type
+	 *
+	 * @param string $type
+	 *
+	 * @return ItemType
+	 */
+	public function setType(string $type): static {
+		$this->type = $type;
 
+		return $this;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return ItemType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set slot
+	 *
+	 * @param string $slot
+	 *
+	 * @return ItemType
+	 */
+	public function setSlot(string $slot): static {
+		$this->slot = $slot;
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+		return $this;
+	}
 
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return ItemType
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
+	/**
+	 * Get slot
+	 *
+	 * @return string
+	 */
+	public function getSlot(): string {
+		return $this->slot;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set slot
-     *
-     * @param string $slot
-     * @return ItemType
-     */
-    public function setSlot($slot)
-    {
-        $this->slot = $slot;
-
-        return $this;
-    }
-
-    /**
-     * Get slot
-     *
-     * @return string 
-     */
-    public function getSlot()
-    {
-        return $this->slot;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 }

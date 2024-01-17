@@ -2,74 +2,28 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class Heraldry {
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $shield;
-
-    /**
-     * @var string
-     */
-    private $shield_colour;
-
-    /**
-     * @var string
-     */
-    private $pattern;
-
-    /**
-     * @var string
-     */
-    private $pattern_colour;
-
-    /**
-     * @var string
-     */
-    private $charge;
-
-    /**
-     * @var string
-     */
-    private $charge_colour;
-
-    /**
-     * @var boolean
-     */
-    private $shading;
-
-    /**
-     * @var string
-     */
-    private $svg;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\User
-     */
-    private $user;
+	private string $name;
+	private string $shield;
+	private string $shield_colour;
+	private ?string $pattern;
+	private ?string $pattern_colour;
+	private ?string $charge;
+	private ?string $charge_colour;
+	private bool $shading;
+	private string $svg;
+	private int $id;
+	private ?User $user;
 
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return Heraldry
      */
-    public function setName($name)
-    {
+    public function setName(string $name): static {
         $this->name = $name;
 
         return $this;
@@ -80,8 +34,7 @@ class Heraldry {
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName(): string {
         return $this->name;
     }
 
@@ -89,10 +42,10 @@ class Heraldry {
      * Set shield
      *
      * @param string $shield
+     *
      * @return Heraldry
      */
-    public function setShield($shield)
-    {
+    public function setShield(string $shield): static {
         $this->shield = $shield;
 
         return $this;
@@ -103,8 +56,7 @@ class Heraldry {
      *
      * @return string 
      */
-    public function getShield()
-    {
+    public function getShield(): string {
         return $this->shield;
     }
 
@@ -112,10 +64,10 @@ class Heraldry {
      * Set shield_colour
      *
      * @param string $shieldColour
+     *
      * @return Heraldry
      */
-    public function setShieldColour($shieldColour)
-    {
+    public function setShieldColour(string $shieldColour): static {
         $this->shield_colour = $shieldColour;
 
         return $this;
@@ -126,19 +78,18 @@ class Heraldry {
      *
      * @return string 
      */
-    public function getShieldColour()
-    {
+    public function getShieldColour(): string {
         return $this->shield_colour;
     }
 
-    /**
-     * Set pattern
-     *
-     * @param string $pattern
-     * @return Heraldry
-     */
-    public function setPattern($pattern)
-    {
+	/**
+	 * Set pattern
+	 *
+	 * @param string|null $pattern
+	 *
+	 * @return Heraldry
+	 */
+    public function setPattern(?string $pattern): static {
         $this->pattern = $pattern;
 
         return $this;
@@ -149,19 +100,18 @@ class Heraldry {
      *
      * @return string 
      */
-    public function getPattern()
-    {
+    public function getPattern(): string {
         return $this->pattern;
     }
 
     /**
      * Set pattern_colour
      *
-     * @param string $patternColour
+     * @param string|null $patternColour
+     *
      * @return Heraldry
      */
-    public function setPatternColour($patternColour)
-    {
+	public function setPatternColour(?string $patternColour): static {
         $this->pattern_colour = $patternColour;
 
         return $this;
@@ -172,19 +122,18 @@ class Heraldry {
      *
      * @return string 
      */
-    public function getPatternColour()
-    {
+    public function getPatternColour(): string {
         return $this->pattern_colour;
     }
 
     /**
      * Set charge
      *
-     * @param string $charge
+     * @param string|null $charge
+     *
      * @return Heraldry
      */
-    public function setCharge($charge)
-    {
+	public function setCharge(?string $charge): static {
         $this->charge = $charge;
 
         return $this;
@@ -195,19 +144,18 @@ class Heraldry {
      *
      * @return string 
      */
-    public function getCharge()
-    {
+    public function getCharge(): string {
         return $this->charge;
     }
 
     /**
      * Set charge_colour
      *
-     * @param string $chargeColour
+     * @param string|null $chargeColour
+     *
      * @return Heraldry
      */
-    public function setChargeColour($chargeColour)
-    {
+	public function setChargeColour(?string $chargeColour): static {
         $this->charge_colour = $chargeColour;
 
         return $this;
@@ -218,8 +166,7 @@ class Heraldry {
      *
      * @return string 
      */
-    public function getChargeColour()
-    {
+    public function getChargeColour(): string {
         return $this->charge_colour;
     }
 
@@ -227,10 +174,10 @@ class Heraldry {
      * Set shading
      *
      * @param boolean $shading
+     *
      * @return Heraldry
      */
-    public function setShading($shading)
-    {
+    public function setShading(bool $shading): static {
         $this->shading = $shading;
 
         return $this;
@@ -241,8 +188,7 @@ class Heraldry {
      *
      * @return boolean 
      */
-    public function getShading()
-    {
+    public function getShading(): bool {
         return $this->shading;
     }
 
@@ -250,10 +196,10 @@ class Heraldry {
      * Set svg
      *
      * @param string $svg
+     *
      * @return Heraldry
      */
-    public function setSvg($svg)
-    {
+    public function setSvg(string $svg): static {
         $this->svg = $svg;
 
         return $this;
@@ -264,8 +210,7 @@ class Heraldry {
      *
      * @return string 
      */
-    public function getSvg()
-    {
+    public function getSvg(): string {
         return $this->svg;
     }
 
@@ -274,19 +219,17 @@ class Heraldry {
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
     /**
      * Set user
      *
-     * @param \App\Entity\User $user
+     * @param User|null $user
      * @return Heraldry
      */
-    public function setUser(\App\Entity\User $user = null)
-    {
+	public function setUser(User $user = null): static {
         $this->user = $user;
 
         return $this;
@@ -295,10 +238,9 @@ class Heraldry {
     /**
      * Get user
      *
-     * @return \App\Entity\User 
+     * @return User
      */
-    public function getUser()
-    {
+    public function getUser(): User {
         return $this->user;
     }
 

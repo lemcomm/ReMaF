@@ -1,245 +1,202 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class Dungeon {
+	private string $area;
+	private Point $location;
+	private int $tick;
+	private int $exploration_count;
+	private int $id;
+	private ?DungeonParty $party;
+	private Collection $levels;
+	private ?GeoData $geo_data;
 
-	public function getCurrentLevel() {
-                     		if (!$this->getParty()) return null;
-                     		return $this->getParty()->getCurrentLevel();
-                     	}
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->levels = new ArrayCollection();
+	}
 
-    /**
-     * @var string
-     */
-    private $area;
+	public function getCurrentLevel(): ?DungeonLevel {
+		if (!$this->getParty()) return null;
+		return $this->getParty()->getCurrentLevel();
+	}
 
-    /**
-     * @var point
-     */
-    private $location;
+	/**
+	 * Set area
+	 *
+	 * @param string $area
+	 *
+	 * @return Dungeon
+	 */
+	public function setArea(string $area): static {
+		$this->area = $area;
 
-    /**
-     * @var integer
-     */
-    private $tick;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $exploration_count;
+	/**
+	 * Get area
+	 *
+	 * @return string
+	 */
+	public function getArea(): string {
+		return $this->area;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set location
+	 *
+	 * @param point $location
+	 *
+	 * @return Dungeon
+	 */
+	public function setLocation(Point $location): static {
+		$this->location = $location;
 
-    /**
-     * @var \App\Entity\DungeonParty
-     */
-    private $party;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $levels;
+	/**
+	 * Get location
+	 *
+	 * @return point
+	 */
+	public function getLocation(): Point {
+		return $this->location;
+	}
 
-    /**
-     * @var \App\Entity\GeoData
-     */
-    private $geo_data;
+	/**
+	 * Set tick
+	 *
+	 * @param integer $tick
+	 *
+	 * @return Dungeon
+	 */
+	public function setTick(int $tick): static {
+		$this->tick = $tick;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->levels = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+		return $this;
+	}
 
-    /**
-     * Set area
-     *
-     * @param string $area
-     * @return Dungeon
-     */
-    public function setArea($area)
-    {
-        $this->area = $area;
+	/**
+	 * Get tick
+	 *
+	 * @return integer
+	 */
+	public function getTick(): int {
+		return $this->tick;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set exploration_count
+	 *
+	 * @param integer $explorationCount
+	 *
+	 * @return Dungeon
+	 */
+	public function setExplorationCount(int $explorationCount): static {
+		$this->exploration_count = $explorationCount;
 
-    /**
-     * Get area
-     *
-     * @return string 
-     */
-    public function getArea()
-    {
-        return $this->area;
-    }
+		return $this;
+	}
 
-    /**
-     * Set location
-     *
-     * @param point $location
-     * @return Dungeon
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
+	/**
+	 * Get exploration_count
+	 *
+	 * @return integer
+	 */
+	public function getExplorationCount(): int {
+		return $this->exploration_count;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get location
-     *
-     * @return point 
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
+	/**
+	 * Set party
+	 *
+	 * @param DungeonParty|null $party
+	 *
+	 * @return Dungeon
+	 */
+	public function setParty(DungeonParty $party = null): static {
+		$this->party = $party;
 
-    /**
-     * Set tick
-     *
-     * @param integer $tick
-     * @return Dungeon
-     */
-    public function setTick($tick)
-    {
-        $this->tick = $tick;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get party
+	 *
+	 * @return DungeonParty
+	 */
+	public function getParty(): DungeonParty {
+		return $this->party;
+	}
 
-    /**
-     * Get tick
-     *
-     * @return integer 
-     */
-    public function getTick()
-    {
-        return $this->tick;
-    }
+	/**
+	 * Add levels
+	 *
+	 * @param DungeonLevel $levels
+	 *
+	 * @return Dungeon
+	 */
+	public function addLevel(DungeonLevel $levels): static {
+		$this->levels[] = $levels;
 
-    /**
-     * Set exploration_count
-     *
-     * @param integer $explorationCount
-     * @return Dungeon
-     */
-    public function setExplorationCount($explorationCount)
-    {
-        $this->exploration_count = $explorationCount;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Remove levels
+	 *
+	 * @param DungeonLevel $levels
+	 */
+	public function removeLevel(DungeonLevel $levels): void {
+		$this->levels->removeElement($levels);
+	}
 
-    /**
-     * Get exploration_count
-     *
-     * @return integer 
-     */
-    public function getExplorationCount()
-    {
-        return $this->exploration_count;
-    }
+	/**
+	 * Get levels
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getLevels(): ArrayCollection|Collection {
+		return $this->levels;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Set geo_data
+	 *
+	 * @param GeoData|null $geoData
+	 *
+	 * @return Dungeon
+	 */
+	public function setGeoData(GeoData $geoData = null): static {
+		$this->geo_data = $geoData;
 
-    /**
-     * Set party
-     *
-     * @param \App\Entity\DungeonParty $party
-     * @return Dungeon
-     */
-    public function setParty(\App\Entity\DungeonParty $party = null)
-    {
-        $this->party = $party;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get party
-     *
-     * @return \App\Entity\DungeonParty 
-     */
-    public function getParty()
-    {
-        return $this->party;
-    }
-
-    /**
-     * Add levels
-     *
-     * @param \App\Entity\DungeonLevel $levels
-     * @return Dungeon
-     */
-    public function addLevel(\App\Entity\DungeonLevel $levels)
-    {
-        $this->levels[] = $levels;
-
-        return $this;
-    }
-
-    /**
-     * Remove levels
-     *
-     * @param \App\Entity\DungeonLevel $levels
-     */
-    public function removeLevel(\App\Entity\DungeonLevel $levels)
-    {
-        $this->levels->removeElement($levels);
-    }
-
-    /**
-     * Get levels
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getLevels()
-    {
-        return $this->levels;
-    }
-
-    /**
-     * Set geo_data
-     *
-     * @param \App\Entity\GeoData $geoData
-     * @return Dungeon
-     */
-    public function setGeoData(\App\Entity\GeoData $geoData = null)
-    {
-        $this->geo_data = $geoData;
-
-        return $this;
-    }
-
-    /**
-     * Get geo_data
-     *
-     * @return \App\Entity\GeoData 
-     */
-    public function getGeoData()
-    {
-        return $this->geo_data;
-    }
+	/**
+	 * Get geo_data
+	 *
+	 * @return GeoData
+	 */
+	public function getGeoData(): GeoData {
+		return $this->geo_data;
+	}
 }

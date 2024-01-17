@@ -4,240 +4,193 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 
-/**
- * DungeonTreasure
- */
-class DungeonTreasure
-{
-    /**
-     * @var integer
-     */
-    private $nr;
+class DungeonTreasure {
+	private int $nr;
+	private int $value;
+	private int $taken;
+	private int $trap;
+	private int $hidden;
+	private int $id;
+	private Collection $targeted_by;
+	private ?DungeonLevel $level;
 
-    /**
-     * @var integer
-     */
-    private $value;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->targeted_by = new ArrayCollection();
+	}
 
-    /**
-     * @var integer
-     */
-    private $taken;
+	/**
+	 * Set nr
+	 *
+	 * @param integer $nr
+	 *
+	 * @return DungeonTreasure
+	 */
+	public function setNr(int $nr): static {
+		$this->nr = $nr;
 
-    /**
-     * @var integer
-     */
-    private $trap;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $hidden;
+	/**
+	 * Get nr
+	 *
+	 * @return integer
+	 */
+	public function getNr(): int {
+		return $this->nr;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set value
+	 *
+	 * @param integer $value
+	 *
+	 * @return DungeonTreasure
+	 */
+	public function setValue(int $value): static {
+		$this->value = $value;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $targeted_by;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\DungeonLevel
-     */
-    private $level;
+	/**
+	 * Get value
+	 *
+	 * @return integer
+	 */
+	public function getValue(): int {
+		return $this->value;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->targeted_by = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Set taken
+	 *
+	 * @param integer $taken
+	 *
+	 * @return DungeonTreasure
+	 */
+	public function setTaken(int $taken): static {
+		$this->taken = $taken;
 
-    /**
-     * Set nr
-     *
-     * @param integer $nr
-     * @return DungeonTreasure
-     */
-    public function setNr($nr)
-    {
-        $this->nr = $nr;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get taken
+	 *
+	 * @return integer
+	 */
+	public function getTaken(): int {
+		return $this->taken;
+	}
 
-    /**
-     * Get nr
-     *
-     * @return integer 
-     */
-    public function getNr()
-    {
-        return $this->nr;
-    }
+	/**
+	 * Set trap
+	 *
+	 * @param integer $trap
+	 *
+	 * @return DungeonTreasure
+	 */
+	public function setTrap(int $trap): static {
+		$this->trap = $trap;
 
-    /**
-     * Set value
-     *
-     * @param integer $value
-     * @return DungeonTreasure
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get trap
+	 *
+	 * @return integer
+	 */
+	public function getTrap(): int {
+		return $this->trap;
+	}
 
-    /**
-     * Get value
-     *
-     * @return integer 
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
+	/**
+	 * Set hidden
+	 *
+	 * @param integer $hidden
+	 *
+	 * @return DungeonTreasure
+	 */
+	public function setHidden(int $hidden): static {
+		$this->hidden = $hidden;
 
-    /**
-     * Set taken
-     *
-     * @param integer $taken
-     * @return DungeonTreasure
-     */
-    public function setTaken($taken)
-    {
-        $this->taken = $taken;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get hidden
+	 *
+	 * @return integer
+	 */
+	public function getHidden(): int {
+		return $this->hidden;
+	}
 
-    /**
-     * Get taken
-     *
-     * @return integer 
-     */
-    public function getTaken()
-    {
-        return $this->taken;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set trap
-     *
-     * @param integer $trap
-     * @return DungeonTreasure
-     */
-    public function setTrap($trap)
-    {
-        $this->trap = $trap;
+	/**
+	 * Add targeted_by
+	 *
+	 * @param Dungeoneer $targetedBy
+	 *
+	 * @return DungeonTreasure
+	 */
+	public function addTargetedBy(Dungeoneer $targetedBy): static {
+		$this->targeted_by[] = $targetedBy;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get trap
-     *
-     * @return integer 
-     */
-    public function getTrap()
-    {
-        return $this->trap;
-    }
+	/**
+	 * Remove targeted_by
+	 *
+	 * @param Dungeoneer $targetedBy
+	 */
+	public function removeTargetedBy(Dungeoneer $targetedBy): void {
+		$this->targeted_by->removeElement($targetedBy);
+	}
 
-    /**
-     * Set hidden
-     *
-     * @param integer $hidden
-     * @return DungeonTreasure
-     */
-    public function setHidden($hidden)
-    {
-        $this->hidden = $hidden;
+	/**
+	 * Get targeted_by
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getTargetedBy(): ArrayCollection|Collection {
+		return $this->targeted_by;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set level
+	 *
+	 * @param DungeonLevel|null $level
+	 *
+	 * @return DungeonTreasure
+	 */
+	public function setLevel(DungeonLevel $level = null): static {
+		$this->level = $level;
 
-    /**
-     * Get hidden
-     *
-     * @return integer 
-     */
-    public function getHidden()
-    {
-        return $this->hidden;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Add targeted_by
-     *
-     * @param \App\Entity\Dungeoneer $targetedBy
-     * @return DungeonTreasure
-     */
-    public function addTargetedBy(\App\Entity\Dungeoneer $targetedBy)
-    {
-        $this->targeted_by[] = $targetedBy;
-
-        return $this;
-    }
-
-    /**
-     * Remove targeted_by
-     *
-     * @param \App\Entity\Dungeoneer $targetedBy
-     */
-    public function removeTargetedBy(\App\Entity\Dungeoneer $targetedBy)
-    {
-        $this->targeted_by->removeElement($targetedBy);
-    }
-
-    /**
-     * Get targeted_by
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getTargetedBy()
-    {
-        return $this->targeted_by;
-    }
-
-    /**
-     * Set level
-     *
-     * @param \App\Entity\DungeonLevel $level
-     * @return DungeonTreasure
-     */
-    public function setLevel(\App\Entity\DungeonLevel $level = null)
-    {
-        $this->level = $level;
-
-        return $this;
-    }
-
-    /**
-     * Get level
-     *
-     * @return \App\Entity\DungeonLevel 
-     */
-    public function getLevel()
-    {
-        return $this->level;
-    }
+	/**
+	 * Get level
+	 *
+	 * @return DungeonLevel
+	 */
+	public function getLevel(): DungeonLevel {
+		return $this->level;
+	}
 }

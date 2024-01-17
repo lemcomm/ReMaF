@@ -2,139 +2,109 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * DungeonEvent
- */
-class DungeonEvent
-{
-    /**
-     * @var \DateTime
-     */
-    private $ts;
+class DungeonEvent {
+	private DateTime $ts;
+	private string $content;
+	private ?array $data;
+	private int $id;
+	private ?DungeonParty $party;
 
-    /**
-     * @var string
-     */
-    private $content;
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return DungeonEvent
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
 
-    /**
-     * @var array
-     */
-    private $data;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
-    /**
-     * @var \App\Entity\DungeonParty
-     */
-    private $party;
+	/**
+	 * Set content
+	 *
+	 * @param string $content
+	 *
+	 * @return DungeonEvent
+	 */
+	public function setContent(string $content): static {
+		$this->content = $content;
 
+		return $this;
+	}
 
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return DungeonEvent
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
+	/**
+	 * Get content
+	 *
+	 * @return string
+	 */
+	public function getContent(): string {
+		return $this->content;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set data
+	 *
+	 * @param array|null $data
+	 *
+	 * @return DungeonEvent
+	 */
+	public function setData(?array $data): static {
+		$this->data = $data;
 
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
+		return $this;
+	}
 
-    /**
-     * Set content
-     *
-     * @param string $content
-     * @return DungeonEvent
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
+	/**
+	 * Get data
+	 *
+	 * @return array|null
+	 */
+	public function getData(): ?array {
+		return $this->data;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get content
-     *
-     * @return string 
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
+	/**
+	 * Set party
+	 *
+	 * @param DungeonParty|null $party
+	 *
+	 * @return DungeonEvent
+	 */
+	public function setParty(DungeonParty $party = null): static {
+		$this->party = $party;
 
-    /**
-     * Set data
-     *
-     * @param array $data
-     * @return DungeonEvent
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get data
-     *
-     * @return array 
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set party
-     *
-     * @param \App\Entity\DungeonParty $party
-     * @return DungeonEvent
-     */
-    public function setParty(\App\Entity\DungeonParty $party = null)
-    {
-        $this->party = $party;
-
-        return $this;
-    }
-
-    /**
-     * Get party
-     *
-     * @return \App\Entity\DungeonParty 
-     */
-    public function getParty()
-    {
-        return $this->party;
-    }
+	/**
+	 * Get party
+	 *
+	 * @return DungeonParty|null
+	 */
+	public function getParty(): ?DungeonParty {
+		return $this->party;
+	}
 }

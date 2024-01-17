@@ -4,49 +4,26 @@ namespace App\Entity;
 
 class FeatureType {
 
-	public function getNametrans() {
-   		return 'feature.'.$this->getName();
-   	}
 
-    /**
-     * @var string
-     */
-    private $name;
+	private string $name;
+	private bool $hidden;
+	private ?string $icon;
+	private ?string $icon_under_construction;
+	private int $build_hours;
+	private int $id;
 
-    /**
-     * @var boolean
-     */
-    private $hidden;
-
-    /**
-     * @var string
-     */
-    private $icon;
-
-    /**
-     * @var string
-     */
-    private $icon_under_construction;
-
-    /**
-     * @var integer
-     */
-    private $build_hours;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
+	public function getNametrans(): string {
+		return 'feature.'.$this->getName();
+	}
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return FeatureType
      */
-    public function setName($name)
-    {
+    public function setName(string $name): static {
         $this->name = $name;
 
         return $this;
@@ -57,8 +34,7 @@ class FeatureType {
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName(): string {
         return $this->name;
     }
 
@@ -66,10 +42,10 @@ class FeatureType {
      * Set hidden
      *
      * @param boolean $hidden
+     *
      * @return FeatureType
      */
-    public function setHidden($hidden)
-    {
+    public function setHidden(bool $hidden): static {
         $this->hidden = $hidden;
 
         return $this;
@@ -80,19 +56,18 @@ class FeatureType {
      *
      * @return boolean 
      */
-    public function getHidden()
-    {
+    public function getHidden(): bool {
         return $this->hidden;
     }
 
-    /**
-     * Set icon
-     *
-     * @param string $icon
-     * @return FeatureType
-     */
-    public function setIcon($icon)
-    {
+	/**
+	 * Set icon
+	 *
+	 * @param string|null $icon
+	 *
+	 * @return FeatureType
+	 */
+    public function setIcon(?string $icon): static {
         $this->icon = $icon;
 
         return $this;
@@ -101,21 +76,20 @@ class FeatureType {
     /**
      * Get icon
      *
-     * @return string 
+     * @return string|null
      */
-    public function getIcon()
-    {
+	public function getIcon(): ?string {
         return $this->icon;
     }
 
     /**
      * Set icon_under_construction
      *
-     * @param string $iconUnderConstruction
+     * @param string|null $iconUnderConstruction
+     *
      * @return FeatureType
      */
-    public function setIconUnderConstruction($iconUnderConstruction)
-    {
+	public function setIconUnderConstruction(?string $iconUnderConstruction): static {
         $this->icon_under_construction = $iconUnderConstruction;
 
         return $this;
@@ -124,10 +98,9 @@ class FeatureType {
     /**
      * Get icon_under_construction
      *
-     * @return string 
+     * @return string|null
      */
-    public function getIconUnderConstruction()
-    {
+	public function getIconUnderConstruction(): ?string {
         return $this->icon_under_construction;
     }
 
@@ -135,10 +108,10 @@ class FeatureType {
      * Set build_hours
      *
      * @param integer $buildHours
+     *
      * @return FeatureType
      */
-    public function setBuildHours($buildHours)
-    {
+    public function setBuildHours(int $buildHours): static {
         $this->build_hours = $buildHours;
 
         return $this;
@@ -149,8 +122,7 @@ class FeatureType {
      *
      * @return integer 
      */
-    public function getBuildHours()
-    {
+    public function getBuildHours(): int {
         return $this->build_hours;
     }
 
@@ -159,8 +131,7 @@ class FeatureType {
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 

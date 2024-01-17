@@ -2,279 +2,222 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+class GeoResource {
+	private int $amount;
+	private float $supply;
+	private float $mod;
+	private int $storage;
+	private int $buildings_base;
+	private int $buildings_bonus;
+	private int $id;
+	private ?Settlement $settlement;
+	private ?GeoData $geo_data;
+	private ?ResourceType $type;
 
-/**
- * GeoResource
- */
-class GeoResource
-{
-    /**
-     * @var integer
-     */
-    private $amount;
+	/**
+	 * Set amount
+	 *
+	 * @param integer $amount
+	 *
+	 * @return GeoResource
+	 */
+	public function setAmount(int $amount): static {
+		$this->amount = $amount;
 
-    /**
-     * @var float
-     */
-    private $supply;
+		return $this;
+	}
 
-    /**
-     * @var float
-     */
-    private $mod;
+	/**
+	 * Get amount
+	 *
+	 * @return integer
+	 */
+	public function getAmount(): int {
+		return $this->amount;
+	}
 
-    /**
-     * @var integer
-     */
-    private $storage;
+	/**
+	 * Set supply
+	 *
+	 * @param float $supply
+	 *
+	 * @return GeoResource
+	 */
+	public function setSupply(float $supply): static {
+		$this->supply = $supply;
 
-    /**
-     * @var integer
-     */
-    private $buildings_base;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $buildings_bonus;
+	/**
+	 * Get supply
+	 *
+	 * @return float
+	 */
+	public function getSupply(): float {
+		return $this->supply;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set mod
+	 *
+	 * @param float $mod
+	 *
+	 * @return GeoResource
+	 */
+	public function setMod(float $mod): static {
+		$this->mod = $mod;
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\GeoData
-     */
-    private $geo_data;
+	/**
+	 * Get mod
+	 *
+	 * @return float
+	 */
+	public function getMod(): float {
+		return $this->mod;
+	}
 
-    /**
-     * @var \App\Entity\ResourceType
-     */
-    private $type;
+	/**
+	 * Set storage
+	 *
+	 * @param integer $storage
+	 *
+	 * @return GeoResource
+	 */
+	public function setStorage(int $storage): static {
+		$this->storage = $storage;
 
+		return $this;
+	}
 
-    /**
-     * Set amount
-     *
-     * @param integer $amount
-     * @return GeoResource
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
+	/**
+	 * Get storage
+	 *
+	 * @return integer
+	 */
+	public function getStorage(): int {
+		return $this->storage;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set buildings_base
+	 *
+	 * @param integer $buildingsBase
+	 *
+	 * @return GeoResource
+	 */
+	public function setBuildingsBase(int $buildingsBase): static {
+		$this->buildings_base = $buildingsBase;
 
-    /**
-     * Get amount
-     *
-     * @return integer 
-     */
-    public function getAmount()
-    {
-        return $this->amount;
-    }
+		return $this;
+	}
 
-    /**
-     * Set supply
-     *
-     * @param float $supply
-     * @return GeoResource
-     */
-    public function setSupply($supply)
-    {
-        $this->supply = $supply;
+	/**
+	 * Get buildings_base
+	 *
+	 * @return integer
+	 */
+	public function getBuildingsBase(): int {
+		return $this->buildings_base;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set buildings_bonus
+	 *
+	 * @param integer $buildingsBonus
+	 *
+	 * @return GeoResource
+	 */
+	public function setBuildingsBonus(int $buildingsBonus): static {
+		$this->buildings_bonus = $buildingsBonus;
 
-    /**
-     * Get supply
-     *
-     * @return float 
-     */
-    public function getSupply()
-    {
-        return $this->supply;
-    }
+		return $this;
+	}
 
-    /**
-     * Set mod
-     *
-     * @param float $mod
-     * @return GeoResource
-     */
-    public function setMod($mod)
-    {
-        $this->mod = $mod;
+	/**
+	 * Get buildings_bonus
+	 *
+	 * @return integer
+	 */
+	public function getBuildingsBonus(): int {
+		return $this->buildings_bonus;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get mod
-     *
-     * @return float 
-     */
-    public function getMod()
-    {
-        return $this->mod;
-    }
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return GeoResource
+	 */
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
 
-    /**
-     * Set storage
-     *
-     * @param integer $storage
-     * @return GeoResource
-     */
-    public function setStorage($storage)
-    {
-        $this->storage = $storage;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement
+	 */
+	public function getSettlement(): Settlement {
+		return $this->settlement;
+	}
 
-    /**
-     * Get storage
-     *
-     * @return integer 
-     */
-    public function getStorage()
-    {
-        return $this->storage;
-    }
+	/**
+	 * Set geo_data
+	 *
+	 * @param GeoData|null $geoData
+	 *
+	 * @return GeoResource
+	 */
+	public function setGeoData(GeoData $geoData = null): static {
+		$this->geo_data = $geoData;
 
-    /**
-     * Set buildings_base
-     *
-     * @param integer $buildingsBase
-     * @return GeoResource
-     */
-    public function setBuildingsBase($buildingsBase)
-    {
-        $this->buildings_base = $buildingsBase;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get geo_data
+	 *
+	 * @return GeoData
+	 */
+	public function getGeoData(): GeoData {
+		return $this->geo_data;
+	}
 
-    /**
-     * Get buildings_base
-     *
-     * @return integer 
-     */
-    public function getBuildingsBase()
-    {
-        return $this->buildings_base;
-    }
+	/**
+	 * Set type
+	 *
+	 * @param ResourceType|null $type
+	 *
+	 * @return GeoResource
+	 */
+	public function setType(ResourceType $type = null): static {
+		$this->type = $type;
 
-    /**
-     * Set buildings_bonus
-     *
-     * @param integer $buildingsBonus
-     * @return GeoResource
-     */
-    public function setBuildingsBonus($buildingsBonus)
-    {
-        $this->buildings_bonus = $buildingsBonus;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get buildings_bonus
-     *
-     * @return integer 
-     */
-    public function getBuildingsBonus()
-    {
-        return $this->buildings_bonus;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set settlement
-     *
-     * @param \App\Entity\Settlement $settlement
-     * @return GeoResource
-     */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
-        $this->settlement = $settlement;
-
-        return $this;
-    }
-
-    /**
-     * Get settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getSettlement()
-    {
-        return $this->settlement;
-    }
-
-    /**
-     * Set geo_data
-     *
-     * @param \App\Entity\GeoData $geoData
-     * @return GeoResource
-     */
-    public function setGeoData(\App\Entity\GeoData $geoData = null)
-    {
-        $this->geo_data = $geoData;
-
-        return $this;
-    }
-
-    /**
-     * Get geo_data
-     *
-     * @return \App\Entity\GeoData 
-     */
-    public function getGeoData()
-    {
-        return $this->geo_data;
-    }
-
-    /**
-     * Set type
-     *
-     * @param \App\Entity\ResourceType $type
-     * @return GeoResource
-     */
-    public function setType(\App\Entity\ResourceType $type = null)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return \App\Entity\ResourceType 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
+	/**
+	 * Get type
+	 *
+	 * @return ResourceType
+	 */
+	public function getType(): ResourceType {
+		return $this->type;
+	}
 }

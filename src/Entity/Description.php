@@ -2,755 +2,615 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-
-/**
- * Description
- */
-class Description
-{
-    /**
-     * @var \DateTime
-     */
-    private $ts;
-
-    /**
-     * @var integer
-     */
-    private $cycle;
-
-    /**
-     * @var string
-     */
-    private $text;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\Artifact
-     */
-    private $active_artifact;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $active_settlement;
-
-    /**
-     * @var \App\Entity\Place
-     */
-    private $active_place;
-
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $active_realm;
-
-    /**
-     * @var \App\Entity\House
-     */
-    private $active_house;
-
-    /**
-     * @var \App\Entity\Portal
-     */
-    private $active_portal;
-
-    /**
-     * @var \App\Entity\Association
-     */
-    private $active_association;
-
-    /**
-     * @var \App\Entity\AssociationRank
-     */
-    private $active_association_rank;
-
-    /**
-     * @var \App\Entity\Deity
-     */
-    private $active_deity;
-
-    /**
-     * @var \App\Entity\User
-     */
-    private $active_user;
-
-    /**
-     * @var \App\Entity\Description
-     */
-    private $previous;
-
-    /**
-     * @var \App\Entity\Description
-     */
-    private $next;
-
-    /**
-     * @var \App\Entity\Artifact
-     */
-    private $artifact;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
-
-    /**
-     * @var \App\Entity\Place
-     */
-    private $place;
-
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
-
-    /**
-     * @var \App\Entity\House
-     */
-    private $house;
-
-    /**
-     * @var \App\Entity\Portal
-     */
-    private $portal;
-
-    /**
-     * @var \App\Entity\Association
-     */
-    private $association;
-
-    /**
-     * @var \App\Entity\AssociationRank
-     */
-    private $association_rank;
-
-    /**
-     * @var \App\Entity\Deity
-     */
-    private $deity;
-
-    /**
-     * @var \App\Entity\User
-     */
-    private $user;
-
-    /**
-     * @var \App\Entity\Character
-     */
-    private $updater;
-
-
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return Description
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
-
-        return $this;
-    }
-
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
-
-    /**
-     * Set cycle
-     *
-     * @param integer $cycle
-     * @return Description
-     */
-    public function setCycle($cycle)
-    {
-        $this->cycle = $cycle;
-
-        return $this;
-    }
-
-    /**
-     * Get cycle
-     *
-     * @return integer 
-     */
-    public function getCycle()
-    {
-        return $this->cycle;
-    }
-
-    /**
-     * Set text
-     *
-     * @param string $text
-     * @return Description
-     */
-    public function setText($text)
-    {
-        $this->text = $text;
-
-        return $this;
-    }
-
-    /**
-     * Get text
-     *
-     * @return string 
-     */
-    public function getText()
-    {
-        return $this->text;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set active_artifact
-     *
-     * @param \App\Entity\Artifact $activeArtifact
-     * @return Description
-     */
-    public function setActiveArtifact(\App\Entity\Artifact $activeArtifact = null)
-    {
-        $this->active_artifact = $activeArtifact;
-
-        return $this;
-    }
-
-    /**
-     * Get active_artifact
-     *
-     * @return \App\Entity\Artifact 
-     */
-    public function getActiveArtifact()
-    {
-        return $this->active_artifact;
-    }
-
-    /**
-     * Set active_settlement
-     *
-     * @param \App\Entity\Settlement $activeSettlement
-     * @return Description
-     */
-    public function setActiveSettlement(\App\Entity\Settlement $activeSettlement = null)
-    {
-        $this->active_settlement = $activeSettlement;
-
-        return $this;
-    }
-
-    /**
-     * Get active_settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getActiveSettlement()
-    {
-        return $this->active_settlement;
-    }
-
-    /**
-     * Set active_place
-     *
-     * @param \App\Entity\Place $activePlace
-     * @return Description
-     */
-    public function setActivePlace(\App\Entity\Place $activePlace = null)
-    {
-        $this->active_place = $activePlace;
-
-        return $this;
-    }
-
-    /**
-     * Get active_place
-     *
-     * @return \App\Entity\Place 
-     */
-    public function getActivePlace()
-    {
-        return $this->active_place;
-    }
-
-    /**
-     * Set active_realm
-     *
-     * @param \App\Entity\Realm $activeRealm
-     * @return Description
-     */
-    public function setActiveRealm(\App\Entity\Realm $activeRealm = null)
-    {
-        $this->active_realm = $activeRealm;
-
-        return $this;
-    }
-
-    /**
-     * Get active_realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getActiveRealm()
-    {
-        return $this->active_realm;
-    }
-
-    /**
-     * Set active_house
-     *
-     * @param \App\Entity\House $activeHouse
-     * @return Description
-     */
-    public function setActiveHouse(\App\Entity\House $activeHouse = null)
-    {
-        $this->active_house = $activeHouse;
-
-        return $this;
-    }
-
-    /**
-     * Get active_house
-     *
-     * @return \App\Entity\House 
-     */
-    public function getActiveHouse()
-    {
-        return $this->active_house;
-    }
-
-    /**
-     * Set active_portal
-     *
-     * @param \App\Entity\Portal $activePortal
-     * @return Description
-     */
-    public function setActivePortal(\App\Entity\Portal $activePortal = null)
-    {
-        $this->active_portal = $activePortal;
-
-        return $this;
-    }
-
-    /**
-     * Get active_portal
-     *
-     * @return \App\Entity\Portal 
-     */
-    public function getActivePortal()
-    {
-        return $this->active_portal;
-    }
-
-    /**
-     * Set active_association
-     *
-     * @param \App\Entity\Association $activeAssociation
-     * @return Description
-     */
-    public function setActiveAssociation(\App\Entity\Association $activeAssociation = null)
-    {
-        $this->active_association = $activeAssociation;
-
-        return $this;
-    }
-
-    /**
-     * Get active_association
-     *
-     * @return \App\Entity\Association 
-     */
-    public function getActiveAssociation()
-    {
-        return $this->active_association;
-    }
-
-    /**
-     * Set active_association_rank
-     *
-     * @param \App\Entity\AssociationRank $activeAssociationRank
-     * @return Description
-     */
-    public function setActiveAssociationRank(\App\Entity\AssociationRank $activeAssociationRank = null)
-    {
-        $this->active_association_rank = $activeAssociationRank;
-
-        return $this;
-    }
-
-    /**
-     * Get active_association_rank
-     *
-     * @return \App\Entity\AssociationRank 
-     */
-    public function getActiveAssociationRank()
-    {
-        return $this->active_association_rank;
-    }
-
-    /**
-     * Set active_deity
-     *
-     * @param \App\Entity\Deity $activeDeity
-     * @return Description
-     */
-    public function setActiveDeity(\App\Entity\Deity $activeDeity = null)
-    {
-        $this->active_deity = $activeDeity;
-
-        return $this;
-    }
-
-    /**
-     * Get active_deity
-     *
-     * @return \App\Entity\Deity 
-     */
-    public function getActiveDeity()
-    {
-        return $this->active_deity;
-    }
-
-    /**
-     * Set active_user
-     *
-     * @param \App\Entity\User $activeUser
-     * @return Description
-     */
-    public function setActiveUser(\App\Entity\User $activeUser = null)
-    {
-        $this->active_user = $activeUser;
-
-        return $this;
-    }
-
-    /**
-     * Get active_user
-     *
-     * @return \App\Entity\User 
-     */
-    public function getActiveUser()
-    {
-        return $this->active_user;
-    }
-
-    /**
-     * Set previous
-     *
-     * @param \App\Entity\Description $previous
-     * @return Description
-     */
-    public function setPrevious(\App\Entity\Description $previous = null)
-    {
-        $this->previous = $previous;
-
-        return $this;
-    }
-
-    /**
-     * Get previous
-     *
-     * @return \App\Entity\Description 
-     */
-    public function getPrevious()
-    {
-        return $this->previous;
-    }
-
-    /**
-     * Set next
-     *
-     * @param \App\Entity\Description $next
-     * @return Description
-     */
-    public function setNext(\App\Entity\Description $next = null)
-    {
-        $this->next = $next;
-
-        return $this;
-    }
-
-    /**
-     * Get next
-     *
-     * @return \App\Entity\Description 
-     */
-    public function getNext()
-    {
-        return $this->next;
-    }
-
-    /**
-     * Set artifact
-     *
-     * @param \App\Entity\Artifact $artifact
-     * @return Description
-     */
-    public function setArtifact(\App\Entity\Artifact $artifact = null)
-    {
-        $this->artifact = $artifact;
-
-        return $this;
-    }
-
-    /**
-     * Get artifact
-     *
-     * @return \App\Entity\Artifact 
-     */
-    public function getArtifact()
-    {
-        return $this->artifact;
-    }
-
-    /**
-     * Set settlement
-     *
-     * @param \App\Entity\Settlement $settlement
-     * @return Description
-     */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
-        $this->settlement = $settlement;
-
-        return $this;
-    }
-
-    /**
-     * Get settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getSettlement()
-    {
-        return $this->settlement;
-    }
-
-    /**
-     * Set place
-     *
-     * @param \App\Entity\Place $place
-     * @return Description
-     */
-    public function setPlace(\App\Entity\Place $place = null)
-    {
-        $this->place = $place;
-
-        return $this;
-    }
-
-    /**
-     * Get place
-     *
-     * @return \App\Entity\Place 
-     */
-    public function getPlace()
-    {
-        return $this->place;
-    }
-
-    /**
-     * Set realm
-     *
-     * @param \App\Entity\Realm $realm
-     * @return Description
-     */
-    public function setRealm(\App\Entity\Realm $realm = null)
-    {
-        $this->realm = $realm;
-
-        return $this;
-    }
-
-    /**
-     * Get realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getRealm()
-    {
-        return $this->realm;
-    }
-
-    /**
-     * Set house
-     *
-     * @param \App\Entity\House $house
-     * @return Description
-     */
-    public function setHouse(\App\Entity\House $house = null)
-    {
-        $this->house = $house;
-
-        return $this;
-    }
-
-    /**
-     * Get house
-     *
-     * @return \App\Entity\House 
-     */
-    public function getHouse()
-    {
-        return $this->house;
-    }
-
-    /**
-     * Set portal
-     *
-     * @param \App\Entity\Portal $portal
-     * @return Description
-     */
-    public function setPortal(\App\Entity\Portal $portal = null)
-    {
-        $this->portal = $portal;
-
-        return $this;
-    }
-
-    /**
-     * Get portal
-     *
-     * @return \App\Entity\Portal 
-     */
-    public function getPortal()
-    {
-        return $this->portal;
-    }
-
-    /**
-     * Set association
-     *
-     * @param \App\Entity\Association $association
-     * @return Description
-     */
-    public function setAssociation(\App\Entity\Association $association = null)
-    {
-        $this->association = $association;
-
-        return $this;
-    }
-
-    /**
-     * Get association
-     *
-     * @return \App\Entity\Association 
-     */
-    public function getAssociation()
-    {
-        return $this->association;
-    }
-
-    /**
-     * Set association_rank
-     *
-     * @param \App\Entity\AssociationRank $associationRank
-     * @return Description
-     */
-    public function setAssociationRank(\App\Entity\AssociationRank $associationRank = null)
-    {
-        $this->association_rank = $associationRank;
-
-        return $this;
-    }
-
-    /**
-     * Get association_rank
-     *
-     * @return \App\Entity\AssociationRank 
-     */
-    public function getAssociationRank()
-    {
-        return $this->association_rank;
-    }
-
-    /**
-     * Set deity
-     *
-     * @param \App\Entity\Deity $deity
-     * @return Description
-     */
-    public function setDeity(\App\Entity\Deity $deity = null)
-    {
-        $this->deity = $deity;
-
-        return $this;
-    }
-
-    /**
-     * Get deity
-     *
-     * @return \App\Entity\Deity 
-     */
-    public function getDeity()
-    {
-        return $this->deity;
-    }
-
-    /**
-     * Set user
-     *
-     * @param \App\Entity\User $user
-     * @return Description
-     */
-    public function setUser(\App\Entity\User $user = null)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \App\Entity\User 
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * Set updater
-     *
-     * @param \App\Entity\Character $updater
-     * @return Description
-     */
-    public function setUpdater(\App\Entity\Character $updater = null)
-    {
-        $this->updater = $updater;
-
-        return $this;
-    }
-
-    /**
-     * Get updater
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getUpdater()
-    {
-        return $this->updater;
-    }
+use DateTime;
+
+class Description {
+	private DateTime $ts;
+	private int $cycle;
+	private string $text;
+	private int $id;
+	private ?Artifact $active_artifact;
+	private ?Settlement $active_settlement;
+	private ?Place $active_place;
+	private ?Realm $active_realm;
+	private ?House $active_house;
+	private ?Portal $active_portal;
+	private ?Association $active_association;
+	private ?AssociationRank $active_association_rank;
+	private ?Deity $active_deity;
+	private ?User $active_user;
+	private ?Description $previous;
+	private ?Description $next;
+	private ?Artifact $artifact;
+	private ?Settlement $settlement;
+	private ?Place $place;
+	private ?Realm $realm;
+	private ?House $house;
+	private ?Portal $portal;
+	private ?Association $association;
+	private ?AssociationRank $association_rank;
+	private ?Deity $deity;
+	private ?User $user;
+	private ?Character $updater;
+
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return Description
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
+
+		return $this;
+	}
+
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
+
+	/**
+	 * Set cycle
+	 *
+	 * @param integer $cycle
+	 *
+	 * @return Description
+	 */
+	public function setCycle(int $cycle): static {
+		$this->cycle = $cycle;
+
+		return $this;
+	}
+
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
+
+	/**
+	 * Set text
+	 *
+	 * @param string $text
+	 *
+	 * @return Description
+	 */
+	public function setText(string $text): static {
+		$this->text = $text;
+
+		return $this;
+	}
+
+	/**
+	 * Get text
+	 *
+	 * @return string
+	 */
+	public function getText(): string {
+		return $this->text;
+	}
+
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
+
+	/**
+	 * Set active_artifact
+	 *
+	 * @param Artifact|null $activeArtifact
+	 *
+	 * @return Description
+	 */
+	public function setActiveArtifact(Artifact $activeArtifact = null): static {
+		$this->active_artifact = $activeArtifact;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_artifact
+	 *
+	 * @return Artifact
+	 */
+	public function getActiveArtifact(): Artifact {
+		return $this->active_artifact;
+	}
+
+	/**
+	 * Set active_settlement
+	 *
+	 * @param Settlement|null $activeSettlement
+	 *
+	 * @return Description
+	 */
+	public function setActiveSettlement(Settlement $activeSettlement = null): static {
+		$this->active_settlement = $activeSettlement;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_settlement
+	 *
+	 * @return Settlement
+	 */
+	public function getActiveSettlement(): Settlement {
+		return $this->active_settlement;
+	}
+
+	/**
+	 * Set active_place
+	 *
+	 * @param Place|null $activePlace
+	 *
+	 * @return Description
+	 */
+	public function setActivePlace(Place $activePlace = null): static {
+		$this->active_place = $activePlace;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_place
+	 *
+	 * @return Place
+	 */
+	public function getActivePlace(): Place {
+		return $this->active_place;
+	}
+
+	/**
+	 * Set active_realm
+	 *
+	 * @param Realm|null $activeRealm
+	 *
+	 * @return Description
+	 */
+	public function setActiveRealm(Realm $activeRealm = null): static {
+		$this->active_realm = $activeRealm;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_realm
+	 *
+	 * @return Realm
+	 */
+	public function getActiveRealm(): Realm {
+		return $this->active_realm;
+	}
+
+	/**
+	 * Set active_house
+	 *
+	 * @param House|null $activeHouse
+	 *
+	 * @return Description
+	 */
+	public function setActiveHouse(House $activeHouse = null): static {
+		$this->active_house = $activeHouse;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_house
+	 *
+	 * @return House
+	 */
+	public function getActiveHouse(): House {
+		return $this->active_house;
+	}
+
+	/**
+	 * Set active_portal
+	 *
+	 * @param Portal|null $activePortal
+	 *
+	 * @return Description
+	 */
+	public function setActivePortal(Portal $activePortal = null): static {
+		$this->active_portal = $activePortal;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_portal
+	 *
+	 * @return Portal
+	 */
+	public function getActivePortal(): Portal {
+		return $this->active_portal;
+	}
+
+	/**
+	 * Set active_association
+	 *
+	 * @param Association|null $activeAssociation
+	 *
+	 * @return Description
+	 */
+	public function setActiveAssociation(Association $activeAssociation = null): static {
+		$this->active_association = $activeAssociation;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_association
+	 *
+	 * @return Association
+	 */
+	public function getActiveAssociation(): Association {
+		return $this->active_association;
+	}
+
+	/**
+	 * Set active_association_rank
+	 *
+	 * @param AssociationRank|null $activeAssociationRank
+	 *
+	 * @return Description
+	 */
+	public function setActiveAssociationRank(AssociationRank $activeAssociationRank = null): static {
+		$this->active_association_rank = $activeAssociationRank;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_association_rank
+	 *
+	 * @return AssociationRank
+	 */
+	public function getActiveAssociationRank(): AssociationRank {
+		return $this->active_association_rank;
+	}
+
+	/**
+	 * Set active_deity
+	 *
+	 * @param Deity|null $activeDeity
+	 *
+	 * @return Description
+	 */
+	public function setActiveDeity(Deity $activeDeity = null): static {
+		$this->active_deity = $activeDeity;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_deity
+	 *
+	 * @return Deity
+	 */
+	public function getActiveDeity(): Deity {
+		return $this->active_deity;
+	}
+
+	/**
+	 * Set active_user
+	 *
+	 * @param User|null $activeUser
+	 *
+	 * @return Description
+	 */
+	public function setActiveUser(User $activeUser = null): static {
+		$this->active_user = $activeUser;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_user
+	 *
+	 * @return User
+	 */
+	public function getActiveUser(): User {
+		return $this->active_user;
+	}
+
+	/**
+	 * Set previous
+	 *
+	 * @param Description|null $previous
+	 *
+	 * @return Description
+	 */
+	public function setPrevious(Description $previous = null): static {
+		$this->previous = $previous;
+
+		return $this;
+	}
+
+	/**
+	 * Get previous
+	 *
+	 * @return Description
+	 */
+	public function getPrevious(): Description {
+		return $this->previous;
+	}
+
+	/**
+	 * Set next
+	 *
+	 * @param Description|null $next
+	 *
+	 * @return Description
+	 */
+	public function setNext(Description $next = null): static {
+		$this->next = $next;
+
+		return $this;
+	}
+
+	/**
+	 * Get next
+	 *
+	 * @return Description
+	 */
+	public function getNext(): Description {
+		return $this->next;
+	}
+
+	/**
+	 * Set artifact
+	 *
+	 * @param Artifact|null $artifact
+	 *
+	 * @return Description
+	 */
+	public function setArtifact(Artifact $artifact = null): static {
+		$this->artifact = $artifact;
+
+		return $this;
+	}
+
+	/**
+	 * Get artifact
+	 *
+	 * @return Artifact
+	 */
+	public function getArtifact(): Artifact {
+		return $this->artifact;
+	}
+
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return Description
+	 */
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
+
+		return $this;
+	}
+
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement
+	 */
+	public function getSettlement(): Settlement {
+		return $this->settlement;
+	}
+
+	/**
+	 * Set place
+	 *
+	 * @param Place|null $place
+	 *
+	 * @return Description
+	 */
+	public function setPlace(Place $place = null): static {
+		$this->place = $place;
+
+		return $this;
+	}
+
+	/**
+	 * Get place
+	 *
+	 * @return Place
+	 */
+	public function getPlace(): Place {
+		return $this->place;
+	}
+
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return Description
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
+
+		return $this;
+	}
+
+	/**
+	 * Get realm
+	 *
+	 * @return Realm
+	 */
+	public function getRealm(): Realm {
+		return $this->realm;
+	}
+
+	/**
+	 * Set house
+	 *
+	 * @param House|null $house
+	 *
+	 * @return Description
+	 */
+	public function setHouse(House $house = null): static {
+		$this->house = $house;
+
+		return $this;
+	}
+
+	/**
+	 * Get house
+	 *
+	 * @return House
+	 */
+	public function getHouse(): House {
+		return $this->house;
+	}
+
+	/**
+	 * Set portal
+	 *
+	 * @param Portal|null $portal
+	 *
+	 * @return Description
+	 */
+	public function setPortal(Portal $portal = null): static {
+		$this->portal = $portal;
+
+		return $this;
+	}
+
+	/**
+	 * Get portal
+	 *
+	 * @return Portal
+	 */
+	public function getPortal(): Portal {
+		return $this->portal;
+	}
+
+	/**
+	 * Set association
+	 *
+	 * @param Association|null $association
+	 *
+	 * @return Description
+	 */
+	public function setAssociation(Association $association = null): static {
+		$this->association = $association;
+
+		return $this;
+	}
+
+	/**
+	 * Get association
+	 *
+	 * @return Association
+	 */
+	public function getAssociation(): Association {
+		return $this->association;
+	}
+
+	/**
+	 * Set association_rank
+	 *
+	 * @param AssociationRank|null $associationRank
+	 *
+	 * @return Description
+	 */
+	public function setAssociationRank(AssociationRank $associationRank = null): static {
+		$this->association_rank = $associationRank;
+
+		return $this;
+	}
+
+	/**
+	 * Get association_rank
+	 *
+	 * @return AssociationRank
+	 */
+	public function getAssociationRank(): AssociationRank {
+		return $this->association_rank;
+	}
+
+	/**
+	 * Set deity
+	 *
+	 * @param Deity|null $deity
+	 *
+	 * @return Description
+	 */
+	public function setDeity(Deity $deity = null): static {
+		$this->deity = $deity;
+
+		return $this;
+	}
+
+	/**
+	 * Get deity
+	 *
+	 * @return Deity
+	 */
+	public function getDeity(): Deity {
+		return $this->deity;
+	}
+
+	/**
+	 * Set user
+	 *
+	 * @param User|null $user
+	 *
+	 * @return Description
+	 */
+	public function setUser(User $user = null): static {
+		$this->user = $user;
+
+		return $this;
+	}
+
+	/**
+	 * Get user
+	 *
+	 * @return User
+	 */
+	public function getUser(): User {
+		return $this->user;
+	}
+
+	/**
+	 * Set updater
+	 *
+	 * @param Character|null $updater
+	 *
+	 * @return Description
+	 */
+	public function setUpdater(Character $updater = null): static {
+		$this->updater = $updater;
+
+		return $this;
+	}
+
+	/**
+	 * Get updater
+	 *
+	 * @return Character
+	 */
+	public function getUpdater(): Character {
+		return $this->updater;
+	}
 }

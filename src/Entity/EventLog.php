@@ -6,9 +6,21 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class EventLog {
+	private int $id;
+	private ?Settlement $settlement;
+	private ?Realm $realm;
+	private ?Character $character;
+	private ?Quest $quest;
+	private ?Artifact $artifact;
+	private ?War $war;
+	private ?Place $place;
+	private ?House $house;
+	private ?Unit $unit;
+	private ?Association $association;
+	private Collection $events;
+	private Collection $metadatas;
 
-
-	public function getType() {
+	public function getType(): false|string {
 		if ($this->settlement) return 'settlement';
 		if ($this->realm) return 'realm';
 		if ($this->character) return 'character';
@@ -21,7 +33,7 @@ class EventLog {
 		return false;
 	}
 
-	public function getSubject() {
+	public function getSubject(): Realm|Association|false|House|Unit|Settlement|Quest|Place|Artifact|Character {
 		if ($this->settlement) return $this->settlement;
 		if ($this->realm) return $this->realm;
 		if ($this->character) return $this->character;
@@ -34,7 +46,7 @@ class EventLog {
 		return false;
 	}
 
-	public function getName() {
+	public function getName(): false|string {
 		if ($this->settlement) return $this->settlement->getName();
 		if ($this->realm) return $this->realm->getName();
 		if ($this->character) return $this->character->getName();
@@ -47,383 +59,302 @@ class EventLog {
 		return false;
 	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->events = new ArrayCollection();
+		$this->metadatas = new ArrayCollection();
+	}
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return EventLog
+	 */
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Quest
-     */
-    private $quest;
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement
+	 */
+	public function getSettlement(): Settlement {
+		return $this->settlement;
+	}
 
-    /**
-     * @var \App\Entity\Artifact
-     */
-    private $artifact;
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return EventLog
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
 
-    /**
-     * @var \App\Entity\War
-     */
-    private $war;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Place
-     */
-    private $place;
+	/**
+	 * Get realm
+	 *
+	 * @return Realm
+	 */
+	public function getRealm(): Realm {
+		return $this->realm;
+	}
 
-    /**
-     * @var \App\Entity\House
-     */
-    private $house;
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return EventLog
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * @var \App\Entity\Unit
-     */
-    private $unit;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Association
-     */
-    private $association;
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $events;
+	/**
+	 * Set quest
+	 *
+	 * @param Quest|null $quest
+	 *
+	 * @return EventLog
+	 */
+	public function setQuest(Quest $quest = null): static {
+		$this->quest = $quest;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $metadatas;
+		return $this;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->events = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->metadatas = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Get quest
+	 *
+	 * @return Quest
+	 */
+	public function getQuest(): Quest {
+		return $this->quest;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Set artifact
+	 *
+	 * @param Artifact|null $artifact
+	 *
+	 * @return EventLog
+	 */
+	public function setArtifact(Artifact $artifact = null): static {
+		$this->artifact = $artifact;
 
-    /**
-     * Set settlement
-     *
-     * @param \App\Entity\Settlement $settlement
-     * @return EventLog
-     */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
-        $this->settlement = $settlement;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get artifact
+	 *
+	 * @return Artifact
+	 */
+	public function getArtifact(): Artifact {
+		return $this->artifact;
+	}
 
-    /**
-     * Get settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getSettlement()
-    {
-        return $this->settlement;
-    }
+	/**
+	 * Set war
+	 *
+	 * @param War|null $war
+	 *
+	 * @return EventLog
+	 */
+	public function setWar(War $war = null): static {
+		$this->war = $war;
 
-    /**
-     * Set realm
-     *
-     * @param \App\Entity\Realm $realm
-     * @return EventLog
-     */
-    public function setRealm(\App\Entity\Realm $realm = null)
-    {
-        $this->realm = $realm;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get war
+	 *
+	 * @return War
+	 */
+	public function getWar(): War {
+		return $this->war;
+	}
 
-    /**
-     * Get realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getRealm()
-    {
-        return $this->realm;
-    }
+	/**
+	 * Set place
+	 *
+	 * @param Place|null $place
+	 *
+	 * @return EventLog
+	 */
+	public function setPlace(Place $place = null): static {
+		$this->place = $place;
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return EventLog
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get place
+	 *
+	 * @return Place
+	 */
+	public function getPlace(): Place {
+		return $this->place;
+	}
 
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
+	/**
+	 * Set house
+	 *
+	 * @param House|null $house
+	 *
+	 * @return EventLog
+	 */
+	public function setHouse(House $house = null): static {
+		$this->house = $house;
 
-    /**
-     * Set quest
-     *
-     * @param \App\Entity\Quest $quest
-     * @return EventLog
-     */
-    public function setQuest(\App\Entity\Quest $quest = null)
-    {
-        $this->quest = $quest;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get house
+	 *
+	 * @return House
+	 */
+	public function getHouse(): House {
+		return $this->house;
+	}
 
-    /**
-     * Get quest
-     *
-     * @return \App\Entity\Quest 
-     */
-    public function getQuest()
-    {
-        return $this->quest;
-    }
+	/**
+	 * Set unit
+	 *
+	 * @param Unit|null $unit
+	 *
+	 * @return EventLog
+	 */
+	public function setUnit(Unit $unit = null): static {
+		$this->unit = $unit;
 
-    /**
-     * Set artifact
-     *
-     * @param \App\Entity\Artifact $artifact
-     * @return EventLog
-     */
-    public function setArtifact(\App\Entity\Artifact $artifact = null)
-    {
-        $this->artifact = $artifact;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get unit
+	 *
+	 * @return Unit
+	 */
+	public function getUnit(): Unit {
+		return $this->unit;
+	}
 
-    /**
-     * Get artifact
-     *
-     * @return \App\Entity\Artifact 
-     */
-    public function getArtifact()
-    {
-        return $this->artifact;
-    }
+	/**
+	 * Set association
+	 *
+	 * @param Association|null $association
+	 *
+	 * @return EventLog
+	 */
+	public function setAssociation(Association $association = null): static {
+		$this->association = $association;
 
-    /**
-     * Set war
-     *
-     * @param \App\Entity\War $war
-     * @return EventLog
-     */
-    public function setWar(\App\Entity\War $war = null)
-    {
-        $this->war = $war;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get association
+	 *
+	 * @return Association
+	 */
+	public function getAssociation(): Association {
+		return $this->association;
+	}
 
-    /**
-     * Get war
-     *
-     * @return \App\Entity\War 
-     */
-    public function getWar()
-    {
-        return $this->war;
-    }
+	/**
+	 * Add events
+	 *
+	 * @param Event $events
+	 *
+	 * @return EventLog
+	 */
+	public function addEvent(Event $events): static {
+		$this->events[] = $events;
 
-    /**
-     * Set place
-     *
-     * @param \App\Entity\Place $place
-     * @return EventLog
-     */
-    public function setPlace(\App\Entity\Place $place = null)
-    {
-        $this->place = $place;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Remove events
+	 *
+	 * @param Event $events
+	 */
+	public function removeEvent(Event $events): void {
+		$this->events->removeElement($events);
+	}
 
-    /**
-     * Get place
-     *
-     * @return \App\Entity\Place 
-     */
-    public function getPlace()
-    {
-        return $this->place;
-    }
+	/**
+	 * Get events
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getEvents(): ArrayCollection|Collection {
+		return $this->events;
+	}
 
-    /**
-     * Set house
-     *
-     * @param \App\Entity\House $house
-     * @return EventLog
-     */
-    public function setHouse(\App\Entity\House $house = null)
-    {
-        $this->house = $house;
+	/**
+	 * Add metadatas
+	 *
+	 * @param EventMetadata $metadatas
+	 *
+	 * @return EventLog
+	 */
+	public function addMetadata(EventMetadata $metadatas): static {
+		$this->metadatas[] = $metadatas;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get house
-     *
-     * @return \App\Entity\House 
-     */
-    public function getHouse()
-    {
-        return $this->house;
-    }
+	/**
+	 * Remove metadatas
+	 *
+	 * @param EventMetadata $metadatas
+	 */
+	public function removeMetadata(EventMetadata $metadatas): void {
+		$this->metadatas->removeElement($metadatas);
+	}
 
-    /**
-     * Set unit
-     *
-     * @param \App\Entity\Unit $unit
-     * @return EventLog
-     */
-    public function setUnit(\App\Entity\Unit $unit = null)
-    {
-        $this->unit = $unit;
-
-        return $this;
-    }
-
-    /**
-     * Get unit
-     *
-     * @return \App\Entity\Unit 
-     */
-    public function getUnit()
-    {
-        return $this->unit;
-    }
-
-    /**
-     * Set association
-     *
-     * @param \App\Entity\Association $association
-     * @return EventLog
-     */
-    public function setAssociation(\App\Entity\Association $association = null)
-    {
-        $this->association = $association;
-
-        return $this;
-    }
-
-    /**
-     * Get association
-     *
-     * @return \App\Entity\Association 
-     */
-    public function getAssociation()
-    {
-        return $this->association;
-    }
-
-    /**
-     * Add events
-     *
-     * @param \App\Entity\Event $events
-     * @return EventLog
-     */
-    public function addEvent(\App\Entity\Event $events)
-    {
-        $this->events[] = $events;
-
-        return $this;
-    }
-
-    /**
-     * Remove events
-     *
-     * @param \App\Entity\Event $events
-     */
-    public function removeEvent(\App\Entity\Event $events)
-    {
-        $this->events->removeElement($events);
-    }
-
-    /**
-     * Get events
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getEvents()
-    {
-        return $this->events;
-    }
-
-    /**
-     * Add metadatas
-     *
-     * @param \App\Entity\EventMetadata $metadatas
-     * @return EventLog
-     */
-    public function addMetadata(\App\Entity\EventMetadata $metadatas)
-    {
-        $this->metadatas[] = $metadatas;
-
-        return $this;
-    }
-
-    /**
-     * Remove metadatas
-     *
-     * @param \App\Entity\EventMetadata $metadatas
-     */
-    public function removeMetadata(\App\Entity\EventMetadata $metadatas)
-    {
-        $this->metadatas->removeElement($metadatas);
-    }
-
-    /**
-     * Get metadatas
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getMetadatas()
-    {
-        return $this->metadatas;
-    }
+	/**
+	 * Get metadatas
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMetadatas(): ArrayCollection|Collection {
+		return $this->metadatas;
+	}
 }

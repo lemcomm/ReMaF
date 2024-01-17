@@ -1,194 +1,158 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 class Entourage extends NPC {
-
-	public function isEntourage() {
+	public function isEntourage(): true {
 		return true;
 	}
 
-    /**
-     * @var integer
-     */
-    private $supply;
+	private int $supply;
+	private int $id;
+	private ?EntourageType $type;
+	private ?Action $action;
+	private ?Character $character;
+	private ?Character $liege;
+	private ?EquipmentType $equipment;
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set supply
+	 *
+	 * @param integer $supply
+	 *
+	 * @return Entourage
+	 */
+	public function setSupply(int $supply): static {
+		$this->supply = $supply;
 
-    /**
-     * @var \App\Entity\EntourageType
-     */
-    private $type;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Action
-     */
-    private $action;
+	/**
+	 * Get supply
+	 *
+	 * @return integer
+	 */
+	public function getSupply(): int {
+		return $this->supply;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $liege;
+	/**
+	 * Set type
+	 *
+	 * @param EntourageType|null $type
+	 *
+	 * @return Entourage
+	 */
+	public function setType(EntourageType $type = null): static {
+		$this->type = $type;
 
-    /**
-     * @var \App\Entity\EquipmentType
-     */
-    private $equipment;
+		return $this;
+	}
 
+	/**
+	 * Get type
+	 *
+	 * @return EntourageType
+	 */
+	public function getType(): EntourageType {
+		return $this->type;
+	}
 
-    /**
-     * Set supply
-     *
-     * @param integer $supply
-     * @return Entourage
-     */
-    public function setSupply($supply)
-    {
-        $this->supply = $supply;
+	/**
+	 * Set action
+	 *
+	 * @param Action|null $action
+	 *
+	 * @return Entourage
+	 */
+	public function setAction(Action $action = null): static {
+		$this->action = $action;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get supply
-     *
-     * @return integer 
-     */
-    public function getSupply()
-    {
-        return $this->supply;
-    }
+	/**
+	 * Get action
+	 *
+	 * @return Action
+	 */
+	public function getAction(): Action {
+		return $this->action;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return Entourage
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Set type
-     *
-     * @param \App\Entity\EntourageType $type
-     * @return Entourage
-     */
-    public function setType(\App\Entity\EntourageType $type = null)
-    {
-        $this->type = $type;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-    /**
-     * Get type
-     *
-     * @return \App\Entity\EntourageType 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
+	/**
+	 * Set liege
+	 *
+	 * @param Character|null $liege
+	 *
+	 * @return Entourage
+	 */
+	public function setLiege(Character $liege = null): static {
+		$this->liege = $liege;
 
-    /**
-     * Set action
-     *
-     * @param \App\Entity\Action $action
-     * @return Entourage
-     */
-    public function setAction(\App\Entity\Action $action = null)
-    {
-        $this->action = $action;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get liege
+	 *
+	 * @return Character
+	 */
+	public function getLiege(): Character {
+		return $this->liege;
+	}
 
-    /**
-     * Get action
-     *
-     * @return \App\Entity\Action 
-     */
-    public function getAction()
-    {
-        return $this->action;
-    }
+	/**
+	 * Set equipment
+	 *
+	 * @param EquipmentType|null $equipment
+	 *
+	 * @return Entourage
+	 */
+	public function setEquipment(EquipmentType $equipment = null): static {
+		$this->equipment = $equipment;
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return Entourage
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set liege
-     *
-     * @param \App\Entity\Character $liege
-     * @return Entourage
-     */
-    public function setLiege(\App\Entity\Character $liege = null)
-    {
-        $this->liege = $liege;
-
-        return $this;
-    }
-
-    /**
-     * Get liege
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getLiege()
-    {
-        return $this->liege;
-    }
-
-    /**
-     * Set equipment
-     *
-     * @param \App\Entity\EquipmentType $equipment
-     * @return Entourage
-     */
-    public function setEquipment(\App\Entity\EquipmentType $equipment = null)
-    {
-        $this->equipment = $equipment;
-
-        return $this;
-    }
-
-    /**
-     * Get equipment
-     *
-     * @return \App\Entity\EquipmentType 
-     */
-    public function getEquipment()
-    {
-        return $this->equipment;
-    }
+	/**
+	 * Get equipment
+	 *
+	 * @return EquipmentType
+	 */
+	public function getEquipment(): EquipmentType {
+		return $this->equipment;
+	}
 }

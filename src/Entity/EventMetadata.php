@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use DateTime;
-use Doctrine\DBAL\Types\Types;
 
 class EventMetadata {
 
@@ -14,7 +13,7 @@ class EventMetadata {
 	private EventLog $log;
 	private Character $reader;
 
-	public function countNewEvents() {
+	public function countNewEvents(): int {
       		$count = 0;
       		if ($this->getAccessUntil()) return 0; // FIXME: this is a hack to prevent the new start lighting up for closed logs
       		foreach ($this->getLog()->getEvents() as $event) {
@@ -25,7 +24,7 @@ class EventMetadata {
       		return $count;
       	}
 
-	public function hasNewEvents() {
+	public function hasNewEvents(): bool {
       		if ($this->getAccessUntil()) return false; // FIXME: this is a hack to prevent the new start lighting up for closed logs
       		foreach ($this->getLog()->getEvents() as $event) {
       			if ($event->getTs() > $this->last_access) {
@@ -41,19 +40,18 @@ class EventMetadata {
 	 * @param int|null $accessFrom
 	 * @return EventMetadata
 	 */
-	public function setAccessFrom(?int $accessFrom)
-   	{
+	public function setAccessFrom(?int $accessFrom): static {
    		$this->access_from = $accessFrom;
    
    		return $this;
    	}
 
 	/**
-	* Get access_from
-	*
-	* @return integer
-	*/
-	public function getAccessFrom() {
+	 * Get access_from
+	 *
+	 * @return int|null
+	 */
+	public function getAccessFrom(): ?int {
    		return $this->access_from;
    	}
 
@@ -63,18 +61,18 @@ class EventMetadata {
 	 * @param int|null $accessUntil
 	 * @return EventMetadata
 	 */
-	public function setAccessUntil(?int $accessUntil) {
+	public function setAccessUntil(?int $accessUntil): static {
    		$this->access_until = $accessUntil;
    
    		return $this;
    	}
 
 	/**
-	* Get access_until
-	*
-	* @return integer
-	*/
-	public function getAccessUntil() {
+	 * Get access_until
+	 *
+	 * @return int|null
+	 */
+	public function getAccessUntil(): ?int {
    		return $this->access_until;
    	}
 
@@ -84,18 +82,18 @@ class EventMetadata {
 	 * @param DateTime|null $lastAccess
 	 * @return EventMetadata
 	 */
-	public function setLastAccess(?DateTime $lastAccess) {
+	public function setLastAccess(?DateTime $lastAccess): static {
    		$this->last_access = $lastAccess;
    
    		return $this;
    	}
 
 	/**
-	* Get last_access
-	*
-	* @return DateTime
-	*/
-	public function getLastAccess() {
+	 * Get last_access
+	 *
+	 * @return DateTime|null
+	 */
+	public function getLastAccess(): ?DateTime {
    		return $this->last_access;
    	}
 
@@ -104,17 +102,18 @@ class EventMetadata {
 	*
 	* @return integer
 	*/
-	public function getId() {
+	public function getId(): int {
    		return $this->id;
    	}
 
 	/**
-	* Set log
-	*
-	* @param EventLog $log
-	* @return EventMetadata
-	*/
-	public function setLog(EventLog $log = null) {
+	 * Set log
+	 *
+	 * @param EventLog|null $log
+	 *
+	 * @return EventMetadata
+	 */
+	public function setLog(EventLog $log = null): static {
    		$this->log = $log;
    
    		return $this;
@@ -125,7 +124,7 @@ class EventMetadata {
 	*
 	* @return EventLog
 	*/
-	public function getLog() {
+	public function getLog(): EventLog {
    		return $this->log;
    	}
 
@@ -135,7 +134,7 @@ class EventMetadata {
 	 * @param Character|null $reader
 	 * @return EventMetadata
 	 */
-	public function setReader(Character $reader = null) {
+	public function setReader(Character $reader = null): static {
    		$this->reader = $reader;
    
    		return $this;
@@ -146,7 +145,7 @@ class EventMetadata {
 	*
 	* @return Character
 	*/
-	public function getReader() {
+	public function getReader(): Character {
    		return $this->reader;
    	}
 }

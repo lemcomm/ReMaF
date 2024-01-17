@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 class Faction {
 
-	protected $ultimate=false;
+	protected Faction|bool $ultimate=false;
 
 	public function findUltimate() {
 		if ($this->ultimate!==false) {
@@ -26,12 +26,12 @@ class Faction {
 		return $this->ultimate;
 	}
 
-	public function isUltimate() {
+	public function isUltimate(): bool {
 		if ($this->findUltimate() === $this) return true;
 		return false;
 	}
 
-	public function findHierarchy($include_myself = false) {
+	public function findHierarchy($include_myself = false): ArrayCollection {
 		$all = new ArrayCollection;
 		if ($include_myself) {
 			$all->add($this);
@@ -45,7 +45,7 @@ class Faction {
 		return $all;
 	}
 
-	public function findAllInferiors($include_myself = false) {
+	public function findAllInferiors($include_myself = false): ArrayCollection {
 		$all = new ArrayCollection;
 		if ($include_myself) {
 			$all->add($this);
@@ -64,7 +64,7 @@ class Faction {
 		return $all;
 	}
 
-	public function findDeadInferiors() {
+	public function findDeadInferiors(): ArrayCollection {
 		$all = new ArrayCollection;
 		foreach ($this->getInferiors() as $sub) {
 			if (!$sub->getActive() && $sub !== $this) {
@@ -75,7 +75,7 @@ class Faction {
 		return $all;
 	}
 
-	public function findAllSuperiors($include_myself = false) {
+	public function findAllSuperiors($include_myself = false): ArrayCollection {
 		$all = new ArrayCollection;
 		if ($include_myself) {
 			$all->add($this);
@@ -178,7 +178,7 @@ class Faction {
 		return false;
 	}
 
-	public function findActiveLaws() {
+	public function findActiveLaws(): ArrayCollection {
 		$all = new ArrayCollection();
 		foreach ($this->findAllSuperiors(true) as $faction) {
 			foreach ($faction->getLaws() as $law) {
@@ -190,7 +190,7 @@ class Faction {
 		return $all;
 	}
 
-	public function findInactiveLaws() {
+	public function findInactiveLaws(): ArrayCollection {
 		$all = new ArrayCollection();
 		foreach ($this->findAllSuperiors(true) as $faction) {
 			foreach ($faction->getLaws() as $law) {
@@ -202,7 +202,7 @@ class Faction {
 		return $all;
 	}
 
-	public function findActivePlayers() {
+	public function findActivePlayers(): ArrayCollection {
 		$users = new ArrayCollection();
 		foreach ($this->findActiveMembers() as $each) {
 			if (!$users->contains($each->getUser())) {

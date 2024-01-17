@@ -1,336 +1,273 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class EquipmentType {
+	public function getNametrans(): string {
+		return 'item.' . $this->getName();
+	}
 
-	public function getNametrans() {
-   		return 'item.'.$this->getName();
-   	}
+	private string $name;
+	private ?string $icon;
+	private string $type;
+	private int $ranged;
+	private int $melee;
+	private int $defense;
+	private int $training_required;
+	private int $resupply_cost;
+	private int $id;
+	private ?BuildingType $provider;
+	private ?BuildingType $trainer;
+	private ?SkillType $skill;
 
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return EquipmentType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var string
-     */
-    private $icon;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $type;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var integer
-     */
-    private $ranged;
+	/**
+	 * Set icon
+	 *
+	 * @param string|null $icon
+	 *
+	 * @return EquipmentType
+	 */
+	public function setIcon(?string $icon): static {
+		$this->icon = $icon;
 
-    /**
-     * @var integer
-     */
-    private $melee;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $defense;
+	/**
+	 * Get icon
+	 *
+	 * @return string|null
+	 */
+	public function getIcon(): ?string {
+		return $this->icon;
+	}
 
-    /**
-     * @var integer
-     */
-    private $training_required;
+	/**
+	 * Set type
+	 *
+	 * @param string $type
+	 *
+	 * @return EquipmentType
+	 */
+	public function setType(string $type): static {
+		$this->type = $type;
 
-    /**
-     * @var integer
-     */
-    private $resupply_cost;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
-    /**
-     * @var \App\Entity\BuildingType
-     */
-    private $provider;
+	/**
+	 * Set ranged
+	 *
+	 * @param integer $ranged
+	 *
+	 * @return EquipmentType
+	 */
+	public function setRanged(int $ranged): static {
+		$this->ranged = $ranged;
 
-    /**
-     * @var \App\Entity\BuildingType
-     */
-    private $trainer;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\SkillType
-     */
-    private $skill;
+	/**
+	 * Get ranged
+	 *
+	 * @return integer
+	 */
+	public function getRanged(): int {
+		return $this->ranged;
+	}
 
+	/**
+	 * Set melee
+	 *
+	 * @param integer $melee
+	 *
+	 * @return EquipmentType
+	 */
+	public function setMelee(int $melee): static {
+		$this->melee = $melee;
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return EquipmentType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get melee
+	 *
+	 * @return integer
+	 */
+	public function getMelee(): int {
+		return $this->melee;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Set defense
+	 *
+	 * @param integer $defense
+	 *
+	 * @return EquipmentType
+	 */
+	public function setDefense(int $defense): static {
+		$this->defense = $defense;
 
-    /**
-     * Set icon
-     *
-     * @param string $icon
-     * @return EquipmentType
-     */
-    public function setIcon($icon)
-    {
-        $this->icon = $icon;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get defense
+	 *
+	 * @return integer
+	 */
+	public function getDefense(): int {
+		return $this->defense;
+	}
 
-    /**
-     * Get icon
-     *
-     * @return string 
-     */
-    public function getIcon()
-    {
-        return $this->icon;
-    }
+	/**
+	 * Set training_required
+	 *
+	 * @param integer $trainingRequired
+	 *
+	 * @return EquipmentType
+	 */
+	public function setTrainingRequired(int $trainingRequired): static {
+		$this->training_required = $trainingRequired;
 
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return EquipmentType
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get training_required
+	 *
+	 * @return integer
+	 */
+	public function getTrainingRequired(): int {
+		return $this->training_required;
+	}
 
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
+	/**
+	 * Set resupply_cost
+	 *
+	 * @param integer $resupplyCost
+	 *
+	 * @return EquipmentType
+	 */
+	public function setResupplyCost(int $resupplyCost): static {
+		$this->resupply_cost = $resupplyCost;
 
-    /**
-     * Set ranged
-     *
-     * @param integer $ranged
-     * @return EquipmentType
-     */
-    public function setRanged($ranged)
-    {
-        $this->ranged = $ranged;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get resupply_cost
+	 *
+	 * @return integer
+	 */
+	public function getResupplyCost(): int {
+		return $this->resupply_cost;
+	}
 
-    /**
-     * Get ranged
-     *
-     * @return integer 
-     */
-    public function getRanged()
-    {
-        return $this->ranged;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set melee
-     *
-     * @param integer $melee
-     * @return EquipmentType
-     */
-    public function setMelee($melee)
-    {
-        $this->melee = $melee;
+	/**
+	 * Set provider
+	 *
+	 * @param BuildingType|null $provider
+	 *
+	 * @return EquipmentType
+	 */
+	public function setProvider(BuildingType $provider = null): static {
+		$this->provider = $provider;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get melee
-     *
-     * @return integer 
-     */
-    public function getMelee()
-    {
-        return $this->melee;
-    }
+	/**
+	 * Get provider
+	 *
+	 * @return BuildingType|null
+	 */
+	public function getProvider(): ?BuildingType {
+		return $this->provider;
+	}
 
-    /**
-     * Set defense
-     *
-     * @param integer $defense
-     * @return EquipmentType
-     */
-    public function setDefense($defense)
-    {
-        $this->defense = $defense;
+	/**
+	 * Set trainer
+	 *
+	 * @param BuildingType|null $trainer
+	 *
+	 * @return EquipmentType
+	 */
+	public function setTrainer(BuildingType $trainer = null): static {
+		$this->trainer = $trainer;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get defense
-     *
-     * @return integer 
-     */
-    public function getDefense()
-    {
-        return $this->defense;
-    }
+	/**
+	 * Get trainer
+	 *
+	 * @return BuildingType|null
+	 */
+	public function getTrainer(): ?BuildingType {
+		return $this->trainer;
+	}
 
-    /**
-     * Set training_required
-     *
-     * @param integer $trainingRequired
-     * @return EquipmentType
-     */
-    public function setTrainingRequired($trainingRequired)
-    {
-        $this->training_required = $trainingRequired;
+	/**
+	 * Set skill
+	 *
+	 * @param SkillType|null $skill
+	 *
+	 * @return EquipmentType
+	 */
+	public function setSkill(SkillType $skill = null): static {
+		$this->skill = $skill;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get training_required
-     *
-     * @return integer 
-     */
-    public function getTrainingRequired()
-    {
-        return $this->training_required;
-    }
-
-    /**
-     * Set resupply_cost
-     *
-     * @param integer $resupplyCost
-     * @return EquipmentType
-     */
-    public function setResupplyCost($resupplyCost)
-    {
-        $this->resupply_cost = $resupplyCost;
-
-        return $this;
-    }
-
-    /**
-     * Get resupply_cost
-     *
-     * @return integer 
-     */
-    public function getResupplyCost()
-    {
-        return $this->resupply_cost;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set provider
-     *
-     * @param \App\Entity\BuildingType $provider
-     * @return EquipmentType
-     */
-    public function setProvider(\App\Entity\BuildingType $provider = null)
-    {
-        $this->provider = $provider;
-
-        return $this;
-    }
-
-    /**
-     * Get provider
-     *
-     * @return \App\Entity\BuildingType 
-     */
-    public function getProvider()
-    {
-        return $this->provider;
-    }
-
-    /**
-     * Set trainer
-     *
-     * @param \App\Entity\BuildingType $trainer
-     * @return EquipmentType
-     */
-    public function setTrainer(\App\Entity\BuildingType $trainer = null)
-    {
-        $this->trainer = $trainer;
-
-        return $this;
-    }
-
-    /**
-     * Get trainer
-     *
-     * @return \App\Entity\BuildingType 
-     */
-    public function getTrainer()
-    {
-        return $this->trainer;
-    }
-
-    /**
-     * Set skill
-     *
-     * @param \App\Entity\SkillType $skill
-     * @return EquipmentType
-     */
-    public function setSkill(\App\Entity\SkillType $skill = null)
-    {
-        $this->skill = $skill;
-
-        return $this;
-    }
-
-    /**
-     * Get skill
-     *
-     * @return \App\Entity\SkillType 
-     */
-    public function getSkill()
-    {
-        return $this->skill;
-    }
+	/**
+	 * Get skill
+	 *
+	 * @return SkillType|null
+	 */
+	public function getSkill(): ?SkillType {
+		return $this->skill;
+	}
 }

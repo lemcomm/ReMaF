@@ -1,136 +1,108 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class EntourageType {
+	private string $name;
+	private int $training;
+	private ?string $icon;
+	private int $id;
+	private ?BuildingType $provider;
 
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return EntourageType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var integer
-     */
-    private $training;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $icon;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set training
+	 *
+	 * @param integer $training
+	 *
+	 * @return EntourageType
+	 */
+	public function setTraining(int $training): static {
+		$this->training = $training;
 
-    /**
-     * @var \App\Entity\BuildingType
-     */
-    private $provider;
+		return $this;
+	}
 
+	/**
+	 * Get training
+	 *
+	 * @return integer
+	 */
+	public function getTraining(): int {
+		return $this->training;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return EntourageType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Set icon
+	 *
+	 * @param string|null $icon
+	 *
+	 * @return EntourageType
+	 */
+	public function setIcon(?string $icon): static {
+		$this->icon = $icon;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Get icon
+	 *
+	 * @return string|null
+	 */
+	public function getIcon(): ?string {
+		return $this->icon;
+	}
 
-    /**
-     * Set training
-     *
-     * @param integer $training
-     * @return EntourageType
-     */
-    public function setTraining($training)
-    {
-        $this->training = $training;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set provider
+	 *
+	 * @param BuildingType|null $provider
+	 *
+	 * @return EntourageType
+	 */
+	public function setProvider(BuildingType $provider = null): static {
+		$this->provider = $provider;
 
-    /**
-     * Get training
-     *
-     * @return integer 
-     */
-    public function getTraining()
-    {
-        return $this->training;
-    }
+		return $this;
+	}
 
-    /**
-     * Set icon
-     *
-     * @param string $icon
-     * @return EntourageType
-     */
-    public function setIcon($icon)
-    {
-        $this->icon = $icon;
-
-        return $this;
-    }
-
-    /**
-     * Get icon
-     *
-     * @return string 
-     */
-    public function getIcon()
-    {
-        return $this->icon;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set provider
-     *
-     * @param \App\Entity\BuildingType $provider
-     * @return EntourageType
-     */
-    public function setProvider(\App\Entity\BuildingType $provider = null)
-    {
-        $this->provider = $provider;
-
-        return $this;
-    }
-
-    /**
-     * Get provider
-     *
-     * @return \App\Entity\BuildingType 
-     */
-    public function getProvider()
-    {
-        return $this->provider;
-    }
+	/**
+	 * Get provider
+	 *
+	 * @return BuildingType
+	 */
+	public function getProvider(): BuildingType {
+		return $this->provider;
+	}
 }

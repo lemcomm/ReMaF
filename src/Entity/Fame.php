@@ -2,139 +2,109 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * Fame
- */
-class Fame
-{
-    /**
-     * @var string
-     */
-    private $name;
+class Fame {
+	private string $name;
+	private DateTime $obtained;
+	private int $cycle;
+	private int $id;
+	private ?Character $character;
 
-    /**
-     * @var \DateTime
-     */
-    private $obtained;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return Fame
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var integer
-     */
-    private $cycle;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Set obtained
+	 *
+	 * @param DateTime $obtained
+	 *
+	 * @return Fame
+	 */
+	public function setObtained(DateTime $obtained): static {
+		$this->obtained = $obtained;
 
+		return $this;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Fame
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Get obtained
+	 *
+	 * @return DateTime
+	 */
+	public function getObtained(): DateTime {
+		return $this->obtained;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set cycle
+	 *
+	 * @param integer $cycle
+	 *
+	 * @return Fame
+	 */
+	public function setCycle(int $cycle): static {
+		$this->cycle = $cycle;
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+		return $this;
+	}
 
-    /**
-     * Set obtained
-     *
-     * @param \DateTime $obtained
-     * @return Fame
-     */
-    public function setObtained($obtained)
-    {
-        $this->obtained = $obtained;
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get obtained
-     *
-     * @return \DateTime 
-     */
-    public function getObtained()
-    {
-        return $this->obtained;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return Fame
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Set cycle
-     *
-     * @param integer $cycle
-     * @return Fame
-     */
-    public function setCycle($cycle)
-    {
-        $this->cycle = $cycle;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get cycle
-     *
-     * @return integer 
-     */
-    public function getCycle()
-    {
-        return $this->cycle;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return Fame
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
-
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
 }

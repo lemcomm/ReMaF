@@ -4,13 +4,8 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
-/**
- * Deity
- */
-class Deity
-{
+class Deity {
 	private string $name;
 	private int $id;
 	private ?Description $description;
@@ -20,231 +15,212 @@ class Deity
 	private Collection $aspects;
 	private ?Association $main_recognizer;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->associations = new ArrayCollection();
-        $this->followers = new ArrayCollection();
-        $this->descriptions = new ArrayCollection();
-        $this->aspects = new ArrayCollection();
-    }
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->associations = new ArrayCollection();
+		$this->followers = new ArrayCollection();
+		$this->descriptions = new ArrayCollection();
+		$this->aspects = new ArrayCollection();
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Deity
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return Deity
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set description
-     *
-     * @param Description $description
-     *
-     * @return Deity
-     */
-    public function setDescription(Description $description = null)
-    {
-        $this->description = $description;
+	/**
+	 * Set description
+	 *
+	 * @param Description|null $description
+	 *
+	 * @return Deity
+	 */
+	public function setDescription(Description $description = null): static {
+		$this->description = $description;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get description
-     *
-     * @return Description
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
+	/**
+	 * Get description
+	 *
+	 * @return Description|null
+	 */
+	public function getDescription(): ?Description {
+		return $this->description;
+	}
 
-    /**
-     * Add associations
-     *
-     * @param AssociationDeity $associations
-     *
-     * @return Deity
-     */
-    public function addAssociation(AssociationDeity $associations)
-    {
-        $this->associations[] = $associations;
+	/**
+	 * Add associations
+	 *
+	 * @param AssociationDeity $associations
+	 *
+	 * @return Deity
+	 */
+	public function addAssociation(AssociationDeity $associations): static {
+		$this->associations[] = $associations;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove associations
-     *
-     * @param AssociationDeity $associations
-     */
-    public function removeAssociation(AssociationDeity $associations)
-    {
-        $this->associations->removeElement($associations);
-    }
+	/**
+	 * Remove associations
+	 *
+	 * @param AssociationDeity $associations
+	 */
+	public function removeAssociation(AssociationDeity $associations): void {
+		$this->associations->removeElement($associations);
+	}
 
-    /**
-     * Get associations
-     *
-     * @return Collection
-     */
-    public function getAssociations()
-    {
-        return $this->associations;
-    }
+	/**
+	 * Get associations
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getAssociations(): ArrayCollection|Collection {
+		return $this->associations;
+	}
 
-    /**
-     * Add followers
-     *
-     * @param CharacterDeity $followers
-     *
-     * @return Deity
-     */
-    public function addFollower(CharacterDeity $followers)
-    {
-        $this->followers[] = $followers;
+	/**
+	 * Add followers
+	 *
+	 * @param CharacterDeity $followers
+	 *
+	 * @return Deity
+	 */
+	public function addFollower(CharacterDeity $followers): static {
+		$this->followers[] = $followers;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove followers
-     *
-     * @param CharacterDeity $followers
-     */
-    public function removeFollower(CharacterDeity $followers)
-    {
-        $this->followers->removeElement($followers);
-    }
+	/**
+	 * Remove followers
+	 *
+	 * @param CharacterDeity $followers
+	 */
+	public function removeFollower(CharacterDeity $followers): void {
+		$this->followers->removeElement($followers);
+	}
 
-    /**
-     * Get followers
-     *
-     * @return Collection
-     */
-    public function getFollowers()
-    {
-        return $this->followers;
-    }
+	/**
+	 * Get followers
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getFollowers(): ArrayCollection|Collection {
+		return $this->followers;
+	}
 
-    /**
-     * Add descriptions
-     *
-     * @param Description $descriptions
-     *
-     * @return Deity
-     */
-    public function addDescription(Description $descriptions)
-    {
-        $this->descriptions[] = $descriptions;
+	/**
+	 * Add descriptions
+	 *
+	 * @param Description $descriptions
+	 *
+	 * @return Deity
+	 */
+	public function addDescription(Description $descriptions): static {
+		$this->descriptions[] = $descriptions;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove descriptions
-     *
-     * @param Description $descriptions
-     */
-    public function removeDescription(Description $descriptions)
-    {
-        $this->descriptions->removeElement($descriptions);
-    }
+	/**
+	 * Remove descriptions
+	 *
+	 * @param Description $descriptions
+	 */
+	public function removeDescription(Description $descriptions): void {
+		$this->descriptions->removeElement($descriptions);
+	}
 
-    /**
-     * Get descriptions
-     *
-     * @return Collection
-     */
-    public function getDescriptions()
-    {
-        return $this->descriptions;
-    }
+	/**
+	 * Get descriptions
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getDescriptions(): ArrayCollection|Collection {
+		return $this->descriptions;
+	}
 
-    /**
-     * Add aspects
-     *
-     * @param DeityAspect $aspects
-     *
-     * @return Deity
-     */
-	public function addAspect(DeityAspect $aspects)
-    {
-        $this->aspects[] = $aspects;
+	/**
+	 * Add aspects
+	 *
+	 * @param DeityAspect $aspects
+	 *
+	 * @return Deity
+	 */
+	public function addAspect(DeityAspect $aspects): static {
+		$this->aspects[] = $aspects;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove aspects
-     *
-     * @param DeityAspect $aspects
-     */
-	public function removeAspect(DeityAspect $aspects)
-    {
-        $this->aspects->removeElement($aspects);
-    }
+	/**
+	 * Remove aspects
+	 *
+	 * @param DeityAspect $aspects
+	 */
+	public function removeAspect(DeityAspect $aspects): void {
+		$this->aspects->removeElement($aspects);
+	}
 
-    /**
-     * Get aspects
-     *
-     * @return Collection
-     */
-    public function getAspects()
-    {
-        return $this->aspects;
-    }
+	/**
+	 * Get aspects
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getAspects(): ArrayCollection|Collection {
+		return $this->aspects;
+	}
 
-    /**
-     * Set main_recognizer
-     *
-     * @param Association $mainRecognizer
-     *
-     * @return Deity
-     */
-	public function setMainRecognizer(Association $mainRecognizer = null)
-    {
-        $this->main_recognizer = $mainRecognizer;
+	/**
+	 * Set main_recognizer
+	 *
+	 * @param Association|null $mainRecognizer
+	 *
+	 * @return Deity
+	 */
+	public function setMainRecognizer(Association $mainRecognizer = null): static {
+		$this->main_recognizer = $mainRecognizer;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get main_recognizer
-     *
-     * @return Association
-     */
-    public function getMainRecognizer()
-    {
-        return $this->main_recognizer;
-    }
+	/**
+	 * Get main_recognizer
+	 *
+	 * @return Association|null
+	 */
+	public function getMainRecognizer(): ?Association {
+		return $this->main_recognizer;
+	}
 }

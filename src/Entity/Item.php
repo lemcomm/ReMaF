@@ -1,52 +1,41 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 class Item {
-
 # Nothing to see here, civilian. Move along.
 
-    /**
-     * @var integer
-     */
-    private $id;
+	private int $id;
+	private ItemType $type;
 
-    /**
-     * @var \App\Entity\ItemType
-     */
-    private $type;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
+	/**
+	 * Set type
+	 *
+	 * @param ItemType|null $type
+	 *
+	 * @return Item
+	 */
+	public function setType(ItemType $type = null): static {
+		$this->type = $type;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Set type
-     *
-     * @param \App\Entity\ItemType $type
-     * @return Item
-     */
-    public function setType(\App\Entity\ItemType $type = null)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return \App\Entity\ItemType 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
+	/**
+	 * Get type
+	 *
+	 * @return ItemType
+	 */
+	public function getType(): ItemType {
+		return $this->type;
+	}
 }

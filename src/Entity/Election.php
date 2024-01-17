@@ -2,392 +2,319 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 
-/**
- * Election
- */
-class Election
-{
-    /**
-     * @var string
-     */
-    private $name;
+class Election {
+	private string $name;
+	private DateTime $complete;
+	private bool $closed;
+	private string $description;
+	private string $method;
+	private ?bool $routine;
+	private int $id;
+	private Collection $votes;
+	private Character $owner;
+	private ?Character $winner;
+	private ?Realm $realm;
+	private ?Association $association;
+	private ?RealmPosition $position;
 
-    /**
-     * @var \DateTime
-     */
-    private $complete;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->votes = new ArrayCollection();
+	}
 
-    /**
-     * @var boolean
-     */
-    private $closed;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return Election
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var string
-     */
-    private $description;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $method;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $routine;
+	/**
+	 * Set complete
+	 *
+	 * @param DateTime $complete
+	 *
+	 * @return Election
+	 */
+	public function setComplete(DateTime $complete): static {
+		$this->complete = $complete;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $votes;
+	/**
+	 * Get complete
+	 *
+	 * @return DateTime
+	 */
+	public function getComplete(): DateTime {
+		return $this->complete;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $owner;
+	/**
+	 * Set closed
+	 *
+	 * @param boolean $closed
+	 *
+	 * @return Election
+	 */
+	public function setClosed(bool $closed): static {
+		$this->closed = $closed;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $winner;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
+	/**
+	 * Get closed
+	 *
+	 * @return boolean
+	 */
+	public function getClosed(): bool {
+		return $this->closed;
+	}
 
-    /**
-     * @var \App\Entity\Association
-     */
-    private $association;
+	/**
+	 * Set description
+	 *
+	 * @param string $description
+	 *
+	 * @return Election
+	 */
+	public function setDescription(string $description): static {
+		$this->description = $description;
 
-    /**
-     * @var \App\Entity\RealmPosition
-     */
-    private $position;
+		return $this;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->votes = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Get description
+	 *
+	 * @return string
+	 */
+	public function getDescription(): string {
+		return $this->description;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Election
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Set method
+	 *
+	 * @param string $method
+	 *
+	 * @return Election
+	 */
+	public function setMethod(string $method): static {
+		$this->method = $method;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Get method
+	 *
+	 * @return string
+	 */
+	public function getMethod(): string {
+		return $this->method;
+	}
 
-    /**
-     * Set complete
-     *
-     * @param \DateTime $complete
-     * @return Election
-     */
-    public function setComplete($complete)
-    {
-        $this->complete = $complete;
+	/**
+	 * Set routine
+	 *
+	 * @param null|boolean $routine
+	 *
+	 * @return Election
+	 */
+	public function setRoutine(?bool $routine): static {
+		$this->routine = $routine;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get complete
-     *
-     * @return \DateTime 
-     */
-    public function getComplete()
-    {
-        return $this->complete;
-    }
+	/**
+	 * Get routine
+	 *
+	 * @return bool|null
+	 */
+	public function getRoutine(): ?bool {
+		return $this->routine;
+	}
 
-    /**
-     * Set closed
-     *
-     * @param boolean $closed
-     * @return Election
-     */
-    public function setClosed($closed)
-    {
-        $this->closed = $closed;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Add votes
+	 *
+	 * @param Vote $votes
+	 *
+	 * @return Election
+	 */
+	public function addVote(Vote $votes): static {
+		$this->votes[] = $votes;
 
-    /**
-     * Get closed
-     *
-     * @return boolean 
-     */
-    public function getClosed()
-    {
-        return $this->closed;
-    }
+		return $this;
+	}
 
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return Election
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
+	/**
+	 * Remove votes
+	 *
+	 * @param Vote $votes
+	 */
+	public function removeVote(Vote $votes): void {
+		$this->votes->removeElement($votes);
+	}
 
-        return $this;
-    }
+	/**
+	 * Get votes
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getVotes(): ArrayCollection|Collection {
+		return $this->votes;
+	}
 
-    /**
-     * Get description
-     *
-     * @return string 
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
+	/**
+	 * Set owner
+	 *
+	 * @param Character|null $owner
+	 *
+	 * @return Election
+	 */
+	public function setOwner(Character $owner = null): static {
+		$this->owner = $owner;
 
-    /**
-     * Set method
-     *
-     * @param string $method
-     * @return Election
-     */
-    public function setMethod($method)
-    {
-        $this->method = $method;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get owner
+	 *
+	 * @return Character
+	 */
+	public function getOwner(): Character {
+		return $this->owner;
+	}
 
-    /**
-     * Get method
-     *
-     * @return string 
-     */
-    public function getMethod()
-    {
-        return $this->method;
-    }
+	/**
+	 * Set winner
+	 *
+	 * @param Character|null $winner
+	 *
+	 * @return Election
+	 */
+	public function setWinner(Character $winner = null): static {
+		$this->winner = $winner;
 
-    /**
-     * Set routine
-     *
-     * @param boolean $routine
-     * @return Election
-     */
-    public function setRoutine($routine)
-    {
-        $this->routine = $routine;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get winner
+	 *
+	 * @return Character|null
+	 */
+	public function getWinner(): ?Character {
+		return $this->winner;
+	}
 
-    /**
-     * Get routine
-     *
-     * @return boolean 
-     */
-    public function getRoutine()
-    {
-        return $this->routine;
-    }
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return Election
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Add votes
-     *
-     * @param \App\Entity\Vote $votes
-     * @return Election
-     */
-    public function addVote(\App\Entity\Vote $votes)
-    {
-        $this->votes[] = $votes;
+	/**
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set association
+	 *
+	 * @param Association|null $association
+	 *
+	 * @return Election
+	 */
+	public function setAssociation(Association $association = null): static {
+		$this->association = $association;
 
-    /**
-     * Remove votes
-     *
-     * @param \App\Entity\Vote $votes
-     */
-    public function removeVote(\App\Entity\Vote $votes)
-    {
-        $this->votes->removeElement($votes);
-    }
+		return $this;
+	}
 
-    /**
-     * Get votes
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getVotes()
-    {
-        return $this->votes;
-    }
+	/**
+	 * Get association
+	 *
+	 * @return Association|null
+	 */
+	public function getAssociation(): ?Association {
+		return $this->association;
+	}
 
-    /**
-     * Set owner
-     *
-     * @param \App\Entity\Character $owner
-     * @return Election
-     */
-    public function setOwner(\App\Entity\Character $owner = null)
-    {
-        $this->owner = $owner;
+	/**
+	 * Set position
+	 *
+	 * @param RealmPosition|null $position
+	 *
+	 * @return Election
+	 */
+	public function setPosition(RealmPosition $position = null): static {
+		$this->position = $position;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get owner
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
+	/**
+	 * Get position
+	 *
+	 * @return RealmPosition|null
+	 */
+	public function getPosition(): ?RealmPosition {
+		return $this->position;
+	}
 
-    /**
-     * Set winner
-     *
-     * @param \App\Entity\Character $winner
-     * @return Election
-     */
-    public function setWinner(\App\Entity\Character $winner = null)
-    {
-        $this->winner = $winner;
+	public function isClosed(): ?bool {
+		return $this->closed;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get winner
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getWinner()
-    {
-        return $this->winner;
-    }
-
-    /**
-     * Set realm
-     *
-     * @param \App\Entity\Realm $realm
-     * @return Election
-     */
-    public function setRealm(\App\Entity\Realm $realm = null)
-    {
-        $this->realm = $realm;
-
-        return $this;
-    }
-
-    /**
-     * Get realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getRealm()
-    {
-        return $this->realm;
-    }
-
-    /**
-     * Set association
-     *
-     * @param \App\Entity\Association $association
-     * @return Election
-     */
-    public function setAssociation(\App\Entity\Association $association = null)
-    {
-        $this->association = $association;
-
-        return $this;
-    }
-
-    /**
-     * Get association
-     *
-     * @return \App\Entity\Association 
-     */
-    public function getAssociation()
-    {
-        return $this->association;
-    }
-
-    /**
-     * Set position
-     *
-     * @param \App\Entity\RealmPosition $position
-     * @return Election
-     */
-    public function setPosition(\App\Entity\RealmPosition $position = null)
-    {
-        $this->position = $position;
-
-        return $this;
-    }
-
-    /**
-     * Get position
-     *
-     * @return \App\Entity\RealmPosition 
-     */
-    public function getPosition()
-    {
-        return $this->position;
-    }
-
-    public function isClosed(): ?bool
-    {
-        return $this->closed;
-    }
-
-    public function isRoutine(): ?bool
-    {
-        return $this->routine;
-    }
+	public function isRoutine(): ?bool {
+		return $this->routine;
+	}
 }

@@ -2,139 +2,109 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * DungeonMessage
- */
-class DungeonMessage
-{
-    /**
-     * @var \DateTime
-     */
-    private $ts;
+class DungeonMessage {
+	private DateTime $ts;
+	private string $content;
+	private int $id;
+	private ?DungeonParty $party;
+	private ?Dungeoneer $sender;
 
-    /**
-     * @var string
-     */
-    private $content;
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return DungeonMessage
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\DungeonParty
-     */
-    private $party;
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
-    /**
-     * @var \App\Entity\Dungeoneer
-     */
-    private $sender;
+	/**
+	 * Set content
+	 *
+	 * @param string $content
+	 *
+	 * @return DungeonMessage
+	 */
+	public function setContent(string $content): static {
+		$this->content = $content;
 
+		return $this;
+	}
 
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return DungeonMessage
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
+	/**
+	 * Get content
+	 *
+	 * @return string
+	 */
+	public function getContent(): string {
+		return $this->content;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
+	/**
+	 * Set party
+	 *
+	 * @param DungeonParty|null $party
+	 *
+	 * @return DungeonMessage
+	 */
+	public function setParty(DungeonParty $party = null): static {
+		$this->party = $party;
 
-    /**
-     * Set content
-     *
-     * @param string $content
-     * @return DungeonMessage
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get party
+	 *
+	 * @return DungeonParty
+	 */
+	public function getParty(): DungeonParty {
+		return $this->party;
+	}
 
-    /**
-     * Get content
-     *
-     * @return string 
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
+	/**
+	 * Set sender
+	 *
+	 * @param Dungeoneer|null $sender
+	 *
+	 * @return DungeonMessage
+	 */
+	public function setSender(Dungeoneer $sender = null): static {
+		$this->sender = $sender;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Set party
-     *
-     * @param \App\Entity\DungeonParty $party
-     * @return DungeonMessage
-     */
-    public function setParty(\App\Entity\DungeonParty $party = null)
-    {
-        $this->party = $party;
-
-        return $this;
-    }
-
-    /**
-     * Get party
-     *
-     * @return \App\Entity\DungeonParty 
-     */
-    public function getParty()
-    {
-        return $this->party;
-    }
-
-    /**
-     * Set sender
-     *
-     * @param \App\Entity\Dungeoneer $sender
-     * @return DungeonMessage
-     */
-    public function setSender(\App\Entity\Dungeoneer $sender = null)
-    {
-        $this->sender = $sender;
-
-        return $this;
-    }
-
-    /**
-     * Get sender
-     *
-     * @return \App\Entity\Dungeoneer 
-     */
-    public function getSender()
-    {
-        return $this->sender;
-    }
+	/**
+	 * Get sender
+	 *
+	 * @return Dungeoneer
+	 */
+	public function getSender(): Dungeoneer {
+		return $this->sender;
+	}
 }
