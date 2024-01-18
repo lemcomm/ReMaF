@@ -2,95 +2,74 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class MessageTag {
+	private string $type;
+	private Character $character;
+	private Message $message;
 
-/**
- * MessageTag
- */
-class MessageTag
-{
-    /**
-     * @var string
-     */
-    private $type;
+	/**
+	 * Set type
+	 *
+	 * @param string $type
+	 *
+	 * @return MessageTag
+	 */
+	public function setType(string $type): static {
+		$this->type = $type;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Message
-     */
-    private $message;
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
+	/**
+	 * Set character
+	 *
+	 * @param Character $character
+	 *
+	 * @return MessageTag
+	 */
+	public function setCharacter(Character $character): static {
+		$this->character = $character;
 
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return MessageTag
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
+	/**
+	 * Set message
+	 *
+	 * @param Message $message
+	 *
+	 * @return MessageTag
+	 */
+	public function setMessage(Message $message): static {
+		$this->message = $message;
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return MessageTag
-     */
-    public function setCharacter(\App\Entity\Character $character)
-    {
-        $this->character = $character;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set message
-     *
-     * @param \App\Entity\Message $message
-     * @return MessageTag
-     */
-    public function setMessage(\App\Entity\Message $message)
-    {
-        $this->message = $message;
-
-        return $this;
-    }
-
-    /**
-     * Get message
-     *
-     * @return \App\Entity\Message 
-     */
-    public function getMessage()
-    {
-        return $this->message;
-    }
+	/**
+	 * Get message
+	 *
+	 * @return Message
+	 */
+	public function getMessage(): Message {
+		return $this->message;
+	}
 }

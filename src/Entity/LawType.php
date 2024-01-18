@@ -2,115 +2,88 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class LawType {
+	private string $name;
+	private string $category;
+	private bool $allow_multiple;
+	private int $id;
 
-/**
- * LawType
- */
-class LawType
-{
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return LawType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var string
-     */
-    private $category;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $allow_multiple;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set category
+	 *
+	 * @param string $category
+	 *
+	 * @return LawType
+	 */
+	public function setCategory(string $category): static {
+		$this->category = $category;
 
+		return $this;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return LawType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Get category
+	 *
+	 * @return string
+	 */
+	public function getCategory(): string {
+		return $this->category;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set allow_multiple
+	 *
+	 * @param boolean $allowMultiple
+	 *
+	 * @return LawType
+	 */
+	public function setAllowMultiple(bool $allowMultiple): static {
+		$this->allow_multiple = $allowMultiple;
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+		return $this;
+	}
 
-    /**
-     * Set category
-     *
-     * @param string $category
-     * @return LawType
-     */
-    public function setCategory($category)
-    {
-        $this->category = $category;
+	/**
+	 * Get allow_multiple
+	 *
+	 * @return boolean
+	 */
+	public function getAllowMultiple(): bool {
+		return $this->allow_multiple;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get category
-     *
-     * @return string 
-     */
-    public function getCategory()
-    {
-        return $this->category;
-    }
-
-    /**
-     * Set allow_multiple
-     *
-     * @param boolean $allowMultiple
-     * @return LawType
-     */
-    public function setAllowMultiple($allowMultiple)
-    {
-        $this->allow_multiple = $allowMultiple;
-
-        return $this;
-    }
-
-    /**
-     * Get allow_multiple
-     *
-     * @return boolean 
-     */
-    public function getAllowMultiple()
-    {
-        return $this->allow_multiple;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function isAllowMultiple(): ?bool
-    {
-        return $this->allow_multiple;
-    }
+	public function isAllowMultiple(): ?bool {
+		return $this->allow_multiple;
+	}
 }

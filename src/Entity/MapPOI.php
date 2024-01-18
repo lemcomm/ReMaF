@@ -2,82 +2,63 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use LongitudeOne\Spatial\PHP\Types\Geometry\Polygon;
 
-/**
- * MapPOI
- */
-class MapPOI
-{
-    /**
-     * @var string
-     */
-    private $name;
+class MapPOI {
+	private string $name;
+	private Polygon $geom;
+	private int $id;
 
-    /**
-     * @var polygon
-     */
-    private $geom;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return MapPOI
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return MapPOI
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Set geom
+	 *
+	 * @param polygon $geom
+	 *
+	 * @return MapPOI
+	 */
+	public function setGeom(Polygon $geom): static {
+		$this->geom = $geom;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Get geom
+	 *
+	 * @return polygon
+	 */
+	public function getGeom(): Polygon {
+		return $this->geom;
+	}
 
-    /**
-     * Set geom
-     *
-     * @param polygon $geom
-     * @return MapPOI
-     */
-    public function setGeom($geom)
-    {
-        $this->geom = $geom;
-
-        return $this;
-    }
-
-    /**
-     * Get geom
-     *
-     * @return polygon 
-     */
-    public function getGeom()
-    {
-        return $this->geom;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 }

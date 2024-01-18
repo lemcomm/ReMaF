@@ -2,83 +2,61 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+class MessageRecipient {
+	private int $id;
+	private Message $message;
+	private Character $character;
 
-/**
- * MessageRecipient
- */
-class MessageRecipient
-{
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * @var \App\Entity\Message
-     */
-    private $message;
+	/**
+	 * Set message
+	 *
+	 * @param Message|null $message
+	 *
+	 * @return MessageRecipient
+	 */
+	public function setMessage(Message $message = null): static {
+		$this->message = $message;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+		return $this;
+	}
 
+	/**
+	 * Get message
+	 *
+	 * @return Message
+	 */
+	public function getMessage(): Message {
+		return $this->message;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return MessageRecipient
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Set message
-     *
-     * @param \App\Entity\Message $message
-     * @return MessageRecipient
-     */
-    public function setMessage(\App\Entity\Message $message = null)
-    {
-        $this->message = $message;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get message
-     *
-     * @return \App\Entity\Message 
-     */
-    public function getMessage()
-    {
-        return $this->message;
-    }
-
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return MessageRecipient
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
-
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 }

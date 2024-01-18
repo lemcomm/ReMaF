@@ -2,195 +2,155 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * MailEntry
- */
-class MailEntry
-{
-    /**
-     * @var string
-     */
-    private $type;
+class MailEntry {
+	private string $type;
+	private DateTime $ts;
+	private DateTime $send_time;
+	private string $content;
+	private int $id;
+	private User $user;
+	private Event $event;
 
-    /**
-     * @var \DateTime
-     */
-    private $ts;
+	/**
+	 * Set type
+	 *
+	 * @param string $type
+	 *
+	 * @return MailEntry
+	 */
+	public function setType(string $type): static {
+		$this->type = $type;
 
-    /**
-     * @var \DateTime
-     */
-    private $send_time;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $content;
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return MailEntry
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
 
-    /**
-     * @var \App\Entity\User
-     */
-    private $user;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Event
-     */
-    private $event;
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
+	/**
+	 * Set send_time
+	 *
+	 * @param DateTime $sendTime
+	 *
+	 * @return MailEntry
+	 */
+	public function setSendTime(DateTime $sendTime): static {
+		$this->send_time = $sendTime;
 
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return MailEntry
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get send_time
+	 *
+	 * @return DateTime
+	 */
+	public function getSendTime(): DateTime {
+		return $this->send_time;
+	}
 
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
+	/**
+	 * Set content
+	 *
+	 * @param string $content
+	 *
+	 * @return MailEntry
+	 */
+	public function setContent(string $content): static {
+		$this->content = $content;
 
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return MailEntry
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get content
+	 *
+	 * @return string
+	 */
+	public function getContent(): string {
+		return $this->content;
+	}
 
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set send_time
-     *
-     * @param \DateTime $sendTime
-     * @return MailEntry
-     */
-    public function setSendTime($sendTime)
-    {
-        $this->send_time = $sendTime;
+	/**
+	 * Set user
+	 *
+	 * @param User|null $user
+	 *
+	 * @return MailEntry
+	 */
+	public function setUser(User $user = null): static {
+		$this->user = $user;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get send_time
-     *
-     * @return \DateTime 
-     */
-    public function getSendTime()
-    {
-        return $this->send_time;
-    }
+	/**
+	 * Get user
+	 *
+	 * @return User
+	 */
+	public function getUser(): User {
+		return $this->user;
+	}
 
-    /**
-     * Set content
-     *
-     * @param string $content
-     * @return MailEntry
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
+	/**
+	 * Set event
+	 *
+	 * @param Event|null $event
+	 *
+	 * @return MailEntry
+	 */
+	public function setEvent(Event $event = null): static {
+		$this->event = $event;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get content
-     *
-     * @return string 
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set user
-     *
-     * @param \App\Entity\User $user
-     * @return MailEntry
-     */
-    public function setUser(\App\Entity\User $user = null)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \App\Entity\User 
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * Set event
-     *
-     * @param \App\Entity\Event $event
-     * @return MailEntry
-     */
-    public function setEvent(\App\Entity\Event $event = null)
-    {
-        $this->event = $event;
-
-        return $this;
-    }
-
-    /**
-     * Get event
-     *
-     * @return \App\Entity\Event 
-     */
-    public function getEvent()
-    {
-        return $this->event;
-    }
+	/**
+	 * Get event
+	 *
+	 * @return Event
+	 */
+	public function getEvent(): Event {
+		return $this->event;
+	}
 }

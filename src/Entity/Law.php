@@ -2,17 +2,19 @@
 
 namespace App\Entity;
 
+use DateTime;
+
 class Law {
-	private string $title;
-	private string $description;
-	private bool $mandatory;
-	private bool $cascades;
-	private string $value;
-	private ?\DateTime $enacted;
-	private int $cycle;
-	private ?\DateTime $repealed_on;
-	private ?\DateTime $invalidated_on;
-	private int $sol_cycles;
+	private ?string $title;
+	private ?string $description;
+	private ?bool $mandatory;
+	private ?bool $cascades;
+	private ?string $value;
+	private ?DateTime $enacted;
+	private ?int $cycle;
+	private ?DateTime $repealed_on;
+	private ?DateTime $invalidated_on;
+	private ?int $sol_cycles;
 	private int $id;
 	private ?Law $invalidated_by;
 	private ?Law $invalidates;
@@ -24,7 +26,7 @@ class Law {
 	private ?LawType $type;
 	private ?Association $faith;
 
-	public function getOrg() {
+	public function getOrg(): Realm|Association|null {
 		if ($this->realm) {
 			return $this->realm;
 		} else {
@@ -32,7 +34,7 @@ class Law {
 		}
 	}
 
-	public function isActive() {
+	public function isActive(): bool {
 		if (!$this->invalidated_on && !$this->repealed_on) {
 			return true;
 		}
@@ -42,11 +44,11 @@ class Law {
 	/**
 	 * Set title
 	 *
-	 * @param string $title
+	 * @param string|null $title
 	 *
 	 * @return Law
 	 */
-	public function setTitle($title) {
+	public function setTitle(?string $title): static {
 		$this->title = $title;
 
 		return $this;
@@ -57,18 +59,18 @@ class Law {
 	 *
 	 * @return string
 	 */
-	public function getTitle() {
+	public function getTitle(): string {
 		return $this->title;
 	}
 
 	/**
 	 * Set description
 	 *
-	 * @param string $description
+	 * @param string|null $description
 	 *
 	 * @return Law
 	 */
-	public function setDescription($description) {
+	public function setDescription(?string $description): static {
 		$this->description = $description;
 
 		return $this;
@@ -79,7 +81,7 @@ class Law {
 	 *
 	 * @return string
 	 */
-	public function getDescription() {
+	public function getDescription(): string {
 		return $this->description;
 	}
 
@@ -90,7 +92,7 @@ class Law {
 	 *
 	 * @return Law
 	 */
-	public function setMandatory($mandatory) {
+	public function setMandatory(?bool $mandatory): static {
 		$this->mandatory = $mandatory;
 
 		return $this;
@@ -101,18 +103,18 @@ class Law {
 	 *
 	 * @return boolean
 	 */
-	public function getMandatory() {
+	public function getMandatory(): bool {
 		return $this->mandatory;
 	}
 
 	/**
 	 * Set cascades
 	 *
-	 * @param boolean $cascades
+	 * @param boolean|null $cascades
 	 *
 	 * @return Law
 	 */
-	public function setCascades($cascades) {
+	public function setCascades(?bool $cascades): static {
 		$this->cascades = $cascades;
 
 		return $this;
@@ -123,18 +125,18 @@ class Law {
 	 *
 	 * @return boolean
 	 */
-	public function getCascades() {
+	public function getCascades(): bool {
 		return $this->cascades;
 	}
 
 	/**
 	 * Set value
 	 *
-	 * @param string $value
+	 * @param string|null $value
 	 *
 	 * @return Law
 	 */
-	public function setValue($value) {
+	public function setValue(?string $value): static {
 		$this->value = $value;
 
 		return $this;
@@ -145,18 +147,18 @@ class Law {
 	 *
 	 * @return string
 	 */
-	public function getValue() {
+	public function getValue(): string {
 		return $this->value;
 	}
 
 	/**
 	 * Set enacted
 	 *
-	 * @param \DateTime $enacted
+	 * @param DateTime $enacted
 	 *
 	 * @return Law
 	 */
-	public function setEnacted($enacted) {
+	public function setEnacted(DateTime $enacted): static {
 		$this->enacted = $enacted;
 
 		return $this;
@@ -165,20 +167,20 @@ class Law {
 	/**
 	 * Get enacted
 	 *
-	 * @return \DateTime
+	 * @return DateTime|null
 	 */
-	public function getEnacted() {
+	public function getEnacted(): ?DateTime {
 		return $this->enacted;
 	}
 
 	/**
 	 * Set cycle
 	 *
-	 * @param integer $cycle
+	 * @param int|null $cycle
 	 *
 	 * @return Law
 	 */
-	public function setCycle($cycle) {
+	public function setCycle(?int $cycle): static {
 		$this->cycle = $cycle;
 
 		return $this;
@@ -189,18 +191,18 @@ class Law {
 	 *
 	 * @return integer
 	 */
-	public function getCycle() {
+	public function getCycle(): int {
 		return $this->cycle;
 	}
 
 	/**
 	 * Set repealed_on
 	 *
-	 * @param \DateTime $repealedOn
+	 * @param DateTime|null $repealedOn
 	 *
 	 * @return Law
 	 */
-	public function setRepealedOn($repealedOn) {
+	public function setRepealedOn(?DateTime $repealedOn): static {
 		$this->repealed_on = $repealedOn;
 
 		return $this;
@@ -209,20 +211,20 @@ class Law {
 	/**
 	 * Get repealed_on
 	 *
-	 * @return \DateTime
+	 * @return DateTime|null
 	 */
-	public function getRepealedOn() {
+	public function getRepealedOn(): ?DateTime {
 		return $this->repealed_on;
 	}
 
 	/**
 	 * Set invalidated_on
 	 *
-	 * @param \DateTime $invalidatedOn
+	 * @param DateTime|null $invalidatedOn
 	 *
 	 * @return Law
 	 */
-	public function setInvalidatedOn($invalidatedOn) {
+	public function setInvalidatedOn(?DateTime $invalidatedOn): static {
 		$this->invalidated_on = $invalidatedOn;
 
 		return $this;
@@ -231,20 +233,20 @@ class Law {
 	/**
 	 * Get invalidated_on
 	 *
-	 * @return \DateTime
+	 * @return DateTime|null
 	 */
-	public function getInvalidatedOn() {
+	public function getInvalidatedOn(): ?DateTime {
 		return $this->invalidated_on;
 	}
 
 	/**
 	 * Set sol_cycles
 	 *
-	 * @param integer $solCycles
+	 * @param int|null $solCycles
 	 *
 	 * @return Law
 	 */
-	public function setSolCycles($solCycles) {
+	public function setSolCycles(?int $solCycles): static {
 		$this->sol_cycles = $solCycles;
 
 		return $this;
@@ -255,7 +257,7 @@ class Law {
 	 *
 	 * @return integer
 	 */
-	public function getSolCycles() {
+	public function getSolCycles(): int {
 		return $this->sol_cycles;
 	}
 
@@ -264,18 +266,18 @@ class Law {
 	 *
 	 * @return integer
 	 */
-	public function getId() {
+	public function getId(): int {
 		return $this->id;
 	}
 
 	/**
 	 * Set invalidated_by
 	 *
-	 * @param Law $invalidatedBy
+	 * @param Law|null $invalidatedBy
 	 *
 	 * @return Law
 	 */
-	public function setInvalidatedBy(Law $invalidatedBy = null) {
+	public function setInvalidatedBy(Law $invalidatedBy = null): static {
 		$this->invalidated_by = $invalidatedBy;
 
 		return $this;
@@ -284,20 +286,20 @@ class Law {
 	/**
 	 * Get invalidated_by
 	 *
-	 * @return Law
+	 * @return Law|null
 	 */
-	public function getInvalidatedBy() {
+	public function getInvalidatedBy(): ?Law {
 		return $this->invalidated_by;
 	}
 
 	/**
 	 * Set invalidates
 	 *
-	 * @param Law $invalidates
+	 * @param Law|null $invalidates
 	 *
 	 * @return Law
 	 */
-	public function setInvalidates(Law $invalidates = null) {
+	public function setInvalidates(Law $invalidates = null): static {
 		$this->invalidates = $invalidates;
 
 		return $this;
@@ -306,20 +308,20 @@ class Law {
 	/**
 	 * Get invalidates
 	 *
-	 * @return Law
+	 * @return Law|null
 	 */
-	public function getInvalidates() {
+	public function getInvalidates(): ?Law {
 		return $this->invalidates;
 	}
 
 	/**
 	 * Set enacted_by
 	 *
-	 * @param Character $enactedBy
+	 * @param Character|null $enactedBy
 	 *
 	 * @return Law
 	 */
-	public function setEnactedBy(Character $enactedBy = null) {
+	public function setEnactedBy(Character $enactedBy = null): static {
 		$this->enacted_by = $enactedBy;
 
 		return $this;
@@ -328,20 +330,20 @@ class Law {
 	/**
 	 * Get enacted_by
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getEnactedBy() {
+	public function getEnactedBy(): ?Character {
 		return $this->enacted_by;
 	}
 
 	/**
 	 * Set repealed_by
 	 *
-	 * @param Character $repealedBy
+	 * @param Character|null $repealedBy
 	 *
 	 * @return Law
 	 */
-	public function setRepealedBy(Character $repealedBy = null) {
+	public function setRepealedBy(Character $repealedBy = null): static {
 		$this->repealed_by = $repealedBy;
 
 		return $this;
@@ -350,20 +352,20 @@ class Law {
 	/**
 	 * Get repealed_by
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getRepealedBy() {
+	public function getRepealedBy(): ?Character {
 		return $this->repealed_by;
 	}
 
 	/**
 	 * Set association
 	 *
-	 * @param Association $association
+	 * @param Association|null $association
 	 *
 	 * @return Law
 	 */
-	public function setAssociation(Association $association = null) {
+	public function setAssociation(Association $association = null): static {
 		$this->association = $association;
 
 		return $this;
@@ -372,20 +374,20 @@ class Law {
 	/**
 	 * Get association
 	 *
-	 * @return Association
+	 * @return Association|null
 	 */
-	public function getAssociation() {
+	public function getAssociation(): ?Association {
 		return $this->association;
 	}
 
 	/**
 	 * Set settlement
 	 *
-	 * @param Settlement $settlement
+	 * @param Settlement|null $settlement
 	 *
 	 * @return Law
 	 */
-	public function setSettlement(Settlement $settlement = null) {
+	public function setSettlement(Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -394,20 +396,20 @@ class Law {
 	/**
 	 * Get settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getSettlement() {
+	public function getSettlement(): ?Settlement {
 		return $this->settlement;
 	}
 
 	/**
 	 * Set realm
 	 *
-	 * @param Realm $realm
+	 * @param Realm|null $realm
 	 *
 	 * @return Law
 	 */
-	public function setRealm(Realm $realm = null) {
+	public function setRealm(Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -416,20 +418,20 @@ class Law {
 	/**
 	 * Get realm
 	 *
-	 * @return Realm
+	 * @return Realm|null
 	 */
-	public function getRealm() {
+	public function getRealm(): ?Realm {
 		return $this->realm;
 	}
 
 	/**
 	 * Set type
 	 *
-	 * @param LawType $type
+	 * @param LawType|null $type
 	 *
 	 * @return Law
 	 */
-	public function setType(LawType $type = null) {
+	public function setType(LawType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -438,9 +440,9 @@ class Law {
 	/**
 	 * Get type
 	 *
-	 * @return LawType
+	 * @return LawType|null
 	 */
-	public function getType() {
+	public function getType(): ?LawType {
 		return $this->type;
 	}
 

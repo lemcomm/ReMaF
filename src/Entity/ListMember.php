@@ -2,232 +2,184 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class ListMember {
+	private int $priority;
+	private bool $allowed;
+	private bool $include_subs;
+	private int $id;
+	private ?Listing $listing;
+	private ?Realm $target_realm;
+	private ?Character $target_character;
+	private ?RealmPosition $target_position;
 
-/**
- * ListMember
- */
-class ListMember
-{
-    /**
-     * @var integer
-     */
-    private $priority;
+	/**
+	 * Set priority
+	 *
+	 * @param integer $priority
+	 *
+	 * @return ListMember
+	 */
+	public function setPriority(int $priority): static {
+		$this->priority = $priority;
 
-    /**
-     * @var boolean
-     */
-    private $allowed;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $include_subs;
+	/**
+	 * Get priority
+	 *
+	 * @return integer
+	 */
+	public function getPriority(): int {
+		return $this->priority;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set allowed
+	 *
+	 * @param boolean $allowed
+	 *
+	 * @return ListMember
+	 */
+	public function setAllowed(bool $allowed): static {
+		$this->allowed = $allowed;
 
-    /**
-     * @var \App\Entity\Listing
-     */
-    private $listing;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $target_realm;
+	/**
+	 * Get allowed
+	 *
+	 * @return boolean
+	 */
+	public function getAllowed(): bool {
+		return $this->allowed;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $target_character;
+	/**
+	 * Set include_subs
+	 *
+	 * @param boolean $includeSubs
+	 *
+	 * @return ListMember
+	 */
+	public function setIncludeSubs(bool $includeSubs): static {
+		$this->include_subs = $includeSubs;
 
-    /**
-     * @var \App\Entity\RealmPosition
-     */
-    private $target_position;
+		return $this;
+	}
 
+	/**
+	 * Get include_subs
+	 *
+	 * @return boolean
+	 */
+	public function getIncludeSubs(): bool {
+		return $this->include_subs;
+	}
 
-    /**
-     * Set priority
-     *
-     * @param integer $priority
-     * @return ListMember
-     */
-    public function setPriority($priority)
-    {
-        $this->priority = $priority;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set listing
+	 *
+	 * @param Listing|null $listing
+	 *
+	 * @return ListMember
+	 */
+	public function setListing(Listing $listing = null): static {
+		$this->listing = $listing;
 
-    /**
-     * Get priority
-     *
-     * @return integer 
-     */
-    public function getPriority()
-    {
-        return $this->priority;
-    }
+		return $this;
+	}
 
-    /**
-     * Set allowed
-     *
-     * @param boolean $allowed
-     * @return ListMember
-     */
-    public function setAllowed($allowed)
-    {
-        $this->allowed = $allowed;
+	/**
+	 * Get listing
+	 *
+	 * @return Listing|null
+	 */
+	public function getListing(): ?Listing {
+		return $this->listing;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set target_realm
+	 *
+	 * @param Realm|null $targetRealm
+	 *
+	 * @return ListMember
+	 */
+	public function setTargetRealm(Realm $targetRealm = null): static {
+		$this->target_realm = $targetRealm;
 
-    /**
-     * Get allowed
-     *
-     * @return boolean 
-     */
-    public function getAllowed()
-    {
-        return $this->allowed;
-    }
+		return $this;
+	}
 
-    /**
-     * Set include_subs
-     *
-     * @param boolean $includeSubs
-     * @return ListMember
-     */
-    public function setIncludeSubs($includeSubs)
-    {
-        $this->include_subs = $includeSubs;
+	/**
+	 * Get target_realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getTargetRealm(): ?Realm {
+		return $this->target_realm;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set target_character
+	 *
+	 * @param Character|null $targetCharacter
+	 *
+	 * @return ListMember
+	 */
+	public function setTargetCharacter(Character $targetCharacter = null): static {
+		$this->target_character = $targetCharacter;
 
-    /**
-     * Get include_subs
-     *
-     * @return boolean 
-     */
-    public function getIncludeSubs()
-    {
-        return $this->include_subs;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get target_character
+	 *
+	 * @return Character|null
+	 */
+	public function getTargetCharacter(): ?Character {
+		return $this->target_character;
+	}
 
-    /**
-     * Set listing
-     *
-     * @param \App\Entity\Listing $listing
-     * @return ListMember
-     */
-    public function setListing(\App\Entity\Listing $listing = null)
-    {
-        $this->listing = $listing;
+	/**
+	 * Set target_position
+	 *
+	 * @param RealmPosition|null $targetPosition
+	 *
+	 * @return ListMember
+	 */
+	public function setTargetPosition(RealmPosition $targetPosition = null): static {
+		$this->target_position = $targetPosition;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get listing
-     *
-     * @return \App\Entity\Listing 
-     */
-    public function getListing()
-    {
-        return $this->listing;
-    }
+	/**
+	 * Get target_position
+	 *
+	 * @return RealmPosition|null
+	 */
+	public function getTargetPosition(): ?RealmPosition {
+		return $this->target_position;
+	}
 
-    /**
-     * Set target_realm
-     *
-     * @param \App\Entity\Realm $targetRealm
-     * @return ListMember
-     */
-    public function setTargetRealm(\App\Entity\Realm $targetRealm = null)
-    {
-        $this->target_realm = $targetRealm;
+	public function isAllowed(): ?bool {
+		return $this->allowed;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get target_realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getTargetRealm()
-    {
-        return $this->target_realm;
-    }
-
-    /**
-     * Set target_character
-     *
-     * @param \App\Entity\Character $targetCharacter
-     * @return ListMember
-     */
-    public function setTargetCharacter(\App\Entity\Character $targetCharacter = null)
-    {
-        $this->target_character = $targetCharacter;
-
-        return $this;
-    }
-
-    /**
-     * Get target_character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getTargetCharacter()
-    {
-        return $this->target_character;
-    }
-
-    /**
-     * Set target_position
-     *
-     * @param \App\Entity\RealmPosition $targetPosition
-     * @return ListMember
-     */
-    public function setTargetPosition(\App\Entity\RealmPosition $targetPosition = null)
-    {
-        $this->target_position = $targetPosition;
-
-        return $this;
-    }
-
-    /**
-     * Get target_position
-     *
-     * @return \App\Entity\RealmPosition 
-     */
-    public function getTargetPosition()
-    {
-        return $this->target_position;
-    }
-
-    public function isAllowed(): ?bool
-    {
-        return $this->allowed;
-    }
-
-    public function isIncludeSubs(): ?bool
-    {
-        return $this->include_subs;
-    }
+	public function isIncludeSubs(): ?bool {
+		return $this->include_subs;
+	}
 }

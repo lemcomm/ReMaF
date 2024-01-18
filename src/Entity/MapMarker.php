@@ -2,195 +2,155 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
-/**
- * MapMarker
- */
-class MapMarker
-{
-    /**
-     * @var string
-     */
-    private $name;
+class MapMarker {
+	private string $name;
+	private string $type;
+	private ?Point $location;
+	private int $placed;
+	private int $id;
+	private ?Character $owner;
+	private ?Realm $realm;
 
-    /**
-     * @var string
-     */
-    private $type;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return MapMarker
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var point
-     */
-    private $location;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $placed;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set type
+	 *
+	 * @param string $type
+	 *
+	 * @return MapMarker
+	 */
+	public function setType(string $type): static {
+		$this->type = $type;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $owner;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
+	/**
+	 * Set location
+	 *
+	 * @param point $location
+	 *
+	 * @return MapMarker
+	 */
+	public function setLocation(Point $location): static {
+		$this->location = $location;
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return MapMarker
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get location
+	 *
+	 * @return Point|null
+	 */
+	public function getLocation(): ?Point {
+		return $this->location;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Set placed
+	 *
+	 * @param integer $placed
+	 *
+	 * @return MapMarker
+	 */
+	public function setPlaced(int $placed): static {
+		$this->placed = $placed;
 
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return MapMarker
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get placed
+	 *
+	 * @return integer
+	 */
+	public function getPlaced(): int {
+		return $this->placed;
+	}
 
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set location
-     *
-     * @param point $location
-     * @return MapMarker
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
+	/**
+	 * Set owner
+	 *
+	 * @param Character|null $owner
+	 *
+	 * @return MapMarker
+	 */
+	public function setOwner(Character $owner = null): static {
+		$this->owner = $owner;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get location
-     *
-     * @return point 
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
+	/**
+	 * Get owner
+	 *
+	 * @return Character|null
+	 */
+	public function getOwner(): ?Character {
+		return $this->owner;
+	}
 
-    /**
-     * Set placed
-     *
-     * @param integer $placed
-     * @return MapMarker
-     */
-    public function setPlaced($placed)
-    {
-        $this->placed = $placed;
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return MapMarker
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get placed
-     *
-     * @return integer 
-     */
-    public function getPlaced()
-    {
-        return $this->placed;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set owner
-     *
-     * @param \App\Entity\Character $owner
-     * @return MapMarker
-     */
-    public function setOwner(\App\Entity\Character $owner = null)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * Get owner
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
-
-    /**
-     * Set realm
-     *
-     * @param \App\Entity\Realm $realm
-     * @return MapMarker
-     */
-    public function setRealm(\App\Entity\Realm $realm = null)
-    {
-        $this->realm = $realm;
-
-        return $this;
-    }
-
-    /**
-     * Get realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getRealm()
-    {
-        return $this->realm;
-    }
+	/**
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
 }
