@@ -2,204 +2,161 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class Permission {
+	private string $class;
+	private string $name;
+	private ?string $translation_string;
+	private ?string $description;
+	private bool $use_value;
+	private bool $use_reserve;
+	private int $id;
 
-/**
- * Permission
- */
-class Permission
-{
-    /**
-     * @var string
-     */
-    private $class;
+	/**
+	 * Set class
+	 *
+	 * @param string $class
+	 *
+	 * @return Permission
+	 */
+	public function setClass(string $class): static {
+		$this->class = $class;
 
-    /**
-     * @var string
-     */
-    private $name;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $translation_string;
+	/**
+	 * Get class
+	 *
+	 * @return string
+	 */
+	public function getClass(): string {
+		return $this->class;
+	}
 
-    /**
-     * @var string
-     */
-    private $description;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return Permission
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var boolean
-     */
-    private $use_value;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $use_reserve;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set translation_string
+	 *
+	 * @param string|null $translationString
+	 *
+	 * @return Permission
+	 */
+	public function setTranslationString(?string $translationString): static {
+		$this->translation_string = $translationString;
 
+		return $this;
+	}
 
-    /**
-     * Set class
-     *
-     * @param string $class
-     * @return Permission
-     */
-    public function setClass($class)
-    {
-        $this->class = $class;
+	/**
+	 * Get translation_string
+	 *
+	 * @return string|null
+	 */
+	public function getTranslationString(): ?string {
+		return $this->translation_string;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set description
+	 *
+	 * @param string|null $description
+	 *
+	 * @return Permission
+	 */
+	public function setDescription(?string $description): static {
+		$this->description = $description;
 
-    /**
-     * Get class
-     *
-     * @return string 
-     */
-    public function getClass()
-    {
-        return $this->class;
-    }
+		return $this;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Permission
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Get description
+	 *
+	 * @return string|null
+	 */
+	public function getDescription(): ?string {
+		return $this->description;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set use_value
+	 *
+	 * @param boolean $useValue
+	 *
+	 * @return Permission
+	 */
+	public function setUseValue(bool $useValue): static {
+		$this->use_value = $useValue;
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+		return $this;
+	}
 
-    /**
-     * Set translation_string
-     *
-     * @param string $translationString
-     * @return Permission
-     */
-    public function setTranslationString($translationString)
-    {
-        $this->translation_string = $translationString;
+	/**
+	 * Get use_value
+	 *
+	 * @return boolean
+	 */
+	public function getUseValue(): bool {
+		return $this->use_value;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set use_reserve
+	 *
+	 * @param boolean $useReserve
+	 *
+	 * @return Permission
+	 */
+	public function setUseReserve(bool $useReserve): static {
+		$this->use_reserve = $useReserve;
 
-    /**
-     * Get translation_string
-     *
-     * @return string 
-     */
-    public function getTranslationString()
-    {
-        return $this->translation_string;
-    }
+		return $this;
+	}
 
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return Permission
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
+	/**
+	 * Get use_reserve
+	 *
+	 * @return boolean
+	 */
+	public function getUseReserve(): bool {
+		return $this->use_reserve;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get description
-     *
-     * @return string 
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
+	public function isUseValue(): ?bool {
+		return $this->use_value;
+	}
 
-    /**
-     * Set use_value
-     *
-     * @param boolean $useValue
-     * @return Permission
-     */
-    public function setUseValue($useValue)
-    {
-        $this->use_value = $useValue;
-
-        return $this;
-    }
-
-    /**
-     * Get use_value
-     *
-     * @return boolean 
-     */
-    public function getUseValue()
-    {
-        return $this->use_value;
-    }
-
-    /**
-     * Set use_reserve
-     *
-     * @param boolean $useReserve
-     * @return Permission
-     */
-    public function setUseReserve($useReserve)
-    {
-        $this->use_reserve = $useReserve;
-
-        return $this;
-    }
-
-    /**
-     * Get use_reserve
-     *
-     * @return boolean 
-     */
-    public function getUseReserve()
-    {
-        return $this->use_reserve;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function isUseValue(): ?bool
-    {
-        return $this->use_value;
-    }
-
-    public function isUseReserve(): ?bool
-    {
-        return $this->use_reserve;
-    }
+	public function isUseReserve(): ?bool {
+		return $this->use_reserve;
+	}
 }

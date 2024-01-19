@@ -2,63 +2,36 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 
-/**
- * NewsPaper
- */
 class NewsPaper
 {
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var \DateTime
-     */
-    private $created_at;
-
-    /**
-     * @var boolean
-     */
-    private $subscription;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $editors;
-
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $editions;
+	private string $name;
+	private DateTime $created_at;
+	private bool $subscription;
+	private int $id;
+	private Collection $editors;
+	private Collection $editions;
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->editors = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->editions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->editors = new ArrayCollection();
+        $this->editions = new ArrayCollection();
     }
 
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return NewsPaper
      */
-    public function setName($name)
-    {
+    public function setName(string $name): static {
         $this->name = $name;
 
         return $this;
@@ -69,19 +42,18 @@ class NewsPaper
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName(): string {
         return $this->name;
     }
 
     /**
      * Set created_at
      *
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
+     *
      * @return NewsPaper
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt(DateTime $createdAt): static {
         $this->created_at = $createdAt;
 
         return $this;
@@ -90,10 +62,9 @@ class NewsPaper
     /**
      * Get created_at
      *
-     * @return \DateTime 
+     * @return DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt(): DateTime {
         return $this->created_at;
     }
 
@@ -101,10 +72,10 @@ class NewsPaper
      * Set subscription
      *
      * @param boolean $subscription
+     *
      * @return NewsPaper
      */
-    public function setSubscription($subscription)
-    {
+    public function setSubscription(bool $subscription): static {
         $this->subscription = $subscription;
 
         return $this;
@@ -115,8 +86,7 @@ class NewsPaper
      *
      * @return boolean 
      */
-    public function getSubscription()
-    {
+    public function getSubscription(): bool {
         return $this->subscription;
     }
 
@@ -125,19 +95,18 @@ class NewsPaper
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
     /**
      * Add editors
      *
-     * @param \App\Entity\NewsEditor $editors
+     * @param NewsEditor $editors
+     *
      * @return NewsPaper
      */
-    public function addEditor(\App\Entity\NewsEditor $editors)
-    {
+    public function addEditor(NewsEditor $editors): static {
         $this->editors[] = $editors;
 
         return $this;
@@ -146,31 +115,29 @@ class NewsPaper
     /**
      * Remove editors
      *
-     * @param \App\Entity\NewsEditor $editors
+     * @param NewsEditor $editors
      */
-    public function removeEditor(\App\Entity\NewsEditor $editors)
-    {
+    public function removeEditor(NewsEditor $editors): void {
         $this->editors->removeElement($editors);
     }
 
-    /**
-     * Get editors
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getEditors()
-    {
+	/**
+	 * Get editors
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+    public function getEditors(): ArrayCollection|Collection {
         return $this->editors;
     }
 
     /**
      * Add editions
      *
-     * @param \App\Entity\NewsEdition $editions
+     * @param NewsEdition $editions
+     *
      * @return NewsPaper
      */
-    public function addEdition(\App\Entity\NewsEdition $editions)
-    {
+    public function addEdition(NewsEdition $editions): static {
         $this->editions[] = $editions;
 
         return $this;
@@ -179,20 +146,18 @@ class NewsPaper
     /**
      * Remove editions
      *
-     * @param \App\Entity\NewsEdition $editions
+     * @param NewsEdition $editions
      */
-    public function removeEdition(\App\Entity\NewsEdition $editions)
-    {
+    public function removeEdition(NewsEdition $editions): void {
         $this->editions->removeElement($editions);
     }
 
-    /**
-     * Get editions
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getEditions()
-    {
+	/**
+	 * Get editions
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+    public function getEditions(): ArrayCollection|Collection {
         return $this->editions;
     }
 

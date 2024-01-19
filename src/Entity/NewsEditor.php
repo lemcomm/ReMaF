@@ -2,214 +2,169 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class NewsEditor {
+	private bool $publisher;
+	private bool $author;
+	private bool $editor;
+	private bool $owner;
+	private int $id;
+	private ?Character $character;
+	private ?NewsPaper $paper;
 
-/**
- * NewsEditor
- */
-class NewsEditor
-{
-    /**
-     * @var boolean
-     */
-    private $publisher;
+	/**
+	 * Set publisher
+	 *
+	 * @param boolean $publisher
+	 *
+	 * @return NewsEditor
+	 */
+	public function setPublisher(bool $publisher): static {
+		$this->publisher = $publisher;
 
-    /**
-     * @var boolean
-     */
-    private $author;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $editor;
+	/**
+	 * Get publisher
+	 *
+	 * @return boolean
+	 */
+	public function getPublisher(): bool {
+		return $this->publisher;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $owner;
+	/**
+	 * Set author
+	 *
+	 * @param boolean $author
+	 *
+	 * @return NewsEditor
+	 */
+	public function setAuthor(bool $author): static {
+		$this->author = $author;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Get author
+	 *
+	 * @return boolean
+	 */
+	public function getAuthor(): bool {
+		return $this->author;
+	}
 
-    /**
-     * @var \App\Entity\NewsPaper
-     */
-    private $paper;
+	/**
+	 * Set editor
+	 *
+	 * @param boolean $editor
+	 *
+	 * @return NewsEditor
+	 */
+	public function setEditor(bool $editor): static {
+		$this->editor = $editor;
 
+		return $this;
+	}
 
-    /**
-     * Set publisher
-     *
-     * @param boolean $publisher
-     * @return NewsEditor
-     */
-    public function setPublisher($publisher)
-    {
-        $this->publisher = $publisher;
+	/**
+	 * Get editor
+	 *
+	 * @return boolean
+	 */
+	public function getEditor(): bool {
+		return $this->editor;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set owner
+	 *
+	 * @param boolean $owner
+	 *
+	 * @return NewsEditor
+	 */
+	public function setOwner(bool $owner): static {
+		$this->owner = $owner;
 
-    /**
-     * Get publisher
-     *
-     * @return boolean 
-     */
-    public function getPublisher()
-    {
-        return $this->publisher;
-    }
+		return $this;
+	}
 
-    /**
-     * Set author
-     *
-     * @param boolean $author
-     * @return NewsEditor
-     */
-    public function setAuthor($author)
-    {
-        $this->author = $author;
+	/**
+	 * Get owner
+	 *
+	 * @return boolean
+	 */
+	public function getOwner(): bool {
+		return $this->owner;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get author
-     *
-     * @return boolean 
-     */
-    public function getAuthor()
-    {
-        return $this->author;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return NewsEditor
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Set editor
-     *
-     * @param boolean $editor
-     * @return NewsEditor
-     */
-    public function setEditor($editor)
-    {
-        $this->editor = $editor;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
 
-    /**
-     * Get editor
-     *
-     * @return boolean 
-     */
-    public function getEditor()
-    {
-        return $this->editor;
-    }
+	/**
+	 * Set paper
+	 *
+	 * @param NewsPaper|null $paper
+	 *
+	 * @return NewsEditor
+	 */
+	public function setPaper(NewsPaper $paper = null): static {
+		$this->paper = $paper;
 
-    /**
-     * Set owner
-     *
-     * @param boolean $owner
-     * @return NewsEditor
-     */
-    public function setOwner($owner)
-    {
-        $this->owner = $owner;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get paper
+	 *
+	 * @return NewsPaper|null
+	 */
+	public function getPaper(): ?NewsPaper {
+		return $this->paper;
+	}
 
-    /**
-     * Get owner
-     *
-     * @return boolean 
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
+	public function isPublisher(): ?bool {
+		return $this->publisher;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	public function isAuthor(): ?bool {
+		return $this->author;
+	}
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return NewsEditor
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
+	public function isEditor(): ?bool {
+		return $this->editor;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set paper
-     *
-     * @param \App\Entity\NewsPaper $paper
-     * @return NewsEditor
-     */
-    public function setPaper(\App\Entity\NewsPaper $paper = null)
-    {
-        $this->paper = $paper;
-
-        return $this;
-    }
-
-    /**
-     * Get paper
-     *
-     * @return \App\Entity\NewsPaper 
-     */
-    public function getPaper()
-    {
-        return $this->paper;
-    }
-
-    public function isPublisher(): ?bool
-    {
-        return $this->publisher;
-    }
-
-    public function isAuthor(): ?bool
-    {
-        return $this->author;
-    }
-
-    public function isEditor(): ?bool
-    {
-        return $this->editor;
-    }
-
-    public function isOwner(): ?bool
-    {
-        return $this->owner;
-    }
+	public function isOwner(): ?bool {
+		return $this->owner;
+	}
 }

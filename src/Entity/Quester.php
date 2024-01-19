@@ -1,247 +1,201 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 
 class Quester {
+	private int $started;
+	private ?int $claim_completed;
+	private ?int $confirmed_completed;
+	private ?int $reward_received;
+	private string $owner_comment;
+	private string $quester_comment;
+	private int $id;
+	private Character $character;
+	private Quest $quest;
 
-    /**
-     * @var integer
-     */
-    private $started;
+	/**
+	 * Set started
+	 *
+	 * @param integer $started
+	 *
+	 * @return Quester
+	 */
+	public function setStarted(int $started): static {
+		$this->started = $started;
 
-    /**
-     * @var integer
-     */
-    private $claim_completed;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $confirmed_completed;
+	/**
+	 * Get started
+	 *
+	 * @return integer
+	 */
+	public function getStarted(): int {
+		return $this->started;
+	}
 
-    /**
-     * @var integer
-     */
-    private $reward_received;
+	/**
+	 * Set claim_completed
+	 *
+	 * @param int|null $claimCompleted
+	 *
+	 * @return Quester
+	 */
+	public function setClaimCompleted(?int $claimCompleted): static {
+		$this->claim_completed = $claimCompleted;
 
-    /**
-     * @var string
-     */
-    private $owner_comment;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $quester_comment;
+	/**
+	 * Get claim_completed
+	 *
+	 * @return int|null
+	 */
+	public function getClaimCompleted(): ?int {
+		return $this->claim_completed;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set confirmed_completed
+	 *
+	 * @param int|null $confirmedCompleted
+	 *
+	 * @return Quester
+	 */
+	public function setConfirmedCompleted(?int $confirmedCompleted): static {
+		$this->confirmed_completed = $confirmedCompleted;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Quest
-     */
-    private $quest;
+	/**
+	 * Get confirmed_completed
+	 *
+	 * @return int|null
+	 */
+	public function getConfirmedCompleted(): ?int {
+		return $this->confirmed_completed;
+	}
 
+	/**
+	 * Set reward_received
+	 *
+	 * @param int|null $rewardReceived
+	 *
+	 * @return Quester
+	 */
+	public function setRewardReceived(?int $rewardReceived): static {
+		$this->reward_received = $rewardReceived;
 
-    /**
-     * Set started
-     *
-     * @param integer $started
-     * @return Quester
-     */
-    public function setStarted($started)
-    {
-        $this->started = $started;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get reward_received
+	 *
+	 * @return int|null
+	 */
+	public function getRewardReceived(): ?int {
+		return $this->reward_received;
+	}
 
-    /**
-     * Get started
-     *
-     * @return integer 
-     */
-    public function getStarted()
-    {
-        return $this->started;
-    }
+	/**
+	 * Set owner_comment
+	 *
+	 * @param string $ownerComment
+	 *
+	 * @return Quester
+	 */
+	public function setOwnerComment(string $ownerComment): static {
+		$this->owner_comment = $ownerComment;
 
-    /**
-     * Set claim_completed
-     *
-     * @param integer $claimCompleted
-     * @return Quester
-     */
-    public function setClaimCompleted($claimCompleted)
-    {
-        $this->claim_completed = $claimCompleted;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get owner_comment
+	 *
+	 * @return string
+	 */
+	public function getOwnerComment(): string {
+		return $this->owner_comment;
+	}
 
-    /**
-     * Get claim_completed
-     *
-     * @return integer 
-     */
-    public function getClaimCompleted()
-    {
-        return $this->claim_completed;
-    }
+	/**
+	 * Set quester_comment
+	 *
+	 * @param string $questerComment
+	 *
+	 * @return Quester
+	 */
+	public function setQuesterComment(string $questerComment): static {
+		$this->quester_comment = $questerComment;
 
-    /**
-     * Set confirmed_completed
-     *
-     * @param integer $confirmedCompleted
-     * @return Quester
-     */
-    public function setConfirmedCompleted($confirmedCompleted)
-    {
-        $this->confirmed_completed = $confirmedCompleted;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get quester_comment
+	 *
+	 * @return string
+	 */
+	public function getQuesterComment(): string {
+		return $this->quester_comment;
+	}
 
-    /**
-     * Get confirmed_completed
-     *
-     * @return integer 
-     */
-    public function getConfirmedCompleted()
-    {
-        return $this->confirmed_completed;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set reward_received
-     *
-     * @param integer $rewardReceived
-     * @return Quester
-     */
-    public function setRewardReceived($rewardReceived)
-    {
-        $this->reward_received = $rewardReceived;
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return Quester
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get reward_received
-     *
-     * @return integer 
-     */
-    public function getRewardReceived()
-    {
-        return $this->reward_received;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-    /**
-     * Set owner_comment
-     *
-     * @param string $ownerComment
-     * @return Quester
-     */
-    public function setOwnerComment($ownerComment)
-    {
-        $this->owner_comment = $ownerComment;
+	/**
+	 * Set quest
+	 *
+	 * @param Quest|null $quest
+	 *
+	 * @return Quester
+	 */
+	public function setQuest(Quest $quest = null): static {
+		$this->quest = $quest;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get owner_comment
-     *
-     * @return string 
-     */
-    public function getOwnerComment()
-    {
-        return $this->owner_comment;
-    }
-
-    /**
-     * Set quester_comment
-     *
-     * @param string $questerComment
-     * @return Quester
-     */
-    public function setQuesterComment($questerComment)
-    {
-        $this->quester_comment = $questerComment;
-
-        return $this;
-    }
-
-    /**
-     * Get quester_comment
-     *
-     * @return string 
-     */
-    public function getQuesterComment()
-    {
-        return $this->quester_comment;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return Quester
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
-
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set quest
-     *
-     * @param \App\Entity\Quest $quest
-     * @return Quester
-     */
-    public function setQuest(\App\Entity\Quest $quest = null)
-    {
-        $this->quest = $quest;
-
-        return $this;
-    }
-
-    /**
-     * Get quest
-     *
-     * @return \App\Entity\Quest 
-     */
-    public function getQuest()
-    {
-        return $this->quest;
-    }
+	/**
+	 * Get quest
+	 *
+	 * @return Quest
+	 */
+	public function getQuest(): Quest {
+		return $this->quest;
+	}
 }

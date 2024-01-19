@@ -1,259 +1,215 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 
 class NewsEdition {
+	public function isPublished(): DateTime {
+		return $this->getPublished();
+	}
 
+	private int $number;
+	private bool $collection;
+	private ?int $published_cycle;
+	private ?DateTime $published;
+	private int $id;
+	private Collection $articles;
+	private Collection $readers;
+	private ?NewsPaper $paper;
 
-	public function isPublished() {
-            		return $this->getPublished();
-            	}
-    /**
-     * @var integer
-     */
-    private $number;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->articles = new ArrayCollection();
+		$this->readers = new ArrayCollection();
+	}
 
-    /**
-     * @var boolean
-     */
-    private $collection;
+	/**
+	 * Set number
+	 *
+	 * @param integer $number
+	 *
+	 * @return NewsEdition
+	 */
+	public function setNumber(int $number): static {
+		$this->number = $number;
 
-    /**
-     * @var integer
-     */
-    private $published_cycle;
+		return $this;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $published;
+	/**
+	 * Get number
+	 *
+	 * @return integer
+	 */
+	public function getNumber(): int {
+		return $this->number;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set collection
+	 *
+	 * @param boolean $collection
+	 *
+	 * @return NewsEdition
+	 */
+	public function setCollection(bool $collection): static {
+		$this->collection = $collection;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $articles;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $readers;
+	/**
+	 * Get collection
+	 *
+	 * @return boolean
+	 */
+	public function getCollection(): bool {
+		return $this->collection;
+	}
 
-    /**
-     * @var \App\Entity\NewsPaper
-     */
-    private $paper;
+	/**
+	 * Set published_cycle
+	 *
+	 * @param integer|null $publishedCycle
+	 *
+	 * @return NewsEdition
+	 */
+	public function setPublishedCycle(?int $publishedCycle): static {
+		$this->published_cycle = $publishedCycle;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->articles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->readers = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+		return $this;
+	}
 
-    /**
-     * Set number
-     *
-     * @param integer $number
-     * @return NewsEdition
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
+	/**
+	 * Get published_cycle
+	 *
+	 * @return int|null
+	 */
+	public function getPublishedCycle(): ?int {
+		return $this->published_cycle;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set published
+	 *
+	 * @param DateTime|null $published
+	 *
+	 * @return NewsEdition
+	 */
+	public function setPublished(?DateTime $published): static {
+		$this->published = $published;
 
-    /**
-     * Get number
-     *
-     * @return integer 
-     */
-    public function getNumber()
-    {
-        return $this->number;
-    }
+		return $this;
+	}
 
-    /**
-     * Set collection
-     *
-     * @param boolean $collection
-     * @return NewsEdition
-     */
-    public function setCollection($collection)
-    {
-        $this->collection = $collection;
+	/**
+	 * Get published
+	 *
+	 * @return DateTime|null
+	 */
+	public function getPublished(): ?DateTime {
+		return $this->published;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get collection
-     *
-     * @return boolean 
-     */
-    public function getCollection()
-    {
-        return $this->collection;
-    }
+	/**
+	 * Add articles
+	 *
+	 * @param NewsArticle $articles
+	 *
+	 * @return NewsEdition
+	 */
+	public function addArticle(NewsArticle $articles): static {
+		$this->articles[] = $articles;
 
-    /**
-     * Set published_cycle
-     *
-     * @param integer|null $publishedCycle
-     * @return NewsEdition
-     */
-    public function setPublishedCycle($publishedCycle)
-    {
-        $this->published_cycle = $publishedCycle;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Remove articles
+	 *
+	 * @param NewsArticle $articles
+	 */
+	public function removeArticle(NewsArticle $articles): void {
+		$this->articles->removeElement($articles);
+	}
 
-    /**
-     * Get published_cycle
-     *
-     * @return integer 
-     */
-    public function getPublishedCycle()
-    {
-        return $this->published_cycle;
-    }
+	/**
+	 * Get articles
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getArticles(): ArrayCollection|Collection {
+		return $this->articles;
+	}
 
-    /**
-     * Set published
-     *
-     * @param \DateTime|null $published
-     * @return NewsEdition
-     */
-    public function setPublished($published)
-    {
-        $this->published = $published;
+	/**
+	 * Add readers
+	 *
+	 * @param NewsReader $readers
+	 *
+	 * @return NewsEdition
+	 */
+	public function addReader(NewsReader $readers): static {
+		$this->readers[] = $readers;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get published
-     *
-     * @return \DateTime 
-     */
-    public function getPublished()
-    {
-        return $this->published;
-    }
+	/**
+	 * Remove readers
+	 *
+	 * @param NewsReader $readers
+	 */
+	public function removeReader(NewsReader $readers): void {
+		$this->readers->removeElement($readers);
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get readers
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getReaders(): ArrayCollection|Collection {
+		return $this->readers;
+	}
 
-    /**
-     * Add articles
-     *
-     * @param \App\Entity\NewsArticle $articles
-     * @return NewsEdition
-     */
-    public function addArticle(\App\Entity\NewsArticle $articles)
-    {
-        $this->articles[] = $articles;
+	/**
+	 * Set paper
+	 *
+	 * @param NewsPaper|null $paper
+	 *
+	 * @return NewsEdition
+	 */
+	public function setPaper(NewsPaper $paper = null): static {
+		$this->paper = $paper;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove articles
-     *
-     * @param \App\Entity\NewsArticle $articles
-     */
-    public function removeArticle(\App\Entity\NewsArticle $articles)
-    {
-        $this->articles->removeElement($articles);
-    }
+	/**
+	 * Get paper
+	 *
+	 * @return NewsPaper|null
+	 */
+	public function getPaper(): ?NewsPaper {
+		return $this->paper;
+	}
 
-    /**
-     * Get articles
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getArticles()
-    {
-        return $this->articles;
-    }
-
-    /**
-     * Add readers
-     *
-     * @param \App\Entity\NewsReader $readers
-     * @return NewsEdition
-     */
-    public function addReader(\App\Entity\NewsReader $readers)
-    {
-        $this->readers[] = $readers;
-
-        return $this;
-    }
-
-    /**
-     * Remove readers
-     *
-     * @param \App\Entity\NewsReader $readers
-     */
-    public function removeReader(\App\Entity\NewsReader $readers)
-    {
-        $this->readers->removeElement($readers);
-    }
-
-    /**
-     * Get readers
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getReaders()
-    {
-        return $this->readers;
-    }
-
-    /**
-     * Set paper
-     *
-     * @param \App\Entity\NewsPaper $paper
-     * @return NewsEdition
-     */
-    public function setPaper(\App\Entity\NewsPaper $paper = null)
-    {
-        $this->paper = $paper;
-
-        return $this;
-    }
-
-    /**
-     * Get paper
-     *
-     * @return \App\Entity\NewsPaper 
-     */
-    public function getPaper()
-    {
-        return $this->paper;
-    }
-
-    public function isCollection(): ?bool
-    {
-        return $this->collection;
-    }
+	public function isCollection(): ?bool {
+		return $this->collection;
+	}
 }

@@ -2,115 +2,88 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class NameList {
+	private string $name;
+	private ?bool $male;
+	private int $id;
+	private ?Culture $culture;
 
-/**
- * NameList
- */
-class NameList
-{
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return NameList
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var boolean
-     */
-    private $male;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var \App\Entity\Culture
-     */
-    private $culture;
+	/**
+	 * Set male
+	 *
+	 * @param bool|null $male
+	 *
+	 * @return NameList
+	 */
+	public function setMale(?bool $male): static {
+		$this->male = $male;
 
+		return $this;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return NameList
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Get male
+	 *
+	 * @return bool|null
+	 */
+	public function getMale(): ?bool {
+		return $this->male;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Set culture
+	 *
+	 * @param Culture|null $culture
+	 *
+	 * @return NameList
+	 */
+	public function setCulture(Culture $culture = null): static {
+		$this->culture = $culture;
 
-    /**
-     * Set male
-     *
-     * @param boolean $male
-     * @return NameList
-     */
-    public function setMale($male)
-    {
-        $this->male = $male;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get culture
+	 *
+	 * @return Culture|null
+	 */
+	public function getCulture(): ?Culture {
+		return $this->culture;
+	}
 
-    /**
-     * Get male
-     *
-     * @return boolean 
-     */
-    public function getMale()
-    {
-        return $this->male;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set culture
-     *
-     * @param \App\Entity\Culture $culture
-     * @return NameList
-     */
-    public function setCulture(\App\Entity\Culture $culture = null)
-    {
-        $this->culture = $culture;
-
-        return $this;
-    }
-
-    /**
-     * Get culture
-     *
-     * @return \App\Entity\Culture 
-     */
-    public function getCulture()
-    {
-        return $this->culture;
-    }
-
-    public function isMale(): ?bool
-    {
-        return $this->male;
-    }
+	public function isMale(): ?bool {
+		return $this->male;
+	}
 }

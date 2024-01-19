@@ -3,77 +3,60 @@
 namespace App\Entity;
 
 class PlaceSubType {
+	private string $name;
+	private int $id;
+	private ?PlaceType $place_type;
 
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return PlaceSubType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var string
-     */
-    private $name;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var \App\Entity\PlaceType
-     */
-    private $place_type;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
+	/**
+	 * Set place_type
+	 *
+	 * @param PlaceType|null $placeType
+	 *
+	 * @return PlaceSubType
+	 */
+	public function setPlaceType(PlaceType $placeType = null): static {
+		$this->place_type = $placeType;
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return PlaceSubType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set place_type
-     *
-     * @param \App\Entity\PlaceType $placeType
-     * @return PlaceSubType
-     */
-    public function setPlaceType(\App\Entity\PlaceType $placeType = null)
-    {
-        $this->place_type = $placeType;
-
-        return $this;
-    }
-
-    /**
-     * Get place_type
-     *
-     * @return \App\Entity\PlaceType 
-     */
-    public function getPlaceType()
-    {
-        return $this->place_type;
-    }
+	/**
+	 * Get place_type
+	 *
+	 * @return PlaceType
+	 */
+	public function getPlaceType(): PlaceType {
+		return $this->place_type;
+	}
 }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
@@ -6,319 +6,237 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class PlaceType {
+	private string $name;
+	private ?string $requires;
+	private bool $visible;
+	private ?bool $defensible;
+	private ?bool $public;
+	private ?bool $spawnable;
+	private ?bool $vassals;
+	private ?bool $associations;
+	private int $id;
+	private Collection $subtypes;
 
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->subtypes = new ArrayCollection();
+	}
 
-    /**
-     * @var string
-     */
-    private $requires;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return PlaceType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var boolean
-     */
-    private $visible;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $defensible;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $public;
+	/**
+	 * Set requires
+	 *
+	 * @param string|null $requires
+	 *
+	 * @return PlaceType
+	 */
+	public function setRequires(?string $requires): static {
+		$this->requires = $requires;
 
-    /**
-     * @var boolean
-     */
-    private $spawnable;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $vassals;
+	/**
+	 * Get requires
+	 *
+	 * @return string
+	 */
+	public function getRequires(): string {
+		return $this->requires;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $associations;
+	/**
+	 * Set visible
+	 *
+	 * @param boolean $visible
+	 *
+	 * @return PlaceType
+	 */
+	public function setVisible(bool $visible): static {
+		$this->visible = $visible;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $subtypes;
+	/**
+	 * Get visible
+	 *
+	 * @return boolean
+	 */
+	public function getVisible(): bool {
+		return $this->visible;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->subtypes = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Set defensible
+	 *
+	 * @param bool|null $defensible
+	 *
+	 * @return PlaceType
+	 */
+	public function setDefensible(?bool $defensible): static {
+		$this->defensible = $defensible;
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return PlaceType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get defensible
+	 *
+	 * @return boolean
+	 */
+	public function getDefensible(): bool {
+		return $this->defensible;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Set public
+	 *
+	 * @param bool|null $public
+	 *
+	 * @return PlaceType
+	 */
+	public function setPublic(?bool $public): static {
+		$this->public = $public;
 
-    /**
-     * Set requires
-     *
-     * @param string $requires
-     * @return PlaceType
-     */
-    public function setRequires($requires)
-    {
-        $this->requires = $requires;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get public
+	 *
+	 * @return boolean
+	 */
+	public function getPublic(): bool {
+		return $this->public;
+	}
 
-    /**
-     * Get requires
-     *
-     * @return string 
-     */
-    public function getRequires()
-    {
-        return $this->requires;
-    }
+	/**
+	 * Set spawnable
+	 *
+	 * @param bool|null $spawnable
+	 *
+	 * @return PlaceType
+	 */
+	public function setSpawnable(?bool $spawnable): static {
+		$this->spawnable = $spawnable;
 
-    /**
-     * Set visible
-     *
-     * @param boolean $visible
-     * @return PlaceType
-     */
-    public function setVisible($visible)
-    {
-        $this->visible = $visible;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get spawnable
+	 *
+	 * @return boolean
+	 */
+	public function getSpawnable(): bool {
+		return $this->spawnable;
+	}
 
-    /**
-     * Get visible
-     *
-     * @return boolean 
-     */
-    public function getVisible()
-    {
-        return $this->visible;
-    }
+	/**
+	 * Set vassals
+	 *
+	 * @param bool|null $vassals
+	 *
+	 * @return PlaceType
+	 */
+	public function setVassals(?bool $vassals): static {
+		$this->vassals = $vassals;
 
-    /**
-     * Set defensible
-     *
-     * @param boolean $defensible
-     * @return PlaceType
-     */
-    public function setDefensible($defensible)
-    {
-        $this->defensible = $defensible;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get vassals
+	 *
+	 * @return boolean
+	 */
+	public function getVassals(): bool {
+		return $this->vassals;
+	}
 
-    /**
-     * Get defensible
-     *
-     * @return boolean 
-     */
-    public function getDefensible()
-    {
-        return $this->defensible;
-    }
+	/**
+	 * Set associations
+	 *
+	 * @param bool|null $associations
+	 *
+	 * @return PlaceType
+	 */
+	public function setAssociations(?bool $associations): static {
+		$this->associations = $associations;
 
-    /**
-     * Set public
-     *
-     * @param boolean $public
-     * @return PlaceType
-     */
-    public function setPublic($public)
-    {
-        $this->public = $public;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get associations
+	 *
+	 * @return boolean
+	 */
+	public function getAssociations(): bool {
+		return $this->associations;
+	}
 
-    /**
-     * Get public
-     *
-     * @return boolean 
-     */
-    public function getPublic()
-    {
-        return $this->public;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set spawnable
-     *
-     * @param boolean $spawnable
-     * @return PlaceType
-     */
-    public function setSpawnable($spawnable)
-    {
-        $this->spawnable = $spawnable;
+	/**
+	 * Add subtypes
+	 *
+	 * @param PlaceSubType $subtypes
+	 *
+	 * @return PlaceType
+	 */
+	public function addSubtype(PlaceSubType $subtypes): static {
+		$this->subtypes[] = $subtypes;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get spawnable
-     *
-     * @return boolean 
-     */
-    public function getSpawnable()
-    {
-        return $this->spawnable;
-    }
+	/**
+	 * Remove subtypes
+	 *
+	 * @param PlaceSubType $subtypes
+	 */
+	public function removeSubtype(PlaceSubType $subtypes): void {
+		$this->subtypes->removeElement($subtypes);
+	}
 
-    /**
-     * Set vassals
-     *
-     * @param boolean $vassals
-     * @return PlaceType
-     */
-    public function setVassals($vassals)
-    {
-        $this->vassals = $vassals;
-
-        return $this;
-    }
-
-    /**
-     * Get vassals
-     *
-     * @return boolean 
-     */
-    public function getVassals()
-    {
-        return $this->vassals;
-    }
-
-    /**
-     * Set associations
-     *
-     * @param boolean $associations
-     * @return PlaceType
-     */
-    public function setAssociations($associations)
-    {
-        $this->associations = $associations;
-
-        return $this;
-    }
-
-    /**
-     * Get associations
-     *
-     * @return boolean 
-     */
-    public function getAssociations()
-    {
-        return $this->associations;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Add subtypes
-     *
-     * @param \App\Entity\PlaceSubType $subtypes
-     * @return PlaceType
-     */
-    public function addSubtype(\App\Entity\PlaceSubType $subtypes)
-    {
-        $this->subtypes[] = $subtypes;
-
-        return $this;
-    }
-
-    /**
-     * Remove subtypes
-     *
-     * @param \App\Entity\PlaceSubType $subtypes
-     */
-    public function removeSubtype(\App\Entity\PlaceSubType $subtypes)
-    {
-        $this->subtypes->removeElement($subtypes);
-    }
-
-    /**
-     * Get subtypes
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getSubtypes()
-    {
-        return $this->subtypes;
-    }
-
-    public function isVisible(): ?bool
-    {
-        return $this->visible;
-    }
-
-    public function isDefensible(): ?bool
-    {
-        return $this->defensible;
-    }
-
-    public function isPublic(): ?bool
-    {
-        return $this->public;
-    }
-
-    public function isSpawnable(): ?bool
-    {
-        return $this->spawnable;
-    }
-
-    public function isVassals(): ?bool
-    {
-        return $this->vassals;
-    }
-
-    public function isAssociations(): ?bool
-    {
-        return $this->associations;
-    }
+	/**
+	 * Get subtypes
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getSubtypes(): ArrayCollection|Collection {
+		return $this->subtypes;
+	}
 }

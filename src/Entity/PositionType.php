@@ -1,83 +1,66 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 class PositionType {
+	private string $name;
+	private bool $hidden;
+	private int $id;
 
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return PositionType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var boolean
-     */
-    private $hidden;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
+	/**
+	 * Set hidden
+	 *
+	 * @param boolean $hidden
+	 *
+	 * @return PositionType
+	 */
+	public function setHidden(bool $hidden): static {
+		$this->hidden = $hidden;
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return PositionType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get hidden
+	 *
+	 * @return boolean
+	 */
+	public function getHidden(): bool {
+		return $this->hidden;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set hidden
-     *
-     * @param boolean $hidden
-     * @return PositionType
-     */
-    public function setHidden($hidden)
-    {
-        $this->hidden = $hidden;
-
-        return $this;
-    }
-
-    /**
-     * Get hidden
-     *
-     * @return boolean 
-     */
-    public function getHidden()
-    {
-        return $this->hidden;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function isHidden(): ?bool
-    {
-        return $this->hidden;
-    }
+	public function isHidden(): ?bool {
+		return $this->hidden;
+	}
 }

@@ -2,148 +2,115 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class NewsReader {
+	private bool $read;
+	private bool $updated;
+	private int $id;
+	private ?Character $character;
+	private ?NewsEdition $edition;
 
-/**
- * NewsReader
- */
-class NewsReader
-{
-    /**
-     * @var boolean
-     */
-    private $read;
+	/**
+	 * Set read
+	 *
+	 * @param boolean $read
+	 *
+	 * @return NewsReader
+	 */
+	public function setRead(bool $read): static {
+		$this->read = $read;
 
-    /**
-     * @var boolean
-     */
-    private $updated;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get read
+	 *
+	 * @return boolean
+	 */
+	public function getRead(): bool {
+		return $this->read;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Set updated
+	 *
+	 * @param boolean $updated
+	 *
+	 * @return NewsReader
+	 */
+	public function setUpdated(bool $updated): static {
+		$this->updated = $updated;
 
-    /**
-     * @var \App\Entity\NewsEdition
-     */
-    private $edition;
+		return $this;
+	}
 
+	/**
+	 * Get updated
+	 *
+	 * @return boolean
+	 */
+	public function getUpdated(): bool {
+		return $this->updated;
+	}
 
-    /**
-     * Set read
-     *
-     * @param boolean $read
-     * @return NewsReader
-     */
-    public function setRead($read)
-    {
-        $this->read = $read;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return NewsReader
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Get read
-     *
-     * @return boolean 
-     */
-    public function getRead()
-    {
-        return $this->read;
-    }
+		return $this;
+	}
 
-    /**
-     * Set updated
-     *
-     * @param boolean $updated
-     * @return NewsReader
-     */
-    public function setUpdated($updated)
-    {
-        $this->updated = $updated;
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set edition
+	 *
+	 * @param NewsEdition|null $edition
+	 *
+	 * @return NewsReader
+	 */
+	public function setEdition(NewsEdition $edition = null): static {
+		$this->edition = $edition;
 
-    /**
-     * Get updated
-     *
-     * @return boolean 
-     */
-    public function getUpdated()
-    {
-        return $this->updated;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get edition
+	 *
+	 * @return NewsEdition|null
+	 */
+	public function getEdition(): ?NewsEdition {
+		return $this->edition;
+	}
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return NewsReader
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
+	public function isRead(): ?bool {
+		return $this->read;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set edition
-     *
-     * @param \App\Entity\NewsEdition $edition
-     * @return NewsReader
-     */
-    public function setEdition(\App\Entity\NewsEdition $edition = null)
-    {
-        $this->edition = $edition;
-
-        return $this;
-    }
-
-    /**
-     * Get edition
-     *
-     * @return \App\Entity\NewsEdition 
-     */
-    public function getEdition()
-    {
-        return $this->edition;
-    }
-
-    public function isRead(): ?bool
-    {
-        return $this->read;
-    }
-
-    public function isUpdated(): ?bool
-    {
-        return $this->updated;
-    }
+	public function isUpdated(): ?bool {
+		return $this->updated;
+	}
 }

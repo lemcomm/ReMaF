@@ -2,70 +2,56 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
+use DateTimeInterface;
 
-class NetExit
-{
-    private ?\DateTimeInterface $ts = null;
+class NetExit {
+	private DateTimeInterface $ts;
+	private ?DateTimeInterface $last_seen = null;
+	private string $ip;
+	private string $type;
+	private int $id;
 
-    private ?\DateTimeInterface $last_seen = null;
+	public function getTs(): ?DateTimeInterface {
+		return $this->ts;
+	}
 
-    private ?string $ip = null;
+	public function setTs(DateTimeInterface $ts): static {
+		$this->ts = $ts;
 
-    private ?string $type = null;
+		return $this;
+	}
 
-    private ?int $id = null;
+	public function getLastSeen(): ?DateTimeInterface {
+		return $this->last_seen;
+	}
 
-    public function getTs(): ?\DateTimeInterface
-    {
-        return $this->ts;
-    }
+	public function setLastSeen(?DateTimeInterface $last_seen): static {
+		$this->last_seen = $last_seen;
 
-    public function setTs(\DateTimeInterface $ts): static
-    {
-        $this->ts = $ts;
+		return $this;
+	}
 
-        return $this;
-    }
+	public function getIp(): ?string {
+		return $this->ip;
+	}
 
-    public function getLastSeen(): ?\DateTimeInterface
-    {
-        return $this->last_seen;
-    }
+	public function setIp(string $ip): static {
+		$this->ip = $ip;
 
-    public function setLastSeen(?\DateTimeInterface $last_seen): static
-    {
-        $this->last_seen = $last_seen;
+		return $this;
+	}
 
-        return $this;
-    }
+	public function getType(): ?string {
+		return $this->type;
+	}
 
-    public function getIp(): ?string
-    {
-        return $this->ip;
-    }
+	public function setType(string $type): static {
+		$this->type = $type;
 
-    public function setIp(string $ip): static
-    {
-        $this->ip = $ip;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+	public function getId(): ?int {
+		return $this->id;
+	}
 }

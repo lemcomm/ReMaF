@@ -2,222 +2,51 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class SettlementPermission extends PermissionBase {
+	private ?Settlement $settlement;
+	private ?Settlement $occupied_settlement;
 
-/**
- * SettlementPermission
- */
-class SettlementPermission
-{
-    /**
-     * @var integer
-     */
-    private $value;
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return SettlementPermission
+	 */
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
 
-    /**
-     * @var integer
-     */
-    private $value_remaining;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $reserve;
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement|null
+	 */
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set occupied_settlement
+	 *
+	 * @param Settlement|null $occupiedSettlement
+	 *
+	 * @return SettlementPermission
+	 */
+	public function setOccupiedSettlement(Settlement $occupiedSettlement = null): static {
+		$this->occupied_settlement = $occupiedSettlement;
 
-    /**
-     * @var \App\Entity\Permission
-     */
-    private $permission;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $occupied_settlement;
-
-    /**
-     * @var \App\Entity\Listing
-     */
-    private $listing;
-
-
-    /**
-     * Set value
-     *
-     * @param integer $value
-     * @return SettlementPermission
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get value
-     *
-     * @return integer 
-     */
-    public function getValue()
-    {
-        return $this->value;
-    }
-
-    /**
-     * Set value_remaining
-     *
-     * @param integer $valueRemaining
-     * @return SettlementPermission
-     */
-    public function setValueRemaining($valueRemaining)
-    {
-        $this->value_remaining = $valueRemaining;
-
-        return $this;
-    }
-
-    /**
-     * Get value_remaining
-     *
-     * @return integer 
-     */
-    public function getValueRemaining()
-    {
-        return $this->value_remaining;
-    }
-
-    /**
-     * Set reserve
-     *
-     * @param integer $reserve
-     * @return SettlementPermission
-     */
-    public function setReserve($reserve)
-    {
-        $this->reserve = $reserve;
-
-        return $this;
-    }
-
-    /**
-     * Get reserve
-     *
-     * @return integer 
-     */
-    public function getReserve()
-    {
-        return $this->reserve;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set permission
-     *
-     * @param \App\Entity\Permission $permission
-     * @return SettlementPermission
-     */
-    public function setPermission(\App\Entity\Permission $permission = null)
-    {
-        $this->permission = $permission;
-
-        return $this;
-    }
-
-    /**
-     * Get permission
-     *
-     * @return \App\Entity\Permission 
-     */
-    public function getPermission()
-    {
-        return $this->permission;
-    }
-
-    /**
-     * Set settlement
-     *
-     * @param \App\Entity\Settlement $settlement
-     * @return SettlementPermission
-     */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
-        $this->settlement = $settlement;
-
-        return $this;
-    }
-
-    /**
-     * Get settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getSettlement()
-    {
-        return $this->settlement;
-    }
-
-    /**
-     * Set occupied_settlement
-     *
-     * @param \App\Entity\Settlement $occupiedSettlement
-     * @return SettlementPermission
-     */
-    public function setOccupiedSettlement(\App\Entity\Settlement $occupiedSettlement = null)
-    {
-        $this->occupied_settlement = $occupiedSettlement;
-
-        return $this;
-    }
-
-    /**
-     * Get occupied_settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getOccupiedSettlement()
-    {
-        return $this->occupied_settlement;
-    }
-
-    /**
-     * Set listing
-     *
-     * @param \App\Entity\Listing $listing
-     * @return SettlementPermission
-     */
-    public function setListing(\App\Entity\Listing $listing = null)
-    {
-        $this->listing = $listing;
-
-        return $this;
-    }
-
-    /**
-     * Get listing
-     *
-     * @return \App\Entity\Listing 
-     */
-    public function getListing()
-    {
-        return $this->listing;
-    }
+	/**
+	 * Get occupied_settlement
+	 *
+	 * @return Settlement|null
+	 */
+	public function getOccupiedSettlement(): ?Settlement {
+		return $this->occupied_settlement;
+	}
 }

@@ -2,335 +2,270 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * NewsArticle
- */
-class NewsArticle
-{
-    /**
-     * @var \DateTime
-     */
-    private $written;
+class NewsArticle {
+	private DateTime $written;
+	private ?DateTime $updated;
+	private string $title;
+	private string $content;
+	private int $position;
+	private int $row;
+	private int $col;
+	private int $size_x;
+	private int $size_y;
+	private int $id;
+	private ?Character $author;
+	private ?NewsEdition $edition;
 
-    /**
-     * @var \DateTime
-     */
-    private $updated;
+	/**
+	 * Set written
+	 *
+	 * @param DateTime $written
+	 *
+	 * @return NewsArticle
+	 */
+	public function setWritten(DateTime $written): static {
+		$this->written = $written;
 
-    /**
-     * @var string
-     */
-    private $title;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $content;
+	/**
+	 * Get written
+	 *
+	 * @return DateTime
+	 */
+	public function getWritten(): DateTime {
+		return $this->written;
+	}
 
-    /**
-     * @var integer
-     */
-    private $position;
+	/**
+	 * Set updated
+	 *
+	 * @param DateTime|null $updated
+	 *
+	 * @return NewsArticle
+	 */
+	public function setUpdated(?DateTime $updated): static {
+		$this->updated = $updated;
 
-    /**
-     * @var integer
-     */
-    private $row;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $col;
+	/**
+	 * Get updated
+	 *
+	 * @return DateTime|null
+	 */
+	public function getUpdated(): ?DateTime {
+		return $this->updated;
+	}
 
-    /**
-     * @var integer
-     */
-    private $size_x;
+	/**
+	 * Set title
+	 *
+	 * @param string $title
+	 *
+	 * @return NewsArticle
+	 */
+	public function setTitle(string $title): static {
+		$this->title = $title;
 
-    /**
-     * @var integer
-     */
-    private $size_y;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get title
+	 *
+	 * @return string
+	 */
+	public function getTitle(): string {
+		return $this->title;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $author;
+	/**
+	 * Set content
+	 *
+	 * @param string $content
+	 *
+	 * @return NewsArticle
+	 */
+	public function setContent(string $content): static {
+		$this->content = $content;
 
-    /**
-     * @var \App\Entity\NewsEdition
-     */
-    private $edition;
+		return $this;
+	}
 
+	/**
+	 * Get content
+	 *
+	 * @return string
+	 */
+	public function getContent(): string {
+		return $this->content;
+	}
 
-    /**
-     * Set written
-     *
-     * @param \DateTime $written
-     * @return NewsArticle
-     */
-    public function setWritten($written)
-    {
-        $this->written = $written;
+	/**
+	 * Set position
+	 *
+	 * @param integer $position
+	 *
+	 * @return NewsArticle
+	 */
+	public function setPosition(int $position): static {
+		$this->position = $position;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get written
-     *
-     * @return \DateTime 
-     */
-    public function getWritten()
-    {
-        return $this->written;
-    }
+	/**
+	 * Get position
+	 *
+	 * @return integer
+	 */
+	public function getPosition(): int {
+		return $this->position;
+	}
 
-    /**
-     * Set updated
-     *
-     * @param \DateTime $updated
-     * @return NewsArticle
-     */
-    public function setUpdated($updated)
-    {
-        $this->updated = $updated;
+	/**
+	 * Set row
+	 *
+	 * @param integer $row
+	 *
+	 * @return NewsArticle
+	 */
+	public function setRow(int $row): static {
+		$this->row = $row;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get updated
-     *
-     * @return \DateTime 
-     */
-    public function getUpdated()
-    {
-        return $this->updated;
-    }
+	/**
+	 * Get row
+	 *
+	 * @return integer
+	 */
+	public function getRow(): int {
+		return $this->row;
+	}
 
-    /**
-     * Set title
-     *
-     * @param string $title
-     * @return NewsArticle
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
+	/**
+	 * Set col
+	 *
+	 * @param integer $col
+	 *
+	 * @return NewsArticle
+	 */
+	public function setCol(int $col): static {
+		$this->col = $col;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get title
-     *
-     * @return string 
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
+	/**
+	 * Get col
+	 *
+	 * @return integer
+	 */
+	public function getCol(): int {
+		return $this->col;
+	}
 
-    /**
-     * Set content
-     *
-     * @param string $content
-     * @return NewsArticle
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
+	/**
+	 * Set size_x
+	 *
+	 * @param integer $sizeX
+	 *
+	 * @return NewsArticle
+	 */
+	public function setSizeX(int $sizeX): static {
+		$this->size_x = $sizeX;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get content
-     *
-     * @return string 
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
+	/**
+	 * Get size_x
+	 *
+	 * @return integer
+	 */
+	public function getSizeX(): int {
+		return $this->size_x;
+	}
 
-    /**
-     * Set position
-     *
-     * @param integer $position
-     * @return NewsArticle
-     */
-    public function setPosition($position)
-    {
-        $this->position = $position;
+	/**
+	 * Set size_y
+	 *
+	 * @param integer $sizeY
+	 *
+	 * @return NewsArticle
+	 */
+	public function setSizeY(int $sizeY): static {
+		$this->size_y = $sizeY;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get position
-     *
-     * @return integer 
-     */
-    public function getPosition()
-    {
-        return $this->position;
-    }
+	/**
+	 * Get size_y
+	 *
+	 * @return integer
+	 */
+	public function getSizeY(): int {
+		return $this->size_y;
+	}
 
-    /**
-     * Set row
-     *
-     * @param integer $row
-     * @return NewsArticle
-     */
-    public function setRow($row)
-    {
-        $this->row = $row;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set author
+	 *
+	 * @param Character|null $author
+	 *
+	 * @return NewsArticle
+	 */
+	public function setAuthor(Character $author = null): static {
+		$this->author = $author;
 
-    /**
-     * Get row
-     *
-     * @return integer 
-     */
-    public function getRow()
-    {
-        return $this->row;
-    }
+		return $this;
+	}
 
-    /**
-     * Set col
-     *
-     * @param integer $col
-     * @return NewsArticle
-     */
-    public function setCol($col)
-    {
-        $this->col = $col;
+	/**
+	 * Get author
+	 *
+	 * @return Character|null
+	 */
+	public function getAuthor(): ?Character {
+		return $this->author;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set edition
+	 *
+	 * @param NewsEdition|null $edition
+	 *
+	 * @return NewsArticle
+	 */
+	public function setEdition(NewsEdition $edition = null): static {
+		$this->edition = $edition;
 
-    /**
-     * Get col
-     *
-     * @return integer 
-     */
-    public function getCol()
-    {
-        return $this->col;
-    }
+		return $this;
+	}
 
-    /**
-     * Set size_x
-     *
-     * @param integer $sizeX
-     * @return NewsArticle
-     */
-    public function setSizeX($sizeX)
-    {
-        $this->size_x = $sizeX;
-
-        return $this;
-    }
-
-    /**
-     * Get size_x
-     *
-     * @return integer 
-     */
-    public function getSizeX()
-    {
-        return $this->size_x;
-    }
-
-    /**
-     * Set size_y
-     *
-     * @param integer $sizeY
-     * @return NewsArticle
-     */
-    public function setSizeY($sizeY)
-    {
-        $this->size_y = $sizeY;
-
-        return $this;
-    }
-
-    /**
-     * Get size_y
-     *
-     * @return integer 
-     */
-    public function getSizeY()
-    {
-        return $this->size_y;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set author
-     *
-     * @param \App\Entity\Character $author
-     * @return NewsArticle
-     */
-    public function setAuthor(\App\Entity\Character $author = null)
-    {
-        $this->author = $author;
-
-        return $this;
-    }
-
-    /**
-     * Get author
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getAuthor()
-    {
-        return $this->author;
-    }
-
-    /**
-     * Set edition
-     *
-     * @param \App\Entity\NewsEdition $edition
-     * @return NewsArticle
-     */
-    public function setEdition(\App\Entity\NewsEdition $edition = null)
-    {
-        $this->edition = $edition;
-
-        return $this;
-    }
-
-    /**
-     * Get edition
-     *
-     * @return \App\Entity\NewsEdition 
-     */
-    public function getEdition()
-    {
-        return $this->edition;
-    }
+	/**
+	 * Get edition
+	 *
+	 * @return NewsEdition|null
+	 */
+	public function getEdition(): ?NewsEdition {
+		return $this->edition;
+	}
 }

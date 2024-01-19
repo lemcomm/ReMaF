@@ -6,33 +6,43 @@ use Doctrine\DBAL\Types\Types;
 
 class NPC {
 
-	public function isSoldier() {
+	private string $name;
+	private int $experience;
+	private bool $alive;
+	private bool $locked;
+	private int $hungry;
+	private int $wounded;
+	private int $distance_home;
+	private Settlement $home;
+
+	// Non-property methods.
+	public function isSoldier(): false {
    		return false;
    	}
 
-	public function isEntourage() {
+	public function isEntourage(): false {
    		return false;
    	}
 
-	public function isActive($include_routed=false) {
+	public function isActive($include_routed=false): bool {
    		if (!$this->isAlive()) return false;
    		if ($this->isWounded()) return false;
    		if (!$include_routed && $this->isRouted()) return false;
    		return true;
    	}
 
-	public function isWounded() {
+	public function isWounded(): bool {
    		return ($this->wounded > 0);
    	}
-	public function wound($value=1) {
+	public function wound($value=1): static {
    		$this->wounded+=$value;
    		return $this;
    	}
-	public function heal($value=1) {
+	public function heal($value=1): static {
    		$this->wounded = max(0, $this->wounded - $value);
    		return $this;
    	}
-	public function HealOrDie() {
+	public function HealOrDie(): bool {
    		if (rand(0,100)<$this->wounded) {
    			$this->kill();
    			return false;
@@ -42,7 +52,7 @@ class NPC {
    		}
    	}
 
-	public function hungerMod() {
+	public function hungerMod(): float|int {
 		$lvl = $this->hungry;
 		if ($lvl == 0) {
 			return 1;
@@ -54,10 +64,10 @@ class NPC {
 	}
 
 
-	public function isHungry() {
+	public function isHungry(): bool {
    		return ($this->hungry > 0);
    	}
-	public function makeHungry($value=1) {
+	public function makeHungry($value=1): static {
    		if ($value > 0) {
    			$this->hungry+=$value;
    		} else {
@@ -65,7 +75,7 @@ class NPC {
    		}
    		return $this;
    	}
-	public function feed() {
+	public function feed(): static {
    		if ($this->hungry>0) {
    			$this->hungry-=5; // drops fairly rapidly
    		}
@@ -75,10 +85,10 @@ class NPC {
    		return $this;
    	}
 
-	public function isAlive() {
+	public function isAlive(): bool {
    		return $this->getAlive();
    	}
-	public function kill() {
+	public function kill(): void {
    		$this->setAlive(false);
    		$this->hungry = 0; // we abuse this counter for rot count now
    		$this->cleanOffers();
@@ -87,67 +97,28 @@ class NPC {
    		}
    	}
 
-	public function isLocked() {
+	public function isLocked(): bool {
    		return $this->getLocked();
    	}
 
-	public function gainExperience($amount=1) {
+	public function gainExperience($amount=1): void {
    		$this->experience += intval(ceil($amount));
    	}
 
 
 	// compatability methods - override these if the child entity implements the related functionality
-	public function cleanOffers() { }
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var integer
-     */
-    private $experience;
-
-    /**
-     * @var boolean
-     */
-    private $alive;
-
-    /**
-     * @var boolean
-     */
-    private $locked;
-
-    /**
-     * @var integer
-     */
-    private $hungry;
-
-    /**
-     * @var integer
-     */
-    private $wounded;
-
-    /**
-     * @var integer
-     */
-    private $distance_home;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $home;
+	public function cleanOffers(): void { }
 
 
+	// Property methods.
     /**
      * Set name
      *
      * @param string $name
+     *
      * @return NPC
      */
-    public function setName($name)
-    {
+    public function setName(string $name): static {
         $this->name = $name;
 
         return $this;
@@ -158,8 +129,7 @@ class NPC {
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName(): string {
         return $this->name;
     }
 
@@ -167,10 +137,10 @@ class NPC {
      * Set experience
      *
      * @param integer $experience
+     *
      * @return NPC
      */
-    public function setExperience($experience)
-    {
+    public function setExperience(int $experience): static {
         $this->experience = $experience;
 
         return $this;
@@ -181,8 +151,7 @@ class NPC {
      *
      * @return integer 
      */
-    public function getExperience()
-    {
+    public function getExperience(): int {
         return $this->experience;
     }
 
@@ -190,10 +159,10 @@ class NPC {
      * Set alive
      *
      * @param boolean $alive
+     *
      * @return NPC
      */
-    public function setAlive($alive)
-    {
+    public function setAlive(bool $alive): static {
         $this->alive = $alive;
 
         return $this;
@@ -204,8 +173,7 @@ class NPC {
      *
      * @return boolean 
      */
-    public function getAlive()
-    {
+    public function getAlive(): bool {
         return $this->alive;
     }
 
@@ -213,10 +181,10 @@ class NPC {
      * Set locked
      *
      * @param boolean $locked
+     *
      * @return NPC
      */
-    public function setLocked($locked)
-    {
+    public function setLocked(bool $locked): static {
         $this->locked = $locked;
 
         return $this;
@@ -227,8 +195,7 @@ class NPC {
      *
      * @return boolean 
      */
-    public function getLocked()
-    {
+    public function getLocked(): bool {
         return $this->locked;
     }
 
@@ -236,10 +203,10 @@ class NPC {
      * Set hungry
      *
      * @param integer $hungry
+     *
      * @return NPC
      */
-    public function setHungry($hungry)
-    {
+    public function setHungry(int $hungry): static {
         $this->hungry = $hungry;
 
         return $this;
@@ -250,8 +217,7 @@ class NPC {
      *
      * @return integer 
      */
-    public function getHungry()
-    {
+    public function getHungry(): int {
         return $this->hungry;
     }
 
@@ -259,10 +225,10 @@ class NPC {
      * Set wounded
      *
      * @param integer $wounded
+     *
      * @return NPC
      */
-    public function setWounded($wounded)
-    {
+    public function setWounded(int $wounded): static {
         $this->wounded = $wounded;
 
         return $this;
@@ -273,8 +239,7 @@ class NPC {
      *
      * @return integer 
      */
-    public function getWounded()
-    {
+    public function getWounded(): int {
         return $this->wounded;
     }
 
@@ -282,10 +247,10 @@ class NPC {
      * Set distance_home
      *
      * @param integer $distanceHome
+     *
      * @return NPC
      */
-    public function setDistanceHome($distanceHome)
-    {
+    public function setDistanceHome(int $distanceHome): static {
         $this->distance_home = $distanceHome;
 
         return $this;
@@ -296,19 +261,18 @@ class NPC {
      *
      * @return integer 
      */
-    public function getDistanceHome()
-    {
+    public function getDistanceHome(): int {
         return $this->distance_home;
     }
 
-    /**
-     * Set home
-     *
-     * @param \App\Entity\Settlement $home
-     * @return NPC
-     */
-    public function setHome(\App\Entity\Settlement $home = null)
-    {
+	/**
+	 * Set home
+	 *
+	 * @param Settlement|null $home
+	 *
+	 * @return NPC
+	 */
+    public function setHome(Settlement $home = null): static {
         $this->home = $home;
 
         return $this;
@@ -317,10 +281,9 @@ class NPC {
     /**
      * Get home
      *
-     * @return \App\Entity\Settlement 
+     * @return Settlement
      */
-    public function getHome()
-    {
+    public function getHome(): Settlement {
         return $this->home;
     }
 }

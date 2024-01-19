@@ -1,300 +1,246 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 
 class Quest {
+	private string $summary;
+	private string $description;
+	private string $reward;
+	private string $notes;
+	private bool $completed;
+	private int $id;
+	private EventLog $log;
+	private Collection $questers;
+	private Character $owner;
+	private Settlement $home;
 
-    /**
-     * @var string
-     */
-    private $summary;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->questers = new ArrayCollection();
+	}
 
-    /**
-     * @var string
-     */
-    private $description;
+	/**
+	 * Set summary
+	 *
+	 * @param string $summary
+	 *
+	 * @return Quest
+	 */
+	public function setSummary(string $summary): static {
+		$this->summary = $summary;
 
-    /**
-     * @var string
-     */
-    private $reward;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $notes;
+	/**
+	 * Get summary
+	 *
+	 * @return string
+	 */
+	public function getSummary(): string {
+		return $this->summary;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $completed;
+	/**
+	 * Set description
+	 *
+	 * @param string $description
+	 *
+	 * @return Quest
+	 */
+	public function setDescription(string $description): static {
+		$this->description = $description;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\EventLog
-     */
-    private $log;
+	/**
+	 * Get description
+	 *
+	 * @return string
+	 */
+	public function getDescription(): string {
+		return $this->description;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $questers;
+	/**
+	 * Set reward
+	 *
+	 * @param string $reward
+	 *
+	 * @return Quest
+	 */
+	public function setReward(string $reward): static {
+		$this->reward = $reward;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $owner;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $home;
+	/**
+	 * Get reward
+	 *
+	 * @return string
+	 */
+	public function getReward(): string {
+		return $this->reward;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->questers = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Set notes
+	 *
+	 * @param string $notes
+	 *
+	 * @return Quest
+	 */
+	public function setNotes(string $notes): static {
+		$this->notes = $notes;
 
-    /**
-     * Set summary
-     *
-     * @param string $summary
-     * @return Quest
-     */
-    public function setSummary($summary)
-    {
-        $this->summary = $summary;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get notes
+	 *
+	 * @return string
+	 */
+	public function getNotes(): string {
+		return $this->notes;
+	}
 
-    /**
-     * Get summary
-     *
-     * @return string 
-     */
-    public function getSummary()
-    {
-        return $this->summary;
-    }
+	/**
+	 * Set completed
+	 *
+	 * @param boolean $completed
+	 *
+	 * @return Quest
+	 */
+	public function setCompleted(bool $completed): static {
+		$this->completed = $completed;
 
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return Quest
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get completed
+	 *
+	 * @return boolean
+	 */
+	public function getCompleted(): bool {
+		return $this->completed;
+	}
 
-    /**
-     * Get description
-     *
-     * @return string 
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set reward
-     *
-     * @param string $reward
-     * @return Quest
-     */
-    public function setReward($reward)
-    {
-        $this->reward = $reward;
+	/**
+	 * Set log
+	 *
+	 * @param EventLog|null $log
+	 *
+	 * @return Quest
+	 */
+	public function setLog(EventLog $log = null): static {
+		$this->log = $log;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get reward
-     *
-     * @return string 
-     */
-    public function getReward()
-    {
-        return $this->reward;
-    }
+	/**
+	 * Get log
+	 *
+	 * @return EventLog
+	 */
+	public function getLog(): EventLog {
+		return $this->log;
+	}
 
-    /**
-     * Set notes
-     *
-     * @param string $notes
-     * @return Quest
-     */
-    public function setNotes($notes)
-    {
-        $this->notes = $notes;
+	/**
+	 * Add questers
+	 *
+	 * @param Quester $questers
+	 *
+	 * @return Quest
+	 */
+	public function addQuester(Quester $questers): static {
+		$this->questers[] = $questers;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get notes
-     *
-     * @return string 
-     */
-    public function getNotes()
-    {
-        return $this->notes;
-    }
+	/**
+	 * Remove questers
+	 *
+	 * @param Quester $questers
+	 */
+	public function removeQuester(Quester $questers): void {
+		$this->questers->removeElement($questers);
+	}
 
-    /**
-     * Set completed
-     *
-     * @param boolean $completed
-     * @return Quest
-     */
-    public function setCompleted($completed)
-    {
-        $this->completed = $completed;
+	/**
+	 * Get questers
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getQuesters(): ArrayCollection|Collection {
+		return $this->questers;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set owner
+	 *
+	 * @param Character|null $owner
+	 *
+	 * @return Quest
+	 */
+	public function setOwner(Character $owner = null): static {
+		$this->owner = $owner;
 
-    /**
-     * Get completed
-     *
-     * @return boolean 
-     */
-    public function getCompleted()
-    {
-        return $this->completed;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get owner
+	 *
+	 * @return Character
+	 */
+	public function getOwner(): Character {
+		return $this->owner;
+	}
 
-    /**
-     * Set log
-     *
-     * @param \App\Entity\EventLog $log
-     * @return Quest
-     */
-    public function setLog(\App\Entity\EventLog $log = null)
-    {
-        $this->log = $log;
+	/**
+	 * Set home
+	 *
+	 * @param Settlement|null $home
+	 *
+	 * @return Quest
+	 */
+	public function setHome(Settlement $home = null): static {
+		$this->home = $home;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get log
-     *
-     * @return \App\Entity\EventLog 
-     */
-    public function getLog()
-    {
-        return $this->log;
-    }
+	/**
+	 * Get home
+	 *
+	 * @return Settlement
+	 */
+	public function getHome(): Settlement {
+		return $this->home;
+	}
 
-    /**
-     * Add questers
-     *
-     * @param \App\Entity\Quester $questers
-     * @return Quest
-     */
-    public function addQuester(\App\Entity\Quester $questers)
-    {
-        $this->questers[] = $questers;
-
-        return $this;
-    }
-
-    /**
-     * Remove questers
-     *
-     * @param \App\Entity\Quester $questers
-     */
-    public function removeQuester(\App\Entity\Quester $questers)
-    {
-        $this->questers->removeElement($questers);
-    }
-
-    /**
-     * Get questers
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getQuesters()
-    {
-        return $this->questers;
-    }
-
-    /**
-     * Set owner
-     *
-     * @param \App\Entity\Character $owner
-     * @return Quest
-     */
-    public function setOwner(\App\Entity\Character $owner = null)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * Get owner
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
-
-    /**
-     * Set home
-     *
-     * @param \App\Entity\Settlement $home
-     * @return Quest
-     */
-    public function setHome(\App\Entity\Settlement $home = null)
-    {
-        $this->home = $home;
-
-        return $this;
-    }
-
-    /**
-     * Get home
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getHome()
-    {
-        return $this->home;
-    }
-
-    public function isCompleted(): ?bool
-    {
-        return $this->completed;
-    }
+	public function isCompleted(): ?bool {
+		return $this->completed;
+	}
 }

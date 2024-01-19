@@ -2,312 +2,247 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * Patron
- */
-class Patron
-{
-    /**
-     * @var integer
-     */
-    private $patreon_id;
+class Patron {
+	private ?int $patreon_id;
+	private ?string $access_token;
+	private ?string $refresh_token;
+	private ?DateTime $expires;
+	private ?int $current_amount;
+	private ?int $credited;
+	private ?string $status;
+	private ?bool $update_needed;
+	private int $id;
+	private ?Patreon $creator;
+	private ?User $user;
 
-    /**
-     * @var string
-     */
-    private $access_token;
+	/**
+	 * Set patreon_id
+	 *
+	 * @param int|null $patreonId
+	 *
+	 * @return Patron
+	 */
+	public function setPatreonId(?int $patreonId): static {
+		$this->patreon_id = $patreonId;
 
-    /**
-     * @var string
-     */
-    private $refresh_token;
+		return $this;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $expires;
+	/**
+	 * Get patreon_id
+	 *
+	 * @return integer
+	 */
+	public function getPatreonId(): int {
+		return $this->patreon_id;
+	}
 
-    /**
-     * @var integer
-     */
-    private $current_amount;
+	/**
+	 * Set access_token
+	 *
+	 * @param string|null $accessToken
+	 *
+	 * @return Patron
+	 */
+	public function setAccessToken(?string $accessToken): static {
+		$this->access_token = $accessToken;
 
-    /**
-     * @var integer
-     */
-    private $credited;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $status;
+	/**
+	 * Get access_token
+	 *
+	 * @return string
+	 */
+	public function getAccessToken(): string {
+		return $this->access_token;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $update_needed;
+	/**
+	 * Set refresh_token
+	 *
+	 * @param string|null $refreshToken
+	 *
+	 * @return Patron
+	 */
+	public function setRefreshToken(?string $refreshToken): static {
+		$this->refresh_token = $refreshToken;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Patreon
-     */
-    private $creator;
+	/**
+	 * Get refresh_token
+	 *
+	 * @return string
+	 */
+	public function getRefreshToken(): string {
+		return $this->refresh_token;
+	}
 
-    /**
-     * @var \App\Entity\User
-     */
-    private $user;
+	/**
+	 * Set expires
+	 *
+	 * @param DateTime|null $expires
+	 *
+	 * @return Patron
+	 */
+	public function setExpires(?DateTime $expires): static {
+		$this->expires = $expires;
 
+		return $this;
+	}
 
-    /**
-     * Set patreon_id
-     *
-     * @param integer $patreonId
-     * @return Patron
-     */
-    public function setPatreonId($patreonId)
-    {
-        $this->patreon_id = $patreonId;
+	/**
+	 * Get expires
+	 *
+	 * @return DateTime
+	 */
+	public function getExpires(): DateTime {
+		return $this->expires;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set current_amount
+	 *
+	 * @param int|null $currentAmount
+	 *
+	 * @return Patron
+	 */
+	public function setCurrentAmount(?int $currentAmount): static {
+		$this->current_amount = $currentAmount;
 
-    /**
-     * Get patreon_id
-     *
-     * @return integer 
-     */
-    public function getPatreonId()
-    {
-        return $this->patreon_id;
-    }
+		return $this;
+	}
 
-    /**
-     * Set access_token
-     *
-     * @param string $accessToken
-     * @return Patron
-     */
-    public function setAccessToken($accessToken)
-    {
-        $this->access_token = $accessToken;
+	/**
+	 * Get current_amount
+	 *
+	 * @return integer
+	 */
+	public function getCurrentAmount(): int {
+		return $this->current_amount;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set credited
+	 *
+	 * @param int|null $credited
+	 *
+	 * @return Patron
+	 */
+	public function setCredited(?int $credited): static {
+		$this->credited = $credited;
 
-    /**
-     * Get access_token
-     *
-     * @return string 
-     */
-    public function getAccessToken()
-    {
-        return $this->access_token;
-    }
+		return $this;
+	}
 
-    /**
-     * Set refresh_token
-     *
-     * @param string $refreshToken
-     * @return Patron
-     */
-    public function setRefreshToken($refreshToken)
-    {
-        $this->refresh_token = $refreshToken;
+	/**
+	 * Get credited
+	 *
+	 * @return integer
+	 */
+	public function getCredited(): int {
+		return $this->credited;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set status
+	 *
+	 * @param string|null $status
+	 *
+	 * @return Patron
+	 */
+	public function setStatus(?string $status): static {
+		$this->status = $status;
 
-    /**
-     * Get refresh_token
-     *
-     * @return string 
-     */
-    public function getRefreshToken()
-    {
-        return $this->refresh_token;
-    }
+		return $this;
+	}
 
-    /**
-     * Set expires
-     *
-     * @param \DateTime $expires
-     * @return Patron
-     */
-    public function setExpires($expires)
-    {
-        $this->expires = $expires;
+	/**
+	 * Get status
+	 *
+	 * @return string
+	 */
+	public function getStatus(): string {
+		return $this->status;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set update_needed
+	 *
+	 * @param boolean $updateNeeded
+	 *
+	 * @return Patron
+	 */
+	public function setUpdateNeeded(?bool $updateNeeded): static {
+		$this->update_needed = $updateNeeded;
 
-    /**
-     * Get expires
-     *
-     * @return \DateTime 
-     */
-    public function getExpires()
-    {
-        return $this->expires;
-    }
+		return $this;
+	}
 
-    /**
-     * Set current_amount
-     *
-     * @param integer $currentAmount
-     * @return Patron
-     */
-    public function setCurrentAmount($currentAmount)
-    {
-        $this->current_amount = $currentAmount;
+	/**
+	 * Get update_needed
+	 *
+	 * @return boolean
+	 */
+	public function getUpdateNeeded(): bool {
+		return $this->update_needed;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get current_amount
-     *
-     * @return integer 
-     */
-    public function getCurrentAmount()
-    {
-        return $this->current_amount;
-    }
+	/**
+	 * Set creator
+	 *
+	 * @param Patreon|null $creator
+	 *
+	 * @return Patron
+	 */
+	public function setCreator(Patreon $creator = null): static {
+		$this->creator = $creator;
 
-    /**
-     * Set credited
-     *
-     * @param integer $credited
-     * @return Patron
-     */
-    public function setCredited($credited)
-    {
-        $this->credited = $credited;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get creator
+	 *
+	 * @return Patreon
+	 */
+	public function getCreator(): Patreon {
+		return $this->creator;
+	}
 
-    /**
-     * Get credited
-     *
-     * @return integer 
-     */
-    public function getCredited()
-    {
-        return $this->credited;
-    }
+	/**
+	 * Set user
+	 *
+	 * @param User|null $user
+	 *
+	 * @return Patron
+	 */
+	public function setUser(User $user = null): static {
+		$this->user = $user;
 
-    /**
-     * Set status
-     *
-     * @param string $status
-     * @return Patron
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get status
-     *
-     * @return string 
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * Set update_needed
-     *
-     * @param boolean $updateNeeded
-     * @return Patron
-     */
-    public function setUpdateNeeded($updateNeeded)
-    {
-        $this->update_needed = $updateNeeded;
-
-        return $this;
-    }
-
-    /**
-     * Get update_needed
-     *
-     * @return boolean 
-     */
-    public function getUpdateNeeded()
-    {
-        return $this->update_needed;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set creator
-     *
-     * @param \App\Entity\Patreon $creator
-     * @return Patron
-     */
-    public function setCreator(\App\Entity\Patreon $creator = null)
-    {
-        $this->creator = $creator;
-
-        return $this;
-    }
-
-    /**
-     * Get creator
-     *
-     * @return \App\Entity\Patreon 
-     */
-    public function getCreator()
-    {
-        return $this->creator;
-    }
-
-    /**
-     * Set user
-     *
-     * @param \App\Entity\User $user
-     * @return Patron
-     */
-    public function setUser(\App\Entity\User $user = null)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \App\Entity\User 
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    public function isUpdateNeeded(): ?bool
-    {
-        return $this->update_needed;
-    }
+	/**
+	 * Get user
+	 *
+	 * @return User
+	 */
+	public function getUser(): User {
+		return $this->user;
+	}
 }

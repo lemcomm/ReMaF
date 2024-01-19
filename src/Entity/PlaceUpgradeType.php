@@ -3,105 +3,83 @@
 namespace App\Entity;
 
 class PlaceUpgradeType {
+	private string $name;
+	private ?string $requires;
+	private int $id;
+	private PlaceType $place_type;
 
-  
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return PlaceUpgradeType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var string
-     */
-    private $requires;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var \App\Entity\PlaceType
-     */
-    private $place_type;
+	/**
+	 * Set requires
+	 *
+	 * @param string|null $requires
+	 *
+	 * @return PlaceUpgradeType
+	 */
+	public function setRequires(?string $requires): static {
+		$this->requires = $requires;
 
+		return $this;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return PlaceUpgradeType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Get requires
+	 *
+	 * @return string|null
+	 */
+	public function getRequires(): ?string {
+		return $this->requires;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Set place_type
+	 *
+	 * @param PlaceType|null $placeType
+	 *
+	 * @return PlaceUpgradeType
+	 */
+	public function setPlaceType(PlaceType $placeType = null): static {
+		$this->place_type = $placeType;
 
-    /**
-     * Set requires
-     *
-     * @param string $requires
-     * @return PlaceUpgradeType
-     */
-    public function setRequires($requires)
-    {
-        $this->requires = $requires;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get requires
-     *
-     * @return string 
-     */
-    public function getRequires()
-    {
-        return $this->requires;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set place_type
-     *
-     * @param \App\Entity\PlaceType $placeType
-     * @return PlaceUpgradeType
-     */
-    public function setPlaceType(\App\Entity\PlaceType $placeType = null)
-    {
-        $this->place_type = $placeType;
-
-        return $this;
-    }
-
-    /**
-     * Get place_type
-     *
-     * @return \App\Entity\PlaceType 
-     */
-    public function getPlaceType()
-    {
-        return $this->place_type;
-    }
+	/**
+	 * Get place_type
+	 *
+	 * @return PlaceType
+	 */
+	public function getPlaceType(): PlaceType {
+		return $this->place_type;
+	}
 }
