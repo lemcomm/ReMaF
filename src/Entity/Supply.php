@@ -2,138 +2,107 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class Supply {
+	private string $type;
+	private int $quantity;
+	private int $id;
+	private ?Unit $unit;
+	private ?Settlement $origin;
 
-/**
- * Supply
- */
-class Supply
-{
-    /**
-     * @var string
-     */
-    private $type;
+	/**
+	 * Set type
+	 *
+	 * @param string $type
+	 *
+	 * @return Supply
+	 */
+	public function setType(string $type): static {
+		$this->type = $type;
 
-    /**
-     * @var integer
-     */
-    private $quantity;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
-    /**
-     * @var \App\Entity\Unit
-     */
-    private $unit;
+	/**
+	 * Set quantity
+	 *
+	 * @param integer $quantity
+	 *
+	 * @return Supply
+	 */
+	public function setQuantity(int $quantity): static {
+		$this->quantity = $quantity;
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $origin;
+		return $this;
+	}
 
+	/**
+	 * Get quantity
+	 *
+	 * @return integer
+	 */
+	public function getQuantity(): int {
+		return $this->quantity;
+	}
 
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return Supply
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set unit
+	 *
+	 * @param Unit|null $unit
+	 *
+	 * @return Supply
+	 */
+	public function setUnit(Unit $unit = null): static {
+		$this->unit = $unit;
 
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
+		return $this;
+	}
 
-    /**
-     * Set quantity
-     *
-     * @param integer $quantity
-     * @return Supply
-     */
-    public function setQuantity($quantity)
-    {
-        $this->quantity = $quantity;
+	/**
+	 * Get unit
+	 *
+	 * @return Unit|null
+	 */
+	public function getUnit(): ?Unit {
+		return $this->unit;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set origin
+	 *
+	 * @param Settlement|null $origin
+	 *
+	 * @return Supply
+	 */
+	public function setOrigin(Settlement $origin = null): static {
+		$this->origin = $origin;
 
-    /**
-     * Get quantity
-     *
-     * @return integer 
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set unit
-     *
-     * @param \App\Entity\Unit $unit
-     * @return Supply
-     */
-    public function setUnit(\App\Entity\Unit $unit = null)
-    {
-        $this->unit = $unit;
-
-        return $this;
-    }
-
-    /**
-     * Get unit
-     *
-     * @return \App\Entity\Unit 
-     */
-    public function getUnit()
-    {
-        return $this->unit;
-    }
-
-    /**
-     * Set origin
-     *
-     * @param \App\Entity\Settlement $origin
-     * @return Supply
-     */
-    public function setOrigin(\App\Entity\Settlement $origin = null)
-    {
-        $this->origin = $origin;
-
-        return $this;
-    }
-
-    /**
-     * Get origin
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getOrigin()
-    {
-        return $this->origin;
-    }
+	/**
+	 * Get origin
+	 *
+	 * @return Settlement|null
+	 */
+	public function getOrigin(): ?Settlement {
+		return $this->origin;
+	}
 }

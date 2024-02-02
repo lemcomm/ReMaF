@@ -2,286 +2,233 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 
-/**
- * UserReport
- */
-class UserReport
-{
-    /**
-     * @var string
-     */
-    private $type;
+class UserReport {
+	private string $type;
+	private string $text;
+	private bool $actioned;
+	private DateTime $date;
+	private int $id;
+	private Collection $notes;
+	private Collection $against;
+	private ?User $user;
+	private ?Journal $journal;
 
-    /**
-     * @var string
-     */
-    private $text;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->notes = new ArrayCollection();
+		$this->against = new ArrayCollection();
+	}
 
-    /**
-     * @var boolean
-     */
-    private $actioned;
+	/**
+	 * Set type
+	 *
+	 * @param string $type
+	 *
+	 * @return UserReport
+	 */
+	public function setType(string $type): static {
+		$this->type = $type;
 
-    /**
-     * @var \DateTime
-     */
-    private $date;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $notes;
+	/**
+	 * Set text
+	 *
+	 * @param string $text
+	 *
+	 * @return UserReport
+	 */
+	public function setText(string $text): static {
+		$this->text = $text;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $against;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\User
-     */
-    private $user;
+	/**
+	 * Get text
+	 *
+	 * @return string
+	 */
+	public function getText(): string {
+		return $this->text;
+	}
 
-    /**
-     * @var \App\Entity\Journal
-     */
-    private $journal;
+	/**
+	 * Set actioned
+	 *
+	 * @param boolean $actioned
+	 *
+	 * @return UserReport
+	 */
+	public function setActioned(bool $actioned): static {
+		$this->actioned = $actioned;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->notes = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->against = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+		return $this;
+	}
 
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return UserReport
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
+	/**
+	 * Get actioned
+	 *
+	 * @return boolean
+	 */
+	public function getActioned(): bool {
+		return $this->actioned;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set date
+	 *
+	 * @param DateTime $date
+	 *
+	 * @return UserReport
+	 */
+	public function setDate(DateTime $date): static {
+		$this->date = $date;
 
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
+		return $this;
+	}
 
-    /**
-     * Set text
-     *
-     * @param string $text
-     * @return UserReport
-     */
-    public function setText($text)
-    {
-        $this->text = $text;
+	/**
+	 * Get date
+	 *
+	 * @return DateTime
+	 */
+	public function getDate(): DateTime {
+		return $this->date;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get text
-     *
-     * @return string 
-     */
-    public function getText()
-    {
-        return $this->text;
-    }
+	/**
+	 * Add notes
+	 *
+	 * @param UserReportNote $notes
+	 *
+	 * @return UserReport
+	 */
+	public function addNote(UserReportNote $notes): static {
+		$this->notes[] = $notes;
 
-    /**
-     * Set actioned
-     *
-     * @param boolean $actioned
-     * @return UserReport
-     */
-    public function setActioned($actioned)
-    {
-        $this->actioned = $actioned;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Remove notes
+	 *
+	 * @param UserReportNote $notes
+	 */
+	public function removeNote(UserReportNote $notes): void {
+		$this->notes->removeElement($notes);
+	}
 
-    /**
-     * Get actioned
-     *
-     * @return boolean 
-     */
-    public function getActioned()
-    {
-        return $this->actioned;
-    }
+	/**
+	 * Get notes
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getNotes(): ArrayCollection|Collection {
+		return $this->notes;
+	}
 
-    /**
-     * Set date
-     *
-     * @param \DateTime $date
-     * @return UserReport
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
+	/**
+	 * Add against
+	 *
+	 * @param UserReportAgainst $against
+	 *
+	 * @return UserReport
+	 */
+	public function addAgainst(UserReportAgainst $against): static {
+		$this->against[] = $against;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get date
-     *
-     * @return \DateTime 
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
+	/**
+	 * Remove against
+	 *
+	 * @param UserReportAgainst $against
+	 */
+	public function removeAgainst(UserReportAgainst $against): void {
+		$this->against->removeElement($against);
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get against
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getAgainst(): ArrayCollection|Collection {
+		return $this->against;
+	}
 
-    /**
-     * Add notes
-     *
-     * @param \App\Entity\UserReportNote $notes
-     * @return UserReport
-     */
-    public function addNote(\App\Entity\UserReportNote $notes)
-    {
-        $this->notes[] = $notes;
+	/**
+	 * Set user
+	 *
+	 * @param User|null $user
+	 *
+	 * @return UserReport
+	 */
+	public function setUser(User $user = null): static {
+		$this->user = $user;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove notes
-     *
-     * @param \App\Entity\UserReportNote $notes
-     */
-    public function removeNote(\App\Entity\UserReportNote $notes)
-    {
-        $this->notes->removeElement($notes);
-    }
+	/**
+	 * Get user
+	 *
+	 * @return User
+	 */
+	public function getUser(): User {
+		return $this->user;
+	}
 
-    /**
-     * Get notes
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getNotes()
-    {
-        return $this->notes;
-    }
+	/**
+	 * Set journal
+	 *
+	 * @param Journal|null $journal
+	 *
+	 * @return UserReport
+	 */
+	public function setJournal(Journal $journal = null): static {
+		$this->journal = $journal;
 
-    /**
-     * Add against
-     *
-     * @param \App\Entity\UserReportAgainst $against
-     * @return UserReport
-     */
-    public function addAgainst(\App\Entity\UserReportAgainst $against)
-    {
-        $this->against[] = $against;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get journal
+	 *
+	 * @return Journal
+	 */
+	public function getJournal(): Journal {
+		return $this->journal;
+	}
 
-    /**
-     * Remove against
-     *
-     * @param \App\Entity\UserReportAgainst $against
-     */
-    public function removeAgainst(\App\Entity\UserReportAgainst $against)
-    {
-        $this->against->removeElement($against);
-    }
-
-    /**
-     * Get against
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getAgainst()
-    {
-        return $this->against;
-    }
-
-    /**
-     * Set user
-     *
-     * @param \App\Entity\User $user
-     * @return UserReport
-     */
-    public function setUser(\App\Entity\User $user = null)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \App\Entity\User 
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
-
-    /**
-     * Set journal
-     *
-     * @param \App\Entity\Journal $journal
-     * @return UserReport
-     */
-    public function setJournal(\App\Entity\Journal $journal = null)
-    {
-        $this->journal = $journal;
-
-        return $this;
-    }
-
-    /**
-     * Get journal
-     *
-     * @return \App\Entity\Journal 
-     */
-    public function getJournal()
-    {
-        return $this->journal;
-    }
-
-    public function isActioned(): ?bool
-    {
-        return $this->actioned;
-    }
+	public function isActioned(): ?bool {
+		return $this->actioned;
+	}
 }

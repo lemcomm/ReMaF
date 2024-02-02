@@ -2,82 +2,61 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class StyleCounter {
+	private int $id;
+	private Style $style;
+	private SkillType $counters;
 
-/**
- * StyleCounter
- */
-class StyleCounter
-{
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * @var \App\Entity\Style
-     */
-    private $style;
+	/**
+	 * Set style
+	 *
+	 * @param Style|null $style
+	 *
+	 * @return StyleCounter
+	 */
+	public function setStyle(Style $style = null): static {
+		$this->style = $style;
 
-    /**
-     * @var \App\Entity\SkillType
-     */
-    private $counters;
+		return $this;
+	}
 
+	/**
+	 * Get style
+	 *
+	 * @return Style
+	 */
+	public function getStyle(): Style {
+		return $this->style;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Set counters
+	 *
+	 * @param SkillType|null $counters
+	 *
+	 * @return StyleCounter
+	 */
+	public function setCounters(SkillType $counters = null): static {
+		$this->counters = $counters;
 
-    /**
-     * Set style
-     *
-     * @param \App\Entity\Style $style
-     * @return StyleCounter
-     */
-    public function setStyle(\App\Entity\Style $style = null)
-    {
-        $this->style = $style;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get style
-     *
-     * @return \App\Entity\Style 
-     */
-    public function getStyle()
-    {
-        return $this->style;
-    }
-
-    /**
-     * Set counters
-     *
-     * @param \App\Entity\SkillType $counters
-     * @return StyleCounter
-     */
-    public function setCounters(\App\Entity\SkillType $counters = null)
-    {
-        $this->counters = $counters;
-
-        return $this;
-    }
-
-    /**
-     * Get counters
-     *
-     * @return \App\Entity\SkillType 
-     */
-    public function getCounters()
-    {
-        return $this->counters;
-    }
+	/**
+	 * Get counters
+	 *
+	 * @return SkillType
+	 */
+	public function getCounters(): SkillType {
+		return $this->counters;
+	}
 }

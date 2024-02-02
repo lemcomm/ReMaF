@@ -4,334 +4,272 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
-/**
- * Style
- */
-class Style
-{
-    /**
-     * @var string
-     */
-    private $name;
+class Style {
+	private string $name;
+	private string $formal_name;
+	private float $neutrality;
+	private float $distance;
+	private float $initiative;
+	private int $id;
+	private Collection|ArrayCollection $users;
+	private Collection|ArrayCollection $counters;
+	private Character $creator;
+	private ItemType $item;
+	private SkillType $augments;
 
-    /**
-     * @var string
-     */
-    private $formal_name;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->users = new ArrayCollection();
+		$this->counters = new ArrayCollection();
+	}
 
-    /**
-     * @var float
-     */
-    private $neutrality;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return Style
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var float
-     */
-    private $distance;
+		return $this;
+	}
 
-    /**
-     * @var float
-     */
-    private $initiative;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set formal_name
+	 *
+	 * @param string $formalName
+	 *
+	 * @return Style
+	 */
+	public function setFormalName(string $formalName): static {
+		$this->formal_name = $formalName;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $users;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $counters;
+	/**
+	 * Get formal_name
+	 *
+	 * @return string
+	 */
+	public function getFormalName(): string {
+		return $this->formal_name;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $creator;
+	/**
+	 * Set neutrality
+	 *
+	 * @param float $neutrality
+	 *
+	 * @return Style
+	 */
+	public function setNeutrality(float $neutrality): static {
+		$this->neutrality = $neutrality;
 
-    /**
-     * @var \App\Entity\ItemType
-     */
-    private $item;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\SkillType
-     */
-    private $augments;
+	/**
+	 * Get neutrality
+	 *
+	 * @return float
+	 */
+	public function getNeutrality(): float {
+		return $this->neutrality;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->counters = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Set distance
+	 *
+	 * @param float $distance
+	 *
+	 * @return Style
+	 */
+	public function setDistance(float $distance): static {
+		$this->distance = $distance;
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Style
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get distance
+	 *
+	 * @return float
+	 */
+	public function getDistance(): float {
+		return $this->distance;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Set initiative
+	 *
+	 * @param float $initiative
+	 *
+	 * @return Style
+	 */
+	public function setInitiative(float $initiative): static {
+		$this->initiative = $initiative;
 
-    /**
-     * Set formal_name
-     *
-     * @param string $formalName
-     * @return Style
-     */
-    public function setFormalName($formalName)
-    {
-        $this->formal_name = $formalName;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get initiative
+	 *
+	 * @return float
+	 */
+	public function getInitiative(): float {
+		return $this->initiative;
+	}
 
-    /**
-     * Get formal_name
-     *
-     * @return string 
-     */
-    public function getFormalName()
-    {
-        return $this->formal_name;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set neutrality
-     *
-     * @param float $neutrality
-     * @return Style
-     */
-    public function setNeutrality($neutrality)
-    {
-        $this->neutrality = $neutrality;
+	/**
+	 * Add users
+	 *
+	 * @param CharacterStyle $users
+	 *
+	 * @return Style
+	 */
+	public function addUser(CharacterStyle $users): static {
+		$this->users[] = $users;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get neutrality
-     *
-     * @return float 
-     */
-    public function getNeutrality()
-    {
-        return $this->neutrality;
-    }
+	/**
+	 * Remove users
+	 *
+	 * @param CharacterStyle $users
+	 */
+	public function removeUser(CharacterStyle $users): void {
+		$this->users->removeElement($users);
+	}
 
-    /**
-     * Set distance
-     *
-     * @param float $distance
-     * @return Style
-     */
-    public function setDistance($distance)
-    {
-        $this->distance = $distance;
+	/**
+	 * Get users
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getUsers(): ArrayCollection|Collection {
+		return $this->users;
+	}
 
-        return $this;
-    }
+	/**
+	 * Add counters
+	 *
+	 * @param StyleCounter $counters
+	 *
+	 * @return Style
+	 */
+	public function addCounter(StyleCounter $counters): static {
+		$this->counters[] = $counters;
 
-    /**
-     * Get distance
-     *
-     * @return float 
-     */
-    public function getDistance()
-    {
-        return $this->distance;
-    }
+		return $this;
+	}
 
-    /**
-     * Set initiative
-     *
-     * @param float $initiative
-     * @return Style
-     */
-    public function setInitiative($initiative)
-    {
-        $this->initiative = $initiative;
+	/**
+	 * Remove counters
+	 *
+	 * @param StyleCounter $counters
+	 */
+	public function removeCounter(StyleCounter $counters): void {
+		$this->counters->removeElement($counters);
+	}
 
-        return $this;
-    }
+	/**
+	 * Get counters
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getCounters(): ArrayCollection|Collection {
+		return $this->counters;
+	}
 
-    /**
-     * Get initiative
-     *
-     * @return float 
-     */
-    public function getInitiative()
-    {
-        return $this->initiative;
-    }
+	/**
+	 * Set creator
+	 *
+	 * @param Character|null $creator
+	 *
+	 * @return Style
+	 */
+	public function setCreator(Character $creator = null): static {
+		$this->creator = $creator;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Add users
-     *
-     * @param \App\Entity\CharacterStyle $users
-     * @return Style
-     */
-    public function addUser(\App\Entity\CharacterStyle $users)
-    {
-        $this->users[] = $users;
+	/**
+	 * Get creator
+	 *
+	 * @return Character
+	 */
+	public function getCreator(): Character {
+		return $this->creator;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set item
+	 *
+	 * @param ItemType|null $item
+	 *
+	 * @return Style
+	 */
+	public function setItem(ItemType $item = null): static {
+		$this->item = $item;
 
-    /**
-     * Remove users
-     *
-     * @param \App\Entity\CharacterStyle $users
-     */
-    public function removeUser(\App\Entity\CharacterStyle $users)
-    {
-        $this->users->removeElement($users);
-    }
+		return $this;
+	}
 
-    /**
-     * Get users
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getUsers()
-    {
-        return $this->users;
-    }
+	/**
+	 * Get item
+	 *
+	 * @return ItemType
+	 */
+	public function getItem(): ItemType {
+		return $this->item;
+	}
 
-    /**
-     * Add counters
-     *
-     * @param \App\Entity\StyleCounter $counters
-     * @return Style
-     */
-    public function addCounter(\App\Entity\StyleCounter $counters)
-    {
-        $this->counters[] = $counters;
+	/**
+	 * Set augments
+	 *
+	 * @param SkillType|null $augments
+	 *
+	 * @return Style
+	 */
+	public function setAugments(SkillType $augments = null): static {
+		$this->augments = $augments;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove counters
-     *
-     * @param \App\Entity\StyleCounter $counters
-     */
-    public function removeCounter(\App\Entity\StyleCounter $counters)
-    {
-        $this->counters->removeElement($counters);
-    }
-
-    /**
-     * Get counters
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getCounters()
-    {
-        return $this->counters;
-    }
-
-    /**
-     * Set creator
-     *
-     * @param \App\Entity\Character $creator
-     * @return Style
-     */
-    public function setCreator(\App\Entity\Character $creator = null)
-    {
-        $this->creator = $creator;
-
-        return $this;
-    }
-
-    /**
-     * Get creator
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCreator()
-    {
-        return $this->creator;
-    }
-
-    /**
-     * Set item
-     *
-     * @param \App\Entity\ItemType $item
-     * @return Style
-     */
-    public function setItem(\App\Entity\ItemType $item = null)
-    {
-        $this->item = $item;
-
-        return $this;
-    }
-
-    /**
-     * Get item
-     *
-     * @return \App\Entity\ItemType 
-     */
-    public function getItem()
-    {
-        return $this->item;
-    }
-
-    /**
-     * Set augments
-     *
-     * @param \App\Entity\SkillType $augments
-     * @return Style
-     */
-    public function setAugments(\App\Entity\SkillType $augments = null)
-    {
-        $this->augments = $augments;
-
-        return $this;
-    }
-
-    /**
-     * Get augments
-     *
-     * @return \App\Entity\SkillType 
-     */
-    public function getAugments()
-    {
-        return $this->augments;
-    }
+	/**
+	 * Get augments
+	 *
+	 * @return SkillType
+	 */
+	public function getAugments(): SkillType {
+		return $this->augments;
+	}
 }

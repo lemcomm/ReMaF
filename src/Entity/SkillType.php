@@ -4,127 +4,101 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
-/**
- * SkillType
- */
-class SkillType
-{
-    /**
-     * @var string
-     */
-    private $name;
+class SkillType {
+	private string $name;
+	private int $id;
+	private Collection $used_by;
+	private SkillCategory $category;
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->used_by = new ArrayCollection();
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $used_by;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return SkillType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var \App\Entity\SkillCategory
-     */
-    private $category;
+		return $this;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->used_by = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return SkillType
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Add used_by
+	 *
+	 * @param EquipmentType $usedBy
+	 *
+	 * @return SkillType
+	 */
+	public function addUsedBy(EquipmentType $usedBy): static {
+		$this->used_by[] = $usedBy;
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Remove used_by
+	 *
+	 * @param EquipmentType $usedBy
+	 */
+	public function removeUsedBy(EquipmentType $usedBy): void {
+		$this->used_by->removeElement($usedBy);
+	}
 
-    /**
-     * Add used_by
-     *
-     * @param \App\Entity\EquipmentType $usedBy
-     * @return SkillType
-     */
-    public function addUsedBy(\App\Entity\EquipmentType $usedBy)
-    {
-        $this->used_by[] = $usedBy;
+	/**
+	 * Get used_by
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getUsedBy(): ArrayCollection|Collection {
+		return $this->used_by;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set category
+	 *
+	 * @param SkillCategory|null $category
+	 *
+	 * @return SkillType
+	 */
+	public function setCategory(SkillCategory $category = null): static {
+		$this->category = $category;
 
-    /**
-     * Remove used_by
-     *
-     * @param \App\Entity\EquipmentType $usedBy
-     */
-    public function removeUsedBy(\App\Entity\EquipmentType $usedBy)
-    {
-        $this->used_by->removeElement($usedBy);
-    }
+		return $this;
+	}
 
-    /**
-     * Get used_by
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getUsedBy()
-    {
-        return $this->used_by;
-    }
-
-    /**
-     * Set category
-     *
-     * @param \App\Entity\SkillCategory $category
-     * @return SkillType
-     */
-    public function setCategory(\App\Entity\SkillCategory $category = null)
-    {
-        $this->category = $category;
-
-        return $this;
-    }
-
-    /**
-     * Get category
-     *
-     * @return \App\Entity\SkillCategory 
-     */
-    public function getCategory()
-    {
-        return $this->category;
-    }
+	/**
+	 * Get category
+	 *
+	 * @return SkillCategory
+	 */
+	public function getCategory(): SkillCategory {
+		return $this->category;
+	}
 }

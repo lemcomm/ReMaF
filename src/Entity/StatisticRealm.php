@@ -2,306 +2,245 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class StatisticRealm {
+	private int $cycle;
+	private int $estates;
+	private int $population;
+	private int $soldiers;
+	private int $militia;
+	private int $area;
+	private int $characters;
+	private int $players;
+	private int $id;
+	private ?Realm $realm;
+	private ?Realm $superior;
 
-/**
- * StatisticRealm
- */
-class StatisticRealm
-{
-    /**
-     * @var integer
-     */
-    private $cycle;
+	/**
+	 * Set cycle
+	 *
+	 * @param integer $cycle
+	 *
+	 * @return StatisticRealm
+	 */
+	public function setCycle(int $cycle): static {
+		$this->cycle = $cycle;
 
-    /**
-     * @var integer
-     */
-    private $estates;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $population;
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
-    /**
-     * @var integer
-     */
-    private $soldiers;
+	/**
+	 * Set estates
+	 *
+	 * @param integer $estates
+	 *
+	 * @return StatisticRealm
+	 */
+	public function setEstates(int $estates): static {
+		$this->estates = $estates;
 
-    /**
-     * @var integer
-     */
-    private $militia;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $area;
+	/**
+	 * Get estates
+	 *
+	 * @return integer
+	 */
+	public function getEstates(): int {
+		return $this->estates;
+	}
 
-    /**
-     * @var integer
-     */
-    private $characters;
+	/**
+	 * Set population
+	 *
+	 * @param integer $population
+	 *
+	 * @return StatisticRealm
+	 */
+	public function setPopulation(int $population): static {
+		$this->population = $population;
 
-    /**
-     * @var integer
-     */
-    private $players;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get population
+	 *
+	 * @return integer
+	 */
+	public function getPopulation(): int {
+		return $this->population;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
+	/**
+	 * Set soldiers
+	 *
+	 * @param integer $soldiers
+	 *
+	 * @return StatisticRealm
+	 */
+	public function setSoldiers(int $soldiers): static {
+		$this->soldiers = $soldiers;
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $superior;
+		return $this;
+	}
 
+	/**
+	 * Get soldiers
+	 *
+	 * @return integer
+	 */
+	public function getSoldiers(): int {
+		return $this->soldiers;
+	}
 
-    /**
-     * Set cycle
-     *
-     * @param integer $cycle
-     * @return StatisticRealm
-     */
-    public function setCycle($cycle)
-    {
-        $this->cycle = $cycle;
+	/**
+	 * Set militia
+	 *
+	 * @param integer $militia
+	 *
+	 * @return StatisticRealm
+	 */
+	public function setMilitia(int $militia): static {
+		$this->militia = $militia;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get cycle
-     *
-     * @return integer 
-     */
-    public function getCycle()
-    {
-        return $this->cycle;
-    }
+	/**
+	 * Get militia
+	 *
+	 * @return integer
+	 */
+	public function getMilitia(): int {
+		return $this->militia;
+	}
 
-    /**
-     * Set estates
-     *
-     * @param integer $estates
-     * @return StatisticRealm
-     */
-    public function setEstates($estates)
-    {
-        $this->estates = $estates;
+	/**
+	 * Set area
+	 *
+	 * @param integer $area
+	 *
+	 * @return StatisticRealm
+	 */
+	public function setArea(int $area): static {
+		$this->area = $area;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get estates
-     *
-     * @return integer 
-     */
-    public function getEstates()
-    {
-        return $this->estates;
-    }
+	/**
+	 * Get area
+	 *
+	 * @return integer
+	 */
+	public function getArea(): int {
+		return $this->area;
+	}
 
-    /**
-     * Set population
-     *
-     * @param integer $population
-     * @return StatisticRealm
-     */
-    public function setPopulation($population)
-    {
-        $this->population = $population;
+	/**
+	 * Set characters
+	 *
+	 * @param integer $characters
+	 *
+	 * @return StatisticRealm
+	 */
+	public function setCharacters(int $characters): static {
+		$this->characters = $characters;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get population
-     *
-     * @return integer 
-     */
-    public function getPopulation()
-    {
-        return $this->population;
-    }
+	/**
+	 * Get characters
+	 *
+	 * @return integer
+	 */
+	public function getCharacters(): int {
+		return $this->characters;
+	}
 
-    /**
-     * Set soldiers
-     *
-     * @param integer $soldiers
-     * @return StatisticRealm
-     */
-    public function setSoldiers($soldiers)
-    {
-        $this->soldiers = $soldiers;
+	/**
+	 * Set players
+	 *
+	 * @param integer $players
+	 *
+	 * @return StatisticRealm
+	 */
+	public function setPlayers(int $players): static {
+		$this->players = $players;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get soldiers
-     *
-     * @return integer 
-     */
-    public function getSoldiers()
-    {
-        return $this->soldiers;
-    }
+	/**
+	 * Get players
+	 *
+	 * @return integer
+	 */
+	public function getPlayers(): int {
+		return $this->players;
+	}
 
-    /**
-     * Set militia
-     *
-     * @param integer $militia
-     * @return StatisticRealm
-     */
-    public function setMilitia($militia)
-    {
-        $this->militia = $militia;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return StatisticRealm
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
 
-    /**
-     * Get militia
-     *
-     * @return integer 
-     */
-    public function getMilitia()
-    {
-        return $this->militia;
-    }
+		return $this;
+	}
 
-    /**
-     * Set area
-     *
-     * @param integer $area
-     * @return StatisticRealm
-     */
-    public function setArea($area)
-    {
-        $this->area = $area;
+	/**
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set superior
+	 *
+	 * @param Realm|null $superior
+	 *
+	 * @return StatisticRealm
+	 */
+	public function setSuperior(Realm $superior = null): static {
+		$this->superior = $superior;
 
-    /**
-     * Get area
-     *
-     * @return integer 
-     */
-    public function getArea()
-    {
-        return $this->area;
-    }
+		return $this;
+	}
 
-    /**
-     * Set characters
-     *
-     * @param integer $characters
-     * @return StatisticRealm
-     */
-    public function setCharacters($characters)
-    {
-        $this->characters = $characters;
-
-        return $this;
-    }
-
-    /**
-     * Get characters
-     *
-     * @return integer 
-     */
-    public function getCharacters()
-    {
-        return $this->characters;
-    }
-
-    /**
-     * Set players
-     *
-     * @param integer $players
-     * @return StatisticRealm
-     */
-    public function setPlayers($players)
-    {
-        $this->players = $players;
-
-        return $this;
-    }
-
-    /**
-     * Get players
-     *
-     * @return integer 
-     */
-    public function getPlayers()
-    {
-        return $this->players;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set realm
-     *
-     * @param \App\Entity\Realm $realm
-     * @return StatisticRealm
-     */
-    public function setRealm(\App\Entity\Realm $realm = null)
-    {
-        $this->realm = $realm;
-
-        return $this;
-    }
-
-    /**
-     * Get realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getRealm()
-    {
-        return $this->realm;
-    }
-
-    /**
-     * Set superior
-     *
-     * @param \App\Entity\Realm $superior
-     * @return StatisticRealm
-     */
-    public function setSuperior(\App\Entity\Realm $superior = null)
-    {
-        $this->superior = $superior;
-
-        return $this;
-    }
-
-    /**
-     * Get superior
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getSuperior()
-    {
-        return $this->superior;
-    }
+	/**
+	 * Get superior
+	 *
+	 * @return Realm|null
+	 */
+	public function getSuperior(): ?Realm {
+		return $this->superior;
+	}
 }

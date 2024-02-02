@@ -1,319 +1,258 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class UnitSettings {
+	private string $name;
+	private ?string $strategy;
+	private ?string $tactic;
+	private ?bool $respect_fort;
+	private ?int $line;
+	private ?string $siege_orders;
+	private ?bool $renamable;
+	private ?float $retreat_threshold;
+	private ?bool $reinforcements;
+	private int $id;
+	private ?Unit $unit;
 
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return UnitSettings
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var string
-     */
-    private $strategy;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $tactic;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $respect_fort;
+	/**
+	 * Set strategy
+	 *
+	 * @param string|null $strategy
+	 *
+	 * @return UnitSettings
+	 */
+	public function setStrategy(?string $strategy = null): static {
+		$this->strategy = $strategy;
 
-    /**
-     * @var integer
-     */
-    private $line;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $siege_orders;
+	/**
+	 * Get strategy
+	 *
+	 * @return string
+	 */
+	public function getStrategy(): string {
+		return $this->strategy;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $renamable;
+	/**
+	 * Set tactic
+	 *
+	 * @param string|null $tactic
+	 *
+	 * @return UnitSettings
+	 */
+	public function setTactic(?string $tactic = null): static {
+		$this->tactic = $tactic;
 
-    /**
-     * @var float
-     */
-    private $retreat_threshold;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $reinforcements;
+	/**
+	 * Get tactic
+	 *
+	 * @return string
+	 */
+	public function getTactic(): string {
+		return $this->tactic;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set respect_fort
+	 *
+	 * @param boolean|null $respectFort
+	 *
+	 * @return UnitSettings
+	 */
+	public function setRespectFort(?bool $respectFort = null): static {
+		$this->respect_fort = $respectFort;
 
-    /**
-     * @var \App\Entity\Unit
-     */
-    private $unit;
+		return $this;
+	}
 
+	/**
+	 * Get respect_fort
+	 *
+	 * @return boolean
+	 */
+	public function getRespectFort(): bool {
+		return $this->respect_fort;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return UnitSettings
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Set line
+	 *
+	 * @param int|null $line
+	 *
+	 * @return UnitSettings
+	 */
+	public function setLine(?int $line = null): static {
+		$this->line = $line;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Get line
+	 *
+	 * @return integer
+	 */
+	public function getLine(): int {
+		return $this->line;
+	}
 
-    /**
-     * Set strategy
-     *
-     * @param string $strategy
-     * @return UnitSettings
-     */
-    public function setStrategy($strategy)
-    {
-        $this->strategy = $strategy;
+	/**
+	 * Set siege_orders
+	 *
+	 * @param string|null $siegeOrders
+	 *
+	 * @return UnitSettings
+	 */
+	public function setSiegeOrders(?string $siegeOrders = null): static {
+		$this->siege_orders = $siegeOrders;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get strategy
-     *
-     * @return string 
-     */
-    public function getStrategy()
-    {
-        return $this->strategy;
-    }
+	/**
+	 * Get siege_orders
+	 *
+	 * @return string
+	 */
+	public function getSiegeOrders(): string {
+		return $this->siege_orders;
+	}
 
-    /**
-     * Set tactic
-     *
-     * @param string $tactic
-     * @return UnitSettings
-     */
-    public function setTactic($tactic)
-    {
-        $this->tactic = $tactic;
+	/**
+	 * Set renamable
+	 *
+	 * @param boolean|null $renamable
+	 *
+	 * @return UnitSettings
+	 */
+	public function setRenamable(?bool $renamable = null): static {
+		$this->renamable = $renamable;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get tactic
-     *
-     * @return string 
-     */
-    public function getTactic()
-    {
-        return $this->tactic;
-    }
+	/**
+	 * Get renamable
+	 *
+	 * @return boolean
+	 */
+	public function getRenamable(): bool {
+		return $this->renamable;
+	}
 
-    /**
-     * Set respect_fort
-     *
-     * @param boolean $respectFort
-     * @return UnitSettings
-     */
-    public function setRespectFort($respectFort)
-    {
-        $this->respect_fort = $respectFort;
+	/**
+	 * Set retreat_threshold
+	 *
+	 * @param float|null $retreatThreshold
+	 *
+	 * @return UnitSettings
+	 */
+	public function setRetreatThreshold(?float $retreatThreshold = null): static {
+		$this->retreat_threshold = $retreatThreshold;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get respect_fort
-     *
-     * @return boolean 
-     */
-    public function getRespectFort()
-    {
-        return $this->respect_fort;
-    }
+	/**
+	 * Get retreat_threshold
+	 *
+	 * @return float
+	 */
+	public function getRetreatThreshold(): float {
+		return $this->retreat_threshold;
+	}
 
-    /**
-     * Set line
-     *
-     * @param integer $line
-     * @return UnitSettings
-     */
-    public function setLine($line)
-    {
-        $this->line = $line;
+	/**
+	 * Set reinforcements
+	 *
+	 * @param boolean|null $reinforcements
+	 *
+	 * @return UnitSettings
+	 */
+	public function setReinforcements(?bool $reinforcements = null): static {
+		$this->reinforcements = $reinforcements;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get line
-     *
-     * @return integer 
-     */
-    public function getLine()
-    {
-        return $this->line;
-    }
+	/**
+	 * Get reinforcements
+	 *
+	 * @return boolean
+	 */
+	public function getReinforcements(): bool {
+		return $this->reinforcements;
+	}
 
-    /**
-     * Set siege_orders
-     *
-     * @param string $siegeOrders
-     * @return UnitSettings
-     */
-    public function setSiegeOrders($siegeOrders)
-    {
-        $this->siege_orders = $siegeOrders;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set unit
+	 *
+	 * @param Unit|null $unit
+	 *
+	 * @return UnitSettings
+	 */
+	public function setUnit(Unit $unit = null): static {
+		$this->unit = $unit;
 
-    /**
-     * Get siege_orders
-     *
-     * @return string 
-     */
-    public function getSiegeOrders()
-    {
-        return $this->siege_orders;
-    }
+		return $this;
+	}
 
-    /**
-     * Set renamable
-     *
-     * @param boolean $renamable
-     * @return UnitSettings
-     */
-    public function setRenamable($renamable)
-    {
-        $this->renamable = $renamable;
+	/**
+	 * Get unit
+	 *
+	 * @return Unit
+	 */
+	public function getUnit(): Unit {
+		return $this->unit;
+	}
 
-        return $this;
-    }
+	public function isRespectFort(): ?bool {
+		return $this->respect_fort;
+	}
 
-    /**
-     * Get renamable
-     *
-     * @return boolean 
-     */
-    public function getRenamable()
-    {
-        return $this->renamable;
-    }
+	public function isRenamable(): ?bool {
+		return $this->renamable;
+	}
 
-    /**
-     * Set retreat_threshold
-     *
-     * @param float $retreatThreshold
-     * @return UnitSettings
-     */
-    public function setRetreatThreshold($retreatThreshold)
-    {
-        $this->retreat_threshold = $retreatThreshold;
-
-        return $this;
-    }
-
-    /**
-     * Get retreat_threshold
-     *
-     * @return float 
-     */
-    public function getRetreatThreshold()
-    {
-        return $this->retreat_threshold;
-    }
-
-    /**
-     * Set reinforcements
-     *
-     * @param boolean $reinforcements
-     * @return UnitSettings
-     */
-    public function setReinforcements($reinforcements)
-    {
-        $this->reinforcements = $reinforcements;
-
-        return $this;
-    }
-
-    /**
-     * Get reinforcements
-     *
-     * @return boolean 
-     */
-    public function getReinforcements()
-    {
-        return $this->reinforcements;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set unit
-     *
-     * @param \App\Entity\Unit $unit
-     * @return UnitSettings
-     */
-    public function setUnit(\App\Entity\Unit $unit = null)
-    {
-        $this->unit = $unit;
-
-        return $this;
-    }
-
-    /**
-     * Get unit
-     *
-     * @return \App\Entity\Unit 
-     */
-    public function getUnit()
-    {
-        return $this->unit;
-    }
-
-    public function isRespectFort(): ?bool
-    {
-        return $this->respect_fort;
-    }
-
-    public function isRenamable(): ?bool
-    {
-        return $this->renamable;
-    }
-
-    public function isReinforcements(): ?bool
-    {
-        return $this->reinforcements;
-    }
+	public function isReinforcements(): ?bool {
+		return $this->reinforcements;
+	}
 }

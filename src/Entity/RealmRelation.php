@@ -2,279 +2,224 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * RealmRelation
- */
-class RealmRelation
-{
-    /**
-     * @var string
-     */
-    private $status;
+class RealmRelation {
+	private string $status;
+	private string $public;
+	private string $internal;
+	private string $delivered;
+	private DateTime $last_change;
+	private int $id;
+	private ?Realm $source_realm;
+	private ?Realm $target_realm;
+	private ?Association $source_association;
+	private ?Association $target_association;
 
-    /**
-     * @var string
-     */
-    private $public;
+	/**
+	 * Set status
+	 *
+	 * @param string $status
+	 *
+	 * @return RealmRelation
+	 */
+	public function setStatus(string $status): static {
+		$this->status = $status;
 
-    /**
-     * @var string
-     */
-    private $internal;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $delivered;
+	/**
+	 * Get status
+	 *
+	 * @return string
+	 */
+	public function getStatus(): string {
+		return $this->status;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $last_change;
+	/**
+	 * Set public
+	 *
+	 * @param string $public
+	 *
+	 * @return RealmRelation
+	 */
+	public function setPublic(string $public): static {
+		$this->public = $public;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $source_realm;
+	/**
+	 * Get public
+	 *
+	 * @return string
+	 */
+	public function getPublic(): string {
+		return $this->public;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $target_realm;
+	/**
+	 * Set internal
+	 *
+	 * @param string $internal
+	 *
+	 * @return RealmRelation
+	 */
+	public function setInternal(string $internal): static {
+		$this->internal = $internal;
 
-    /**
-     * @var \App\Entity\Association
-     */
-    private $source_association;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Association
-     */
-    private $target_association;
+	/**
+	 * Get internal
+	 *
+	 * @return string
+	 */
+	public function getInternal(): string {
+		return $this->internal;
+	}
 
+	/**
+	 * Set delivered
+	 *
+	 * @param string $delivered
+	 *
+	 * @return RealmRelation
+	 */
+	public function setDelivered(string $delivered): static {
+		$this->delivered = $delivered;
 
-    /**
-     * Set status
-     *
-     * @param string $status
-     * @return RealmRelation
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get delivered
+	 *
+	 * @return string
+	 */
+	public function getDelivered(): string {
+		return $this->delivered;
+	}
 
-    /**
-     * Get status
-     *
-     * @return string 
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
+	/**
+	 * Set last_change
+	 *
+	 * @param DateTime $lastChange
+	 *
+	 * @return RealmRelation
+	 */
+	public function setLastChange(DateTime $lastChange): static {
+		$this->last_change = $lastChange;
 
-    /**
-     * Set public
-     *
-     * @param string $public
-     * @return RealmRelation
-     */
-    public function setPublic($public)
-    {
-        $this->public = $public;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get last_change
+	 *
+	 * @return DateTime
+	 */
+	public function getLastChange(): DateTime {
+		return $this->last_change;
+	}
 
-    /**
-     * Get public
-     *
-     * @return string 
-     */
-    public function getPublic()
-    {
-        return $this->public;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set internal
-     *
-     * @param string $internal
-     * @return RealmRelation
-     */
-    public function setInternal($internal)
-    {
-        $this->internal = $internal;
+	/**
+	 * Set source_realm
+	 *
+	 * @param Realm|null $sourceRealm
+	 *
+	 * @return RealmRelation
+	 */
+	public function setSourceRealm(Realm $sourceRealm = null): static {
+		$this->source_realm = $sourceRealm;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get internal
-     *
-     * @return string 
-     */
-    public function getInternal()
-    {
-        return $this->internal;
-    }
+	/**
+	 * Get source_realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getSourceRealm(): ?Realm {
+		return $this->source_realm;
+	}
 
-    /**
-     * Set delivered
-     *
-     * @param string $delivered
-     * @return RealmRelation
-     */
-    public function setDelivered($delivered)
-    {
-        $this->delivered = $delivered;
+	/**
+	 * Set target_realm
+	 *
+	 * @param Realm|null $targetRealm
+	 *
+	 * @return RealmRelation
+	 */
+	public function setTargetRealm(Realm $targetRealm = null): static {
+		$this->target_realm = $targetRealm;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get delivered
-     *
-     * @return string 
-     */
-    public function getDelivered()
-    {
-        return $this->delivered;
-    }
+	/**
+	 * Get target_realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getTargetRealm(): ?Realm {
+		return $this->target_realm;
+	}
 
-    /**
-     * Set last_change
-     *
-     * @param \DateTime $lastChange
-     * @return RealmRelation
-     */
-    public function setLastChange($lastChange)
-    {
-        $this->last_change = $lastChange;
+	/**
+	 * Set source_association
+	 *
+	 * @param Association|null $sourceAssociation
+	 *
+	 * @return RealmRelation
+	 */
+	public function setSourceAssociation(Association $sourceAssociation = null): static {
+		$this->source_association = $sourceAssociation;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get last_change
-     *
-     * @return \DateTime 
-     */
-    public function getLastChange()
-    {
-        return $this->last_change;
-    }
+	/**
+	 * Get source_association
+	 *
+	 * @return Association|null
+	 */
+	public function getSourceAssociation(): ?Association {
+		return $this->source_association;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Set target_association
+	 *
+	 * @param Association|null $targetAssociation
+	 *
+	 * @return RealmRelation
+	 */
+	public function setTargetAssociation(Association $targetAssociation = null): static {
+		$this->target_association = $targetAssociation;
 
-    /**
-     * Set source_realm
-     *
-     * @param \App\Entity\Realm $sourceRealm
-     * @return RealmRelation
-     */
-    public function setSourceRealm(\App\Entity\Realm $sourceRealm = null)
-    {
-        $this->source_realm = $sourceRealm;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get source_realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getSourceRealm()
-    {
-        return $this->source_realm;
-    }
-
-    /**
-     * Set target_realm
-     *
-     * @param \App\Entity\Realm $targetRealm
-     * @return RealmRelation
-     */
-    public function setTargetRealm(\App\Entity\Realm $targetRealm = null)
-    {
-        $this->target_realm = $targetRealm;
-
-        return $this;
-    }
-
-    /**
-     * Get target_realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getTargetRealm()
-    {
-        return $this->target_realm;
-    }
-
-    /**
-     * Set source_association
-     *
-     * @param \App\Entity\Association $sourceAssociation
-     * @return RealmRelation
-     */
-    public function setSourceAssociation(\App\Entity\Association $sourceAssociation = null)
-    {
-        $this->source_association = $sourceAssociation;
-
-        return $this;
-    }
-
-    /**
-     * Get source_association
-     *
-     * @return \App\Entity\Association 
-     */
-    public function getSourceAssociation()
-    {
-        return $this->source_association;
-    }
-
-    /**
-     * Set target_association
-     *
-     * @param \App\Entity\Association $targetAssociation
-     * @return RealmRelation
-     */
-    public function setTargetAssociation(\App\Entity\Association $targetAssociation = null)
-    {
-        $this->target_association = $targetAssociation;
-
-        return $this;
-    }
-
-    /**
-     * Get target_association
-     *
-     * @return \App\Entity\Association 
-     */
-    public function getTargetAssociation()
-    {
-        return $this->target_association;
-    }
+	/**
+	 * Get target_association
+	 *
+	 * @return Association|null
+	 */
+	public function getTargetAssociation(): ?Association {
+		return $this->target_association;
+	}
 }

@@ -2,124 +2,99 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * UserLimits
- */
-class UserLimits
-{
-    /**
-     * @var integer
-     */
-    private $artifacts;
+class UserLimits {
+	private int $artifacts;
+	private DateTime $places_date;
+	private int $places;
+	private User $user;
 
-    /**
-     * @var \DateTime
-     */
-    private $places_date;
+	/**
+	 * Set artifacts
+	 *
+	 * @param integer $artifacts
+	 *
+	 * @return UserLimits
+	 */
+	public function setArtifacts(int $artifacts): static {
+		$this->artifacts = $artifacts;
 
-    /**
-     * @var integer
-     */
-    private $places;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\User
-     */
-    private $user;
+	/**
+	 * Get artifacts
+	 *
+	 * @return integer
+	 */
+	public function getArtifacts(): int {
+		return $this->artifacts;
+	}
 
+	/**
+	 * Set places_date
+	 *
+	 * @param DateTime $placesDate
+	 *
+	 * @return UserLimits
+	 */
+	public function setPlacesDate(DateTime $placesDate): static {
+		$this->places_date = $placesDate;
 
-    /**
-     * Set artifacts
-     *
-     * @param integer $artifacts
-     * @return UserLimits
-     */
-    public function setArtifacts($artifacts)
-    {
-        $this->artifacts = $artifacts;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get places_date
+	 *
+	 * @return DateTime
+	 */
+	public function getPlacesDate(): DateTime {
+		return $this->places_date;
+	}
 
-    /**
-     * Get artifacts
-     *
-     * @return integer 
-     */
-    public function getArtifacts()
-    {
-        return $this->artifacts;
-    }
+	/**
+	 * Set places
+	 *
+	 * @param integer $places
+	 *
+	 * @return UserLimits
+	 */
+	public function setPlaces(int $places): static {
+		$this->places = $places;
 
-    /**
-     * Set places_date
-     *
-     * @param \DateTime $placesDate
-     * @return UserLimits
-     */
-    public function setPlacesDate($placesDate)
-    {
-        $this->places_date = $placesDate;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get places
+	 *
+	 * @return integer
+	 */
+	public function getPlaces(): int {
+		return $this->places;
+	}
 
-    /**
-     * Get places_date
-     *
-     * @return \DateTime 
-     */
-    public function getPlacesDate()
-    {
-        return $this->places_date;
-    }
+	/**
+	 * Set user
+	 *
+	 * @param User $user
+	 *
+	 * @return UserLimits
+	 */
+	public function setUser(User $user): static {
+		$this->user = $user;
 
-    /**
-     * Set places
-     *
-     * @param integer $places
-     * @return UserLimits
-     */
-    public function setPlaces($places)
-    {
-        $this->places = $places;
+		return $this;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get places
-     *
-     * @return integer 
-     */
-    public function getPlaces()
-    {
-        return $this->places;
-    }
-
-    /**
-     * Set user
-     *
-     * @param \App\Entity\User $user
-     * @return UserLimits
-     */
-    public function setUser(\App\Entity\User $user)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \App\Entity\User 
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
+	/**
+	 * Get user
+	 *
+	 * @return User
+	 */
+	public function getUser(): User {
+		return $this->user;
+	}
 }

@@ -2,166 +2,130 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class StatisticResources {
+	private int $cycle;
+	private int $supply;
+	private int $demand;
+	private int $trade;
+	private int $id;
+	private ?ResourceType $resource;
 
-/**
- * StatisticResources
- */
-class StatisticResources
-{
-    /**
-     * @var integer
-     */
-    private $cycle;
+	/**
+	 * Set cycle
+	 *
+	 * @param integer $cycle
+	 *
+	 * @return StatisticResources
+	 */
+	public function setCycle(int $cycle): static {
+		$this->cycle = $cycle;
 
-    /**
-     * @var integer
-     */
-    private $supply;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $demand;
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
-    /**
-     * @var integer
-     */
-    private $trade;
+	/**
+	 * Set supply
+	 *
+	 * @param integer $supply
+	 *
+	 * @return StatisticResources
+	 */
+	public function setSupply(int $supply): static {
+		$this->supply = $supply;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\ResourceType
-     */
-    private $resource;
+	/**
+	 * Get supply
+	 *
+	 * @return integer
+	 */
+	public function getSupply(): int {
+		return $this->supply;
+	}
 
+	/**
+	 * Set demand
+	 *
+	 * @param integer $demand
+	 *
+	 * @return StatisticResources
+	 */
+	public function setDemand(int $demand): static {
+		$this->demand = $demand;
 
-    /**
-     * Set cycle
-     *
-     * @param integer $cycle
-     * @return StatisticResources
-     */
-    public function setCycle($cycle)
-    {
-        $this->cycle = $cycle;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get demand
+	 *
+	 * @return integer
+	 */
+	public function getDemand(): int {
+		return $this->demand;
+	}
 
-    /**
-     * Get cycle
-     *
-     * @return integer 
-     */
-    public function getCycle()
-    {
-        return $this->cycle;
-    }
+	/**
+	 * Set trade
+	 *
+	 * @param integer $trade
+	 *
+	 * @return StatisticResources
+	 */
+	public function setTrade(int $trade): static {
+		$this->trade = $trade;
 
-    /**
-     * Set supply
-     *
-     * @param integer $supply
-     * @return StatisticResources
-     */
-    public function setSupply($supply)
-    {
-        $this->supply = $supply;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get trade
+	 *
+	 * @return integer
+	 */
+	public function getTrade(): int {
+		return $this->trade;
+	}
 
-    /**
-     * Get supply
-     *
-     * @return integer 
-     */
-    public function getSupply()
-    {
-        return $this->supply;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set demand
-     *
-     * @param integer $demand
-     * @return StatisticResources
-     */
-    public function setDemand($demand)
-    {
-        $this->demand = $demand;
+	/**
+	 * Set resource
+	 *
+	 * @param ResourceType|null $resource
+	 *
+	 * @return StatisticResources
+	 */
+	public function setResource(ResourceType $resource = null): static {
+		$this->resource = $resource;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get demand
-     *
-     * @return integer 
-     */
-    public function getDemand()
-    {
-        return $this->demand;
-    }
-
-    /**
-     * Set trade
-     *
-     * @param integer $trade
-     * @return StatisticResources
-     */
-    public function setTrade($trade)
-    {
-        $this->trade = $trade;
-
-        return $this;
-    }
-
-    /**
-     * Get trade
-     *
-     * @return integer 
-     */
-    public function getTrade()
-    {
-        return $this->trade;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set resource
-     *
-     * @param \App\Entity\ResourceType $resource
-     * @return StatisticResources
-     */
-    public function setResource(\App\Entity\ResourceType $resource = null)
-    {
-        $this->resource = $resource;
-
-        return $this;
-    }
-
-    /**
-     * Get resource
-     *
-     * @return \App\Entity\ResourceType 
-     */
-    public function getResource()
-    {
-        return $this->resource;
-    }
+	/**
+	 * Get resource
+	 *
+	 * @return ResourceType
+	 */
+	public function getResource(): ResourceType {
+		return $this->resource;
+	}
 }

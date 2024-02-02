@@ -2,167 +2,132 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * SoldierLog
- */
-class SoldierLog
-{
-    /**
-     * @var string
-     */
-    private $content;
+class SoldierLog {
+	private string $content;
+	private array $data;
+	private DateTime $ts;
+	private int $cycle;
+	private int $id;
+	private ?Soldier $soldier;
 
-    /**
-     * @var array
-     */
-    private $data;
+	/**
+	 * Set content
+	 *
+	 * @param string $content
+	 *
+	 * @return SoldierLog
+	 */
+	public function setContent(string $content): static {
+		$this->content = $content;
 
-    /**
-     * @var \DateTime
-     */
-    private $ts;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $cycle;
+	/**
+	 * Get content
+	 *
+	 * @return string
+	 */
+	public function getContent(): string {
+		return $this->content;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set data
+	 *
+	 * @param array $data
+	 *
+	 * @return SoldierLog
+	 */
+	public function setData(array $data): static {
+		$this->data = $data;
 
-    /**
-     * @var \App\Entity\Soldier
-     */
-    private $soldier;
+		return $this;
+	}
 
+	/**
+	 * Get data
+	 *
+	 * @return array
+	 */
+	public function getData(): array {
+		return $this->data;
+	}
 
-    /**
-     * Set content
-     *
-     * @param string $content
-     * @return SoldierLog
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return SoldierLog
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get content
-     *
-     * @return string 
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
-    /**
-     * Set data
-     *
-     * @param array $data
-     * @return SoldierLog
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
+	/**
+	 * Set cycle
+	 *
+	 * @param integer $cycle
+	 *
+	 * @return SoldierLog
+	 */
+	public function setCycle(int $cycle): static {
+		$this->cycle = $cycle;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get data
-     *
-     * @return array 
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return SoldierLog
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set soldier
+	 *
+	 * @param Soldier|null $soldier
+	 *
+	 * @return SoldierLog
+	 */
+	public function setSoldier(Soldier $soldier = null): static {
+		$this->soldier = $soldier;
 
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
+		return $this;
+	}
 
-    /**
-     * Set cycle
-     *
-     * @param integer $cycle
-     * @return SoldierLog
-     */
-    public function setCycle($cycle)
-    {
-        $this->cycle = $cycle;
-
-        return $this;
-    }
-
-    /**
-     * Get cycle
-     *
-     * @return integer 
-     */
-    public function getCycle()
-    {
-        return $this->cycle;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set soldier
-     *
-     * @param \App\Entity\Soldier $soldier
-     * @return SoldierLog
-     */
-    public function setSoldier(\App\Entity\Soldier $soldier = null)
-    {
-        $this->soldier = $soldier;
-
-        return $this;
-    }
-
-    /**
-     * Get soldier
-     *
-     * @return \App\Entity\Soldier 
-     */
-    public function getSoldier()
-    {
-        return $this->soldier;
-    }
+	/**
+	 * Get soldier
+	 *
+	 * @return Soldier
+	 */
+	public function getSoldier(): Soldier {
+		return $this->soldier;
+	}
 }

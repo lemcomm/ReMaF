@@ -2,276 +2,227 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * Skill
- */
 class Skill {
+	private int $theory;
+	private int $practice;
+	private int $theory_high;
+	private int $practice_high;
+	private DateTime $updated;
+	private int $id;
+	private Character $character;
+	private SkillType $type;
+	private SkillCategory $category;
 
-        public function evaluate() {
-                $pract = $this->practice?$this->practice:1;
-                $theory = $this->theory?$this->theory:1;
-                if ($pract >= $theory * 3) {
-                        # Theory is less than a third of pracitce. Use practice but subtract a quarter.
-                        $score = $pract * 0.75;
-                } elseif ($pract * 10 <= $theory) {
-                        # Practice is less than a tenth of theory. Use theory but remove four fifths.
-                        $score = $theory * 0.2;
-                } else {
-                        $score = max($theory, $pract);
-                }
-                return sqrt($score * 5);
-        }
+	public function evaluate(): float {
+		$pract = $this->practice ?: 1;
+		$theory = $this->theory ?: 1;
+		if ($pract >= $theory * 3) {
+			# Theory is less than a third of practice. Use practice but subtract a quarter.
+			$score = $pract * 0.75;
+		} elseif ($pract * 10 <= $theory) {
+			# Practice is less than a tenth of theory. Use theory but remove four fifths.
+			$score = $theory * 0.2;
+		} else {
+			$score = max($theory, $pract);
+		}
+		return sqrt($score * 5);
+	}
 
-        public function getScore() {
-                $char = $this->character;
-                $scores = [$this->evaluate()];
-                foreach ($char->getSkills() as $each) {
-                        if ($each->getCategory() === $this->category && $each !== $this) {
-                                $scores[] = $each->evaluate()/2;
-                        }
-                }
-                return max($scores);
-        }
-    /**
-     * @var integer
-     */
-    private $theory;
+	public function getScore() {
+		$char = $this->character;
+		$scores = [$this->evaluate()];
+		foreach ($char->getSkills() as $each) {
+			if ($each->getCategory() === $this->category && $each !== $this) {
+				$scores[] = $each->evaluate() / 2;
+			}
+		}
+		return max($scores);
+	}
 
-    /**
-     * @var integer
-     */
-    private $practice;
+	/**
+	 * Set theory
+	 *
+	 * @param integer $theory
+	 *
+	 * @return Skill
+	 */
+	public function setTheory(int $theory): static {
+		$this->theory = $theory;
 
-    /**
-     * @var integer
-     */
-    private $theory_high;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $practice_high;
+	/**
+	 * Get theory
+	 *
+	 * @return integer
+	 */
+	public function getTheory(): int {
+		return $this->theory;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $updated;
+	/**
+	 * Set practice
+	 *
+	 * @param integer $practice
+	 *
+	 * @return Skill
+	 */
+	public function setPractice(int $practice): static {
+		$this->practice = $practice;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Get practice
+	 *
+	 * @return integer
+	 */
+	public function getPractice(): int {
+		return $this->practice;
+	}
 
-    /**
-     * @var \App\Entity\SkillType
-     */
-    private $type;
+	/**
+	 * Set theory_high
+	 *
+	 * @param integer $theoryHigh
+	 *
+	 * @return Skill
+	 */
+	public function setTheoryHigh(int $theoryHigh): static {
+		$this->theory_high = $theoryHigh;
 
-    /**
-     * @var \App\Entity\SkillCategory
-     */
-    private $category;
+		return $this;
+	}
 
+	/**
+	 * Get theory_high
+	 *
+	 * @return integer
+	 */
+	public function getTheoryHigh(): int {
+		return $this->theory_high;
+	}
 
-    /**
-     * Set theory
-     *
-     * @param integer $theory
-     * @return Skill
-     */
-    public function setTheory($theory)
-    {
-        $this->theory = $theory;
+	/**
+	 * Set practice_high
+	 *
+	 * @param integer $practiceHigh
+	 *
+	 * @return Skill
+	 */
+	public function setPracticeHigh(int $practiceHigh): static {
+		$this->practice_high = $practiceHigh;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get theory
-     *
-     * @return integer 
-     */
-    public function getTheory()
-    {
-        return $this->theory;
-    }
+	/**
+	 * Get practice_high
+	 *
+	 * @return integer
+	 */
+	public function getPracticeHigh(): int {
+		return $this->practice_high;
+	}
 
-    /**
-     * Set practice
-     *
-     * @param integer $practice
-     * @return Skill
-     */
-    public function setPractice($practice)
-    {
-        $this->practice = $practice;
+	/**
+	 * Set updated
+	 *
+	 * @param DateTime $updated
+	 *
+	 * @return Skill
+	 */
+	public function setUpdated(DateTime $updated): static {
+		$this->updated = $updated;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get practice
-     *
-     * @return integer 
-     */
-    public function getPractice()
-    {
-        return $this->practice;
-    }
+	/**
+	 * Get updated
+	 *
+	 * @return DateTime
+	 */
+	public function getUpdated(): DateTime {
+		return $this->updated;
+	}
 
-    /**
-     * Set theory_high
-     *
-     * @param integer $theoryHigh
-     * @return Skill
-     */
-    public function setTheoryHigh($theoryHigh)
-    {
-        $this->theory_high = $theoryHigh;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return Skill
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Get theory_high
-     *
-     * @return integer 
-     */
-    public function getTheoryHigh()
-    {
-        return $this->theory_high;
-    }
+		return $this;
+	}
 
-    /**
-     * Set practice_high
-     *
-     * @param integer $practiceHigh
-     * @return Skill
-     */
-    public function setPracticeHigh($practiceHigh)
-    {
-        $this->practice_high = $practiceHigh;
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set type
+	 *
+	 * @param SkillType|null $type
+	 *
+	 * @return Skill
+	 */
+	public function setType(SkillType $type = null): static {
+		$this->type = $type;
 
-    /**
-     * Get practice_high
-     *
-     * @return integer 
-     */
-    public function getPracticeHigh()
-    {
-        return $this->practice_high;
-    }
+		return $this;
+	}
 
-    /**
-     * Set updated
-     *
-     * @param \DateTime $updated
-     * @return Skill
-     */
-    public function setUpdated($updated)
-    {
-        $this->updated = $updated;
+	/**
+	 * Get type
+	 *
+	 * @return SkillType
+	 */
+	public function getType(): SkillType {
+		return $this->type;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set category
+	 *
+	 * @param SkillCategory|null $category
+	 *
+	 * @return Skill
+	 */
+	public function setCategory(SkillCategory $category = null): static {
+		$this->category = $category;
 
-    /**
-     * Get updated
-     *
-     * @return \DateTime 
-     */
-    public function getUpdated()
-    {
-        return $this->updated;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return Skill
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
-
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set type
-     *
-     * @param \App\Entity\SkillType $type
-     * @return Skill
-     */
-    public function setType(\App\Entity\SkillType $type = null)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return \App\Entity\SkillType 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set category
-     *
-     * @param \App\Entity\SkillCategory $category
-     * @return Skill
-     */
-    public function setCategory(\App\Entity\SkillCategory $category = null)
-    {
-        $this->category = $category;
-
-        return $this;
-    }
-
-    /**
-     * Get category
-     *
-     * @return \App\Entity\SkillCategory 
-     */
-    public function getCategory()
-    {
-        return $this->category;
-    }
+	/**
+	 * Get category
+	 *
+	 * @return SkillCategory
+	 */
+	public function getCategory(): SkillCategory {
+		return $this->category;
+	}
 }

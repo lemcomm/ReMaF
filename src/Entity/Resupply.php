@@ -2,53 +2,24 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-
-/**
- * Resupply
- */
 class Resupply
 {
-    /**
-     * @var integer
-     */
-    private $travel_days;
-
-    /**
-     * @var integer
-     */
-    private $quantity;
-
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var \App\Entity\Unit
-     */
-    private $unit;
-
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $origin;
+	private int $travel_days;
+	private int $quantity;
+	private string $type;
+	private int $id;
+	private Unit $unit;
+	private Settlement $origin;
 
 
     /**
      * Set travel_days
      *
      * @param integer $travelDays
+     *
      * @return Resupply
      */
-    public function setTravelDays($travelDays)
-    {
+    public function setTravelDays(int $travelDays): static {
         $this->travel_days = $travelDays;
 
         return $this;
@@ -59,8 +30,7 @@ class Resupply
      *
      * @return integer 
      */
-    public function getTravelDays()
-    {
+    public function getTravelDays(): int {
         return $this->travel_days;
     }
 
@@ -68,10 +38,10 @@ class Resupply
      * Set quantity
      *
      * @param integer $quantity
+     *
      * @return Resupply
      */
-    public function setQuantity($quantity)
-    {
+    public function setQuantity(int $quantity): static {
         $this->quantity = $quantity;
 
         return $this;
@@ -82,8 +52,7 @@ class Resupply
      *
      * @return integer 
      */
-    public function getQuantity()
-    {
+    public function getQuantity(): int {
         return $this->quantity;
     }
 
@@ -91,10 +60,10 @@ class Resupply
      * Set type
      *
      * @param string $type
+     *
      * @return Resupply
      */
-    public function setType($type)
-    {
+    public function setType(string $type): static {
         $this->type = $type;
 
         return $this;
@@ -105,8 +74,7 @@ class Resupply
      *
      * @return string 
      */
-    public function getType()
-    {
+    public function getType(): string {
         return $this->type;
     }
 
@@ -115,19 +83,18 @@ class Resupply
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId(): int {
         return $this->id;
     }
 
-    /**
-     * Set unit
-     *
-     * @param \App\Entity\Unit $unit
-     * @return Resupply
-     */
-    public function setUnit(\App\Entity\Unit $unit = null)
-    {
+	/**
+	 * Set unit
+	 *
+	 * @param Unit|null $unit
+	 *
+	 * @return Resupply
+	 */
+    public function setUnit(Unit $unit = null): static {
         $this->unit = $unit;
 
         return $this;
@@ -136,21 +103,19 @@ class Resupply
     /**
      * Get unit
      *
-     * @return \App\Entity\Unit 
+     * @return Unit
      */
-    public function getUnit()
-    {
+    public function getUnit(): Unit {
         return $this->unit;
     }
 
-    /**
-     * Set origin
-     *
-     * @param \App\Entity\Settlement $origin
-     * @return Resupply
-     */
-    public function setOrigin(\App\Entity\Settlement $origin = null)
-    {
+	/**
+	 * Set origin
+	 *
+	 * @param Settlement|null $origin
+	 * @return Resupply
+	 */
+    public function setOrigin(Settlement $origin = null): static {
         $this->origin = $origin;
 
         return $this;
@@ -159,10 +124,9 @@ class Resupply
     /**
      * Get origin
      *
-     * @return \App\Entity\Settlement 
+     * @return Settlement
      */
-    public function getOrigin()
-    {
+    public function getOrigin(): Settlement {
         return $this->origin;
     }
 }

@@ -2,181 +2,142 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class WarTarget {
+	private bool $attacked;
+	private bool $taken_ever;
+	private bool $taken_currently;
+	private int $id;
+	private ?War $war;
+	private ?Settlement $settlement;
 
-/**
- * WarTarget
- */
-class WarTarget
-{
-    /**
-     * @var boolean
-     */
-    private $attacked;
+	/**
+	 * Set attacked
+	 *
+	 * @param boolean $attacked
+	 *
+	 * @return WarTarget
+	 */
+	public function setAttacked(bool $attacked): static {
+		$this->attacked = $attacked;
 
-    /**
-     * @var boolean
-     */
-    private $taken_ever;
+		return $this;
+	}
 
-    /**
-     * @var boolean
-     */
-    private $taken_currently;
+	/**
+	 * Get attacked
+	 *
+	 * @return boolean
+	 */
+	public function getAttacked(): bool {
+		return $this->attacked;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set taken_ever
+	 *
+	 * @param boolean $takenEver
+	 *
+	 * @return WarTarget
+	 */
+	public function setTakenEver(bool $takenEver): static {
+		$this->taken_ever = $takenEver;
 
-    /**
-     * @var \App\Entity\War
-     */
-    private $war;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
+	/**
+	 * Get taken_ever
+	 *
+	 * @return boolean
+	 */
+	public function getTakenEver(): bool {
+		return $this->taken_ever;
+	}
 
+	/**
+	 * Set taken_currently
+	 *
+	 * @param boolean $takenCurrently
+	 *
+	 * @return WarTarget
+	 */
+	public function setTakenCurrently(bool $takenCurrently): static {
+		$this->taken_currently = $takenCurrently;
 
-    /**
-     * Set attacked
-     *
-     * @param boolean $attacked
-     * @return WarTarget
-     */
-    public function setAttacked($attacked)
-    {
-        $this->attacked = $attacked;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get taken_currently
+	 *
+	 * @return boolean
+	 */
+	public function getTakenCurrently(): bool {
+		return $this->taken_currently;
+	}
 
-    /**
-     * Get attacked
-     *
-     * @return boolean 
-     */
-    public function getAttacked()
-    {
-        return $this->attacked;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set taken_ever
-     *
-     * @param boolean $takenEver
-     * @return WarTarget
-     */
-    public function setTakenEver($takenEver)
-    {
-        $this->taken_ever = $takenEver;
+	/**
+	 * Set war
+	 *
+	 * @param War|null $war
+	 *
+	 * @return WarTarget
+	 */
+	public function setWar(War $war = null): static {
+		$this->war = $war;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get taken_ever
-     *
-     * @return boolean 
-     */
-    public function getTakenEver()
-    {
-        return $this->taken_ever;
-    }
+	/**
+	 * Get war
+	 *
+	 * @return War|null
+	 */
+	public function getWar(): ?War {
+		return $this->war;
+	}
 
-    /**
-     * Set taken_currently
-     *
-     * @param boolean $takenCurrently
-     * @return WarTarget
-     */
-    public function setTakenCurrently($takenCurrently)
-    {
-        $this->taken_currently = $takenCurrently;
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return WarTarget
+	 */
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get taken_currently
-     *
-     * @return boolean 
-     */
-    public function getTakenCurrently()
-    {
-        return $this->taken_currently;
-    }
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement|null
+	 */
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	public function isAttacked(): ?bool {
+		return $this->attacked;
+	}
 
-    /**
-     * Set war
-     *
-     * @param \App\Entity\War $war
-     * @return WarTarget
-     */
-    public function setWar(\App\Entity\War $war = null)
-    {
-        $this->war = $war;
+	public function isTakenEver(): ?bool {
+		return $this->taken_ever;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get war
-     *
-     * @return \App\Entity\War 
-     */
-    public function getWar()
-    {
-        return $this->war;
-    }
-
-    /**
-     * Set settlement
-     *
-     * @param \App\Entity\Settlement $settlement
-     * @return WarTarget
-     */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
-        $this->settlement = $settlement;
-
-        return $this;
-    }
-
-    /**
-     * Get settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getSettlement()
-    {
-        return $this->settlement;
-    }
-
-    public function isAttacked(): ?bool
-    {
-        return $this->attacked;
-    }
-
-    public function isTakenEver(): ?bool
-    {
-        return $this->taken_ever;
-    }
-
-    public function isTakenCurrently(): ?bool
-    {
-        return $this->taken_currently;
-    }
+	public function isTakenCurrently(): ?bool {
+		return $this->taken_currently;
+	}
 }

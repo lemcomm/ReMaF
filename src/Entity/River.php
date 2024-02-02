@@ -2,82 +2,63 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
 
-/**
- * River
- */
-class River
-{
-    /**
-     * @var string
-     */
-    private $name;
+class River {
+	private string $name;
+	private linestring $course;
+	private int $id;
 
-    /**
-     * @var linestring
-     */
-    private $course;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return River
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return River
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Set course
+	 *
+	 * @param linestring $course
+	 *
+	 * @return River
+	 */
+	public function setCourse(LineString $course): static {
+		$this->course = $course;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Get course
+	 *
+	 * @return linestring
+	 */
+	public function getCourse(): LineString {
+		return $this->course;
+	}
 
-    /**
-     * Set course
-     *
-     * @param linestring $course
-     * @return River
-     */
-    public function setCourse($course)
-    {
-        $this->course = $course;
-
-        return $this;
-    }
-
-    /**
-     * Get course
-     *
-     * @return linestring 
-     */
-    public function getCourse()
-    {
-        return $this->course;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 }

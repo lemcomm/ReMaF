@@ -1,426 +1,381 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 
 class War {
+	private string $summary;
+	private string $description;
+	private int $timer;
+	private int $id;
+	private ?EventLog $log;
+	private Collection $targets;
+	private Collection $related_battles;
+	private Collection $related_battle_reports;
+	private Collection $sieges;
+	private ?Realm $realm;
+	private array|bool $attackers = false;
+	private array|bool $defenders = false;
 
-	private $attackers=false;
-	private $defenders=false;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->targets = new ArrayCollection();
+		$this->related_battles = new ArrayCollection();
+		$this->related_battle_reports = new ArrayCollection();
+		$this->sieges = new ArrayCollection();
+	}
 
-	public function getName() {
-         		return $this->getSummary();
-         	}
+	public function getName(): string {
+		return $this->getSummary();
+	}
 
-	public function getScore() {
-         		$score = 0;
-         		if ($this->getTimer() > 60) {
-         			$scores = array('now'=>1, 'ever'=>0, 'else'=>0);
-         		} elseif ($this->getTimer() > 30) {
-         			$scores = array('now'=>1, 'ever'=>0, 'else'=>-1);
-         		} else {
-         			$scores = array('now'=>1, 'ever'=>-1, 'else'=>-3);
-         		}
-         		foreach ($this->getTargets() as $target) {
-         			if ($target->getTakenCurrently()) {
-         				if ($this->getTimer() <= 0) {
-         					$score+=3;
-         				} else {
-         					$score+=$scores['now'];
-         				}
-         			} elseif ($target->getTakenEver()) {
-         				$score+=$scores['ever'];
-         			} else {
-         				$score+=$scores['else'];
-         			}
-         		}
-         		$targets = count($this->getTargets());
-         		if ($targets > 0) {
-         			return round($score*100 / count($this->getTargets())*3);
-         		} else {
-         			return 0;
-         		}
-         	}
+	public function getScore(): float|int {
+		$score = 0;
+		if ($this->getTimer() > 60) {
+			$scores = [
+				'now' => 1,
+				'ever' => 0,
+				'else' => 0,
+			];
+		} elseif ($this->getTimer() > 30) {
+			$scores = [
+				'now' => 1,
+				'ever' => 0,
+				'else' => -1,
+			];
+		} else {
+			$scores = [
+				'now' => 1,
+				'ever' => -1,
+				'else' => -3,
+			];
+		}
+		foreach ($this->getTargets() as $target) {
+			if ($target->getTakenCurrently()) {
+				if ($this->getTimer() <= 0) {
+					$score += 3;
+				} else {
+					$score += $scores['now'];
+				}
+			} elseif ($target->getTakenEver()) {
+				$score += $scores['ever'];
+			} else {
+				$score += $scores['else'];
+			}
+		}
+		$targets = count($this->getTargets());
+		if ($targets > 0) {
+			return round($score * 100 / count($this->getTargets()) * 3);
+		} else {
+			return 0;
+		}
+	}
 
-	public function getAttackers($include_self=true) {
-         		if (!$this->attackers) {
-         			$this->attackers = array();
-         
-         			foreach ($this->getTargets() as $target) {
-         				if ($target->getSettlement()->getRealm()) {
-         					foreach ($this->getRealm()->getInferiors() as $inferior) {
-         						if ($inferior->findAllInferiors(true)->contains($target->getSettlement()->getRealm())) {
-         						// we attack one of our inferior realms - exclude the branch that contains it as attackers
-         						} else {
-         							foreach ($inferior->findAllInferiors(true) as $sub) {
-         								if ($sub->getActive()) {
-         									$this->attackers[$sub->getId()] = $sub;
-         								}
-         							}
-         						}
-         					}
-         				}
-         			}
-         		}
-         
-         		$attackers = $this->attackers;
-         		if ($include_self) {
-         			$attackers[$this->getRealm()->getId()] = $this->getRealm();
-         		}
-         
-         		return $attackers;
-         	}
+	public function getAttackers($include_self = true): bool|array {
+		if (!$this->attackers) {
+			$this->attackers = [];
 
+			foreach ($this->getTargets() as $target) {
+				if ($target->getSettlement()->getRealm()) {
+					foreach ($this->getRealm()->getInferiors() as $inferior) {
+						if ($inferior->findAllInferiors(true)->contains($target->getSettlement()->getRealm())) {
+							// we attack one of our inferior realms - exclude the branch that contains it as attackers
+						} else {
+							foreach ($inferior->findAllInferiors(true) as $sub) {
+								if ($sub->getActive()) {
+									$this->attackers[$sub->getId()] = $sub;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 
-	public function getDefenders() {
-         		if (!$this->defenders) {
-         			$this->defenders = array();
-         			foreach ($this->getTargets() as $target) {
-         				if ($target->getSettlement()->getRealm()) {
-         					$this->defenders[$target->getSettlement()->getRealm()->getId()] = $target->getSettlement()->getRealm();
-         					if ($target->getSettlement()->getRealm()->findAllSuperiors()->contains($this->getRealm())) {
-         						// one of my superior realms attacks me - don't include the upwards hierarchy as defenders
-         					} else {
-         						foreach ($target->getSettlement()->getRealm()->findAllSuperiors() as $superior) {
-         							if ($superior->getActive()) {
-         								$this->defenders[$superior->getId()] = $superior;
-         							}
-         						}
-         					}
-         					foreach ($target->getSettlement()->getRealm()->getInferiors() as $inferior) {
-         						if ($inferior->findAllInferiors(true)->contains($this->getRealm())) {
-         						// one of my inferior realms attacks me - exclude the branch that contains it
-         						} else {
-         							foreach ($inferior->findAllInferiors(true) as $sub) {
-         								if ($sub->getActive()) {
-         									$this->defenders[$sub->getId()] = $sub;
-         								}
-         							}
-         						}
-         					}
-         				}
-         			}
-         		}
-         		return $this->defenders;
-         	}
-    /**
-     * @var string
-     */
-    private $summary;
+		$attackers = $this->attackers;
+		if ($include_self) {
+			$attackers[$this->getRealm()->getId()] = $this->getRealm();
+		}
 
-    /**
-     * @var string
-     */
-    private $description;
+		return $attackers;
+	}
 
-    /**
-     * @var integer
-     */
-    private $timer;
+	public function getDefenders(): bool|array {
+		if (!$this->defenders) {
+			$this->defenders = [];
+			foreach ($this->getTargets() as $target) {
+				if ($target->getSettlement()->getRealm()) {
+					$this->defenders[$target->getSettlement()->getRealm()->getId()] = $target->getSettlement()->getRealm();
+					if ($target->getSettlement()->getRealm()->findAllSuperiors()->contains($this->getRealm())) {
+						// one of my superior realms attacks me - don't include the upwards hierarchy as defenders
+					} else {
+						foreach ($target->getSettlement()->getRealm()->findAllSuperiors() as $superior) {
+							if ($superior->getActive()) {
+								$this->defenders[$superior->getId()] = $superior;
+							}
+						}
+					}
+					foreach ($target->getSettlement()->getRealm()->getInferiors() as $inferior) {
+						if ($inferior->findAllInferiors(true)->contains($this->getRealm())) {
+							// one of my inferior realms attacks me - exclude the branch that contains it
+						} else {
+							foreach ($inferior->findAllInferiors(true) as $sub) {
+								if ($sub->getActive()) {
+									$this->defenders[$sub->getId()] = $sub;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return $this->defenders;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set summary
+	 *
+	 * @param string $summary
+	 *
+	 * @return War
+	 */
+	public function setSummary(string $summary): static {
+		$this->summary = $summary;
 
-    /**
-     * @var \App\Entity\EventLog
-     */
-    private $log;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $targets;
+	/**
+	 * Get summary
+	 *
+	 * @return string
+	 */
+	public function getSummary(): string {
+		return $this->summary;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $related_battles;
+	/**
+	 * Set description
+	 *
+	 * @param string $description
+	 *
+	 * @return War
+	 */
+	public function setDescription(string $description): static {
+		$this->description = $description;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $related_battle_reports;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $sieges;
+	/**
+	 * Get description
+	 *
+	 * @return string
+	 */
+	public function getDescription(): string {
+		return $this->description;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
+	/**
+	 * Set timer
+	 *
+	 * @param integer $timer
+	 *
+	 * @return War
+	 */
+	public function setTimer(int $timer): static {
+		$this->timer = $timer;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->targets = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->related_battles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->related_battle_reports = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->sieges = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+		return $this;
+	}
 
-    /**
-     * Set summary
-     *
-     * @param string $summary
-     * @return War
-     */
-    public function setSummary($summary)
-    {
-        $this->summary = $summary;
+	/**
+	 * Get timer
+	 *
+	 * @return integer
+	 */
+	public function getTimer(): int {
+		return $this->timer;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get summary
-     *
-     * @return string 
-     */
-    public function getSummary()
-    {
-        return $this->summary;
-    }
+	/**
+	 * Set log
+	 *
+	 * @param EventLog|null $log
+	 *
+	 * @return War
+	 */
+	public function setLog(EventLog $log = null): static {
+		$this->log = $log;
 
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return War
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get log
+	 *
+	 * @return EventLog|null
+	 */
+	public function getLog(): ?EventLog {
+		return $this->log;
+	}
 
-    /**
-     * Get description
-     *
-     * @return string 
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
+	/**
+	 * Add targets
+	 *
+	 * @param WarTarget $targets
+	 *
+	 * @return War
+	 */
+	public function addTarget(WarTarget $targets): static {
+		$this->targets[] = $targets;
 
-    /**
-     * Set timer
-     *
-     * @param integer $timer
-     * @return War
-     */
-    public function setTimer($timer)
-    {
-        $this->timer = $timer;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Remove targets
+	 *
+	 * @param WarTarget $targets
+	 */
+	public function removeTarget(WarTarget $targets): void {
+		$this->targets->removeElement($targets);
+	}
 
-    /**
-     * Get timer
-     *
-     * @return integer 
-     */
-    public function getTimer()
-    {
-        return $this->timer;
-    }
+	/**
+	 * Get targets
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getTargets(): ArrayCollection|Collection {
+		return $this->targets;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Add related_battles
+	 *
+	 * @param Battle $relatedBattles
+	 *
+	 * @return War
+	 */
+	public function addRelatedBattle(Battle $relatedBattles): static {
+		$this->related_battles[] = $relatedBattles;
 
-    /**
-     * Set log
-     *
-     * @param \App\Entity\EventLog $log
-     * @return War
-     */
-    public function setLog(\App\Entity\EventLog $log = null)
-    {
-        $this->log = $log;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Remove related_battles
+	 *
+	 * @param Battle $relatedBattles
+	 */
+	public function removeRelatedBattle(Battle $relatedBattles): void {
+		$this->related_battles->removeElement($relatedBattles);
+	}
 
-    /**
-     * Get log
-     *
-     * @return \App\Entity\EventLog 
-     */
-    public function getLog()
-    {
-        return $this->log;
-    }
+	/**
+	 * Get related_battles
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getRelatedBattles(): ArrayCollection|Collection {
+		return $this->related_battles;
+	}
 
-    /**
-     * Add targets
-     *
-     * @param \App\Entity\WarTarget $targets
-     * @return War
-     */
-    public function addTarget(\App\Entity\WarTarget $targets)
-    {
-        $this->targets[] = $targets;
+	/**
+	 * Add related_battle_reports
+	 *
+	 * @param BattleReport $relatedBattleReports
+	 *
+	 * @return War
+	 */
+	public function addRelatedBattleReport(BattleReport $relatedBattleReports): static {
+		$this->related_battle_reports[] = $relatedBattleReports;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove targets
-     *
-     * @param \App\Entity\WarTarget $targets
-     */
-    public function removeTarget(\App\Entity\WarTarget $targets)
-    {
-        $this->targets->removeElement($targets);
-    }
+	/**
+	 * Remove related_battle_reports
+	 *
+	 * @param BattleReport $relatedBattleReports
+	 */
+	public function removeRelatedBattleReport(BattleReport $relatedBattleReports): void {
+		$this->related_battle_reports->removeElement($relatedBattleReports);
+	}
 
-    /**
-     * Get targets
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getTargets()
-    {
-        return $this->targets;
-    }
+	/**
+	 * Get related_battle_reports
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getRelatedBattleReports(): ArrayCollection|Collection {
+		return $this->related_battle_reports;
+	}
 
-    /**
-     * Add related_battles
-     *
-     * @param \App\Entity\Battle $relatedBattles
-     * @return War
-     */
-    public function addRelatedBattle(\App\Entity\Battle $relatedBattles)
-    {
-        $this->related_battles[] = $relatedBattles;
+	/**
+	 * Add sieges
+	 *
+	 * @param Siege $sieges
+	 *
+	 * @return War
+	 */
+	public function addSiege(Siege $sieges): static {
+		$this->sieges[] = $sieges;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove related_battles
-     *
-     * @param \App\Entity\Battle $relatedBattles
-     */
-    public function removeRelatedBattle(\App\Entity\Battle $relatedBattles)
-    {
-        $this->related_battles->removeElement($relatedBattles);
-    }
+	/**
+	 * Remove sieges
+	 *
+	 * @param Siege $sieges
+	 */
+	public function removeSiege(Siege $sieges): void {
+		$this->sieges->removeElement($sieges);
+	}
 
-    /**
-     * Get related_battles
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getRelatedBattles()
-    {
-        return $this->related_battles;
-    }
+	/**
+	 * Get sieges
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getSieges(): ArrayCollection|Collection {
+		return $this->sieges;
+	}
 
-    /**
-     * Add related_battle_reports
-     *
-     * @param \App\Entity\BattleReport $relatedBattleReports
-     * @return War
-     */
-    public function addRelatedBattleReport(\App\Entity\BattleReport $relatedBattleReports)
-    {
-        $this->related_battle_reports[] = $relatedBattleReports;
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return War
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove related_battle_reports
-     *
-     * @param \App\Entity\BattleReport $relatedBattleReports
-     */
-    public function removeRelatedBattleReport(\App\Entity\BattleReport $relatedBattleReports)
-    {
-        $this->related_battle_reports->removeElement($relatedBattleReports);
-    }
-
-    /**
-     * Get related_battle_reports
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getRelatedBattleReports()
-    {
-        return $this->related_battle_reports;
-    }
-
-    /**
-     * Add sieges
-     *
-     * @param \App\Entity\Siege $sieges
-     * @return War
-     */
-    public function addSiege(\App\Entity\Siege $sieges)
-    {
-        $this->sieges[] = $sieges;
-
-        return $this;
-    }
-
-    /**
-     * Remove sieges
-     *
-     * @param \App\Entity\Siege $sieges
-     */
-    public function removeSiege(\App\Entity\Siege $sieges)
-    {
-        $this->sieges->removeElement($sieges);
-    }
-
-    /**
-     * Get sieges
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getSieges()
-    {
-        return $this->sieges;
-    }
-
-    /**
-     * Set realm
-     *
-     * @param \App\Entity\Realm $realm
-     * @return War
-     */
-    public function setRealm(\App\Entity\Realm $realm = null)
-    {
-        $this->realm = $realm;
-
-        return $this;
-    }
-
-    /**
-     * Get realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getRealm()
-    {
-        return $this->realm;
-    }
+	/**
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
 }

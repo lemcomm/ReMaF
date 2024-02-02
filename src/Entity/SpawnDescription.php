@@ -2,419 +2,339 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * SpawnDescription
- */
-class SpawnDescription
-{
-    /**
-     * @var \DateTime
-     */
-    private $ts;
+class SpawnDescription {
+	private DateTime $ts;
+	private int $cycle;
+	private string $text;
+	private int $id;
+	private ?Place $active_place;
+	private ?Realm $active_realm;
+	private ?House $active_house;
+	private ?Association $active_association;
+	private ?SpawnDescription $previous;
+	private ?SpawnDescription $next;
+	private ?Place $place;
+	private ?Realm $realm;
+	private ?House $house;
+	private ?Association $association;
+	private ?Character $updater;
 
-    /**
-     * @var integer
-     */
-    private $cycle;
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
 
-    /**
-     * @var string
-     */
-    private $text;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
-    /**
-     * @var \App\Entity\Place
-     */
-    private $active_place;
+	/**
+	 * Set cycle
+	 *
+	 * @param integer $cycle
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setCycle(int $cycle): static {
+		$this->cycle = $cycle;
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $active_realm;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\House
-     */
-    private $active_house;
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
-    /**
-     * @var \App\Entity\Association
-     */
-    private $active_association;
+	/**
+	 * Set text
+	 *
+	 * @param string $text
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setText(string $text): static {
+		$this->text = $text;
 
-    /**
-     * @var \App\Entity\SpawnDescription
-     */
-    private $previous;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\SpawnDescription
-     */
-    private $next;
+	/**
+	 * Get text
+	 *
+	 * @return string
+	 */
+	public function getText(): string {
+		return $this->text;
+	}
 
-    /**
-     * @var \App\Entity\Place
-     */
-    private $place;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
+	/**
+	 * Set active_place
+	 *
+	 * @param Place|null $activePlace
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setActivePlace(Place $activePlace = null): static {
+		$this->active_place = $activePlace;
 
-    /**
-     * @var \App\Entity\House
-     */
-    private $house;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Association
-     */
-    private $association;
+	/**
+	 * Get active_place
+	 *
+	 * @return Place|null
+	 */
+	public function getActivePlace(): ?Place {
+		return $this->active_place;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $updater;
+	/**
+	 * Set active_realm
+	 *
+	 * @param Realm|null $activeRealm
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setActiveRealm(Realm $activeRealm = null): static {
+		$this->active_realm = $activeRealm;
 
+		return $this;
+	}
 
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return SpawnDescription
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
+	/**
+	 * Get active_realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getActiveRealm(): ?Realm {
+		return $this->active_realm;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set active_house
+	 *
+	 * @param House|null $activeHouse
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setActiveHouse(House $activeHouse = null): static {
+		$this->active_house = $activeHouse;
 
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
+		return $this;
+	}
 
-    /**
-     * Set cycle
-     *
-     * @param integer $cycle
-     * @return SpawnDescription
-     */
-    public function setCycle($cycle)
-    {
-        $this->cycle = $cycle;
+	/**
+	 * Get active_house
+	 *
+	 * @return House|null
+	 */
+	public function getActiveHouse(): ?House {
+		return $this->active_house;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set active_association
+	 *
+	 * @param Association|null $activeAssociation
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setActiveAssociation(Association $activeAssociation = null): static {
+		$this->active_association = $activeAssociation;
 
-    /**
-     * Get cycle
-     *
-     * @return integer 
-     */
-    public function getCycle()
-    {
-        return $this->cycle;
-    }
+		return $this;
+	}
 
-    /**
-     * Set text
-     *
-     * @param string $text
-     * @return SpawnDescription
-     */
-    public function setText($text)
-    {
-        $this->text = $text;
+	/**
+	 * Get active_association
+	 *
+	 * @return Association|null
+	 */
+	public function getActiveAssociation(): ?Association {
+		return $this->active_association;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set previous
+	 *
+	 * @param SpawnDescription|null $previous
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setPrevious(SpawnDescription $previous = null): static {
+		$this->previous = $previous;
 
-    /**
-     * Get text
-     *
-     * @return string 
-     */
-    public function getText()
-    {
-        return $this->text;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get previous
+	 *
+	 * @return SpawnDescription|null
+	 */
+	public function getPrevious(): ?SpawnDescription {
+		return $this->previous;
+	}
 
-    /**
-     * Set active_place
-     *
-     * @param \App\Entity\Place $activePlace
-     * @return SpawnDescription
-     */
-    public function setActivePlace(\App\Entity\Place $activePlace = null)
-    {
-        $this->active_place = $activePlace;
+	/**
+	 * Set next
+	 *
+	 * @param SpawnDescription|null $next
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setNext(SpawnDescription $next = null): static {
+		$this->next = $next;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get active_place
-     *
-     * @return \App\Entity\Place 
-     */
-    public function getActivePlace()
-    {
-        return $this->active_place;
-    }
+	/**
+	 * Get next
+	 *
+	 * @return SpawnDescription|null
+	 */
+	public function getNext(): ?SpawnDescription {
+		return $this->next;
+	}
 
-    /**
-     * Set active_realm
-     *
-     * @param \App\Entity\Realm $activeRealm
-     * @return SpawnDescription
-     */
-    public function setActiveRealm(\App\Entity\Realm $activeRealm = null)
-    {
-        $this->active_realm = $activeRealm;
+	/**
+	 * Set place
+	 *
+	 * @param Place|null $place
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setPlace(Place $place = null): static {
+		$this->place = $place;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get active_realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getActiveRealm()
-    {
-        return $this->active_realm;
-    }
+	/**
+	 * Get place
+	 *
+	 * @return Place|null
+	 */
+	public function getPlace(): ?Place {
+		return $this->place;
+	}
 
-    /**
-     * Set active_house
-     *
-     * @param \App\Entity\House $activeHouse
-     * @return SpawnDescription
-     */
-    public function setActiveHouse(\App\Entity\House $activeHouse = null)
-    {
-        $this->active_house = $activeHouse;
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get active_house
-     *
-     * @return \App\Entity\House 
-     */
-    public function getActiveHouse()
-    {
-        return $this->active_house;
-    }
+	/**
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
 
-    /**
-     * Set active_association
-     *
-     * @param \App\Entity\Association $activeAssociation
-     * @return SpawnDescription
-     */
-    public function setActiveAssociation(\App\Entity\Association $activeAssociation = null)
-    {
-        $this->active_association = $activeAssociation;
+	/**
+	 * Set house
+	 *
+	 * @param House|null $house
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setHouse(House $house = null): static {
+		$this->house = $house;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get active_association
-     *
-     * @return \App\Entity\Association 
-     */
-    public function getActiveAssociation()
-    {
-        return $this->active_association;
-    }
+	/**
+	 * Get house
+	 *
+	 * @return House|null
+	 */
+	public function getHouse(): ?House {
+		return $this->house;
+	}
 
-    /**
-     * Set previous
-     *
-     * @param \App\Entity\SpawnDescription $previous
-     * @return SpawnDescription
-     */
-    public function setPrevious(\App\Entity\SpawnDescription $previous = null)
-    {
-        $this->previous = $previous;
+	/**
+	 * Set association
+	 *
+	 * @param Association|null $association
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setAssociation(Association $association = null): static {
+		$this->association = $association;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get previous
-     *
-     * @return \App\Entity\SpawnDescription 
-     */
-    public function getPrevious()
-    {
-        return $this->previous;
-    }
+	/**
+	 * Get association
+	 *
+	 * @return Association|null
+	 */
+	public function getAssociation(): ?Association {
+		return $this->association;
+	}
 
-    /**
-     * Set next
-     *
-     * @param \App\Entity\SpawnDescription $next
-     * @return SpawnDescription
-     */
-    public function setNext(\App\Entity\SpawnDescription $next = null)
-    {
-        $this->next = $next;
+	/**
+	 * Set updater
+	 *
+	 * @param Character|null $updater
+	 *
+	 * @return SpawnDescription
+	 */
+	public function setUpdater(Character $updater = null): static {
+		$this->updater = $updater;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get next
-     *
-     * @return \App\Entity\SpawnDescription 
-     */
-    public function getNext()
-    {
-        return $this->next;
-    }
-
-    /**
-     * Set place
-     *
-     * @param \App\Entity\Place $place
-     * @return SpawnDescription
-     */
-    public function setPlace(\App\Entity\Place $place = null)
-    {
-        $this->place = $place;
-
-        return $this;
-    }
-
-    /**
-     * Get place
-     *
-     * @return \App\Entity\Place 
-     */
-    public function getPlace()
-    {
-        return $this->place;
-    }
-
-    /**
-     * Set realm
-     *
-     * @param \App\Entity\Realm $realm
-     * @return SpawnDescription
-     */
-    public function setRealm(\App\Entity\Realm $realm = null)
-    {
-        $this->realm = $realm;
-
-        return $this;
-    }
-
-    /**
-     * Get realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getRealm()
-    {
-        return $this->realm;
-    }
-
-    /**
-     * Set house
-     *
-     * @param \App\Entity\House $house
-     * @return SpawnDescription
-     */
-    public function setHouse(\App\Entity\House $house = null)
-    {
-        $this->house = $house;
-
-        return $this;
-    }
-
-    /**
-     * Get house
-     *
-     * @return \App\Entity\House 
-     */
-    public function getHouse()
-    {
-        return $this->house;
-    }
-
-    /**
-     * Set association
-     *
-     * @param \App\Entity\Association $association
-     * @return SpawnDescription
-     */
-    public function setAssociation(\App\Entity\Association $association = null)
-    {
-        $this->association = $association;
-
-        return $this;
-    }
-
-    /**
-     * Get association
-     *
-     * @return \App\Entity\Association 
-     */
-    public function getAssociation()
-    {
-        return $this->association;
-    }
-
-    /**
-     * Set updater
-     *
-     * @param \App\Entity\Character $updater
-     * @return SpawnDescription
-     */
-    public function setUpdater(\App\Entity\Character $updater = null)
-    {
-        $this->updater = $updater;
-
-        return $this;
-    }
-
-    /**
-     * Get updater
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getUpdater()
-    {
-        return $this->updater;
-    }
+	/**
+	 * Get updater
+	 *
+	 * @return Character|null
+	 */
+	public function getUpdater(): ?Character {
+		return $this->updater;
+	}
 }

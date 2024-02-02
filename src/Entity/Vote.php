@@ -1,136 +1,108 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class Vote {
+	private int $vote;
+	private int $id;
+	private ?Character $character;
+	private ?Election $election;
+	private ?Character $target_character;
 
-    /**
-     * @var integer
-     */
-    private $vote;
+	/**
+	 * Set vote
+	 *
+	 * @param integer $vote
+	 *
+	 * @return Vote
+	 */
+	public function setVote(int $vote): static {
+		$this->vote = $vote;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Get vote
+	 *
+	 * @return integer
+	 */
+	public function getVote(): int {
+		return $this->vote;
+	}
 
-    /**
-     * @var \App\Entity\Election
-     */
-    private $election;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $target_character;
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return Vote
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
+		return $this;
+	}
 
-    /**
-     * Set vote
-     *
-     * @param integer $vote
-     * @return Vote
-     */
-    public function setVote($vote)
-    {
-        $this->vote = $vote;
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set election
+	 *
+	 * @param Election|null $election
+	 *
+	 * @return Vote
+	 */
+	public function setElection(Election $election = null): static {
+		$this->election = $election;
 
-    /**
-     * Get vote
-     *
-     * @return integer 
-     */
-    public function getVote()
-    {
-        return $this->vote;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get election
+	 *
+	 * @return Election
+	 */
+	public function getElection(): Election {
+		return $this->election;
+	}
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return Vote
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
+	/**
+	 * Set target_character
+	 *
+	 * @param Character|null $targetCharacter
+	 *
+	 * @return Vote
+	 */
+	public function setTargetCharacter(Character $targetCharacter = null): static {
+		$this->target_character = $targetCharacter;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set election
-     *
-     * @param \App\Entity\Election $election
-     * @return Vote
-     */
-    public function setElection(\App\Entity\Election $election = null)
-    {
-        $this->election = $election;
-
-        return $this;
-    }
-
-    /**
-     * Get election
-     *
-     * @return \App\Entity\Election 
-     */
-    public function getElection()
-    {
-        return $this->election;
-    }
-
-    /**
-     * Set target_character
-     *
-     * @param \App\Entity\Character $targetCharacter
-     * @return Vote
-     */
-    public function setTargetCharacter(\App\Entity\Character $targetCharacter = null)
-    {
-        $this->target_character = $targetCharacter;
-
-        return $this;
-    }
-
-    /**
-     * Get target_character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getTargetCharacter()
-    {
-        return $this->target_character;
-    }
+	/**
+	 * Get target_character
+	 *
+	 * @return Character
+	 */
+	public function getTargetCharacter(): Character {
+		return $this->target_character;
+	}
 }

@@ -1,248 +1,202 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
+use DateTime;
 
 class UserPayment {
+	private ?string $transaction_code;
+	private float $amount;
+	private string $currency;
+	private int $credits;
+	private ?int $bonus;
+	private DateTime $ts;
+	private string $type;
+	private int $id;
+	private User $user;
 
-    /**
-     * @var string
-     */
-    private $transaction_code;
+	/**
+	 * Set transaction_code
+	 *
+	 * @param string|null $transactionCode
+	 *
+	 * @return UserPayment
+	 */
+	public function setTransactionCode(?string $transactionCode = null): static {
+		$this->transaction_code = $transactionCode;
 
-    /**
-     * @var float
-     */
-    private $amount;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $currency;
+	/**
+	 * Get transaction_code
+	 *
+	 * @return string
+	 */
+	public function getTransactionCode(): string {
+		return $this->transaction_code;
+	}
 
-    /**
-     * @var integer
-     */
-    private $credits;
+	/**
+	 * Set amount
+	 *
+	 * @param float $amount
+	 *
+	 * @return UserPayment
+	 */
+	public function setAmount(float $amount): static {
+		$this->amount = $amount;
 
-    /**
-     * @var integer
-     */
-    private $bonus;
+		return $this;
+	}
 
-    /**
-     * @var \DateTime
-     */
-    private $ts;
+	/**
+	 * Get amount
+	 *
+	 * @return float
+	 */
+	public function getAmount(): float {
+		return $this->amount;
+	}
 
-    /**
-     * @var string
-     */
-    private $type;
+	/**
+	 * Set currency
+	 *
+	 * @param string $currency
+	 *
+	 * @return UserPayment
+	 */
+	public function setCurrency(string $currency): static {
+		$this->currency = $currency;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\User
-     */
-    private $user;
+	/**
+	 * Get currency
+	 *
+	 * @return string
+	 */
+	public function getCurrency(): string {
+		return $this->currency;
+	}
 
+	/**
+	 * Set credits
+	 *
+	 * @param integer $credits
+	 *
+	 * @return UserPayment
+	 */
+	public function setCredits(int $credits): static {
+		$this->credits = $credits;
 
-    /**
-     * Set transaction_code
-     *
-     * @param string $transactionCode
-     * @return UserPayment
-     */
-    public function setTransactionCode($transactionCode)
-    {
-        $this->transaction_code = $transactionCode;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get credits
+	 *
+	 * @return integer
+	 */
+	public function getCredits(): int {
+		return $this->credits;
+	}
 
-    /**
-     * Get transaction_code
-     *
-     * @return string 
-     */
-    public function getTransactionCode()
-    {
-        return $this->transaction_code;
-    }
+	/**
+	 * Set bonus
+	 *
+	 * @param int|null $bonus
+	 *
+	 * @return UserPayment
+	 */
+	public function setBonus(?int $bonus = null): static {
+		$this->bonus = $bonus;
 
-    /**
-     * Set amount
-     *
-     * @param float $amount
-     * @return UserPayment
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get bonus
+	 *
+	 * @return integer
+	 */
+	public function getBonus(): int {
+		return $this->bonus;
+	}
 
-    /**
-     * Get amount
-     *
-     * @return float 
-     */
-    public function getAmount()
-    {
-        return $this->amount;
-    }
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return UserPayment
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
 
-    /**
-     * Set currency
-     *
-     * @param string $currency
-     * @return UserPayment
-     */
-    public function setCurrency($currency)
-    {
-        $this->currency = $currency;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
-    /**
-     * Get currency
-     *
-     * @return string 
-     */
-    public function getCurrency()
-    {
-        return $this->currency;
-    }
+	/**
+	 * Set type
+	 *
+	 * @param string $type
+	 *
+	 * @return UserPayment
+	 */
+	public function setType(string $type): static {
+		$this->type = $type;
 
-    /**
-     * Set credits
-     *
-     * @param integer $credits
-     * @return UserPayment
-     */
-    public function setCredits($credits)
-    {
-        $this->credits = $credits;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
-    /**
-     * Get credits
-     *
-     * @return integer 
-     */
-    public function getCredits()
-    {
-        return $this->credits;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set bonus
-     *
-     * @param integer $bonus
-     * @return UserPayment
-     */
-    public function setBonus($bonus)
-    {
-        $this->bonus = $bonus;
+	/**
+	 * Set user
+	 *
+	 * @param User|null $user
+	 *
+	 * @return UserPayment
+	 */
+	public function setUser(User $user = null): static {
+		$this->user = $user;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get bonus
-     *
-     * @return integer 
-     */
-    public function getBonus()
-    {
-        return $this->bonus;
-    }
-
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return UserPayment
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
-
-        return $this;
-    }
-
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
-
-    /**
-     * Set type
-     *
-     * @param string $type
-     * @return UserPayment
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return string 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set user
-     *
-     * @param \App\Entity\User $user
-     * @return UserPayment
-     */
-    public function setUser(\App\Entity\User $user = null)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return \App\Entity\User 
-     */
-    public function getUser()
-    {
-        return $this->user;
-    }
+	/**
+	 * Get user
+	 *
+	 * @return User
+	 */
+	public function getUser(): User {
+		return $this->user;
+	}
 }

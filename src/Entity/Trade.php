@@ -1,196 +1,159 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class Trade {
 
+	private ?string $name;
+	private int $amount;
+	private float $tradecost;
+	private int $id;
+	private ?ResourceType $resource_type;
+	private ?Settlement $source;
+	private ?Settlement $destination;
+
 	public function __toString() {
-   		return "trade {$this->id} - from ".$this->source->getId()." to ".$this->destination->getId();
-   	}
+		return "trade $this->id - from " . $this->source->getId() . " to " . $this->destination->getId();
+	}
 
-    /**
-     * @var string
-     */
-    private $name;
+	/**
+	 * Set name
+	 *
+	 * @param string|null $name
+	 *
+	 * @return Trade
+	 */
+	public function setName(?string $name = null): static {
+		$this->name = $name;
 
-    /**
-     * @var integer
-     */
-    private $amount;
+		return $this;
+	}
 
-    /**
-     * @var float
-     */
-    private $tradecost;
+	/**
+	 * Get name
+	 *
+	 * @return string|null
+	 */
+	public function getName(): ?string {
+		return $this->name;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set amount
+	 *
+	 * @param integer $amount
+	 *
+	 * @return Trade
+	 */
+	public function setAmount(int $amount): static {
+		$this->amount = $amount;
 
-    /**
-     * @var \App\Entity\ResourceType
-     */
-    private $resource_type;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $source;
+	/**
+	 * Get amount
+	 *
+	 * @return integer
+	 */
+	public function getAmount(): int {
+		return $this->amount;
+	}
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $destination;
+	/**
+	 * Set tradecost
+	 *
+	 * @param float $tradecost
+	 *
+	 * @return Trade
+	 */
+	public function setTradecost(float $tradecost): static {
+		$this->tradecost = $tradecost;
 
+		return $this;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Trade
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+	/**
+	 * Get tradecost
+	 *
+	 * @return float
+	 */
+	public function getTradecost(): float {
+		return $this->tradecost;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Set resource_type
+	 *
+	 * @param ResourceType|null $resourceType
+	 *
+	 * @return Trade
+	 */
+	public function setResourceType(ResourceType $resourceType = null): static {
+		$this->resource_type = $resourceType;
 
-    /**
-     * Set amount
-     *
-     * @param integer $amount
-     * @return Trade
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get resource_type
+	 *
+	 * @return ResourceType
+	 */
+	public function getResourceType(): ResourceType {
+		return $this->resource_type;
+	}
 
-    /**
-     * Get amount
-     *
-     * @return integer 
-     */
-    public function getAmount()
-    {
-        return $this->amount;
-    }
+	/**
+	 * Set source
+	 *
+	 * @param Settlement|null $source
+	 *
+	 * @return Trade
+	 */
+	public function setSource(Settlement $source = null): static {
+		$this->source = $source;
 
-    /**
-     * Set tradecost
-     *
-     * @param float $tradecost
-     * @return Trade
-     */
-    public function setTradecost($tradecost)
-    {
-        $this->tradecost = $tradecost;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get source
+	 *
+	 * @return Settlement
+	 */
+	public function getSource(): Settlement {
+		return $this->source;
+	}
 
-    /**
-     * Get tradecost
-     *
-     * @return float 
-     */
-    public function getTradecost()
-    {
-        return $this->tradecost;
-    }
+	/**
+	 * Set destination
+	 *
+	 * @param Settlement|null $destination
+	 *
+	 * @return Trade
+	 */
+	public function setDestination(Settlement $destination = null): static {
+		$this->destination = $destination;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Set resource_type
-     *
-     * @param \App\Entity\ResourceType $resourceType
-     * @return Trade
-     */
-    public function setResourceType(\App\Entity\ResourceType $resourceType = null)
-    {
-        $this->resource_type = $resourceType;
-
-        return $this;
-    }
-
-    /**
-     * Get resource_type
-     *
-     * @return \App\Entity\ResourceType 
-     */
-    public function getResourceType()
-    {
-        return $this->resource_type;
-    }
-
-    /**
-     * Set source
-     *
-     * @param \App\Entity\Settlement $source
-     * @return Trade
-     */
-    public function setSource(\App\Entity\Settlement $source = null)
-    {
-        $this->source = $source;
-
-        return $this;
-    }
-
-    /**
-     * Get source
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getSource()
-    {
-        return $this->source;
-    }
-
-    /**
-     * Set destination
-     *
-     * @param \App\Entity\Settlement $destination
-     * @return Trade
-     */
-    public function setDestination(\App\Entity\Settlement $destination = null)
-    {
-        $this->destination = $destination;
-
-        return $this;
-    }
-
-    /**
-     * Get destination
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getDestination()
-    {
-        return $this->destination;
-    }
+	/**
+	 * Get destination
+	 *
+	 * @return Settlement
+	 */
+	public function getDestination(): Settlement {
+		return $this->destination;
+	}
 }

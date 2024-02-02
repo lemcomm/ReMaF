@@ -2,200 +2,160 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
+use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
-/**
- * SpotEvent
- */
-class SpotEvent
-{
-    /**
-     * @var \DateTime
-     */
-    private $ts;
+class SpotEvent {
+	private DateTime $ts;
+	private point $location;
+	private bool $current;
+	private int $id;
+	private ?Character $spotter;
+	private ?Character $target;
+	private ?GeoFeature $tower;
 
-    /**
-     * @var point
-     */
-    private $location;
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return SpotEvent
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
 
-    /**
-     * @var boolean
-     */
-    private $current;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $spotter;
+	/**
+	 * Set location
+	 *
+	 * @param point $location
+	 *
+	 * @return SpotEvent
+	 */
+	public function setLocation(Point $location): static {
+		$this->location = $location;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $target;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\GeoFeature
-     */
-    private $tower;
+	/**
+	 * Get location
+	 *
+	 * @return point
+	 */
+	public function getLocation(): Point {
+		return $this->location;
+	}
 
+	/**
+	 * Set current
+	 *
+	 * @param boolean $current
+	 *
+	 * @return SpotEvent
+	 */
+	public function setCurrent(bool $current): static {
+		$this->current = $current;
 
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return SpotEvent
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get current
+	 *
+	 * @return boolean
+	 */
+	public function getCurrent(): bool {
+		return $this->current;
+	}
 
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set location
-     *
-     * @param point $location
-     * @return SpotEvent
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
+	/**
+	 * Set spotter
+	 *
+	 * @param Character|null $spotter
+	 *
+	 * @return SpotEvent
+	 */
+	public function setSpotter(Character $spotter = null): static {
+		$this->spotter = $spotter;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get location
-     *
-     * @return point 
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
+	/**
+	 * Get spotter
+	 *
+	 * @return Character
+	 */
+	public function getSpotter(): Character {
+		return $this->spotter;
+	}
 
-    /**
-     * Set current
-     *
-     * @param boolean $current
-     * @return SpotEvent
-     */
-    public function setCurrent($current)
-    {
-        $this->current = $current;
+	/**
+	 * Set target
+	 *
+	 * @param Character|null $target
+	 *
+	 * @return SpotEvent
+	 */
+	public function setTarget(Character $target = null): static {
+		$this->target = $target;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get current
-     *
-     * @return boolean 
-     */
-    public function getCurrent()
-    {
-        return $this->current;
-    }
+	/**
+	 * Get target
+	 *
+	 * @return Character
+	 */
+	public function getTarget(): Character {
+		return $this->target;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Set tower
+	 *
+	 * @param GeoFeature|null $tower
+	 *
+	 * @return SpotEvent
+	 */
+	public function setTower(GeoFeature $tower = null): static {
+		$this->tower = $tower;
 
-    /**
-     * Set spotter
-     *
-     * @param \App\Entity\Character $spotter
-     * @return SpotEvent
-     */
-    public function setSpotter(\App\Entity\Character $spotter = null)
-    {
-        $this->spotter = $spotter;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get tower
+	 *
+	 * @return GeoFeature
+	 */
+	public function getTower(): GeoFeature {
+		return $this->tower;
+	}
 
-    /**
-     * Get spotter
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getSpotter()
-    {
-        return $this->spotter;
-    }
-
-    /**
-     * Set target
-     *
-     * @param \App\Entity\Character $target
-     * @return SpotEvent
-     */
-    public function setTarget(\App\Entity\Character $target = null)
-    {
-        $this->target = $target;
-
-        return $this;
-    }
-
-    /**
-     * Get target
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getTarget()
-    {
-        return $this->target;
-    }
-
-    /**
-     * Set tower
-     *
-     * @param \App\Entity\GeoFeature $tower
-     * @return SpotEvent
-     */
-    public function setTower(\App\Entity\GeoFeature $tower = null)
-    {
-        $this->tower = $tower;
-
-        return $this;
-    }
-
-    /**
-     * Get tower
-     *
-     * @return \App\Entity\GeoFeature 
-     */
-    public function getTower()
-    {
-        return $this->tower;
-    }
-
-    public function isCurrent(): ?bool
-    {
-        return $this->current;
-    }
+	public function isCurrent(): ?bool {
+		return $this->current;
+	}
 }

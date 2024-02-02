@@ -2,250 +2,199 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class StatisticSettlement {
+	private int $cycle;
+	private int $population;
+	private int $thralls;
+	private int $militia;
+	private float $starvation;
+	private int $war_fatigue;
+	private int $id;
+	private ?Settlement $settlement;
+	private ?Realm $realm;
 
-/**
- * StatisticSettlement
- */
-class StatisticSettlement
-{
-    /**
-     * @var integer
-     */
-    private $cycle;
+	/**
+	 * Set cycle
+	 *
+	 * @param integer $cycle
+	 *
+	 * @return StatisticSettlement
+	 */
+	public function setCycle(int $cycle): static {
+		$this->cycle = $cycle;
 
-    /**
-     * @var integer
-     */
-    private $population;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $thralls;
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
-    /**
-     * @var integer
-     */
-    private $militia;
+	/**
+	 * Set population
+	 *
+	 * @param integer $population
+	 *
+	 * @return StatisticSettlement
+	 */
+	public function setPopulation(int $population): static {
+		$this->population = $population;
 
-    /**
-     * @var float
-     */
-    private $starvation;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $war_fatigue;
+	/**
+	 * Get population
+	 *
+	 * @return integer
+	 */
+	public function getPopulation(): int {
+		return $this->population;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set thralls
+	 *
+	 * @param integer $thralls
+	 *
+	 * @return StatisticSettlement
+	 */
+	public function setThralls(int $thralls): static {
+		$this->thralls = $thralls;
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
+	/**
+	 * Get thralls
+	 *
+	 * @return integer
+	 */
+	public function getThralls(): int {
+		return $this->thralls;
+	}
 
+	/**
+	 * Set militia
+	 *
+	 * @param integer $militia
+	 *
+	 * @return StatisticSettlement
+	 */
+	public function setMilitia(int $militia): static {
+		$this->militia = $militia;
 
-    /**
-     * Set cycle
-     *
-     * @param integer $cycle
-     * @return StatisticSettlement
-     */
-    public function setCycle($cycle)
-    {
-        $this->cycle = $cycle;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get militia
+	 *
+	 * @return integer
+	 */
+	public function getMilitia(): int {
+		return $this->militia;
+	}
 
-    /**
-     * Get cycle
-     *
-     * @return integer 
-     */
-    public function getCycle()
-    {
-        return $this->cycle;
-    }
+	/**
+	 * Set starvation
+	 *
+	 * @param float $starvation
+	 *
+	 * @return StatisticSettlement
+	 */
+	public function setStarvation(float $starvation): static {
+		$this->starvation = $starvation;
 
-    /**
-     * Set population
-     *
-     * @param integer $population
-     * @return StatisticSettlement
-     */
-    public function setPopulation($population)
-    {
-        $this->population = $population;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get starvation
+	 *
+	 * @return float
+	 */
+	public function getStarvation(): float {
+		return $this->starvation;
+	}
 
-    /**
-     * Get population
-     *
-     * @return integer 
-     */
-    public function getPopulation()
-    {
-        return $this->population;
-    }
+	/**
+	 * Set war_fatigue
+	 *
+	 * @param integer $warFatigue
+	 *
+	 * @return StatisticSettlement
+	 */
+	public function setWarFatigue(int $warFatigue): static {
+		$this->war_fatigue = $warFatigue;
 
-    /**
-     * Set thralls
-     *
-     * @param integer $thralls
-     * @return StatisticSettlement
-     */
-    public function setThralls($thralls)
-    {
-        $this->thralls = $thralls;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get war_fatigue
+	 *
+	 * @return integer
+	 */
+	public function getWarFatigue(): int {
+		return $this->war_fatigue;
+	}
 
-    /**
-     * Get thralls
-     *
-     * @return integer 
-     */
-    public function getThralls()
-    {
-        return $this->thralls;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set militia
-     *
-     * @param integer $militia
-     * @return StatisticSettlement
-     */
-    public function setMilitia($militia)
-    {
-        $this->militia = $militia;
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return StatisticSettlement
+	 */
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get militia
-     *
-     * @return integer 
-     */
-    public function getMilitia()
-    {
-        return $this->militia;
-    }
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement
+	 */
+	public function getSettlement(): Settlement {
+		return $this->settlement;
+	}
 
-    /**
-     * Set starvation
-     *
-     * @param float $starvation
-     * @return StatisticSettlement
-     */
-    public function setStarvation($starvation)
-    {
-        $this->starvation = $starvation;
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return StatisticSettlement
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get starvation
-     *
-     * @return float 
-     */
-    public function getStarvation()
-    {
-        return $this->starvation;
-    }
-
-    /**
-     * Set war_fatigue
-     *
-     * @param integer $warFatigue
-     * @return StatisticSettlement
-     */
-    public function setWarFatigue($warFatigue)
-    {
-        $this->war_fatigue = $warFatigue;
-
-        return $this;
-    }
-
-    /**
-     * Get war_fatigue
-     *
-     * @return integer 
-     */
-    public function getWarFatigue()
-    {
-        return $this->war_fatigue;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set settlement
-     *
-     * @param \App\Entity\Settlement $settlement
-     * @return StatisticSettlement
-     */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
-        $this->settlement = $settlement;
-
-        return $this;
-    }
-
-    /**
-     * Get settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getSettlement()
-    {
-        return $this->settlement;
-    }
-
-    /**
-     * Set realm
-     *
-     * @param \App\Entity\Realm $realm
-     * @return StatisticSettlement
-     */
-    public function setRealm(\App\Entity\Realm $realm = null)
-    {
-        $this->realm = $realm;
-
-        return $this;
-    }
-
-    /**
-     * Get realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getRealm()
-    {
-        return $this->realm;
-    }
+	/**
+	 * Get realm
+	 *
+	 * @return Realm
+	 */
+	public function getRealm(): Realm {
+		return $this->realm;
+	}
 }

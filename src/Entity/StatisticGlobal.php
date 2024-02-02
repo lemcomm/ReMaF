@@ -2,839 +2,684 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-
-/**
- * StatisticGlobal
- */
-class StatisticGlobal
-{
-    /**
-     * @var integer
-     */
-    private $cycle;
-
-    /**
-     * @var integer
-     */
-    private $users;
-
-    /**
-     * @var integer
-     */
-    private $active_users;
-
-    /**
-     * @var integer
-     */
-    private $really_active_users;
-
-    /**
-     * @var integer
-     */
-    private $today_users;
-
-    /**
-     * @var integer
-     */
-    private $ever_paid_users;
-
-    /**
-     * @var integer
-     */
-    private $paying_users;
-
-    /**
-     * @var integer
-     */
-    private $active_patrons;
-
-    /**
-     * @var integer
-     */
-    private $characters;
-
-    /**
-     * @var integer
-     */
-    private $living_characters;
-
-    /**
-     * @var integer
-     */
-    private $active_characters;
-
-    /**
-     * @var integer
-     */
-    private $deceased_characters;
-
-    /**
-     * @var integer
-     */
-    private $realms;
-
-    /**
-     * @var integer
-     */
-    private $major_realms;
-
-    /**
-     * @var integer
-     */
-    private $buildings;
-
-    /**
-     * @var integer
-     */
-    private $constructions;
-
-    /**
-     * @var integer
-     */
-    private $abandoned;
-
-    /**
-     * @var integer
-     */
-    private $features;
-
-    /**
-     * @var integer
-     */
-    private $roads;
-
-    /**
-     * @var integer
-     */
-    private $trades;
-
-    /**
-     * @var integer
-     */
-    private $battles;
-
-    /**
-     * @var integer
-     */
-    private $soldiers;
-
-    /**
-     * @var integer
-     */
-    private $militia;
-
-    /**
-     * @var integer
-     */
-    private $recruits;
-
-    /**
-     * @var integer
-     */
-    private $offers;
-
-    /**
-     * @var integer
-     */
-    private $entourage;
-
-    /**
-     * @var integer
-     */
-    private $peasants;
-
-    /**
-     * @var integer
-     */
-    private $thralls;
-
-    /**
-     * @var \DateTime
-     */
-    private $ts;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-
-    /**
-     * Set cycle
-     *
-     * @param integer $cycle
-     * @return StatisticGlobal
-     */
-    public function setCycle($cycle)
-    {
-        $this->cycle = $cycle;
-
-        return $this;
-    }
-
-    /**
-     * Get cycle
-     *
-     * @return integer 
-     */
-    public function getCycle()
-    {
-        return $this->cycle;
-    }
-
-    /**
-     * Set users
-     *
-     * @param integer $users
-     * @return StatisticGlobal
-     */
-    public function setUsers($users)
-    {
-        $this->users = $users;
-
-        return $this;
-    }
-
-    /**
-     * Get users
-     *
-     * @return integer 
-     */
-    public function getUsers()
-    {
-        return $this->users;
-    }
-
-    /**
-     * Set active_users
-     *
-     * @param integer $activeUsers
-     * @return StatisticGlobal
-     */
-    public function setActiveUsers($activeUsers)
-    {
-        $this->active_users = $activeUsers;
-
-        return $this;
-    }
-
-    /**
-     * Get active_users
-     *
-     * @return integer 
-     */
-    public function getActiveUsers()
-    {
-        return $this->active_users;
-    }
-
-    /**
-     * Set really_active_users
-     *
-     * @param integer $reallyActiveUsers
-     * @return StatisticGlobal
-     */
-    public function setReallyActiveUsers($reallyActiveUsers)
-    {
-        $this->really_active_users = $reallyActiveUsers;
-
-        return $this;
-    }
-
-    /**
-     * Get really_active_users
-     *
-     * @return integer 
-     */
-    public function getReallyActiveUsers()
-    {
-        return $this->really_active_users;
-    }
-
-    /**
-     * Set today_users
-     *
-     * @param integer $todayUsers
-     * @return StatisticGlobal
-     */
-    public function setTodayUsers($todayUsers)
-    {
-        $this->today_users = $todayUsers;
-
-        return $this;
-    }
-
-    /**
-     * Get today_users
-     *
-     * @return integer 
-     */
-    public function getTodayUsers()
-    {
-        return $this->today_users;
-    }
-
-    /**
-     * Set ever_paid_users
-     *
-     * @param integer $everPaidUsers
-     * @return StatisticGlobal
-     */
-    public function setEverPaidUsers($everPaidUsers)
-    {
-        $this->ever_paid_users = $everPaidUsers;
-
-        return $this;
-    }
-
-    /**
-     * Get ever_paid_users
-     *
-     * @return integer 
-     */
-    public function getEverPaidUsers()
-    {
-        return $this->ever_paid_users;
-    }
-
-    /**
-     * Set paying_users
-     *
-     * @param integer $payingUsers
-     * @return StatisticGlobal
-     */
-    public function setPayingUsers($payingUsers)
-    {
-        $this->paying_users = $payingUsers;
-
-        return $this;
-    }
-
-    /**
-     * Get paying_users
-     *
-     * @return integer 
-     */
-    public function getPayingUsers()
-    {
-        return $this->paying_users;
-    }
-
-    /**
-     * Set active_patrons
-     *
-     * @param integer $activePatrons
-     * @return StatisticGlobal
-     */
-    public function setActivePatrons($activePatrons)
-    {
-        $this->active_patrons = $activePatrons;
-
-        return $this;
-    }
-
-    /**
-     * Get active_patrons
-     *
-     * @return integer 
-     */
-    public function getActivePatrons()
-    {
-        return $this->active_patrons;
-    }
-
-    /**
-     * Set characters
-     *
-     * @param integer $characters
-     * @return StatisticGlobal
-     */
-    public function setCharacters($characters)
-    {
-        $this->characters = $characters;
-
-        return $this;
-    }
-
-    /**
-     * Get characters
-     *
-     * @return integer 
-     */
-    public function getCharacters()
-    {
-        return $this->characters;
-    }
-
-    /**
-     * Set living_characters
-     *
-     * @param integer $livingCharacters
-     * @return StatisticGlobal
-     */
-    public function setLivingCharacters($livingCharacters)
-    {
-        $this->living_characters = $livingCharacters;
-
-        return $this;
-    }
-
-    /**
-     * Get living_characters
-     *
-     * @return integer 
-     */
-    public function getLivingCharacters()
-    {
-        return $this->living_characters;
-    }
-
-    /**
-     * Set active_characters
-     *
-     * @param integer $activeCharacters
-     * @return StatisticGlobal
-     */
-    public function setActiveCharacters($activeCharacters)
-    {
-        $this->active_characters = $activeCharacters;
-
-        return $this;
-    }
-
-    /**
-     * Get active_characters
-     *
-     * @return integer 
-     */
-    public function getActiveCharacters()
-    {
-        return $this->active_characters;
-    }
-
-    /**
-     * Set deceased_characters
-     *
-     * @param integer $deceasedCharacters
-     * @return StatisticGlobal
-     */
-    public function setDeceasedCharacters($deceasedCharacters)
-    {
-        $this->deceased_characters = $deceasedCharacters;
-
-        return $this;
-    }
-
-    /**
-     * Get deceased_characters
-     *
-     * @return integer 
-     */
-    public function getDeceasedCharacters()
-    {
-        return $this->deceased_characters;
-    }
-
-    /**
-     * Set realms
-     *
-     * @param integer $realms
-     * @return StatisticGlobal
-     */
-    public function setRealms($realms)
-    {
-        $this->realms = $realms;
-
-        return $this;
-    }
-
-    /**
-     * Get realms
-     *
-     * @return integer 
-     */
-    public function getRealms()
-    {
-        return $this->realms;
-    }
-
-    /**
-     * Set major_realms
-     *
-     * @param integer $majorRealms
-     * @return StatisticGlobal
-     */
-    public function setMajorRealms($majorRealms)
-    {
-        $this->major_realms = $majorRealms;
-
-        return $this;
-    }
-
-    /**
-     * Get major_realms
-     *
-     * @return integer 
-     */
-    public function getMajorRealms()
-    {
-        return $this->major_realms;
-    }
-
-    /**
-     * Set buildings
-     *
-     * @param integer $buildings
-     * @return StatisticGlobal
-     */
-    public function setBuildings($buildings)
-    {
-        $this->buildings = $buildings;
-
-        return $this;
-    }
-
-    /**
-     * Get buildings
-     *
-     * @return integer 
-     */
-    public function getBuildings()
-    {
-        return $this->buildings;
-    }
-
-    /**
-     * Set constructions
-     *
-     * @param integer $constructions
-     * @return StatisticGlobal
-     */
-    public function setConstructions($constructions)
-    {
-        $this->constructions = $constructions;
-
-        return $this;
-    }
-
-    /**
-     * Get constructions
-     *
-     * @return integer 
-     */
-    public function getConstructions()
-    {
-        return $this->constructions;
-    }
-
-    /**
-     * Set abandoned
-     *
-     * @param integer $abandoned
-     * @return StatisticGlobal
-     */
-    public function setAbandoned($abandoned)
-    {
-        $this->abandoned = $abandoned;
-
-        return $this;
-    }
-
-    /**
-     * Get abandoned
-     *
-     * @return integer 
-     */
-    public function getAbandoned()
-    {
-        return $this->abandoned;
-    }
-
-    /**
-     * Set features
-     *
-     * @param integer $features
-     * @return StatisticGlobal
-     */
-    public function setFeatures($features)
-    {
-        $this->features = $features;
-
-        return $this;
-    }
-
-    /**
-     * Get features
-     *
-     * @return integer 
-     */
-    public function getFeatures()
-    {
-        return $this->features;
-    }
-
-    /**
-     * Set roads
-     *
-     * @param integer $roads
-     * @return StatisticGlobal
-     */
-    public function setRoads($roads)
-    {
-        $this->roads = $roads;
-
-        return $this;
-    }
-
-    /**
-     * Get roads
-     *
-     * @return integer 
-     */
-    public function getRoads()
-    {
-        return $this->roads;
-    }
-
-    /**
-     * Set trades
-     *
-     * @param integer $trades
-     * @return StatisticGlobal
-     */
-    public function setTrades($trades)
-    {
-        $this->trades = $trades;
-
-        return $this;
-    }
-
-    /**
-     * Get trades
-     *
-     * @return integer 
-     */
-    public function getTrades()
-    {
-        return $this->trades;
-    }
-
-    /**
-     * Set battles
-     *
-     * @param integer $battles
-     * @return StatisticGlobal
-     */
-    public function setBattles($battles)
-    {
-        $this->battles = $battles;
-
-        return $this;
-    }
-
-    /**
-     * Get battles
-     *
-     * @return integer 
-     */
-    public function getBattles()
-    {
-        return $this->battles;
-    }
-
-    /**
-     * Set soldiers
-     *
-     * @param integer $soldiers
-     * @return StatisticGlobal
-     */
-    public function setSoldiers($soldiers)
-    {
-        $this->soldiers = $soldiers;
-
-        return $this;
-    }
-
-    /**
-     * Get soldiers
-     *
-     * @return integer 
-     */
-    public function getSoldiers()
-    {
-        return $this->soldiers;
-    }
-
-    /**
-     * Set militia
-     *
-     * @param integer $militia
-     * @return StatisticGlobal
-     */
-    public function setMilitia($militia)
-    {
-        $this->militia = $militia;
-
-        return $this;
-    }
-
-    /**
-     * Get militia
-     *
-     * @return integer 
-     */
-    public function getMilitia()
-    {
-        return $this->militia;
-    }
-
-    /**
-     * Set recruits
-     *
-     * @param integer $recruits
-     * @return StatisticGlobal
-     */
-    public function setRecruits($recruits)
-    {
-        $this->recruits = $recruits;
-
-        return $this;
-    }
-
-    /**
-     * Get recruits
-     *
-     * @return integer 
-     */
-    public function getRecruits()
-    {
-        return $this->recruits;
-    }
-
-    /**
-     * Set offers
-     *
-     * @param integer $offers
-     * @return StatisticGlobal
-     */
-    public function setOffers($offers)
-    {
-        $this->offers = $offers;
-
-        return $this;
-    }
-
-    /**
-     * Get offers
-     *
-     * @return integer 
-     */
-    public function getOffers()
-    {
-        return $this->offers;
-    }
-
-    /**
-     * Set entourage
-     *
-     * @param integer $entourage
-     * @return StatisticGlobal
-     */
-    public function setEntourage($entourage)
-    {
-        $this->entourage = $entourage;
-
-        return $this;
-    }
-
-    /**
-     * Get entourage
-     *
-     * @return integer 
-     */
-    public function getEntourage()
-    {
-        return $this->entourage;
-    }
-
-    /**
-     * Set peasants
-     *
-     * @param integer $peasants
-     * @return StatisticGlobal
-     */
-    public function setPeasants($peasants)
-    {
-        $this->peasants = $peasants;
-
-        return $this;
-    }
-
-    /**
-     * Get peasants
-     *
-     * @return integer 
-     */
-    public function getPeasants()
-    {
-        return $this->peasants;
-    }
-
-    /**
-     * Set thralls
-     *
-     * @param integer $thralls
-     * @return StatisticGlobal
-     */
-    public function setThralls($thralls)
-    {
-        $this->thralls = $thralls;
-
-        return $this;
-    }
-
-    /**
-     * Get thralls
-     *
-     * @return integer 
-     */
-    public function getThralls()
-    {
-        return $this->thralls;
-    }
-
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return StatisticGlobal
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
-
-        return $this;
-    }
-
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+use DateTime;
+
+class StatisticGlobal {
+	private int $cycle;
+	private int $users;
+	private int $active_users;
+	private ?int $really_active_users;
+	private ?int $today_users;
+	private int $ever_paid_users;
+	private int $paying_users;
+	private ?int $active_patrons;
+	private int $characters;
+	private int $living_characters;
+	private int $active_characters;
+	private int $deceased_characters;
+	private int $realms;
+	private int $major_realms;
+	private int $buildings;
+	private int $constructions;
+	private int $abandoned;
+	private int $features;
+	private int $roads;
+	private int $trades;
+	private int $battles;
+	private int $soldiers;
+	private int $militia;
+	private int $recruits;
+	private int $offers;
+	private int $entourage;
+	private int $peasants;
+	private int $thralls;
+	private DateTime $ts;
+	private int $id;
+
+	/**
+	 * Set cycle
+	 *
+	 * @param integer $cycle
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setCycle(int $cycle): static {
+		$this->cycle = $cycle;
+
+		return $this;
+	}
+
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
+
+	/**
+	 * Set users
+	 *
+	 * @param integer $users
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setUsers(int $users): static {
+		$this->users = $users;
+
+		return $this;
+	}
+
+	/**
+	 * Get users
+	 *
+	 * @return integer
+	 */
+	public function getUsers(): int {
+		return $this->users;
+	}
+
+	/**
+	 * Set active_users
+	 *
+	 * @param integer $activeUsers
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setActiveUsers(int $activeUsers): static {
+		$this->active_users = $activeUsers;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_users
+	 *
+	 * @return integer
+	 */
+	public function getActiveUsers(): int {
+		return $this->active_users;
+	}
+
+	/**
+	 * Set really_active_users
+	 *
+	 * @param integer $reallyActiveUsers
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setReallyActiveUsers(int $reallyActiveUsers): static {
+		$this->really_active_users = $reallyActiveUsers;
+
+		return $this;
+	}
+
+	/**
+	 * Get really_active_users
+	 *
+	 * @return int|null
+	 */
+	public function getReallyActiveUsers(): ?int {
+		return $this->really_active_users;
+	}
+
+	/**
+	 * Set today_users
+	 *
+	 * @param integer $todayUsers
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setTodayUsers(int $todayUsers): static {
+		$this->today_users = $todayUsers;
+
+		return $this;
+	}
+
+	/**
+	 * Get today_users
+	 *
+	 * @return int|null
+	 */
+	public function getTodayUsers(): ?int {
+		return $this->today_users;
+	}
+
+	/**
+	 * Set ever_paid_users
+	 *
+	 * @param integer $everPaidUsers
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setEverPaidUsers(int $everPaidUsers): static {
+		$this->ever_paid_users = $everPaidUsers;
+
+		return $this;
+	}
+
+	/**
+	 * Get ever_paid_users
+	 *
+	 * @return integer
+	 */
+	public function getEverPaidUsers(): int {
+		return $this->ever_paid_users;
+	}
+
+	/**
+	 * Set paying_users
+	 *
+	 * @param integer $payingUsers
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setPayingUsers(int $payingUsers): static {
+		$this->paying_users = $payingUsers;
+
+		return $this;
+	}
+
+	/**
+	 * Get paying_users
+	 *
+	 * @return integer
+	 */
+	public function getPayingUsers(): int {
+		return $this->paying_users;
+	}
+
+	/**
+	 * Set active_patrons
+	 *
+	 * @param integer $activePatrons
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setActivePatrons(int $activePatrons): static {
+		$this->active_patrons = $activePatrons;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_patrons
+	 *
+	 * @return int|null
+	 */
+	public function getActivePatrons(): ?int {
+		return $this->active_patrons;
+	}
+
+	/**
+	 * Set characters
+	 *
+	 * @param integer $characters
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setCharacters(int $characters): static {
+		$this->characters = $characters;
+
+		return $this;
+	}
+
+	/**
+	 * Get characters
+	 *
+	 * @return integer
+	 */
+	public function getCharacters(): int {
+		return $this->characters;
+	}
+
+	/**
+	 * Set living_characters
+	 *
+	 * @param integer $livingCharacters
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setLivingCharacters(int $livingCharacters): static {
+		$this->living_characters = $livingCharacters;
+
+		return $this;
+	}
+
+	/**
+	 * Get living_characters
+	 *
+	 * @return integer
+	 */
+	public function getLivingCharacters(): int {
+		return $this->living_characters;
+	}
+
+	/**
+	 * Set active_characters
+	 *
+	 * @param integer $activeCharacters
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setActiveCharacters(int $activeCharacters): static {
+		$this->active_characters = $activeCharacters;
+
+		return $this;
+	}
+
+	/**
+	 * Get active_characters
+	 *
+	 * @return integer
+	 */
+	public function getActiveCharacters(): int {
+		return $this->active_characters;
+	}
+
+	/**
+	 * Set deceased_characters
+	 *
+	 * @param integer $deceasedCharacters
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setDeceasedCharacters(int $deceasedCharacters): static {
+		$this->deceased_characters = $deceasedCharacters;
+
+		return $this;
+	}
+
+	/**
+	 * Get deceased_characters
+	 *
+	 * @return integer
+	 */
+	public function getDeceasedCharacters(): int {
+		return $this->deceased_characters;
+	}
+
+	/**
+	 * Set realms
+	 *
+	 * @param integer $realms
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setRealms(int $realms): static {
+		$this->realms = $realms;
+
+		return $this;
+	}
+
+	/**
+	 * Get realms
+	 *
+	 * @return integer
+	 */
+	public function getRealms(): int {
+		return $this->realms;
+	}
+
+	/**
+	 * Set major_realms
+	 *
+	 * @param integer $majorRealms
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setMajorRealms(int $majorRealms): static {
+		$this->major_realms = $majorRealms;
+
+		return $this;
+	}
+
+	/**
+	 * Get major_realms
+	 *
+	 * @return integer
+	 */
+	public function getMajorRealms(): int {
+		return $this->major_realms;
+	}
+
+	/**
+	 * Set buildings
+	 *
+	 * @param integer $buildings
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setBuildings(int $buildings): static {
+		$this->buildings = $buildings;
+
+		return $this;
+	}
+
+	/**
+	 * Get buildings
+	 *
+	 * @return integer
+	 */
+	public function getBuildings(): int {
+		return $this->buildings;
+	}
+
+	/**
+	 * Set constructions
+	 *
+	 * @param integer $constructions
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setConstructions(int $constructions): static {
+		$this->constructions = $constructions;
+
+		return $this;
+	}
+
+	/**
+	 * Get constructions
+	 *
+	 * @return integer
+	 */
+	public function getConstructions(): int {
+		return $this->constructions;
+	}
+
+	/**
+	 * Set abandoned
+	 *
+	 * @param integer $abandoned
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setAbandoned(int $abandoned): static {
+		$this->abandoned = $abandoned;
+
+		return $this;
+	}
+
+	/**
+	 * Get abandoned
+	 *
+	 * @return integer
+	 */
+	public function getAbandoned(): int {
+		return $this->abandoned;
+	}
+
+	/**
+	 * Set features
+	 *
+	 * @param integer $features
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setFeatures(int $features): static {
+		$this->features = $features;
+
+		return $this;
+	}
+
+	/**
+	 * Get features
+	 *
+	 * @return integer
+	 */
+	public function getFeatures(): int {
+		return $this->features;
+	}
+
+	/**
+	 * Set roads
+	 *
+	 * @param integer $roads
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setRoads(int $roads): static {
+		$this->roads = $roads;
+
+		return $this;
+	}
+
+	/**
+	 * Get roads
+	 *
+	 * @return integer
+	 */
+	public function getRoads(): int {
+		return $this->roads;
+	}
+
+	/**
+	 * Set trades
+	 *
+	 * @param integer $trades
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setTrades(int $trades): static {
+		$this->trades = $trades;
+
+		return $this;
+	}
+
+	/**
+	 * Get trades
+	 *
+	 * @return integer
+	 */
+	public function getTrades(): int {
+		return $this->trades;
+	}
+
+	/**
+	 * Set battles
+	 *
+	 * @param integer $battles
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setBattles(int $battles): static {
+		$this->battles = $battles;
+
+		return $this;
+	}
+
+	/**
+	 * Get battles
+	 *
+	 * @return integer
+	 */
+	public function getBattles(): int {
+		return $this->battles;
+	}
+
+	/**
+	 * Set soldiers
+	 *
+	 * @param integer $soldiers
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setSoldiers(int $soldiers): static {
+		$this->soldiers = $soldiers;
+
+		return $this;
+	}
+
+	/**
+	 * Get soldiers
+	 *
+	 * @return integer
+	 */
+	public function getSoldiers(): int {
+		return $this->soldiers;
+	}
+
+	/**
+	 * Set militia
+	 *
+	 * @param integer $militia
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setMilitia(int $militia): static {
+		$this->militia = $militia;
+
+		return $this;
+	}
+
+	/**
+	 * Get militia
+	 *
+	 * @return integer
+	 */
+	public function getMilitia(): int {
+		return $this->militia;
+	}
+
+	/**
+	 * Set recruits
+	 *
+	 * @param integer $recruits
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setRecruits(int $recruits): static {
+		$this->recruits = $recruits;
+
+		return $this;
+	}
+
+	/**
+	 * Get recruits
+	 *
+	 * @return integer
+	 */
+	public function getRecruits(): int {
+		return $this->recruits;
+	}
+
+	/**
+	 * Set offers
+	 *
+	 * @param integer $offers
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setOffers(int $offers): static {
+		$this->offers = $offers;
+
+		return $this;
+	}
+
+	/**
+	 * Get offers
+	 *
+	 * @return integer
+	 */
+	public function getOffers(): int {
+		return $this->offers;
+	}
+
+	/**
+	 * Set entourage
+	 *
+	 * @param integer $entourage
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setEntourage(int $entourage): static {
+		$this->entourage = $entourage;
+
+		return $this;
+	}
+
+	/**
+	 * Get entourage
+	 *
+	 * @return integer
+	 */
+	public function getEntourage(): int {
+		return $this->entourage;
+	}
+
+	/**
+	 * Set peasants
+	 *
+	 * @param integer $peasants
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setPeasants(int $peasants): static {
+		$this->peasants = $peasants;
+
+		return $this;
+	}
+
+	/**
+	 * Get peasants
+	 *
+	 * @return integer
+	 */
+	public function getPeasants(): int {
+		return $this->peasants;
+	}
+
+	/**
+	 * Set thralls
+	 *
+	 * @param integer $thralls
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setThralls(int $thralls): static {
+		$this->thralls = $thralls;
+
+		return $this;
+	}
+
+	/**
+	 * Get thralls
+	 *
+	 * @return integer
+	 */
+	public function getThralls(): int {
+		return $this->thralls;
+	}
+
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return StatisticGlobal
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
+
+		return $this;
+	}
+
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
+
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 }

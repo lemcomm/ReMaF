@@ -2,139 +2,109 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
-/**
- * UpdateNote
- */
-class UpdateNote
-{
-    /**
-     * @var \DateTime
-     */
-    private $ts;
+class UpdateNote {
+	private DateTime $ts;
+	private string $version;
+	private string $title;
+	private string $text;
+	private int $id;
 
-    /**
-     * @var string
-     */
-    private $version;
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return UpdateNote
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
 
-    /**
-     * @var string
-     */
-    private $title;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $text;
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set version
+	 *
+	 * @param string $version
+	 *
+	 * @return UpdateNote
+	 */
+	public function setVersion(string $version): static {
+		$this->version = $version;
 
+		return $this;
+	}
 
-    /**
-     * Set ts
-     *
-     * @param \DateTime $ts
-     * @return UpdateNote
-     */
-    public function setTs($ts)
-    {
-        $this->ts = $ts;
+	/**
+	 * Get version
+	 *
+	 * @return string
+	 */
+	public function getVersion(): string {
+		return $this->version;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set title
+	 *
+	 * @param string $title
+	 *
+	 * @return UpdateNote
+	 */
+	public function setTitle(string $title): static {
+		$this->title = $title;
 
-    /**
-     * Get ts
-     *
-     * @return \DateTime 
-     */
-    public function getTs()
-    {
-        return $this->ts;
-    }
+		return $this;
+	}
 
-    /**
-     * Set version
-     *
-     * @param string $version
-     * @return UpdateNote
-     */
-    public function setVersion($version)
-    {
-        $this->version = $version;
+	/**
+	 * Get title
+	 *
+	 * @return string
+	 */
+	public function getTitle(): string {
+		return $this->title;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set text
+	 *
+	 * @param string $text
+	 *
+	 * @return UpdateNote
+	 */
+	public function setText(string $text): static {
+		$this->text = $text;
 
-    /**
-     * Get version
-     *
-     * @return string 
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
+		return $this;
+	}
 
-    /**
-     * Set title
-     *
-     * @param string $title
-     * @return UpdateNote
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
+	/**
+	 * Get text
+	 *
+	 * @return string
+	 */
+	public function getText(): string {
+		return $this->text;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get title
-     *
-     * @return string 
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * Set text
-     *
-     * @param string $text
-     * @return UpdateNote
-     */
-    public function setText($text)
-    {
-        $this->text = $text;
-
-        return $this;
-    }
-
-    /**
-     * Get text
-     *
-     * @return string 
-     */
-    public function getText()
-    {
-        return $this->text;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 }

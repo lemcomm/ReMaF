@@ -2,84 +2,67 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
+use DateTimeInterface;
 
-class SecurityLog
-{
-    private ?string $type = null;
+class SecurityLog {
+	private string $type;
+	private string $ip;
+	private string $route;
+	private DateTimeInterface $timestamp;
+	private int $id;
+	private ?User $user = null;
 
-    private ?string $ip = null;
+	public function getType(): string {
+		return $this->type;
+	}
 
-    private ?string $route = null;
+	public function setType(string $type): self {
+		$this->type = $type;
 
-    private ?\DateTimeInterface $timestamp = null;
+		return $this;
+	}
 
-    private ?int $id = null;
+	public function getIp(): string {
+		return $this->ip;
+	}
 
-    private ?User $user = null;
+	public function setIp(string $ip): self {
+		$this->ip = $ip;
 
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
+		return $this;
+	}
 
-    public function setType(string $type): self
-    {
-        $this->type = $type;
+	public function getRoute(): string {
+		return $this->route;
+	}
 
-        return $this;
-    }
+	public function setRoute(string $route): self {
+		$this->route = $route;
 
-    public function getIp(): ?string
-    {
-        return $this->ip;
-    }
+		return $this;
+	}
 
-    public function setIp(string $ip): self
-    {
-        $this->ip = $ip;
+	public function getTimestamp(): DateTimeInterface {
+		return $this->timestamp;
+	}
 
-        return $this;
-    }
+	public function setTimestamp(DateTimeInterface $timestamp): self {
+		$this->timestamp = $timestamp;
 
-    public function getRoute(): ?string
-    {
-        return $this->route;
-    }
+		return $this;
+	}
 
-    public function setRoute(string $route): self
-    {
-        $this->route = $route;
+	public function getId(): ?int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	public function getUser(): ?User {
+		return $this->user;
+	}
 
-    public function getTimestamp(): ?\DateTimeInterface
-    {
-        return $this->timestamp;
-    }
+	public function setUser(?User $user): self {
+		$this->user = $user;
 
-    public function setTimestamp(\DateTimeInterface $timestamp): self
-    {
-        $this->timestamp = $timestamp;
-
-        return $this;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
-
-        return $this;
-    }
+		return $this;
+	}
 }

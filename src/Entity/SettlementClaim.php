@@ -2,148 +2,115 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class SettlementClaim {
+	private bool $enforceable;
+	private bool $priority;
+	private int $id;
+	private ?Character $character;
+	private ?Settlement $settlement;
 
-/**
- * SettlementClaim
- */
-class SettlementClaim
-{
-    /**
-     * @var boolean
-     */
-    private $enforceable;
+	/**
+	 * Set enforceable
+	 *
+	 * @param boolean $enforceable
+	 *
+	 * @return SettlementClaim
+	 */
+	public function setEnforceable(bool $enforceable): static {
+		$this->enforceable = $enforceable;
 
-    /**
-     * @var boolean
-     */
-    private $priority;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Get enforceable
+	 *
+	 * @return boolean
+	 */
+	public function getEnforceable(): bool {
+		return $this->enforceable;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Set priority
+	 *
+	 * @param boolean $priority
+	 *
+	 * @return SettlementClaim
+	 */
+	public function setPriority(bool $priority): static {
+		$this->priority = $priority;
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
+		return $this;
+	}
 
+	/**
+	 * Get priority
+	 *
+	 * @return boolean
+	 */
+	public function getPriority(): bool {
+		return $this->priority;
+	}
 
-    /**
-     * Set enforceable
-     *
-     * @param boolean $enforceable
-     * @return SettlementClaim
-     */
-    public function setEnforceable($enforceable)
-    {
-        $this->enforceable = $enforceable;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return SettlementClaim
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Get enforceable
-     *
-     * @return boolean 
-     */
-    public function getEnforceable()
-    {
-        return $this->enforceable;
-    }
+		return $this;
+	}
 
-    /**
-     * Set priority
-     *
-     * @param boolean $priority
-     * @return SettlementClaim
-     */
-    public function setPriority($priority)
-    {
-        $this->priority = $priority;
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return SettlementClaim
+	 */
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
 
-    /**
-     * Get priority
-     *
-     * @return boolean 
-     */
-    public function getPriority()
-    {
-        return $this->priority;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement
+	 */
+	public function getSettlement(): Settlement {
+		return $this->settlement;
+	}
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return SettlementClaim
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
+	public function isEnforceable(): ?bool {
+		return $this->enforceable;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set settlement
-     *
-     * @param \App\Entity\Settlement $settlement
-     * @return SettlementClaim
-     */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
-        $this->settlement = $settlement;
-
-        return $this;
-    }
-
-    /**
-     * Get settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getSettlement()
-    {
-        return $this->settlement;
-    }
-
-    public function isEnforceable(): ?bool
-    {
-        return $this->enforceable;
-    }
-
-    public function isPriority(): ?bool
-    {
-        return $this->priority;
-    }
+	public function isPriority(): ?bool {
+		return $this->priority;
+	}
 }

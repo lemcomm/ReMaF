@@ -2,200 +2,162 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 /**
  * UserReportNote
  */
-class UserReportNote
-{
-    /**
-     * @var string
-     */
-    private $text;
+class UserReportNote {
+	private string $text;
+	private DateTime $date;
+	private bool $pending;
+	private string $verdict;
+	private int $id;
+	private ?User $from;
+	private ?UserReport $report;
 
-    /**
-     * @var \DateTime
-     */
-    private $date;
+	/**
+	 * Set text
+	 *
+	 * @param string $text
+	 *
+	 * @return UserReportNote
+	 */
+	public function setText(string $text): static {
+		$this->text = $text;
 
-    /**
-     * @var boolean
-     */
-    private $pending;
+		return $this;
+	}
 
-    /**
-     * @var string
-     */
-    private $verdict;
+	/**
+	 * Get text
+	 *
+	 * @return string
+	 */
+	public function getText(): string {
+		return $this->text;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set date
+	 *
+	 * @param DateTime $date
+	 *
+	 * @return UserReportNote
+	 */
+	public function setDate(DateTime $date): static {
+		$this->date = $date;
 
-    /**
-     * @var \App\Entity\User
-     */
-    private $from;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\UserReport
-     */
-    private $report;
+	/**
+	 * Get date
+	 *
+	 * @return DateTime
+	 */
+	public function getDate(): DateTime {
+		return $this->date;
+	}
 
+	/**
+	 * Set pending
+	 *
+	 * @param boolean $pending
+	 *
+	 * @return UserReportNote
+	 */
+	public function setPending(bool $pending): static {
+		$this->pending = $pending;
 
-    /**
-     * Set text
-     *
-     * @param string $text
-     * @return UserReportNote
-     */
-    public function setText($text)
-    {
-        $this->text = $text;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get pending
+	 *
+	 * @return boolean
+	 */
+	public function getPending(): bool {
+		return $this->pending;
+	}
 
-    /**
-     * Get text
-     *
-     * @return string 
-     */
-    public function getText()
-    {
-        return $this->text;
-    }
+	/**
+	 * Set verdict
+	 *
+	 * @param string $verdict
+	 *
+	 * @return UserReportNote
+	 */
+	public function setVerdict(string $verdict): static {
+		$this->verdict = $verdict;
 
-    /**
-     * Set date
-     *
-     * @param \DateTime $date
-     * @return UserReportNote
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get verdict
+	 *
+	 * @return string
+	 */
+	public function getVerdict(): string {
+		return $this->verdict;
+	}
 
-    /**
-     * Get date
-     *
-     * @return \DateTime 
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set pending
-     *
-     * @param boolean $pending
-     * @return UserReportNote
-     */
-    public function setPending($pending)
-    {
-        $this->pending = $pending;
+	/**
+	 * Set from
+	 *
+	 * @param User|null $from
+	 *
+	 * @return UserReportNote
+	 */
+	public function setFrom(User $from = null): static {
+		$this->from = $from;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get pending
-     *
-     * @return boolean 
-     */
-    public function getPending()
-    {
-        return $this->pending;
-    }
+	/**
+	 * Get from
+	 *
+	 * @return User|null
+	 */
+	public function getFrom(): ?User {
+		return $this->from;
+	}
 
-    /**
-     * Set verdict
-     *
-     * @param string $verdict
-     * @return UserReportNote
-     */
-    public function setVerdict($verdict)
-    {
-        $this->verdict = $verdict;
+	/**
+	 * Set report
+	 *
+	 * @param UserReport|null $report
+	 *
+	 * @return UserReportNote
+	 */
+	public function setReport(UserReport $report = null): static {
+		$this->report = $report;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get verdict
-     *
-     * @return string 
-     */
-    public function getVerdict()
-    {
-        return $this->verdict;
-    }
+	/**
+	 * Get report
+	 *
+	 * @return UserReport|null
+	 */
+	public function getReport(): ?UserReport {
+		return $this->report;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set from
-     *
-     * @param \App\Entity\User $from
-     * @return UserReportNote
-     */
-    public function setFrom(\App\Entity\User $from = null)
-    {
-        $this->from = $from;
-
-        return $this;
-    }
-
-    /**
-     * Get from
-     *
-     * @return \App\Entity\User 
-     */
-    public function getFrom()
-    {
-        return $this->from;
-    }
-
-    /**
-     * Set report
-     *
-     * @param \App\Entity\UserReport $report
-     * @return UserReportNote
-     */
-    public function setReport(\App\Entity\UserReport $report = null)
-    {
-        $this->report = $report;
-
-        return $this;
-    }
-
-    /**
-     * Get report
-     *
-     * @return \App\Entity\UserReport 
-     */
-    public function getReport()
-    {
-        return $this->report;
-    }
-
-    public function isPending(): ?bool
-    {
-        return $this->pending;
-    }
+	public function isPending(): ?bool {
+		return $this->pending;
+	}
 }

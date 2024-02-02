@@ -2,54 +2,76 @@
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 class Siege {
+	private int $stage;
+	private int $max_stage;
+	private bool $encircled;
+	private ?int $encirclement;
+	private int $id;
+	private ?Settlement $settlement;
+	private ?Place $place;
+	private ?BattleGroup $attacker;
+	private Collection $groups;
+	private Collection $battles;
+	private Collection $related_battle_reports;
+	private ?Realm $realm;
+	private ?War $war;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->groups = new ArrayCollection();
+		$this->battles = new ArrayCollection();
+		$this->related_battle_reports = new ArrayCollection();
+	}
 
 	public function getLeader($side) {
-      		$leader = null;
-      		foreach ($this->groups as $group) {
-      			if ($side == 'attacker' && $group->isAttacker()) {
-      				$leader = $group->getLeader();
-      			} else if ($side == 'defender' && $group->isDefender()) {
-      				$leader = $group->getLeader();
-      			}
-      		}
-      		return $leader;
-      	}
-	
-	public function setLeader($side, $character) {
-      		foreach ($this->groups as $group) {
-      			if ($side == 'attackers' && $group->isAttacker()) {
-      				$group->setLeader($character);
-      			} else if ($side == 'defenders' && $group->isDefender()) {
-      				$group->setLeader($character);
-      			}
-      		}
-      	}
+		$leader = null;
+		foreach ($this->groups as $group) {
+			if ($side == 'attacker' && $group->isAttacker()) {
+				$leader = $group->getLeader();
+			} elseif ($side == 'defender' && $group->isDefender()) {
+				$leader = $group->getLeader();
+			}
+		}
+		return $leader;
+	}
+
+	public function setLeader($side, $character): void {
+		foreach ($this->groups as $group) {
+			if ($side == 'attackers' && $group->isAttacker()) {
+				$group->setLeader($character);
+			} elseif ($side == 'defenders' && $group->isDefender()) {
+				$group->setLeader($character);
+			}
+		}
+	}
 
 	public function getDefender() {
-      		foreach ($this->groups as $group) {
-      			if ($this->attacker != $group) {
-      				return $group;
-      			}
-      		}
-      	}
+		foreach ($this->groups as $group) {
+			if ($this->attacker != $group) {
+				return $group;
+			}
+		}
+		return null;
+	}
 
-	public function getCharacters() {
-      		$allsiegers = new ArrayCollection;
-      		foreach ($this->groups as $group) {
-      			foreach ($group->getCharacters() as $character) {
-      				$allsiegers->add($character);
-      			}
-      		}
-      
-      		return $allsiegers;
-      	}
+	public function getCharacters(): ArrayCollection {
+		$allsiegers = new ArrayCollection;
+		foreach ($this->groups as $group) {
+			foreach ($group->getCharacters() as $character) {
+				$allsiegers->add($character);
+			}
+		}
 
-	public function updateEncirclement() {
+		return $allsiegers;
+	}
+
+	public function updateEncirclement(): static {
 		$chars = $this->attacker->getCharacters();
 		$count = 0;
 		foreach ($chars as $char) {
@@ -59,406 +81,313 @@ class Siege {
 		}
 		if ($count >= $this->encirclement) {
 			$this->setEncirclement(true);
-			return $this;
 		} else {
 			$this->setEncirclement(false);
-			return $this;
 		}
+		return $this;
 	}
-	
-    /**
-     * @var integer
-     */
-    private $stage;
 
-    /**
-     * @var integer
-     */
-    private $max_stage;
+	/**
+	 * Set stage
+	 *
+	 * @param integer $stage
+	 *
+	 * @return Siege
+	 */
+	public function setStage(int $stage): static {
+		$this->stage = $stage;
 
-    /**
-     * @var boolean
-     */
-    private $encircled;
+		return $this;
+	}
 
-    /**
-     * @var integer
-     */
-    private $encirclement;
+	/**
+	 * Get stage
+	 *
+	 * @return integer
+	 */
+	public function getStage(): int {
+		return $this->stage;
+	}
 
-    /**
-     * @var integer
-     */
-    private $id;
+	/**
+	 * Set max_stage
+	 *
+	 * @param integer $maxStage
+	 *
+	 * @return Siege
+	 */
+	public function setMaxStage(int $maxStage): static {
+		$this->max_stage = $maxStage;
 
-    /**
-     * @var \App\Entity\Settlement
-     */
-    private $settlement;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Place
-     */
-    private $place;
+	/**
+	 * Get max_stage
+	 *
+	 * @return integer
+	 */
+	public function getMaxStage(): int {
+		return $this->max_stage;
+	}
 
-    /**
-     * @var \App\Entity\BattleGroup
-     */
-    private $attacker;
+	/**
+	 * Set encircled
+	 *
+	 * @param boolean|null $encircled
+	 *
+	 * @return Siege
+	 */
+	public function setEncircled(?bool $encircled = null): static {
+		$this->encircled = $encircled;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $groups;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $battles;
+	/**
+	 * Get encircled
+	 *
+	 * @return boolean
+	 */
+	public function getEncircled(): bool {
+		return $this->encircled;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $related_battle_reports;
+	/**
+	 * Set encirclement
+	 *
+	 * @param integer $encirclement
+	 *
+	 * @return Siege
+	 */
+	public function setEncirclement(int $encirclement): static {
+		$this->encirclement = $encirclement;
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\War
-     */
-    private $war;
+	/**
+	 * Get encirclement
+	 *
+	 * @return integer
+	 */
+	public function getEncirclement(): int {
+		return $this->encirclement;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->battles = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->related_battle_reports = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Set stage
-     *
-     * @param integer $stage
-     * @return Siege
-     */
-    public function setStage($stage)
-    {
-        $this->stage = $stage;
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return Siege
+	 */
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get stage
-     *
-     * @return integer 
-     */
-    public function getStage()
-    {
-        return $this->stage;
-    }
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement
+	 */
+	public function getSettlement(): Settlement {
+		return $this->settlement;
+	}
 
-    /**
-     * Set max_stage
-     *
-     * @param integer $maxStage
-     * @return Siege
-     */
-    public function setMaxStage($maxStage)
-    {
-        $this->max_stage = $maxStage;
+	/**
+	 * Set place
+	 *
+	 * @param Place|null $place
+	 *
+	 * @return Siege
+	 */
+	public function setPlace(Place $place = null): static {
+		$this->place = $place;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get max_stage
-     *
-     * @return integer 
-     */
-    public function getMaxStage()
-    {
-        return $this->max_stage;
-    }
+	/**
+	 * Get place
+	 *
+	 * @return Place
+	 */
+	public function getPlace(): Place {
+		return $this->place;
+	}
 
-    /**
-     * Set encircled
-     *
-     * @param boolean $encircled
-     * @return Siege
-     */
-    public function setEncircled($encircled)
-    {
-        $this->encircled = $encircled;
+	/**
+	 * Set attacker
+	 *
+	 * @param BattleGroup|null $attacker
+	 *
+	 * @return Siege
+	 */
+	public function setAttacker(BattleGroup $attacker = null): static {
+		$this->attacker = $attacker;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get encircled
-     *
-     * @return boolean 
-     */
-    public function getEncircled()
-    {
-        return $this->encircled;
-    }
+	/**
+	 * Get attacker
+	 *
+	 * @return BattleGroup
+	 */
+	public function getAttacker(): BattleGroup {
+		return $this->attacker;
+	}
 
-    /**
-     * Set encirclement
-     *
-     * @param integer $encirclement
-     * @return Siege
-     */
-    public function setEncirclement($encirclement)
-    {
-        $this->encirclement = $encirclement;
+	/**
+	 * Add groups
+	 *
+	 * @param BattleGroup $groups
+	 *
+	 * @return Siege
+	 */
+	public function addGroup(BattleGroup $groups): static {
+		$this->groups[] = $groups;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get encirclement
-     *
-     * @return integer 
-     */
-    public function getEncirclement()
-    {
-        return $this->encirclement;
-    }
+	/**
+	 * Remove groups
+	 *
+	 * @param BattleGroup $groups
+	 */
+	public function removeGroup(BattleGroup $groups): void {
+		$this->groups->removeElement($groups);
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+	/**
+	 * Get groups
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getGroups(): ArrayCollection|Collection {
+		return $this->groups;
+	}
 
-    /**
-     * Set settlement
-     *
-     * @param \App\Entity\Settlement $settlement
-     * @return Siege
-     */
-    public function setSettlement(\App\Entity\Settlement $settlement = null)
-    {
-        $this->settlement = $settlement;
+	/**
+	 * Add battles
+	 *
+	 * @param Battle $battles
+	 *
+	 * @return Siege
+	 */
+	public function addBattle(Battle $battles): static {
+		$this->battles[] = $battles;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get settlement
-     *
-     * @return \App\Entity\Settlement 
-     */
-    public function getSettlement()
-    {
-        return $this->settlement;
-    }
+	/**
+	 * Remove battles
+	 *
+	 * @param Battle $battles
+	 */
+	public function removeBattle(Battle $battles): void {
+		$this->battles->removeElement($battles);
+	}
 
-    /**
-     * Set place
-     *
-     * @param \App\Entity\Place $place
-     * @return Siege
-     */
-    public function setPlace(\App\Entity\Place $place = null)
-    {
-        $this->place = $place;
+	/**
+	 * Get battles
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getBattles(): ArrayCollection|Collection {
+		return $this->battles;
+	}
 
-        return $this;
-    }
+	/**
+	 * Add related_battle_reports
+	 *
+	 * @param BattleReport $relatedBattleReports
+	 *
+	 * @return Siege
+	 */
+	public function addRelatedBattleReport(BattleReport $relatedBattleReports): static {
+		$this->related_battle_reports[] = $relatedBattleReports;
 
-    /**
-     * Get place
-     *
-     * @return \App\Entity\Place 
-     */
-    public function getPlace()
-    {
-        return $this->place;
-    }
+		return $this;
+	}
 
-    /**
-     * Set attacker
-     *
-     * @param \App\Entity\BattleGroup $attacker
-     * @return Siege
-     */
-    public function setAttacker(\App\Entity\BattleGroup $attacker = null)
-    {
-        $this->attacker = $attacker;
+	/**
+	 * Remove related_battle_reports
+	 *
+	 * @param BattleReport $relatedBattleReports
+	 */
+	public function removeRelatedBattleReport(BattleReport $relatedBattleReports): void {
+		$this->related_battle_reports->removeElement($relatedBattleReports);
+	}
 
-        return $this;
-    }
+	/**
+	 * Get related_battle_reports
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getRelatedBattleReports(): ArrayCollection|Collection {
+		return $this->related_battle_reports;
+	}
 
-    /**
-     * Get attacker
-     *
-     * @return \App\Entity\BattleGroup 
-     */
-    public function getAttacker()
-    {
-        return $this->attacker;
-    }
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return Siege
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
 
-    /**
-     * Add groups
-     *
-     * @param \App\Entity\BattleGroup $groups
-     * @return Siege
-     */
-    public function addGroup(\App\Entity\BattleGroup $groups)
-    {
-        $this->groups[] = $groups;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get realm
+	 *
+	 * @return Realm
+	 */
+	public function getRealm(): Realm {
+		return $this->realm;
+	}
 
-    /**
-     * Remove groups
-     *
-     * @param \App\Entity\BattleGroup $groups
-     */
-    public function removeGroup(\App\Entity\BattleGroup $groups)
-    {
-        $this->groups->removeElement($groups);
-    }
+	/**
+	 * Set war
+	 *
+	 * @param War|null $war
+	 *
+	 * @return Siege
+	 */
+	public function setWar(War $war = null): static {
+		$this->war = $war;
 
-    /**
-     * Get groups
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getGroups()
-    {
-        return $this->groups;
-    }
+		return $this;
+	}
 
-    /**
-     * Add battles
-     *
-     * @param \App\Entity\Battle $battles
-     * @return Siege
-     */
-    public function addBattle(\App\Entity\Battle $battles)
-    {
-        $this->battles[] = $battles;
+	/**
+	 * Get war
+	 *
+	 * @return War
+	 */
+	public function getWar(): War {
+		return $this->war;
+	}
 
-        return $this;
-    }
-
-    /**
-     * Remove battles
-     *
-     * @param \App\Entity\Battle $battles
-     */
-    public function removeBattle(\App\Entity\Battle $battles)
-    {
-        $this->battles->removeElement($battles);
-    }
-
-    /**
-     * Get battles
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getBattles()
-    {
-        return $this->battles;
-    }
-
-    /**
-     * Add related_battle_reports
-     *
-     * @param \App\Entity\BattleReport $relatedBattleReports
-     * @return Siege
-     */
-    public function addRelatedBattleReport(\App\Entity\BattleReport $relatedBattleReports)
-    {
-        $this->related_battle_reports[] = $relatedBattleReports;
-
-        return $this;
-    }
-
-    /**
-     * Remove related_battle_reports
-     *
-     * @param \App\Entity\BattleReport $relatedBattleReports
-     */
-    public function removeRelatedBattleReport(\App\Entity\BattleReport $relatedBattleReports)
-    {
-        $this->related_battle_reports->removeElement($relatedBattleReports);
-    }
-
-    /**
-     * Get related_battle_reports
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getRelatedBattleReports()
-    {
-        return $this->related_battle_reports;
-    }
-
-    /**
-     * Set realm
-     *
-     * @param \App\Entity\Realm $realm
-     * @return Siege
-     */
-    public function setRealm(\App\Entity\Realm $realm = null)
-    {
-        $this->realm = $realm;
-
-        return $this;
-    }
-
-    /**
-     * Get realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getRealm()
-    {
-        return $this->realm;
-    }
-
-    /**
-     * Set war
-     *
-     * @param \App\Entity\War $war
-     * @return Siege
-     */
-    public function setWar(\App\Entity\War $war = null)
-    {
-        $this->war = $war;
-
-        return $this;
-    }
-
-    /**
-     * Get war
-     *
-     * @return \App\Entity\War 
-     */
-    public function getWar()
-    {
-        return $this->war;
-    }
-
-    public function isEncircled(): ?bool
-    {
-        return $this->encircled;
-    }
+	public function isEncircled(): ?bool {
+		return $this->encircled;
+	}
 }

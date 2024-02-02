@@ -2,111 +2,84 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
+class RegionFamiliarity {
+	private int $amount;
+	private int $id;
+	private Character $character;
+	private GeoData $geo_data;
 
-/**
- * RegionFamiliarity
- */
-class RegionFamiliarity
-{
-    /**
-     * @var integer
-     */
-    private $amount;
+	/**
+	 * Set amount
+	 *
+	 * @param integer $amount
+	 *
+	 * @return RegionFamiliarity
+	 */
+	public function setAmount(int $amount): static {
+		$this->amount = $amount;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $character;
+	/**
+	 * Get amount
+	 *
+	 * @return integer
+	 */
+	public function getAmount(): int {
+		return $this->amount;
+	}
 
-    /**
-     * @var \App\Entity\GeoData
-     */
-    private $geo_data;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return RegionFamiliarity
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-    /**
-     * Set amount
-     *
-     * @param integer $amount
-     * @return RegionFamiliarity
-     */
-    public function setAmount($amount)
-    {
-        $this->amount = $amount;
+		return $this;
+	}
 
-        return $this;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-    /**
-     * Get amount
-     *
-     * @return integer 
-     */
-    public function getAmount()
-    {
-        return $this->amount;
-    }
+	/**
+	 * Set geo_data
+	 *
+	 * @param GeoData|null $geoData
+	 *
+	 * @return RegionFamiliarity
+	 */
+	public function setGeoData(GeoData $geoData = null): static {
+		$this->geo_data = $geoData;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Set character
-     *
-     * @param \App\Entity\Character $character
-     * @return RegionFamiliarity
-     */
-    public function setCharacter(\App\Entity\Character $character = null)
-    {
-        $this->character = $character;
-
-        return $this;
-    }
-
-    /**
-     * Get character
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getCharacter()
-    {
-        return $this->character;
-    }
-
-    /**
-     * Set geo_data
-     *
-     * @param \App\Entity\GeoData $geoData
-     * @return RegionFamiliarity
-     */
-    public function setGeoData(\App\Entity\GeoData $geoData = null)
-    {
-        $this->geo_data = $geoData;
-
-        return $this;
-    }
-
-    /**
-     * Get geo_data
-     *
-     * @return \App\Entity\GeoData 
-     */
-    public function getGeoData()
-    {
-        return $this->geo_data;
-    }
+	/**
+	 * Get geo_data
+	 *
+	 * @return GeoData
+	 */
+	public function getGeoData(): GeoData {
+		return $this->geo_data;
+	}
 }

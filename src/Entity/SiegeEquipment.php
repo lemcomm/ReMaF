@@ -4,216 +4,174 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
-/**
- * SiegeEquipment
- */
-class SiegeEquipment
-{
-    /**
-     * @var integer
-     */
-    private $hours_spent;
+class SiegeEquipment {
+	private int $hours_spent;
+	private int $hours_needed;
+	private bool $ready;
+	private int $id;
+	private Collection $manned_by;
+	private ?SiegeEquipmentType $type;
+	private ?Character $owner;
 
-    /**
-     * @var integer
-     */
-    private $hours_needed;
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->manned_by = new ArrayCollection();
+	}
 
-    /**
-     * @var boolean
-     */
-    private $ready;
+	/**
+	 * Set hours_spent
+	 *
+	 * @param integer $hoursSpent
+	 *
+	 * @return SiegeEquipment
+	 */
+	public function setHoursSpent(int $hoursSpent): static {
+		$this->hours_spent = $hoursSpent;
 
-    /**
-     * @var integer
-     */
-    private $id;
+		return $this;
+	}
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    private $manned_by;
+	/**
+	 * Get hours_spent
+	 *
+	 * @return integer
+	 */
+	public function getHoursSpent(): int {
+		return $this->hours_spent;
+	}
 
-    /**
-     * @var \App\Entity\SiegeEquipmentType
-     */
-    private $type;
+	/**
+	 * Set hours_needed
+	 *
+	 * @param integer $hoursNeeded
+	 *
+	 * @return SiegeEquipment
+	 */
+	public function setHoursNeeded(int $hoursNeeded): static {
+		$this->hours_needed = $hoursNeeded;
 
-    /**
-     * @var \App\Entity\Character
-     */
-    private $owner;
+		return $this;
+	}
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->manned_by = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+	/**
+	 * Get hours_needed
+	 *
+	 * @return integer
+	 */
+	public function getHoursNeeded(): int {
+		return $this->hours_needed;
+	}
 
-    /**
-     * Set hours_spent
-     *
-     * @param integer $hoursSpent
-     * @return SiegeEquipment
-     */
-    public function setHoursSpent($hoursSpent)
-    {
-        $this->hours_spent = $hoursSpent;
+	/**
+	 * Set ready
+	 *
+	 * @param boolean $ready
+	 *
+	 * @return SiegeEquipment
+	 */
+	public function setReady(bool $ready): static {
+		$this->ready = $ready;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get hours_spent
-     *
-     * @return integer 
-     */
-    public function getHoursSpent()
-    {
-        return $this->hours_spent;
-    }
+	/**
+	 * Get ready
+	 *
+	 * @return boolean
+	 */
+	public function getReady(): bool {
+		return $this->ready;
+	}
 
-    /**
-     * Set hours_needed
-     *
-     * @param integer $hoursNeeded
-     * @return SiegeEquipment
-     */
-    public function setHoursNeeded($hoursNeeded)
-    {
-        $this->hours_needed = $hoursNeeded;
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Add manned_by
+	 *
+	 * @param Soldier $mannedBy
+	 *
+	 * @return SiegeEquipment
+	 */
+	public function addMannedBy(Soldier $mannedBy): static {
+		$this->manned_by[] = $mannedBy;
 
-    /**
-     * Get hours_needed
-     *
-     * @return integer 
-     */
-    public function getHoursNeeded()
-    {
-        return $this->hours_needed;
-    }
+		return $this;
+	}
 
-    /**
-     * Set ready
-     *
-     * @param boolean $ready
-     * @return SiegeEquipment
-     */
-    public function setReady($ready)
-    {
-        $this->ready = $ready;
+	/**
+	 * Remove manned_by
+	 *
+	 * @param Soldier $mannedBy
+	 */
+	public function removeMannedBy(Soldier $mannedBy): void {
+		$this->manned_by->removeElement($mannedBy);
+	}
 
-        return $this;
-    }
+	/**
+	 * Get manned_by
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMannedBy(): ArrayCollection|Collection {
+		return $this->manned_by;
+	}
 
-    /**
-     * Get ready
-     *
-     * @return boolean 
-     */
-    public function getReady()
-    {
-        return $this->ready;
-    }
+	/**
+	 * Set type
+	 *
+	 * @param SiegeEquipmentType|null $type
+	 *
+	 * @return SiegeEquipment
+	 */
+	public function setType(SiegeEquipmentType $type = null): static {
+		$this->type = $type;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Add manned_by
-     *
-     * @param \App\Entity\Soldier $mannedBy
-     * @return SiegeEquipment
-     */
-    public function addMannedBy(\App\Entity\Soldier $mannedBy)
-    {
-        $this->manned_by[] = $mannedBy;
+	/**
+	 * Get type
+	 *
+	 * @return SiegeEquipmentType
+	 */
+	public function getType(): SiegeEquipmentType {
+		return $this->type;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set owner
+	 *
+	 * @param Character|null $owner
+	 *
+	 * @return SiegeEquipment
+	 */
+	public function setOwner(Character $owner = null): static {
+		$this->owner = $owner;
 
-    /**
-     * Remove manned_by
-     *
-     * @param \App\Entity\Soldier $mannedBy
-     */
-    public function removeMannedBy(\App\Entity\Soldier $mannedBy)
-    {
-        $this->manned_by->removeElement($mannedBy);
-    }
+		return $this;
+	}
 
-    /**
-     * Get manned_by
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getMannedBy()
-    {
-        return $this->manned_by;
-    }
+	/**
+	 * Get owner
+	 *
+	 * @return Character
+	 */
+	public function getOwner(): Character {
+		return $this->owner;
+	}
 
-    /**
-     * Set type
-     *
-     * @param \App\Entity\SiegeEquipmentType $type
-     * @return SiegeEquipment
-     */
-    public function setType(\App\Entity\SiegeEquipmentType $type = null)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return \App\Entity\SiegeEquipmentType 
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set owner
-     *
-     * @param \App\Entity\Character $owner
-     * @return SiegeEquipment
-     */
-    public function setOwner(\App\Entity\Character $owner = null)
-    {
-        $this->owner = $owner;
-
-        return $this;
-    }
-
-    /**
-     * Get owner
-     *
-     * @return \App\Entity\Character 
-     */
-    public function getOwner()
-    {
-        return $this->owner;
-    }
-
-    public function isReady(): ?bool
-    {
-        return $this->ready;
-    }
+	public function isReady(): ?bool {
+		return $this->ready;
+	}
 }

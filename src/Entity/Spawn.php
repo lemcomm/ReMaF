@@ -2,156 +2,124 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
+class Spawn {
+	private bool $active;
+	private ?Place $place;
+	private ?House $house;
+	private ?Realm $realm;
+	private ?Association $association;
 
-/**
- * Spawn
- */
-class Spawn
-{
-    /**
-     * @var boolean
-     */
-    private $active;
+	/**
+	 * Set active
+	 *
+	 * @param boolean $active
+	 *
+	 * @return Spawn
+	 */
+	public function setActive(bool $active): static {
+		$this->active = $active;
 
-    /**
-     * @var \App\Entity\Place
-     */
-    private $place;
+		return $this;
+	}
 
-    /**
-     * @var \App\Entity\House
-     */
-    private $house;
+	/**
+	 * Get active
+	 *
+	 * @return boolean
+	 */
+	public function getActive(): bool {
+		return $this->active;
+	}
 
-    /**
-     * @var \App\Entity\Realm
-     */
-    private $realm;
+	/**
+	 * Set place
+	 *
+	 * @param Place $place
+	 *
+	 * @return Spawn
+	 */
+	public function setPlace(Place $place): static {
+		$this->place = $place;
 
-    /**
-     * @var \App\Entity\Association
-     */
-    private $association;
+		return $this;
+	}
 
+	/**
+	 * Get place
+	 *
+	 * @return Place|null
+	 */
+	public function getPlace(): ?Place {
+		return $this->place;
+	}
 
-    /**
-     * Set active
-     *
-     * @param boolean $active
-     * @return Spawn
-     */
-    public function setActive($active)
-    {
-        $this->active = $active;
+	/**
+	 * Set house
+	 *
+	 * @param House|null $house
+	 *
+	 * @return Spawn
+	 */
+	public function setHouse(House $house = null): static {
+		$this->house = $house;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get active
-     *
-     * @return boolean 
-     */
-    public function getActive()
-    {
-        return $this->active;
-    }
+	/**
+	 * Get house
+	 *
+	 * @return House|null
+	 */
+	public function getHouse(): ?House {
+		return $this->house;
+	}
 
-    /**
-     * Set place
-     *
-     * @param \App\Entity\Place $place
-     * @return Spawn
-     */
-    public function setPlace(\App\Entity\Place $place)
-    {
-        $this->place = $place;
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return Spawn
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get place
-     *
-     * @return \App\Entity\Place 
-     */
-    public function getPlace()
-    {
-        return $this->place;
-    }
+	/**
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
 
-    /**
-     * Set house
-     *
-     * @param \App\Entity\House $house
-     * @return Spawn
-     */
-    public function setHouse(\App\Entity\House $house = null)
-    {
-        $this->house = $house;
+	/**
+	 * Set association
+	 *
+	 * @param Association|null $association
+	 *
+	 * @return Spawn
+	 */
+	public function setAssociation(Association $association = null): static {
+		$this->association = $association;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get house
-     *
-     * @return \App\Entity\House 
-     */
-    public function getHouse()
-    {
-        return $this->house;
-    }
+	/**
+	 * Get association
+	 *
+	 * @return Association|null
+	 */
+	public function getAssociation(): ?Association {
+		return $this->association;
+	}
 
-    /**
-     * Set realm
-     *
-     * @param \App\Entity\Realm $realm
-     * @return Spawn
-     */
-    public function setRealm(\App\Entity\Realm $realm = null)
-    {
-        $this->realm = $realm;
-
-        return $this;
-    }
-
-    /**
-     * Get realm
-     *
-     * @return \App\Entity\Realm 
-     */
-    public function getRealm()
-    {
-        return $this->realm;
-    }
-
-    /**
-     * Set association
-     *
-     * @param \App\Entity\Association $association
-     * @return Spawn
-     */
-    public function setAssociation(\App\Entity\Association $association = null)
-    {
-        $this->association = $association;
-
-        return $this;
-    }
-
-    /**
-     * Get association
-     *
-     * @return \App\Entity\Association 
-     */
-    public function getAssociation()
-    {
-        return $this->association;
-    }
-
-    public function isActive(): ?bool
-    {
-        return $this->active;
-    }
+	public function isActive(): ?bool {
+		return $this->active;
+	}
 }
