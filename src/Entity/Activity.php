@@ -149,9 +149,9 @@ class Activity {
 	/**
 	 * Get start
 	 *
-	 * @return DateTime
+	 * @return DateTime|null
 	 */
-	public function getStart(): DateTime {
+	public function getStart(): ?DateTime {
 		return $this->start;
 	}
 
@@ -171,9 +171,9 @@ class Activity {
 	/**
 	 * Get finish
 	 *
-	 * @return DateTime
+	 * @return DateTime|null
 	 */
-	public function getFinish(): DateTime {
+	public function getFinish(): ?DateTime {
 		return $this->finish;
 	}
 
@@ -193,9 +193,9 @@ class Activity {
 	/**
 	 * Get same
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getSame(): bool {
+	public function getSame(): ?bool {
 		return $this->same;
 	}
 
@@ -215,9 +215,9 @@ class Activity {
 	/**
 	 * Get weapon_only
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getWeaponOnly(): bool {
+	public function getWeaponOnly(): ?bool {
 		return $this->weapon_only;
 	}
 
@@ -237,9 +237,9 @@ class Activity {
 	/**
 	 * Get ready
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getReady(): bool {
+	public function getReady(): ?bool {
 		return $this->ready;
 	}
 
@@ -259,9 +259,9 @@ class Activity {
 	/**
 	 * Get location
 	 *
-	 * @return point
+	 * @return Point|null
 	 */
-	public function getLocation(): Point {
+	public function getLocation(): ?Point {
 		return $this->location;
 	}
 
@@ -290,9 +290,9 @@ class Activity {
 	/**
 	 * Get report
 	 *
-	 * @return ActivityReport
+	 * @return ActivityReport|null
 	 */
-	public function getReport(): ActivityReport {
+	public function getReport(): ?ActivityReport {
 		return $this->report;
 	}
 
@@ -436,9 +436,9 @@ class Activity {
 	/**
 	 * Get type
 	 *
-	 * @return ActivityType
+	 * @return ActivityType|null
 	 */
-	public function getType(): ActivityType {
+	public function getType(): ?ActivityType {
 		return $this->type;
 	}
 
@@ -458,9 +458,9 @@ class Activity {
 	/**
 	 * Get subtype
 	 *
-	 * @return ActivitySubType
+	 * @return ActivitySubType|null
 	 */
-	public function getSubtype(): ActivitySubType {
+	public function getSubtype(): ?ActivitySubType {
 		return $this->subtype;
 	}
 
@@ -480,9 +480,9 @@ class Activity {
 	/**
 	 * Get main_event
 	 *
-	 * @return Activity
+	 * @return Activity|null
 	 */
-	public function getMainEvent(): Activity {
+	public function getMainEvent(): ?Activity {
 		return $this->main_event;
 	}
 
@@ -502,9 +502,9 @@ class Activity {
 	/**
 	 * Get geo_data
 	 *
-	 * @return GeoData
+	 * @return GeoData|null
 	 */
-	public function getGeoData(): GeoData {
+	public function getGeoData(): ?GeoData {
 		return $this->geo_data;
 	}
 
@@ -524,9 +524,9 @@ class Activity {
 	/**
 	 * Get settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getSettlement(): Settlement {
+	public function getSettlement(): ?Settlement {
 		return $this->settlement;
 	}
 
@@ -546,9 +546,9 @@ class Activity {
 	/**
 	 * Get place
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getPlace(): Place {
+	public function getPlace(): ?Place {
 		return $this->place;
 	}
 }

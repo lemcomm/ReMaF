@@ -45,7 +45,7 @@ class InfoController extends AbstractController {
 		return $this->render('Info/all.html.twig', $this->alltypes('FeatureType', $request));
 	}
 
-	#[Route ('/info/buildings/{id}', name:'maf_info_buildings', requirements:['id'=>'\d+'])]
+	#[Route ('/info/buildings/{id}', name:'maf_info_featuretype', requirements:['id'=>'\d+'])]
 	public function featuretypeAction($id): Response {
 		$em = $this->em;
 		$featuretype = $em->getRepository('App:FeatureType')->find($id);

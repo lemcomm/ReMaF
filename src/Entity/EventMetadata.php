@@ -120,11 +120,11 @@ class EventMetadata {
    	}
 
 	/**
-	* Get log
-	*
-	* @return EventLog
-	*/
-	public function getLog(): EventLog {
+	 * Get log
+	 *
+	 * @return EventLog|null
+	 */
+	public function getLog(): ?EventLog {
    		return $this->log;
    	}
 
@@ -141,11 +141,11 @@ class EventMetadata {
    	}
 
 	/**
-	* Get reader
-	*
-	* @return Character
-	*/
-	public function getReader(): Character {
+	 * Get reader
+	 *
+	 * @return Character|null
+	 */
+	public function getReader(): ?Character {
    		return $this->reader;
    	}
 }

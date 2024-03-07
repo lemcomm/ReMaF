@@ -243,8 +243,4 @@ class DungeonMonster {
 	public function getType(): ?DungeonMonsterType {
 		return $this->type;
 	}
-
-	public function isStunned(): ?bool {
-		return $this->stunned;
-	}
 }

@@ -176,9 +176,9 @@ class Skill {
 	/**
 	 * Get character
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCharacter(): Character {
+	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 
@@ -198,9 +198,9 @@ class Skill {
 	/**
 	 * Get type
 	 *
-	 * @return SkillType
+	 * @return SkillType|null
 	 */
-	public function getType(): SkillType {
+	public function getType(): ?SkillType {
 		return $this->type;
 	}
 
@@ -220,9 +220,9 @@ class Skill {
 	/**
 	 * Get category
 	 *
-	 * @return SkillCategory
+	 * @return SkillCategory|null
 	 */
-	public function getCategory(): SkillCategory {
+	public function getCategory(): ?SkillCategory {
 		return $this->category;
 	}
 }

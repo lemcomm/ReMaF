@@ -32,9 +32,9 @@ class MessageRecipient {
 	/**
 	 * Get message
 	 *
-	 * @return Message
+	 * @return Message|null
 	 */
-	public function getMessage(): Message {
+	public function getMessage(): ?Message {
 		return $this->message;
 	}
 
@@ -54,9 +54,9 @@ class MessageRecipient {
 	/**
 	 * Get character
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCharacter(): Character {
+	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 }

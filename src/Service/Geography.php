@@ -293,16 +293,18 @@ class Geography {
 	}
 
 	public function findNearestPlace(Character $character) {
-		$query = $this->em->createQuery('SELECT p, ST_Distance(p.location, c.location) AS distance FROM App:Place p JOIN App:Character c WHERE c = :char AND p.location IS NOT NULL ORDER BY distance ASC');
-		$query->setParameter('char', $character);
+		$location = $character->getLocation();
+		$query = $this->em->createQuery('SELECT p, ST_Distance(p.location, ST_Point(:x, :y)) AS distance FROM App:Place p WHERE p.location IS NOT NULL ORDER BY distance ASC');
+		$query->setParameters(array('x'=>$location->getX(), 'y'=>$location->getY()));
 		$query->setMaxResults(1);
 		return $query->getOneOrNullResult();
 	}
 
 	public function findNearestActionablePlace(Character $character) {
 		$maxdistance = $this->calculateInteractionDistance($character);
-		$query = $this->em->createQuery('SELECT p, ST_Distance(p.location, c.location) AS distance FROM App:Place p JOIN App:Character c WHERE c = :char AND p.location IS NOT NULL AND ST_Distance(c.location, p.location) < :maxdistance ORDER BY distance ASC');
-		$query->setParameters(array('char'=>$character, 'maxdistance'=>$maxdistance));
+		$location = $character->getLocation();
+		$query = $this->em->createQuery('SELECT p, ST_Distance(p.location, ST_Point(:x, :y)) AS distance FROM App:Place p WHERE p.location IS NOT NULL AND ST_Distance(ST_Point(:x, :y), p.location) < :maxdistance ORDER BY distance ASC');
+		$query->setParameters(array('maxdistance'=>$maxdistance, 'x'=>$location->getX(), 'y'=>$location->getY()));
 		$query->setMaxResults(1);
 		return $query->getOneOrNullResult();
 	}

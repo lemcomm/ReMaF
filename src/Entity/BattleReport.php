@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
@@ -7,29 +7,28 @@ use Doctrine\Common\Collections\Collection;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class BattleReport {
-
 	public function getName(): string {
-                     		return "battle"; // TODO: something better? this is used for links
-                     	}
+		return "battle"; // TODO: something better? this is used for links
+	}
 
 	public function checkForObserver(Character $char): bool {
-                     		foreach ($this->observers as $each) {
-                     			if ($each->getCharacter() === $char) {
-                     				return true;
-                     			}
-                     		}
-                     		return false;
-                     	}
+		foreach ($this->observers as $each) {
+			if ($each->getCharacter() === $char) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public function countPublicJournals(): int {
-                     		$i = 0;
-                     		foreach ($this->journals as $each) {
-                     			if ($each->getPublic()) {
-                     				$i++;
-                     			}
-                     		}
-                     		return $i;
-                     	}
+		$i = 0;
+		foreach ($this->journals as $each) {
+			if ($each->getPublic()) {
+				$i++;
+			}
+		}
+		return $i;
+	}
 
 	private int $cycle;
 	private Point $location;
@@ -59,356 +58,355 @@ class BattleReport {
 	private Siege $siege;
 	private Collection $defense_buildings;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->participants = new ArrayCollection();
-        $this->groups = new ArrayCollection();
-        $this->observers = new ArrayCollection();
-        $this->journals = new ArrayCollection();
-        $this->defense_buildings = new ArrayCollection();
-    }
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->participants = new ArrayCollection();
+		$this->groups = new ArrayCollection();
+		$this->observers = new ArrayCollection();
+		$this->journals = new ArrayCollection();
+		$this->defense_buildings = new ArrayCollection();
+	}
 
-    /**
-     * Set cycle
-     *
-     * @param integer $cycle
-     *
-     * @return BattleReport
-     */
-    public function setCycle(int $cycle): static {
-        $this->cycle = $cycle;
+	/**
+	 * Set cycle
+	 *
+	 * @param integer $cycle
+	 *
+	 * @return BattleReport
+	 */
+	public function setCycle(int $cycle): static {
+		$this->cycle = $cycle;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get cycle
-     *
-     * @return integer 
-     */
-    public function getCycle(): int {
-        return $this->cycle;
-    }
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
-    /**
-     * Set location
-     *
-     * @param point $location
-     *
-     * @return BattleReport
-     */
-    public function setLocation(Point $location): static {
-        $this->location = $location;
+	/**
+	 * Set location
+	 *
+	 * @param point $location
+	 *
+	 * @return BattleReport
+	 */
+	public function setLocation(Point $location): static {
+		$this->location = $location;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get location
-     *
-     * @return point 
-     */
-    public function getLocation(): Point {
-        return $this->location;
-    }
+	/**
+	 * Get location
+	 *
+	 * @return point
+	 */
+	public function getLocation(): Point {
+		return $this->location;
+	}
 
-    /**
-     * Set location_name
-     *
-     * @param array|null $locationName
-     *
-     * @return BattleReport
-     */
-    public function setLocationName(array $locationName = null): static {
-        $this->location_name = $locationName;
+	/**
+	 * Set location_name
+	 *
+	 * @param array|null $locationName
+	 *
+	 * @return BattleReport
+	 */
+	public function setLocationName(array $locationName = null): static {
+		$this->location_name = $locationName;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get location_name
-     *
-     * @return array 
-     */
-    public function getLocationName(): array {
-        return $this->location_name;
-    }
+	/**
+	 * Get location_name
+	 *
+	 * @return array|null
+	 */
+	public function getLocationName(): ?array {
+		return $this->location_name;
+	}
 
-    /**
-     * Set assault
-     *
-     * @param boolean $assault
-     *
-     * @return BattleReport
-     */
-    public function setAssault(bool $assault): static {
-        $this->assault = $assault;
+	/**
+	 * Set assault
+	 *
+	 * @param boolean $assault
+	 *
+	 * @return BattleReport
+	 */
+	public function setAssault(bool $assault): static {
+		$this->assault = $assault;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get assault
-     *
-     * @return boolean 
-     */
-    public function getAssault(): bool {
-        return $this->assault;
-    }
+	/**
+	 * Get assault
+	 *
+	 * @return boolean
+	 */
+	public function getAssault(): bool {
+		return $this->assault;
+	}
 
-    /**
-     * Set sortie
-     *
-     * @param boolean $sortie
-     *
-     * @return BattleReport
-     */
-    public function setSortie(bool $sortie): static {
-        $this->sortie = $sortie;
+	/**
+	 * Set sortie
+	 *
+	 * @param boolean $sortie
+	 *
+	 * @return BattleReport
+	 */
+	public function setSortie(bool $sortie): static {
+		$this->sortie = $sortie;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get sortie
-     *
-     * @return boolean 
-     */
-    public function getSortie(): bool {
-        return $this->sortie;
-    }
+	/**
+	 * Get sortie
+	 *
+	 * @return boolean
+	 */
+	public function getSortie(): bool {
+		return $this->sortie;
+	}
 
-    /**
-     * Set urban
-     *
-     * @param boolean $urban
-     *
-     * @return BattleReport
-     */
-    public function setUrban(bool $urban): static {
-        $this->urban = $urban;
+	/**
+	 * Set urban
+	 *
+	 * @param boolean $urban
+	 *
+	 * @return BattleReport
+	 */
+	public function setUrban(bool $urban): static {
+		$this->urban = $urban;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get urban
-     *
-     * @return boolean 
-     */
-    public function getUrban(): bool {
-        return $this->urban;
-    }
+	/**
+	 * Get urban
+	 *
+	 * @return boolean
+	 */
+	public function getUrban(): bool {
+		return $this->urban;
+	}
 
-    /**
-     * Set defender_group_id
-     *
-     * @param integer|null $defenderGroupId
-     *
-     * @return BattleReport
-     */
-    public function setDefenderGroupId(int $defenderGroupId = null): static {
-        $this->defender_group_id = $defenderGroupId;
+	/**
+	 * Set defender_group_id
+	 *
+	 * @param integer|null $defenderGroupId
+	 *
+	 * @return BattleReport
+	 */
+	public function setDefenderGroupId(int $defenderGroupId = null): static {
+		$this->defender_group_id = $defenderGroupId;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get defender_group_id
-     *
-     * @return integer 
-     */
-    public function getDefenderGroupId(): int {
-        return $this->defender_group_id;
-    }
+	/**
+	 * Get defender_group_id
+	 *
+	 * @return int|null
+	 */
+	public function getDefenderGroupId(): ?int {
+		return $this->defender_group_id;
+	}
 
-    /**
-     * Set start
-     *
-     * @param array $start
-     *
-     * @return BattleReport
-     */
-    public function setStart(array $start): static {
-        $this->start = $start;
+	/**
+	 * Set start
+	 *
+	 * @param array $start
+	 *
+	 * @return BattleReport
+	 */
+	public function setStart(array $start): static {
+		$this->start = $start;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get start
-     *
-     * @return array 
-     */
-    public function getStart(): array {
-        return $this->start;
-    }
+	/**
+	 * Get start
+	 *
+	 * @return array
+	 */
+	public function getStart(): array {
+		return $this->start;
+	}
 
-    /**
-     * Set combat
-     *
-     * @param array $combat
-     *
-     * @return BattleReport
-     */
-    public function setCombat(array $combat): static {
-        $this->combat = $combat;
+	/**
+	 * Set combat
+	 *
+	 * @param array $combat
+	 *
+	 * @return BattleReport
+	 */
+	public function setCombat(array $combat): static {
+		$this->combat = $combat;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get combat
-     *
-     * @return array 
-     */
-    public function getCombat(): array {
-        return $this->combat;
-    }
+	/**
+	 * Get combat
+	 *
+	 * @return array
+	 */
+	public function getCombat(): array {
+		return $this->combat;
+	}
 
-    /**
-     * Set hunt
-     *
-     * @param array $hunt
-     *
-     * @return BattleReport
-     */
-    public function setHunt(array $hunt): static {
-        $this->hunt = $hunt;
+	/**
+	 * Set hunt
+	 *
+	 * @param array $hunt
+	 *
+	 * @return BattleReport
+	 */
+	public function setHunt(array $hunt): static {
+		$this->hunt = $hunt;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get hunt
-     *
-     * @return array 
-     */
-    public function getHunt(): array {
-        return $this->hunt;
-    }
+	/**
+	 * Get hunt
+	 *
+	 * @return array
+	 */
+	public function getHunt(): array {
+		return $this->hunt;
+	}
 
-    /**
-     * Set finish
-     *
-     * @param array $finish
-     *
-     * @return BattleReport
-     */
-    public function setFinish(array $finish): static {
-        $this->finish = $finish;
+	/**
+	 * Set finish
+	 *
+	 * @param array $finish
+	 *
+	 * @return BattleReport
+	 */
+	public function setFinish(array $finish): static {
+		$this->finish = $finish;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get finish
-     *
-     * @return array 
-     */
-    public function getFinish(): array {
-        return $this->finish;
-    }
+	/**
+	 * Get finish
+	 *
+	 * @return array
+	 */
+	public function getFinish(): array {
+		return $this->finish;
+	}
 
-    /**
-     * Set completed
-     *
-     * @param boolean $completed
-     *
-     * @return BattleReport
-     */
-    public function setCompleted(bool $completed): static {
-        $this->completed = $completed;
+	/**
+	 * Set completed
+	 *
+	 * @param boolean $completed
+	 *
+	 * @return BattleReport
+	 */
+	public function setCompleted(bool $completed): static {
+		$this->completed = $completed;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get completed
-     *
-     * @return boolean 
-     */
-    public function getCompleted(): bool {
-        return $this->completed;
-    }
+	/**
+	 * Get completed
+	 *
+	 * @return boolean
+	 */
+	public function getCompleted(): bool {
+		return $this->completed;
+	}
 
-    /**
-     * Set count
-     *
-     * @param integer|null $count
-     *
-     * @return BattleReport
-     */
-    public function setCount(int $count = null): static {
-        $this->count = $count;
+	/**
+	 * Set count
+	 *
+	 * @param integer|null $count
+	 *
+	 * @return BattleReport
+	 */
+	public function setCount(int $count = null): static {
+		$this->count = $count;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get count
-     *
-     * @return integer 
-     */
-    public function getCount(): int {
-        return $this->count;
-    }
+	/**
+	 * Get count
+	 *
+	 * @return int|null
+	 */
+	public function getCount(): ?int {
+		return $this->count;
+	}
 
-    /**
-     * Set epicness
-     *
-     * @param integer|null $epicness
-     *
-     * @return BattleReport
-     */
-    public function setEpicness(int $epicness = null): static {
-        $this->epicness = $epicness;
+	/**
+	 * Set epicness
+	 *
+	 * @param integer|null $epicness
+	 *
+	 * @return BattleReport
+	 */
+	public function setEpicness(int $epicness = null): static {
+		$this->epicness = $epicness;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get epicness
-     *
-     * @return integer 
-     */
-    public function getEpicness(): int {
-        return $this->epicness;
-    }
+	/**
+	 * Get epicness
+	 *
+	 * @return int|null
+	 */
+	public function getEpicness(): ?int {
+		return $this->epicness;
+	}
 
-    /**
-     * Set debug
-     *
-     * @param string $debug
-     *
-     * @return BattleReport
-     */
-    public function setDebug(string $debug): static {
-        $this->debug = $debug;
+	/**
+	 * Set debug
+	 *
+	 * @param string $debug
+	 *
+	 * @return BattleReport
+	 */
+	public function setDebug(string $debug): static {
+		$this->debug = $debug;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get debug
-     *
-     * @return string 
-     */
-    public function getDebug(): string {
-        return $this->debug;
-    }
+	/**
+	 * Get debug
+	 *
+	 * @return string
+	 */
+	public function getDebug(): string {
+		return $this->debug;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
 	/**
 	 * Set primary_attacker
@@ -417,188 +415,188 @@ class BattleReport {
 	 *
 	 * @return BattleReport
 	 */
-    public function setPrimaryAttacker(BattleReportGroup $primaryAttacker = null): static {
-        $this->primary_attacker = $primaryAttacker;
+	public function setPrimaryAttacker(BattleReportGroup $primaryAttacker = null): static {
+		$this->primary_attacker = $primaryAttacker;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get primary_attacker
-     *
-     * @return BattleReportGroup
-     */
-    public function getPrimaryAttacker(): BattleReportGroup {
-        return $this->primary_attacker;
-    }
+	/**
+	 * Get primary_attacker
+	 *
+	 * @return BattleReportGroup|null
+	 */
+	public function getPrimaryAttacker(): ?BattleReportGroup {
+		return $this->primary_attacker;
+	}
 
-    /**
-     * Set primary_defender
-     *
-     * @param BattleReportGroup|null $primaryDefender
-     *
-     * @return BattleReport
-     */
+	/**
+	 * Set primary_defender
+	 *
+	 * @param BattleReportGroup|null $primaryDefender
+	 *
+	 * @return BattleReport
+	 */
 	public function setPrimaryDefender(BattleReportGroup $primaryDefender = null): static {
-        $this->primary_defender = $primaryDefender;
+		$this->primary_defender = $primaryDefender;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get primary_defender
-     *
-     * @return BattleReportGroup
-     */
-    public function getPrimaryDefender(): BattleReportGroup {
-        return $this->primary_defender;
-    }
+	/**
+	 * Get primary_defender
+	 *
+	 * @return BattleReportGroup|null
+	 */
+	public function getPrimaryDefender(): ?BattleReportGroup {
+		return $this->primary_defender;
+	}
 
-    /**
-     * Add participants
-     *
-     * @param BattleParticipant $participants
-     *
-     * @return BattleReport
-     */
-    public function addParticipant(BattleParticipant $participants): static {
-        $this->participants[] = $participants;
+	/**
+	 * Add participants
+	 *
+	 * @param BattleParticipant $participants
+	 *
+	 * @return BattleReport
+	 */
+	public function addParticipant(BattleParticipant $participants): static {
+		$this->participants[] = $participants;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove participants
-     *
-     * @param BattleParticipant $participants
-     */
-    public function removeParticipant(BattleParticipant $participants): void {
-        $this->participants->removeElement($participants);
-    }
+	/**
+	 * Remove participants
+	 *
+	 * @param BattleParticipant $participants
+	 */
+	public function removeParticipant(BattleParticipant $participants): void {
+		$this->participants->removeElement($participants);
+	}
 
-    /**
-     * Get participants
-     *
-     * @return ArrayCollection|Collection
-     */
+	/**
+	 * Get participants
+	 *
+	 * @return ArrayCollection|Collection
+	 */
 	public function getParticipants(): ArrayCollection|Collection {
-        return $this->participants;
-    }
+		return $this->participants;
+	}
 
-    /**
-     * Add groups
-     *
-     * @param BattleReportGroup $groups
-     *
-     * @return BattleReport
-     */
+	/**
+	 * Add groups
+	 *
+	 * @param BattleReportGroup $groups
+	 *
+	 * @return BattleReport
+	 */
 	public function addGroup(BattleReportGroup $groups): static {
-        $this->groups[] = $groups;
+		$this->groups[] = $groups;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove groups
-     *
-     * @param BattleReportGroup $groups
-     */
+	/**
+	 * Remove groups
+	 *
+	 * @param BattleReportGroup $groups
+	 */
 	public function removeGroup(BattleReportGroup $groups): void {
-        $this->groups->removeElement($groups);
-    }
+		$this->groups->removeElement($groups);
+	}
 
-    /**
-     * Get groups
-     *
-     * @return ArrayCollection|Collection
-     */
+	/**
+	 * Get groups
+	 *
+	 * @return ArrayCollection|Collection
+	 */
 	public function getGroups(): ArrayCollection|Collection {
-        return $this->groups;
-    }
+		return $this->groups;
+	}
 
-    /**
-     * Add observers
-     *
-     * @param BattleReportObserver $observers
-     *
-     * @return BattleReport
-     */
+	/**
+	 * Add observers
+	 *
+	 * @param BattleReportObserver $observers
+	 *
+	 * @return BattleReport
+	 */
 	public function addObserver(BattleReportObserver $observers): static {
-        $this->observers[] = $observers;
+		$this->observers[] = $observers;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove observers
-     *
-     * @param BattleReportObserver $observers
-     */
+	/**
+	 * Remove observers
+	 *
+	 * @param BattleReportObserver $observers
+	 */
 	public function removeObserver(BattleReportObserver $observers): void {
-        $this->observers->removeElement($observers);
-    }
+		$this->observers->removeElement($observers);
+	}
 
-    /**
-     * Get observers
-     *
-     * @return ArrayCollection|Collection
-     */
+	/**
+	 * Get observers
+	 *
+	 * @return ArrayCollection|Collection
+	 */
 	public function getObservers(): ArrayCollection|Collection {
-        return $this->observers;
-    }
+		return $this->observers;
+	}
 
-    /**
-     * Add journals
-     *
-     * @param Journal $journals
-     *
-     * @return BattleReport
-     */
-    public function addJournal(Journal $journals): static {
-        $this->journals[] = $journals;
+	/**
+	 * Add journals
+	 *
+	 * @param Journal $journals
+	 *
+	 * @return BattleReport
+	 */
+	public function addJournal(Journal $journals): static {
+		$this->journals[] = $journals;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove journals
-     *
-     * @param Journal $journals
-     */
+	/**
+	 * Remove journals
+	 *
+	 * @param Journal $journals
+	 */
 	public function removeJournal(Journal $journals): void {
-        $this->journals->removeElement($journals);
-    }
+		$this->journals->removeElement($journals);
+	}
 
-    /**
-     * Get journals
-     *
-     * @return ArrayCollection|Collection
-     */
+	/**
+	 * Get journals
+	 *
+	 * @return ArrayCollection|Collection
+	 */
 	public function getJournals(): ArrayCollection|Collection {
-        return $this->journals;
-    }
+		return $this->journals;
+	}
 
-    /**
-     * Set settlement
-     *
-     * @param Settlement|null $settlement
-     *
-     * @return BattleReport
-     */
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return BattleReport
+	 */
 	public function setSettlement(Settlement $settlement = null): static {
-        $this->settlement = $settlement;
+		$this->settlement = $settlement;
 
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * Get settlement
-     *
-     * @return Settlement
-     */
-    public function getSettlement(): Settlement {
-        return $this->settlement;
-    }
+	 *
+	 * @return Settlement|null
+	 */
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
+	}
 
 	/**
 	 * Set place
@@ -608,112 +606,92 @@ class BattleReport {
 	 * @return BattleReport
 	 */
 	public function setPlace(Place $place = null): static {
-        $this->place = $place;
+		$this->place = $place;
 
-        return $this;
-    }
-
-    /**
-     * Get place
-     *
-     * @return Place
-     */
-    public function getPlace(): Place {
-        return $this->place;
-    }
-
-    /**
-     * Set war
-     *
-     * @param War|null $war
-     *
-     * @return BattleReport
-     */
-	public function setWar(War $war = null): static {
-        $this->war = $war;
-
-        return $this;
-    }
-
-    /**
-     * Get war
-     *
-     * @return War
-     */
-    public function getWar(): War {
-        return $this->war;
-    }
-
-    /**
-     * Set siege
-     *
-     * @param Siege|null $siege
-     *
-     * @return BattleReport
-     */
-	public function setSiege(Siege $siege = null): static {
-        $this->siege = $siege;
-
-	    return $this;
-    }
-
-    /**
-     * Get siege
-     *
-     * @return Siege
-     */
-    public function getSiege(): Siege {
-        return $this->siege;
-    }
+		return $this;
+	}
 
 	/**
-     * Add defense_buildings
-     *
-     * @param BuildingType $defenseBuildings
+	 * Get place
+	 *
+	 * @return Place|null
+	 */
+	public function getPlace(): ?Place {
+		return $this->place;
+	}
+
+	/**
+	 * Set war
+	 *
+	 * @param War|null $war
 	 *
 	 * @return BattleReport
-     */
-    public function addDefenseBuilding(BuildingType $defenseBuildings): static {
-        $this->defense_buildings[] = $defenseBuildings;
+	 */
+	public function setWar(War $war = null): static {
+		$this->war = $war;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove defense_buildings
-     *
-     * @param BuildingType $defenseBuildings
-     */
-    public function removeDefenseBuilding(BuildingType $defenseBuildings): void {
-        $this->defense_buildings->removeElement($defenseBuildings);
-    }
+	/**
+	 * Get war
+	 *
+	 * @return War|null
+	 */
+	public function getWar(): ?War {
+		return $this->war;
+	}
 
-    /**
-     * Get defense_buildings
-     *
-     * @return ArrayCollection|Collection
-     */
+	/**
+	 * Set siege
+	 *
+	 * @param Siege|null $siege
+	 *
+	 * @return BattleReport
+	 */
+	public function setSiege(Siege $siege = null): static {
+		$this->siege = $siege;
+
+		return $this;
+	}
+
+	/**
+	 * Get siege
+	 *
+	 * @return Siege|null
+	 */
+	public function getSiege(): ?Siege {
+		return $this->siege;
+	}
+
+	/**
+	 * Add defense_buildings
+	 *
+	 * @param BuildingType $defenseBuildings
+	 *
+	 * @return BattleReport
+	 */
+	public function addDefenseBuilding(BuildingType $defenseBuildings): static {
+		$this->defense_buildings[] = $defenseBuildings;
+
+		return $this;
+	}
+
+	/**
+	 * Remove defense_buildings
+	 *
+	 * @param BuildingType $defenseBuildings
+	 */
+	public function removeDefenseBuilding(BuildingType $defenseBuildings): void {
+		$this->defense_buildings->removeElement($defenseBuildings);
+	}
+
+	/**
+	 * Get defense_buildings
+	 *
+	 * @return ArrayCollection|Collection
+	 */
 	public function getDefenseBuildings(): ArrayCollection|Collection {
-        return $this->defense_buildings;
-    }
-
-    public function isAssault(): ?bool
-    {
-        return $this->assault;
-    }
-
-    public function isSortie(): ?bool
-    {
-        return $this->sortie;
-    }
-
-    public function isUrban(): ?bool
-    {
-        return $this->urban;
-    }
-
-    public function isCompleted(): ?bool
-    {
-        return $this->completed;
-    }
+		return $this->defense_buildings;
+	}
 }

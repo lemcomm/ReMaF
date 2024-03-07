@@ -123,9 +123,9 @@ class StatisticResources {
 	/**
 	 * Get resource
 	 *
-	 * @return ResourceType
+	 * @return ResourceType|null
 	 */
-	public function getResource(): ResourceType {
+	public function getResource(): ?ResourceType {
 		return $this->resource;
 	}
 }

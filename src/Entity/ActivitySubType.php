@@ -56,12 +56,12 @@ class ActivitySubType
         return $this;
     }
 
-    /**
-     * Get type
-     *
-     * @return ActivityType
-     */
-    public function getType(): ActivityType {
+	/**
+	 * Get type
+	 *
+	 * @return ActivityType|null
+	 */
+    public function getType(): ?ActivityType {
         return $this->type;
     }
 }

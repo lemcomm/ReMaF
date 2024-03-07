@@ -159,9 +159,9 @@ class Quest {
 	/**
 	 * Get log
 	 *
-	 * @return EventLog
+	 * @return EventLog|null
 	 */
-	public function getLog(): EventLog {
+	public function getLog(): ?EventLog {
 		return $this->log;
 	}
 
@@ -212,9 +212,9 @@ class Quest {
 	/**
 	 * Get owner
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getOwner(): Character {
+	public function getOwner(): ?Character {
 		return $this->owner;
 	}
 
@@ -234,9 +234,9 @@ class Quest {
 	/**
 	 * Get home
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getHome(): Settlement {
+	public function getHome(): ?Settlement {
 		return $this->home;
 	}
 

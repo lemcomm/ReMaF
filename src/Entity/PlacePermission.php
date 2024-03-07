@@ -6,8 +6,18 @@ namespace App\Entity;
  * PlacePermission
  */
 class PlacePermission extends PermissionBase {
+	#Inherited Properties
+	private ?int $value;
+	private ?int $value_remaining;
+	private ?int $reserve;
+	private int $id;
+	private ?Permission $permission;
+	private ?Listing $listing;
+
+	#Local Properties
 	private ?Place $place;
 	private ?Place $occupied_place;
+
 
 	/**
 	 * Set place
@@ -25,9 +35,9 @@ class PlacePermission extends PermissionBase {
 	/**
 	 * Get place
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getPlace(): Place {
+	public function getPlace(): ?Place {
 		return $this->place;
 	}
 
@@ -47,9 +57,9 @@ class PlacePermission extends PermissionBase {
 	/**
 	 * Get occupied_place
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getOccupiedPlace(): Place {
+	public function getOccupiedPlace(): ?Place {
 		return $this->occupied_place;
 	}
 }

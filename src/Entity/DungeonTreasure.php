@@ -188,9 +188,9 @@ class DungeonTreasure {
 	/**
 	 * Get level
 	 *
-	 * @return DungeonLevel
+	 * @return DungeonLevel|null
 	 */
-	public function getLevel(): DungeonLevel {
+	public function getLevel(): ?DungeonLevel {
 		return $this->level;
 	}
 }

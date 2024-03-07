@@ -107,12 +107,12 @@ class BattleReportGroup {
         return $this;
     }
 
-    /**
-     * Get fates
-     *
-     * @return array 
-     */
-    public function getFates(): array {
+	/**
+	 * Get fates
+	 *
+	 * @return array|null
+	 */
+    public function getFates(): ?array {
         return $this->fates;
     }
 
@@ -129,12 +129,12 @@ class BattleReportGroup {
         return $this;
     }
 
-    /**
-     * Get count
-     *
-     * @return integer 
-     */
-    public function getCount(): int {
+	/**
+	 * Get count
+	 *
+	 * @return int|null
+	 */
+    public function getCount(): ?int {
         return $this->count;
     }
 
@@ -253,12 +253,12 @@ class BattleReportGroup {
         return $this;
     }
 
-    /**
-     * Get battle_report
-     *
-     * @return BattleReport
-     */
-    public function getBattleReport(): BattleReport {
+	/**
+	 * Get battle_report
+	 *
+	 * @return BattleReport|null
+	 */
+    public function getBattleReport(): ?BattleReport {
         return $this->battle_report;
     }
 
@@ -275,12 +275,12 @@ class BattleReportGroup {
         return $this;
     }
 
-    /**
-     * Get supporting
-     *
-     * @return BattleReportGroup
-     */
-    public function getSupporting(): BattleReportGroup {
+	/**
+	 * Get supporting
+	 *
+	 * @return BattleReportGroup|null
+	 */
+    public function getSupporting(): ?BattleReportGroup {
         return $this->supporting;
     }
 }

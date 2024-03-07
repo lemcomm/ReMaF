@@ -124,9 +124,9 @@ class Description {
 	/**
 	 * Get active_artifact
 	 *
-	 * @return Artifact
+	 * @return Artifact|null
 	 */
-	public function getActiveArtifact(): Artifact {
+	public function getActiveArtifact(): ?Artifact {
 		return $this->active_artifact;
 	}
 
@@ -146,9 +146,9 @@ class Description {
 	/**
 	 * Get active_settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getActiveSettlement(): Settlement {
+	public function getActiveSettlement(): ?Settlement {
 		return $this->active_settlement;
 	}
 
@@ -168,9 +168,9 @@ class Description {
 	/**
 	 * Get active_place
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getActivePlace(): Place {
+	public function getActivePlace(): ?Place {
 		return $this->active_place;
 	}
 
@@ -190,9 +190,9 @@ class Description {
 	/**
 	 * Get active_realm
 	 *
-	 * @return Realm
+	 * @return Realm|null
 	 */
-	public function getActiveRealm(): Realm {
+	public function getActiveRealm(): ?Realm {
 		return $this->active_realm;
 	}
 
@@ -212,9 +212,9 @@ class Description {
 	/**
 	 * Get active_house
 	 *
-	 * @return House
+	 * @return House|null
 	 */
-	public function getActiveHouse(): House {
+	public function getActiveHouse(): ?House {
 		return $this->active_house;
 	}
 
@@ -234,9 +234,9 @@ class Description {
 	/**
 	 * Get active_portal
 	 *
-	 * @return Portal
+	 * @return Portal|null
 	 */
-	public function getActivePortal(): Portal {
+	public function getActivePortal(): ?Portal {
 		return $this->active_portal;
 	}
 
@@ -256,9 +256,9 @@ class Description {
 	/**
 	 * Get active_association
 	 *
-	 * @return Association
+	 * @return Association|null
 	 */
-	public function getActiveAssociation(): Association {
+	public function getActiveAssociation(): ?Association {
 		return $this->active_association;
 	}
 
@@ -278,9 +278,9 @@ class Description {
 	/**
 	 * Get active_association_rank
 	 *
-	 * @return AssociationRank
+	 * @return AssociationRank|null
 	 */
-	public function getActiveAssociationRank(): AssociationRank {
+	public function getActiveAssociationRank(): ?AssociationRank {
 		return $this->active_association_rank;
 	}
 
@@ -300,9 +300,9 @@ class Description {
 	/**
 	 * Get active_deity
 	 *
-	 * @return Deity
+	 * @return Deity|null
 	 */
-	public function getActiveDeity(): Deity {
+	public function getActiveDeity(): ?Deity {
 		return $this->active_deity;
 	}
 
@@ -322,9 +322,9 @@ class Description {
 	/**
 	 * Get active_user
 	 *
-	 * @return User
+	 * @return User|null
 	 */
-	public function getActiveUser(): User {
+	public function getActiveUser(): ?User {
 		return $this->active_user;
 	}
 
@@ -344,9 +344,9 @@ class Description {
 	/**
 	 * Get previous
 	 *
-	 * @return Description
+	 * @return Description|null
 	 */
-	public function getPrevious(): Description {
+	public function getPrevious(): ?Description {
 		return $this->previous;
 	}
 
@@ -366,9 +366,9 @@ class Description {
 	/**
 	 * Get next
 	 *
-	 * @return Description
+	 * @return Description|null
 	 */
-	public function getNext(): Description {
+	public function getNext(): ?Description {
 		return $this->next;
 	}
 
@@ -388,9 +388,9 @@ class Description {
 	/**
 	 * Get artifact
 	 *
-	 * @return Artifact
+	 * @return Artifact|null
 	 */
-	public function getArtifact(): Artifact {
+	public function getArtifact(): ?Artifact {
 		return $this->artifact;
 	}
 
@@ -410,9 +410,9 @@ class Description {
 	/**
 	 * Get settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getSettlement(): Settlement {
+	public function getSettlement(): ?Settlement {
 		return $this->settlement;
 	}
 
@@ -432,9 +432,9 @@ class Description {
 	/**
 	 * Get place
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getPlace(): Place {
+	public function getPlace(): ?Place {
 		return $this->place;
 	}
 
@@ -454,9 +454,9 @@ class Description {
 	/**
 	 * Get realm
 	 *
-	 * @return Realm
+	 * @return Realm|null
 	 */
-	public function getRealm(): Realm {
+	public function getRealm(): ?Realm {
 		return $this->realm;
 	}
 
@@ -476,9 +476,9 @@ class Description {
 	/**
 	 * Get house
 	 *
-	 * @return House
+	 * @return House|null
 	 */
-	public function getHouse(): House {
+	public function getHouse(): ?House {
 		return $this->house;
 	}
 
@@ -498,9 +498,9 @@ class Description {
 	/**
 	 * Get portal
 	 *
-	 * @return Portal
+	 * @return Portal|null
 	 */
-	public function getPortal(): Portal {
+	public function getPortal(): ?Portal {
 		return $this->portal;
 	}
 
@@ -520,9 +520,9 @@ class Description {
 	/**
 	 * Get association
 	 *
-	 * @return Association
+	 * @return Association|null
 	 */
-	public function getAssociation(): Association {
+	public function getAssociation(): ?Association {
 		return $this->association;
 	}
 
@@ -542,9 +542,9 @@ class Description {
 	/**
 	 * Get association_rank
 	 *
-	 * @return AssociationRank
+	 * @return AssociationRank|null
 	 */
-	public function getAssociationRank(): AssociationRank {
+	public function getAssociationRank(): ?AssociationRank {
 		return $this->association_rank;
 	}
 
@@ -564,9 +564,9 @@ class Description {
 	/**
 	 * Get deity
 	 *
-	 * @return Deity
+	 * @return Deity|null
 	 */
-	public function getDeity(): Deity {
+	public function getDeity(): ?Deity {
 		return $this->deity;
 	}
 
@@ -586,9 +586,9 @@ class Description {
 	/**
 	 * Get user
 	 *
-	 * @return User
+	 * @return User|null
 	 */
-	public function getUser(): User {
+	public function getUser(): ?User {
 		return $this->user;
 	}
 
@@ -608,9 +608,9 @@ class Description {
 	/**
 	 * Get updater
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getUpdater(): Character {
+	public function getUpdater(): ?Character {
 		return $this->updater;
 	}
 }

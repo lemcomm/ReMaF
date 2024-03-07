@@ -39,9 +39,9 @@ class ActivityGroup {
 	/**
 	 * Get name
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getName(): string {
+	public function getName(): ?string {
 		return $this->name;
 	}
 
@@ -132,9 +132,9 @@ class ActivityGroup {
 	/**
 	 * Get activity
 	 *
-	 * @return Activity
+	 * @return Activity|null
 	 */
-	public function getActivity(): Activity {
+	public function getActivity(): ?Activity {
 		return $this->activity;
 	}
 }

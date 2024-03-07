@@ -121,12 +121,12 @@ class Resupply
         return $this;
     }
 
-    /**
-     * Get origin
-     *
-     * @return Settlement
-     */
-    public function getOrigin(): Settlement {
+	/**
+	 * Get origin
+	 *
+	 * @return Settlement|null
+	 */
+    public function getOrigin(): ?Settlement {
         return $this->origin;
     }
 }

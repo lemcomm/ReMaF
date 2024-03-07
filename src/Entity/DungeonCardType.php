@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 class DungeonCardType {
-
 	private string $name;
 	private int $rarity;
 	private string $monsterclass;
@@ -159,17 +158,5 @@ class DungeonCardType {
 	 */
 	public function getId(): int {
 		return $this->id;
-	}
-
-	public function isTargetMonster(): ?bool {
-		return $this->target_monster;
-	}
-
-	public function isTargetTreasure(): ?bool {
-		return $this->target_treasure;
-	}
-
-	public function isTargetDungeoneer(): ?bool {
-		return $this->target_dungeoneer;
 	}
 }

@@ -33,9 +33,9 @@ class Item {
 	/**
 	 * Get type
 	 *
-	 * @return ItemType
+	 * @return ItemType|null
 	 */
-	public function getType(): ItemType {
+	public function getType(): ?ItemType {
 		return $this->type;
 	}
 }

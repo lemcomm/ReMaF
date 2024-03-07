@@ -183,12 +183,12 @@ class ActivityReportCharacter
         return $this;
     }
 
-    /**
-     * Get attacks
-     *
-     * @return integer 
-     */
-    public function getAttacks(): int {
+	/**
+	 * Get attacks
+	 *
+	 * @return int|null
+	 */
+    public function getAttacks(): ?int {
         return $this->attacks;
     }
 
@@ -205,12 +205,12 @@ class ActivityReportCharacter
         return $this;
     }
 
-    /**
-     * Get hits_taken
-     *
-     * @return integer 
-     */
-    public function getHitsTaken(): int {
+	/**
+	 * Get hits_taken
+	 *
+	 * @return int|null
+	 */
+    public function getHitsTaken(): ?int {
         return $this->hits_taken;
     }
 
@@ -227,12 +227,12 @@ class ActivityReportCharacter
         return $this;
     }
 
-    /**
-     * Get hits_made
-     *
-     * @return integer 
-     */
-    public function getHitsMade(): int {
+	/**
+	 * Get hits_made
+	 *
+	 * @return int|null
+	 */
+    public function getHitsMade(): ?int {
         return $this->hits_made;
     }
 
@@ -249,12 +249,12 @@ class ActivityReportCharacter
         return $this;
     }
 
-    /**
-     * Get wounds
-     *
-     * @return integer 
-     */
-    public function getWounds(): int {
+	/**
+	 * Get wounds
+	 *
+	 * @return int|null
+	 */
+    public function getWounds(): ?int {
         return $this->wounds;
     }
 
@@ -311,12 +311,12 @@ class ActivityReportCharacter
         return $this;
     }
 
-    /**
-     * Get activity_report
-     *
-     * @return ActivityReport
-     */
-    public function getActivityReport(): ActivityReport {
+	/**
+	 * Get activity_report
+	 *
+	 * @return ActivityReport|null
+	 */
+    public function getActivityReport(): ?ActivityReport {
         return $this->activity_report;
     }
 
@@ -333,12 +333,12 @@ class ActivityReportCharacter
         return $this;
     }
 
-    /**
-     * Get group_report
-     *
-     * @return ActivityReportGroup
-     */
-    public function getGroupReport(): ActivityReportGroup {
+	/**
+	 * Get group_report
+	 *
+	 * @return ActivityReportGroup|null
+	 */
+    public function getGroupReport(): ?ActivityReportGroup {
         return $this->group_report;
     }
 
@@ -355,12 +355,12 @@ class ActivityReportCharacter
         return $this;
     }
 
-    /**
-     * Get character
-     *
-     * @return Character
-     */
-    public function getCharacter(): Character {
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+    public function getCharacter(): ?Character {
         return $this->character;
     }
 
@@ -377,12 +377,12 @@ class ActivityReportCharacter
         return $this;
     }
 
-    /**
-     * Get weapon
-     *
-     * @return EquipmentType
-     */
-    public function getWeapon(): EquipmentType {
+	/**
+	 * Get weapon
+	 *
+	 * @return EquipmentType|null
+	 */
+    public function getWeapon(): ?EquipmentType {
         return $this->weapon;
     }
 
@@ -399,12 +399,12 @@ class ActivityReportCharacter
         return $this;
     }
 
-    /**
-     * Get armour
-     *
-     * @return EquipmentType
-     */
-    public function getArmour(): EquipmentType {
+	/**
+	 * Get armour
+	 *
+	 * @return EquipmentType|null
+	 */
+    public function getArmour(): ?EquipmentType {
         return $this->armour;
     }
 
@@ -423,10 +423,10 @@ class ActivityReportCharacter
 
 	/**
 	 * Get equipment
-     *
-     * @return EquipmentType
-     */
-    public function getEquipment(): EquipmentType {
+	 *
+	 * @return EquipmentType|null
+	 */
+    public function getEquipment(): ?EquipmentType {
         return $this->equipment;
     }
 
@@ -444,11 +444,11 @@ class ActivityReportCharacter
     }
 
 	/**
-     * Get mount
-     *
-     * @return EquipmentType
-     */
-    public function getMount(): EquipmentType {
+	 * Get mount
+	 *
+	 * @return EquipmentType|null
+	 */
+    public function getMount(): ?EquipmentType {
         return $this->mount;
     }
 

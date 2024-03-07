@@ -260,9 +260,9 @@ class GeoData {
 	/**
 	 * Get settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getSettlement(): Settlement {
+	public function getSettlement(): ?Settlement {
 		return $this->settlement;
 	}
 
@@ -437,29 +437,9 @@ class GeoData {
 	/**
 	 * Get biome
 	 *
-	 * @return Biome
+	 * @return Biome|null
 	 */
-	public function getBiome(): Biome {
+	public function getBiome(): ?Biome {
 		return $this->biome;
-	}
-
-	public function isHills(): ?bool {
-		return $this->hills;
-	}
-
-	public function isCoast(): ?bool {
-		return $this->coast;
-	}
-
-	public function isLake(): ?bool {
-		return $this->lake;
-	}
-
-	public function isRiver(): ?bool {
-		return $this->river;
-	}
-
-	public function isPassable(): ?bool {
-		return $this->passable;
 	}
 }

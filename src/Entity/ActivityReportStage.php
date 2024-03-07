@@ -72,12 +72,12 @@ class ActivityReportStage
         return $this;
     }
 
-    /**
-     * Get extra
-     *
-     * @return array 
-     */
-    public function getExtra(): array {
+	/**
+	 * Get extra
+	 *
+	 * @return array|null
+	 */
+    public function getExtra(): ?array {
         return $this->extra;
     }
 
@@ -103,12 +103,12 @@ class ActivityReportStage
         return $this;
     }
 
-    /**
-     * Get group
-     *
-     * @return ActivityReportGroup
-     */
-    public function getGroup(): ActivityReportGroup {
+	/**
+	 * Get group
+	 *
+	 * @return ActivityReportGroup|null
+	 */
+    public function getGroup(): ?ActivityReportGroup {
         return $this->group;
     }
 
@@ -125,12 +125,12 @@ class ActivityReportStage
         return $this;
     }
 
-    /**
-     * Get character
-     *
-     * @return ActivityReportCharacter
-     */
-    public function getCharacter(): ActivityReportCharacter {
+	/**
+	 * Get character
+	 *
+	 * @return ActivityReportCharacter|null
+	 */
+    public function getCharacter(): ?ActivityReportCharacter {
         return $this->character;
     }
 }

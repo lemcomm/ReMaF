@@ -125,9 +125,9 @@ class SoldierLog {
 	/**
 	 * Get soldier
 	 *
-	 * @return Soldier
+	 * @return Soldier|null
 	 */
-	public function getSoldier(): Soldier {
+	public function getSoldier(): ?Soldier {
 		return $this->soldier;
 	}
 }

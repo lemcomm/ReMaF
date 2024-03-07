@@ -33,9 +33,9 @@ class Patron {
 	/**
 	 * Get patreon_id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getPatreonId(): int {
+	public function getPatreonId(): ?int {
 		return $this->patreon_id;
 	}
 
@@ -55,9 +55,9 @@ class Patron {
 	/**
 	 * Get access_token
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getAccessToken(): string {
+	public function getAccessToken(): ?string {
 		return $this->access_token;
 	}
 
@@ -77,9 +77,9 @@ class Patron {
 	/**
 	 * Get refresh_token
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getRefreshToken(): string {
+	public function getRefreshToken(): ?string {
 		return $this->refresh_token;
 	}
 
@@ -99,9 +99,9 @@ class Patron {
 	/**
 	 * Get expires
 	 *
-	 * @return DateTime
+	 * @return DateTime|null
 	 */
-	public function getExpires(): DateTime {
+	public function getExpires(): ?DateTime {
 		return $this->expires;
 	}
 
@@ -121,9 +121,9 @@ class Patron {
 	/**
 	 * Get current_amount
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCurrentAmount(): int {
+	public function getCurrentAmount(): ?int {
 		return $this->current_amount;
 	}
 
@@ -143,9 +143,9 @@ class Patron {
 	/**
 	 * Get credited
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCredited(): int {
+	public function getCredited(): ?int {
 		return $this->credited;
 	}
 
@@ -165,9 +165,9 @@ class Patron {
 	/**
 	 * Get status
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getStatus(): string {
+	public function getStatus(): ?string {
 		return $this->status;
 	}
 
@@ -218,9 +218,9 @@ class Patron {
 	/**
 	 * Get creator
 	 *
-	 * @return Patreon
+	 * @return Patreon|null
 	 */
-	public function getCreator(): Patreon {
+	public function getCreator(): ?Patreon {
 		return $this->creator;
 	}
 
@@ -240,9 +240,9 @@ class Patron {
 	/**
 	 * Get user
 	 *
-	 * @return User
+	 * @return User|null
 	 */
-	public function getUser(): User {
+	public function getUser(): ?User {
 		return $this->user;
 	}
 }

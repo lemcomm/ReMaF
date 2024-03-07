@@ -200,9 +200,9 @@ class UserReport {
 	/**
 	 * Get user
 	 *
-	 * @return User
+	 * @return User|null
 	 */
-	public function getUser(): User {
+	public function getUser(): ?User {
 		return $this->user;
 	}
 
@@ -222,9 +222,9 @@ class UserReport {
 	/**
 	 * Get journal
 	 *
-	 * @return Journal
+	 * @return Journal|null
 	 */
-	public function getJournal(): Journal {
+	public function getJournal(): ?Journal {
 		return $this->journal;
 	}
 

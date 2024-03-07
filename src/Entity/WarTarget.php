@@ -128,16 +128,4 @@ class WarTarget {
 	public function getSettlement(): ?Settlement {
 		return $this->settlement;
 	}
-
-	public function isAttacked(): ?bool {
-		return $this->attacked;
-	}
-
-	public function isTakenEver(): ?bool {
-		return $this->taken_ever;
-	}
-
-	public function isTakenCurrently(): ?bool {
-		return $this->taken_currently;
-	}
 }

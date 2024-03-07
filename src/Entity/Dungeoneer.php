@@ -219,9 +219,9 @@ class Dungeoneer {
 	/**
 	 * Get character
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCharacter(): Character {
+	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 
@@ -241,9 +241,9 @@ class Dungeoneer {
 	/**
 	 * Get last_action
 	 *
-	 * @return DungeonCard
+	 * @return DungeonCard|null
 	 */
-	public function getLastAction(): DungeonCard {
+	public function getLastAction(): ?DungeonCard {
 		return $this->last_action;
 	}
 
@@ -263,9 +263,9 @@ class Dungeoneer {
 	/**
 	 * Get current_action
 	 *
-	 * @return DungeonCard
+	 * @return DungeonCard|null
 	 */
-	public function getCurrentAction(): DungeonCard {
+	public function getCurrentAction(): ?DungeonCard {
 		return $this->current_action;
 	}
 
@@ -378,9 +378,9 @@ class Dungeoneer {
 	/**
 	 * Get party
 	 *
-	 * @return DungeonParty
+	 * @return DungeonParty|null
 	 */
-	public function getParty(): DungeonParty {
+	public function getParty(): ?DungeonParty {
 		return $this->party;
 	}
 

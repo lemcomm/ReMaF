@@ -155,7 +155,7 @@ class BattleGroup {
 					$enemies->add($group);
 				}
 			}
-      		} else if ($this->siege) {
+      		} elseif ($this->siege) {
       			# Sieges are a lot easier, as they're always 2 sided.
 			foreach ($this->siege->getGroups() as $enemies) {
 				if ($enemies !== $this) {
@@ -210,12 +210,12 @@ class BattleGroup {
         return $this;
     }
 
-    /**
-     * Get engaged
-     *
-     * @return boolean 
-     */
-    public function getEngaged(): bool {
+	/**
+	 * Get engaged
+	 *
+	 * @return bool|null
+	 */
+    public function getEngaged(): ?bool {
         return $this->engaged;
     }
 
@@ -241,12 +241,12 @@ class BattleGroup {
         return $this;
     }
 
-    /**
-     * Get attacking_in_siege
-     *
-     * @return Siege
-     */
-    public function getAttackingInSiege(): Siege {
+	/**
+	 * Get attacking_in_siege
+	 *
+	 * @return Siege|null
+	 */
+    public function getAttackingInSiege(): ?Siege {
         return $this->attacking_in_siege;
     }
 
@@ -263,12 +263,12 @@ class BattleGroup {
         return $this;
     }
 
-    /**
-     * Get active_report
-     *
-     * @return BattleReportGroup
-     */
-    public function getActiveReport(): BattleReportGroup {
+	/**
+	 * Get active_report
+	 *
+	 * @return BattleReportGroup|null
+	 */
+    public function getActiveReport(): ?BattleReportGroup {
         return $this->active_report;
     }
 
@@ -410,11 +410,11 @@ class BattleGroup {
     }
 
 	/**
-     * Get battle
-     *
-     * @return Battle
-     */
-    public function getBattle(): Battle {
+	 * Get battle
+	 *
+	 * @return Battle|null
+	 */
+    public function getBattle(): ?Battle {
         return $this->battle;
     }
 
@@ -432,11 +432,11 @@ class BattleGroup {
     }
 
 	/**
-     * Get leader
-     *
-     * @return Character
-     */
-    public function getLeader(): Character {
+	 * Get leader
+	 *
+	 * @return Character|null
+	 */
+    public function getLeader(): ?Character {
         return $this->leader;
     }
 
@@ -453,12 +453,12 @@ class BattleGroup {
         return $this;
     }
 
-    /**
-     * Get siege
-     *
-     * @return Siege
-     */
-    public function getSiege(): Siege {
+	/**
+	 * Get siege
+	 *
+	 * @return Siege|null
+	 */
+    public function getSiege(): ?Siege {
         return $this->siege;
     }
 
@@ -475,12 +475,12 @@ class BattleGroup {
         return $this;
     }
 
-    /**
-     * Get reinforcing
-     *
-     * @return BattleGroup
-     */
-    public function getReinforcing(): BattleGroup {
+	/**
+	 * Get reinforcing
+	 *
+	 * @return BattleGroup|null
+	 */
+    public function getReinforcing(): ?BattleGroup {
         return $this->reinforcing;
     }
 

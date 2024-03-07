@@ -78,9 +78,9 @@ class DungeonCard {
 	/**
 	 * Get type
 	 *
-	 * @return DungeonCardType
+	 * @return DungeonCardType|null
 	 */
-	public function getType(): DungeonCardType {
+	public function getType(): ?DungeonCardType {
 		return $this->type;
 	}
 
@@ -100,9 +100,9 @@ class DungeonCard {
 	/**
 	 * Get owner
 	 *
-	 * @return Dungeoneer
+	 * @return Dungeoneer|null
 	 */
-	public function getOwner(): Dungeoneer {
+	public function getOwner(): ?Dungeoneer {
 		return $this->owner;
 	}
 }

@@ -80,7 +80,7 @@ class SettlementClaim {
 	 *
 	 * @return Character
 	 */
-	public function getCharacter(): Character {
+	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 
@@ -102,15 +102,7 @@ class SettlementClaim {
 	 *
 	 * @return Settlement
 	 */
-	public function getSettlement(): Settlement {
+	public function getSettlement(): ?Settlement {
 		return $this->settlement;
-	}
-
-	public function isEnforceable(): ?bool {
-		return $this->enforceable;
-	}
-
-	public function isPriority(): ?bool {
-		return $this->priority;
 	}
 }

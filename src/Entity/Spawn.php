@@ -118,8 +118,4 @@ class Spawn {
 	public function getAssociation(): ?Association {
 		return $this->association;
 	}
-
-	public function isActive(): ?bool {
-		return $this->active;
-	}
 }

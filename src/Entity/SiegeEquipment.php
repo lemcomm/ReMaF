@@ -143,9 +143,9 @@ class SiegeEquipment {
 	/**
 	 * Get type
 	 *
-	 * @return SiegeEquipmentType
+	 * @return SiegeEquipmentType|null
 	 */
-	public function getType(): SiegeEquipmentType {
+	public function getType(): ?SiegeEquipmentType {
 		return $this->type;
 	}
 
@@ -165,9 +165,9 @@ class SiegeEquipment {
 	/**
 	 * Get owner
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getOwner(): Character {
+	public function getOwner(): ?Character {
 		return $this->owner;
 	}
 

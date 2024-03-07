@@ -141,9 +141,9 @@ class Dungeon {
 	/**
 	 * Get party
 	 *
-	 * @return DungeonParty
+	 * @return DungeonParty|null
 	 */
-	public function getParty(): DungeonParty {
+	public function getParty(): ?DungeonParty {
 		return $this->party;
 	}
 
@@ -194,9 +194,9 @@ class Dungeon {
 	/**
 	 * Get geo_data
 	 *
-	 * @return GeoData
+	 * @return GeoData|null
 	 */
-	public function getGeoData(): GeoData {
+	public function getGeoData(): ?GeoData {
 		return $this->geo_data;
 	}
 }

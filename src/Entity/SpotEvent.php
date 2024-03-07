@@ -105,9 +105,9 @@ class SpotEvent {
 	/**
 	 * Get spotter
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getSpotter(): Character {
+	public function getSpotter(): ?Character {
 		return $this->spotter;
 	}
 
@@ -127,9 +127,9 @@ class SpotEvent {
 	/**
 	 * Get target
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getTarget(): Character {
+	public function getTarget(): ?Character {
 		return $this->target;
 	}
 
@@ -149,9 +149,9 @@ class SpotEvent {
 	/**
 	 * Get tower
 	 *
-	 * @return GeoFeature
+	 * @return GeoFeature|null
 	 */
-	public function getTower(): GeoFeature {
+	public function getTower(): ?GeoFeature {
 		return $this->tower;
 	}
 

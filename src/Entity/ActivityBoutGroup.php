@@ -35,9 +35,9 @@ class ActivityBoutGroup {
 	/**
 	 * Get bout
 	 *
-	 * @return ActivityBout
+	 * @return ActivityBout|null
 	 */
-	public function getBout(): ActivityBout {
+	public function getBout(): ?ActivityBout {
 		return $this->bout;
 	}
 
@@ -57,9 +57,9 @@ class ActivityBoutGroup {
 	/**
 	 * Get group
 	 *
-	 * @return ActivityGroup
+	 * @return ActivityGroup|null
 	 */
-	public function getGroup(): ActivityGroup {
+	public function getGroup(): ?ActivityGroup {
 		return $this->group;
 	}
 }

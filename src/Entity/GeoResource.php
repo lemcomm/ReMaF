@@ -171,9 +171,9 @@ class GeoResource {
 	/**
 	 * Get settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getSettlement(): Settlement {
+	public function getSettlement(): ?Settlement {
 		return $this->settlement;
 	}
 
@@ -193,9 +193,9 @@ class GeoResource {
 	/**
 	 * Get geo_data
 	 *
-	 * @return GeoData
+	 * @return GeoData|null
 	 */
-	public function getGeoData(): GeoData {
+	public function getGeoData(): ?GeoData {
 		return $this->geo_data;
 	}
 
@@ -215,9 +215,9 @@ class GeoResource {
 	/**
 	 * Get type
 	 *
-	 * @return ResourceType
+	 * @return ResourceType|null
 	 */
-	public function getType(): ResourceType {
+	public function getType(): ?ResourceType {
 		return $this->type;
 	}
 }

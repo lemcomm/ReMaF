@@ -57,9 +57,9 @@ class Law {
 	/**
 	 * Get title
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getTitle(): string {
+	public function getTitle(): ?string {
 		return $this->title;
 	}
 
@@ -79,9 +79,9 @@ class Law {
 	/**
 	 * Get description
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getDescription(): string {
+	public function getDescription(): ?string {
 		return $this->description;
 	}
 
@@ -101,9 +101,9 @@ class Law {
 	/**
 	 * Get mandatory
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getMandatory(): bool {
+	public function getMandatory(): ?bool {
 		return $this->mandatory;
 	}
 
@@ -123,9 +123,9 @@ class Law {
 	/**
 	 * Get cascades
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getCascades(): bool {
+	public function getCascades(): ?bool {
 		return $this->cascades;
 	}
 
@@ -145,9 +145,9 @@ class Law {
 	/**
 	 * Get value
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getValue(): string {
+	public function getValue(): ?string {
 		return $this->value;
 	}
 
@@ -189,9 +189,9 @@ class Law {
 	/**
 	 * Get cycle
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCycle(): int {
+	public function getCycle(): ?int {
 		return $this->cycle;
 	}
 
@@ -255,9 +255,9 @@ class Law {
 	/**
 	 * Get sol_cycles
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getSolCycles(): int {
+	public function getSolCycles(): ?int {
 		return $this->sol_cycles;
 	}
 

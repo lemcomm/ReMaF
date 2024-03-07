@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * AssociationPlace
  */
@@ -28,12 +26,12 @@ class AssociationPlace
         return $this;
     }
 
-    /**
-     * Get headquarters
-     *
-     * @return boolean 
-     */
-    public function getHeadquarters(): bool {
+	/**
+	 * Get headquarters
+	 *
+	 * @return bool|null
+	 */
+    public function getHeadquarters(): ?bool {
         return $this->headquarters;
     }
 
@@ -59,12 +57,12 @@ class AssociationPlace
         return $this;
     }
 
-    /**
-     * Get association
-     *
-     * @return Association
-     */
-    public function getAssociation(): Association {
+	/**
+	 * Get association
+	 *
+	 * @return Association|null
+	 */
+    public function getAssociation(): ?Association {
         return $this->association;
     }
 
@@ -80,12 +78,12 @@ class AssociationPlace
         return $this;
     }
 
-    /**
-     * Get place
-     *
-     * @return Place
-     */
-    public function getPlace(): Place {
+	/**
+	 * Get place
+	 *
+	 * @return Place|null
+	 */
+    public function getPlace(): ?Place {
         return $this->place;
     }
 

@@ -236,9 +236,9 @@ class BuildingType {
 	/**
 	 * Get built_in
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getBuiltIn(): array {
+	public function getBuiltIn(): ?array {
 		return $this->built_in;
 	}
 
@@ -466,9 +466,5 @@ class BuildingType {
 	 */
 	public function getEnables(): ArrayCollection|Collection {
 		return $this->enables;
-	}
-
-	public function isSpecialConditions(): ?bool {
-		return $this->special_conditions;
 	}
 }

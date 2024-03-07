@@ -154,9 +154,9 @@ class Listing {
 	/**
 	 * Get creator
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCreator(): Character {
+	public function getCreator(): ?Character {
 		return $this->creator;
 	}
 

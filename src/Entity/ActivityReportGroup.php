@@ -154,12 +154,12 @@ class ActivityReportGroup
         return $this;
     }
 
-    /**
-     * Get activity_report
-     *
-     * @return ActivityReport
-     */
-    public function getActivityReport(): ActivityReport {
+	/**
+	 * Get activity_report
+	 *
+	 * @return ActivityReport|null
+	 */
+    public function getActivityReport(): ?ActivityReport {
         return $this->activity_report;
     }
 }

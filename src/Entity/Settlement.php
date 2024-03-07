@@ -595,9 +595,9 @@ class Settlement {
 	/**
 	 * Get abduction_cooldown
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getAbductionCooldown(): int {
+	public function getAbductionCooldown(): ?int {
 		return $this->abduction_cooldown;
 	}
 
@@ -639,9 +639,9 @@ class Settlement {
 	/**
 	 * Get feed_soldiers
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getFeedSoldiers(): bool {
+	public function getFeedSoldiers(): ?bool {
 		return $this->feed_soldiers;
 	}
 
@@ -670,9 +670,9 @@ class Settlement {
 	/**
 	 * Get description
 	 *
-	 * @return Description
+	 * @return Description|null
 	 */
-	public function getDescription(): Description {
+	public function getDescription(): ?Description {
 		return $this->description;
 	}
 
@@ -692,9 +692,9 @@ class Settlement {
 	/**
 	 * Get geo_data
 	 *
-	 * @return GeoData
+	 * @return GeoData|null
 	 */
-	public function getGeoData(): GeoData {
+	public function getGeoData(): ?GeoData {
 		return $this->geo_data;
 	}
 
@@ -714,9 +714,9 @@ class Settlement {
 	/**
 	 * Get geo_marker
 	 *
-	 * @return GeoFeature
+	 * @return GeoFeature|null
 	 */
-	public function getGeoMarker(): GeoFeature {
+	public function getGeoMarker(): ?GeoFeature {
 		return $this->geo_marker;
 	}
 
@@ -736,9 +736,9 @@ class Settlement {
 	/**
 	 * Get log
 	 *
-	 * @return EventLog
+	 * @return EventLog|null
 	 */
-	public function getLog(): EventLog {
+	public function getLog(): ?EventLog {
 		return $this->log;
 	}
 
@@ -758,9 +758,9 @@ class Settlement {
 	/**
 	 * Get siege
 	 *
-	 * @return Siege
+	 * @return Siege|null
 	 */
-	public function getSiege(): Siege {
+	public function getSiege(): ?Siege {
 		return $this->siege;
 	}
 
@@ -1617,9 +1617,9 @@ class Settlement {
 	/**
 	 * Get culture
 	 *
-	 * @return Culture
+	 * @return Culture|null
 	 */
-	public function getCulture(): Culture {
+	public function getCulture(): ?Culture {
 		return $this->culture;
 	}
 
@@ -1639,9 +1639,9 @@ class Settlement {
 	/**
 	 * Get owner
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getOwner(): Character {
+	public function getOwner(): ?Character {
 		return $this->owner;
 	}
 
@@ -1661,9 +1661,9 @@ class Settlement {
 	/**
 	 * Get steward
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getSteward(): Character {
+	public function getSteward(): ?Character {
 		return $this->steward;
 	}
 
@@ -1683,9 +1683,9 @@ class Settlement {
 	/**
 	 * Get realm
 	 *
-	 * @return Realm
+	 * @return Realm|null
 	 */
-	public function getRealm(): Realm {
+	public function getRealm(): ?Realm {
 		return $this->realm;
 	}
 
@@ -1705,9 +1705,9 @@ class Settlement {
 	/**
 	 * Get occupant
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getOccupant(): Character {
+	public function getOccupant(): ?Character {
 		return $this->occupant;
 	}
 
@@ -1727,9 +1727,9 @@ class Settlement {
 	/**
 	 * Get occupier
 	 *
-	 * @return Realm
+	 * @return Realm|null
 	 */
-	public function getOccupier(): Realm {
+	public function getOccupier(): ?Realm {
 		return $this->occupier;
 	}
 

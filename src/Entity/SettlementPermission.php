@@ -3,6 +3,15 @@
 namespace App\Entity;
 
 class SettlementPermission extends PermissionBase {
+	#Inherited Properties
+	private ?int $value;
+	private ?int $value_remaining;
+	private ?int $reserve;
+	private int $id;
+	private ?Permission $permission;
+	private ?Listing $listing;
+
+	#Local Properties
 	private ?Settlement $settlement;
 	private ?Settlement $occupied_settlement;
 

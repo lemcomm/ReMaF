@@ -147,9 +147,9 @@ class Siege {
 	/**
 	 * Get encircled
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getEncircled(): bool {
+	public function getEncircled(): ?bool {
 		return $this->encircled;
 	}
 
@@ -200,9 +200,9 @@ class Siege {
 	/**
 	 * Get settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getSettlement(): Settlement {
+	public function getSettlement(): ?Settlement {
 		return $this->settlement;
 	}
 
@@ -222,9 +222,9 @@ class Siege {
 	/**
 	 * Get place
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getPlace(): Place {
+	public function getPlace(): ?Place {
 		return $this->place;
 	}
 
@@ -244,9 +244,9 @@ class Siege {
 	/**
 	 * Get attacker
 	 *
-	 * @return BattleGroup
+	 * @return BattleGroup|null
 	 */
-	public function getAttacker(): BattleGroup {
+	public function getAttacker(): ?BattleGroup {
 		return $this->attacker;
 	}
 
@@ -359,9 +359,9 @@ class Siege {
 	/**
 	 * Get realm
 	 *
-	 * @return Realm
+	 * @return Realm|null
 	 */
-	public function getRealm(): Realm {
+	public function getRealm(): ?Realm {
 		return $this->realm;
 	}
 
@@ -381,9 +381,9 @@ class Siege {
 	/**
 	 * Get war
 	 *
-	 * @return War
+	 * @return War|null
 	 */
-	public function getWar(): War {
+	public function getWar(): ?War {
 		return $this->war;
 	}
 

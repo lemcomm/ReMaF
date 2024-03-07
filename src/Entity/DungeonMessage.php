@@ -80,9 +80,9 @@ class DungeonMessage {
 	/**
 	 * Get party
 	 *
-	 * @return DungeonParty
+	 * @return DungeonParty|null
 	 */
-	public function getParty(): DungeonParty {
+	public function getParty(): ?DungeonParty {
 		return $this->party;
 	}
 
@@ -102,9 +102,9 @@ class DungeonMessage {
 	/**
 	 * Get sender
 	 *
-	 * @return Dungeoneer
+	 * @return Dungeoneer|null
 	 */
-	public function getSender(): Dungeoneer {
+	public function getSender(): ?Dungeoneer {
 		return $this->sender;
 	}
 }

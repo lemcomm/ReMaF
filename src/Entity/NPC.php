@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-
 class NPC {
 
 	private string $name;
@@ -16,11 +14,11 @@ class NPC {
 	private Settlement $home;
 
 	// Non-property methods.
-	public function isSoldier(): false {
+	public function isSoldier(): bool {
    		return false;
    	}
 
-	public function isEntourage(): false {
+	public function isEntourage(): bool {
    		return false;
    	}
 
@@ -278,12 +276,12 @@ class NPC {
         return $this;
     }
 
-    /**
-     * Get home
-     *
-     * @return Settlement
-     */
-    public function getHome(): Settlement {
+	/**
+	 * Get home
+	 *
+	 * @return Settlement|null
+	 */
+    public function getHome(): ?Settlement {
         return $this->home;
     }
 }

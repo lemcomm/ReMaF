@@ -100,9 +100,9 @@ class EntourageType {
 	/**
 	 * Get provider
 	 *
-	 * @return BuildingType
+	 * @return BuildingType|null
 	 */
-	public function getProvider(): BuildingType {
+	public function getProvider(): ?BuildingType {
 		return $this->provider;
 	}
 }

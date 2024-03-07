@@ -171,9 +171,9 @@ class Quester {
 	/**
 	 * Get character
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCharacter(): Character {
+	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 
@@ -193,9 +193,9 @@ class Quester {
 	/**
 	 * Get quest
 	 *
-	 * @return Quest
+	 * @return Quest|null
 	 */
-	public function getQuest(): Quest {
+	public function getQuest(): ?Quest {
 		return $this->quest;
 	}
 }

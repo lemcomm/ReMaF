@@ -6,8 +6,6 @@ namespace App\Entity;
  * BattleReportObserver
  */
 class BattleReportObserver {
-
-
 	private int $id;
 	private BattleReport $battle_report;
 	private Character $character;
@@ -16,14 +14,14 @@ class BattleReportObserver {
 		return $this->setBattleReport($battleReport);
 	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
 	/**
 	 * Set battle_report
@@ -32,40 +30,40 @@ class BattleReportObserver {
 	 *
 	 * @return BattleReportObserver
 	 */
-    public function setBattleReport(BattleReport $battleReport = null): static {
-        $this->battle_report = $battleReport;
+	public function setBattleReport(BattleReport $battleReport = null): static {
+		$this->battle_report = $battleReport;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get battle_report
-     *
-     * @return BattleReport
-     */
-    public function getBattleReport(): BattleReport {
-        return $this->battle_report;
-    }
+	/**
+	 * Get battle_report
+	 *
+	 * @return BattleReport|null
+	 */
+	public function getBattleReport(): ?BattleReport {
+		return $this->battle_report;
+	}
 
-    /**
-     * Set character
-     *
-     * @param Character|null $character
-     *
-     * @return BattleReportObserver
-     */
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return BattleReportObserver
+	 */
 	public function setCharacter(Character $character = null): static {
-        $this->character = $character;
+		$this->character = $character;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get character
-     *
-     * @return Character
-     */
-    public function getCharacter(): Character {
-        return $this->character;
-    }
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
 }

@@ -1259,9 +1259,9 @@ class Realm extends Faction {
 	/**
 	 * Get capital
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getCapital(): Settlement {
+	public function getCapital(): ?Settlement {
 		return $this->capital;
 	}
 

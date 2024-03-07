@@ -109,7 +109,7 @@ class Trade {
 	 *
 	 * @return ResourceType
 	 */
-	public function getResourceType(): ResourceType {
+	public function getResourceType(): ?ResourceType {
 		return $this->resource_type;
 	}
 
@@ -131,7 +131,7 @@ class Trade {
 	 *
 	 * @return Settlement
 	 */
-	public function getSource(): Settlement {
+	public function getSource(): ?Settlement {
 		return $this->source;
 	}
 
@@ -153,7 +153,7 @@ class Trade {
 	 *
 	 * @return Settlement
 	 */
-	public function getDestination(): Settlement {
+	public function getDestination(): ?Settlement {
 		return $this->destination;
 	}
 }

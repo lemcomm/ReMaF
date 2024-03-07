@@ -3,6 +3,15 @@
 namespace App\Entity;
 
 class RealmPermission extends PermissionBase {
+	#Inherited Properties
+	private ?int $value;
+	private ?int $value_remaining;
+	private ?int $reserve;
+	private int $id;
+	private ?Permission $permission;
+	private ?Listing $listing;
+
+	#Local Properties
 	private Realm $realm;
 
 	/**
@@ -21,9 +30,9 @@ class RealmPermission extends PermissionBase {
 	/**
 	 * Get realm
 	 *
-	 * @return Realm
+	 * @return Realm|null
 	 */
-	public function getRealm(): Realm {
+	public function getRealm(): ?Realm {
 		return $this->realm;
 	}
 }

@@ -60,12 +60,12 @@ class ActivityReportObserver {
         return $this;
     }
 
-    /**
-     * Get character
-     *
-     * @return Character
-     */
-    public function getCharacter(): Character {
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+    public function getCharacter(): ?Character {
         return $this->character;
     }
 }

@@ -333,12 +333,12 @@ class Battle {
         return $this;
     }
 
-    /**
-     * Get primary_attacker
-     *
-     * @return BattleGroup
-     */
-    public function getPrimaryAttacker(): BattleGroup {
+	/**
+	 * Get primary_attacker
+	 *
+	 * @return BattleGroup|null
+	 */
+    public function getPrimaryAttacker(): ?BattleGroup {
         return $this->primary_attacker;
     }
 
@@ -355,12 +355,12 @@ class Battle {
         return $this;
     }
 
-    /**
-     * Get primary_defender
-     *
-     * @return BattleGroup
-     */
-    public function getPrimaryDefender(): BattleGroup {
+	/**
+	 * Get primary_defender
+	 *
+	 * @return BattleGroup|null
+	 */
+    public function getPrimaryDefender(): ?BattleGroup {
         return $this->primary_defender;
     }
 
@@ -377,12 +377,12 @@ class Battle {
         return $this;
     }
 
-    /**
-     * Get settlement
-     *
-     * @return Settlement
-     */
-    public function getSettlement(): Settlement {
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement|null
+	 */
+    public function getSettlement(): ?Settlement {
         return $this->settlement;
     }
 
@@ -399,12 +399,12 @@ class Battle {
         return $this;
     }
 
-    /**
-     * Get place
-     *
-     * @return Place
-     */
-    public function getPlace(): Place {
+	/**
+	 * Get place
+	 *
+	 * @return Place|null
+	 */
+    public function getPlace(): ?Place {
         return $this->place;
     }
 
@@ -422,11 +422,11 @@ class Battle {
     }
 
 	/**
-     * Get war
-     *
-     * @return War
-     */
-    public function getWar(): War {
+	 * Get war
+	 *
+	 * @return War|null
+	 */
+    public function getWar(): ?War {
         return $this->war;
     }
 
@@ -444,11 +444,11 @@ class Battle {
     }
 
 	/**
-     * Get siege
-     *
-     * @return Siege
-     */
-    public function getSiege(): Siege {
+	 * Get siege
+	 *
+	 * @return Siege|null
+	 */
+    public function getSiege(): ?Siege {
         return $this->siege;
     }
 

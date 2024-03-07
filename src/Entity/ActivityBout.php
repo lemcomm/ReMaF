@@ -57,7 +57,7 @@ class ActivityBout {
 	/**
 	 * Get participants
 	 *
-	 * @return Collection
+	 * @return ArrayCollection|Collection
 	 */
 	public function getParticipants(): ArrayCollection|Collection {
 		return $this->participants;
@@ -88,7 +88,7 @@ class ActivityBout {
 	/**
 	 * Get groups
 	 *
-	 * @return Collection
+	 * @return ArrayCollection|Collection
 	 */
 	public function getGroups(): ArrayCollection|Collection {
 		return $this->groups;
@@ -110,9 +110,9 @@ class ActivityBout {
 	/**
 	 * Get type
 	 *
-	 * @return ActivitySubType
+	 * @return ActivitySubType|null
 	 */
-	public function getType(): ActivitySubType {
+	public function getType(): ?ActivitySubType {
 		return $this->type;
 	}
 
@@ -132,9 +132,9 @@ class ActivityBout {
 	/**
 	 * Get activity
 	 *
-	 * @return Activity
+	 * @return Activity|null
 	 */
-	public function getActivity(): Activity {
+	public function getActivity(): ?Activity {
 		return $this->activity;
 	}
 }

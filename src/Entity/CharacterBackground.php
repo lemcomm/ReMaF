@@ -27,9 +27,9 @@ class CharacterBackground {
 	/**
 	 * Get appearance
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getAppearance(): string {
+	public function getAppearance(): ?string {
 		return $this->appearance;
 	}
 
@@ -49,9 +49,9 @@ class CharacterBackground {
 	/**
 	 * Get personality
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getPersonality(): string {
+	public function getPersonality(): ?string {
 		return $this->personality;
 	}
 
@@ -71,9 +71,9 @@ class CharacterBackground {
 	/**
 	 * Get secrets
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getSecrets(): string {
+	public function getSecrets(): ?string {
 		return $this->secrets;
 	}
 
@@ -93,9 +93,9 @@ class CharacterBackground {
 	/**
 	 * Get retirement
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getRetirement(): string {
+	public function getRetirement(): ?string {
 		return $this->retirement;
 	}
 
@@ -115,9 +115,9 @@ class CharacterBackground {
 	/**
 	 * Get death
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getDeath(): string {
+	public function getDeath(): ?string {
 		return $this->death;
 	}
 
@@ -146,9 +146,9 @@ class CharacterBackground {
 	/**
 	 * Get character
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCharacter(): Character {
+	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 }

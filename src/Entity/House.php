@@ -14,12 +14,12 @@ class House {
 	private ?string $secret;
 	private int $gold;
 	private int $id;
-	private Character $head;
-	private Description $description;
-	private SpawnDescription $spawn_description;
-	private EventLog $log;
-	private Place $home;
-	private Spawn $spawn;
+	private ?Character $head;
+	private ?Description $description;
+	private ?SpawnDescription $spawn_description;
+	private ?EventLog $log;
+	private ?Place $home;
+	private ?Spawn $spawn;
 	private Collection $members;
 	private Collection $cadets;
 	private Collection $descriptions;
@@ -28,11 +28,11 @@ class House {
 	private Collection $related_requests;
 	private Collection $part_of_requests;
 	private Collection $conversations;
-	private Heraldry $crest;
-	private Character $founder;
-	private Character $successor;
-	private House $superior;
-	private Settlement $inside_settlement;
+	private ?Heraldry $crest;
+	private ?Character $founder;
+	private ?Character $successor;
+	private ?House $superior;
+	private ?Settlement $inside_settlement;
 	protected House|bool $ultimate = false;
 
 	/**
@@ -243,9 +243,9 @@ class House {
 	/**
 	 * Get private
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getPrivate(): string {
+	public function getPrivate(): ?string {
 		return $this->private;
 	}
 
@@ -265,9 +265,9 @@ class House {
 	/**
 	 * Get secret
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getSecret(): string {
+	public function getSecret(): ?string {
 		return $this->secret;
 	}
 
@@ -318,9 +318,9 @@ class House {
 	/**
 	 * Get head
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getHead(): Character {
+	public function getHead(): ?Character {
 		return $this->head;
 	}
 
@@ -340,9 +340,9 @@ class House {
 	/**
 	 * Get description
 	 *
-	 * @return Description
+	 * @return Description|null
 	 */
-	public function getDescription(): Description {
+	public function getDescription(): ?Description {
 		return $this->description;
 	}
 
@@ -362,9 +362,9 @@ class House {
 	/**
 	 * Get spawn_description
 	 *
-	 * @return SpawnDescription
+	 * @return SpawnDescription|null
 	 */
-	public function getSpawnDescription(): SpawnDescription {
+	public function getSpawnDescription(): ?SpawnDescription {
 		return $this->spawn_description;
 	}
 
@@ -384,9 +384,9 @@ class House {
 	/**
 	 * Get log
 	 *
-	 * @return EventLog
+	 * @return EventLog|null
 	 */
-	public function getLog(): EventLog {
+	public function getLog(): ?EventLog {
 		return $this->log;
 	}
 
@@ -406,9 +406,9 @@ class House {
 	/**
 	 * Get home
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getHome(): Place {
+	public function getHome(): ?Place {
 		return $this->home;
 	}
 
@@ -428,9 +428,9 @@ class House {
 	/**
 	 * Get spawn
 	 *
-	 * @return Spawn
+	 * @return Spawn|null
 	 */
-	public function getSpawn(): Spawn {
+	public function getSpawn(): ?Spawn {
 		return $this->spawn;
 	}
 
@@ -698,9 +698,9 @@ class House {
 	/**
 	 * Get crest
 	 *
-	 * @return Heraldry
+	 * @return Heraldry|null
 	 */
-	public function getCrest(): Heraldry {
+	public function getCrest(): ?Heraldry {
 		return $this->crest;
 	}
 
@@ -720,9 +720,9 @@ class House {
 	/**
 	 * Get founder
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getFounder(): Character {
+	public function getFounder(): ?Character {
 		return $this->founder;
 	}
 
@@ -742,9 +742,9 @@ class House {
 	/**
 	 * Get successor
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getSuccessor(): Character {
+	public function getSuccessor(): ?Character {
 		return $this->successor;
 	}
 
@@ -764,9 +764,9 @@ class House {
 	/**
 	 * Get superior
 	 *
-	 * @return House
+	 * @return House|null
 	 */
-	public function getSuperior(): House {
+	public function getSuperior(): ?House {
 		return $this->superior;
 	}
 
@@ -786,9 +786,9 @@ class House {
 	/**
 	 * Get inside_settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getInsideSettlement(): Settlement {
+	public function getInsideSettlement(): ?Settlement {
 		return $this->inside_settlement;
 	}
 

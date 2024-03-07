@@ -187,9 +187,9 @@ class Code {
 	/**
 	 * Get used_on
 	 *
-	 * @return DateTime
+	 * @return DateTime|null
 	 */
-	public function getUsedOn(): DateTime {
+	public function getUsedOn(): ?DateTime {
 		return $this->used_on;
 	}
 

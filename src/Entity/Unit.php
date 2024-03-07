@@ -11,17 +11,17 @@ class Unit {
 	private ?string $destination;
 	private ?bool $disbanded;
 	private int $id;
-	private EventLog $log;
-	private UnitSettings $settings;
+	private ?EventLog $log;
+	private ?UnitSettings $settings;
 	private Collection $soldiers;
 	private Collection $supplies;
 	private Collection $incoming_supplies;
-	private Character $character;
-	private Character $marshal;
-	private Settlement $settlement;
-	private Settlement $defending_settlement;
-	private Place $place;
-	private Settlement $supplier;
+	private ?Character $character;
+	private ?Character $marshal;
+	private ?Settlement $settlement;
+	private ?Settlement $defending_settlement;
+	private ?Place $place;
+	private ?Settlement $supplier;
 	private int $maxSize = 200;
 
 	/**
@@ -144,9 +144,9 @@ class Unit {
 	/**
 	 * Get line
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getLine(): int {
+	public function getLine(): ?int {
 		return $this->line;
 	}
 
@@ -166,9 +166,9 @@ class Unit {
 	/**
 	 * Get travel_days
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getTravelDays(): int {
+	public function getTravelDays(): ?int {
 		return $this->travel_days;
 	}
 
@@ -188,9 +188,9 @@ class Unit {
 	/**
 	 * Get destination
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getDestination(): string {
+	public function getDestination(): ?string {
 		return $this->destination;
 	}
 
@@ -210,9 +210,9 @@ class Unit {
 	/**
 	 * Get disbanded
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getDisbanded(): bool {
+	public function getDisbanded(): ?bool {
 		return $this->disbanded;
 	}
 
@@ -241,9 +241,9 @@ class Unit {
 	/**
 	 * Get log
 	 *
-	 * @return EventLog
+	 * @return EventLog|null
 	 */
-	public function getLog(): EventLog {
+	public function getLog(): ?EventLog {
 		return $this->log;
 	}
 
@@ -263,9 +263,9 @@ class Unit {
 	/**
 	 * Get settings
 	 *
-	 * @return UnitSettings
+	 * @return UnitSettings|null
 	 */
-	public function getSettings(): UnitSettings {
+	public function getSettings(): ?UnitSettings {
 		return $this->settings;
 	}
 
@@ -378,9 +378,9 @@ class Unit {
 	/**
 	 * Get character
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCharacter(): Character {
+	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 
@@ -400,9 +400,9 @@ class Unit {
 	/**
 	 * Get marshal
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getMarshal(): Character {
+	public function getMarshal(): ?Character {
 		return $this->marshal;
 	}
 
@@ -422,9 +422,9 @@ class Unit {
 	/**
 	 * Get settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getSettlement(): Settlement {
+	public function getSettlement(): ?Settlement {
 		return $this->settlement;
 	}
 
@@ -444,9 +444,9 @@ class Unit {
 	/**
 	 * Get defending_settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getDefendingSettlement(): Settlement {
+	public function getDefendingSettlement(): ?Settlement {
 		return $this->defending_settlement;
 	}
 
@@ -466,9 +466,9 @@ class Unit {
 	/**
 	 * Get place
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getPlace(): Place {
+	public function getPlace(): ?Place {
 		return $this->place;
 	}
 
@@ -488,9 +488,9 @@ class Unit {
 	/**
 	 * Get supplier
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getSupplier(): Settlement {
+	public function getSupplier(): ?Settlement {
 		return $this->supplier;
 	}
 

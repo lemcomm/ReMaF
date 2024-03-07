@@ -11,9 +11,10 @@ gametime:
  short:       "{year}-{week}-{day}"
 realtime:
  forever:     eternity
- day:         "{d} day (real time)|{d} days (real time)"
- hour:        "{h} hour (real time)|{h} hours (real time)"
- minute:      "{m} minute (real time)|{m} minutes (real time)"
+ child:   "Child{count, plural, other {ren}}"
+ day:         "{d} real day{count, plural, other {s}}"
+ hour:        "{h} real hour{count, plural, other {s}}"
+ minute:      "{m} real minute{count, plural, other {s}}"
 
 menu:
  login:     Login
@@ -441,8 +442,8 @@ account:
     get them added in the future. If you by a culture pack, you will always get all updates for free.
   notenoughcredits:   You do not have enough credits for this purchase.
   bought:
-   title:   Culture Pack Bought|Culture Packs Bought
-   intro:   "Congratulations, you have bought a culture pack:|Congratulations, you have bought {amount} culture packs:"
+   title:   Culture Pack{count, plural, other {s}} Bought
+   intro:   "Congratulations, you have bought {amount} culture pack{count, plural, other {s}}:"
    contains:  "this pack contains:"
  gift:
   link:     Gift to existing player
@@ -543,7 +544,7 @@ newcharacter:
    people that don't exist as characters in the game. If you want to create a family tree, make sure to start
    with the oldest generations.<br />
    All characters are <a href="{firstoneurl}">First Ones</a> and begin the game as fully trained and equipped knights.
- limit:     You can create {limit} more living characters today.|You can create {limit} more living characters today.
+ limit:     You can create {limit} more living character{count, plural, other {s}} today.
  limited:   You cannot create new living characters anymore today. You will get more available character slots every real-life day.
  spawnlimit:  You currently have several unspawned characters. Please start playing them first, before you create more characters.
  accountlimit:  You are currently playing {active} of {limit} possible characters.
@@ -622,7 +623,7 @@ character:
  father:  Father
  mother:  Mother
  married: Married to
- partner: Partner|Partners
+ partner: Partner{count, plural, other {s}}
  none:    (no character)
  child:   "Child{count, plural, other {ren}}"
  resupply: "Resupply from camp followers:"
@@ -848,7 +849,7 @@ settlement:
   1:  Minor shortage of {resource}
   2:  Shortage of {resource}
   3:  Dramatic shortage of {resource}
-  effect:   Production and construction requiring this resource are slowed down.|Production and construction requiring these resources are slowed down.
+  effect:   Production and construction requiring {count, plural, =1 {this resource} other {these resources}} are slowed down.
   none:     All resource demands are satisfied.
  security:
   tt: How protected the settlement is against forces of nature and bandits. Can be improved with defensive buildings, militia, etc.
@@ -942,7 +943,7 @@ locked:       Locked
 dead:         Dead
 battling:     Battling
 inactive:     Inactive
-prisoner:     Prisoner|Prisoners
+prisoner:     Prisoner{count, plural, other {s}}
 wounded:      Wounded
 hungry:       Hungry
 veryhungry:   Starving
@@ -951,8 +952,8 @@ offered:      Included in a knight offer
 assigned:     Assigned from {from}, could still be reclaimed
 lastbattle:   Last battle
 islocked:     Currently being reassigned to you
-hour:         hour|hours
-minute:       minute|minutes
+hour:         hour{count, plural, other {s}}
+minute:       minute{count, plural, other {s}}
 untilturn:    "{h} {hours}, {m} {minutes} until next day change"
 untilturn2:   "{m} {minutes} until next day change"
 location:     Location
@@ -983,9 +984,9 @@ charstatus:
  renaming:     rename
  reclaiming:   reclaim
  sieging:     sieging
-newevents:    "{number} event|{number} events"
-newmessages:  "{number} message|{number} messages"
-requests:     "{number} request|{number} requests"
+newevents:    "{number} event{count, plural, other {s}}"
+newmessages:  "{number} message{count, plural, other {s}}"
+requests:     "{number} request{count, plural, other {s}}"
 inside:       inside {settlement}
 inside2:      inside {place}, in {settlement}
 inside3:      inside {place}, near {settlement}
@@ -1006,20 +1007,20 @@ fewoffers:    There are only {count} knight offers open at this time. Creating m
 distance:    distance
 length:      length
 dist:
- m:          "{value} m|{value} m"
- metre:      "{value} metre|{value} metres"
- y:          "{value} y|{value} y"
- yard:       "{value} yard|{value} yards"
- mi:         "{value} mi|{value} mi"
- mile:       "{value} mile|{value} miles"
- league:     "{value} league|{value} leagues"
+ m:          "{value} m"
+ metre:      "{value} meter{count, plural, other {s}}"
+ y:          "{value} y"
+ yard:       "{value} yard{count, plural, other {s}}"
+ mi:         "{value} mi"
+ mile:       "{value} mile{count, plural, other {s}}"
+ league:     "{value} league{count, plural, other {s}}"
 area:
- hectare:    "{value} hectare|{value} hectares"
- sqm:        "{value} square mile|{value} square miles"
- sql:        "{value} square league|{value} square leagues"
+ hectare:    "{value} hectare{count, plural, other {s}}"
+ sqm:        "{value} square mile{count, plural, other {s}}"
+ sql:        "{value} square league{count, plural, other {s}}"
 metre_abr:   m
 popdensity:  People per square mile
-day:         day|days
+day:         day{count, plural, other {s}}
 today:       today
 
 source:      Source
@@ -1032,10 +1033,10 @@ goods:       goods
 money:       wealth
 
 background:  background
-estate:      estate|estates
-realm:       realm|realms
-building:    building|buildings
-feature:     feature|features
+estate:      estate{count, plural, other {s}}
+realm:       realm{count, plural, other {s}}
+building:    building{count, plural, other {s}}
+feature:     feature{count, plural, other {s}}
 build:
  workers:    workers
  available:  "{number} ({percent} %) workers available"
@@ -1139,22 +1140,22 @@ npc:
  supply:       supply
  is:           wandering bandit
  maxreached:   You are already playing the maximum allowed number of bandits.
- entourage:    entourage member|entourage members
- entourage2:   entourage|entourage
- follower:     camp follower|camp followers
- scout:        scout|scouts
- prospector:   prospector|prospectors
- merchant:     merchant|merchants
- spy:          spy|spies
- priest:       priest|priests
- herald:       herald|heralds
- translator:   translator|translators
- scholar:      scholar|scholars
- soldier:      soldier|soldiers
+ entourage:    entourage member{count, plural, other {s}}
+ entourage2:   entourage
+ follower:     camp follower{count, plural, other {s}}
+ scout:        scout{count, plural, other {s}}
+ prospector:   prospector{count, plural, other {s}}
+ merchant:     merchant{count, plural, other {s}}
+ spy:          sp{count, plural, =1 {y} other {ies}}
+ priest:       priest{count, plural, other {s}}
+ herald:       herald{count, plural, other {s}}
+ translator:   translator{count, plural, other {s}}
+ scholar:      scholar{count, plural, other {s}}
+ soldier:      soldier{count, plural, other {s}}
  soldiers:     Soldiers of {name}
  soldiershere: soldiers present
  intraining:   recruits in training
- units:        Your unit|Your units
+ units:        Your unit{count, plural, other {s}}
 
 soldier:
  type:             type
@@ -1180,17 +1181,17 @@ soldier:
   items:           by details
   items_desc:      Sort soldiers into detailed groups so each set of equipment (weapon, armor, item) has its own group.
 
- rabble:           Rabble|Rabble
- light infantry:   Light Infantry|Light Infantry
- medium infantry:  Medium Infantry|Medium Infantry
- heavy infantry:   Heavy Infantry|Heavy Infantry
- archer:           Archer|Archers
- armoured archer:  Armored Archer|Armored Archers
- mounted archer:   Mounted Archer|Mounted Archers
- cavalry:          Cavalry|Cavalry
- light cavalry:    Light Cavalry|Light Cavalry
- heavy cavalry:    Heavy Cavalry|Heavy Cavalry
- noble:            First One|First Ones
+ rabble:           Rabble
+ light infantry:   Light Infantry
+ medium infantry:  Medium Infantry
+ heavy infantry:   Heavy Infantry
+ archer:           Archer{count, plural, other {s}}
+ armoured archer:  Armored Archer{count, plural, other {s}}
+ mounted archer:   Mounted Archer{count, plural, other {s}}
+ cavalry:          Cavalry
+ light cavalry:    Light Cavalry
+ heavy cavalry:    Heavy Cavalry
+ noble:            First One{count, plural, other {s}}
 
 item:
  none:             (none)
@@ -1245,9 +1246,9 @@ events:
  alldone:   Marked as read for all your characters
  alldone2:  Marked as read for this character
  research:
-  ongoing:  A scholar of yours is currently researching older records in this journal.|{amount} of your scholars are currently researching older records in this journal.
+  ongoing:  "{count, plural, =1 {A scholar of yours is} other {{amount} scholars of yours are}} currently researching older records in this journal."
   intro:    There are more events in older records, a scholar will be able to research them.
-  can:      You have a scholar available for research work.|You have {amount} scholars available for research work.
+  can:      You have a scholar{count, plural, other {s}} available for research work.
  filter:
   all:      All events
   medium:   Only interesting
@@ -1329,48 +1330,48 @@ battle:
  combat:        combat
  ranged:
   title:        ranged phase
-  shots:        "{i} shot fired|{i} shots fired"
-  hits:         "{i} hit|{i} hits"
-  kill:         "{i} enemy killed|{i} enemies killed"
-  wound:        "{i} enemy wounded|{i} enemies wounded"
-  routed:       "{i} enemy routed|{i} enemies routed"
-  capture:      "{i} enemy First One surrendered|{i} enemy First Ones surrendered"
+  shots:        "{i} shot{count, plural, other {s}} fired"
+  hits:         "{i} hit{count, plural, other {s}}"
+  kill:         "{i} enem{count, plural, =1 {y} other {ies}} killed"
+  wound:        "{i} enem{count, plural, =1 {y} other {ies}} wounded"
+  routed:       "{i} enem{count, plural, =1 {y} other {ies}} routed"
+  capture:      "{i} enemy First One{count, plural, other {s}} surrendered"
  melee:
   title:        melee phase {i}
-  alive:        "{i} soldier fighting|{i} soldiers fighting"
-  kill:         "{i} enemy killed|{i} enemies killed"
-  wound:        "{i} enemy wounded|{i} enemies wounded"
-  panic:        "{i} enemy routed|{i} enemies routed"
-  capture:      "{i} enemy First One captured|{i} enemy First Ones captured"
+  alive:        "{i} soldier{count, plural, other {s}} fighting"
+  kill:         "{i} enem{count, plural, =1 {y} other {ies}} killed"
+  wound:        "{i} enem{count, plural, =1 {y} other {ies}} wounded"
+  panic:        "{i} enem{count, plural, =1 {y} other {ies}} routed"
+  capture:      "{i} enemy First One{count, plural, other {s}} captured"
  round:
-  title: Combat Phase {i}
-  alive: "{i} soldier fighting|{i} soldiers fighting"
-  shots:        "{i} shot fired|{i} shots fired"
-  rangedHits:   "{i} ranged hit|{i} ranged hits"
-  kill:         "{i} enemy killed|{i} enemies killed"
-  wound:        "{i} enemy wounded|{i} enemies wounded"
-  panic:        "{i} enemy routed|{i} enemies routed"
-  capture:      "{i} enemy First One captured|{i} enemy First Ones captured"
-  fail:         "{i} was unable to do any damage|{i} were unable to do any damage"
-  misses:       "{i} missed their target|{i} missed their targets"
-  crowded:      "{i} was unable to reach a target|{i} were unable to reach thier targets"
-  routed:       "{i} soldier was routed|{i} soldiers were routed"
-  strikes:      "{i} melee hit|{i} melee hits"
-  notarget:     "{i} was unable to find a target|{i} were unable to find a target"
-  chargefail:   "{i} was counter-attacked in the charge, but took no damage|{i} were counter-attacked in the charge, but took no damage"
-  chargewound:  "{i} was wounded by the enemy in the charge|{i} were wounded by the enemy in the charge"
-  chargecapture: "{i} was captured by the enemy in the carge|{i} were captured by the enemy in the carge"
-  chargekill:   "{i} was killed by the enemy in the charge|{i} were killed by the enemy in the charge"
-  lightShieldfail:    "{i} was counter-attacked, but took no damage|{i} were counter-attacked but took no damage"
-  lightShieldwound:   "{i} was wounded by an enemy counter-attack|{i} were wounded by enemy counter-attacks"
-  lightShieldcapture: "{i} was captured by the enemy a counter-attack|{i} were captured by the enemy in counter-attacks"
-  lightShieldkill:   "{i} was killed by the enemy in a counter-attack|{i} were killed by the enemy in counter-attacks"
-  stared:       "{i} First One refused to reteat|{i} First Ones refused to retreat"
+  title:        Combat Phase {i}
+  alive:        "{i} soldier{count, plural, other {s}} fighting"
+  shots:        "{i} shot{count, plural, other {s}} fired"
+  rangedHits:   "{i} ranged hit{count, plural, other {s}}"
+  kill:         "{i} enem{count, plural, =1 {y} other {ies}} killed"
+  wound:        "{i} enem{count, plural, =1 {y} other {ies}} wounded"
+  panic:        "{i} enem{count, plural, =1 {y} other {ies}} routed"
+  capture:      "{i} enemy First One{count, plural, other {s}} captured"
+  fail:         "{i} {count, plural, =1 {was} other {were}} unable to do any damage"
+  misses:       "{i} missed their target{count, plural, other {s}}"
+  crowded:      "{i} was unable to reach a target{count, plural, other {s}}"
+  routed:       "{i} soldier{count, plural, =1 { was} other {s were}} routed"
+  strikes:      "{i} melee hit{count, plural, other {s}}"
+  notarget:     "{i} {count, plural, =1 {was} other {were}} unable to find a target"
+  chargefail:   "{i} {count, plural, =1 {was} other {were}} counter-attacked in the charge, but took no damage"
+  chargewound:  "{i} {count, plural, =1 {was} other {were}} wounded by the enemy in the charge"
+  chargecapture: "{i} {count, plural, =1 {was} other {were}} captured by the enemy in the carge"
+  chargekill:   "{i} {count, plural, =1 {was} other {were}} killed by the enemy in the charge"
+  lightShieldfail:    "{i} {count, plural, =1 {was} other {were}} counter-attacked, but took no damage"
+  lightShieldwound:   "{i} {count, plural, =1 {was} other {were}} wounded by an enemy counter-attack"
+  lightShieldcapture: "{i} {count, plural, =1 {was} other {were}} captured by the enemy a counter-attack"
+  lightShieldkill:   "{i} {count, plural, =1 {was} other {were}} killed by the enemy in a counter-attack"
+  stared:       "{i} First One{count, plural, other {s}} refused to retreat"
  hunt:
   title:        hunt
-  killed:       "{i} enemy was killed or wounded while fleeing.|{i} enemies were killed or wounded while fleeing."
-  entkilled:    "{i} enemy entourage member was killed during the rout.|{i} enemy entourage members were killed during the rout."
-  dropped:      "{i} soldier dropped their equipment to run away faster.|{i} soldiers dropped their equipment to run faster."
+  killed:       "{i} enem{count, plural, =1 {y} other {ies}} was killed or wounded while fleeing."
+  entkilled:    "{i} enemy entourage member{count, plural, =1 { was} other {s were}} was killed during the rout."
+  dropped:      "{i} soldier{count, plural, =1 { was} other {s were}} dropped their equipment to run away faster."
  extras:
   noble:
    kill:        "{who} was killed by {by}."

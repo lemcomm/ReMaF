@@ -119,9 +119,9 @@ class ActivityReport {
 	/**
 	 * Get location_name
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getLocationName(): array {
+	public function getLocationName(): ?array {
 		return $this->location_name;
 	}
 
@@ -163,9 +163,9 @@ class ActivityReport {
 	/**
 	 * Get count
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCount(): int {
+	public function getCount(): ?int {
 		return $this->count;
 	}
 
@@ -185,9 +185,9 @@ class ActivityReport {
 	/**
 	 * Get debug
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getDebug(): string {
+	public function getDebug(): ?string {
 		return $this->debug;
 	}
 
@@ -238,9 +238,9 @@ class ActivityReport {
 	/**
 	 * Get activity
 	 *
-	 * @return Activity
+	 * @return Activity|null
 	 */
-	public function getActivity(): Activity {
+	public function getActivity(): ?Activity {
 		return $this->activity;
 	}
 
@@ -384,9 +384,9 @@ class ActivityReport {
 	/**
 	 * Get type
 	 *
-	 * @return ActivityType
+	 * @return ActivityType|null
 	 */
-	public function getType(): ActivityType {
+	public function getType(): ?ActivityType {
 		return $this->type;
 	}
 
@@ -406,9 +406,9 @@ class ActivityReport {
 	/**
 	 * Get subtype
 	 *
-	 * @return ActivitySubType
+	 * @return ActivitySubType|null
 	 */
-	public function getSubtype(): ActivitySubType {
+	public function getSubtype(): ?ActivitySubType {
 		return $this->subtype;
 	}
 
@@ -428,9 +428,9 @@ class ActivityReport {
 	/**
 	 * Get settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getSettlement(): Settlement {
+	public function getSettlement(): ?Settlement {
 		return $this->settlement;
 	}
 
@@ -450,9 +450,9 @@ class ActivityReport {
 	/**
 	 * Get place
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getPlace(): Place {
+	public function getPlace(): ?Place {
 		return $this->place;
 	}
 
@@ -472,9 +472,9 @@ class ActivityReport {
 	/**
 	 * Get geo_data
 	 *
-	 * @return GeoData
+	 * @return GeoData|null
 	 */
-	public function getGeoData(): GeoData {
+	public function getGeoData(): ?GeoData {
 		return $this->geo_data;
 	}
 

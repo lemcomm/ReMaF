@@ -52,12 +52,12 @@ class AssociationMember
         return $this;
     }
 
-    /**
-     * Get rank_date
-     *
-     * @return DateTime
-     */
-    public function getRankDate(): DateTime {
+	/**
+	 * Get rank_date
+	 *
+	 * @return DateTime|null
+	 */
+    public function getRankDate(): ?DateTime {
         return $this->rank_date;
     }
 
@@ -83,12 +83,12 @@ class AssociationMember
         return $this;
     }
 
-    /**
-     * Get association
-     *
-     * @return Association
-     */
-    public function getAssociation(): Association {
+	/**
+	 * Get association
+	 *
+	 * @return Association|null
+	 */
+    public function getAssociation(): ?Association {
         return $this->association;
     }
 
@@ -105,12 +105,12 @@ class AssociationMember
         return $this;
     }
 
-    /**
-     * Get character
-     *
-     * @return Character
-     */
-    public function getCharacter(): Character {
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+    public function getCharacter(): ?Character {
         return $this->character;
     }
 
@@ -127,12 +127,12 @@ class AssociationMember
         return $this;
     }
 
-    /**
-     * Get rank
-     *
-     * @return AssociationRank
-     */
-    public function getRank(): AssociationRank {
+	/**
+	 * Get rank
+	 *
+	 * @return AssociationRank|null
+	 */
+    public function getRank(): ?AssociationRank {
         return $this->rank;
     }
 }

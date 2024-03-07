@@ -62,9 +62,9 @@ class PlaceType {
 	/**
 	 * Get requires
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getRequires(): string {
+	public function getRequires(): ?string {
 		return $this->requires;
 	}
 
@@ -106,9 +106,9 @@ class PlaceType {
 	/**
 	 * Get defensible
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getDefensible(): bool {
+	public function getDefensible(): ?bool {
 		return $this->defensible;
 	}
 
@@ -128,9 +128,9 @@ class PlaceType {
 	/**
 	 * Get public
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getPublic(): bool {
+	public function getPublic(): ?bool {
 		return $this->public;
 	}
 
@@ -150,9 +150,9 @@ class PlaceType {
 	/**
 	 * Get spawnable
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getSpawnable(): bool {
+	public function getSpawnable(): ?bool {
 		return $this->spawnable;
 	}
 
@@ -172,9 +172,9 @@ class PlaceType {
 	/**
 	 * Get vassals
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getVassals(): bool {
+	public function getVassals(): ?bool {
 		return $this->vassals;
 	}
 

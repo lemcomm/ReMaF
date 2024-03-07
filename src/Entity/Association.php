@@ -204,9 +204,9 @@ class Association extends Faction {
 	/**
 	 * Get faith_name
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getFaithName(): string {
+	public function getFaithName(): ?string {
    		return $this->faith_name;
    	}
 
@@ -226,9 +226,9 @@ class Association extends Faction {
 	/**
 	 * Get follower_name
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getFollowerName(): string {
+	public function getFollowerName(): ?string {
    		return $this->follower_name;
    	}
 
@@ -248,9 +248,9 @@ class Association extends Faction {
 	/**
 	 * Get motto
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getMotto(): string {
+	public function getMotto(): ?string {
    		return $this->motto;
    	}
 
@@ -270,9 +270,9 @@ class Association extends Faction {
 	/**
 	 * Get active
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getActive(): bool {
+	public function getActive(): ?bool {
    		return $this->active;
    	}
 
@@ -292,9 +292,9 @@ class Association extends Faction {
 	/**
 	 * Get short_description
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getShortDescription(): string {
+	public function getShortDescription(): ?string {
    		return $this->short_description;
    	}
 
@@ -323,9 +323,9 @@ class Association extends Faction {
 	/**
 	 * Get description
 	 *
-	 * @return Description
+	 * @return Description|null
 	 */
-	public function getDescription(): Description {
+	public function getDescription(): ?Description {
    		return $this->description;
    	}
 
@@ -345,9 +345,9 @@ class Association extends Faction {
 	/**
 	 * Get spawn_description
 	 *
-	 * @return SpawnDescription
+	 * @return SpawnDescription|null
 	 */
-	public function getSpawnDescription(): SpawnDescription {
+	public function getSpawnDescription(): ?SpawnDescription {
    		return $this->spawn_description;
    	}
 
@@ -367,9 +367,9 @@ class Association extends Faction {
 	/**
 	 * Get log
 	 *
-	 * @return EventLog
+	 * @return EventLog|null
 	 */
-	public function getLog(): EventLog {
+	public function getLog(): ?EventLog {
    		return $this->log;
    	}
 
@@ -947,9 +947,9 @@ class Association extends Faction {
 	/**
 	 * Get type
 	 *
-	 * @return AssociationType
+	 * @return AssociationType|null
 	 */
-	public function getType(): AssociationType {
+	public function getType(): ?AssociationType {
    		return $this->type;
    	}
 
@@ -969,9 +969,9 @@ class Association extends Faction {
 	/**
 	 * Get superior
 	 *
-	 * @return Association
+	 * @return Association|null
 	 */
-	public function getSuperior(): Association {
+	public function getSuperior(): ?Association {
    		return $this->superior;
    	}
 
@@ -991,9 +991,9 @@ class Association extends Faction {
 	/**
 	 * Get founder
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getFounder(): Character {
+	public function getFounder(): ?Character {
    		return $this->founder;
    	}
 

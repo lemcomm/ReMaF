@@ -8,8 +8,7 @@ use Doctrine\Common\Collections\Collection;
 /**
  * Biome
  */
-class Biome
-{
+class Biome {
 	private string $name;
 	private float $spot;
 	private float $travel;
@@ -18,183 +17,180 @@ class Biome
 	private int $id;
 	private Collection $geo_data;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->geo_data = new ArrayCollection();
-    }
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->geo_data = new ArrayCollection();
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Biome
-     */
-    public function setName(string $name): static {
-        $this->name = $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return Biome
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName(): string {
-        return $this->name;
-    }
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * Set spot
-     *
-     * @param float $spot
-     *
-     * @return Biome
-     */
-    public function setSpot(float $spot): static {
-        $this->spot = $spot;
+	/**
+	 * Set spot
+	 *
+	 * @param float $spot
+	 *
+	 * @return Biome
+	 */
+	public function setSpot(float $spot): static {
+		$this->spot = $spot;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get spot
-     *
-     * @return float 
-     */
-    public function getSpot(): float {
-        return $this->spot;
-    }
+	/**
+	 * Get spot
+	 *
+	 * @return float
+	 */
+	public function getSpot(): float {
+		return $this->spot;
+	}
 
-    /**
-     * Set travel
-     *
-     * @param float $travel
-     *
-     * @return Biome
-     */
-    public function setTravel(float $travel): static {
-        $this->travel = $travel;
+	/**
+	 * Set travel
+	 *
+	 * @param float $travel
+	 *
+	 * @return Biome
+	 */
+	public function setTravel(float $travel): static {
+		$this->travel = $travel;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get travel
-     *
-     * @return float 
-     */
-    public function getTravel(): float {
-        return $this->travel;
-    }
+	/**
+	 * Get travel
+	 *
+	 * @return float
+	 */
+	public function getTravel(): float {
+		return $this->travel;
+	}
 
-    /**
-     * Set road_construction
-     *
-     * @param float $roadConstruction
-     *
-     * @return Biome
-     */
-    public function setRoadConstruction(float $roadConstruction): static {
-        $this->road_construction = $roadConstruction;
+	/**
+	 * Set road_construction
+	 *
+	 * @param float $roadConstruction
+	 *
+	 * @return Biome
+	 */
+	public function setRoadConstruction(float $roadConstruction): static {
+		$this->road_construction = $roadConstruction;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get road_construction
-     *
-     * @return float 
-     */
-    public function getRoadConstruction(): float {
-        return $this->road_construction;
-    }
+	/**
+	 * Get road_construction
+	 *
+	 * @return float
+	 */
+	public function getRoadConstruction(): float {
+		return $this->road_construction;
+	}
 
-    /**
-     * Set feature_construction
-     *
-     * @param float $featureConstruction
-     *
-     * @return Biome
-     */
-    public function setFeatureConstruction(float $featureConstruction): static {
-        $this->feature_construction = $featureConstruction;
+	/**
+	 * Set feature_construction
+	 *
+	 * @param float $featureConstruction
+	 *
+	 * @return Biome
+	 */
+	public function setFeatureConstruction(float $featureConstruction): static {
+		$this->feature_construction = $featureConstruction;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get feature_construction
-     *
-     * @return float 
-     */
-    public function getFeatureConstruction(): float {
-        return $this->feature_construction;
-    }
+	/**
+	 * Get feature_construction
+	 *
+	 * @return float
+	 */
+	public function getFeatureConstruction(): float {
+		return $this->feature_construction;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return integer
+	 */
+	public function getId(): int {
+		return $this->id;
+	}
 
-    /**
-     * Add geo_data
-     *
-     * @param GeoData $geoData
-     *
-     * @return Biome
-     */
-    public function addGeoDatum(GeoData $geoData): static {
-        $this->geo_data[] = $geoData;
+	/**
+	 * Add geo_data
+	 *
+	 * @param GeoData $geoData
+	 *
+	 * @return Biome
+	 */
+	public function addGeoDatum(GeoData $geoData): static {
+		$this->geo_data[] = $geoData;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove geo_data
-     *
-     * @param GeoData $geoData
-     */
-    public function removeGeoDatum(GeoData $geoData): void {
-        $this->geo_data->removeElement($geoData);
-    }
+	/**
+	 * Remove geo_data
+	 *
+	 * @param GeoData $geoData
+	 */
+	public function removeGeoDatum(GeoData $geoData): void {
+		$this->geo_data->removeElement($geoData);
+	}
 
 	/**
 	 * Get geo_data
 	 *
 	 * @return ArrayCollection|Collection
 	 */
-    public function getGeoData(): ArrayCollection|Collection {
-        return $this->geo_data;
-    }
+	public function getGeoData(): ArrayCollection|Collection {
+		return $this->geo_data;
+	}
 
-    public function addGeoData(GeoData $geoData): self
-    {
-        if (!$this->geo_data->contains($geoData)) {
-            $this->geo_data->add($geoData);
-            $geoData->setBiome($this);
-        }
+	public function addGeoData(GeoData $geoData): self {
+		if (!$this->geo_data->contains($geoData)) {
+			$this->geo_data->add($geoData);
+			$geoData->setBiome($this);
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function removeGeoData(GeoData $geoData): self
-    {
-        if ($this->geo_data->removeElement($geoData)) {
-            // set the owning side to null (unless already changed)
-            if ($geoData->getBiome() === $this) {
-                $geoData->setBiome();
-            }
-        }
+	public function removeGeoData(GeoData $geoData): self {
+		if ($this->geo_data->removeElement($geoData)) {
+			// set the owning side to null (unless already changed)
+			if ($geoData->getBiome() === $this) {
+				$geoData->setBiome();
+			}
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 }

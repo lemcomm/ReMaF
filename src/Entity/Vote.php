@@ -56,9 +56,9 @@ class Vote {
 	/**
 	 * Get character
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCharacter(): Character {
+	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 
@@ -78,9 +78,9 @@ class Vote {
 	/**
 	 * Get election
 	 *
-	 * @return Election
+	 * @return Election|null
 	 */
-	public function getElection(): Election {
+	public function getElection(): ?Election {
 		return $this->election;
 	}
 
@@ -100,9 +100,9 @@ class Vote {
 	/**
 	 * Get target_character
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getTargetCharacter(): Character {
+	public function getTargetCharacter(): ?Character {
 		return $this->target_character;
 	}
 }

@@ -62,9 +62,9 @@ class Entourage extends NPC {
 	/**
 	 * Get type
 	 *
-	 * @return EntourageType
+	 * @return EntourageType|null
 	 */
-	public function getType(): EntourageType {
+	public function getType(): ?EntourageType {
 		return $this->type;
 	}
 
@@ -84,9 +84,9 @@ class Entourage extends NPC {
 	/**
 	 * Get action
 	 *
-	 * @return Action
+	 * @return Action|null
 	 */
-	public function getAction(): Action {
+	public function getAction(): ?Action {
 		return $this->action;
 	}
 
@@ -106,9 +106,9 @@ class Entourage extends NPC {
 	/**
 	 * Get character
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCharacter(): Character {
+	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 
@@ -128,9 +128,9 @@ class Entourage extends NPC {
 	/**
 	 * Get liege
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getLiege(): Character {
+	public function getLiege(): ?Character {
 		return $this->liege;
 	}
 
@@ -150,9 +150,9 @@ class Entourage extends NPC {
 	/**
 	 * Get equipment
 	 *
-	 * @return EquipmentType
+	 * @return EquipmentType|null
 	 */
-	public function getEquipment(): EquipmentType {
+	public function getEquipment(): ?EquipmentType {
 		return $this->equipment;
 	}
 }

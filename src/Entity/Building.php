@@ -224,12 +224,12 @@ class Building {
         return $this;
     }
 
-    /**
-     * Get settlement
-     *
-     * @return Settlement
-     */
-    public function getSettlement(): Settlement {
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement|null
+	 */
+    public function getSettlement(): ?Settlement {
         return $this->settlement;
     }
 
@@ -245,12 +245,12 @@ class Building {
         return $this;
     }
 
-    /**
-     * Get place
-     *
-     * @return Place
-     */
-    public function getPlace(): Place {
+	/**
+	 * Get place
+	 *
+	 * @return Place|null
+	 */
+    public function getPlace(): ?Place {
         return $this->place;
     }
 
@@ -266,12 +266,12 @@ class Building {
         return $this;
     }
 
-    /**
-     * Get type
-     *
-     * @return BuildingType
-     */
-    public function getType(): BuildingType {
+	/**
+	 * Get type
+	 *
+	 * @return BuildingType|null
+	 */
+    public function getType(): ?BuildingType {
         return $this->type;
     }
 }

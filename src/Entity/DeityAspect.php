@@ -32,9 +32,9 @@ class DeityAspect {
 	/**
 	 * Get deity
 	 *
-	 * @return Deity
+	 * @return Deity|null
 	 */
-	public function getDeity(): Deity {
+	public function getDeity(): ?Deity {
 		return $this->deity;
 	}
 
@@ -54,9 +54,9 @@ class DeityAspect {
 	/**
 	 * Get aspect
 	 *
-	 * @return AspectType
+	 * @return AspectType|null
 	 */
-	public function getAspect(): AspectType {
+	public function getAspect(): ?AspectType {
 		return $this->aspect;
 	}
 }

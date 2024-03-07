@@ -53,9 +53,9 @@ class UnitSettings {
 	/**
 	 * Get strategy
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getStrategy(): string {
+	public function getStrategy(): ?string {
 		return $this->strategy;
 	}
 
@@ -75,9 +75,9 @@ class UnitSettings {
 	/**
 	 * Get tactic
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getTactic(): string {
+	public function getTactic(): ?string {
 		return $this->tactic;
 	}
 
@@ -97,9 +97,9 @@ class UnitSettings {
 	/**
 	 * Get respect_fort
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getRespectFort(): bool {
+	public function getRespectFort(): ?bool {
 		return $this->respect_fort;
 	}
 
@@ -119,9 +119,9 @@ class UnitSettings {
 	/**
 	 * Get line
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getLine(): int {
+	public function getLine(): ?int {
 		return $this->line;
 	}
 
@@ -141,9 +141,9 @@ class UnitSettings {
 	/**
 	 * Get siege_orders
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getSiegeOrders(): string {
+	public function getSiegeOrders(): ?string {
 		return $this->siege_orders;
 	}
 
@@ -163,9 +163,9 @@ class UnitSettings {
 	/**
 	 * Get renamable
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getRenamable(): bool {
+	public function getRenamable(): ?bool {
 		return $this->renamable;
 	}
 
@@ -185,9 +185,9 @@ class UnitSettings {
 	/**
 	 * Get retreat_threshold
 	 *
-	 * @return float
+	 * @return float|null
 	 */
-	public function getRetreatThreshold(): float {
+	public function getRetreatThreshold(): ?float {
 		return $this->retreat_threshold;
 	}
 
@@ -207,9 +207,9 @@ class UnitSettings {
 	/**
 	 * Get reinforcements
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getReinforcements(): bool {
+	public function getReinforcements(): ?bool {
 		return $this->reinforcements;
 	}
 
@@ -238,21 +238,9 @@ class UnitSettings {
 	/**
 	 * Get unit
 	 *
-	 * @return Unit
+	 * @return Unit|null
 	 */
-	public function getUnit(): Unit {
+	public function getUnit(): ?Unit {
 		return $this->unit;
-	}
-
-	public function isRespectFort(): ?bool {
-		return $this->respect_fort;
-	}
-
-	public function isRenamable(): ?bool {
-		return $this->renamable;
-	}
-
-	public function isReinforcements(): ?bool {
-		return $this->reinforcements;
 	}
 }

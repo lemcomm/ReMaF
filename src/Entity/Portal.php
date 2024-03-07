@@ -56,9 +56,9 @@ class Portal {
 	/**
 	 * Get description
 	 *
-	 * @return Description
+	 * @return Description|null
 	 */
-	public function getDescription(): Description {
+	public function getDescription(): ?Description {
 		return $this->description;
 	}
 
@@ -140,9 +140,9 @@ class Portal {
 	/**
 	 * Get maintainer
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getMaintainer(): Character {
+	public function getMaintainer(): ?Character {
 		return $this->maintainer;
 	}
 
@@ -162,9 +162,9 @@ class Portal {
 	/**
 	 * Get origin
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getOrigin(): Place {
+	public function getOrigin(): ?Place {
 		return $this->origin;
 	}
 
@@ -184,9 +184,9 @@ class Portal {
 	/**
 	 * Get destination
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getDestination(): Place {
+	public function getDestination(): ?Place {
 		return $this->destination;
 	}
 
@@ -206,9 +206,9 @@ class Portal {
 	/**
 	 * Get origin_access
 	 *
-	 * @return Listing
+	 * @return Listing|null
 	 */
-	public function getOriginAccess(): Listing {
+	public function getOriginAccess(): ?Listing {
 		return $this->origin_access;
 	}
 
@@ -228,9 +228,9 @@ class Portal {
 	/**
 	 * Get dest_access
 	 *
-	 * @return Listing
+	 * @return Listing|null
 	 */
-	public function getDestAccess(): Listing {
+	public function getDestAccess(): ?Listing {
 		return $this->dest_access;
 	}
 }

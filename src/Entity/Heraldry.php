@@ -95,12 +95,12 @@ class Heraldry {
         return $this;
     }
 
-    /**
-     * Get pattern
-     *
-     * @return string 
-     */
-    public function getPattern(): string {
+	/**
+	 * Get pattern
+	 *
+	 * @return string|null
+	 */
+    public function getPattern(): ?string {
         return $this->pattern;
     }
 
@@ -117,12 +117,12 @@ class Heraldry {
         return $this;
     }
 
-    /**
-     * Get pattern_colour
-     *
-     * @return string 
-     */
-    public function getPatternColour(): string {
+	/**
+	 * Get pattern_colour
+	 *
+	 * @return string|null
+	 */
+    public function getPatternColour(): ?string {
         return $this->pattern_colour;
     }
 
@@ -139,12 +139,12 @@ class Heraldry {
         return $this;
     }
 
-    /**
-     * Get charge
-     *
-     * @return string 
-     */
-    public function getCharge(): string {
+	/**
+	 * Get charge
+	 *
+	 * @return string|null
+	 */
+    public function getCharge(): ?string {
         return $this->charge;
     }
 
@@ -161,12 +161,12 @@ class Heraldry {
         return $this;
     }
 
-    /**
-     * Get charge_colour
-     *
-     * @return string 
-     */
-    public function getChargeColour(): string {
+	/**
+	 * Get charge_colour
+	 *
+	 * @return string|null
+	 */
+    public function getChargeColour(): ?string {
         return $this->charge_colour;
     }
 
@@ -235,12 +235,12 @@ class Heraldry {
         return $this;
     }
 
-    /**
-     * Get user
-     *
-     * @return User
-     */
-    public function getUser(): User {
+	/**
+	 * Get user
+	 *
+	 * @return User|null
+	 */
+    public function getUser(): ?User {
         return $this->user;
     }
 

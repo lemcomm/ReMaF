@@ -32,9 +32,9 @@ class StyleCounter {
 	/**
 	 * Get style
 	 *
-	 * @return Style
+	 * @return Style|null
 	 */
-	public function getStyle(): Style {
+	public function getStyle(): ?Style {
 		return $this->style;
 	}
 
@@ -54,9 +54,9 @@ class StyleCounter {
 	/**
 	 * Get counters
 	 *
-	 * @return SkillType
+	 * @return SkillType|null
 	 */
-	public function getCounters(): SkillType {
+	public function getCounters(): ?SkillType {
 		return $this->counters;
 	}
 }

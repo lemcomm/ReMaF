@@ -96,9 +96,9 @@ class SkillType {
 	/**
 	 * Get category
 	 *
-	 * @return SkillCategory
+	 * @return SkillCategory|null
 	 */
-	public function getCategory(): SkillCategory {
+	public function getCategory(): ?SkillCategory {
 		return $this->category;
 	}
 }

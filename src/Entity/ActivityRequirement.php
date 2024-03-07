@@ -35,12 +35,12 @@ class ActivityRequirement
         return $this;
     }
 
-    /**
-     * Get type
-     *
-     * @return ActivityType
-     */
-    public function getType(): ActivityType {
+	/**
+	 * Get type
+	 *
+	 * @return ActivityType|null
+	 */
+    public function getType(): ?ActivityType {
         return $this->type;
     }
 
@@ -57,12 +57,12 @@ class ActivityRequirement
         return $this;
     }
 
-    /**
-     * Get building
-     *
-     * @return BuildingType
-     */
-    public function getBuilding(): BuildingType {
+	/**
+	 * Get building
+	 *
+	 * @return BuildingType|null
+	 */
+    public function getBuilding(): ?BuildingType {
         return $this->building;
     }
 
@@ -79,12 +79,12 @@ class ActivityRequirement
         return $this;
     }
 
-    /**
-     * Get place
-     *
-     * @return PlaceType
-     */
-    public function getPlace(): PlaceType {
+	/**
+	 * Get place
+	 *
+	 * @return PlaceType|null
+	 */
+    public function getPlace(): ?PlaceType {
         return $this->place;
     }
 }

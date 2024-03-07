@@ -152,9 +152,9 @@ class DungeonLevel {
 	/**
 	 * Get dungeon
 	 *
-	 * @return Dungeon
+	 * @return Dungeon|null
 	 */
-	public function getDungeon(): Dungeon {
+	public function getDungeon(): ?Dungeon {
 		return $this->dungeon;
 	}
 }

@@ -77,9 +77,9 @@ class PlaceUpgradeType {
 	/**
 	 * Get place_type
 	 *
-	 * @return PlaceType
+	 * @return PlaceType|null
 	 */
-	public function getPlaceType(): PlaceType {
+	public function getPlaceType(): ?PlaceType {
 		return $this->place_type;
 	}
 }

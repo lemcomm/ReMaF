@@ -91,9 +91,9 @@ class RealmPosition {
 	/**
 	 * Get rank
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getRank(): int {
+	public function getRank(): ?int {
 		return $this->rank;
 	}
 
@@ -157,9 +157,9 @@ class RealmPosition {
 	/**
 	 * Get legislative
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getLegislative(): bool {
+	public function getLegislative(): ?bool {
 		return $this->legislative;
 	}
 
@@ -201,9 +201,9 @@ class RealmPosition {
 	/**
 	 * Get electiontype
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getElectiontype(): string {
+	public function getElectiontype(): ?string {
 		return $this->electiontype;
 	}
 
@@ -267,9 +267,9 @@ class RealmPosition {
 	/**
 	 * Get year
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getYear(): int {
+	public function getYear(): ?int {
 		return $this->year;
 	}
 
@@ -289,9 +289,9 @@ class RealmPosition {
 	/**
 	 * Get week
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getWeek(): int {
+	public function getWeek(): ?int {
 		return $this->week;
 	}
 
@@ -311,9 +311,9 @@ class RealmPosition {
 	/**
 	 * Get cycle
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCycle(): int {
+	public function getCycle(): ?int {
 		return $this->cycle;
 	}
 
@@ -333,9 +333,9 @@ class RealmPosition {
 	/**
 	 * Get drop_cycle
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getDropCycle(): int {
+	public function getDropCycle(): ?int {
 		return $this->drop_cycle;
 	}
 
@@ -355,9 +355,9 @@ class RealmPosition {
 	/**
 	 * Get current_term_ends
 	 *
-	 * @return DateTime
+	 * @return DateTime|null
 	 */
-	public function getCurrentTermEnds(): DateTime {
+	public function getCurrentTermEnds(): ?DateTime {
 		return $this->current_term_ends;
 	}
 
@@ -377,9 +377,9 @@ class RealmPosition {
 	/**
 	 * Get retired
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getRetired(): bool {
+	public function getRetired(): ?bool {
 		return $this->retired;
 	}
 
@@ -399,9 +399,9 @@ class RealmPosition {
 	/**
 	 * Get keeponslumber
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getKeeponslumber(): bool {
+	public function getKeeponslumber(): ?bool {
 		return $this->keeponslumber;
 	}
 
@@ -421,9 +421,9 @@ class RealmPosition {
 	/**
 	 * Get minholders
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getMinholders(): int {
+	public function getMinholders(): ?int {
 		return $this->minholders;
 	}
 
@@ -443,9 +443,9 @@ class RealmPosition {
 	/**
 	 * Get have_vassals
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getHaveVassals(): bool {
+	public function getHaveVassals(): ?bool {
 		return $this->have_vassals;
 	}
 
@@ -629,9 +629,9 @@ class RealmPosition {
 	/**
 	 * Get type
 	 *
-	 * @return PositionType
+	 * @return PositionType|null
 	 */
-	public function getType(): PositionType {
+	public function getType(): ?PositionType {
 		return $this->type;
 	}
 
@@ -651,9 +651,9 @@ class RealmPosition {
 	/**
 	 * Get realm
 	 *
-	 * @return Realm
+	 * @return Realm|null
 	 */
-	public function getRealm(): Realm {
+	public function getRealm(): ?Realm {
 		return $this->realm;
 	}
 
@@ -717,33 +717,5 @@ class RealmPosition {
 	 */
 	public function getHolders(): ArrayCollection|Collection {
 		return $this->holders;
-	}
-
-	public function isRuler(): ?bool {
-		return $this->ruler;
-	}
-
-	public function isLegislative(): ?bool {
-		return $this->legislative;
-	}
-
-	public function isElected(): ?bool {
-		return $this->elected;
-	}
-
-	public function isInherit(): ?bool {
-		return $this->inherit;
-	}
-
-	public function isRetired(): ?bool {
-		return $this->retired;
-	}
-
-	public function isKeeponslumber(): ?bool {
-		return $this->keeponslumber;
-	}
-
-	public function isHaveVassals(): ?bool {
-		return $this->have_vassals;
 	}
 }

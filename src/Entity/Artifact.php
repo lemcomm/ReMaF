@@ -89,12 +89,12 @@ class Artifact {
         return $this;
     }
 
-    /**
-     * Get description
-     *
-     * @return Description
-     */
-    public function getDescription(): Description {
+	/**
+	 * Get description
+	 *
+	 * @return Description|null
+	 */
+    public function getDescription(): ?Description {
         return $this->description;
     }
 
@@ -110,12 +110,12 @@ class Artifact {
         return $this;
     }
 
-    /**
-     * Get log
-     *
-     * @return EventLog
-     */
-    public function getLog(): EventLog {
+	/**
+	 * Get log
+	 *
+	 * @return EventLog|null
+	 */
+    public function getLog(): ?EventLog {
         return $this->log;
     }
 
@@ -162,12 +162,12 @@ class Artifact {
         return $this;
     }
 
-    /**
-     * Get owner
-     *
-     * @return Character
-     */
-    public function getOwner(): Character {
+	/**
+	 * Get owner
+	 *
+	 * @return Character|null
+	 */
+    public function getOwner(): ?Character {
         return $this->owner;
     }
 
@@ -183,12 +183,12 @@ class Artifact {
         return $this;
     }
 
-    /**
-     * Get creator
-     *
-     * @return User
-     */
-    public function getCreator(): User {
+	/**
+	 * Get creator
+	 *
+	 * @return User|null
+	 */
+    public function getCreator(): ?User {
         return $this->creator;
     }
 }

@@ -37,9 +37,9 @@ class ActivityBoutParticipant {
 	/**
 	 * Get bout
 	 *
-	 * @return ActivityBout
+	 * @return ActivityBout|null
 	 */
-	public function getBout(): ActivityBout {
+	public function getBout(): ?ActivityBout {
 		return $this->bout;
 	}
 
@@ -59,9 +59,9 @@ class ActivityBoutParticipant {
 	/**
 	 * Get participant
 	 *
-	 * @return ActivityParticipant
+	 * @return ActivityParticipant|null
 	 */
-	public function getParticipant(): ActivityParticipant {
+	public function getParticipant(): ?ActivityParticipant {
 		return $this->participant;
 	}
 }

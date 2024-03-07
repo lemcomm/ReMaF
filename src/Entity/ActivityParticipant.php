@@ -57,9 +57,9 @@ class ActivityParticipant {
 	/**
 	 * Get role
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getRole(): string {
+	public function getRole(): ?string {
 		return $this->role;
 	}
 
@@ -79,9 +79,9 @@ class ActivityParticipant {
 	/**
 	 * Get accepted
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getAccepted(): bool {
+	public function getAccepted(): ?bool {
 		return $this->accepted;
 	}
 
@@ -101,9 +101,9 @@ class ActivityParticipant {
 	/**
 	 * Get organizer
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getOrganizer(): bool {
+	public function getOrganizer(): ?bool {
 		return $this->organizer;
 	}
 
@@ -163,9 +163,9 @@ class ActivityParticipant {
 	/**
 	 * Get activity
 	 *
-	 * @return Activity
+	 * @return Activity|null
 	 */
-	public function getActivity(): Activity {
+	public function getActivity(): ?Activity {
 		return $this->activity;
 	}
 
@@ -185,9 +185,9 @@ class ActivityParticipant {
 	/**
 	 * Get character
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCharacter(): Character {
+	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 
@@ -207,9 +207,9 @@ class ActivityParticipant {
 	/**
 	 * Get style
 	 *
-	 * @return Style
+	 * @return Style|null
 	 */
-	public function getStyle(): Style {
+	public function getStyle(): ?Style {
 		return $this->style;
 	}
 
@@ -229,9 +229,9 @@ class ActivityParticipant {
 	/**
 	 * Get weapon
 	 *
-	 * @return EquipmentType
+	 * @return EquipmentType|null
 	 */
-	public function getWeapon(): EquipmentType {
+	public function getWeapon(): ?EquipmentType {
 		return $this->weapon;
 	}
 
@@ -251,9 +251,9 @@ class ActivityParticipant {
 	/**
 	 * Get group
 	 *
-	 * @return ActivityGroup
+	 * @return ActivityGroup|null
 	 */
-	public function getGroup(): ActivityGroup {
+	public function getGroup(): ?ActivityGroup {
 		return $this->group;
 	}
 

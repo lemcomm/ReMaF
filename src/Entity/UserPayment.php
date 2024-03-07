@@ -31,9 +31,9 @@ class UserPayment {
 	/**
 	 * Get transaction_code
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getTransactionCode(): string {
+	public function getTransactionCode(): ?string {
 		return $this->transaction_code;
 	}
 
@@ -119,9 +119,9 @@ class UserPayment {
 	/**
 	 * Get bonus
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getBonus(): int {
+	public function getBonus(): ?int {
 		return $this->bonus;
 	}
 
@@ -194,9 +194,9 @@ class UserPayment {
 	/**
 	 * Get user
 	 *
-	 * @return User
+	 * @return User|null
 	 */
-	public function getUser(): User {
+	public function getUser(): ?User {
 		return $this->user;
 	}
 }

@@ -324,9 +324,9 @@ class Conversation {
 	/**
 	 * Get local_for
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getLocalFor(): Character {
+	public function getLocalFor(): ?Character {
 		return $this->local_for;
 	}
 
@@ -408,9 +408,9 @@ class Conversation {
 	/**
 	 * Get realm
 	 *
-	 * @return Realm
+	 * @return Realm|null
 	 */
-	public function getRealm(): Realm {
+	public function getRealm(): ?Realm {
 		return $this->realm;
 	}
 
@@ -430,9 +430,9 @@ class Conversation {
 	/**
 	 * Get house
 	 *
-	 * @return House
+	 * @return House|null
 	 */
-	public function getHouse(): House {
+	public function getHouse(): ?House {
 		return $this->house;
 	}
 
@@ -452,9 +452,9 @@ class Conversation {
 	/**
 	 * Get association
 	 *
-	 * @return Association
+	 * @return Association|null
 	 */
-	public function getAssociation(): Association {
+	public function getAssociation(): ?Association {
 		return $this->association;
 	}
 

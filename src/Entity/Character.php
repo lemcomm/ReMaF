@@ -1604,9 +1604,9 @@ class Character {
 	/**
 	 * Get background
 	 *
-	 * @return CharacterBackground
+	 * @return CharacterBackground|null
 	 */
-	public function getBackground(): CharacterBackground {
+	public function getBackground(): ?CharacterBackground {
 		return $this->background;
 	}
 
@@ -1626,9 +1626,9 @@ class Character {
 	/**
 	 * Get log
 	 *
-	 * @return EventLog
+	 * @return EventLog|null
 	 */
-	public function getLog(): EventLog {
+	public function getLog(): ?EventLog {
 		return $this->log;
 	}
 
@@ -1648,9 +1648,9 @@ class Character {
 	/**
 	 * Get dungeoneer
 	 *
-	 * @return Dungeoneer
+	 * @return Dungeoneer|null
 	 */
-	public function getDungeoneer(): Dungeoneer {
+	public function getDungeoneer(): ?Dungeoneer {
 		return $this->dungeoneer;
 	}
 
@@ -1692,9 +1692,9 @@ class Character {
 	/**
 	 * Get active_report
 	 *
-	 * @return BattleReportCharacter
+	 * @return BattleReportCharacter|null
 	 */
-	public function getActiveReport(): BattleReportCharacter {
+	public function getActiveReport(): ?BattleReportCharacter {
 		return $this->active_report;
 	}
 
@@ -1714,9 +1714,9 @@ class Character {
 	/**
 	 * Get local_conversation
 	 *
-	 * @return Conversation
+	 * @return Conversation|null
 	 */
-	public function getLocalConversation(): Conversation {
+	public function getLocalConversation(): ?Conversation {
 		return $this->local_conversation;
 	}
 
@@ -3224,9 +3224,9 @@ class Character {
 	/**
 	 * Get weapon
 	 *
-	 * @return EquipmentType
+	 * @return EquipmentType|null
 	 */
-	public function getWeapon(): EquipmentType {
+	public function getWeapon(): ?EquipmentType {
 		return $this->weapon;
 	}
 
@@ -3246,9 +3246,9 @@ class Character {
 	/**
 	 * Get armour
 	 *
-	 * @return EquipmentType
+	 * @return EquipmentType|null
 	 */
-	public function getArmour(): EquipmentType {
+	public function getArmour(): ?EquipmentType {
 		return $this->armour;
 	}
 
@@ -3268,9 +3268,9 @@ class Character {
 	/**
 	 * Get equipment
 	 *
-	 * @return EquipmentType
+	 * @return EquipmentType|null
 	 */
-	public function getEquipment(): EquipmentType {
+	public function getEquipment(): ?EquipmentType {
 		return $this->equipment;
 	}
 
@@ -3290,9 +3290,9 @@ class Character {
 	/**
 	 * Get mount
 	 *
-	 * @return EquipmentType
+	 * @return EquipmentType|null
 	 */
-	public function getMount(): EquipmentType {
+	public function getMount(): ?EquipmentType {
 		return $this->mount;
 	}
 
@@ -3312,9 +3312,9 @@ class Character {
 	/**
 	 * Get prisoner_of
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getPrisonerOf(): Character {
+	public function getPrisonerOf(): ?Character {
 		return $this->prisoner_of;
 	}
 
@@ -3334,9 +3334,9 @@ class Character {
 	/**
 	 * Get user
 	 *
-	 * @return User
+	 * @return User|null
 	 */
-	public function getUser(): User {
+	public function getUser(): ?User {
 		return $this->user;
 	}
 
@@ -3356,9 +3356,9 @@ class Character {
 	/**
 	 * Get crest
 	 *
-	 * @return Heraldry
+	 * @return Heraldry|null
 	 */
-	public function getCrest(): Heraldry {
+	public function getCrest(): ?Heraldry {
 		return $this->crest;
 	}
 
@@ -3378,9 +3378,9 @@ class Character {
 	/**
 	 * Get liege
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getLiege(): Character {
+	public function getLiege(): ?Character {
 		return $this->liege;
 	}
 
@@ -3400,9 +3400,9 @@ class Character {
 	/**
 	 * Get successor
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getSuccessor(): Character {
+	public function getSuccessor(): ?Character {
 		return $this->successor;
 	}
 
@@ -3422,9 +3422,9 @@ class Character {
 	/**
 	 * Get inside_settlement
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getInsideSettlement(): Settlement {
+	public function getInsideSettlement(): ?Settlement {
 		return $this->inside_settlement;
 	}
 
@@ -3444,9 +3444,9 @@ class Character {
 	/**
 	 * Get inside_place
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getInsidePlace(): Place {
+	public function getInsidePlace(): ?Place {
 		return $this->inside_place;
 	}
 
@@ -3466,9 +3466,9 @@ class Character {
 	/**
 	 * Get house
 	 *
-	 * @return House
+	 * @return House|null
 	 */
-	public function getHouse(): House {
+	public function getHouse(): ?House {
 		return $this->house;
 	}
 
@@ -3488,9 +3488,9 @@ class Character {
 	/**
 	 * Get used_portal
 	 *
-	 * @return Portal
+	 * @return Portal|null
 	 */
-	public function getUsedPortal(): Portal {
+	public function getUsedPortal(): ?Portal {
 		return $this->used_portal;
 	}
 
@@ -3510,9 +3510,9 @@ class Character {
 	/**
 	 * Get realm
 	 *
-	 * @return Realm
+	 * @return Realm|null
 	 */
-	public function getRealm(): Realm {
+	public function getRealm(): ?Realm {
 		return $this->realm;
 	}
 
@@ -3532,9 +3532,9 @@ class Character {
 	/**
 	 * Get liege_land
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getLiegeLand(): Settlement {
+	public function getLiegeLand(): ?Settlement {
 		return $this->liege_land;
 	}
 
@@ -3554,9 +3554,9 @@ class Character {
 	/**
 	 * Get liege_place
 	 *
-	 * @return Place
+	 * @return Place|null
 	 */
-	public function getLiegePlace(): Place {
+	public function getLiegePlace(): ?Place {
 		return $this->liege_place;
 	}
 
@@ -3576,9 +3576,9 @@ class Character {
 	/**
 	 * Get liege_position
 	 *
-	 * @return RealmPosition
+	 * @return RealmPosition|null
 	 */
-	public function getLiegePosition(): RealmPosition {
+	public function getLiegePosition(): ?RealmPosition {
 		return $this->liege_position;
 	}
 
@@ -3598,9 +3598,9 @@ class Character {
 	/**
 	 * Get faith
 	 *
-	 * @return Association
+	 * @return Association|null
 	 */
-	public function getFaith(): Association {
+	public function getFaith(): ?Association {
 		return $this->faith;
 	}
 

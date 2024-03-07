@@ -223,9 +223,9 @@ class Style {
 	/**
 	 * Get creator
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getCreator(): Character {
+	public function getCreator(): ?Character {
 		return $this->creator;
 	}
 
@@ -245,9 +245,9 @@ class Style {
 	/**
 	 * Get item
 	 *
-	 * @return ItemType
+	 * @return ItemType|null
 	 */
-	public function getItem(): ItemType {
+	public function getItem(): ?ItemType {
 		return $this->item;
 	}
 
@@ -267,9 +267,9 @@ class Style {
 	/**
 	 * Get augments
 	 *
-	 * @return SkillType
+	 * @return SkillType|null
 	 */
-	public function getAugments(): SkillType {
+	public function getAugments(): ?SkillType {
 		return $this->augments;
 	}
 }

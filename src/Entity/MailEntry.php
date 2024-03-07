@@ -126,9 +126,9 @@ class MailEntry {
 	/**
 	 * Get user
 	 *
-	 * @return User
+	 * @return User|null
 	 */
-	public function getUser(): User {
+	public function getUser(): ?User {
 		return $this->user;
 	}
 
@@ -148,9 +148,9 @@ class MailEntry {
 	/**
 	 * Get event
 	 *
-	 * @return Event
+	 * @return Event|null
 	 */
-	public function getEvent(): Event {
+	public function getEvent(): ?Event {
 		return $this->event;
 	}
 }
