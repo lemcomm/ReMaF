@@ -40,8 +40,7 @@
 			{% endif %}
 		{% endfor %}
 	</tbody></table>
-		{{ form_widget(form_old) }}
-	<button type="submit">{{ "relation.choice.submitchange"|trans({},"politics") }}</button>
+	{{ form_widget(form_old.submit) }}
 	</form>
 	{% endif %}
 
@@ -50,7 +49,6 @@
 		<p>{{ "partners.new.intro"|trans({},"politics")|raw }}</p>
 		<form class="compact" action="{{ path('maf_politics_partners', {'type':'new'}) }}" method="post">
 			{{ form_widget(form_new) }}
-		<button type="submit">{{ "relation.choice.submitnew"|trans({},"politics") }}</button>
 		</form>
 	{% else %}
 		<p>{{ "partners.new.none"|trans({},"politics")|raw }}</p>

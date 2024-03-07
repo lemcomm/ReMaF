@@ -16,8 +16,10 @@
 		<li>{{ link(requires) }}</li>
 	{% endfor %}
 		<li>{{ buildingtype.buildhours }} {{ 'economy.workhours'|trans({}, "actions") }}</li>
-	{% for resource in buildingtype.resources if resource.requiresconstruction > 0 %}
+	{% for resource in buildingtype.resources %}
+		{% if resource.requiresconstruction > 0 %}
 		<li>{{ resource.requiresconstruction }} {{ resource.resourcetype.name|trans }}</li>
+		{% endif %}
 	{% endfor %}
 		<li>{{ 'minpop'|trans({"%pop%":buildingtype.minPopulation}, "economy") }}</li>
 		<li>{{ 'optpop'|trans({"%pop%":buildingtype.minPopulation*2}, "economy") }}</li>
@@ -26,12 +28,14 @@
 	{% endif %}
 	</ul>
 
+	{% if buildingtype.enables.count > 0 %}
 	<h3>{{ 'reqfor'|trans({},"economy") }}</h3>
 	<ul>
 	{% for enables in buildingtype.enables %}
 		<li>{{ link(enables) }}</li>
 	{% endfor %}
 	</ul>
+	{% endif %}
 
 	<h3>{{ 'provides'|trans({},"economy") }}</h3>
 	<ul>
@@ -47,8 +51,10 @@
 	{% for provides in buildingtype.providesTraining %}
 		<li>{{ 'trainingfor'|trans({'%item%':link(provides)}, "economy")|raw }}</li>
 	{% endfor %}
-	{% for resource in buildingtype.resources if (resource.providesoperation > 0) or (resource.providesoperationbonus > 0) %}
+	{% for resource in buildingtype.resources %}
+		{% if (resource.providesoperation > 0) or (resource.providesoperationbonus > 0) %}
 		<li>{{ resource.resourcetype.name|trans }} {{ 'bonus'|trans({}, "economy") }}</li>
+		{% endif %}
 	{% endfor %}
 	</ul>
 

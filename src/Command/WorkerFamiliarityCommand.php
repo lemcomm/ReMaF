@@ -56,7 +56,7 @@ class WorkerFamiliarityCommand extends  Command {
 	}
 
 	private function addFamiliarity($character_id, $geo_id, $amount, $limit=10000) {
-		$exists = $this->em->getRepository('App:RegionFamiliarity')->findOneBy(array('character'=>$character_id, 'geo_data'=>$geo_id));
+		$exists = $this->em->getRepository(RegionFamiliarity::class)->findOneBy(array('character'=>$character_id, 'geo_data'=>$geo_id));
 		if ($exists) {
 			if ($exists->getAmount() < $limit) {
 				$exists->setAmount(min(10000,$exists->getAmount() + $amount));

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Patron;
+use App\Entity\User;
 use App\Form\CultureType;
 use App\Form\GiftType;
 use App\Form\SubscriptionType;
@@ -10,6 +11,7 @@ use App\Service\AppState;
 use App\Service\MailManager;
 use App\Service\NotificationManager;
 use App\Service\PaymentManager;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Patreon\OAuth as POA;
@@ -76,7 +78,7 @@ class PaymentController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
-			list($code, $result) = $this->pay->redeemHash($user, $data['hash']);
+			[$code, $result] = $this->pay->redeemHash($user, $data['hash']);
 
 			if ($result === true) {
 				$redeemed = $code;
@@ -114,7 +116,7 @@ class PaymentController extends AbstractController {
 		$user = $this->getUser();
 		$user_id = $user->getId();
 		try {
-			list($result, $items) = $this->pay->retrieveStripe($request->query->get('session_id'));
+			[$result, $items] = $this->pay->retrieveStripe($request->query->get('session_id'));
 		} catch (Exception $e) {
 			$this->addFlash('error', "Stripe Payment Failed. If you've received this it's because we weren't able to complete the transaction for some reason. Please let an administrator know about this in a direct message either on Discord or via email to andrew@iungard.com.");
 			return $this->redirectToRoute('maf_payment');
@@ -208,7 +210,7 @@ class PaymentController extends AbstractController {
 		$patreons = $user->getPatronizing();
 		$pm = $this->pay;
 
-		$now = new \DateTime('now');
+		$now = new DateTime('now');
 		$amount = 0;
 		$wait = false;
 		if ($patreons->count() > 1) {
@@ -220,7 +222,7 @@ class PaymentController extends AbstractController {
 				$pm->refreshPatreonTokens($patron);
 				usleep(100000); #Wait a tenth a second, then continue, to avoid overloading the API.
 			}
-			list($status, $entitlement) = $pm->refreshPatreonPledge($patron);
+			[$status, $entitlement] = $pm->refreshPatreonPledge($patron);
 			# NOTE: Expand this later for other creators if we have any.
 			if ($patron->getCreator()->getCreator()=='andrew') {
 				$amount += $entitlement;
@@ -247,7 +249,7 @@ class PaymentController extends AbstractController {
 			$pm = $this->pay;
 			$auth = new POA($creator->getClientId(), $creator->getClientSecret());
 			$tokens = $auth->get_tokens($code, $creator->getReturnUri());
-			$patron = $this->em->getRepository('App:Patron')->findOneBy(["user"=>$user, "creator"=>$creator]);
+			$patron = $this->em->getRepository(Patron::class)->findOneBy(["user"=>$user, "creator"=>$creator]);
 			if (!$patron) {
 				$patron = new Patron();
 				$this->em->persist($patron);
@@ -256,8 +258,8 @@ class PaymentController extends AbstractController {
 			}
 			$patron->setAccessToken($tokens['access_token']);
 			$patron->setRefreshToken($tokens['refresh_token']);
-			$patron->setExpires(new \DateTime('+'.$tokens['expires_in'].' seconds'));
-			list($status, $entitlement) = $pm->refreshPatreonPledge($patron);
+			$patron->setExpires(new DateTime('+'.$tokens['expires_in'].' seconds'));
+			[$status, $entitlement] = $pm->refreshPatreonPledge($patron);
 			if ($status === false) {
 				#This only returns false if the API spits garbage at us.
 				$this->addFlash('error', $this->trans->trans('account.patreonapifailure'));
@@ -334,7 +336,7 @@ class PaymentController extends AbstractController {
 			$data = $form->getData();
 			$value = $this->giftchoices[$data['credits']];
 
-			$target = $this->em->getRepository('App:User')->findOneByEmail($data['email']);
+			$target = $this->em->getRepository(User::class)->findOneByEmail($data['email']);
 			if (!$target) {
 				sleep(1); // to make brute-forcing e-mail addresses a bit slower
 				return array('error'=>'notarget');

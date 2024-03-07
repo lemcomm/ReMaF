@@ -27,7 +27,7 @@ class BuildingconstructionType extends AbstractType {
 				PercentType::class,
 				array(
 					'required' => false,
-					'precision' => 2,
+					'scale' => 2,
 					'data' => $existing->getWorkers(),
 					'attr' => array('size'=>3, 'class' => 'assignment')
 				)
@@ -41,7 +41,7 @@ class BuildingconstructionType extends AbstractType {
 				PercentType::class,
 				array(
 					'required' => false,
-					'precision' => 2,
+					'scale' => 2,
 					'attr' => array('size'=>3, 'class' => 'assignment')
 				)
 			);

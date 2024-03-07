@@ -8,6 +8,7 @@ use App\Entity\StatisticGlobal;
 use App\Entity\StatisticRealm;
 use App\Entity\StatisticResources;
 use App\Entity\StatisticSettlement;
+use App\Entity\Trade;
 use App\Service\CommonService;
 use App\Service\Economy;
 use App\Service\Geography;
@@ -186,7 +187,7 @@ class StatisticsTurnCommand extends Command {
 		$this->em->flush();
 		if ($debug) { $output->writeln(" - done"); }
 
-		$resources = $this->em->getRepository('App:ResourceType')->findAll();
+		$resources = $this->em->getRepository(ResourceType::class)->findAll();
 		$resource_stats = array();
 		foreach ($resources as $resource) {
 			$resource_stats[$resource->getName()] = array('supply'=>0, 'demand'=>0, 'trade'=>0);
@@ -243,7 +244,7 @@ class StatisticsTurnCommand extends Command {
 		$this->em->clear();
 
 		if ($debug) { $output->write("gathering trade statistics"); }
-		$trades = $this->em->getRepository('App:Trade')->findAll();
+		$trades = $this->em->getRepository(Trade::class)->findAll();
 		foreach ($trades as $trade) {
 			if ($debug) { $output->write("."); }
 			$resource_stats[$trade->getResourceType()->getName()]['trade'] += $trade->getAmount();

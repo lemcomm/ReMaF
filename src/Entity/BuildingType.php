@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 
 class BuildingType {
 	private string $name;
-	private string $icon;
+	private ?string $icon;
 	private int $build_hours;
 	private int $min_population;
 	private int $auto_population;
@@ -87,20 +87,20 @@ class BuildingType {
 	/**
 	 * Get icon
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getIcon(): string {
+	public function getIcon(): ?string {
 		return $this->icon;
 	}
 
 	/**
 	 * Set icon
 	 *
-	 * @param string $icon
+	 * @param string|null $icon
 	 *
 	 * @return BuildingType
 	 */
-	public function setIcon(string $icon): static {
+	public function setIcon(?string $icon): static {
 		$this->icon = $icon;
 
 		return $this;

@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\User;
 use App\Service\PaymentManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -38,9 +39,9 @@ class UserPaymentCommand extends  Command {
 
 		$u = $input->getArgument('user');
 		if (intval($u)) {
-			$user = $em->getRepository('App:User')->findOneBy(['id'=>intval($u)]);
+			$user = $em->getRepository(User::class)->findOneBy(['id'=>intval($u)]);
 		} else {
-			$user = $em->getRepository('App:User')->findOneBy(['email'=>$u]);
+			$user = $em->getRepository(User::class)->findOneBy(['email'=>$u]);
 		}
 		if (!$user) {
 			throw new \Exception("Cannot find user $u");

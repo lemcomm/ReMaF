@@ -4,6 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Character;
 use App\Entity\MapMarker;
+use App\Entity\Realm;
+use App\Entity\ResourceType;
+use App\Entity\Settlement;
 use App\Service\AppState;
 use App\Service\CommonService;
 use App\Service\Geography;
@@ -77,7 +80,7 @@ class MapController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$my_markers = new ArrayCollection($em->getRepository('App:MapMarker')->findBy(['owner'=>$character]));
+		$my_markers = new ArrayCollection($em->getRepository(MapMarker::class)->findBy(['owner'=>$character]));
 
 		if (count($my_markers) >= 10) {
 			$limit = true;
@@ -570,17 +573,17 @@ class MapController extends AbstractController {
 		$em = $this->em;
 		switch ($mode) {
 			case "all":
-				$realms = $em->getRepository('App:Realm')->findAll();
+				$realms = $em->getRepository(Realm::class)->findAll();
 				break;
 			case '2nd':
 				$query = $em->createQuery('SELECT r FROM App:Realm r JOIN r.superior s WHERE s.superior IS NULL');
 				$realms = $query->getResult();
 				break;
 			case '1': case '2': case '3': case '4': case '5': case '6': case '7':
-				$realms = $em->getRepository('App:Realm')->findBy(['type'=>$mode]);
+				$realms = $em->getRepository(Realm::class)->findBy(['type'=>$mode]);
 				break;
 			default:
-				$realms = $em->getRepository('App:Realm')->findBy(['superior'=>null]);
+				$realms = $em->getRepository(Realm::class)->findBy(['superior'=>null]);
 		}
 		foreach ($realms as $realm) {
 			$data = $this->geo->findRealmDataPolygons($realm);
@@ -603,7 +606,7 @@ class MapController extends AbstractController {
 
 		if ($mode=="2nd") {
 			// add in those territories that are direct parts
-			$realms = $em->getRepository('App:Realm')->findBy(array('superior'=>null));
+			$realms = $em->getRepository(Realm::class)->findBy(array('superior'=>null));
 			foreach ($realms as $realm) {
 				$data = $this->geo->findRealmDataPolygons($realm);
 				foreach ($data as $row) {
@@ -651,7 +654,7 @@ class MapController extends AbstractController {
 		$features = array();
 		$em = $this->em;
 		if ($resource) {
-			$resource = $em->getRepository('App:ResourceType')->findOneBy(['name'=>$resource]);
+			$resource = $em->getRepository(ResourceType::class)->findOneBy(['name'=>$resource]);
 			$query = $em->createQuery('SELECT t.id, t.amount, r.name, ST_AsGeoJSON(ST_MakeLine(aa.center, bb.center)) as geometry FROM App:Trade t JOIN t.resource_type r JOIN t.source a JOIN a.geo_data aa JOIN t.destination b JOIN b.geo_data bb WHERE r = :resource');
 			$query->setParameters(['resource' => $resource]);
 		} else {
@@ -679,7 +682,7 @@ class MapController extends AbstractController {
 	#[Route ('/map/details/settlement/{id}', requirements:['id'=>'\d+'])]
 	public function detailsSettlementAction($id): Response {
 		$em = $this->em;
-		$settlement = $em->getRepository('App:Settlement')->find($id);
+		$settlement = $em->getRepository(Settlement::class)->find($id);
 
 		return $this->render('Map/detailsSettlement.html.twig', [
 			'settlement'=>$settlement
@@ -690,7 +693,7 @@ class MapController extends AbstractController {
 	public function detailsCharacterAction($id): Response {
 		$em = $this->em;
 		// TODO: verify distance
-		$char = $em->getRepository('App:Character')->find($id);
+		$char = $em->getRepository(Character::class)->find($id);
 
 		$realms = $char->findRealms();
 		$ultimates = new ArrayCollection;
@@ -711,7 +714,7 @@ class MapController extends AbstractController {
 	#[Route ('/map/details/marker/{id}', requirements:['id'=>'\d+'])]
 	public function detailsMarkerAction($id): Response {
 		$em = $this->em;
-		$marker = $em->getRepository('App:MapMarker')->find($id);
+		$marker = $em->getRepository(MapMarker::class)->find($id);
 
 		// TODO: check if we are allowed to see this marker
 

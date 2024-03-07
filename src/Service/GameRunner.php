@@ -6,6 +6,7 @@ use App\Entity\Election;
 use App\Entity\RealmPosition;
 use App\Entity\Siege;
 use App\Entity\Supply;
+use App\Entity\Unit;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -671,7 +672,7 @@ class GameRunner {
 		}
 		if ($count) {
 			foreach ($units as $each) {
-				$unit = $this->em->getRepository('App:Unit')->findOneBy(['id'=>$each]);
+				$unit = $this->em->getRepository(Unit::class)->findOneBy(['id'=>$each]);
 				if ($unit && ($character = $unit->getCharacter())) {
 					$this->history->logEvent(
 						$character,

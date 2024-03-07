@@ -48,7 +48,7 @@ class FeatureconstructionType extends AbstractType {
 						PercentType::class,
 						array(
 							'required' => false,
-							'precision' => 2,
+							'scale' => 2,
 							'data' => $feature->getWorkers(),
 							'attr' => array('size'=>3, 'class' => 'assignment')
 						)
@@ -62,7 +62,7 @@ class FeatureconstructionType extends AbstractType {
 		$builder->get('new')->add('workers', PercentType::class,
 			array(
 				'required' => false,
-				'precision' => 2,
+				'scale' => 2,
 				'attr' => array('size'=>3, 'class' => 'assignment')
 			)
 		);

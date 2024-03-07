@@ -35,8 +35,10 @@
 					<th data-sorter="false"></th>
 				</tr></thead>
 				<tbody>
-				{% for build in buildings if build.active == true %}
-					{% include "element/buildingrow.html.twig" with { "build": build } only %}
+				{% for build in buildings %}
+					{% if build.active == true %}
+						{% include "element/buildingrow.html.twig" with { "build": build } only %}
+					{% endif %}
 				{% endfor %}
 				</tbody>
 			</table>
@@ -46,56 +48,58 @@
 			<h3>{{ 'economy.build.underconstruction'|trans({},"actions")|title }}</h3>
 			<table id="buildingslist2">
 				<thead><tr style="margin-top: 1em">
-					<th>{{ "building"|trans({'count':1}|title }}</th>
+					<th>{{ "building"|trans({'count':1})|title }}</th>
 					<th>{{ "economy.build.status"|trans({}, "actions") }}</th>
 					<th>{{ "economy.build.progress"|trans({}, "actions") }}</th>
 					<th colspan="2">{{ "economy.build.workers"|trans({}, "actions") }}</th>
 					<th>{{ "economy.build.completion"|trans({}, "actions") }}</th>
 				</tr></thead>
 				<tbody>
-				{% for build in buildings if build.active == false %}
-					<tr>
-						<td>{{ link(build.type) }}</td>
-						<td>
-							{% if build.workers > 0 %}
-								{{ 'economy.build.building'|trans({},"actions") }}
-							{% else %}
-								{{ 'economy.build.abandoned'|trans({},"actions") }}
-							{% endif %}
-						</td>
+				{% for build in buildings %}
+					{% if build.active == false %}
+						<tr>
+							<td>{{ link(build.type) }}</td>
+							<td>
+								{% if build.workers > 0 %}
+									{{ 'economy.build.building'|trans({},"actions") }}
+								{% else %}
+									{{ 'economy.build.abandoned'|trans({},"actions") }}
+								{% endif %}
+							</td>
 
-						<td class="progress_column">
-							{% if build.condition < 0 %}
-							{% set progress = ((build.condition+build.type.buildhours)*100/build.type.buildhours) // 1 %}
-							<div class="progressbar" value="{{progress}}"><span class="progress_value_dummy">{{ progress }} %</span></div></td>
-							{% endif %}
-						</td>
-						{% if build.type.minpopulation * 0.5 <= settlement.fullpopulation %}
-							<td align="center">{{ form_widget(form.existing[build.id]) }}</td>
-							<td align="right" id="we_{{ build.id }}">{{ (build.workers*settlement.population)|number_format }} {{ 'build.workers'|trans }}</td>
-							{% if build.workers > 0 %}
-								{# FIXME: both the estimates and the actual calculation should have a low limit. Or maybe a max number of people who can work on something - no matter how many people you throw at it, you just can't complete most things in 1 day! #}
-								{% set complete = (-1*build.condition) / (10*((build.workers*settlement.population) ** 0.95)) %}
-								{% set worstcase = complete/build.currentspeed %}
-								<td align="right" id="done_{{ build.id }}">
-									{% if complete < 1 %}
-										{{ 'today'|trans }}
-									{% else %}
-										{% if worstcase > complete + 1 %}
-											{{ complete|number_format }}-{{ worstcase|number_format }} {{ 'day'|trans({'count':worstcase|number_format} }}
+							<td class="progress_column">
+								{% if build.condition < 0 %}
+								{% set progress = ((build.condition+build.type.buildhours)*100/build.type.buildhours) // 1 %}
+								<div class="progressbar" value="{{progress}}"><span class="progress_value_dummy">{{ progress }} %</span></div>
+								{% endif %}
+							</td>
+							{% if build.type.minpopulation * 0.5 <= settlement.fullpopulation %}
+								<td align="center">{{ form_widget(form.existing[build.id]) }}</td>
+								<td align="right" id="we_{{ build.id }}">{{ (build.workers*settlement.population)|number_format }} {{ 'build.workers'|trans }}</td>
+								{% if build.workers > 0 %}
+									{# FIXME: both the estimates and the actual calculation should have a low limit. Or maybe a max number of people who can work on something - no matter how many people you throw at it, you just can't complete most things in 1 day! #}
+									{% set complete = (-1*build.condition) / (10*((build.workers*settlement.population) ** 0.95)) %}
+									{% set worstcase = complete/build.currentspeed %}
+									<td align="right" id="done_{{ build.id }}">
+										{% if complete < 1 %}
+											{{ 'today'|trans }}
 										{% else %}
-											{{ complete|number_format }} {{ 'day'|trans({'count':complete|number_format} }}
+											{% if worstcase > complete + 1 %}
+												{{ complete|number_format }}-{{ worstcase|number_format }} {{ 'day'|trans({'count':worstcase|number_format}) }}
+											{% else %}
+												{{ complete|number_format }} {{ 'day'|trans({'count':complete|number_format}) }}
+											{% endif %}
 										{% endif %}
-									{% endif %}
-								</td>
+									</td>
+								{% else %}
+									<td align="right" id="done_{{ build.id }}">{{ "economy.build.never"|trans({}, "actions")}}</td>
+								{% endif %}
 							{% else %}
+								<td></td><td></td>
 								<td align="right" id="done_{{ build.id }}">{{ "economy.build.never"|trans({}, "actions")}}</td>
 							{% endif %}
-						{% else %}
-							<td></td><td></td>
-							<td align="right" id="done_{{ build.id }}">{{ "economy.build.never"|trans({}, "actions")}}</td>
-						{% endif %}
-					</tr>
+						</tr>
+					{% endif %}
 				{% endfor %}
 				</tbody>
 			{% if roadworkers > 0 or featureworkers > 0 %}
@@ -122,7 +126,7 @@
 		{% if available is not empty %}
 			<table id="constructions">
 				<thead><tr>
-					<th>{{ "building"|trans({'count':1}|title }}</th>
+					<th>{{ "building"|trans({'count':1})|title }}</th>
 					<th colspan="2" data-sorter="false">{{ "economy.build.workers"|trans({}, "actions") }}</th>
 					<th>{{ "economy.build.effort"|trans({}, "actions") }}</th>
 				</tr></thead>
@@ -151,7 +155,7 @@
 		{# TODO: per default, collapsed #}
 		<table id="unavailable" class="disabled">
 			<thead><tr>
-				<th>{{ "building"|trans({'count':1}|title }}</th>
+				<th>{{ "building"|trans({'count':1})|title }}</th>
 				<th data-sorter="false"></th>
 			</tr></thead>
 			<tbody>

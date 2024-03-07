@@ -13,7 +13,8 @@ use App\Entity\Settlement;
 use App\Entity\SettlementPermission;
 use App\Form\CharacterSelectType;
 use App\Form\ListingType;
-use App\Form\PartnershipsType;
+use App\Form\PartnershipsNewType;
+use App\Form\PartnershipsOldType;
 use App\Form\PrisonersManageType;
 use App\Service\ActionManager;
 use App\Service\CharacterManager;
@@ -21,6 +22,8 @@ use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
 use App\Service\History;
 use App\Service\Politics;
+use DateInterval;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,7 +31,9 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -408,121 +413,111 @@ class PoliticsController extends AbstractController {
 		]);
 	}
 	
-	#[Route ('/politics/partner/{type}', name:'maf_politics_partners', defaults: ['type'=>null])]
-	public function partnersAction(Request $request, $type=null) {
+	#[Route ('/politics/partner', name:'maf_politics_partners')]
+	public function partnersAction(Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('partnershipsTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 		$em = $this->em;
 		$newavailable = false;
-		$formOldView=null; $formNewView=null;
 
-		if ($type==null || $type=='old') {
-			$query = $em->createQuery('SELECT DISTINCT p FROM App:Partnership p JOIN p.partners c WHERE c = :me AND p.end_date IS NULL');
-			$query->setParameter('me', $character);
-			$currentRelations = $query->getResult();
-			$formOld = $this->createForm(PartnershipsType::class, null, ['me'=>$character, 'newpartners'=>false, 'others'=>$currentRelations]);
-			$formOldView = $formOld->createView();
-		}
-		if ($type==null || $type=='new') {
-			// FIXME: shouldn't this be in the dispatcher?
-			$others = $this->disp->getActionableCharacters();
-			$choices=array();
-			if ($character->getPartnerships()) {
-				foreach ($character->getPartnerships() as $partnership) {
-					if (!$partnership->getEndDate()) {
-						$existingpartners[] = $partnership->getOtherPartner($character);
-					}
+		$query = $em->createQuery('SELECT DISTINCT p FROM App:Partnership p JOIN p.partners c WHERE c = :me AND p.end_date IS NULL');
+		$query->setParameter('me', $character);
+		$currentRelations = $query->getResult();
+		$formOld = $this->createForm(PartnershipsOldType::class, null, ['me'=>$character, 'others'=>$currentRelations]);
+		$formOldView = $formOld->createView();
+
+		// FIXME: shouldn't this be in the dispatcher?
+		$others = $this->disp->getActionableCharacters();
+		$choices=array();
+		if ($character->getPartnerships()) {
+			foreach ($character->getPartnerships() as $partnership) {
+				if (!$partnership->getEndDate()) {
+					$existingpartners[] = $partnership->getOtherPartner($character);
 				}
 			}
-			foreach ($others as $other) {
-				$char = $other['character'];
-				if ($character->getNonHeteroOptions()) {
-					if (!$char->isNPC() && $char->isActive(true) && !in_array($char, $existingpartners)) {
-						$choices[$char->getId()] = $char->getName();
-					}
-				} else {
-					if (!$char->isNPC() && $char->isActive(true) && !in_array($char, $existingpartners) && $char->getMale() != $character->getMale()) {
-						$choices[$char->getId()] = $char->getName();
-					}
-				}
-				// TODO: filter out existing partnerships
-			}
-			$formNew = $this->createForm(PartnershipsType::class, null, ['me'=>$character, 'newpartners'=>true, 'others'=>$choices]);
-			$formNewView = $formNew->createView();
-			if (!empty($choices)) {
-				$newavailable=true;
-			}
 		}
-
-		/* TODO: This is a complete rework of how these were handled. It WILL need testing, and MAY need redesigned. --Andrew 20230524 */
+		foreach ($others as $other) {
+			$char = $other['character'];
+			if ($character->getNonHeteroOptions()) {
+				if (!$char->isNPC() && $char->isActive(true) && !in_array($char, $existingpartners)) {
+					$choices[$char->getId()] = $char->getName();
+				}
+			} else {
+				if (!$char->isNPC() && $char->isActive(true) && !in_array($char, $existingpartners) && $char->getMale() != $character->getMale()) {
+					$choices[$char->getId()] = $char->getName();
+				}
+			}
+			// TODO: filter out existing partnerships
+		}
+		$formNew = $this->createForm(PartnershipsNewType::class, null, ['others'=>$choices]);
+		$formNewView = $formNew->createView();
+		if (!empty($choices)) {
+			$newavailable=true;
+		}
 
 		$formOld->handleRequest($request);
-		if ($formOld->isSubmitted() && $formOld->isValid()) {
+		# TODO: Figure out why Symfony Form validation doesn't like this form, and make it work.
+		if ($formOld->isSubmitted()) {
 			$data = $formOld->getData();
+			echo 'form old';
 
 			foreach ($data['partnership'] as $id=>$change) {
 				if (!$change) continue;
+				$valid = false;
 				$relation = $em->getRepository(Partnership::class)->find($id);
-				switch ($change) {
-					case 'public':
-						// TODO: event posting
-						$relation->setPublic(true);
-						break;
-					case 'nosex':
-						$relation->setWithSex(false);
-						break;
-					case 'cancel':
-						// TODO: event posting
-						$relation->setActive(false);
-						$relation->setEndDate(new \DateTime("now"));
-						break;
-					case 'withdraw':
-						// TODO: notify other
-						$em->remove($relation);
-						break;
-					case 'accept':
-						$relation->setActive(true);
-						$relation->setStartDate(new \DateTime("now"));
-						if (in_array($relation->getType(), array("marriage", "engagement")) && $relation->getPublic()) {
-							if ($relation->getType()=="marriage") {
-								$priority = History::HIGH;
+				if ($relation->getPartners()->contains($character)) {
+					$valid = true;
+				}
+				if ($valid) {
+					if ($relation->getType() == "marriage") {
+						$priority = History::HIGH;
+					} else {
+						$priority = History::MEDIUM;
+					}
+					switch ($change) {
+						case 'public':
+							// TODO: event posting
+							$relation->setPublic(true);
+							break;
+						case 'nosex':
+							$relation->setWithSex(false);
+							break;
+						case 'cancel':
+							// TODO: event posting
+							$relation->setActive(false);
+							$relation->setEndDate(new DateTime("now"));
+							break;
+						case 'withdraw':
+							// TODO: notify other
+							$em->remove($relation);
+							break;
+						case 'accept':
+							$relation->setActive(true);
+							$relation->setStartDate(new DateTime("now"));
+							if (in_array($relation->getType(), [
+									"marriage",
+									"engagement"
+								]) && $relation->getPublic()) {
+								foreach ($relation->getPartners() as $partner) {
+									$other = $relation->getOtherPartner($partner);
+									$this->hist->logEvent($partner, 'event.character.public.' . $relation->getType(), ['%link-character%' => $other->getId()], $priority, true);
+								}
 							} else {
-								$priority = History::MEDIUM;
+								foreach ($relation->getPartners() as $partner) {
+									$other = $relation->getOtherPartner($partner);
+									$this->hist->logEvent($partner, 'event.character.secret.' . $relation->getType(), ['%link-character%' => $other->getId()], HISTORY::MEDIUM, false);
+								}
 							}
-							foreach ($relation->getPartners() as $partner) {
-								$other = $relation->getOtherPartner($partner);
-								$this->hist->logEvent(
-									$partner,
-									'event.character.public.'.$relation->getType(),
-									array('%link-character%'=>$other->getId()),
-									$priority, true
-								);
-							}
-						} else {
-							foreach ($relation->getPartners() as $partner) {
-								$other = $relation->getOtherPartner($partner);
-								$this->hist->logEvent(
-									$partner,
-									'event.character.secret.'.$relation->getType(),
-									array('%link-character%'=>$other->getId()),
-									HISTORY::MEDIUM, false
-								);
-							}
-						}
-						break;
-					case 'reject':
-						// inform the other
-						$other = $relation->getOtherPartner($character);
-						$this->hist->logEvent(
-							$other,
-							'event.character.rejected.'.$relation->getType(),
-							array('%link-character%'=>$character->getId()),
-							HISTORY::HIGH, false, 20
-						);
-						$em->remove($relation);
-						break;
+							break;
+						case 'reject':
+							// inform the other
+							$other = $relation->getOtherPartner($character);
+							$this->hist->logEvent($other, 'event.character.rejected.' . $relation->getType(), ['%link-character%' => $character->getId()], HISTORY::HIGH, false, 20);
+							$em->remove($relation);
+							break;
+					}
 				}
 			}
 			$em->flush();
@@ -530,7 +525,8 @@ class PoliticsController extends AbstractController {
 			return $this->redirectToRoute('maf_politics_partners');
 		}
 		$formNew->handleRequest($request);
-		if ($formNew->isSubmitted() && $formNew->isSubmitted()) {
+		if ($formNew->isSubmitted() && $formNew->isValid()) {
+			echo 'form new';
 			$data = $formNew->getData();
 
 			$partner = $em->getRepository(Character::class)->find($data['partner']);
@@ -781,8 +777,8 @@ class PoliticsController extends AbstractController {
 							// 2 hour blocking action
 							$act = new Action;
 							$act->setType('personal.prisonassign')->setCharacter($prisoner);
-							$complete = new \DateTime("now");
-							$complete->add(new \DateInterval("PT2H"));
+							$complete = new DateTime("now");
+							$complete->add(new DateInterval("PT2H"));
 							$act->setComplete($complete);
 							$act->setBlockTravel(false);
 							$actMan->queue($act);

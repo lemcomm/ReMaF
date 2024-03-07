@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\BuildingType;
+use App\Entity\EntourageType;
+use App\Entity\FeatureType;
+use App\Entity\EquipmentType;
 use App\Service\PageReader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -26,10 +30,10 @@ class InfoController extends AbstractController {
 		return $this->render('Info/all.html.twig', $this->alltypes('BuildingType', $request));
 	}
 
-	#[Route ('/info/building/{id}', name:'maf_info_buildingtype', requirements:['id'=>'\d+'])]
+	#[Route ('/info/building/{id}', name:'maf_info_building', requirements:['id'=>'\d+'])]
 	public function buildingtypeAction($id): Response {
 		$em = $this->em;
-		$buildingtype = $em->getRepository('App:BuildingType')->find($id);
+		$buildingtype = $em->getRepository(BuildingType::class)->find($id);
 		if (!$buildingtype) {
 			throw $this->createNotFoundException('error.notfound.buildingtype');
 		}
@@ -45,10 +49,10 @@ class InfoController extends AbstractController {
 		return $this->render('Info/all.html.twig', $this->alltypes('FeatureType', $request));
 	}
 
-	#[Route ('/info/buildings/{id}', name:'maf_info_featuretype', requirements:['id'=>'\d+'])]
+	#[Route ('/info/feature/{id}', name:'maf_info_featuretype', requirements:['id'=>'\d+'])]
 	public function featuretypeAction($id): Response {
 		$em = $this->em;
-		$featuretype = $em->getRepository('App:FeatureType')->find($id);
+		$featuretype = $em->getRepository(FeatureType::class)->find($id);
 		if (!$featuretype) {
 			throw $this->createNotFoundException('error.notfound.featuretype');
 		}
@@ -58,7 +62,7 @@ class InfoController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/info/entourages', name:'maf_info_features')]
+	#[Route ('/info/entourages', name:'maf_info_entourages')]
 	public function allentouragetypesAction(Request $request): Response {
 
 		return $this->render('Info/all.html.twig', $this->alltypes('EntourageType', $request));
@@ -67,7 +71,7 @@ class InfoController extends AbstractController {
 	#[Route ('/info/entourage/{id}', name:'maf_info_entourage', requirements:['id'=>'\d+'])]
 	public function entouragetypeAction($id): Response {
 		$em = $this->em;
-		$entouragetype = $em->getRepository('App:EntourageType')->find($id);
+		$entouragetype = $em->getRepository(EntourageType::class)->find($id);
 		if (!$entouragetype) {
 			throw $this->createNotFoundException('error.notfound.entouragetype');
 		}
@@ -86,7 +90,7 @@ class InfoController extends AbstractController {
 	#[Route ('/info/equipment/{id}', name:'maf_info_equipment', requirements:['id'=>'\d+'])]
 	public function equipmenttypeAction($id): Response {
 		$em = $this->em;
-		$equipmenttype = $em->getRepository('App:EquipmentType')->find($id);
+		$equipmenttype = $em->getRepository(EquipmentType::class)->find($id);
 		if (!$equipmenttype) {
 			throw $this->createNotFoundException('error.notfound.equipmenttype');
 		}
@@ -99,7 +103,7 @@ class InfoController extends AbstractController {
 
 	private function alltypes($type, $request): array {
 		$em = $this->em;
-		$all = $em->getRepository('App:'.$type)->findBy([], ['name'=>'asc']);
+		$all = $em->getRepository($type::class)->findBy([], ['name'=>'asc']);
 		$toc = $this->pager->getPage('manual', 'toc', $request->getLocale());
 
 		return [

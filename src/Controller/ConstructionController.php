@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\BuildingType;
 use App\Entity\Character;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\Economy;
@@ -42,7 +43,7 @@ class ConstructionController extends AbstractController {
 	
 	#[Route ('/build/roads', name:'maf_construction_roads')]
 	public function roadsAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('economyRoadsTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('economyRoadsTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -52,7 +53,7 @@ class ConstructionController extends AbstractController {
 /*
 		if (!$settlement->getGeoMarker()) {
 			$marker = new GeoFeature;
-			$hidden = $em->getRepository('App:FeatureType')->findOneByName('settlement');
+			$hidden = $em->getRepository(FeatureType::class)->findOneByName('settlement');
 			if (!$hidden) {
 				throw new \Exception('required hidden feature type not found');
 			}
@@ -90,7 +91,7 @@ class ConstructionController extends AbstractController {
 				} else {
 					foreach ($existing as $id=>$amount) {
 						// we are also setting 0 values here because they might currently be > 0
-						$road = $em->getRepository('App:Road')->find($id);
+						$road = $em->getRepository(Road::class)->find($id);
 						if ($road->getQuality()>=5) {
 							// max road level: 5
 							$amount = 0.0;
@@ -188,12 +189,12 @@ class ConstructionController extends AbstractController {
 	#[Route ('/build/features', name:'maf_construction_features')]
 	public function featuresAction(Request $request): RedirectResponse|Response {
 		// TODO: add a way to remove / demolish features
-		list($character, $settlement) = $this->dispatcher->gateway('economyFeaturesTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('economyFeaturesTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
-		list($features, $active, $building, $workhours) = $this->featureData($settlement);
+		[$features, $active, $building, $workhours] = $this->featureData($settlement);
 		$form = $this->createForm(FeatureconstructionType::class, null, ['features' => $features, 'river' => $settlement->getGeoData()->getRiver(), 'coast' => $settlement->getGeoData()->getCoast()]);
 
 		$form->handleRequest($request);
@@ -213,7 +214,7 @@ class ConstructionController extends AbstractController {
 					$form->addError(new FormError("economy.toomany"));
 				} else {
 					foreach ($existing as $id=>$value) {
-						$feature = $em->getRepository('App:GeoFeature')->find($id);
+						$feature = $em->getRepository(GeoFeature::class)->find($id);
 						if ($feature->getActive()) {
 							$feature->setName($value);
 						} else {
@@ -286,7 +287,7 @@ class ConstructionController extends AbstractController {
 			} // end new feature
 
 			$em->flush();
-			list($features, $active, $building, $workhours) = $this->featureData($settlement);
+			[$features, $active, $building, $workhours] = $this->featureData($settlement);
 			$form = $this->createForm(FeatureconstructionType::class, null, ['features' => $features, 'river' => $settlement->getGeoData()->getRiver(), 'coast' => $settlement->getGeoData()->getCoast()]);
 		}
 		return $this->render('Construction/features.html.twig', [
@@ -357,7 +358,7 @@ class ConstructionController extends AbstractController {
 
 	#[Route ('/build/buildings', name:'maf_construction_buildings')]
 	public function buildingsAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('economyBuildingsTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('economyBuildingsTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -365,7 +366,7 @@ class ConstructionController extends AbstractController {
 
 		$available=array();
 		$unavailable=array();
-		$all = $em->getRepository('App:BuildingType')->findAll();
+		$all = $em->getRepository(BuildingType::class)->findAll();
 		foreach ($all as $type) {
 			if ($settlement->hasBuilding($type, true) OR !in_array('city',$type->getBuiltIn())) continue; # Already have it? Not buildable here? Move along.
 			$data = $this->checkBuildability($settlement, $type);
@@ -397,7 +398,7 @@ class ConstructionController extends AbstractController {
 			} else {
 				foreach ($data['existing'] as $id=>$amount) {
 					// we are also setting 0 values here because they might currently be > 0
-					$building = $em->getRepository('App:Building')->find($id);
+					$building = $em->getRepository(Building::class)->find($id);
 					if ($building->getType()->getMinPopulation() * 0.5 > $settlement->getFullPopulation()) {
 						// unsustainable
 						$amount = 0;
@@ -407,7 +408,7 @@ class ConstructionController extends AbstractController {
 
 				foreach ($data['available'] as $id=>$amount) {
 					if ($amount>0) {
-						$buildingtype = $em->getRepository('App:BuildingType')->find($id);
+						$buildingtype = $em->getRepository(BuildingType::class)->find($id);
 						$building = new Building;
 						$building->setType($buildingtype);
 						$building->setSettlement($settlement);
@@ -500,7 +501,7 @@ class ConstructionController extends AbstractController {
 
 	#[Route ('/build/focus', name:'maf_construction_focus', methods:['post'])]
 	public function focusAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('economyBuildingsTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('economyBuildingsTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -514,7 +515,7 @@ class ConstructionController extends AbstractController {
 		$focus = max(0, min(3,$focus));
 
 		$em = $this->em;
-		$building = $em->getRepository('App:Building')->find($id);
+		$building = $em->getRepository(Building::class)->find($id);
 		if (!$building) {
 			throw $this->createNotFoundException("building $id not found");
 		}

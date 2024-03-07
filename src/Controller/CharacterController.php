@@ -8,6 +8,7 @@ use App\Entity\Character;
 use App\Entity\CharacterRating;
 use App\Entity\CharacterRatingVote;
 use App\Entity\Conversation;
+use App\Entity\EquipmentType;
 use App\Entity\Heraldry;
 use App\Entity\House;
 use App\Entity\Realm;
@@ -505,7 +506,7 @@ class CharacterController extends AbstractController {
 				# Resets this on formerly retired characters.
 				$character->setList(1);
 			}
-			list($conv, $supConv) = $this->conv->sendNewCharacterMsg($realm, $house, $place, $character);
+			[$conv, $supConv] = $this->conv->sendNewCharacterMsg($realm, $house, $place, $character);
 			# $conv should always be a Conversation, while supConv will be if realm is not Ultimate--otherwise null.
 			# Both instances of Converstion.
 
@@ -616,7 +617,7 @@ class CharacterController extends AbstractController {
 			throw $this->createNotFoundException('error.notfound.character');
 		}
 
-		list($respect, $honor, $trust, $data) = $this->charman->Reputation($char, $this->getUser());
+		[$respect, $honor, $trust, $data] = $this->charman->Reputation($char, $this->getUser());
 
 		usort($data, function($a, $b){
 			if ($a['value'] < $b['value']) return 1;
@@ -647,7 +648,7 @@ class CharacterController extends AbstractController {
 			$data = $form->getData();
 			$id = $data->getCharacter()->getId();
 			$em = $this->em;
-			$my_rating = $em->getRepository('App:CharacterRating')->findOneBy(array('character'=>$data->getCharacter(), 'given_by_user'=>$this->getUser()));
+			$my_rating = $em->getRepository(CharacterRating::class)->findOneBy(array('character'=>$data->getCharacter(), 'given_by_user'=>$this->getUser()));
 			if ($my_rating) {
 				// TODO: if we've changed it substantially, we should clear out the votes!
 				// FIXME: This is a bit ugly. Can we not use the existing $data object?
@@ -677,11 +678,11 @@ class CharacterController extends AbstractController {
 	public function voteAction(Request $request): Response {
 		if ($request->request->has("id") &&  $request->request->has("vote")) {
 			$em = $this->em;
-			$rating = $em->getRepository('App:CharacterRating')->find($request->request->get("id"));
+			$rating = $em->getRepository(CharacterRating::class)->find($request->request->get("id"));
 			if (!$rating) return new Response("rating not found");
-			$char = $em->getRepository('App:Character')->find($rating->getCharacter());
+			$char = $em->getRepository(Character::class)->find($rating->getCharacter());
 			if ($char->getUser() == $this->getUser()) return new Response("can't vote on ratings for your own characters");
-			$my_vote = $em->getRepository('App:CharacterRatingVote')->findOneBy(array('rating'=>$rating, 'user'=>$this->getUser()));
+			$my_vote = $em->getRepository(CharacterRatingVote::class)->findOneBy(array('rating'=>$rating, 'user'=>$this->getUser()));
 			if (!$my_vote) {
 				$my_vote = new CharacterRatingVote;
 				$my_vote->setRating($rating);
@@ -703,7 +704,7 @@ class CharacterController extends AbstractController {
   	#[Route ('/char/family/{id}', name:'maf_char_family', requirements: ['id'=>'\d+'])]
 	public function familyAction($id): Response {
 		$em = $this->em;
-		$char = $em->getRepository('App:Character')->find($id);
+		$char = $em->getRepository(Character::class)->find($id);
 
 		$characters = array($id=>$char);
 		$characters = $this->addRelatives($characters, $char);
@@ -913,10 +914,10 @@ class CharacterController extends AbstractController {
 		}
 		$em = $this->em;
 		$opts = [];
-		$opt['wpns'] = $em->getRepository('App:EquipmentType')->findBy(['type'=>'weapon']);
-		$opt['arms'] = $em->getRepository('App:EquipmentType')->findBy(['type'=>'armour']);
-		$opt['othr'] = $em->getRepository('App:EquipmentType')->findBy(['type'=>'equipment']);
-		$opt['mnts'] = $em->getRepository('App:EquipmentType')->findBy(['type'=>'mount']);
+		$opt['wpns'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon']);
+		$opt['arms'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'armour']);
+		$opt['othr'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'equipment']);
+		$opt['mnts'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'mount']);
 
 		$form = $this->createForm(CharacterLoadoutType::class, $character, $opts);
 		$form->handleRequest($request);
@@ -1352,12 +1353,12 @@ class CharacterController extends AbstractController {
 
 			if ($character->getTravelAtSea()) {
 				// sea travel - disembark when we hit land
-				list($invalid, $disembark) = $this->geo->checkTravelSea($character, $invalid);
+				[$invalid, $disembark] = $this->geo->checkTravelSea($character, $invalid);
 			} else {
 				// land travel - may not cross water, oceans, impassable mountains
 				$invalid = $this->geo->checkTravelLand($character, $invalid);
 
-				list($invalid, $bridges) = $this->geo->checkTravelRivers($character, $invalid);
+				[$invalid, $bridges] = $this->geo->checkTravelRivers($character, $invalid);
 				$invalid = $this->geo->checkTravelCliffs($character, $invalid);
 
 				$roads = $this->geo->checkTravelRoads($character);
@@ -1430,7 +1431,7 @@ class CharacterController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$report = $em->getRepository('App:BattleReport')->find($id);
+		$report = $em->getRepository(BattleReport::class)->find($id);
 		if (!$report) {
 			throw $this->createNotFoundException('error.notfound.battlereport');
 		}
@@ -1496,7 +1497,7 @@ class CharacterController extends AbstractController {
 			foreach ($nobles_data as $i=>$group) {
 				$nobles[$i]=array();
 				foreach ($group as $id=>$fate) {
-					$char = $em->getRepository('App:Character')->find($id);
+					$char = $em->getRepository(Character::class)->find($id);
 					$nobles[$i][] = array('character'=>$char, 'fate'=>$fate);
 				}
 			}

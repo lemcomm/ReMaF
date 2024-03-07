@@ -4,7 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Action;
 use App\Entity\Character;
+use App\Entity\EntourageType;
+use App\Entity\ResourceType;
 use App\Entity\Settlement;
+use App\Entity\Ship;
 use App\Entity\Trade;
 use App\Form\AreYouSureType;
 use App\Form\CultureType;
@@ -84,7 +87,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/', name:'maf_actions')]
 	public function indexAction(CommonService $common): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway(false, true);
+		[$character, $settlement] = $this->dispatcher->gateway(false, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -116,7 +119,7 @@ class ActionsController extends AbstractController {
 
 		if ($request->isMethod('POST') && $request->request->has("id")) {
 			$em = $this->em;
-			$action = $em->getRepository('App:Action')->find($request->request->get("id"));
+			$action = $em->getRepository(Action::class)->find($request->request->get("id"));
 			if (!$action) {
 				return array('action'=>null, 'result'=>array('success'=>false, 'message'=>'either.invalid.wrongid'));
 			}
@@ -133,7 +136,7 @@ class ActionsController extends AbstractController {
 			}
 
 			// check that we are not already opposing or supporting it
-			$have = $em->getRepository('App:Action')->findBy(array('type'=>array('oppose','support'), 'character'=>$character, 'opposed_action'=>$action));
+			$have = $em->getRepository(Action::class)->findBy(array('type'=>array('oppose','support'), 'character'=>$character, 'opposed_action'=>$action));
 			if ($have) {
 				return array('action'=>null, 'result'=>array('success'=>false, 'message'=>'either.invalid.already'));
 			}
@@ -173,7 +176,7 @@ class ActionsController extends AbstractController {
 
 		if ($request->isMethod('POST') && $request->request->has("id")) {
 			$em = $this->em;
-			$action = $em->getRepository('App:Action')->find($request->request->get("id"));
+			$action = $em->getRepository(Action::class)->find($request->request->get("id"));
 			if (!$action) {
 				return array('action'=>null, 'result'=>array('success'=>false, 'message'=>'either.invalid.wrongid'));
 			}
@@ -186,7 +189,7 @@ class ActionsController extends AbstractController {
 			}
 
 			// check that we are not already opposing or supporting it
-			$have = $em->getRepository('App:Action')->findBy(array('type'=>array('oppose','support'), 'character'=>$character, 'opposed_action'=>$action));
+			$have = $em->getRepository(Action::class)->findBy(array('type'=>array('oppose','support'), 'character'=>$character, 'opposed_action'=>$action));
 			if ($have) {
 				return array('action'=>null, 'result'=>array('success'=>false, 'message'=>'either.invalid.already'));
 			}
@@ -219,7 +222,7 @@ class ActionsController extends AbstractController {
 	
 	#[Route ('/actions/enter', name:'maf_actions_enter')]
 	public function enterAction(): RedirectResponse {
-		list($character, $settlement) = $this->dispatcher->gateway('locationEnterTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('locationEnterTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -235,7 +238,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/exit', name:'maf_actions_exit')]
 	public function exitAction(): RedirectResponse {
-		list($character, $settlement) = $this->dispatcher->gateway('locationLeaveTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('locationLeaveTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -260,7 +263,7 @@ class ActionsController extends AbstractController {
 		$embark_ship = false;
 
 		$em = $this->em;
-		$my_ship = $em->getRepository('App:Ship')->findOneBy(['owner'=>$character]);
+		$my_ship = $em->getRepository(Ship::class)->findOneBy(['owner'=>$character]);
 		if ($my_ship) {
 			$nearest = $this->geo->findMyShip($character);
 			$ship_distance = $nearest['distance'];
@@ -359,7 +362,7 @@ class ActionsController extends AbstractController {
 		if ($form->isValid()) {
 			$data = $form->getData();
 			$em = $this->em;
-			list($his_ship, $distance) = $this->geo->findMyShip($data['target']);
+			[$his_ship, $distance] = $this->geo->findMyShip($data['target']);
 			if ($his_ship) {
 				// FIXME: this should NOT automatically remove my old ship, due to small abuse potential, but for now that's the fastest solution
 				$em->remove($his_ship);
@@ -390,7 +393,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/spy', name:'maf_actions_spy')]
 	public function spyAction(): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('nearbySpyTest', true, true);
+		[$character, $settlement] = $this->dispatcher->gateway('nearbySpyTest', true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -402,7 +405,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/take', name:'maf_actions_take')]
 	public function takeAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('controlTakeTest', true, true);
+		[$character, $settlement] = $this->dispatcher->gateway('controlTakeTest', true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -559,7 +562,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/grant', name:'maf_actions_grant')]
 	public function grantAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('controlGrantTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('controlGrantTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -620,7 +623,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/steward', name:'maf_actions_steward')]
 	public function stewardAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('controlStewardTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('controlStewardTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -674,7 +677,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/rename', name:'maf_actions_rename')]
 	public function renameAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('controlRenameTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('controlRenameTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -721,7 +724,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/changeculture', name:'maf_actions_changeculture')]
 	public function changecultureAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('controlCultureTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('controlCultureTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -757,13 +760,13 @@ class ActionsController extends AbstractController {
 	
 	#[Route ('/actions/trade', name:'maf_actions_trade')]
 	public function tradeAction(LawManager $lawman, PermissionManager $perms, Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('economyTradeTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('economyTradeTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
 		$em = $this->em;
-		$resources = $em->getRepository('App:ResourceType')->findAll();
+		$resources = $em->getRepository(ResourceType::class)->findAll();
 
 		/*
 		The lines below this comment exist to check if a given character is not the owner but has owner-level trade access to this settlement.
@@ -970,7 +973,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/entourage', name:'maf_actions_entourage')]
 	public function entourageAction(Generator $generator, UnitDispatcher $unitDis, Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $unitDis->gateway('personalEntourageTest', true);
+		[$character, $settlement] = $unitDis->gateway('personalEntourageTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1010,7 +1013,7 @@ class ActionsController extends AbstractController {
 			foreach ($data['recruits'] as $id=>$amount) {
 				if ($amount>0) {
 					$fail = 0;
-					$type = $em->getRepository('App:EntourageType')->find($id);
+					$type = $em->getRepository(EntourageType::class)->find($id);
 					if (!$type) { /* TODO: throw exception */}
 
 					// TODO: use the resupply limit we already display
@@ -1066,7 +1069,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/occupation/changeoccupant', name:'maf_settlement_occupant')]
 	public function changeOccupantAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('controlChangeOccupantTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('controlChangeOccupantTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1100,7 +1103,7 @@ class ActionsController extends AbstractController {
 	
 	#[Route ('/actions/occupation/changeoccupier', name:'maf_settlement_occupier')]
 	public function changeOccupierAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('controlChangeOccupierTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('controlChangeOccupierTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1134,7 +1137,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/occupation/start"', name:'maf_settlement_occupation_start')]
 	public function occupationStartAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('controlOccupationStartTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('controlOccupationStartTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -1159,7 +1162,7 @@ class ActionsController extends AbstractController {
 
 	#[Route ('/actions/occupation/end"', name:'maf_settlement_occupation_end')]
 	public function occupationEndAction(Request $request): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('controlOccupationEndTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('controlOccupationEndTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}

@@ -71,7 +71,7 @@ class ArtifactsController extends AbstractController {
 				}
 
 				// TODO: this might become expensive when we have a lot, as similar_text has a complexity of O(N^3)
-				foreach ($this->em->getRepository('App:Artifact')->findAll() as $check) {
+				foreach ($this->em->getRepository(Artifact::class)->findAll() as $check) {
 					similar_text(strtolower($name), strtolower($check->getName()), $percent);
 					if ($percent > 90.0) {
 						$form->addError(new FormError("Your name is too similar to an existing name (".$check->getName()."). Please choose a more unique name."));

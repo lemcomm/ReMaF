@@ -42,7 +42,7 @@ class RoadconstructionType extends AbstractType {
 				array(
 					'required' => false,
 					'disabled' => $disabled,
-					'precision' => 2,
+					'scale' => 2,
 					'data' => $data['road']->getWorkers(),
 					'attr' => array('size'=>3, 'class' => 'assignment')
 				)
