@@ -3,11 +3,11 @@
 namespace App\Entity;
 
 class CharacterBackground {
-	private string $appearance;
-	private string $personality;
-	private string $secrets;
-	private string $retirement;
-	private string $death;
+	private ?string $appearance;
+	private ?string $personality;
+	private ?string $secrets;
+	private ?string $retirement;
+	private ?string $death;
 	private ?int $id = null;
 	private Character $character;
 

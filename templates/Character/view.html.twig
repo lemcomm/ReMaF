@@ -102,7 +102,7 @@
 	<img src="{{ asset('images/nicubunu_chain.svg') }}" alt="{{ 'prisoner'|trans({'count':1}) }}" height="16px" align="bottom" />
 </p>
 {% endif %}
-{% if char.user.newplayer %}
+{% if char.user and char.user.newplayer %}
 	<p><i>{{ 'character.newplayer'|trans }}</i></p>
 {% endif %}
 
@@ -123,7 +123,7 @@
 	<i><a href="{{ path("maf_journal_character", {'id':char.id}) }}">{{ 'character.journals'|trans|title }}</a></i>
 {% endif %}
 
-{% if char.background.appearance is defined %}
+{% if char.background.appearance and char.background.appearance is defined %}
 	{{ char.background.appearance|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 {% endif %}
 {% if relationship %}
@@ -165,11 +165,11 @@
 {% endif %}
 
 {% if char.retired or char.alive == false %}
-	{% if char.retired and char.background.retirement is defined %}
+	{% if char.retired and char.background.retirement and char.background.retirement is defined %}
 		<h2>{{ 'meta.background.retirement.name'|trans({},"actions")|title }}</h2>
 		{{ char.background.retirement|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 	{% endif %}
-	{% if char.alive == false and char.background.death is defined %}
+	{% if char.alive == false and char.background.death and char.background.death is defined %}
 		<h2>{{ 'meta.background.death.name'|trans({},"actions")|title }}</h2>
 		{{ char.background.death|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
 	{% endif %}

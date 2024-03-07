@@ -23,16 +23,16 @@ class BattleReport {
 	private int $epicness;
 	private string $debug;
 	private ?int $id = null;
-	private BattleReportGroup $primary_attacker;
-	private BattleReportGroup $primary_defender;
+	private ?BattleReportGroup $primary_attacker;
+	private ?BattleReportGroup $primary_defender;
 	private Collection $participants;
 	private Collection $groups;
 	private Collection $observers;
 	private Collection $journals;
-	private Settlement $settlement;
-	private Place $place;
-	private War $war;
-	private Siege $siege;
+	private ?Settlement $settlement;
+	private ?Place $place;
+	private ?War $war;
+	private ?Siege $siege;
 	private Collection $defense_buildings;
 
 	/**

@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 
 class Event {
 	private string $content;
-	private array $data;
+	private ?array $data = [];
 	private bool $public;
 	private DateTime $ts;
 	private int $cycle;
@@ -50,9 +50,9 @@ class Event {
 	/**
 	 * Get data
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getData(): array {
+	public function getData(): ?array {
 		return $this->data;
 	}
 

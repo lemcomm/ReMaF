@@ -511,7 +511,7 @@ class MapController extends AbstractController {
 			$query = $em->createQuery('SELECT s.id, ST_AsGeoJSON(s.location) as location FROM App:Ship s, App:Character me WHERE me = :me AND (ST_Distance(s.location, me.location) < :maxdistance OR s.owner = :me)');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>Geography::DISTANCE_FEATURE));
 			$iterableResult = $query->toIterable();
-			while (($row = $iterableResult->next()) !== false) {
+			while (($row = $iterableResult->next()) != false) {
 				$s = array_shift($row);
 
 				$features[] = array(
@@ -528,10 +528,10 @@ class MapController extends AbstractController {
 			}
 
 			// mix in dungeons
-			$query = $em->createQuery('SELECT d.id, d.area as area, ST_AsGeoJSON(d.location) as location FROM DungeonBundle:Dungeon d, App:Character me WHERE me = :me AND ST_Distance(d.location, me.location) < :maxdistance');
+			$query = $em->createQuery('SELECT d.id, d.area as area, ST_AsGeoJSON(d.location) as location FROM App:Dungeon d, App:Character me WHERE me = :me AND ST_Distance(d.location, me.location) < :maxdistance');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>$this->geo->calculateSpottingDistance($character)));
 			$iterableResult = $query->toIterable();
-			while (($row = $iterableResult->next()) !== false) {
+			while (($row = $iterableResult->next()) != false) {
 				$d = array_shift($row);
 
 				$features[] = array(

@@ -11,7 +11,9 @@ use App\Entity\Conversation;
 use App\Entity\EquipmentType;
 use App\Entity\Heraldry;
 use App\Entity\House;
+use App\Entity\Place;
 use App\Entity\Realm;
+use App\Entity\Settlement;
 use App\Entity\Spawn;
 
 use App\Form\AssocSelectType;
@@ -1464,9 +1466,9 @@ class CharacterController extends AbstractController {
 
 		if ($loc = $report->getLocationName()) {
 			if ($report->getPlace()) {
-				$location = array('key' => $loc['key'], 'entity'=>$em->getRepository("App:Place")->find($loc['id']));
+				$location = array('key' => $loc['key'], 'entity'=>$em->getRepository(Place::class)->find($loc['id']));
 			} else {
-				$location = array('key' => $loc['key'], 'entity'=>$em->getRepository("App:Settlement")->find($loc['id']));
+				$location = array('key' => $loc['key'], 'entity'=>$em->getRepository(Settlement::class)->find($loc['id']));
 			}
 		} else {
 			$location = array('key'=>'battle.location.nowhere');

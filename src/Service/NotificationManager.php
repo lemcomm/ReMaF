@@ -119,11 +119,11 @@ class NotificationManager {
 		$entity = false;
 		if ($loc = $rep->getLocationName()) {
 			if ($rep->getPlace()) {
-				$entity = $em->getRepository("App:Place")->find($loc['id']);
+				$entity = $em->getRepository(Place::class)->find($loc['id']);
 				$name = $entity->getName();
 				$url = 'https://mightandfealty.com/place/'.$loc['id'];
 			} else {
-				$entity = $em->getRepository("App:Settlement")->find($loc['id']);
+				$entity = $em->getRepository(Settlement::class)->find($loc['id']);
 				$name = $entity->getName();
 				$url = 'https://mightandfealty.com/settlement/'.$loc['id'];
 			}
