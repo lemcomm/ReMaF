@@ -87,7 +87,7 @@
         </div>
 	<div id="replydialog" title="{{ 'message.reply.title'|trans({}, "conversations")|title }}">
 		{% include "Conversation/syntax.html.twig" %}
-		{{ render(controller('BM2\\SiteBundle\\Controller\\ConversationController::replyRecentAction', {}, {'msg': null, 'window':period} )) }}
+		{{ render(controller('App\\Controller\\ConversationController::replyRecentAction', {}, {'msg': null, 'window':period} )) }}
 	</div>
 
 	{% include 'Conversation/recent_menu.html.twig' %}

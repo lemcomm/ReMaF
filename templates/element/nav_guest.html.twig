@@ -2,7 +2,7 @@
 	{% if app.user and is_granted("ROLE_OLYMPUS") %}
 		{% include "element/nav_gm.html.twig" %}
 	{% endif %}
-	{#<li><a href="{{ path('bm2_map') }}">{{ 'menu.map'|trans }}</a></li>#}
+	<li><a href="{{ path('maf_map') }}">{{ 'menu.map'|trans }}</a></li>
 	<li><a href="{{ path('maf_about') }}">{{ 'menu.about'|trans }}</a></li>
 	<li><a href="{{ path('maf_manual') }}/intro">{{ 'menu.manual'|trans }}</a></li>
 	<li><a href="{{ path('maf_fiction') }}">{{ 'menu.fiction'|trans }}</a></li>

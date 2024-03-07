@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\BattleReport;
 use App\Service\NotificationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -31,7 +32,7 @@ class DebugDiscordCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$id = $input->getArgument('i');
 		$output->writeln("Looking for BattleReport #".$id);
-		$entity = $this->em->getRepository("BM2SiteBundle:BattleReport")->findOneBy(['id'=>$id]);
+		$entity = $this->em->getRepository(BattleReport::class)->findOneBy(['id'=>$id]);
 		$this->nm->spoolBattle($entity, 5);
 	}
 

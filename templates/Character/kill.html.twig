@@ -14,7 +14,7 @@
 		{% else %}
 	#}
 	<p>{{ "meta.kill.intro"|trans({'%he%':character.gender('he')|trans},"actions")|raw }}</p>
-	<form class="wide" action="{{ path('bm2_site_character_kill') }}" method="post">
+	<form class="wide" action="{{ path('maf_char_kill') }}" method="post">
 		{{ form_widget(form) }}
 		<button type="submit" name="submit">{{ "meta.kill.submit"|trans({},"actions") }}</button>
 	</form>

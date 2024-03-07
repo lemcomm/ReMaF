@@ -87,7 +87,7 @@
 	{% endif %}
 	{% set route = app.request.get('_route') %}
 	{% if route is null %}
-		{% set route = 'bm2_homepage' %}
+		{% set route = 'maf_homepage' %}
 	{% endif %}
 	{% if supported_languages is not defined %}{% set supported_languages = {
 		'en': { 'flag': l_english, 'name': 'english' },

@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Listing;
+use App\Entity\Permission;
 use App\Entity\Settlement;
 use App\Entity\SettlementPermission;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -43,7 +44,7 @@ class SettlementOccupationPermissionsType extends AbstractType {
 		$builder->add('permission', EntityType::class, array(
 			'required' => true,
 			'choice_translation_domain' => true,
-			'class'=>'BM2SiteBundle:Permission',
+			'class'=>Permission::class,
 			'choice_label'=>'translation_string',
 			'query_builder'=>function(EntityRepository $er) {
 				return $er->createQueryBuilder('p')->where('p.class = :class')->setParameter('class', 'settlement');

@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Settlement;
+use App\Entity\War;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -24,9 +25,9 @@ class WarType extends AbstractType {
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'war_1911',
-			'translation_domain' => 'actions',
-			'data_class'			=> 'BM2\SiteBundle\Entity\War',
-			'attr'					=> array('class'=>'wide')
+			'translation_domain' 	=> 'actions',
+			'data_class'		=> War::class,
+			'attr'			=> array('class'=>'wide')
 		));
 		$resolver->setRequired(['me']);
 	}

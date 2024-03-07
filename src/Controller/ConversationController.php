@@ -32,6 +32,7 @@ use App\Form\NewConversationType;
 use App\Form\NewLocalMessageType;
 use App\Form\RecentMessageReplyType;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ConversationController extends AbstractController {
@@ -389,7 +390,7 @@ class ConversationController extends AbstractController {
 	}
 
 	#[Route ('/conv/{conv}', name:'maf_conv_read', requirements:['conv'=>'\d+'])]
-	public function readAction(AuthorizationChecker $checker, Conversation $conv): RedirectResponse|Response {
+	public function readAction(AuthorizationCheckerInterface $checker, Conversation $conv): RedirectResponse|Response {
 		$gm = $checker->isGranted('ROLE_OLYMPUS');
 		if ($gm) {
 			try {

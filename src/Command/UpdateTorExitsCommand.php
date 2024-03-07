@@ -48,7 +48,7 @@ class UpdateTorExitsCommand extends Command {
 		$changed = 0;
 		$skipped = 0;
 		foreach ($all as $each) {
-			$ip = $em->getRepository('BM2SiteBundle:NetExit')->findOneBy(['ip'=>$each['ip']]);
+			$ip = $em->getRepository(NetExit::class)->findOneBy(['ip'=>$each['ip']]);
 			if (!$ip) {
 				$ip = new NetExit;
 				$em->persist($ip);

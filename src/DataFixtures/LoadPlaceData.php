@@ -80,7 +80,7 @@ class LoadPlaceData extends Fixture {
 	public function load(ObjectManager $manager): void {
 		# Load place types.
 		foreach ($this->placetypes as $name=>$data) {
-			$type = $manager->getRepository('BM2SiteBundle:PlaceType')->findOneBy(['name'=>$name]);
+			$type = $manager->getRepository(PlaceType::class)->findOneBy(['name'=>$name]);
 			if (!$type) {
 				$type = new PlaceType();
 				$manager->persist($type);

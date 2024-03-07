@@ -34,7 +34,7 @@
 	{% if not archive %}
 		<div id="replydialog" title="{{ 'message.reply.title'|trans({}, "conversations")|title }}">
 			{% include "Conversation/syntax.html.twig" %}
-			{{ render(controller('BM2\\SiteBundle\\Controller\\ConversationController::replyLocalAction')) }}
+			{{ render(controller('App\\Controller\\ConversationController::replyLocalAction')) }}
 		</div>
 
 		<p align="right">

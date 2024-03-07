@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Realm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -16,7 +17,7 @@ class RealmManageType extends AbstractType {
 		$resolver->setDefaults(array(
 			'intention'       => 'realmmanage_13535',
 			'translation_domain' => 'politics',
-			'data_class'		=> 'BM2\SiteBundle\Entity\Realm',
+			'data_class'		=> Realm::class,
 		));
 		$resolver->setRequired(['min','max']);
 	}

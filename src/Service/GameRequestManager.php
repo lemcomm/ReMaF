@@ -68,9 +68,9 @@ class GameRequestManager {
 		1. User inputs the data for the request for a form and submits it from a controller route.
 		2. That route verifies the data submitted is accurate and then submits it to this Service.
 		3. This service builds the GameRequest and stores it in the database.
-		4. Another route, likely the bm2_gamerequest_manage route allows the receiving user to interact with pending/active requests.
+		4. Another route, likely the maf_gamerequest_manage route allows the receiving user to interact with pending/active requests.
 		5. That controller presents the approve/deny actions to the user.
-		6. When a user accepts/denies a request, it is handled by the GameRequest Controller, either by the bm2_gamerequest_approve or the bm2_gamerequest_deny routes, respectively.
+		6. When a user accepts/denies a request, it is handled by the GameRequest Controller, either by the maf_gamerequest_approve or the maf_gamerequest_deny routes, respectively.
 		   These routes verify the user has authority to handle that request, carry out all actions of the request, and reroute the user to the appropriate page afterwards.
 		7. When an approved request reaches it's expiration date OR a week after a denied request was denied has been reached, GameRunner will purge that request from the database on the next hourly turn.
 

@@ -948,7 +948,6 @@ class RealmController extends AbstractController {
 				$this->em->flush();
 				$this->addFlash('notice', $this->trans->trans('realm.capital.success', array(), 'politics'));
 				return $this->redirectToRoute('maf_realm_capital', array('realm'=>$realm->getId()));
-				#return $this->redirectToRoute('bm2_politics');
 			}
 		}
 

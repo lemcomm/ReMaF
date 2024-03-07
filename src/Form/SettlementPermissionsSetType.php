@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use BM2\SiteBundle\Form\SettlementOccupationPermissionsType;
+use App\Entity\Settlement;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -10,7 +10,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityManager;
 
-use BM2\SiteBundle\Entity\Character;
 use Symfony\Component\Validator\Constraints\Valid;
 
 /**
@@ -25,7 +24,7 @@ class SettlementPermissionsSetType extends AbstractType {
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
 			'intention'       => 'sps_41312',
-			'data_class'		=> 'BM2\SiteBundle\Entity\Settlement',
+			'data_class'		=> Settlement::class,
 			'translation_domain' => 'actions'
 		));
 	}
