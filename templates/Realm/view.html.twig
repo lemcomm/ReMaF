@@ -183,8 +183,10 @@
 		{% if parentpoly and parentpoly != '' %}
 			addoutline('{{ parentpoly }}', '#cccc20', 1, '{{ realm.superior.colourhex}}', 0.3);
 		{% endif %}
-		{% for sub in subpolygons if sub != '' %}
-			addoutline('{{ sub }}', '#b01020', 1, '#000000', 0, 'dash');
+		{% for sub in subpolygons %}
+			{% if sub != '' %}
+				addoutline('{{ sub }}', '#b01020', 1, '#000000', 0, 'dash');
+			{% endif %}
 		{% endfor %}
 		addoutline('{{ realmpoly }}', '#cc2030', 2, '{{ realm.colourhex}}', 0.5);
 	{% endif %}

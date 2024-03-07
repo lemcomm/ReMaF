@@ -51,8 +51,8 @@
 			{% for character in report.characters %}
 				<td>
 				{% set wpn = character.weapon.name %}
-				{% for stage in character.stages if stage.round == i %}
-					{% if stage.round != 32767 %}
+				{% for stage in character.stages %}
+					{% if stage.round == i and stage.round != 32767 %}
 						<li>{{ ('report.combat.'~stage.data.result)|trans({'%name%':character.character.name, '%weapon%':wpn})|raw }}</li>
 					{% endif %}
 				{% endfor %}

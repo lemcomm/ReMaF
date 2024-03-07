@@ -61,26 +61,30 @@
 		{# this part here (and only this part) assumes 2 sides to a battle #}
 		<tr>
 			<td rowspan="100" class="battlebanners" align="right"><ul>
-			{% for participant in report.participants if participant.groupId == 0 %}
-				{% if participant.character.crest %}
+			{% for participant in report.participants %}
+				{% if participant.groupId == 0 and participant.character.crest %}
 					<li>{{ character_link(participant.character.id, '<img src="'~path("maf_heraldry_crest", {"id":participant.character.crest.id})~'"/>') }}</li>
 				{% endif %}
 			{% endfor %}
 			</ul></td>
 			<td class="reportcolumn"><ul class="shortlist">
-			{% for participant in report.participants if participant.groupId == 0 %}
+			{% for participant in report.participants %}
+				{% if participant.groupId == 0 %}
 				<li>{{ link(participant.character) }}</li>
+				{% endif %}
 			{% endfor %}
 			</ul></td>
 
 			<td class="reportcolumn"><ul class="shortlist">
-			{% for participant in report.participants if participant.groupId == 1 %}
+			{% for participant in report.participants %}
+				{% if participant.groupId == 1 %}
 				<li>{{ link(participant.character) }}</li>
+				{% endif %}
 			{% endfor %}
 			</ul></td>
 			<td rowspan="100" class="battlebanners" align="left"><ul>
-			{% for participant in report.participants if participant.groupId == 1 %}
-				{% if participant.character.crest %}
+			{% for participant in report.participants %}
+				{% if participant.groupId == 1 and participant.character.crest %}
 					<li><img src="{{ path("maf_heraldry_crest", {"id":participant.character.crest.id}) }}"/></li>
 				{% endif %}
 			{% endfor %}
@@ -108,8 +112,10 @@
 				<ul>
 					<li>{{ 'battle.ranged.shots'|trans({'count':group.shots, '%i%':group.shots}) }}</li>
 					<li>{{ 'battle.ranged.hits'|trans({'count':group.hits, '%i%':group.hits}) }}</li>
-					{% for result,amount in group.results if amount > 0 and result != 'fail' and result != 'extra' %}
+					{% for result,amount in group.results %}
+						{% if amount > 0 and result != 'fail' and result != 'extra' %}
 						<li>{{ ('battle.ranged.'~result)|trans({'count':amount, '%i%':amount}) }}</li>
+						{% endif %}
 					{% endfor %}
 					{% if group.routed > 0 %}
 						<li>{{ 'battle.ranged.routed'|trans({'count':group.routed, '%i%':group.routed}) }}</li>
@@ -127,8 +133,10 @@
 			{% for i, group in melee %}
 				<td valign="top">
 				<ul>
-					{% for result,amount in group if amount > 0 and result != 'fail' and result != 'extra' %}
-						<li>{{ ('battle.melee.'~result)|trans({'count':amount, '%i%':amount}) }}</li>
+					{% for result,amount in group %}
+						{% if amount > 0 and result != 'fail' and result != 'extra' %}
+							<li>{{ ('battle.melee.'~result)|trans({'count':amount, '%i%':amount}) }}</li>
+						{% endif %}
 					{% endfor %}
 					{{ macros.extras(report.participants, group) }}
 				</ul>
@@ -142,8 +150,10 @@
 		{% for i, group in report.hunt %}
 			<td valign="top">
 			<ul>
-				{% for result,amount in group if amount > 0 and result != 'extra' %}
-					<li>{{ ('battle.hunt.'~result)|trans({'count':amount, '%i%':amount}) }}</li>
+				{% for result,amount in group %}
+					{% if amount > 0 and result != 'extra' %}
+						<li>{{ ('battle.hunt.'~result)|trans({'count':amount, '%i%':amount}) }}</li>
+					{% endif %}
 				{% endfor %}
 				{{ macros.extras(report.participants, group) }}
 			</ul>
@@ -223,23 +233,27 @@
 			<tr>
 			{% for group in report.groups %}
 				<td>
-				{% for stage in group.combatStages if stage.round == i %}
-					{% for result, amount in stage.data if amount > 0 %}
-						<li>{{ ('battle.round.'~result)|trans({'count':amount, '%i%':amount}) }}</li>
-					{% endfor %}
-					{% for extra in stage.extra %}
-						{% set who = null %}
-						{% set by = null %}
-						{% for participant in fighters %}
-							{% if participant.character.id == extra.who %}
-								{% set who = participant.character %}
-							{% endif %}
-							{% if extra.by is defined and participant.character.id == extra.by %}
-								{% set by = participant.character %}
+				{% for stage in group.combatStages %}
+					{% if stage.round == i %}
+						{% for result, amount in stage.data %}
+							{% if amount > 0 %}
+							<li>{{ ('battle.round.'~result)|trans({'count':amount, '%i%':amount}) }}</li>
 							{% endif %}
 						{% endfor %}
-						<li>{{ ('battle.extras.'~extra.what)|trans({'%who%':who?link(who):'[nobody]', '%by%':by?link(by):'[nobody]'})|raw }}</li>
-					{% endfor %}
+						{% for extra in stage.extra %}
+							{% set who = null %}
+							{% set by = null %}
+							{% for participant in fighters %}
+								{% if participant.character.id == extra.who %}
+									{% set who = participant.character %}
+								{% endif %}
+								{% if extra.by is defined and participant.character.id == extra.by %}
+									{% set by = participant.character %}
+								{% endif %}
+							{% endfor %}
+							<li>{{ ('battle.extras.'~extra.what)|trans({'%who%':who?link(who):'[nobody]', '%by%':by?link(by):'[nobody]'})|raw }}</li>
+						{% endfor %}
+					{% endif %}
 				{% endfor %}
 				</td>
 			{% endfor %}
@@ -252,8 +266,10 @@
 		<tr>
 			{% for group in report.groups %}
 				<td valign="top"><ul>
-				{% for result,amount in group.hunt if amount > 0 and result != 'extra' %}
+				{% for result,amount in group.hunt %}
+					{% if amount > 0 and result != 'extra' %}
 					<li>{{ ('battle.hunt.'~result)|trans({'count':amount, '%i%':amount}) }}</li>
+					{% endif %}
 				{% endfor %}
 				{# TODO: Add logic for when nobles are killed while fleeing. #}
 				</ul></td>

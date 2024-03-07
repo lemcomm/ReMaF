@@ -25,16 +25,18 @@
 		<h3>{{ 'economy.features.existing'|trans({}, "actions")|title }}</h3>
 		<table>
 			<thead><tr>
-				<th>{{ "feature"|trans({'count':1}|title }}</th>
+				<th>{{ "feature"|trans({'count':1})|title }}</th>
 				<th>{{ "feature.name"|trans({}, "economy") }}</th>
 			</tr></thead>
 			<tbody>
-			{% for feature in features %}{% if feature.active == true and feature.type.hidden == false %}
-				<tr>
-					<td>{{ link(feature.type) }}</a></td>
-					<td>{{ form_widget(form.existing[feature.id]) }}</td>
-				</tr>
-			{% endif %}{% endfor %}
+			{% for feature in features %}
+				{% if feature.active == true and feature.type.hidden == false %}
+					<tr>
+						<td>{{ link(feature.type) }}</a></td>
+						<td>{{ form_widget(form.existing[feature.id]) }}</td>
+					</tr>
+				{% endif %}
+			{% endfor %}
 			</tbody>
 		</table>
 
@@ -45,42 +47,44 @@
 		<table>
 			<thead><tr>
 				<th></th>
-				<th>{{ "feature"|trans({'count':1}|title }}</th>
+				<th>{{ "feature"|trans({'count':1})|title }}</th>
 				<th>{{ "economy.features.progress"|trans({}, "actions") }}</th>
 				<th>{{ "economy.features.workers"|trans({}, "actions") }}</th>
 				<th>{{ "economy.features.workers"|trans({}, "actions") }}</th>
 				<th>{{ "economy.features.completion"|trans({}, "actions") }}</th>
 			</tr></thead>
 			<tbody>
-			{% for feature in features %}{% if feature.active == false and feature.type.hidden == false %}
-				<tr>
-					<td>{{ feature.name }}</td>
-					<td>{{ link(feature.type) }}</a></td>
-					<td class="progress_column">
-					{# FIXME: lots of hard-coded stuff in there. That should be moved elsewhere... #}
-						{% if feature.condition < 0 %}
-						{% set progress = ((feature.condition+feature.type.buildhours)*100/feature.type.buildhours)|number_format %}
-						<div class="progressbar" value="{{progress}}"><span class="progress_value_dummy">{{ progress }} %</span></div></td>
-						{% endif %}
-					</td>
-					<td align="center">{{ form_widget(form.existing[feature.id]) }}</td>
-					<td align="right" id="we_{{ feature.id }}">{{ (feature.workers*settlement.population)|number_format }} {{ 'build.workers'|trans }}</td>
-					{% if feature.active %}
-						<td align="right"></td>
-					{% else %}
-						{% if feature.workers > 0 %}
-							{% set complete = (-1*feature.condition) / workhours[feature.id] %}
-							{% if complete < 1 %}
-								<td align="right" id="done_{{ feature.id }}">{{ 'today'|trans }}</td>
-							{% else %}
-								<td align="right" id="done_{{ feature.id }}">{{ complete|number_format }} {{ 'day'|trans({'count':complete} }}</td>
+			{% for feature in features %}
+				{% if feature.active == false and feature.type.hidden == false %}
+					<tr>
+						<td>{{ feature.name }}</td>
+						<td>{{ link(feature.type) }}</a></td>
+						<td class="progress_column">
+						{# FIXME: lots of hard-coded stuff in there. That should be moved elsewhere... #}
+							{% if feature.condition < 0 %}
+							{% set progress = ((feature.condition+feature.type.buildhours)*100/feature.type.buildhours)|number_format %}
+							<div class="progressbar" value="{{progress}}"><span class="progress_value_dummy">{{ progress }} %</span></div></td>
 							{% endif %}
+						</td>
+						<td align="center">{{ form_widget(form.existing[feature.id]) }}</td>
+						<td align="right" id="we_{{ feature.id }}">{{ (feature.workers*settlement.population)|number_format }} {{ 'build.workers'|trans }}</td>
+						{% if feature.active %}
+							<td align="right"></td>
 						{% else %}
-							<td align="right" id="done_{{ feature.id }}">{{ "economy.features.never"|trans({}, "actions")}}</td>
+							{% if feature.workers > 0 %}
+								{% set complete = (-1*feature.condition) / workhours[feature.id] %}
+								{% if complete < 1 %}
+									<td align="right" id="done_{{ feature.id }}">{{ 'today'|trans }}</td>
+								{% else %}
+									<td align="right" id="done_{{ feature.id }}">{{ complete|number_format }} {{ 'day'|trans({'count':complete}) }}</td>
+								{% endif %}
+							{% else %}
+								<td align="right" id="done_{{ feature.id }}">{{ "economy.features.never"|trans({}, "actions")}}</td>
+							{% endif %}
 						{% endif %}
-					{% endif %}
-				</tr>
-			{% endif %}{% endfor %}
+					</tr>
+				{% endif %}
+			{% endfor %}
 			</tbody>
 			{% if roadworkers > 0 or buildingworkers > 0 %}
 			<tfoot>

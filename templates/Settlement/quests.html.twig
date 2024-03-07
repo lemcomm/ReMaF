@@ -14,12 +14,14 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for quest in quests if quest.completed == false %}
-				<tr>
-					<td>{{ quest.summary }}</td>
-					<td><ul class="shortlist">{% for quester in quest.questers %}<li>{{ link(quester.character) }}</li>{% endfor %}</ul></td>
-					<td><a href="{{ path('maf_quests_details', {'id':quest.id}) }}">{{ "quests.details"|trans({},"actions") }}</a></td>
-				</tr>
+			{% for quest in quests %}
+				{% if quest.completed == false %}
+					<tr>
+						<td>{{ quest.summary }}</td>
+						<td><ul class="shortlist">{% for quester in quest.questers %}<li>{{ link(quester.character) }}</li>{% endfor %}</ul></td>
+						<td><a href="{{ path('maf_quests_details', {'id':quest.id}) }}">{{ "quests.details"|trans({},"actions") }}</a></td>
+					</tr>
+				{% endif %}
 			{% endfor %}
 		</tbody>
 	</table>
@@ -35,11 +37,13 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for quest in quests if quest.completed == true %}
-				<tr>
-					<td>{{ quest.summary }}</td>
-					<td><ul class="shortlist">{% for quester in quest.questers %}<li>{{ link(quester.character) }}</li>{% endfor %}</ul></td>
-				</tr>
+			{% for quest in quests %}
+				{% if quest.completed == true %}
+					<tr>
+						<td>{{ quest.summary }}</td>
+						<td><ul class="shortlist">{% for quester in quest.questers %}<li>{{ link(quester.character) }}</li>{% endfor %}</ul></td>
+					</tr>
+				{% endif %}
 			{% endfor %}
 		</tbody>
 	</table>
