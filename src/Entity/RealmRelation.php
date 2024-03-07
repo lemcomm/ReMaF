@@ -10,11 +10,20 @@ class RealmRelation {
 	private string $internal;
 	private string $delivered;
 	private DateTime $last_change;
-	private int $id;
+	private ?int $id = null;
 	private ?Realm $source_realm;
 	private ?Realm $target_realm;
 	private ?Association $source_association;
 	private ?Association $target_association;
+
+	/**
+	 * Get status
+	 *
+	 * @return string
+	 */
+	public function getStatus(): string {
+		return $this->status;
+	}
 
 	/**
 	 * Set status
@@ -30,12 +39,12 @@ class RealmRelation {
 	}
 
 	/**
-	 * Get status
+	 * Get public
 	 *
 	 * @return string
 	 */
-	public function getStatus(): string {
-		return $this->status;
+	public function getPublic(): string {
+		return $this->public;
 	}
 
 	/**
@@ -52,12 +61,12 @@ class RealmRelation {
 	}
 
 	/**
-	 * Get public
+	 * Get internal
 	 *
 	 * @return string
 	 */
-	public function getPublic(): string {
-		return $this->public;
+	public function getInternal(): string {
+		return $this->internal;
 	}
 
 	/**
@@ -74,12 +83,12 @@ class RealmRelation {
 	}
 
 	/**
-	 * Get internal
+	 * Get delivered
 	 *
 	 * @return string
 	 */
-	public function getInternal(): string {
-		return $this->internal;
+	public function getDelivered(): string {
+		return $this->delivered;
 	}
 
 	/**
@@ -96,12 +105,12 @@ class RealmRelation {
 	}
 
 	/**
-	 * Get delivered
+	 * Get last_change
 	 *
-	 * @return string
+	 * @return DateTime
 	 */
-	public function getDelivered(): string {
-		return $this->delivered;
+	public function getLastChange(): DateTime {
+		return $this->last_change;
 	}
 
 	/**
@@ -118,21 +127,21 @@ class RealmRelation {
 	}
 
 	/**
-	 * Get last_change
+	 * Get id
 	 *
-	 * @return DateTime
+	 * @return int|null
 	 */
-	public function getLastChange(): DateTime {
-		return $this->last_change;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get source_realm
 	 *
-	 * @return integer
+	 * @return Realm|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getSourceRealm(): ?Realm {
+		return $this->source_realm;
 	}
 
 	/**
@@ -149,12 +158,12 @@ class RealmRelation {
 	}
 
 	/**
-	 * Get source_realm
+	 * Get target_realm
 	 *
 	 * @return Realm|null
 	 */
-	public function getSourceRealm(): ?Realm {
-		return $this->source_realm;
+	public function getTargetRealm(): ?Realm {
+		return $this->target_realm;
 	}
 
 	/**
@@ -171,12 +180,12 @@ class RealmRelation {
 	}
 
 	/**
-	 * Get target_realm
+	 * Get source_association
 	 *
-	 * @return Realm|null
+	 * @return Association|null
 	 */
-	public function getTargetRealm(): ?Realm {
-		return $this->target_realm;
+	public function getSourceAssociation(): ?Association {
+		return $this->source_association;
 	}
 
 	/**
@@ -193,12 +202,12 @@ class RealmRelation {
 	}
 
 	/**
-	 * Get source_association
+	 * Get target_association
 	 *
 	 * @return Association|null
 	 */
-	public function getSourceAssociation(): ?Association {
-		return $this->source_association;
+	public function getTargetAssociation(): ?Association {
+		return $this->target_association;
 	}
 
 	/**
@@ -212,14 +221,5 @@ class RealmRelation {
 		$this->target_association = $targetAssociation;
 
 		return $this;
-	}
-
-	/**
-	 * Get target_association
-	 *
-	 * @return Association|null
-	 */
-	public function getTargetAssociation(): ?Association {
-		return $this->target_association;
 	}
 }

@@ -14,7 +14,7 @@ class Partnership {
 	private bool $partner_may_use_crest;
 	private ?DateTime $start_date;
 	private ?DateTime $end_date;
-	private int $id;
+	private ?int $id = null;
 	private Character $initiator;
 	private Collection $partners;
 
@@ -33,6 +33,24 @@ class Partnership {
 	}
 
 	/**
+	 * Get partners
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getPartners(): ArrayCollection|Collection {
+		return $this->partners;
+	}
+
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
+
+	/**
 	 * Set type
 	 *
 	 * @param string $type
@@ -46,12 +64,16 @@ class Partnership {
 	}
 
 	/**
-	 * Get type
+	 * Get active
 	 *
-	 * @return string
+	 * @return boolean
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getActive(): bool {
+		return $this->active;
+	}
+
+	public function isActive(): ?bool {
+		return $this->active;
 	}
 
 	/**
@@ -68,12 +90,16 @@ class Partnership {
 	}
 
 	/**
-	 * Get active
+	 * Get public
 	 *
 	 * @return boolean
 	 */
-	public function getActive(): bool {
-		return $this->active;
+	public function getPublic(): bool {
+		return $this->public;
+	}
+
+	public function isPublic(): ?bool {
+		return $this->public;
 	}
 
 	/**
@@ -90,34 +116,16 @@ class Partnership {
 	}
 
 	/**
-	 * Get public
+	 * Get partner_may_use_crest
 	 *
 	 * @return boolean
 	 */
-	public function getPublic(): bool {
-		return $this->public;
+	public function getPartnerMayUseCrest(): bool {
+		return $this->partner_may_use_crest;
 	}
 
-	/**
-	 * Set with_sex
-	 *
-	 * @param boolean $withSex
-	 *
-	 * @return Partnership
-	 */
-	public function setWithSex(bool $withSex): static {
-		$this->with_sex = $withSex;
-
-		return $this;
-	}
-
-	/**
-	 * Get with_sex
-	 *
-	 * @return boolean
-	 */
-	public function getWithSex(): bool {
-		return $this->with_sex;
+	public function isPartnerMayUseCrest(): ?bool {
+		return $this->partner_may_use_crest;
 	}
 
 	/**
@@ -134,12 +142,12 @@ class Partnership {
 	}
 
 	/**
-	 * Get partner_may_use_crest
+	 * Get start_date
 	 *
-	 * @return boolean
+	 * @return DateTime|null
 	 */
-	public function getPartnerMayUseCrest(): bool {
-		return $this->partner_may_use_crest;
+	public function getStartDate(): ?DateTime {
+		return $this->start_date;
 	}
 
 	/**
@@ -156,12 +164,12 @@ class Partnership {
 	}
 
 	/**
-	 * Get start_date
+	 * Get end_date
 	 *
 	 * @return DateTime|null
 	 */
-	public function getStartDate(): ?DateTime {
-		return $this->start_date;
+	public function getEndDate(): ?DateTime {
+		return $this->end_date;
 	}
 
 	/**
@@ -178,21 +186,21 @@ class Partnership {
 	}
 
 	/**
-	 * Get end_date
+	 * Get id
 	 *
-	 * @return DateTime|null
+	 * @return int|null
 	 */
-	public function getEndDate(): ?DateTime {
-		return $this->end_date;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get initiator
 	 *
-	 * @return integer
+	 * @return Character
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getInitiator(): Character {
+		return $this->initiator;
 	}
 
 	/**
@@ -206,15 +214,6 @@ class Partnership {
 		$this->initiator = $initiator;
 
 		return $this;
-	}
-
-	/**
-	 * Get initiator
-	 *
-	 * @return Character
-	 */
-	public function getInitiator(): Character {
-		return $this->initiator;
 	}
 
 	/**
@@ -239,28 +238,29 @@ class Partnership {
 		$this->partners->removeElement($partners);
 	}
 
-	/**
-	 * Get partners
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getPartners(): ArrayCollection|Collection {
-		return $this->partners;
-	}
-
-	public function isActive(): ?bool {
-		return $this->active;
-	}
-
-	public function isPublic(): ?bool {
-		return $this->public;
-	}
-
 	public function isWithSex(): ?bool {
 		return $this->with_sex;
 	}
 
-	public function isPartnerMayUseCrest(): ?bool {
-		return $this->partner_may_use_crest;
+	/**
+	 * Get with_sex
+	 *
+	 * @return boolean
+	 */
+	public function getWithSex(): bool {
+		return $this->with_sex;
+	}
+
+	/**
+	 * Set with_sex
+	 *
+	 * @param boolean $withSex
+	 *
+	 * @return Partnership
+	 */
+	public function setWithSex(bool $withSex): static {
+		$this->with_sex = $withSex;
+
+		return $this;
 	}
 }

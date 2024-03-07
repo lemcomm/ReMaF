@@ -6,15 +6,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class Realm extends Faction {
+	protected bool|Collection $all_characters = false;
+	protected bool|Collection $all_active_characters = false;
+	protected bool|Collection $rulers = false;
 	private bool $active;
-	private string $name;
-	private string $formal_name;
 	private int $type;
 	private string $colour_hex;
 	private string $colour_rgb;
 	private ?string $language;
 	private ?string $old_description;
-	private int $id;
+	private ?int $id = null;
 	private ?Description $description;
 	private ?SpawnDescription $spawn_description;
 	private ?EventLog $log;
@@ -32,26 +33,20 @@ class Realm extends Faction {
 	private Collection $foreign_relations;
 	private Collection $wars;
 	private Collection $sieges;
-	private Collection $conversations;
-	private Collection $requests;
-	private Collection $related_requests;
-	private Collection $part_of_requests;
 	private Collection $places;
 	private Collection $embassies_abroad;
 	private Collection $hosted_embassies;
 	private Collection $vassals;
 	private Collection $permissions;
-	private Settlement $capital;
+	private ?Settlement $capital;
 	private ?Realm $superior;
 	private ?Place $capital_place;
-	protected bool|Collection $all_characters = false;
-	protected bool|Collection $all_active_characters = false;
-	protected bool|Collection $rulers = false;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
+		parent::__construct();
 		$this->descriptions = new ArrayCollection();
 		$this->spawns = new ArrayCollection();
 		$this->spawn_descriptions = new ArrayCollection();
@@ -66,37 +61,11 @@ class Realm extends Faction {
 		$this->foreign_relations = new ArrayCollection();
 		$this->wars = new ArrayCollection();
 		$this->sieges = new ArrayCollection();
-		$this->conversations = new ArrayCollection();
-		$this->requests = new ArrayCollection();
-		$this->related_requests = new ArrayCollection();
-		$this->part_of_requests = new ArrayCollection();
 		$this->places = new ArrayCollection();
 		$this->embassies_abroad = new ArrayCollection();
 		$this->hosted_embassies = new ArrayCollection();
 		$this->vassals = new ArrayCollection();
 		$this->permissions = new ArrayCollection();
-	}
-
-	public function findTerritory($with_subs = true, $all_subs = true): Collection {
-		if (!$with_subs) return $this->getSettlements();
-
-		$territory = new ArrayCollection;
-
-		if ($all_subs) {
-			$all = $this->findAllInferiors(true);
-		} else {
-			$all[] = $this;
-			$all[] = $this->getInferiors();
-		}
-		foreach ($all as $realm) {
-			foreach ($realm->getSettlements() as $settlement) {
-				if (!$territory->contains($settlement)) {
-					$territory->add($settlement);
-				}
-			}
-		}
-
-		return $territory;
 	}
 
 	public function findRulers(): ArrayCollection|bool {
@@ -113,6 +82,15 @@ class Realm extends Faction {
 		}
 
 		return $this->rulers;
+	}
+
+	/**
+	 * Get positions
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getPositions(): ArrayCollection|Collection {
+		return $this->positions;
 	}
 
 	public function findMembers($with_subs = true, $forceupdate = false): ArrayCollection|bool {
@@ -180,6 +158,84 @@ class Realm extends Faction {
 		return $this->all_characters;
 	}
 
+	public function findTerritory($with_subs = true, $all_subs = true): Collection {
+		if (!$with_subs) return $this->getSettlements();
+
+		$territory = new ArrayCollection;
+
+		if ($all_subs) {
+			$all = $this->findAllInferiors(true);
+		} else {
+			$all[] = $this;
+			$all[] = $this->getInferiors();
+		}
+		foreach ($all as $realm) {
+			foreach ($realm->getSettlements() as $settlement) {
+				if (!$territory->contains($settlement)) {
+					$territory->add($settlement);
+				}
+			}
+		}
+
+		return $territory;
+	}
+
+	/**
+	 * Get settlements
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getSettlements(): ArrayCollection|Collection {
+		return $this->settlements;
+	}
+
+	/**
+	 * Get inferiors
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getInferiors(): ArrayCollection|Collection {
+		return $this->inferiors;
+	}
+
+	private function addRealmMember(Character $char) {
+		if (!$this->all_characters->contains($char)) {
+			$this->all_characters->add($char);
+		}
+		foreach ($char->getVassals() as $vassal) {
+			if (!$this->all_characters->contains($vassal)) {
+				$this->all_characters->add($vassal);
+			}
+		}
+	}
+
+	/**
+	 * Get vassals
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getVassals(): ArrayCollection|Collection {
+		return $this->vassals;
+	}
+
+	/**
+	 * Get places
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getPlaces(): ArrayCollection|Collection {
+		return $this->places;
+	}
+
+	/**
+	 * Get hosted_embassies
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getHostedEmbassies(): ArrayCollection|Collection {
+		return $this->hosted_embassies;
+	}
+
 	public function findActiveMembers($with_subs = true, $forceupdate = false): ArrayCollection|bool {
 		if ($this->all_active_characters && !$forceupdate) return $this->all_active_characters;
 		$this->all_active_characters = new ArrayCollection;
@@ -237,17 +293,6 @@ class Realm extends Faction {
 		return $this->all_active_characters;
 	}
 
-	private function addRealmMember(Character $char) {
-		if (!$this->all_characters->contains($char)) {
-			$this->all_characters->add($char);
-		}
-		foreach ($char->getVassals() as $vassal) {
-			if (!$this->all_characters->contains($vassal)) {
-				$this->all_characters->add($vassal);
-			}
-		}
-	}
-
 	private function addActiveRealmMember(Character $char) {
 		if (!$this->all_active_characters->contains($char)) {
 			$this->all_active_characters->add($char);
@@ -269,6 +314,15 @@ class Realm extends Faction {
 		return $all;
 	}
 
+	/**
+	 * Get my_relations
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMyRelations(): ArrayCollection|Collection {
+		return $this->my_relations;
+	}
+
 	public function findUnfriendlyRelations(): ArrayCollection {
 		$all = new ArrayCollection();
 		foreach ($this->getMyRelations() as $rel) {
@@ -277,6 +331,19 @@ class Realm extends Faction {
 			}
 		}
 		return $all;
+	}
+
+	/**
+	 * Get active
+	 *
+	 * @return boolean
+	 */
+	public function getActive(): bool {
+		return $this->active;
+	}
+
+	public function isActive(): ?bool {
+		return $this->active;
 	}
 
 	/**
@@ -293,56 +360,12 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get active
+	 * Get type
 	 *
-	 * @return boolean
+	 * @return integer
 	 */
-	public function getActive(): bool {
-		return $this->active;
-	}
-
-	/**
-	 * Set name
-	 *
-	 * @param string $name
-	 *
-	 * @return Realm
-	 */
-	public function setName(string $name): static {
-		$this->name = $name;
-
-		return $this;
-	}
-
-	/**
-	 * Get name
-	 *
-	 * @return string
-	 */
-	public function getName(): string {
-		return $this->name;
-	}
-
-	/**
-	 * Set formal_name
-	 *
-	 * @param string $formalName
-	 *
-	 * @return Realm
-	 */
-	public function setFormalName(string $formalName): static {
-		$this->formal_name = $formalName;
-
-		return $this;
-	}
-
-	/**
-	 * Get formal_name
-	 *
-	 * @return string
-	 */
-	public function getFormalName(): string {
-		return $this->formal_name;
+	public function getType(): int {
+		return $this->type;
 	}
 
 	/**
@@ -359,12 +382,12 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get type
+	 * Get colour_hex
 	 *
-	 * @return integer
+	 * @return string
 	 */
-	public function getType(): int {
-		return $this->type;
+	public function getColourHex(): string {
+		return $this->colour_hex;
 	}
 
 	/**
@@ -381,12 +404,12 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get colour_hex
+	 * Get colour_rgb
 	 *
 	 * @return string
 	 */
-	public function getColourHex(): string {
-		return $this->colour_hex;
+	public function getColourRgb(): string {
+		return $this->colour_rgb;
 	}
 
 	/**
@@ -403,12 +426,12 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get colour_rgb
+	 * Get language
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getColourRgb(): string {
-		return $this->colour_rgb;
+	public function getLanguage(): ?string {
+		return $this->language;
 	}
 
 	/**
@@ -425,12 +448,12 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get language
+	 * Get old_description
 	 *
 	 * @return string|null
 	 */
-	public function getLanguage(): ?string {
-		return $this->language;
+	public function getOldDescription(): ?string {
+		return $this->old_description;
 	}
 
 	/**
@@ -447,21 +470,21 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get old_description
+	 * Get id
 	 *
-	 * @return string|null
+	 * @return int|null
 	 */
-	public function getOldDescription(): ?string {
-		return $this->old_description;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get description
 	 *
-	 * @return integer
+	 * @return Description|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getDescription(): ?Description {
+		return $this->description;
 	}
 
 	/**
@@ -478,12 +501,12 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get description
+	 * Get spawn_description
 	 *
-	 * @return Description|null
+	 * @return SpawnDescription|null
 	 */
-	public function getDescription(): ?Description {
-		return $this->description;
+	public function getSpawnDescription(): ?SpawnDescription {
+		return $this->spawn_description;
 	}
 
 	/**
@@ -500,12 +523,12 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get spawn_description
+	 * Get log
 	 *
-	 * @return SpawnDescription|null
+	 * @return EventLog|null
 	 */
-	public function getSpawnDescription(): ?SpawnDescription {
-		return $this->spawn_description;
+	public function getLog(): ?EventLog {
+		return $this->log;
 	}
 
 	/**
@@ -519,15 +542,6 @@ class Realm extends Faction {
 		$this->log = $log;
 
 		return $this;
-	}
-
-	/**
-	 * Get log
-	 *
-	 * @return EventLog|null
-	 */
-	public function getLog(): ?EventLog {
-		return $this->log;
 	}
 
 	/**
@@ -646,15 +660,6 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get inferiors
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getInferiors(): ArrayCollection|Collection {
-		return $this->inferiors;
-	}
-
-	/**
 	 * Add settlements
 	 *
 	 * @param Settlement $settlements
@@ -674,15 +679,6 @@ class Realm extends Faction {
 	 */
 	public function removeSettlement(Settlement $settlements) {
 		$this->settlements->removeElement($settlements);
-	}
-
-	/**
-	 * Get settlements
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getSettlements(): ArrayCollection|Collection {
-		return $this->settlements;
 	}
 
 	/**
@@ -801,15 +797,6 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get positions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getPositions(): ArrayCollection|Collection {
-		return $this->positions;
-	}
-
-	/**
 	 * Add elections
 	 *
 	 * @param Election $elections
@@ -860,15 +847,6 @@ class Realm extends Faction {
 	 */
 	public function removeMyRelation(RealmRelation $myRelations) {
 		$this->my_relations->removeElement($myRelations);
-	}
-
-	/**
-	 * Get my_relations
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getMyRelations(): ArrayCollection|Collection {
-		return $this->my_relations;
 	}
 
 	/**
@@ -962,37 +940,6 @@ class Realm extends Faction {
 	 */
 	public function getSieges(): ArrayCollection|Collection {
 		return $this->sieges;
-	}
-
-	/**
-	 * Add conversations
-	 *
-	 * @param Conversation $conversations
-	 *
-	 * @return Realm
-	 */
-	public function addConversation(Conversation $conversations): static {
-		$this->conversations[] = $conversations;
-
-		return $this;
-	}
-
-	/**
-	 * Remove conversations
-	 *
-	 * @param Conversation $conversations
-	 */
-	public function removeConversation(Conversation $conversations) {
-		$this->conversations->removeElement($conversations);
-	}
-
-	/**
-	 * Get conversations
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getConversations(): ArrayCollection|Collection {
-		return $this->conversations;
 	}
 
 	/**
@@ -1111,15 +1058,6 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get places
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getPlaces(): ArrayCollection|Collection {
-		return $this->places;
-	}
-
-	/**
 	 * Add embassies_abroad
 	 *
 	 * @param Place $embassiesAbroad
@@ -1173,15 +1111,6 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get hosted_embassies
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getHostedEmbassies(): ArrayCollection|Collection {
-		return $this->hosted_embassies;
-	}
-
-	/**
 	 * Add vassals
 	 *
 	 * @param Character $vassals
@@ -1201,15 +1130,6 @@ class Realm extends Faction {
 	 */
 	public function removeVassal(Character $vassals) {
 		$this->vassals->removeElement($vassals);
-	}
-
-	/**
-	 * Get vassals
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getVassals(): ArrayCollection|Collection {
-		return $this->vassals;
 	}
 
 	/**
@@ -1244,6 +1164,15 @@ class Realm extends Faction {
 	}
 
 	/**
+	 * Get capital
+	 *
+	 * @return Settlement|null
+	 */
+	public function getCapital(): ?Settlement {
+		return $this->capital;
+	}
+
+	/**
 	 * Set capital
 	 *
 	 * @param Settlement|null $capital
@@ -1257,12 +1186,12 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get capital
+	 * Get superior
 	 *
-	 * @return Settlement|null
+	 * @return Realm|null
 	 */
-	public function getCapital(): ?Settlement {
-		return $this->capital;
+	public function getSuperior(): ?Realm {
+		return $this->superior;
 	}
 
 	/**
@@ -1279,12 +1208,12 @@ class Realm extends Faction {
 	}
 
 	/**
-	 * Get superior
+	 * Get capital_place
 	 *
-	 * @return Realm|null
+	 * @return Place|null
 	 */
-	public function getSuperior(): ?Realm {
-		return $this->superior;
+	public function getCapitalPlace(): ?Place {
+		return $this->capital_place;
 	}
 
 	/**
@@ -1298,18 +1227,5 @@ class Realm extends Faction {
 		$this->capital_place = $capitalPlace;
 
 		return $this;
-	}
-
-	/**
-	 * Get capital_place
-	 *
-	 * @return Place|null
-	 */
-	public function getCapitalPlace(): ?Place {
-		return $this->capital_place;
-	}
-
-	public function isActive(): ?bool {
-		return $this->active;
 	}
 }

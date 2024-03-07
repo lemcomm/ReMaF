@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 class Listing {
 	private string $name;
 	private bool $public;
-	private int $id;
+	private ?int $id = null;
 	private Collection $members;
 	private Collection $descendants;
 	private ?Character $creator;
@@ -21,6 +21,15 @@ class Listing {
 	public function __construct() {
 		$this->members = new ArrayCollection();
 		$this->descendants = new ArrayCollection();
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -37,42 +46,11 @@ class Listing {
 	}
 
 	/**
-	 * Get name
-	 *
-	 * @return string
-	 */
-	public function getName(): string {
-		return $this->name;
-	}
-
-	/**
-	 * Set public
-	 *
-	 * @param boolean $public
-	 *
-	 * @return Listing
-	 */
-	public function setPublic(bool $public): static {
-		$this->public = $public;
-
-		return $this;
-	}
-
-	/**
-	 * Get public
-	 *
-	 * @return boolean
-	 */
-	public function getPublic(): bool {
-		return $this->public;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -139,6 +117,15 @@ class Listing {
 	}
 
 	/**
+	 * Get creator
+	 *
+	 * @return Character|null
+	 */
+	public function getCreator(): ?Character {
+		return $this->creator;
+	}
+
+	/**
 	 * Set creator
 	 *
 	 * @param Character|null $creator
@@ -152,12 +139,12 @@ class Listing {
 	}
 
 	/**
-	 * Get creator
+	 * Get owner
 	 *
-	 * @return Character|null
+	 * @return User|null
 	 */
-	public function getCreator(): ?Character {
-		return $this->creator;
+	public function getOwner(): ?User {
+		return $this->owner;
 	}
 
 	/**
@@ -174,12 +161,12 @@ class Listing {
 	}
 
 	/**
-	 * Get owner
+	 * Get inherit_from
 	 *
-	 * @return User|null
+	 * @return Listing|null
 	 */
-	public function getOwner(): ?User {
-		return $this->owner;
+	public function getInheritFrom(): ?Listing {
+		return $this->inherit_from;
 	}
 
 	/**
@@ -195,16 +182,29 @@ class Listing {
 		return $this;
 	}
 
-	/**
-	 * Get inherit_from
-	 *
-	 * @return Listing|null
-	 */
-	public function getInheritFrom(): ?Listing {
-		return $this->inherit_from;
-	}
-
 	public function isPublic(): ?bool {
 		return $this->public;
+	}
+
+	/**
+	 * Get public
+	 *
+	 * @return boolean
+	 */
+	public function getPublic(): bool {
+		return $this->public;
+	}
+
+	/**
+	 * Set public
+	 *
+	 * @param boolean $public
+	 *
+	 * @return Listing
+	 */
+	public function setPublic(bool $public): static {
+		$this->public = $public;
+
+		return $this;
 	}
 }

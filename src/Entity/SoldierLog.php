@@ -9,8 +9,17 @@ class SoldierLog {
 	private array $data;
 	private DateTime $ts;
 	private int $cycle;
-	private int $id;
+	private ?int $id = null;
 	private ?Soldier $soldier;
+
+	/**
+	 * Get content
+	 *
+	 * @return string
+	 */
+	public function getContent(): string {
+		return $this->content;
+	}
 
 	/**
 	 * Set content
@@ -26,12 +35,12 @@ class SoldierLog {
 	}
 
 	/**
-	 * Get content
+	 * Get data
 	 *
-	 * @return string
+	 * @return array
 	 */
-	public function getContent(): string {
-		return $this->content;
+	public function getData(): array {
+		return $this->data;
 	}
 
 	/**
@@ -48,12 +57,12 @@ class SoldierLog {
 	}
 
 	/**
-	 * Get data
+	 * Get ts
 	 *
-	 * @return array
+	 * @return DateTime
 	 */
-	public function getData(): array {
-		return $this->data;
+	public function getTs(): DateTime {
+		return $this->ts;
 	}
 
 	/**
@@ -70,12 +79,12 @@ class SoldierLog {
 	}
 
 	/**
-	 * Get ts
+	 * Get cycle
 	 *
-	 * @return DateTime
+	 * @return integer
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getCycle(): int {
+		return $this->cycle;
 	}
 
 	/**
@@ -92,21 +101,21 @@ class SoldierLog {
 	}
 
 	/**
-	 * Get cycle
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get soldier
 	 *
-	 * @return integer
+	 * @return Soldier|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getSoldier(): ?Soldier {
+		return $this->soldier;
 	}
 
 	/**
@@ -120,14 +129,5 @@ class SoldierLog {
 		$this->soldier = $soldier;
 
 		return $this;
-	}
-
-	/**
-	 * Get soldier
-	 *
-	 * @return Soldier|null
-	 */
-	public function getSoldier(): ?Soldier {
-		return $this->soldier;
 	}
 }

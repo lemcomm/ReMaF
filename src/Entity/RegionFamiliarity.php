@@ -4,9 +4,18 @@ namespace App\Entity;
 
 class RegionFamiliarity {
 	private int $amount;
-	private int $id;
+	private ?int $id = null;
 	private Character $character;
 	private GeoData $geo_data;
+
+	/**
+	 * Get amount
+	 *
+	 * @return integer
+	 */
+	public function getAmount(): int {
+		return $this->amount;
+	}
 
 	/**
 	 * Set amount
@@ -22,21 +31,21 @@ class RegionFamiliarity {
 	}
 
 	/**
-	 * Get amount
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getAmount(): int {
-		return $this->amount;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -53,12 +62,12 @@ class RegionFamiliarity {
 	}
 
 	/**
-	 * Get character
+	 * Get geo_data
 	 *
-	 * @return Character|null
+	 * @return GeoData|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getGeoData(): ?GeoData {
+		return $this->geo_data;
 	}
 
 	/**
@@ -72,14 +81,5 @@ class RegionFamiliarity {
 		$this->geo_data = $geoData;
 
 		return $this;
-	}
-
-	/**
-	 * Get geo_data
-	 *
-	 * @return GeoData|null
-	 */
-	public function getGeoData(): ?GeoData {
-		return $this->geo_data;
 	}
 }

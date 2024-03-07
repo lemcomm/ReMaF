@@ -6,7 +6,16 @@ class ItemType {
 	private string $name;
 	private string $type;
 	private string $slot;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -22,12 +31,12 @@ class ItemType {
 	}
 
 	/**
-	 * Get name
+	 * Get type
 	 *
 	 * @return string
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getType(): string {
+		return $this->type;
 	}
 
 	/**
@@ -44,12 +53,12 @@ class ItemType {
 	}
 
 	/**
-	 * Get type
+	 * Get slot
 	 *
 	 * @return string
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getSlot(): string {
+		return $this->slot;
 	}
 
 	/**
@@ -66,20 +75,11 @@ class ItemType {
 	}
 
 	/**
-	 * Get slot
-	 *
-	 * @return string
-	 */
-	public function getSlot(): string {
-		return $this->slot;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 }

@@ -7,9 +7,18 @@ use DateTime;
 class DungeonMessage {
 	private DateTime $ts;
 	private string $content;
-	private int $id;
+	private ?int $id = null;
 	private ?DungeonParty $party;
 	private ?Dungeoneer $sender;
+
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
 	/**
 	 * Set ts
@@ -25,12 +34,12 @@ class DungeonMessage {
 	}
 
 	/**
-	 * Get ts
+	 * Get content
 	 *
-	 * @return DateTime
+	 * @return string
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getContent(): string {
+		return $this->content;
 	}
 
 	/**
@@ -47,21 +56,21 @@ class DungeonMessage {
 	}
 
 	/**
-	 * Get content
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getContent(): string {
-		return $this->content;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get party
 	 *
-	 * @return integer
+	 * @return DungeonParty|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getParty(): ?DungeonParty {
+		return $this->party;
 	}
 
 	/**
@@ -78,12 +87,12 @@ class DungeonMessage {
 	}
 
 	/**
-	 * Get party
+	 * Get sender
 	 *
-	 * @return DungeonParty|null
+	 * @return Dungeoneer|null
 	 */
-	public function getParty(): ?DungeonParty {
-		return $this->party;
+	public function getSender(): ?Dungeoneer {
+		return $this->sender;
 	}
 
 	/**
@@ -97,14 +106,5 @@ class DungeonMessage {
 		$this->sender = $sender;
 
 		return $this;
-	}
-
-	/**
-	 * Get sender
-	 *
-	 * @return Dungeoneer|null
-	 */
-	public function getSender(): ?Dungeoneer {
-		return $this->sender;
 	}
 }

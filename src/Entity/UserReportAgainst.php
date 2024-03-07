@@ -6,10 +6,19 @@ use DateTime;
 
 class UserReportAgainst {
 	private DateTime $date;
-	private int $id;
+	private ?int $id = null;
 	private ?User $added_by;
 	private ?User $user;
 	private ?UserReport $report;
+
+	/**
+	 * Get date
+	 *
+	 * @return DateTime
+	 */
+	public function getDate(): DateTime {
+		return $this->date;
+	}
 
 	/**
 	 * Set date
@@ -25,21 +34,21 @@ class UserReportAgainst {
 	}
 
 	/**
-	 * Get date
+	 * Get id
 	 *
-	 * @return DateTime
+	 * @return int|null
 	 */
-	public function getDate(): DateTime {
-		return $this->date;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get added_by
 	 *
-	 * @return integer
+	 * @return User|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getAddedBy(): ?User {
+		return $this->added_by;
 	}
 
 	/**
@@ -56,12 +65,12 @@ class UserReportAgainst {
 	}
 
 	/**
-	 * Get added_by
+	 * Get user
 	 *
 	 * @return User|null
 	 */
-	public function getAddedBy(): ?User {
-		return $this->added_by;
+	public function getUser(): ?User {
+		return $this->user;
 	}
 
 	/**
@@ -78,12 +87,12 @@ class UserReportAgainst {
 	}
 
 	/**
-	 * Get user
+	 * Get report
 	 *
-	 * @return User|null
+	 * @return UserReport|null
 	 */
-	public function getUser(): ?User {
-		return $this->user;
+	public function getReport(): ?UserReport {
+		return $this->report;
 	}
 
 	/**
@@ -97,14 +106,5 @@ class UserReportAgainst {
 		$this->report = $report;
 
 		return $this;
-	}
-
-	/**
-	 * Get report
-	 *
-	 * @return UserReport|null
-	 */
-	public function getReport(): ?UserReport {
-		return $this->report;
 	}
 }

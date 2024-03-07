@@ -13,9 +13,18 @@ class Code {
 	private int $vip_status;
 	private bool $used;
 	private DateTime $used_on;
-	private int $id;
+	private ?int $id = null;
 	private ?User $sender;
 	private ?User $used_by;
+
+	/**
+	 * Get code
+	 *
+	 * @return string
+	 */
+	public function getCode(): string {
+		return $this->code;
+	}
 
 	/**
 	 * Set code
@@ -31,12 +40,12 @@ class Code {
 	}
 
 	/**
-	 * Get code
+	 * Get sent_to_email
 	 *
 	 * @return string
 	 */
-	public function getCode(): string {
-		return $this->code;
+	public function getSentToEmail(): string {
+		return $this->sent_to_email;
 	}
 
 	/**
@@ -53,34 +62,12 @@ class Code {
 	}
 
 	/**
-	 * Get sent_to_email
+	 * Get sent_on
 	 *
-	 * @return string
+	 * @return DateTime
 	 */
-	public function getSentToEmail(): string {
-		return $this->sent_to_email;
-	}
-
-	/**
-	 * Set limit_to_email
-	 *
-	 * @param boolean $limitToEmail
-	 *
-	 * @return Code
-	 */
-	public function setLimitToEmail(bool $limitToEmail): static {
-		$this->limit_to_email = $limitToEmail;
-
-		return $this;
-	}
-
-	/**
-	 * Get limit_to_email
-	 *
-	 * @return boolean
-	 */
-	public function getLimitToEmail(): bool {
-		return $this->limit_to_email;
+	public function getSentOn(): DateTime {
+		return $this->sent_on;
 	}
 
 	/**
@@ -97,12 +84,12 @@ class Code {
 	}
 
 	/**
-	 * Get sent_on
+	 * Get credits
 	 *
-	 * @return DateTime
+	 * @return integer
 	 */
-	public function getSentOn(): DateTime {
-		return $this->sent_on;
+	public function getCredits(): int {
+		return $this->credits;
 	}
 
 	/**
@@ -119,12 +106,12 @@ class Code {
 	}
 
 	/**
-	 * Get credits
+	 * Get vip_status
 	 *
 	 * @return integer
 	 */
-	public function getCredits(): int {
-		return $this->credits;
+	public function getVipStatus(): int {
+		return $this->vip_status;
 	}
 
 	/**
@@ -141,34 +128,12 @@ class Code {
 	}
 
 	/**
-	 * Get vip_status
+	 * Get used_on
 	 *
-	 * @return integer
+	 * @return DateTime|null
 	 */
-	public function getVipStatus(): int {
-		return $this->vip_status;
-	}
-
-	/**
-	 * Set used
-	 *
-	 * @param boolean $used
-	 *
-	 * @return Code
-	 */
-	public function setUsed(bool $used): static {
-		$this->used = $used;
-
-		return $this;
-	}
-
-	/**
-	 * Get used
-	 *
-	 * @return boolean
-	 */
-	public function getUsed(): bool {
-		return $this->used;
+	public function getUsedOn(): ?DateTime {
+		return $this->used_on;
 	}
 
 	/**
@@ -185,21 +150,21 @@ class Code {
 	}
 
 	/**
-	 * Get used_on
+	 * Get id
 	 *
-	 * @return DateTime|null
+	 * @return int|null
 	 */
-	public function getUsedOn(): ?DateTime {
-		return $this->used_on;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get sender
 	 *
-	 * @return integer
+	 * @return User|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getSender(): ?User {
+		return $this->sender;
 	}
 
 	/**
@@ -216,12 +181,12 @@ class Code {
 	}
 
 	/**
-	 * Get sender
+	 * Get used_by
 	 *
 	 * @return User|null
 	 */
-	public function getSender(): ?User {
-		return $this->sender;
+	public function getUsedBy(): ?User {
+		return $this->used_by;
 	}
 
 	/**
@@ -237,20 +202,55 @@ class Code {
 		return $this;
 	}
 
-	/**
-	 * Get used_by
-	 *
-	 * @return User|null
-	 */
-	public function getUsedBy(): ?User {
-		return $this->used_by;
-	}
-
 	public function isLimitToEmail(): ?bool {
 		return $this->limit_to_email;
 	}
 
+	/**
+	 * Get limit_to_email
+	 *
+	 * @return boolean
+	 */
+	public function getLimitToEmail(): bool {
+		return $this->limit_to_email;
+	}
+
+	/**
+	 * Set limit_to_email
+	 *
+	 * @param boolean $limitToEmail
+	 *
+	 * @return Code
+	 */
+	public function setLimitToEmail(bool $limitToEmail): static {
+		$this->limit_to_email = $limitToEmail;
+
+		return $this;
+	}
+
 	public function isUsed(): ?bool {
 		return $this->used;
+	}
+
+	/**
+	 * Get used
+	 *
+	 * @return boolean
+	 */
+	public function getUsed(): bool {
+		return $this->used;
+	}
+
+	/**
+	 * Set used
+	 *
+	 * @param boolean $used
+	 *
+	 * @return Code
+	 */
+	public function setUsed(bool $used): static {
+		$this->used = $used;
+
+		return $this;
 	}
 }

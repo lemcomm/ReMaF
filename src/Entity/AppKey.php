@@ -7,66 +7,73 @@ use DateTime;
 /**
  * AppKey
  */
-class AppKey
-{
+class AppKey {
+	private ?int $id = null;
 	private DateTime $ts;
 	private string $token;
-	private int $id;
 	private User $user;
 
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
-    /**
-     * Set ts
-     *
-     * @param DateTime $ts
-     *
-     * @return AppKey
-     */
-    public function setTs(DateTime $ts): static {
-        $this->ts = $ts;
+	/**
+	 * Set ts
+	 *
+	 * @param DateTime $ts
+	 *
+	 * @return AppKey
+	 */
+	public function setTs(DateTime $ts): static {
+		$this->ts = $ts;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get ts
-     *
-     * @return DateTime
-     */
-    public function getTs(): DateTime {
-        return $this->ts;
-    }
+	/**
+	 * Get token
+	 *
+	 * @return string
+	 */
+	public function getToken(): string {
+		return $this->token;
+	}
 
-    /**
-     * Set token
-     *
-     * @param string $token
-     *
-     * @return AppKey
-     */
-    public function setToken(string $token): static {
-        $this->token = $token;
+	/**
+	 * Set token
+	 *
+	 * @param string $token
+	 *
+	 * @return AppKey
+	 */
+	public function setToken(string $token): static {
+		$this->token = $token;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get token
-     *
-     * @return string 
-     */
-    public function getToken(): string {
-        return $this->token;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+	/**
+	 * Get user
+	 *
+	 * @return User
+	 */
+	public function getUser(): User {
+		return $this->user;
+	}
 
 	/**
 	 * Set user
@@ -75,18 +82,9 @@ class AppKey
 	 *
 	 * @return AppKey
 	 */
-    public function setUser(User $user = null): static {
-        $this->user = $user;
+	public function setUser(User $user = null): static {
+		$this->user = $user;
 
-        return $this;
-    }
-
-    /**
-     * Get user
-     *
-     * @return User
-     */
-    public function getUser(): User {
-        return $this->user;
-    }
+		return $this;
+	}
 }

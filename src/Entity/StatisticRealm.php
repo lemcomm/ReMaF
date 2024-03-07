@@ -11,9 +11,18 @@ class StatisticRealm {
 	private int $area;
 	private int $characters;
 	private int $players;
-	private int $id;
+	private ?int $id = null;
 	private ?Realm $realm;
 	private ?Realm $superior;
+
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
 	/**
 	 * Set cycle
@@ -29,12 +38,12 @@ class StatisticRealm {
 	}
 
 	/**
-	 * Get cycle
+	 * Get estates
 	 *
 	 * @return integer
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getEstates(): int {
+		return $this->estates;
 	}
 
 	/**
@@ -51,12 +60,12 @@ class StatisticRealm {
 	}
 
 	/**
-	 * Get estates
+	 * Get population
 	 *
 	 * @return integer
 	 */
-	public function getEstates(): int {
-		return $this->estates;
+	public function getPopulation(): int {
+		return $this->population;
 	}
 
 	/**
@@ -73,12 +82,12 @@ class StatisticRealm {
 	}
 
 	/**
-	 * Get population
+	 * Get soldiers
 	 *
 	 * @return integer
 	 */
-	public function getPopulation(): int {
-		return $this->population;
+	public function getSoldiers(): int {
+		return $this->soldiers;
 	}
 
 	/**
@@ -95,12 +104,12 @@ class StatisticRealm {
 	}
 
 	/**
-	 * Get soldiers
+	 * Get militia
 	 *
 	 * @return integer
 	 */
-	public function getSoldiers(): int {
-		return $this->soldiers;
+	public function getMilitia(): int {
+		return $this->militia;
 	}
 
 	/**
@@ -117,12 +126,12 @@ class StatisticRealm {
 	}
 
 	/**
-	 * Get militia
+	 * Get area
 	 *
 	 * @return integer
 	 */
-	public function getMilitia(): int {
-		return $this->militia;
+	public function getArea(): int {
+		return $this->area;
 	}
 
 	/**
@@ -139,12 +148,12 @@ class StatisticRealm {
 	}
 
 	/**
-	 * Get area
+	 * Get characters
 	 *
 	 * @return integer
 	 */
-	public function getArea(): int {
-		return $this->area;
+	public function getCharacters(): int {
+		return $this->characters;
 	}
 
 	/**
@@ -161,12 +170,12 @@ class StatisticRealm {
 	}
 
 	/**
-	 * Get characters
+	 * Get players
 	 *
 	 * @return integer
 	 */
-	public function getCharacters(): int {
-		return $this->characters;
+	public function getPlayers(): int {
+		return $this->players;
 	}
 
 	/**
@@ -183,21 +192,21 @@ class StatisticRealm {
 	}
 
 	/**
-	 * Get players
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getPlayers(): int {
-		return $this->players;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get realm
 	 *
-	 * @return integer
+	 * @return Realm|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -214,12 +223,12 @@ class StatisticRealm {
 	}
 
 	/**
-	 * Get realm
+	 * Get superior
 	 *
 	 * @return Realm|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
+	public function getSuperior(): ?Realm {
+		return $this->superior;
 	}
 
 	/**
@@ -233,14 +242,5 @@ class StatisticRealm {
 		$this->superior = $superior;
 
 		return $this;
-	}
-
-	/**
-	 * Get superior
-	 *
-	 * @return Realm|null
-	 */
-	public function getSuperior(): ?Realm {
-		return $this->superior;
 	}
 }

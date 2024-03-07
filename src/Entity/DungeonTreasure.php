@@ -11,7 +11,7 @@ class DungeonTreasure {
 	private int $taken;
 	private int $trap;
 	private int $hidden;
-	private int $id;
+	private ?int $id = null;
 	private Collection $targeted_by;
 	private ?DungeonLevel $level;
 
@@ -20,6 +20,15 @@ class DungeonTreasure {
 	 */
 	public function __construct() {
 		$this->targeted_by = new ArrayCollection();
+	}
+
+	/**
+	 * Get nr
+	 *
+	 * @return integer
+	 */
+	public function getNr(): int {
+		return $this->nr;
 	}
 
 	/**
@@ -36,12 +45,12 @@ class DungeonTreasure {
 	}
 
 	/**
-	 * Get nr
+	 * Get value
 	 *
 	 * @return integer
 	 */
-	public function getNr(): int {
-		return $this->nr;
+	public function getValue(): int {
+		return $this->value;
 	}
 
 	/**
@@ -58,12 +67,12 @@ class DungeonTreasure {
 	}
 
 	/**
-	 * Get value
+	 * Get taken
 	 *
 	 * @return integer
 	 */
-	public function getValue(): int {
-		return $this->value;
+	public function getTaken(): int {
+		return $this->taken;
 	}
 
 	/**
@@ -80,12 +89,12 @@ class DungeonTreasure {
 	}
 
 	/**
-	 * Get taken
+	 * Get trap
 	 *
 	 * @return integer
 	 */
-	public function getTaken(): int {
-		return $this->taken;
+	public function getTrap(): int {
+		return $this->trap;
 	}
 
 	/**
@@ -102,12 +111,12 @@ class DungeonTreasure {
 	}
 
 	/**
-	 * Get trap
+	 * Get hidden
 	 *
 	 * @return integer
 	 */
-	public function getTrap(): int {
-		return $this->trap;
+	public function getHidden(): int {
+		return $this->hidden;
 	}
 
 	/**
@@ -124,20 +133,11 @@ class DungeonTreasure {
 	}
 
 	/**
-	 * Get hidden
-	 *
-	 * @return integer
-	 */
-	public function getHidden(): int {
-		return $this->hidden;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -173,6 +173,15 @@ class DungeonTreasure {
 	}
 
 	/**
+	 * Get level
+	 *
+	 * @return DungeonLevel|null
+	 */
+	public function getLevel(): ?DungeonLevel {
+		return $this->level;
+	}
+
+	/**
 	 * Set level
 	 *
 	 * @param DungeonLevel|null $level
@@ -183,14 +192,5 @@ class DungeonTreasure {
 		$this->level = $level;
 
 		return $this;
-	}
-
-	/**
-	 * Get level
-	 *
-	 * @return DungeonLevel|null
-	 */
-	public function getLevel(): ?DungeonLevel {
-		return $this->level;
 	}
 }

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 
 
 class Settlement {
+	public bool $corruption = false;
 	private string $name;
 	private int $population;
 	private int $thralls;
@@ -17,7 +18,7 @@ class Settlement {
 	private ?int $abduction_cooldown;
 	private bool $allow_thralls;
 	private ?bool $feed_soldiers;
-	private int $id;
+	private ?int $id = null;
 	private ?Description $description;
 	private ?GeoData $geo_data;
 	private ?GeoFeature $geo_marker;
@@ -60,7 +61,6 @@ class Settlement {
 	private int $assignedBuildings = -1;
 	private int $assignedFeatures = -1;
 	private int $employees = -1;
-	public bool $corruption = false;
 
 	/**
 	 * Constructor
@@ -95,6 +95,10 @@ class Settlement {
 		$this->laws = new ArrayCollection();
 	}
 
+	public function getPic(): string {
+		return 'size-' . $this->getSize() . '-' . ($this->id % 5 + 1);
+	}
+
 	public function getSize(): int {
 		/*
 		  size:
@@ -122,14 +126,6 @@ class Settlement {
 		if ($pop < 50000) return 9;
 		if ($pop < 100000) return 10;
 		return 11;
-	}
-
-	public function getType(): string {
-		return 'settlement.size.' . $this->getSize();
-	}
-
-	public function getPic(): string {
-		return 'size-' . $this->getSize() . '-' . ($this->id % 5 + 1);
 	}
 
 	public function getFullPopulation() {
@@ -234,6 +230,112 @@ class Settlement {
 		return round($time_to_take);
 	}
 
+	/**
+	 * Get units
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getUnits(): ArrayCollection|Collection {
+		return $this->units;
+	}
+
+	/**
+	 * Get claims
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getClaims(): ArrayCollection|Collection {
+		return $this->claims;
+	}
+
+	/**
+	 * Get population
+	 *
+	 * @return integer
+	 */
+	public function getPopulation(): int {
+		return $this->population;
+	}
+
+	/**
+	 * Set population
+	 *
+	 * @param integer $population
+	 *
+	 * @return Settlement
+	 */
+	public function setPopulation(int $population): static {
+		$this->population = $population;
+
+		return $this;
+	}
+
+	/**
+	 * Get owner
+	 *
+	 * @return Character|null
+	 */
+	public function getOwner(): ?Character {
+		return $this->owner;
+	}
+
+	/**
+	 * Set owner
+	 *
+	 * @param Character|null $owner
+	 *
+	 * @return Settlement
+	 */
+	public function setOwner(Character $owner = null): static {
+		$this->owner = $owner;
+
+		return $this;
+	}
+
+	/**
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
+
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return Settlement
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
+
+		return $this;
+	}
+
+	/**
+	 * Get occupant
+	 *
+	 * @return Character|null
+	 */
+	public function getOccupant(): ?Character {
+		return $this->occupant;
+	}
+
+	/**
+	 * Set occupant
+	 *
+	 * @param Character|null $occupant
+	 *
+	 * @return Settlement
+	 */
+	public function setOccupant(Character $occupant = null): static {
+		$this->occupant = $occupant;
+
+		return $this;
+	}
+
 	public function getRecruitLimit($ignore_recruited = false) {
 		// TODO: this should take population density, etc. into account, I think, which means it would have to be moved into the military service
 		$max = ceil($this->population / 10);
@@ -251,6 +353,28 @@ class Settlement {
 		return $resource->first();
 	}
 
+	/**
+	 * Get resources
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getResources(): ArrayCollection|Collection {
+		return $this->resources;
+	}
+
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
+
+	public function getType(): string {
+		return 'settlement.size.' . $this->getSize();
+	}
+
 	public function getNameWithOwner(): string {
 		if ($this->getOwner()) {
 			return $this->getName() . ' (' . $this->getOwner()->getName() . ')';
@@ -259,15 +383,90 @@ class Settlement {
 		}
 	}
 
-	public function findDefenders(): ArrayCollection {
-		// anyone with a "defend settlement" action who is nearby
-		$defenders = new ArrayCollection;
-		foreach ($this->getRelatedActions() as $act) {
-			if ($act->getType() == 'settlement.defend') {
-				$defenders->add($act->getCharacter());
-			}
-		}
-		return $defenders;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
+
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return Settlement
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
+
+		return $this;
+	}
+
+	public function getActiveBuildings(): ArrayCollection|Collection {
+		return $this->getBuildings()->filter(function ($entry) {
+			return ($entry->getActive());
+		});
+	}
+
+	/**
+	 * Get buildings
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getBuildings(): ArrayCollection|Collection {
+		return $this->buildings;
+	}
+
+	public function hasBuilding(BuildingType $type, $with_inactive = false) {
+		$has = $this->getBuildingByType($type);
+		if (!$has) return false;
+		if ($with_inactive) return true;
+		return $has->isActive();
+	}
+
+	public function getBuildingByType(BuildingType $type) {
+		$present = $this->getBuildings()->filter(function ($entry) use ($type) {
+			return ($entry->getType() == $type);
+		});
+		if ($present) return $present->first();
+		return false;
+	}
+
+	public function hasBuildingNamed($name) {
+		$has = $this->getBuildingByName($name);
+		if (!$has) return false;
+		return $has->isActive();
+	}
+
+	public function getBuildingByName($name) {
+		$present = $this->getBuildings()->filter(function ($entry) use ($name) {
+			return ($entry->getType()->getName() == $name);
+		});
+		if ($present) return $present->first();
+		return false;
+	}
+
+	public function isFortified(): bool {
+		$walls = $this->getBuildings()->filter(function ($entry) {
+			if (!$entry->isActive() && abs($entry->getCondition()) / $entry->getType()->getBuildHours() < 0.3) return false;
+			return in_array($entry->getType()->getName(), [
+				'Palisade',
+				'Wood Wall',
+				'Stone Wall',
+				'Fortress',
+				'Citadel',
+			]);
+		});
+		if (!$walls->isEmpty() && $this->isDefended()) return true;
+		return false;
+	}
+
+	public function isDefended(): bool {
+		if ($this->countDefenders() > 0) return true;
+		return false;
 	}
 
 	public function countDefenders() {
@@ -286,64 +485,54 @@ class Settlement {
 		return $militia + $defenders;
 	}
 
-	public function getActiveBuildings(): ArrayCollection|Collection {
-		return $this->getBuildings()->filter(function ($entry) {
-			return ($entry->getActive());
-		});
+	public function findDefenders(): ArrayCollection {
+		// anyone with a "defend settlement" action who is nearby
+		$defenders = new ArrayCollection;
+		foreach ($this->getRelatedActions() as $act) {
+			if ($act->getType() == 'settlement.defend') {
+				$defenders->add($act->getCharacter());
+			}
+		}
+		return $defenders;
 	}
 
-	public function getBuildingByType(BuildingType $type) {
-		$present = $this->getBuildings()->filter(function ($entry) use ($type) {
-			return ($entry->getType() == $type);
-		});
-		if ($present) return $present->first();
-		return false;
-	}
-
-	public function hasBuilding(BuildingType $type, $with_inactive = false) {
-		$has = $this->getBuildingByType($type);
-		if (!$has) return false;
-		if ($with_inactive) return true;
-		return $has->isActive();
-	}
-
-	public function getBuildingByName($name) {
-		$present = $this->getBuildings()->filter(function ($entry) use ($name) {
-			return ($entry->getType()->getName() == $name);
-		});
-		if ($present) return $present->first();
-		return false;
-	}
-
-	public function hasBuildingNamed($name) {
-		$has = $this->getBuildingByName($name);
-		if (!$has) return false;
-		return $has->isActive();
-	}
-
-	public function isFortified(): bool {
-		$walls = $this->getBuildings()->filter(function ($entry) {
-			if (!$entry->isActive() && abs($entry->getCondition()) / $entry->getType()->getBuildHours() < 0.3) return false;
-			return in_array($entry->getType()->getName(), [
-				'Palisade',
-				'Wood Wall',
-				'Stone Wall',
-				'Fortress',
-				'Citadel',
-			]);
-		});
-		if (!$walls->isEmpty() && $this->isDefended()) return true;
-		return false;
+	/**
+	 * Get related_actions
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getRelatedActions(): ArrayCollection|Collection {
+		return $this->related_actions;
 	}
 
 	public function getAvailableWorkforce() {
 		return $this->getPopulation() + $this->getThralls() - $this->getRoadWorkers() - $this->getBuildingWorkers() - $this->getFeatureWorkers() - $this->getEmployees();
 	}
 
-	public function getAvailableWorkforcePercent() {
-		if ($this->getPopulation() <= 0) return 0;
-		$employeespercent = $this->getEmployees() / $this->getPopulation();
-		return 1 - $this->getRoadWorkersPercent() - $this->getBuildingWorkersPercent() - $this->getFeatureWorkersPercent() - $employeespercent;
+	/**
+	 * Get thralls
+	 *
+	 * @return integer
+	 */
+	public function getThralls(): int {
+		return $this->thralls;
+	}
+
+	/**
+	 * Set thralls
+	 *
+	 * @param integer $thralls
+	 *
+	 * @return Settlement
+	 */
+	public function setThralls(int $thralls): static {
+		$this->thralls = $thralls;
+
+		return $this;
+	}
+
+	public function getRoadWorkers(): float {
+		return round($this->getRoadWorkersPercent() * $this->getPopulation());
 	}
 
 	public function getRoadWorkersPercent() {
@@ -359,8 +548,30 @@ class Settlement {
 		return $this->assignedRoads;
 	}
 
-	public function getRoadWorkers(): float {
-		return round($this->getRoadWorkersPercent() * $this->getPopulation());
+	/**
+	 * Get geo_data
+	 *
+	 * @return GeoData|null
+	 */
+	public function getGeoData(): ?GeoData {
+		return $this->geo_data;
+	}
+
+	/**
+	 * Set geo_data
+	 *
+	 * @param GeoData|null $geoData
+	 *
+	 * @return Settlement
+	 */
+	public function setGeoData(GeoData $geoData = null): static {
+		$this->geo_data = $geoData;
+
+		return $this;
+	}
+
+	public function getBuildingWorkers(): float {
+		return round($this->getBuildingWorkersPercent() * $this->getPopulation());
 	}
 
 	public function getBuildingWorkersPercent() {
@@ -376,8 +587,8 @@ class Settlement {
 		return $this->assignedBuildings;
 	}
 
-	public function getBuildingWorkers(): float {
-		return round($this->getBuildingWorkersPercent() * $this->getPopulation());
+	public function getFeatureWorkers($force_recalc = false): float {
+		return round($this->getFeatureWorkersPercent($force_recalc) * $this->getPopulation());
 	}
 
 	public function getFeatureWorkersPercent($force_recalc = false) {
@@ -394,10 +605,6 @@ class Settlement {
 		return $this->assignedFeatures;
 	}
 
-	public function getFeatureWorkers($force_recalc = false): float {
-		return round($this->getFeatureWorkersPercent($force_recalc) * $this->getPopulation());
-	}
-
 	public function getEmployees() {
 		if ($this->employees == -1) {
 			$this->employees = 0;
@@ -411,6 +618,12 @@ class Settlement {
 		return $this->employees;
 	}
 
+	public function getAvailableWorkforcePercent() {
+		if ($this->getPopulation() <= 0) return 0;
+		$employeespercent = $this->getEmployees() / $this->getPopulation();
+		return 1 - $this->getRoadWorkersPercent() - $this->getBuildingWorkersPercent() - $this->getFeatureWorkersPercent() - $employeespercent;
+	}
+
 	public function getTrainingPoints(): float {
 		return round(pow($this->population / 10, 0.75) * 5);
 	}
@@ -420,75 +633,13 @@ class Settlement {
 		return max(1, sqrt(sqrt($this->population) / 2));
 	}
 
-	public function isDefended(): bool {
-		if ($this->countDefenders() > 0) return true;
-		return false;
-	}
-
 	/**
-	 * Set name
-	 *
-	 * @param string $name
-	 *
-	 * @return Settlement
-	 */
-	public function setName(string $name): static {
-		$this->name = $name;
-
-		return $this;
-	}
-
-	/**
-	 * Get name
-	 *
-	 * @return string
-	 */
-	public function getName(): string {
-		return $this->name;
-	}
-
-	/**
-	 * Set population
-	 *
-	 * @param integer $population
-	 *
-	 * @return Settlement
-	 */
-	public function setPopulation(int $population): static {
-		$this->population = $population;
-
-		return $this;
-	}
-
-	/**
-	 * Get population
+	 * Get recruited
 	 *
 	 * @return integer
 	 */
-	public function getPopulation(): int {
-		return $this->population;
-	}
-
-	/**
-	 * Set thralls
-	 *
-	 * @param integer $thralls
-	 *
-	 * @return Settlement
-	 */
-	public function setThralls(int $thralls): static {
-		$this->thralls = $thralls;
-
-		return $this;
-	}
-
-	/**
-	 * Get thralls
-	 *
-	 * @return integer
-	 */
-	public function getThralls(): int {
-		return $this->thralls;
+	public function getRecruited(): int {
+		return $this->recruited;
 	}
 
 	/**
@@ -505,12 +656,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get recruited
+	 * Get starvation
 	 *
-	 * @return integer
+	 * @return float
 	 */
-	public function getRecruited(): int {
-		return $this->recruited;
+	public function getStarvation(): float {
+		return $this->starvation;
 	}
 
 	/**
@@ -527,12 +678,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get starvation
+	 * Get gold
 	 *
-	 * @return float
+	 * @return integer
 	 */
-	public function getStarvation(): float {
-		return $this->starvation;
+	public function getGold(): int {
+		return $this->gold;
 	}
 
 	/**
@@ -549,12 +700,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get gold
+	 * Get war_fatigue
 	 *
 	 * @return integer
 	 */
-	public function getGold(): int {
-		return $this->gold;
+	public function getWarFatigue(): int {
+		return $this->war_fatigue;
 	}
 
 	/**
@@ -571,12 +722,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get war_fatigue
+	 * Get abduction_cooldown
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getWarFatigue(): int {
-		return $this->war_fatigue;
+	public function getAbductionCooldown(): ?int {
+		return $this->abduction_cooldown;
 	}
 
 	/**
@@ -593,34 +744,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get abduction_cooldown
+	 * Get feed_soldiers
 	 *
-	 * @return int|null
+	 * @return bool|null
 	 */
-	public function getAbductionCooldown(): ?int {
-		return $this->abduction_cooldown;
-	}
-
-	/**
-	 * Set allow_thralls
-	 *
-	 * @param boolean $allowThralls
-	 *
-	 * @return Settlement
-	 */
-	public function setAllowThralls(bool $allowThralls): static {
-		$this->allow_thralls = $allowThralls;
-
-		return $this;
-	}
-
-	/**
-	 * Get allow_thralls
-	 *
-	 * @return boolean
-	 */
-	public function getAllowThralls(): bool {
-		return $this->allow_thralls;
+	public function getFeedSoldiers(): ?bool {
+		return $this->feed_soldiers;
 	}
 
 	/**
@@ -637,21 +766,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get feed_soldiers
+	 * Get description
 	 *
-	 * @return bool|null
+	 * @return Description|null
 	 */
-	public function getFeedSoldiers(): ?bool {
-		return $this->feed_soldiers;
-	}
-
-	/**
-	 * Get id
-	 *
-	 * @return integer
-	 */
-	public function getId(): int {
-		return $this->id;
+	public function getDescription(): ?Description {
+		return $this->description;
 	}
 
 	/**
@@ -668,34 +788,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get description
+	 * Get geo_marker
 	 *
-	 * @return Description|null
+	 * @return GeoFeature|null
 	 */
-	public function getDescription(): ?Description {
-		return $this->description;
-	}
-
-	/**
-	 * Set geo_data
-	 *
-	 * @param GeoData|null $geoData
-	 *
-	 * @return Settlement
-	 */
-	public function setGeoData(GeoData $geoData = null): static {
-		$this->geo_data = $geoData;
-
-		return $this;
-	}
-
-	/**
-	 * Get geo_data
-	 *
-	 * @return GeoData|null
-	 */
-	public function getGeoData(): ?GeoData {
-		return $this->geo_data;
+	public function getGeoMarker(): ?GeoFeature {
+		return $this->geo_marker;
 	}
 
 	/**
@@ -712,12 +810,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get geo_marker
+	 * Get log
 	 *
-	 * @return GeoFeature|null
+	 * @return EventLog|null
 	 */
-	public function getGeoMarker(): ?GeoFeature {
-		return $this->geo_marker;
+	public function getLog(): ?EventLog {
+		return $this->log;
 	}
 
 	/**
@@ -734,12 +832,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get log
+	 * Get siege
 	 *
-	 * @return EventLog|null
+	 * @return Siege|null
 	 */
-	public function getLog(): ?EventLog {
-		return $this->log;
+	public function getSiege(): ?Siege {
+		return $this->siege;
 	}
 
 	/**
@@ -753,15 +851,6 @@ class Settlement {
 		$this->siege = $siege;
 
 		return $this;
-	}
-
-	/**
-	 * Get siege
-	 *
-	 * @return Siege|null
-	 */
-	public function getSiege(): ?Siege {
-		return $this->siege;
 	}
 
 	/**
@@ -880,15 +969,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get resources
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getResources(): ArrayCollection|Collection {
-		return $this->resources;
-	}
-
-	/**
 	 * Add buildings
 	 *
 	 * @param Building $buildings
@@ -908,15 +988,6 @@ class Settlement {
 	 */
 	public function removeBuilding(Building $buildings): void {
 		$this->buildings->removeElement($buildings);
-	}
-
-	/**
-	 * Get buildings
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getBuildings(): ArrayCollection|Collection {
-		return $this->buildings;
 	}
 
 	/**
@@ -1001,15 +1072,6 @@ class Settlement {
 	 */
 	public function removeClaim(SettlementClaim $claims): void {
 		$this->claims->removeElement($claims);
-	}
-
-	/**
-	 * Get claims
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getClaims(): ArrayCollection|Collection {
-		return $this->claims;
 	}
 
 	/**
@@ -1218,15 +1280,6 @@ class Settlement {
 	 */
 	public function removeRelatedAction(Action $relatedActions): void {
 		$this->related_actions->removeElement($relatedActions);
-	}
-
-	/**
-	 * Get related_actions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getRelatedActions(): ArrayCollection|Collection {
-		return $this->related_actions;
 	}
 
 	/**
@@ -1469,15 +1522,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get units
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getUnits(): ArrayCollection|Collection {
-		return $this->units;
-	}
-
-	/**
 	 * Add defending_units
 	 *
 	 * @param Unit $defendingUnits
@@ -1602,6 +1646,15 @@ class Settlement {
 	}
 
 	/**
+	 * Get culture
+	 *
+	 * @return Culture|null
+	 */
+	public function getCulture(): ?Culture {
+		return $this->culture;
+	}
+
+	/**
 	 * Set culture
 	 *
 	 * @param Culture|null $culture
@@ -1615,34 +1668,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get culture
-	 *
-	 * @return Culture|null
-	 */
-	public function getCulture(): ?Culture {
-		return $this->culture;
-	}
-
-	/**
-	 * Set owner
-	 *
-	 * @param Character|null $owner
-	 *
-	 * @return Settlement
-	 */
-	public function setOwner(Character $owner = null): static {
-		$this->owner = $owner;
-
-		return $this;
-	}
-
-	/**
-	 * Get owner
+	 * Get steward
 	 *
 	 * @return Character|null
 	 */
-	public function getOwner(): ?Character {
-		return $this->owner;
+	public function getSteward(): ?Character {
+		return $this->steward;
 	}
 
 	/**
@@ -1659,56 +1690,12 @@ class Settlement {
 	}
 
 	/**
-	 * Get steward
-	 *
-	 * @return Character|null
-	 */
-	public function getSteward(): ?Character {
-		return $this->steward;
-	}
-
-	/**
-	 * Set realm
-	 *
-	 * @param Realm|null $realm
-	 *
-	 * @return Settlement
-	 */
-	public function setRealm(Realm $realm = null): static {
-		$this->realm = $realm;
-
-		return $this;
-	}
-
-	/**
-	 * Get realm
+	 * Get occupier
 	 *
 	 * @return Realm|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
-	}
-
-	/**
-	 * Set occupant
-	 *
-	 * @param Character|null $occupant
-	 *
-	 * @return Settlement
-	 */
-	public function setOccupant(Character $occupant = null): static {
-		$this->occupant = $occupant;
-
-		return $this;
-	}
-
-	/**
-	 * Get occupant
-	 *
-	 * @return Character|null
-	 */
-	public function getOccupant(): ?Character {
-		return $this->occupant;
+	public function getOccupier(): ?Realm {
+		return $this->occupier;
 	}
 
 	/**
@@ -1724,17 +1711,30 @@ class Settlement {
 		return $this;
 	}
 
-	/**
-	 * Get occupier
-	 *
-	 * @return Realm|null
-	 */
-	public function getOccupier(): ?Realm {
-		return $this->occupier;
-	}
-
 	public function isAllowThralls(): ?bool {
 		return $this->allow_thralls;
+	}
+
+	/**
+	 * Get allow_thralls
+	 *
+	 * @return boolean
+	 */
+	public function getAllowThralls(): bool {
+		return $this->allow_thralls;
+	}
+
+	/**
+	 * Set allow_thralls
+	 *
+	 * @param boolean $allowThralls
+	 *
+	 * @return Settlement
+	 */
+	public function setAllowThralls(bool $allowThralls): static {
+		$this->allow_thralls = $allowThralls;
+
+		return $this;
 	}
 
 	public function isFeedSoldiers(): ?bool {

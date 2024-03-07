@@ -3,17 +3,26 @@
 namespace App\Entity;
 
 class MessageRecipient {
-	private int $id;
+	private ?int $id = null;
 	private Message $message;
 	private Character $character;
 
 	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get message
+	 *
+	 * @return Message|null
+	 */
+	public function getMessage(): ?Message {
+		return $this->message;
 	}
 
 	/**
@@ -30,12 +39,12 @@ class MessageRecipient {
 	}
 
 	/**
-	 * Get message
+	 * Get character
 	 *
-	 * @return Message|null
+	 * @return Character|null
 	 */
-	public function getMessage(): ?Message {
-		return $this->message;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -49,14 +58,5 @@ class MessageRecipient {
 		$this->character = $character;
 
 		return $this;
-	}
-
-	/**
-	 * Get character
-	 *
-	 * @return Character|null
-	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
 	}
 }

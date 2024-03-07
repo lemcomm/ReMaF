@@ -8,8 +8,17 @@ class Fame {
 	private string $name;
 	private DateTime $obtained;
 	private int $cycle;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $character;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -25,12 +34,12 @@ class Fame {
 	}
 
 	/**
-	 * Get name
+	 * Get obtained
 	 *
-	 * @return string
+	 * @return DateTime
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getObtained(): DateTime {
+		return $this->obtained;
 	}
 
 	/**
@@ -47,12 +56,12 @@ class Fame {
 	}
 
 	/**
-	 * Get obtained
+	 * Get cycle
 	 *
-	 * @return DateTime
+	 * @return integer
 	 */
-	public function getObtained(): DateTime {
-		return $this->obtained;
+	public function getCycle(): int {
+		return $this->cycle;
 	}
 
 	/**
@@ -69,21 +78,21 @@ class Fame {
 	}
 
 	/**
-	 * Get cycle
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -97,14 +106,5 @@ class Fame {
 		$this->character = $character;
 
 		return $this;
-	}
-
-	/**
-	 * Get character
-	 *
-	 * @return Character|null
-	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
 	}
 }

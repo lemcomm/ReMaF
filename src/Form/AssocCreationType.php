@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Association;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -108,7 +109,7 @@ class AssocCreationType extends AbstractType {
 			'required'=>false,
 			'placeholder' => 'assoc.form.empty',
 			'attr' => array('title'=>'assoc.help.type'),
-			'class' => 'BM2SiteBundle:Association',
+			'class' => Association::class,
 			'choice_translation_domain' => true,
 			'choice_label' => 'name',
 			'choices' => $assocs

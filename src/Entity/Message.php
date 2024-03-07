@@ -16,7 +16,7 @@ class Message {
 	private ?int $recipient_count;
 	private ?string $target;
 	private ?bool $read;
-	private int $id;
+	private ?int $id = null;
 	private Collection $replies;
 	private Collection $tags;
 	private Collection $recipients;
@@ -34,6 +34,15 @@ class Message {
 	}
 
 	/**
+	 * Get topic
+	 *
+	 * @return string|null
+	 */
+	public function getTopic(): ?string {
+		return $this->topic;
+	}
+
+	/**
 	 * Set topic
 	 *
 	 * @param string|null $topic
@@ -47,12 +56,12 @@ class Message {
 	}
 
 	/**
-	 * Get topic
+	 * Get type
 	 *
 	 * @return string|null
 	 */
-	public function getTopic(): ?string {
-		return $this->topic;
+	public function getType(): ?string {
+		return $this->type;
 	}
 
 	/**
@@ -69,12 +78,12 @@ class Message {
 	}
 
 	/**
-	 * Get type
+	 * Get sent
 	 *
-	 * @return string|null
+	 * @return DateTime
 	 */
-	public function getType(): ?string {
-		return $this->type;
+	public function getSent(): DateTime {
+		return $this->sent;
 	}
 
 	/**
@@ -91,12 +100,12 @@ class Message {
 	}
 
 	/**
-	 * Get sent
+	 * Get cycle
 	 *
-	 * @return DateTime
+	 * @return int|null
 	 */
-	public function getSent(): DateTime {
-		return $this->sent;
+	public function getCycle(): ?int {
+		return $this->cycle;
 	}
 
 	/**
@@ -113,12 +122,12 @@ class Message {
 	}
 
 	/**
-	 * Get cycle
+	 * Get system_content
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getCycle(): ?int {
-		return $this->cycle;
+	public function getSystemContent(): ?string {
+		return $this->system_content;
 	}
 
 	/**
@@ -135,12 +144,12 @@ class Message {
 	}
 
 	/**
-	 * Get system_content
+	 * Get content
 	 *
 	 * @return string|null
 	 */
-	public function getSystemContent(): ?string {
-		return $this->system_content;
+	public function getContent(): ?string {
+		return $this->content;
 	}
 
 	/**
@@ -157,12 +166,12 @@ class Message {
 	}
 
 	/**
-	 * Get content
+	 * Get recipient_count
 	 *
-	 * @return string|null
+	 * @return int|null
 	 */
-	public function getContent(): ?string {
-		return $this->content;
+	public function getRecipientCount(): ?int {
+		return $this->recipient_count;
 	}
 
 	/**
@@ -179,12 +188,12 @@ class Message {
 	}
 
 	/**
-	 * Get recipient_count
+	 * Get target
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getRecipientCount(): ?int {
-		return $this->recipient_count;
+	public function getTarget(): ?string {
+		return $this->target;
 	}
 
 	/**
@@ -201,12 +210,12 @@ class Message {
 	}
 
 	/**
-	 * Get target
+	 * Get read
 	 *
-	 * @return string|null
+	 * @return bool|null
 	 */
-	public function getTarget(): ?string {
-		return $this->target;
+	public function getRead(): ?bool {
+		return $this->read;
 	}
 
 	/**
@@ -223,20 +232,11 @@ class Message {
 	}
 
 	/**
-	 * Get read
-	 *
-	 * @return bool|null
-	 */
-	public function getRead(): ?bool {
-		return $this->read;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -334,6 +334,15 @@ class Message {
 	}
 
 	/**
+	 * Get conversation
+	 *
+	 * @return Conversation|null
+	 */
+	public function getConversation(): ?Conversation {
+		return $this->conversation;
+	}
+
+	/**
 	 * Set conversation
 	 *
 	 * @param Conversation|null $conversation
@@ -347,12 +356,12 @@ class Message {
 	}
 
 	/**
-	 * Get conversation
+	 * Get sender
 	 *
-	 * @return Conversation|null
+	 * @return Character|null
 	 */
-	public function getConversation(): ?Conversation {
-		return $this->conversation;
+	public function getSender(): ?Character {
+		return $this->sender;
 	}
 
 	/**
@@ -369,12 +378,12 @@ class Message {
 	}
 
 	/**
-	 * Get sender
+	 * Get reply_to
 	 *
-	 * @return Character|null
+	 * @return Message|null
 	 */
-	public function getSender(): ?Character {
-		return $this->sender;
+	public function getReplyTo(): ?Message {
+		return $this->reply_to;
 	}
 
 	/**
@@ -388,15 +397,6 @@ class Message {
 		$this->reply_to = $replyTo;
 
 		return $this;
-	}
-
-	/**
-	 * Get reply_to
-	 *
-	 * @return Message|null
-	 */
-	public function getReplyTo(): ?Message {
-		return $this->reply_to;
 	}
 
 	public function isRead(): ?bool {

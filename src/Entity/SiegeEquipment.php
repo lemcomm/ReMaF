@@ -9,7 +9,7 @@ class SiegeEquipment {
 	private int $hours_spent;
 	private int $hours_needed;
 	private bool $ready;
-	private int $id;
+	private ?int $id = null;
 	private Collection $manned_by;
 	private ?SiegeEquipmentType $type;
 	private ?Character $owner;
@@ -19,6 +19,15 @@ class SiegeEquipment {
 	 */
 	public function __construct() {
 		$this->manned_by = new ArrayCollection();
+	}
+
+	/**
+	 * Get hours_spent
+	 *
+	 * @return integer
+	 */
+	public function getHoursSpent(): int {
+		return $this->hours_spent;
 	}
 
 	/**
@@ -35,12 +44,12 @@ class SiegeEquipment {
 	}
 
 	/**
-	 * Get hours_spent
+	 * Get hours_needed
 	 *
 	 * @return integer
 	 */
-	public function getHoursSpent(): int {
-		return $this->hours_spent;
+	public function getHoursNeeded(): int {
+		return $this->hours_needed;
 	}
 
 	/**
@@ -57,12 +66,16 @@ class SiegeEquipment {
 	}
 
 	/**
-	 * Get hours_needed
+	 * Get ready
 	 *
-	 * @return integer
+	 * @return boolean
 	 */
-	public function getHoursNeeded(): int {
-		return $this->hours_needed;
+	public function getReady(): bool {
+		return $this->ready;
+	}
+
+	public function isReady(): ?bool {
+		return $this->ready;
 	}
 
 	/**
@@ -79,20 +92,11 @@ class SiegeEquipment {
 	}
 
 	/**
-	 * Get ready
-	 *
-	 * @return boolean
-	 */
-	public function getReady(): bool {
-		return $this->ready;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -128,6 +132,15 @@ class SiegeEquipment {
 	}
 
 	/**
+	 * Get type
+	 *
+	 * @return SiegeEquipmentType|null
+	 */
+	public function getType(): ?SiegeEquipmentType {
+		return $this->type;
+	}
+
+	/**
 	 * Set type
 	 *
 	 * @param SiegeEquipmentType|null $type
@@ -141,12 +154,12 @@ class SiegeEquipment {
 	}
 
 	/**
-	 * Get type
+	 * Get owner
 	 *
-	 * @return SiegeEquipmentType|null
+	 * @return Character|null
 	 */
-	public function getType(): ?SiegeEquipmentType {
-		return $this->type;
+	public function getOwner(): ?Character {
+		return $this->owner;
 	}
 
 	/**
@@ -160,18 +173,5 @@ class SiegeEquipment {
 		$this->owner = $owner;
 
 		return $this;
-	}
-
-	/**
-	 * Get owner
-	 *
-	 * @return Character|null
-	 */
-	public function getOwner(): ?Character {
-		return $this->owner;
-	}
-
-	public function isReady(): ?bool {
-		return $this->ready;
 	}
 }

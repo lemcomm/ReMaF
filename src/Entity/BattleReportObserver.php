@@ -6,7 +6,7 @@ namespace App\Entity;
  * BattleReportObserver
  */
 class BattleReportObserver {
-	private int $id;
+	private ?int $id = null;
 	private BattleReport $battle_report;
 	private Character $character;
 
@@ -17,10 +17,19 @@ class BattleReportObserver {
 	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get battle_report
+	 *
+	 * @return BattleReport|null
+	 */
+	public function getBattleReport(): ?BattleReport {
+		return $this->battle_report;
 	}
 
 	/**
@@ -37,12 +46,12 @@ class BattleReportObserver {
 	}
 
 	/**
-	 * Get battle_report
+	 * Get character
 	 *
-	 * @return BattleReport|null
+	 * @return Character|null
 	 */
-	public function getBattleReport(): ?BattleReport {
-		return $this->battle_report;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -56,14 +65,5 @@ class BattleReportObserver {
 		$this->character = $character;
 
 		return $this;
-	}
-
-	/**
-	 * Get character
-	 *
-	 * @return Character|null
-	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
 	}
 }

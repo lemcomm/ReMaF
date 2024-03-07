@@ -5,9 +5,18 @@ namespace App\Entity;
 class DungeonCard {
 	private int $amount;
 	private int $played;
-	private int $id;
+	private ?int $id = null;
 	private ?DungeonCardType $type;
 	private ?Dungeoneer $owner;
+
+	/**
+	 * Get amount
+	 *
+	 * @return integer
+	 */
+	public function getAmount(): int {
+		return $this->amount;
+	}
 
 	/**
 	 * Set amount
@@ -23,12 +32,12 @@ class DungeonCard {
 	}
 
 	/**
-	 * Get amount
+	 * Get played
 	 *
 	 * @return integer
 	 */
-	public function getAmount(): int {
-		return $this->amount;
+	public function getPlayed(): int {
+		return $this->played;
 	}
 
 	/**
@@ -45,21 +54,21 @@ class DungeonCard {
 	}
 
 	/**
-	 * Get played
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getPlayed(): int {
-		return $this->played;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get type
 	 *
-	 * @return integer
+	 * @return DungeonCardType|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getType(): ?DungeonCardType {
+		return $this->type;
 	}
 
 	/**
@@ -76,12 +85,12 @@ class DungeonCard {
 	}
 
 	/**
-	 * Get type
+	 * Get owner
 	 *
-	 * @return DungeonCardType|null
+	 * @return Dungeoneer|null
 	 */
-	public function getType(): ?DungeonCardType {
-		return $this->type;
+	public function getOwner(): ?Dungeoneer {
+		return $this->owner;
 	}
 
 	/**
@@ -95,14 +104,5 @@ class DungeonCard {
 		$this->owner = $owner;
 
 		return $this;
-	}
-
-	/**
-	 * Get owner
-	 *
-	 * @return Dungeoneer|null
-	 */
-	public function getOwner(): ?Dungeoneer {
-		return $this->owner;
 	}
 }

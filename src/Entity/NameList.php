@@ -5,8 +5,17 @@ namespace App\Entity;
 class NameList {
 	private string $name;
 	private ?bool $male;
-	private int $id;
+	private ?int $id = null;
 	private ?Culture $culture;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -22,12 +31,12 @@ class NameList {
 	}
 
 	/**
-	 * Get name
+	 * Get male
 	 *
-	 * @return string
+	 * @return bool|null
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getMale(): ?bool {
+		return $this->male;
 	}
 
 	/**
@@ -44,21 +53,21 @@ class NameList {
 	}
 
 	/**
-	 * Get male
+	 * Get id
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getMale(): ?bool {
-		return $this->male;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get culture
 	 *
-	 * @return integer
+	 * @return Culture|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCulture(): ?Culture {
+		return $this->culture;
 	}
 
 	/**
@@ -72,15 +81,6 @@ class NameList {
 		$this->culture = $culture;
 
 		return $this;
-	}
-
-	/**
-	 * Get culture
-	 *
-	 * @return Culture|null
-	 */
-	public function getCulture(): ?Culture {
-		return $this->culture;
 	}
 
 	public function isMale(): ?bool {

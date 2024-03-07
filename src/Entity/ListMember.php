@@ -6,11 +6,20 @@ class ListMember {
 	private int $priority;
 	private bool $allowed;
 	private bool $include_subs;
-	private int $id;
+	private ?int $id = null;
 	private ?Listing $listing;
 	private ?Realm $target_realm;
 	private ?Character $target_character;
 	private ?RealmPosition $target_position;
+
+	/**
+	 * Get priority
+	 *
+	 * @return integer
+	 */
+	public function getPriority(): int {
+		return $this->priority;
+	}
 
 	/**
 	 * Set priority
@@ -26,12 +35,16 @@ class ListMember {
 	}
 
 	/**
-	 * Get priority
+	 * Get allowed
 	 *
-	 * @return integer
+	 * @return boolean
 	 */
-	public function getPriority(): int {
-		return $this->priority;
+	public function getAllowed(): bool {
+		return $this->allowed;
+	}
+
+	public function isAllowed(): ?bool {
+		return $this->allowed;
 	}
 
 	/**
@@ -48,43 +61,21 @@ class ListMember {
 	}
 
 	/**
-	 * Get allowed
-	 *
-	 * @return boolean
-	 */
-	public function getAllowed(): bool {
-		return $this->allowed;
-	}
-
-	/**
-	 * Set include_subs
-	 *
-	 * @param boolean $includeSubs
-	 *
-	 * @return ListMember
-	 */
-	public function setIncludeSubs(bool $includeSubs): static {
-		$this->include_subs = $includeSubs;
-
-		return $this;
-	}
-
-	/**
-	 * Get include_subs
-	 *
-	 * @return boolean
-	 */
-	public function getIncludeSubs(): bool {
-		return $this->include_subs;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get listing
+	 *
+	 * @return Listing|null
+	 */
+	public function getListing(): ?Listing {
+		return $this->listing;
 	}
 
 	/**
@@ -101,12 +92,12 @@ class ListMember {
 	}
 
 	/**
-	 * Get listing
+	 * Get target_realm
 	 *
-	 * @return Listing|null
+	 * @return Realm|null
 	 */
-	public function getListing(): ?Listing {
-		return $this->listing;
+	public function getTargetRealm(): ?Realm {
+		return $this->target_realm;
 	}
 
 	/**
@@ -123,12 +114,12 @@ class ListMember {
 	}
 
 	/**
-	 * Get target_realm
+	 * Get target_character
 	 *
-	 * @return Realm|null
+	 * @return Character|null
 	 */
-	public function getTargetRealm(): ?Realm {
-		return $this->target_realm;
+	public function getTargetCharacter(): ?Character {
+		return $this->target_character;
 	}
 
 	/**
@@ -145,12 +136,12 @@ class ListMember {
 	}
 
 	/**
-	 * Get target_character
+	 * Get target_position
 	 *
-	 * @return Character|null
+	 * @return RealmPosition|null
 	 */
-	public function getTargetCharacter(): ?Character {
-		return $this->target_character;
+	public function getTargetPosition(): ?RealmPosition {
+		return $this->target_position;
 	}
 
 	/**
@@ -166,20 +157,29 @@ class ListMember {
 		return $this;
 	}
 
-	/**
-	 * Get target_position
-	 *
-	 * @return RealmPosition|null
-	 */
-	public function getTargetPosition(): ?RealmPosition {
-		return $this->target_position;
-	}
-
-	public function isAllowed(): ?bool {
-		return $this->allowed;
-	}
-
 	public function isIncludeSubs(): ?bool {
 		return $this->include_subs;
+	}
+
+	/**
+	 * Get include_subs
+	 *
+	 * @return boolean
+	 */
+	public function getIncludeSubs(): bool {
+		return $this->include_subs;
+	}
+
+	/**
+	 * Set include_subs
+	 *
+	 * @param boolean $includeSubs
+	 *
+	 * @return ListMember
+	 */
+	public function setIncludeSubs(bool $includeSubs): static {
+		$this->include_subs = $includeSubs;
+
+		return $this;
 	}
 }

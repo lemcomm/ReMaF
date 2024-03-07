@@ -41,7 +41,7 @@ class PaymentCommand extends Command {
 		$output->writeln('maintenance and payment cycle:');
 
 		$inactives = 0;
-		$query = $this->em->createQuery('SELECT c FROM BM2SiteBundle:Character c WHERE c.slumbering = false AND c.alive = true AND DATE_PART(\'day\', :now - c.last_access) > :inactivity');
+		$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.slumbering = false AND c.alive = true AND DATE_PART(\'day\', :now - c.last_access) > :inactivity');
 		$query->setParameters(array('now'=>new DateTime("now"), 'inactivity'=>$this->inactivityDays));
 		foreach ($query->getResult() as $char) {
 			$inactives++;

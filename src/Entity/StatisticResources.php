@@ -7,8 +7,17 @@ class StatisticResources {
 	private int $supply;
 	private int $demand;
 	private int $trade;
-	private int $id;
+	private ?int $id = null;
 	private ?ResourceType $resource;
+
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
 	/**
 	 * Set cycle
@@ -24,12 +33,12 @@ class StatisticResources {
 	}
 
 	/**
-	 * Get cycle
+	 * Get supply
 	 *
 	 * @return integer
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getSupply(): int {
+		return $this->supply;
 	}
 
 	/**
@@ -46,12 +55,12 @@ class StatisticResources {
 	}
 
 	/**
-	 * Get supply
+	 * Get demand
 	 *
 	 * @return integer
 	 */
-	public function getSupply(): int {
-		return $this->supply;
+	public function getDemand(): int {
+		return $this->demand;
 	}
 
 	/**
@@ -68,12 +77,12 @@ class StatisticResources {
 	}
 
 	/**
-	 * Get demand
+	 * Get trade
 	 *
 	 * @return integer
 	 */
-	public function getDemand(): int {
-		return $this->demand;
+	public function getTrade(): int {
+		return $this->trade;
 	}
 
 	/**
@@ -90,21 +99,21 @@ class StatisticResources {
 	}
 
 	/**
-	 * Get trade
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getTrade(): int {
-		return $this->trade;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get resource
 	 *
-	 * @return integer
+	 * @return ResourceType|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getResource(): ?ResourceType {
+		return $this->resource;
 	}
 
 	/**
@@ -118,14 +127,5 @@ class StatisticResources {
 		$this->resource = $resource;
 
 		return $this;
-	}
-
-	/**
-	 * Get resource
-	 *
-	 * @return ResourceType|null
-	 */
-	public function getResource(): ?ResourceType {
-		return $this->resource;
 	}
 }

@@ -4,10 +4,19 @@ namespace App\Entity;
 
 class Vote {
 	private int $vote;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $character;
 	private ?Election $election;
 	private ?Character $target_character;
+
+	/**
+	 * Get vote
+	 *
+	 * @return integer
+	 */
+	public function getVote(): int {
+		return $this->vote;
+	}
 
 	/**
 	 * Set vote
@@ -23,21 +32,21 @@ class Vote {
 	}
 
 	/**
-	 * Get vote
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getVote(): int {
-		return $this->vote;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -54,12 +63,12 @@ class Vote {
 	}
 
 	/**
-	 * Get character
+	 * Get election
 	 *
-	 * @return Character|null
+	 * @return Election|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getElection(): ?Election {
+		return $this->election;
 	}
 
 	/**
@@ -76,12 +85,12 @@ class Vote {
 	}
 
 	/**
-	 * Get election
+	 * Get target_character
 	 *
-	 * @return Election|null
+	 * @return Character|null
 	 */
-	public function getElection(): ?Election {
-		return $this->election;
+	public function getTargetCharacter(): ?Character {
+		return $this->target_character;
 	}
 
 	/**
@@ -95,14 +104,5 @@ class Vote {
 		$this->target_character = $targetCharacter;
 
 		return $this;
-	}
-
-	/**
-	 * Get target_character
-	 *
-	 * @return Character|null
-	 */
-	public function getTargetCharacter(): ?Character {
-		return $this->target_character;
 	}
 }

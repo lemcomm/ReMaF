@@ -10,7 +10,7 @@ class Unit {
 	private ?int $travel_days;
 	private ?string $destination;
 	private ?bool $disbanded;
-	private int $id;
+	private ?int $id = null;
 	private ?EventLog $log;
 	private ?UnitSettings $settings;
 	private Collection $soldiers;
@@ -53,16 +53,32 @@ class Unit {
 		return $c;
 	}
 
-	public function getActiveSoldiers(): ArrayCollection|Collection {
-		return $this->getSoldiers()->filter(function ($entry) {
-			return ($entry->isActive());
-		});
-	}
-
 	public function getTravellingSoldiers(): ArrayCollection|Collection {
 		return $this->getSoldiers()->filter(function ($entry) {
 			return ($entry->getTravelDays() > 0 && $entry->isAlive());
 		});
+	}
+
+	/**
+	 * Get travel_days
+	 *
+	 * @return int|null
+	 */
+	public function getTravelDays(): ?int {
+		return $this->travel_days;
+	}
+
+	/**
+	 * Set travel_days
+	 *
+	 * @param int|null $travelDays
+	 *
+	 * @return Unit
+	 */
+	public function setTravelDays(?int $travelDays = null): static {
+		$this->travel_days = $travelDays;
+
+		return $this;
 	}
 
 	public function getWoundedSoldiers(): ArrayCollection|Collection {
@@ -105,6 +121,21 @@ class Unit {
 		return $data;
 	}
 
+	public function getActiveSoldiers(): ArrayCollection|Collection {
+		return $this->getSoldiers()->filter(function ($entry) {
+			return ($entry->isActive());
+		});
+	}
+
+	/**
+	 * Get soldiers
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getSoldiers(): ArrayCollection|Collection {
+		return $this->soldiers;
+	}
+
 	public function getAvailable(): int {
 		return $this->maxSize - $this->getSoldiers()->count();
 	}
@@ -129,14 +160,89 @@ class Unit {
 	}
 
 	/**
-	 * Set line
+	 * Get settlement
 	 *
-	 * @param int|null $line
+	 * @return Settlement|null
+	 */
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
+	}
+
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
 	 *
 	 * @return Unit
 	 */
-	public function setLine(?int $line = null): static {
-		$this->line = $line;
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
+
+		return $this;
+	}
+
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
+
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return Unit
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
+
+		return $this;
+	}
+
+	/**
+	 * Get place
+	 *
+	 * @return Place|null
+	 */
+	public function getPlace(): ?Place {
+		return $this->place;
+	}
+
+	/**
+	 * Set place
+	 *
+	 * @param Place|null $place
+	 *
+	 * @return Unit
+	 */
+	public function setPlace(Place $place = null): static {
+		$this->place = $place;
+
+		return $this;
+	}
+
+	/**
+	 * Get defending_settlement
+	 *
+	 * @return Settlement|null
+	 */
+	public function getDefendingSettlement(): ?Settlement {
+		return $this->defending_settlement;
+	}
+
+	/**
+	 * Set defending_settlement
+	 *
+	 * @param Settlement|null $defendingSettlement
+	 *
+	 * @return Unit
+	 */
+	public function setDefendingSettlement(Settlement $defendingSettlement = null): static {
+		$this->defending_settlement = $defendingSettlement;
 
 		return $this;
 	}
@@ -151,25 +257,25 @@ class Unit {
 	}
 
 	/**
-	 * Set travel_days
+	 * Set line
 	 *
-	 * @param int|null $travelDays
+	 * @param int|null $line
 	 *
 	 * @return Unit
 	 */
-	public function setTravelDays(?int $travelDays = null): static {
-		$this->travel_days = $travelDays;
+	public function setLine(?int $line = null): static {
+		$this->line = $line;
 
 		return $this;
 	}
 
 	/**
-	 * Get travel_days
+	 * Get destination
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getTravelDays(): ?int {
-		return $this->travel_days;
+	public function getDestination(): ?string {
+		return $this->destination;
 	}
 
 	/**
@@ -186,12 +292,12 @@ class Unit {
 	}
 
 	/**
-	 * Get destination
+	 * Get disbanded
 	 *
-	 * @return string|null
+	 * @return bool|null
 	 */
-	public function getDestination(): ?string {
-		return $this->destination;
+	public function getDisbanded(): ?bool {
+		return $this->disbanded;
 	}
 
 	/**
@@ -208,21 +314,21 @@ class Unit {
 	}
 
 	/**
-	 * Get disbanded
+	 * Get id
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getDisbanded(): ?bool {
-		return $this->disbanded;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get log
 	 *
-	 * @return integer
+	 * @return EventLog|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getLog(): ?EventLog {
+		return $this->log;
 	}
 
 	/**
@@ -239,12 +345,12 @@ class Unit {
 	}
 
 	/**
-	 * Get log
+	 * Get settings
 	 *
-	 * @return EventLog|null
+	 * @return UnitSettings|null
 	 */
-	public function getLog(): ?EventLog {
-		return $this->log;
+	public function getSettings(): ?UnitSettings {
+		return $this->settings;
 	}
 
 	/**
@@ -258,15 +364,6 @@ class Unit {
 		$this->settings = $settings;
 
 		return $this;
-	}
-
-	/**
-	 * Get settings
-	 *
-	 * @return UnitSettings|null
-	 */
-	public function getSettings(): ?UnitSettings {
-		return $this->settings;
 	}
 
 	/**
@@ -289,15 +386,6 @@ class Unit {
 	 */
 	public function removeSoldier(Soldier $soldiers): void {
 		$this->soldiers->removeElement($soldiers);
-	}
-
-	/**
-	 * Get soldiers
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getSoldiers(): ArrayCollection|Collection {
-		return $this->soldiers;
 	}
 
 	/**
@@ -363,25 +451,12 @@ class Unit {
 	}
 
 	/**
-	 * Set character
-	 *
-	 * @param Character|null $character
-	 *
-	 * @return Unit
-	 */
-	public function setCharacter(Character $character = null): static {
-		$this->character = $character;
-
-		return $this;
-	}
-
-	/**
-	 * Get character
+	 * Get marshal
 	 *
 	 * @return Character|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getMarshal(): ?Character {
+		return $this->marshal;
 	}
 
 	/**
@@ -398,78 +473,12 @@ class Unit {
 	}
 
 	/**
-	 * Get marshal
-	 *
-	 * @return Character|null
-	 */
-	public function getMarshal(): ?Character {
-		return $this->marshal;
-	}
-
-	/**
-	 * Set settlement
-	 *
-	 * @param Settlement|null $settlement
-	 *
-	 * @return Unit
-	 */
-	public function setSettlement(Settlement $settlement = null): static {
-		$this->settlement = $settlement;
-
-		return $this;
-	}
-
-	/**
-	 * Get settlement
+	 * Get supplier
 	 *
 	 * @return Settlement|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
-	}
-
-	/**
-	 * Set defending_settlement
-	 *
-	 * @param Settlement|null $defendingSettlement
-	 *
-	 * @return Unit
-	 */
-	public function setDefendingSettlement(Settlement $defendingSettlement = null): static {
-		$this->defending_settlement = $defendingSettlement;
-
-		return $this;
-	}
-
-	/**
-	 * Get defending_settlement
-	 *
-	 * @return Settlement|null
-	 */
-	public function getDefendingSettlement(): ?Settlement {
-		return $this->defending_settlement;
-	}
-
-	/**
-	 * Set place
-	 *
-	 * @param Place|null $place
-	 *
-	 * @return Unit
-	 */
-	public function setPlace(Place $place = null): static {
-		$this->place = $place;
-
-		return $this;
-	}
-
-	/**
-	 * Get place
-	 *
-	 * @return Place|null
-	 */
-	public function getPlace(): ?Place {
-		return $this->place;
+	public function getSupplier(): ?Settlement {
+		return $this->supplier;
 	}
 
 	/**
@@ -483,15 +492,6 @@ class Unit {
 		$this->supplier = $supplier;
 
 		return $this;
-	}
-
-	/**
-	 * Get supplier
-	 *
-	 * @return Settlement|null
-	 */
-	public function getSupplier(): ?Settlement {
-		return $this->supplier;
 	}
 
 	public function isDisbanded(): ?bool {

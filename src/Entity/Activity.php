@@ -11,8 +11,7 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
  * Activity
  */
 class Activity {
-
-	private int $id;
+	private ?int $id = null;
 	private string $name;
 	private DateTime $created;
 	private DateTime $start;
@@ -33,18 +32,16 @@ class Activity {
 	private Settlement $settlement;
 	private Place $place;
 
+	public function __construct() {
+		$this->events = new ArrayCollection();
+		$this->participants = new ArrayCollection();
+		$this->groups = new ArrayCollection();
+		$this->bouts = new ArrayCollection();
+	}
+
 	public function findChallenger() {
 		foreach ($this->participants as $p) {
 			if ($p->getOrganizer()) {
-				return $p;
-			}
-		}
-		return false;
-	}
-
-	public function findChallenged() {
-		foreach ($this->participants as $p) {
-			if (!$p->getOrganizer()) {
 				return $p;
 			}
 		}
@@ -82,11 +79,22 @@ class Activity {
 		return false;
 	}
 
-	public function __construct() {
-		$this->events = new ArrayCollection();
-		$this->participants = new ArrayCollection();
-		$this->groups = new ArrayCollection();
-		$this->bouts = new ArrayCollection();
+	public function findChallenged() {
+		foreach ($this->participants as $p) {
+			if (!$p->getOrganizer()) {
+				return $p;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -103,12 +111,12 @@ class Activity {
 	}
 
 	/**
-	 * Get name
+	 * Get created
 	 *
-	 * @return string
+	 * @return DateTime
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getCreated(): DateTime {
+		return $this->created;
 	}
 
 	/**
@@ -125,12 +133,12 @@ class Activity {
 	}
 
 	/**
-	 * Get created
+	 * Get start
 	 *
-	 * @return DateTime
+	 * @return DateTime|null
 	 */
-	public function getCreated(): DateTime {
-		return $this->created;
+	public function getStart(): ?DateTime {
+		return $this->start;
 	}
 
 	/**
@@ -147,12 +155,12 @@ class Activity {
 	}
 
 	/**
-	 * Get start
+	 * Get finish
 	 *
 	 * @return DateTime|null
 	 */
-	public function getStart(): ?DateTime {
-		return $this->start;
+	public function getFinish(): ?DateTime {
+		return $this->finish;
 	}
 
 	/**
@@ -169,12 +177,12 @@ class Activity {
 	}
 
 	/**
-	 * Get finish
+	 * Get same
 	 *
-	 * @return DateTime|null
+	 * @return bool|null
 	 */
-	public function getFinish(): ?DateTime {
-		return $this->finish;
+	public function getSame(): ?bool {
+		return $this->same;
 	}
 
 	/**
@@ -191,12 +199,12 @@ class Activity {
 	}
 
 	/**
-	 * Get same
+	 * Get weapon_only
 	 *
 	 * @return bool|null
 	 */
-	public function getSame(): ?bool {
-		return $this->same;
+	public function getWeaponOnly(): ?bool {
+		return $this->weapon_only;
 	}
 
 	/**
@@ -213,12 +221,12 @@ class Activity {
 	}
 
 	/**
-	 * Get weapon_only
+	 * Get ready
 	 *
 	 * @return bool|null
 	 */
-	public function getWeaponOnly(): ?bool {
-		return $this->weapon_only;
+	public function getReady(): ?bool {
+		return $this->ready;
 	}
 
 	/**
@@ -235,12 +243,12 @@ class Activity {
 	}
 
 	/**
-	 * Get ready
+	 * Get location
 	 *
-	 * @return bool|null
+	 * @return Point|null
 	 */
-	public function getReady(): ?bool {
-		return $this->ready;
+	public function getLocation(): ?Point {
+		return $this->location;
 	}
 
 	/**
@@ -257,21 +265,21 @@ class Activity {
 	}
 
 	/**
-	 * Get location
+	 * Get id
 	 *
-	 * @return Point|null
+	 * @return int|null
 	 */
-	public function getLocation(): ?Point {
-		return $this->location;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get report
 	 *
-	 * @return integer
+	 * @return ActivityReport|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getReport(): ?ActivityReport {
+		return $this->report;
 	}
 
 	/**
@@ -285,15 +293,6 @@ class Activity {
 		$this->report = $report;
 
 		return $this;
-	}
-
-	/**
-	 * Get report
-	 *
-	 * @return ActivityReport|null
-	 */
-	public function getReport(): ?ActivityReport {
-		return $this->report;
 	}
 
 	/**
@@ -421,6 +420,15 @@ class Activity {
 	}
 
 	/**
+	 * Get type
+	 *
+	 * @return ActivityType|null
+	 */
+	public function getType(): ?ActivityType {
+		return $this->type;
+	}
+
+	/**
 	 * Set type
 	 *
 	 * @param ActivityType|null $type
@@ -434,12 +442,12 @@ class Activity {
 	}
 
 	/**
-	 * Get type
+	 * Get subtype
 	 *
-	 * @return ActivityType|null
+	 * @return ActivitySubType|null
 	 */
-	public function getType(): ?ActivityType {
-		return $this->type;
+	public function getSubtype(): ?ActivitySubType {
+		return $this->subtype;
 	}
 
 	/**
@@ -456,12 +464,12 @@ class Activity {
 	}
 
 	/**
-	 * Get subtype
+	 * Get main_event
 	 *
-	 * @return ActivitySubType|null
+	 * @return Activity|null
 	 */
-	public function getSubtype(): ?ActivitySubType {
-		return $this->subtype;
+	public function getMainEvent(): ?Activity {
+		return $this->main_event;
 	}
 
 	/**
@@ -478,12 +486,12 @@ class Activity {
 	}
 
 	/**
-	 * Get main_event
+	 * Get geo_data
 	 *
-	 * @return Activity|null
+	 * @return GeoData|null
 	 */
-	public function getMainEvent(): ?Activity {
-		return $this->main_event;
+	public function getGeoData(): ?GeoData {
+		return $this->geo_data;
 	}
 
 	/**
@@ -500,12 +508,12 @@ class Activity {
 	}
 
 	/**
-	 * Get geo_data
+	 * Get settlement
 	 *
-	 * @return GeoData|null
+	 * @return Settlement|null
 	 */
-	public function getGeoData(): ?GeoData {
-		return $this->geo_data;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -522,12 +530,12 @@ class Activity {
 	}
 
 	/**
-	 * Get settlement
+	 * Get place
 	 *
-	 * @return Settlement|null
+	 * @return Place|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getPlace(): ?Place {
+		return $this->place;
 	}
 
 	/**
@@ -541,14 +549,5 @@ class Activity {
 		$this->place = $place;
 
 		return $this;
-	}
-
-	/**
-	 * Get place
-	 *
-	 * @return Place|null
-	 */
-	public function getPlace(): ?Place {
-		return $this->place;
 	}
 }

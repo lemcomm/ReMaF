@@ -13,8 +13,10 @@
 		<li>
 			You have stolen the following supplies:
 			<ul>
-				{% for name,amount in result.supply if amount > 0 %}
-					<li>{{ amount }} {{ ('item.'~name)|trans }}</li>{# FIXME: this should have plural forms #}
+				{% for name,amount in result.supply %}
+					{% if amount > 0 %}
+						<li>{{ amount }} {{ ('item.'~name)|trans }}</li>{# FIXME: this should have plural forms #}
+					{% endif %}
 				{% endfor %}
 			</ul>
 		</li>
@@ -23,8 +25,10 @@
 		<li>
 			You have stolen the following resources and sent them to {{ link(target) }}:
 			<ul>
-				{% for name,amount in result.resources if amount > 0 %}
-					<li>{{ amount }} {{ name|trans }}</li>
+				{% for name,amount in result.resources %}
+					{% if amount > 0 %}
+						<li>{{ amount }} {{ name|trans }}</li>
+					{% endif %}
 				{% endfor %}
 			</ul>
 		</li>
@@ -35,8 +39,10 @@
 	{% if result.burn is defined %}
 		<li>Your troops burn and damage the following:
 			<ul>
-				{% for name,amount in result.burn if amount > 0 %}
-					<li>{{ name|trans }}</li>
+				{% for name,amount in result.burn %}
+					{% if amount > 0 %}
+						<li>{{ name|trans }}</li>
+					{% endif %}
 				{% endfor %}
 			</ul>
 		</li>

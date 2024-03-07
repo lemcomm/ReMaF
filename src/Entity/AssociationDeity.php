@@ -10,10 +10,19 @@ use DateTime;
 class AssociationDeity {
 	private string $words;
 	private DateTime $words_timestamp;
-	private int $id;
+	private ?int $id = null;
 	private Association $association;
 	private Deity $deity;
 	private Character $words_from;
+
+	/**
+	 * Get words
+	 *
+	 * @return string|null
+	 */
+	public function getWords(): ?string {
+		return $this->words;
+	}
 
 	/**
 	 * Set words
@@ -29,12 +38,12 @@ class AssociationDeity {
 	}
 
 	/**
-	 * Get words
+	 * Get words_timestamp
 	 *
-	 * @return string|null
+	 * @return DateTime|null
 	 */
-	public function getWords(): ?string {
-		return $this->words;
+	public function getWordsTimestamp(): ?DateTime {
+		return $this->words_timestamp;
 	}
 
 	/**
@@ -51,21 +60,21 @@ class AssociationDeity {
 	}
 
 	/**
-	 * Get words_timestamp
+	 * Get id
 	 *
-	 * @return DateTime|null
+	 * @return int|null
 	 */
-	public function getWordsTimestamp(): ?DateTime {
-		return $this->words_timestamp;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get association
 	 *
-	 * @return integer
+	 * @return Association|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getAssociation(): ?Association {
+		return $this->association;
 	}
 
 	/**
@@ -82,12 +91,12 @@ class AssociationDeity {
 	}
 
 	/**
-	 * Get association
+	 * Get deity
 	 *
-	 * @return Association|null
+	 * @return Deity|null
 	 */
-	public function getAssociation(): ?Association {
-		return $this->association;
+	public function getDeity(): ?Deity {
+		return $this->deity;
 	}
 
 	/**
@@ -104,12 +113,12 @@ class AssociationDeity {
 	}
 
 	/**
-	 * Get deity
+	 * Get words_from
 	 *
-	 * @return Deity|null
+	 * @return Character|null
 	 */
-	public function getDeity(): ?Deity {
-		return $this->deity;
+	public function getWordsFrom(): ?Character {
+		return $this->words_from;
 	}
 
 	/**
@@ -123,14 +132,5 @@ class AssociationDeity {
 		$this->words_from = $wordsFrom;
 
 		return $this;
-	}
-
-	/**
-	 * Get words_from
-	 *
-	 * @return Character|null
-	 */
-	public function getWordsFrom(): ?Character {
-		return $this->words_from;
 	}
 }

@@ -14,7 +14,7 @@ class Event {
 	private int $cycle;
 	private int $priority;
 	private ?int $lifetime;
-	private int $id;
+	private ?int $id = null;
 	private Collection $mail_entries;
 	private ?EventLog $log;
 
@@ -23,6 +23,15 @@ class Event {
 	 */
 	public function __construct() {
 		$this->mail_entries = new ArrayCollection();
+	}
+
+	/**
+	 * Get content
+	 *
+	 * @return string
+	 */
+	public function getContent(): string {
+		return $this->content;
 	}
 
 	/**
@@ -39,12 +48,12 @@ class Event {
 	}
 
 	/**
-	 * Get content
+	 * Get data
 	 *
-	 * @return string
+	 * @return array
 	 */
-	public function getContent(): string {
-		return $this->content;
+	public function getData(): array {
+		return $this->data;
 	}
 
 	/**
@@ -61,34 +70,12 @@ class Event {
 	}
 
 	/**
-	 * Get data
+	 * Get ts
 	 *
-	 * @return array
+	 * @return DateTime
 	 */
-	public function getData(): array {
-		return $this->data;
-	}
-
-	/**
-	 * Set public
-	 *
-	 * @param boolean $public
-	 *
-	 * @return Event
-	 */
-	public function setPublic(bool $public): static {
-		$this->public = $public;
-
-		return $this;
-	}
-
-	/**
-	 * Get public
-	 *
-	 * @return boolean
-	 */
-	public function getPublic(): bool {
-		return $this->public;
+	public function getTs(): DateTime {
+		return $this->ts;
 	}
 
 	/**
@@ -105,12 +92,12 @@ class Event {
 	}
 
 	/**
-	 * Get ts
+	 * Get cycle
 	 *
-	 * @return DateTime
+	 * @return integer
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getCycle(): int {
+		return $this->cycle;
 	}
 
 	/**
@@ -127,12 +114,12 @@ class Event {
 	}
 
 	/**
-	 * Get cycle
+	 * Get priority
 	 *
 	 * @return integer
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getPriority(): int {
+		return $this->priority;
 	}
 
 	/**
@@ -149,12 +136,12 @@ class Event {
 	}
 
 	/**
-	 * Get priority
+	 * Get lifetime
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getPriority(): int {
-		return $this->priority;
+	public function getLifetime(): ?int {
+		return $this->lifetime;
 	}
 
 	/**
@@ -171,20 +158,11 @@ class Event {
 	}
 
 	/**
-	 * Get lifetime
+	 * Get id
 	 *
 	 * @return int|null
 	 */
-	public function getLifetime(): ?int {
-		return $this->lifetime;
-	}
-
-	/**
-	 * Get id
-	 *
-	 * @return integer
-	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -220,6 +198,15 @@ class Event {
 	}
 
 	/**
+	 * Get log
+	 *
+	 * @return EventLog|null
+	 */
+	public function getLog(): ?EventLog {
+		return $this->log;
+	}
+
+	/**
 	 * Set log
 	 *
 	 * @param EventLog|null $log
@@ -232,16 +219,29 @@ class Event {
 		return $this;
 	}
 
-	/**
-	 * Get log
-	 *
-	 * @return EventLog|null
-	 */
-	public function getLog(): ?EventLog {
-		return $this->log;
-	}
-
 	public function isPublic(): ?bool {
 		return $this->public;
+	}
+
+	/**
+	 * Get public
+	 *
+	 * @return boolean
+	 */
+	public function getPublic(): bool {
+		return $this->public;
+	}
+
+	/**
+	 * Set public
+	 *
+	 * @param boolean $public
+	 *
+	 * @return Event
+	 */
+	public function setPublic(bool $public): static {
+		$this->public = $public;
+
+		return $this;
 	}
 }

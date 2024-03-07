@@ -9,7 +9,7 @@ class SecurityLog {
 	private string $ip;
 	private string $route;
 	private DateTimeInterface $timestamp;
-	private int $id;
+	private ?int $id = null;
 	private ?User $user = null;
 
 	public function getType(): string {

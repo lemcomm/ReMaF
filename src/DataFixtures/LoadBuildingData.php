@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\BuildingType;
 use App\Entity\BuildingResource;
+use App\Entity\ResourceType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -198,7 +199,7 @@ class LoadBuildingData extends Fixture implements DependentFixtureInterface {
 			$this->addReference('buildingtype: '.strtolower($name), $type);
 
 			foreach ($this->resources[$name] as $resourcename => $resourcedata) {
-				$rt = $manager->getRepository('BM2SiteBundle:ResourceType')->findOneBy(['name'=>$resourcename]);
+				$rt = $manager->getRepository(ResourceType::class)->findOneBy(['name'=>$resourcename]);
 				if (!$rt) {
 					echo "can't find $resourcename needed by $name.\n";
 				}

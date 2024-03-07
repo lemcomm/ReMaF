@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 
 class Deity {
 	private string $name;
-	private int $id;
+	private ?int $id = null;
 	private ?Description $description;
 	private Collection $associations;
 	private Collection $followers;
@@ -26,6 +26,15 @@ class Deity {
 	}
 
 	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
+
+	/**
 	 * Set name
 	 *
 	 * @param string $name
@@ -39,21 +48,21 @@ class Deity {
 	}
 
 	/**
-	 * Get name
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get description
 	 *
-	 * @return integer
+	 * @return Description|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getDescription(): ?Description {
+		return $this->description;
 	}
 
 	/**
@@ -67,15 +76,6 @@ class Deity {
 		$this->description = $description;
 
 		return $this;
-	}
-
-	/**
-	 * Get description
-	 *
-	 * @return Description|null
-	 */
-	public function getDescription(): ?Description {
-		return $this->description;
 	}
 
 	/**
@@ -203,6 +203,15 @@ class Deity {
 	}
 
 	/**
+	 * Get main_recognizer
+	 *
+	 * @return Association|null
+	 */
+	public function getMainRecognizer(): ?Association {
+		return $this->main_recognizer;
+	}
+
+	/**
 	 * Set main_recognizer
 	 *
 	 * @param Association|null $mainRecognizer
@@ -213,14 +222,5 @@ class Deity {
 		$this->main_recognizer = $mainRecognizer;
 
 		return $this;
-	}
-
-	/**
-	 * Get main_recognizer
-	 *
-	 * @return Association|null
-	 */
-	public function getMainRecognizer(): ?Association {
-		return $this->main_recognizer;
 	}
 }

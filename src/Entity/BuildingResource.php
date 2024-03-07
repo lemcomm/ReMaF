@@ -7,9 +7,18 @@ class BuildingResource {
 	private int $requires_operation;
 	private int $provides_operation;
 	private int $provides_operation_bonus;
-	private int $id;
+	private ?int $id = null;
 	private BuildingType $building_type;
 	private ResourceType $resource_type;
+
+	/**
+	 * Get requires_construction
+	 *
+	 * @return integer
+	 */
+	public function getRequiresConstruction(): int {
+		return $this->requires_construction;
+	}
 
 	/**
 	 * Set requires_construction
@@ -25,12 +34,12 @@ class BuildingResource {
 	}
 
 	/**
-	 * Get requires_construction
+	 * Get requires_operation
 	 *
 	 * @return integer
 	 */
-	public function getRequiresConstruction(): int {
-		return $this->requires_construction;
+	public function getRequiresOperation(): int {
+		return $this->requires_operation;
 	}
 
 	/**
@@ -47,12 +56,12 @@ class BuildingResource {
 	}
 
 	/**
-	 * Get requires_operation
+	 * Get provides_operation
 	 *
 	 * @return integer
 	 */
-	public function getRequiresOperation(): int {
-		return $this->requires_operation;
+	public function getProvidesOperation(): int {
+		return $this->provides_operation;
 	}
 
 	/**
@@ -69,12 +78,12 @@ class BuildingResource {
 	}
 
 	/**
-	 * Get provides_operation
+	 * Get provides_operation_bonus
 	 *
 	 * @return integer
 	 */
-	public function getProvidesOperation(): int {
-		return $this->provides_operation;
+	public function getProvidesOperationBonus(): int {
+		return $this->provides_operation_bonus;
 	}
 
 	/**
@@ -91,21 +100,21 @@ class BuildingResource {
 	}
 
 	/**
-	 * Get provides_operation_bonus
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getProvidesOperationBonus(): int {
-		return $this->provides_operation_bonus;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get building_type
 	 *
-	 * @return integer
+	 * @return BuildingType|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getBuildingType(): ?BuildingType {
+		return $this->building_type;
 	}
 
 	/**
@@ -122,12 +131,12 @@ class BuildingResource {
 	}
 
 	/**
-	 * Get building_type
+	 * Get resource_type
 	 *
-	 * @return BuildingType|null
+	 * @return ResourceType|null
 	 */
-	public function getBuildingType(): ?BuildingType {
-		return $this->building_type;
+	public function getResourceType(): ?ResourceType {
+		return $this->resource_type;
 	}
 
 	/**
@@ -141,14 +150,5 @@ class BuildingResource {
 		$this->resource_type = $resourceType;
 
 		return $this;
-	}
-
-	/**
-	 * Get resource_type
-	 *
-	 * @return ResourceType|null
-	 */
-	public function getResourceType(): ?ResourceType {
-		return $this->resource_type;
 	}
 }

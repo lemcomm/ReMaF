@@ -6,9 +6,18 @@ class WarTarget {
 	private bool $attacked;
 	private bool $taken_ever;
 	private bool $taken_currently;
-	private int $id;
+	private ?int $id = null;
 	private ?War $war;
 	private ?Settlement $settlement;
+
+	/**
+	 * Get attacked
+	 *
+	 * @return boolean
+	 */
+	public function getAttacked(): bool {
+		return $this->attacked;
+	}
 
 	/**
 	 * Set attacked
@@ -24,12 +33,12 @@ class WarTarget {
 	}
 
 	/**
-	 * Get attacked
+	 * Get taken_ever
 	 *
 	 * @return boolean
 	 */
-	public function getAttacked(): bool {
-		return $this->attacked;
+	public function getTakenEver(): bool {
+		return $this->taken_ever;
 	}
 
 	/**
@@ -46,12 +55,12 @@ class WarTarget {
 	}
 
 	/**
-	 * Get taken_ever
+	 * Get taken_currently
 	 *
 	 * @return boolean
 	 */
-	public function getTakenEver(): bool {
-		return $this->taken_ever;
+	public function getTakenCurrently(): bool {
+		return $this->taken_currently;
 	}
 
 	/**
@@ -68,21 +77,21 @@ class WarTarget {
 	}
 
 	/**
-	 * Get taken_currently
+	 * Get id
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getTakenCurrently(): bool {
-		return $this->taken_currently;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get war
 	 *
-	 * @return integer
+	 * @return War|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getWar(): ?War {
+		return $this->war;
 	}
 
 	/**
@@ -99,12 +108,12 @@ class WarTarget {
 	}
 
 	/**
-	 * Get war
+	 * Get settlement
 	 *
-	 * @return War|null
+	 * @return Settlement|null
 	 */
-	public function getWar(): ?War {
-		return $this->war;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -118,14 +127,5 @@ class WarTarget {
 		$this->settlement = $settlement;
 
 		return $this;
-	}
-
-	/**
-	 * Get settlement
-	 *
-	 * @return Settlement|null
-	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
 	}
 }

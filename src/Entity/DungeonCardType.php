@@ -9,7 +9,7 @@ class DungeonCardType {
 	private bool $target_monster;
 	private bool $target_treasure;
 	private bool $target_dungeoneer;
-	private int $id;
+	private ?int $id = null;
 
 	public function getRareText(): string {
 		if ($this->rarity == 0) return 'common'; // exception for leave, etc. cards you can't draw randomly
@@ -17,6 +17,15 @@ class DungeonCardType {
 		if ($this->rarity <= 100) return 'rare';
 		if ($this->rarity <= 400) return 'uncommon';
 		return 'common';
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -33,12 +42,12 @@ class DungeonCardType {
 	}
 
 	/**
-	 * Get name
+	 * Get rarity
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getRarity(): int {
+		return $this->rarity;
 	}
 
 	/**
@@ -55,12 +64,12 @@ class DungeonCardType {
 	}
 
 	/**
-	 * Get rarity
+	 * Get monsterclass
 	 *
-	 * @return integer
+	 * @return string
 	 */
-	public function getRarity(): int {
-		return $this->rarity;
+	public function getMonsterclass(): string {
+		return $this->monsterclass;
 	}
 
 	/**
@@ -77,12 +86,12 @@ class DungeonCardType {
 	}
 
 	/**
-	 * Get monsterclass
+	 * Get target_monster
 	 *
-	 * @return string
+	 * @return boolean
 	 */
-	public function getMonsterclass(): string {
-		return $this->monsterclass;
+	public function getTargetMonster(): bool {
+		return $this->target_monster;
 	}
 
 	/**
@@ -99,12 +108,12 @@ class DungeonCardType {
 	}
 
 	/**
-	 * Get target_monster
+	 * Get target_treasure
 	 *
 	 * @return boolean
 	 */
-	public function getTargetMonster(): bool {
-		return $this->target_monster;
+	public function getTargetTreasure(): bool {
+		return $this->target_treasure;
 	}
 
 	/**
@@ -121,12 +130,12 @@ class DungeonCardType {
 	}
 
 	/**
-	 * Get target_treasure
+	 * Get target_dungeoneer
 	 *
 	 * @return boolean
 	 */
-	public function getTargetTreasure(): bool {
-		return $this->target_treasure;
+	public function getTargetDungeoneer(): bool {
+		return $this->target_dungeoneer;
 	}
 
 	/**
@@ -143,20 +152,11 @@ class DungeonCardType {
 	}
 
 	/**
-	 * Get target_dungeoneer
-	 *
-	 * @return boolean
-	 */
-	public function getTargetDungeoneer(): bool {
-		return $this->target_dungeoneer;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 }

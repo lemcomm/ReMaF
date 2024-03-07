@@ -8,7 +8,7 @@ class SpawnDescription {
 	private DateTime $ts;
 	private int $cycle;
 	private string $text;
-	private int $id;
+	private ?int $id = null;
 	private ?Place $active_place;
 	private ?Realm $active_realm;
 	private ?House $active_house;
@@ -20,6 +20,15 @@ class SpawnDescription {
 	private ?House $house;
 	private ?Association $association;
 	private ?Character $updater;
+
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
 	/**
 	 * Set ts
@@ -35,12 +44,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get ts
+	 * Get cycle
 	 *
-	 * @return DateTime
+	 * @return integer
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getCycle(): int {
+		return $this->cycle;
 	}
 
 	/**
@@ -57,12 +66,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get cycle
+	 * Get text
 	 *
-	 * @return integer
+	 * @return string
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getText(): string {
+		return $this->text;
 	}
 
 	/**
@@ -79,21 +88,21 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get text
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getText(): string {
-		return $this->text;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get active_place
 	 *
-	 * @return integer
+	 * @return Place|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getActivePlace(): ?Place {
+		return $this->active_place;
 	}
 
 	/**
@@ -110,12 +119,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get active_place
+	 * Get active_realm
 	 *
-	 * @return Place|null
+	 * @return Realm|null
 	 */
-	public function getActivePlace(): ?Place {
-		return $this->active_place;
+	public function getActiveRealm(): ?Realm {
+		return $this->active_realm;
 	}
 
 	/**
@@ -132,12 +141,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get active_realm
+	 * Get active_house
 	 *
-	 * @return Realm|null
+	 * @return House|null
 	 */
-	public function getActiveRealm(): ?Realm {
-		return $this->active_realm;
+	public function getActiveHouse(): ?House {
+		return $this->active_house;
 	}
 
 	/**
@@ -154,12 +163,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get active_house
+	 * Get active_association
 	 *
-	 * @return House|null
+	 * @return Association|null
 	 */
-	public function getActiveHouse(): ?House {
-		return $this->active_house;
+	public function getActiveAssociation(): ?Association {
+		return $this->active_association;
 	}
 
 	/**
@@ -176,12 +185,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get active_association
+	 * Get previous
 	 *
-	 * @return Association|null
+	 * @return SpawnDescription|null
 	 */
-	public function getActiveAssociation(): ?Association {
-		return $this->active_association;
+	public function getPrevious(): ?SpawnDescription {
+		return $this->previous;
 	}
 
 	/**
@@ -198,12 +207,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get previous
+	 * Get next
 	 *
 	 * @return SpawnDescription|null
 	 */
-	public function getPrevious(): ?SpawnDescription {
-		return $this->previous;
+	public function getNext(): ?SpawnDescription {
+		return $this->next;
 	}
 
 	/**
@@ -220,12 +229,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get next
+	 * Get place
 	 *
-	 * @return SpawnDescription|null
+	 * @return Place|null
 	 */
-	public function getNext(): ?SpawnDescription {
-		return $this->next;
+	public function getPlace(): ?Place {
+		return $this->place;
 	}
 
 	/**
@@ -242,12 +251,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get place
+	 * Get realm
 	 *
-	 * @return Place|null
+	 * @return Realm|null
 	 */
-	public function getPlace(): ?Place {
-		return $this->place;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -264,12 +273,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get realm
+	 * Get house
 	 *
-	 * @return Realm|null
+	 * @return House|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
+	public function getHouse(): ?House {
+		return $this->house;
 	}
 
 	/**
@@ -286,12 +295,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get house
+	 * Get association
 	 *
-	 * @return House|null
+	 * @return Association|null
 	 */
-	public function getHouse(): ?House {
-		return $this->house;
+	public function getAssociation(): ?Association {
+		return $this->association;
 	}
 
 	/**
@@ -308,12 +317,12 @@ class SpawnDescription {
 	}
 
 	/**
-	 * Get association
+	 * Get updater
 	 *
-	 * @return Association|null
+	 * @return Character|null
 	 */
-	public function getAssociation(): ?Association {
-		return $this->association;
+	public function getUpdater(): ?Character {
+		return $this->updater;
 	}
 
 	/**
@@ -327,14 +336,5 @@ class SpawnDescription {
 		$this->updater = $updater;
 
 		return $this;
-	}
-
-	/**
-	 * Get updater
-	 *
-	 * @return Character|null
-	 */
-	public function getUpdater(): ?Character {
-		return $this->updater;
 	}
 }

@@ -12,7 +12,7 @@ class DungeonMonster {
 	private int $size;
 	private int $wounds;
 	private bool $stunned;
-	private int $id;
+	private ?int $id = null;
 	private Collection $targeted_by;
 	private ?DungeonLevel $level;
 	private ?DungeonMonsterType $type;
@@ -29,6 +29,15 @@ class DungeonMonster {
 	}
 
 	/**
+	 * Get nr
+	 *
+	 * @return integer
+	 */
+	public function getNr(): int {
+		return $this->nr;
+	}
+
+	/**
 	 * Set nr
 	 *
 	 * @param integer $nr
@@ -42,12 +51,12 @@ class DungeonMonster {
 	}
 
 	/**
-	 * Get nr
+	 * Get amount
 	 *
 	 * @return integer
 	 */
-	public function getNr(): int {
-		return $this->nr;
+	public function getAmount(): int {
+		return $this->amount;
 	}
 
 	/**
@@ -64,12 +73,12 @@ class DungeonMonster {
 	}
 
 	/**
-	 * Get amount
+	 * Get original_amount
 	 *
 	 * @return integer
 	 */
-	public function getAmount(): int {
-		return $this->amount;
+	public function getOriginalAmount(): int {
+		return $this->original_amount;
 	}
 
 	/**
@@ -86,12 +95,12 @@ class DungeonMonster {
 	}
 
 	/**
-	 * Get original_amount
+	 * Get size
 	 *
 	 * @return integer
 	 */
-	public function getOriginalAmount(): int {
-		return $this->original_amount;
+	public function getSize(): int {
+		return $this->size;
 	}
 
 	/**
@@ -108,12 +117,12 @@ class DungeonMonster {
 	}
 
 	/**
-	 * Get size
+	 * Get wounds
 	 *
 	 * @return integer
 	 */
-	public function getSize(): int {
-		return $this->size;
+	public function getWounds(): int {
+		return $this->wounds;
 	}
 
 	/**
@@ -130,12 +139,12 @@ class DungeonMonster {
 	}
 
 	/**
-	 * Get wounds
+	 * Get stunned
 	 *
-	 * @return integer
+	 * @return boolean
 	 */
-	public function getWounds(): int {
-		return $this->wounds;
+	public function getStunned(): bool {
+		return $this->stunned;
 	}
 
 	/**
@@ -152,20 +161,11 @@ class DungeonMonster {
 	}
 
 	/**
-	 * Get stunned
-	 *
-	 * @return boolean
-	 */
-	public function getStunned(): bool {
-		return $this->stunned;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -201,6 +201,15 @@ class DungeonMonster {
 	}
 
 	/**
+	 * Get level
+	 *
+	 * @return DungeonLevel|null
+	 */
+	public function getLevel(): ?DungeonLevel {
+		return $this->level;
+	}
+
+	/**
 	 * Set level
 	 *
 	 * @param DungeonLevel|null $level
@@ -214,12 +223,12 @@ class DungeonMonster {
 	}
 
 	/**
-	 * Get level
+	 * Get type
 	 *
-	 * @return DungeonLevel|null
+	 * @return DungeonMonsterType|null
 	 */
-	public function getLevel(): ?DungeonLevel {
-		return $this->level;
+	public function getType(): ?DungeonMonsterType {
+		return $this->type;
 	}
 
 	/**
@@ -233,14 +242,5 @@ class DungeonMonster {
 		$this->type = $type;
 
 		return $this;
-	}
-
-	/**
-	 * Get type
-	 *
-	 * @return DungeonMonsterType|null
-	 */
-	public function getType(): ?DungeonMonsterType {
-		return $this->type;
 	}
 }

@@ -9,7 +9,16 @@ class Permission {
 	private ?string $description;
 	private bool $use_value;
 	private bool $use_reserve;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get class
+	 *
+	 * @return string
+	 */
+	public function getClass(): string {
+		return $this->class;
+	}
 
 	/**
 	 * Set class
@@ -25,12 +34,12 @@ class Permission {
 	}
 
 	/**
-	 * Get class
+	 * Get name
 	 *
 	 * @return string
 	 */
-	public function getClass(): string {
-		return $this->class;
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -47,12 +56,12 @@ class Permission {
 	}
 
 	/**
-	 * Get name
+	 * Get translation_string
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getTranslationString(): ?string {
+		return $this->translation_string;
 	}
 
 	/**
@@ -69,12 +78,12 @@ class Permission {
 	}
 
 	/**
-	 * Get translation_string
+	 * Get description
 	 *
 	 * @return string|null
 	 */
-	public function getTranslationString(): ?string {
-		return $this->translation_string;
+	public function getDescription(): ?string {
+		return $this->description;
 	}
 
 	/**
@@ -91,12 +100,16 @@ class Permission {
 	}
 
 	/**
-	 * Get description
+	 * Get use_value
 	 *
-	 * @return string|null
+	 * @return boolean
 	 */
-	public function getDescription(): ?string {
-		return $this->description;
+	public function getUseValue(): bool {
+		return $this->use_value;
+	}
+
+	public function isUseValue(): ?bool {
+		return $this->use_value;
 	}
 
 	/**
@@ -113,12 +126,16 @@ class Permission {
 	}
 
 	/**
-	 * Get use_value
+	 * Get use_reserve
 	 *
 	 * @return boolean
 	 */
-	public function getUseValue(): bool {
-		return $this->use_value;
+	public function getUseReserve(): bool {
+		return $this->use_reserve;
+	}
+
+	public function isUseReserve(): ?bool {
+		return $this->use_reserve;
 	}
 
 	/**
@@ -135,28 +152,11 @@ class Permission {
 	}
 
 	/**
-	 * Get use_reserve
-	 *
-	 * @return boolean
-	 */
-	public function getUseReserve(): bool {
-		return $this->use_reserve;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
-	}
-
-	public function isUseValue(): ?bool {
-		return $this->use_value;
-	}
-
-	public function isUseReserve(): ?bool {
-		return $this->use_reserve;
 	}
 }

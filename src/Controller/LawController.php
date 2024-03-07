@@ -222,7 +222,7 @@ class LawController extends AbstractController {
 		$lawMan = $this->lawMan;
 		if ($type->getName() == 'realmFaith') {
 			$faiths = new ArrayCollection();
-			$query = $this->em->createQuery('SELECT a FROM BM2SiteBundle:Association a WHERE a.faith_name is not null and a.follower_name is not null');
+			$query = $this->em->createQuery('SELECT a FROM App:Association a WHERE a.faith_name is not null and a.follower_name is not null');
 			$all = $query->getResult();
 			foreach ($all as $each) {
 				if ($each->isPublic()) {

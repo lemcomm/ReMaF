@@ -9,10 +9,10 @@ use Doctrine\Common\Collections\Collection;
  * ActivityParticipant
  */
 class ActivityParticipant {
+	private ?int $id = null;
 	private string $role;
 	private bool $accepted;
 	private bool $organizer;
-	private int $id;
 	private Collection $bout_participation;
 	private Activity $activity;
 	private Character $character;
@@ -34,11 +34,46 @@ class ActivityParticipant {
 		return false;
 	}
 
+	/**
+	 * Get organizer
+	 *
+	 * @return bool|null
+	 */
+	public function getOrganizer(): ?bool {
+		return $this->organizer;
+	}
+
+	public function isOrganizer(): ?bool {
+		return $this->organizer;
+	}
+
+	/**
+	 * Set organizer
+	 *
+	 * @param boolean|null $organizer
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setOrganizer(bool $organizer = null): static {
+		$this->organizer = $organizer;
+
+		return $this;
+	}
+
 	public function isChallenged(): bool {
 		if (!$this->getOrganizer()) {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Get role
+	 *
+	 * @return string|null
+	 */
+	public function getRole(): ?string {
+		return $this->role;
 	}
 
 	/**
@@ -55,64 +90,11 @@ class ActivityParticipant {
 	}
 
 	/**
-	 * Get role
-	 *
-	 * @return string|null
-	 */
-	public function getRole(): ?string {
-		return $this->role;
-	}
-
-	/**
-	 * Set accepted
-	 *
-	 * @param boolean|null $accepted
-	 *
-	 * @return ActivityParticipant
-	 */
-	public function setAccepted(bool $accepted = null): static {
-		$this->accepted = $accepted;
-
-		return $this;
-	}
-
-	/**
-	 * Get accepted
-	 *
-	 * @return bool|null
-	 */
-	public function getAccepted(): ?bool {
-		return $this->accepted;
-	}
-
-	/**
-	 * Set organizer
-	 *
-	 * @param boolean|null $organizer
-	 *
-	 * @return ActivityParticipant
-	 */
-	public function setOrganizer(bool $organizer = null): static {
-		$this->organizer = $organizer;
-
-		return $this;
-	}
-
-	/**
-	 * Get organizer
-	 *
-	 * @return bool|null
-	 */
-	public function getOrganizer(): ?bool {
-		return $this->organizer;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -148,6 +130,15 @@ class ActivityParticipant {
 	}
 
 	/**
+	 * Get activity
+	 *
+	 * @return Activity|null
+	 */
+	public function getActivity(): ?Activity {
+		return $this->activity;
+	}
+
+	/**
 	 * Set activity
 	 *
 	 * @param Activity|null $activity
@@ -161,12 +152,12 @@ class ActivityParticipant {
 	}
 
 	/**
-	 * Get activity
+	 * Get character
 	 *
-	 * @return Activity|null
+	 * @return Character|null
 	 */
-	public function getActivity(): ?Activity {
-		return $this->activity;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -183,12 +174,12 @@ class ActivityParticipant {
 	}
 
 	/**
-	 * Get character
+	 * Get style
 	 *
-	 * @return Character|null
+	 * @return Style|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getStyle(): ?Style {
+		return $this->style;
 	}
 
 	/**
@@ -205,12 +196,12 @@ class ActivityParticipant {
 	}
 
 	/**
-	 * Get style
+	 * Get weapon
 	 *
-	 * @return Style|null
+	 * @return EquipmentType|null
 	 */
-	public function getStyle(): ?Style {
-		return $this->style;
+	public function getWeapon(): ?EquipmentType {
+		return $this->weapon;
 	}
 
 	/**
@@ -227,12 +218,12 @@ class ActivityParticipant {
 	}
 
 	/**
-	 * Get weapon
+	 * Get group
 	 *
-	 * @return EquipmentType|null
+	 * @return ActivityGroup|null
 	 */
-	public function getWeapon(): ?EquipmentType {
-		return $this->weapon;
+	public function getGroup(): ?ActivityGroup {
+		return $this->group;
 	}
 
 	/**
@@ -248,20 +239,29 @@ class ActivityParticipant {
 		return $this;
 	}
 
-	/**
-	 * Get group
-	 *
-	 * @return ActivityGroup|null
-	 */
-	public function getGroup(): ?ActivityGroup {
-		return $this->group;
-	}
-
 	public function isAccepted(): ?bool {
 		return $this->accepted;
 	}
 
-	public function isOrganizer(): ?bool {
-		return $this->organizer;
+	/**
+	 * Get accepted
+	 *
+	 * @return bool|null
+	 */
+	public function getAccepted(): ?bool {
+		return $this->accepted;
+	}
+
+	/**
+	 * Set accepted
+	 *
+	 * @param boolean|null $accepted
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setAccepted(bool $accepted = null): static {
+		$this->accepted = $accepted;
+
+		return $this;
 	}
 }

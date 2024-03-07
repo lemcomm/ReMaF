@@ -3,17 +3,34 @@
 namespace App\Entity;
 
 class Trade {
-
 	private ?string $name;
 	private int $amount;
 	private float $tradecost;
-	private int $id;
+	private ?int $id = null;
 	private ?ResourceType $resource_type;
 	private ?Settlement $source;
 	private ?Settlement $destination;
 
 	public function __toString() {
 		return "trade $this->id - from " . $this->source->getId() . " to " . $this->destination->getId();
+	}
+
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string|null
+	 */
+	public function getName(): ?string {
+		return $this->name;
 	}
 
 	/**
@@ -30,12 +47,12 @@ class Trade {
 	}
 
 	/**
-	 * Get name
+	 * Get amount
 	 *
-	 * @return string|null
+	 * @return integer
 	 */
-	public function getName(): ?string {
-		return $this->name;
+	public function getAmount(): int {
+		return $this->amount;
 	}
 
 	/**
@@ -52,12 +69,12 @@ class Trade {
 	}
 
 	/**
-	 * Get amount
+	 * Get tradecost
 	 *
-	 * @return integer
+	 * @return float
 	 */
-	public function getAmount(): int {
-		return $this->amount;
+	public function getTradecost(): float {
+		return $this->tradecost;
 	}
 
 	/**
@@ -74,21 +91,12 @@ class Trade {
 	}
 
 	/**
-	 * Get tradecost
+	 * Get resource_type
 	 *
-	 * @return float
+	 * @return ResourceType|null
 	 */
-	public function getTradecost(): float {
-		return $this->tradecost;
-	}
-
-	/**
-	 * Get id
-	 *
-	 * @return integer
-	 */
-	public function getId(): int {
-		return $this->id;
+	public function getResourceType(): ?ResourceType {
+		return $this->resource_type;
 	}
 
 	/**
@@ -105,12 +113,12 @@ class Trade {
 	}
 
 	/**
-	 * Get resource_type
+	 * Get source
 	 *
-	 * @return ResourceType
+	 * @return Settlement|null
 	 */
-	public function getResourceType(): ?ResourceType {
-		return $this->resource_type;
+	public function getSource(): ?Settlement {
+		return $this->source;
 	}
 
 	/**
@@ -127,12 +135,12 @@ class Trade {
 	}
 
 	/**
-	 * Get source
+	 * Get destination
 	 *
-	 * @return Settlement
+	 * @return Settlement|null
 	 */
-	public function getSource(): ?Settlement {
-		return $this->source;
+	public function getDestination(): ?Settlement {
+		return $this->destination;
 	}
 
 	/**
@@ -146,14 +154,5 @@ class Trade {
 		$this->destination = $destination;
 
 		return $this;
-	}
-
-	/**
-	 * Get destination
-	 *
-	 * @return Settlement
-	 */
-	public function getDestination(): ?Settlement {
-		return $this->destination;
 	}
 }

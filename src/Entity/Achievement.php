@@ -1,10 +1,9 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
 class Achievement {
-
-	private int $id;
+	private ?int $id = null;
 	private string $type;
 	private int $value;
 	private Character $character;
@@ -20,34 +19,33 @@ class Achievement {
 		};
 	}
 
+	public function setValue(int $value): static {
+		$this->value = $value;
 
-    public function setType(string $type): static {
-        $this->type = $type;
+		return $this;
+	}
 
-        return $this;
-    }
+	public function getType(): string {
+		return $this->type;
+	}
 
-    public function getType(): string {
-        return $this->type;
-    }
+	public function setType(string $type): static {
+		$this->type = $type;
 
-    public function setValue(int $value): static {
-        $this->value = $value;
+		return $this;
+	}
 
-        return $this;
-    }
+	public function getId(): ?int {
+		return $this->id;
+	}
 
-    public function getId(): int {
-        return $this->id;
-    }
+	public function getCharacter(): Character {
+		return $this->character;
+	}
 
-    public function setCharacter(Character $character): static {
-        $this->character = $character;
+	public function setCharacter(Character $character): static {
+		$this->character = $character;
 
-        return $this;
-    }
-
-    public function getCharacter(): Character {
-        return $this->character;
-    }
+		return $this;
+	}
 }

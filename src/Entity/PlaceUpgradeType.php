@@ -5,8 +5,17 @@ namespace App\Entity;
 class PlaceUpgradeType {
 	private string $name;
 	private ?string $requires;
-	private int $id;
+	private ?int $id = null;
 	private PlaceType $place_type;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -22,12 +31,12 @@ class PlaceUpgradeType {
 	}
 
 	/**
-	 * Get name
+	 * Get requires
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getRequires(): ?string {
+		return $this->requires;
 	}
 
 	/**
@@ -44,21 +53,21 @@ class PlaceUpgradeType {
 	}
 
 	/**
-	 * Get requires
+	 * Get id
 	 *
-	 * @return string|null
+	 * @return int|null
 	 */
-	public function getRequires(): ?string {
-		return $this->requires;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get place_type
 	 *
-	 * @return integer
+	 * @return PlaceType|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getPlaceType(): ?PlaceType {
+		return $this->place_type;
 	}
 
 	/**
@@ -72,14 +81,5 @@ class PlaceUpgradeType {
 		$this->place_type = $placeType;
 
 		return $this;
-	}
-
-	/**
-	 * Get place_type
-	 *
-	 * @return PlaceType|null
-	 */
-	public function getPlaceType(): ?PlaceType {
-		return $this->place_type;
 	}
 }

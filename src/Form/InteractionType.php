@@ -46,15 +46,17 @@ class InteractionType extends AbstractType {
 		$me = $options['me'];
 		$maxdistance = $options['maxdistance'];
 		$settlementcheck = $options['settlementcheck'];
-		$builder->add('target', 'entity', array(
+		$builder->add('target', EntityType::class, array(
 			'label'=>'interaction.'.$options['action'].'.name',
 			'placeholder'=>$options['multiple']?'character.none':null,
 			'multiple'=>$options['multiple'],
 			'expanded'=>true,
 			'required'=>$options['multiple'],
-			'class'=>Character::class, 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($me, $maxdistance, $settlementcheck) {
+			'class'=>Character::class,
+			'choice_label'=>'name',
+			'query_builder'=>function(EntityRepository $er) use ($me, $maxdistance, $settlementcheck) {
 				$qb = $er->createQueryBuilder('c');
-				$qb->from('BM2SiteBundle:Character', 'me');
+				$qb->from('App:Character', 'me');
 				$qb->where('c.alive = true');
 				$qb->andWhere('c.prisoner_of IS NULL');
 				$qb->andWhere('c.system NOT LIKE :gm OR c.system IS NULL')->setParameter('gm', 'GM');

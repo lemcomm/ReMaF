@@ -85,7 +85,7 @@ class AssociationController extends AbstractController {
 		]);
 	}
 
-	#[Route('/assoc/create', name:'maf_assoc')]
+	#[Route('/assoc/create', name:'maf_assoc_create')]
 	public function createAction(Request $request): RedirectResponse|Response {
 		$char = $this->gateway('assocCreateTest');
 		if (!($char instanceof Character)) {

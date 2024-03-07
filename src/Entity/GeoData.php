@@ -17,7 +17,7 @@ class GeoData {
 	private bool $river;
 	private float $humidity;
 	private bool $passable;
-	private int $id;
+	private ?int $id = null;
 	private ?Settlement $settlement;
 	private Collection $roads;
 	private Collection $features;
@@ -38,6 +38,15 @@ class GeoData {
 	}
 
 	/**
+	 * Get center
+	 *
+	 * @return Point|null
+	 */
+	public function getCenter(): ?Point {
+		return $this->center;
+	}
+
+	/**
 	 * Set center
 	 *
 	 * @param Point|null $center
@@ -51,12 +60,12 @@ class GeoData {
 	}
 
 	/**
-	 * Get center
+	 * Get poly
 	 *
-	 * @return Point|null
+	 * @return polygon
 	 */
-	public function getCenter(): ?Point {
-		return $this->center;
+	public function getPoly(): Polygon {
+		return $this->poly;
 	}
 
 	/**
@@ -73,12 +82,12 @@ class GeoData {
 	}
 
 	/**
-	 * Get poly
+	 * Get altitude
 	 *
-	 * @return polygon
+	 * @return integer
 	 */
-	public function getPoly(): Polygon {
-		return $this->poly;
+	public function getAltitude(): int {
+		return $this->altitude;
 	}
 
 	/**
@@ -95,12 +104,12 @@ class GeoData {
 	}
 
 	/**
-	 * Get altitude
+	 * Get hills
 	 *
-	 * @return integer
+	 * @return boolean
 	 */
-	public function getAltitude(): int {
-		return $this->altitude;
+	public function getHills(): bool {
+		return $this->hills;
 	}
 
 	/**
@@ -117,12 +126,12 @@ class GeoData {
 	}
 
 	/**
-	 * Get hills
+	 * Get coast
 	 *
 	 * @return boolean
 	 */
-	public function getHills(): bool {
-		return $this->hills;
+	public function getCoast(): bool {
+		return $this->coast;
 	}
 
 	/**
@@ -139,12 +148,12 @@ class GeoData {
 	}
 
 	/**
-	 * Get coast
+	 * Get lake
 	 *
 	 * @return boolean
 	 */
-	public function getCoast(): bool {
-		return $this->coast;
+	public function getLake(): bool {
+		return $this->lake;
 	}
 
 	/**
@@ -161,12 +170,12 @@ class GeoData {
 	}
 
 	/**
-	 * Get lake
+	 * Get river
 	 *
 	 * @return boolean
 	 */
-	public function getLake(): bool {
-		return $this->lake;
+	public function getRiver(): bool {
+		return $this->river;
 	}
 
 	/**
@@ -183,12 +192,12 @@ class GeoData {
 	}
 
 	/**
-	 * Get river
+	 * Get humidity
 	 *
-	 * @return boolean
+	 * @return float
 	 */
-	public function getRiver(): bool {
-		return $this->river;
+	public function getHumidity(): float {
+		return $this->humidity;
 	}
 
 	/**
@@ -205,12 +214,12 @@ class GeoData {
 	}
 
 	/**
-	 * Get humidity
+	 * Get passable
 	 *
-	 * @return float
+	 * @return boolean
 	 */
-	public function getHumidity(): float {
-		return $this->humidity;
+	public function getPassable(): bool {
+		return $this->passable;
 	}
 
 	/**
@@ -227,21 +236,21 @@ class GeoData {
 	}
 
 	/**
-	 * Get passable
+	 * Get id
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getPassable(): bool {
-		return $this->passable;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get settlement
 	 *
-	 * @return integer
+	 * @return Settlement|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -255,15 +264,6 @@ class GeoData {
 		$this->settlement = $settlement;
 
 		return $this;
-	}
-
-	/**
-	 * Get settlement
-	 *
-	 * @return Settlement|null
-	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
 	}
 
 	/**
@@ -422,6 +422,15 @@ class GeoData {
 	}
 
 	/**
+	 * Get biome
+	 *
+	 * @return Biome|null
+	 */
+	public function getBiome(): ?Biome {
+		return $this->biome;
+	}
+
+	/**
 	 * Set biome
 	 *
 	 * @param Biome|null $biome
@@ -432,14 +441,5 @@ class GeoData {
 		$this->biome = $biome;
 
 		return $this;
-	}
-
-	/**
-	 * Get biome
-	 *
-	 * @return Biome|null
-	 */
-	public function getBiome(): ?Biome {
-		return $this->biome;
 	}
 }

@@ -10,10 +10,19 @@ class BattleReportCharacter {
 	private int $kills;
 	private int $hits_taken;
 	private int $hits_made;
-	private int $id;
+	private ?int $id = null;
 	private BattleReportGroup $group_report;
 	private Character $character;
 	private Character $captured_by;
+
+	/**
+	 * Get standing
+	 *
+	 * @return boolean
+	 */
+	public function getStanding(): bool {
+		return $this->standing;
+	}
 
 	/**
 	 * Set standing
@@ -29,12 +38,12 @@ class BattleReportCharacter {
 	}
 
 	/**
-	 * Get standing
+	 * Get wounded
 	 *
 	 * @return boolean
 	 */
-	public function getStanding(): bool {
-		return $this->standing;
+	public function getWounded(): bool {
+		return $this->wounded;
 	}
 
 	/**
@@ -51,12 +60,12 @@ class BattleReportCharacter {
 	}
 
 	/**
-	 * Get wounded
+	 * Get killed
 	 *
 	 * @return boolean
 	 */
-	public function getWounded(): bool {
-		return $this->wounded;
+	public function getKilled(): bool {
+		return $this->killed;
 	}
 
 	/**
@@ -73,12 +82,12 @@ class BattleReportCharacter {
 	}
 
 	/**
-	 * Get killed
+	 * Get attacks
 	 *
-	 * @return boolean
+	 * @return integer
 	 */
-	public function getKilled(): bool {
-		return $this->killed;
+	public function getAttacks(): int {
+		return $this->attacks;
 	}
 
 	/**
@@ -95,12 +104,12 @@ class BattleReportCharacter {
 	}
 
 	/**
-	 * Get attacks
+	 * Get kills
 	 *
 	 * @return integer
 	 */
-	public function getAttacks(): int {
-		return $this->attacks;
+	public function getKills(): int {
+		return $this->kills;
 	}
 
 	/**
@@ -117,12 +126,12 @@ class BattleReportCharacter {
 	}
 
 	/**
-	 * Get kills
+	 * Get hits_taken
 	 *
 	 * @return integer
 	 */
-	public function getKills(): int {
-		return $this->kills;
+	public function getHitsTaken(): int {
+		return $this->hits_taken;
 	}
 
 	/**
@@ -139,12 +148,12 @@ class BattleReportCharacter {
 	}
 
 	/**
-	 * Get hits_taken
+	 * Get hits_made
 	 *
 	 * @return integer
 	 */
-	public function getHitsTaken(): int {
-		return $this->hits_taken;
+	public function getHitsMade(): int {
+		return $this->hits_made;
 	}
 
 	/**
@@ -161,21 +170,21 @@ class BattleReportCharacter {
 	}
 
 	/**
-	 * Get hits_made
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getHitsMade(): int {
-		return $this->hits_made;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get group_report
 	 *
-	 * @return integer
+	 * @return BattleReportGroup|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getGroupReport(): ?BattleReportGroup {
+		return $this->group_report;
 	}
 
 	/**
@@ -192,12 +201,12 @@ class BattleReportCharacter {
 	}
 
 	/**
-	 * Get group_report
+	 * Get character
 	 *
-	 * @return BattleReportGroup|null
+	 * @return Character|null
 	 */
-	public function getGroupReport(): ?BattleReportGroup {
-		return $this->group_report;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -214,12 +223,12 @@ class BattleReportCharacter {
 	}
 
 	/**
-	 * Get character
+	 * Get captured_by
 	 *
 	 * @return Character|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getCapturedBy(): ?Character {
+		return $this->captured_by;
 	}
 
 	/**
@@ -233,14 +242,5 @@ class BattleReportCharacter {
 		$this->captured_by = $capturedBy;
 
 		return $this;
-	}
-
-	/**
-	 * Get captured_by
-	 *
-	 * @return Character|null
-	 */
-	public function getCapturedBy(): ?Character {
-		return $this->captured_by;
 	}
 }

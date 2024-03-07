@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Character;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -28,7 +29,7 @@ class AddParticipantType extends AbstractType {
 			'expanded'=>true,
 			'label' => false,
 			'placeholder' => 'add.empty',
-			'class' => 'BM2SiteBundle:Character',
+			'class' => Character::class,
 			'property' => 'name',
 			'query_builder'=>function(EntityRepository $er) use ($recipients) {
 				$qb = $er->createQueryBuilder('c');

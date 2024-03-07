@@ -8,6 +8,15 @@ class MessageTag {
 	private Message $message;
 
 	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
+
+	/**
 	 * Set type
 	 *
 	 * @param string $type
@@ -21,12 +30,12 @@ class MessageTag {
 	}
 
 	/**
-	 * Get type
+	 * Get character
 	 *
-	 * @return string
+	 * @return Character
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getCharacter(): Character {
+		return $this->character;
 	}
 
 	/**
@@ -43,12 +52,12 @@ class MessageTag {
 	}
 
 	/**
-	 * Get character
+	 * Get message
 	 *
-	 * @return Character
+	 * @return Message
 	 */
-	public function getCharacter(): Character {
-		return $this->character;
+	public function getMessage(): Message {
+		return $this->message;
 	}
 
 	/**
@@ -62,14 +71,5 @@ class MessageTag {
 		$this->message = $message;
 
 		return $this;
-	}
-
-	/**
-	 * Get message
-	 *
-	 * @return Message
-	 */
-	public function getMessage(): Message {
-		return $this->message;
 	}
 }

@@ -15,9 +15,18 @@ class ConversationPermission {
 	private ?bool $owner;
 	private ?bool $manager;
 	private int $unread;
-	private int $id;
+	private ?int $id = null;
 	private Conversation $conversation;
 	private Character $character;
+
+	/**
+	 * Get start_time
+	 *
+	 * @return DateTime
+	 */
+	public function getStartTime(): DateTime {
+		return $this->start_time;
+	}
 
 	/**
 	 * Set start_time
@@ -33,12 +42,12 @@ class ConversationPermission {
 	}
 
 	/**
-	 * Get start_time
+	 * Get end_time
 	 *
-	 * @return DateTime
+	 * @return DateTime|null
 	 */
-	public function getStartTime(): DateTime {
-		return $this->start_time;
+	public function getEndTime(): ?DateTime {
+		return $this->end_time;
 	}
 
 	/**
@@ -55,12 +64,12 @@ class ConversationPermission {
 	}
 
 	/**
-	 * Get end_time
+	 * Get last_access
 	 *
 	 * @return DateTime|null
 	 */
-	public function getEndTime(): ?DateTime {
-		return $this->end_time;
+	public function getLastAccess(): ?DateTime {
+		return $this->last_access;
 	}
 
 	/**
@@ -77,34 +86,12 @@ class ConversationPermission {
 	}
 
 	/**
-	 * Get last_access
+	 * Get owner
 	 *
-	 * @return DateTime|null
+	 * @return bool|null
 	 */
-	public function getLastAccess(): ?DateTime {
-		return $this->last_access;
-	}
-
-	/**
-	 * Set active
-	 *
-	 * @param boolean $active
-	 *
-	 * @return ConversationPermission
-	 */
-	public function setActive(bool $active): static {
-		$this->active = $active;
-
-		return $this;
-	}
-
-	/**
-	 * Get active
-	 *
-	 * @return boolean
-	 */
-	public function getActive(): bool {
-		return $this->active;
+	public function getOwner(): ?bool {
+		return $this->owner;
 	}
 
 	/**
@@ -121,12 +108,12 @@ class ConversationPermission {
 	}
 
 	/**
-	 * Get owner
+	 * Get manager
 	 *
 	 * @return bool|null
 	 */
-	public function getOwner(): ?bool {
-		return $this->owner;
+	public function getManager(): ?bool {
+		return $this->manager;
 	}
 
 	/**
@@ -143,12 +130,12 @@ class ConversationPermission {
 	}
 
 	/**
-	 * Get manager
+	 * Get unread
 	 *
-	 * @return bool|null
+	 * @return integer
 	 */
-	public function getManager(): ?bool {
-		return $this->manager;
+	public function getUnread(): int {
+		return $this->unread;
 	}
 
 	/**
@@ -165,21 +152,21 @@ class ConversationPermission {
 	}
 
 	/**
-	 * Get unread
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getUnread(): int {
-		return $this->unread;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get conversation
 	 *
-	 * @return integer
+	 * @return Conversation
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getConversation(): Conversation {
+		return $this->conversation;
 	}
 
 	/**
@@ -196,12 +183,12 @@ class ConversationPermission {
 	}
 
 	/**
-	 * Get conversation
+	 * Get character
 	 *
-	 * @return Conversation
+	 * @return Character
 	 */
-	public function getConversation(): Conversation {
-		return $this->conversation;
+	public function getCharacter(): Character {
+		return $this->character;
 	}
 
 	/**
@@ -217,17 +204,30 @@ class ConversationPermission {
 		return $this;
 	}
 
-	/**
-	 * Get character
-	 *
-	 * @return Character
-	 */
-	public function getCharacter(): Character {
-		return $this->character;
-	}
-
 	public function isActive(): ?bool {
 		return $this->active;
+	}
+
+	/**
+	 * Get active
+	 *
+	 * @return boolean
+	 */
+	public function getActive(): bool {
+		return $this->active;
+	}
+
+	/**
+	 * Set active
+	 *
+	 * @param boolean $active
+	 *
+	 * @return ConversationPermission
+	 */
+	public function setActive(bool $active): static {
+		$this->active = $active;
+
+		return $this;
 	}
 
 	public function isOwner(): ?bool {

@@ -12,8 +12,17 @@ class UserPayment {
 	private ?int $bonus;
 	private DateTime $ts;
 	private string $type;
-	private int $id;
+	private ?int $id = null;
 	private User $user;
+
+	/**
+	 * Get transaction_code
+	 *
+	 * @return string|null
+	 */
+	public function getTransactionCode(): ?string {
+		return $this->transaction_code;
+	}
 
 	/**
 	 * Set transaction_code
@@ -29,12 +38,12 @@ class UserPayment {
 	}
 
 	/**
-	 * Get transaction_code
+	 * Get amount
 	 *
-	 * @return string|null
+	 * @return float
 	 */
-	public function getTransactionCode(): ?string {
-		return $this->transaction_code;
+	public function getAmount(): float {
+		return $this->amount;
 	}
 
 	/**
@@ -51,12 +60,12 @@ class UserPayment {
 	}
 
 	/**
-	 * Get amount
+	 * Get currency
 	 *
-	 * @return float
+	 * @return string
 	 */
-	public function getAmount(): float {
-		return $this->amount;
+	public function getCurrency(): string {
+		return $this->currency;
 	}
 
 	/**
@@ -73,12 +82,12 @@ class UserPayment {
 	}
 
 	/**
-	 * Get currency
+	 * Get credits
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getCurrency(): string {
-		return $this->currency;
+	public function getCredits(): int {
+		return $this->credits;
 	}
 
 	/**
@@ -95,12 +104,12 @@ class UserPayment {
 	}
 
 	/**
-	 * Get credits
+	 * Get bonus
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCredits(): int {
-		return $this->credits;
+	public function getBonus(): ?int {
+		return $this->bonus;
 	}
 
 	/**
@@ -117,12 +126,12 @@ class UserPayment {
 	}
 
 	/**
-	 * Get bonus
+	 * Get ts
 	 *
-	 * @return int|null
+	 * @return DateTime
 	 */
-	public function getBonus(): ?int {
-		return $this->bonus;
+	public function getTs(): DateTime {
+		return $this->ts;
 	}
 
 	/**
@@ -139,12 +148,12 @@ class UserPayment {
 	}
 
 	/**
-	 * Get ts
+	 * Get type
 	 *
-	 * @return DateTime
+	 * @return string
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getType(): string {
+		return $this->type;
 	}
 
 	/**
@@ -161,21 +170,21 @@ class UserPayment {
 	}
 
 	/**
-	 * Get type
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get user
 	 *
-	 * @return integer
+	 * @return User|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getUser(): ?User {
+		return $this->user;
 	}
 
 	/**
@@ -189,14 +198,5 @@ class UserPayment {
 		$this->user = $user;
 
 		return $this;
-	}
-
-	/**
-	 * Get user
-	 *
-	 * @return User|null
-	 */
-	public function getUser(): ?User {
-		return $this->user;
 	}
 }

@@ -2,6 +2,7 @@
 
 namespace App\DataTransformer;
 
+use App\Entity\Character;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
@@ -30,14 +31,14 @@ class CharacterTransformer implements DataTransformerInterface {
 		# First strip it of all non-numeric characters and see if we can find a character.
 		$id = preg_replace('/[^1234567890]*/', '', $input);
 		if ($id) {
-			$character = $this->em->getRepository('BM2SiteBundle:Character')->findOneBy(['id'=>$id, 'alive' => TRUE]);
+			$character = $this->em->getRepository(Character::class)->findOneBy(['id'=>$id, 'alive' => TRUE]);
 			if ($character) {
 				echo $character->getName();
 			}
 		} else {
 			# Presumably, that wasn't an ID. Assume it's just a name. Strip out parantheses and numbers.
 			$name = trim(preg_replace('/[123456790()]*/', '', $input));
-			$potentials = $this->em->getRepository('BM2SiteBundle:Character')->findBy(array('name' => $name, 'alive' => TRUE), array('id' => 'ASC'));
+			$potentials = $this->em->getRepository(Character::class)->findBy(array('name' => $name, 'alive' => TRUE), array('id' => 'ASC'));
 			foreach ($potentials as $each) {
 				if ($each->getRetired()) {
 					continue;
@@ -48,7 +49,7 @@ class CharacterTransformer implements DataTransformerInterface {
 			}
 			if (!$character) {
 				$name = preg_replace('/(<\/i>)+/', '', preg_replace('/(<i>)+/', '', $name));
-				$character = $this->em->getRepository('BM2SiteBundle:Character')->findOneBy(['known_as' => $name, 'alive' => TRUE], ['id' => 'ASC']);
+				$character = $this->em->getRepository(Character::class)->findOneBy(['known_as' => $name, 'alive' => TRUE], ['id' => 'ASC']);
 			}
 		}
 

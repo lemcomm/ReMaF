@@ -16,7 +16,7 @@ class Place {
 	private ?bool $destroyed;
 	private ?Point $location;
 	private ?string $short_description;
-	private int $id;
+	private ?int $id = null;
 	private ?House $house;
 	private ?GeoFeature $geo_marker;
 	private ?Description $description;
@@ -119,6 +119,46 @@ class Place {
 		return $defenders;
 	}
 
+	/**
+	 * Get related_actions
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getRelatedActions(): ArrayCollection|Collection {
+		return $this->related_actions;
+	}
+
+	/**
+	 * Get type
+	 *
+	 * @return PlaceType|null
+	 */
+	public function getType(): ?PlaceType {
+		return $this->type;
+	}
+
+	/**
+	 * Set type
+	 *
+	 * @param PlaceType|null $type
+	 *
+	 * @return Place
+	 */
+	public function setType(PlaceType $type = null): static {
+		$this->type = $type;
+
+		return $this;
+	}
+
+	/**
+	 * Get units
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getUnits(): ArrayCollection|Collection {
+		return $this->units;
+	}
+
 	public function containsAssociation(Association $assoc): bool {
 		foreach ($this->getAssociations() as $ap) {
 			# Cycle through AssociationPlace intermediary objects.
@@ -127,6 +167,15 @@ class Place {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Get associations
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getAssociations(): ArrayCollection|Collection {
+		return $this->associations;
 	}
 
 	public function isOwner(Character $char): bool {
@@ -148,6 +197,15 @@ class Place {
 	}
 
 	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
+
+	/**
 	 * Set name
 	 *
 	 * @param string $name
@@ -161,12 +219,166 @@ class Place {
 	}
 
 	/**
-	 * Get name
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
+
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return Place
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
+
+		return $this;
+	}
+
+	/**
+	 * Get owner
+	 *
+	 * @return Character|null
+	 */
+	public function getOwner(): ?Character {
+		return $this->owner;
+	}
+
+	/**
+	 * Set owner
+	 *
+	 * @param Character|null $owner
+	 *
+	 * @return Place
+	 */
+	public function setOwner(Character $owner = null): static {
+		$this->owner = $owner;
+
+		return $this;
+	}
+
+	/**
+	 * Get ambassador
+	 *
+	 * @return Character|null
+	 */
+	public function getAmbassador(): ?Character {
+		return $this->ambassador;
+	}
+
+	/**
+	 * Set ambassador
+	 *
+	 * @param Character|null $ambassador
+	 *
+	 * @return Place
+	 */
+	public function setAmbassador(Character $ambassador = null): static {
+		$this->ambassador = $ambassador;
+
+		return $this;
+	}
+
+	/**
+	 * Get owning_realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getOwningRealm(): ?Realm {
+		return $this->owning_realm;
+	}
+
+	/**
+	 * Set owning_realm
+	 *
+	 * @param Realm|null $owningRealm
+	 *
+	 * @return Place
+	 */
+	public function setOwningRealm(Realm $owningRealm = null): static {
+		$this->owning_realm = $owningRealm;
+
+		return $this;
+	}
+
+	/**
+	 * Get hosting_realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getHostingRealm(): ?Realm {
+		return $this->hosting_realm;
+	}
+
+	/**
+	 * Set hosting_realm
+	 *
+	 * @param Realm|null $hostingRealm
+	 *
+	 * @return Place
+	 */
+	public function setHostingRealm(Realm $hostingRealm = null): static {
+		$this->hosting_realm = $hostingRealm;
+
+		return $this;
+	}
+
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement|null
+	 */
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
+	}
+
+	/**
+	 * Set settlement
+	 *
+	 * @param Settlement|null $settlement
+	 *
+	 * @return Place
+	 */
+	public function setSettlement(Settlement $settlement = null): static {
+		$this->settlement = $settlement;
+
+		return $this;
+	}
+
+	/**
+	 * Get geo_data
+	 *
+	 * @return GeoData|null
+	 */
+	public function getGeoData(): ?GeoData {
+		return $this->geo_data;
+	}
+
+	/**
+	 * Set geo_data
+	 *
+	 * @param GeoData|null $geoData
+	 *
+	 * @return Place
+	 */
+	public function setGeoData(GeoData $geoData = null): static {
+		$this->geo_data = $geoData;
+
+		return $this;
+	}
+
+	/**
+	 * Get formal_name
 	 *
 	 * @return string
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getFormalName(): string {
+		return $this->formal_name;
 	}
 
 	/**
@@ -183,12 +395,12 @@ class Place {
 	}
 
 	/**
-	 * Get formal_name
+	 * Get visible
 	 *
-	 * @return string
+	 * @return bool|null
 	 */
-	public function getFormalName(): string {
-		return $this->formal_name;
+	public function getVisible(): ?bool {
+		return $this->visible;
 	}
 
 	/**
@@ -205,12 +417,12 @@ class Place {
 	}
 
 	/**
-	 * Get visible
+	 * Get workers
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getVisible(): ?bool {
-		return $this->visible;
+	public function getWorkers(): ?int {
+		return $this->workers;
 	}
 
 	/**
@@ -227,12 +439,12 @@ class Place {
 	}
 
 	/**
-	 * Get workers
+	 * Get active
 	 *
-	 * @return int|null
+	 * @return bool|null
 	 */
-	public function getWorkers(): ?int {
-		return $this->workers;
+	public function getActive(): ?bool {
+		return $this->active;
 	}
 
 	/**
@@ -249,12 +461,12 @@ class Place {
 	}
 
 	/**
-	 * Get active
+	 * Get public
 	 *
 	 * @return bool|null
 	 */
-	public function getActive(): ?bool {
-		return $this->active;
+	public function getPublic(): ?bool {
+		return $this->public;
 	}
 
 	/**
@@ -271,12 +483,12 @@ class Place {
 	}
 
 	/**
-	 * Get public
+	 * Get destroyed
 	 *
 	 * @return bool|null
 	 */
-	public function getPublic(): ?bool {
-		return $this->public;
+	public function getDestroyed(): ?bool {
+		return $this->destroyed;
 	}
 
 	/**
@@ -293,12 +505,12 @@ class Place {
 	}
 
 	/**
-	 * Get destroyed
+	 * Get location
 	 *
-	 * @return bool|null
+	 * @return Point|null
 	 */
-	public function getDestroyed(): ?bool {
-		return $this->destroyed;
+	public function getLocation(): ?Point {
+		return $this->location;
 	}
 
 	/**
@@ -315,12 +527,12 @@ class Place {
 	}
 
 	/**
-	 * Get location
+	 * Get short_description
 	 *
-	 * @return Point|null
+	 * @return string|null
 	 */
-	public function getLocation(): ?Point {
-		return $this->location;
+	public function getShortDescription(): ?string {
+		return $this->short_description;
 	}
 
 	/**
@@ -337,21 +549,21 @@ class Place {
 	}
 
 	/**
-	 * Get short_description
+	 * Get id
 	 *
-	 * @return string|null
+	 * @return int|null
 	 */
-	public function getShortDescription(): ?string {
-		return $this->short_description;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get house
 	 *
-	 * @return integer
+	 * @return House|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getHouse(): ?House {
+		return $this->house;
 	}
 
 	/**
@@ -368,12 +580,12 @@ class Place {
 	}
 
 	/**
-	 * Get house
+	 * Get geo_marker
 	 *
-	 * @return House|null
+	 * @return GeoFeature|null
 	 */
-	public function getHouse(): ?House {
-		return $this->house;
+	public function getGeoMarker(): ?GeoFeature {
+		return $this->geo_marker;
 	}
 
 	/**
@@ -390,12 +602,12 @@ class Place {
 	}
 
 	/**
-	 * Get geo_marker
+	 * Get description
 	 *
-	 * @return GeoFeature|null
+	 * @return Description|null
 	 */
-	public function getGeoMarker(): ?GeoFeature {
-		return $this->geo_marker;
+	public function getDescription(): ?Description {
+		return $this->description;
 	}
 
 	/**
@@ -412,12 +624,12 @@ class Place {
 	}
 
 	/**
-	 * Get description
+	 * Get spawn_description
 	 *
-	 * @return Description|null
+	 * @return SpawnDescription|null
 	 */
-	public function getDescription(): ?Description {
-		return $this->description;
+	public function getSpawnDescription(): ?SpawnDescription {
+		return $this->spawn_description;
 	}
 
 	/**
@@ -434,12 +646,12 @@ class Place {
 	}
 
 	/**
-	 * Get spawn_description
+	 * Get spawn
 	 *
-	 * @return SpawnDescription|null
+	 * @return Spawn|null
 	 */
-	public function getSpawnDescription(): ?SpawnDescription {
-		return $this->spawn_description;
+	public function getSpawn(): ?Spawn {
+		return $this->spawn;
 	}
 
 	/**
@@ -456,12 +668,12 @@ class Place {
 	}
 
 	/**
-	 * Get spawn
+	 * Get log
 	 *
-	 * @return Spawn|null
+	 * @return EventLog|null
 	 */
-	public function getSpawn(): ?Spawn {
-		return $this->spawn;
+	public function getLog(): ?EventLog {
+		return $this->log;
 	}
 
 	/**
@@ -478,12 +690,12 @@ class Place {
 	}
 
 	/**
-	 * Get log
+	 * Get siege
 	 *
-	 * @return EventLog|null
+	 * @return Siege|null
 	 */
-	public function getLog(): ?EventLog {
-		return $this->log;
+	public function getSiege(): ?Siege {
+		return $this->siege;
 	}
 
 	/**
@@ -497,15 +709,6 @@ class Place {
 		$this->siege = $siege;
 
 		return $this;
-	}
-
-	/**
-	 * Get siege
-	 *
-	 * @return Siege|null
-	 */
-	public function getSiege(): ?Siege {
-		return $this->siege;
 	}
 
 	/**
@@ -683,15 +886,6 @@ class Place {
 	 */
 	public function removeUnit(Unit $units): void {
 		$this->units->removeElement($units);
-	}
-
-	/**
-	 * Get units
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getUnits(): ArrayCollection|Collection {
-		return $this->units;
 	}
 
 	/**
@@ -934,15 +1128,6 @@ class Place {
 	}
 
 	/**
-	 * Get related_actions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getRelatedActions(): ArrayCollection|Collection {
-		return $this->related_actions;
-	}
-
-	/**
 	 * Add vassals
 	 *
 	 * @param Character $vassals
@@ -1027,15 +1212,6 @@ class Place {
 	}
 
 	/**
-	 * Get associations
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getAssociations(): ArrayCollection|Collection {
-		return $this->associations;
-	}
-
-	/**
 	 * Add battles
 	 *
 	 * @param Battle $battles
@@ -1067,25 +1243,12 @@ class Place {
 	}
 
 	/**
-	 * Set type
+	 * Get sub_type
 	 *
-	 * @param PlaceType|null $type
-	 *
-	 * @return Place
+	 * @return PlaceSubType|null
 	 */
-	public function setType(PlaceType $type = null): static {
-		$this->type = $type;
-
-		return $this;
-	}
-
-	/**
-	 * Get type
-	 *
-	 * @return PlaceType|null
-	 */
-	public function getType(): ?PlaceType {
-		return $this->type;
+	public function getSubType(): ?PlaceSubType {
+		return $this->sub_type;
 	}
 
 	/**
@@ -1102,56 +1265,12 @@ class Place {
 	}
 
 	/**
-	 * Get sub_type
-	 *
-	 * @return PlaceSubType|null
-	 */
-	public function getSubType(): ?PlaceSubType {
-		return $this->sub_type;
-	}
-
-	/**
-	 * Set owner
-	 *
-	 * @param Character|null $owner
-	 *
-	 * @return Place
-	 */
-	public function setOwner(Character $owner = null): static {
-		$this->owner = $owner;
-
-		return $this;
-	}
-
-	/**
-	 * Get owner
+	 * Get creator
 	 *
 	 * @return Character|null
 	 */
-	public function getOwner(): ?Character {
-		return $this->owner;
-	}
-
-	/**
-	 * Set ambassador
-	 *
-	 * @param Character|null $ambassador
-	 *
-	 * @return Place
-	 */
-	public function setAmbassador(Character $ambassador = null): static {
-		$this->ambassador = $ambassador;
-
-		return $this;
-	}
-
-	/**
-	 * Get ambassador
-	 *
-	 * @return Character|null
-	 */
-	public function getAmbassador(): ?Character {
-		return $this->ambassador;
+	public function getCreator(): ?Character {
+		return $this->creator;
 	}
 
 	/**
@@ -1168,12 +1287,12 @@ class Place {
 	}
 
 	/**
-	 * Get creator
+	 * Get occupant
 	 *
 	 * @return Character|null
 	 */
-	public function getCreator(): ?Character {
-		return $this->creator;
+	public function getOccupant(): ?Character {
+		return $this->occupant;
 	}
 
 	/**
@@ -1190,100 +1309,12 @@ class Place {
 	}
 
 	/**
-	 * Get occupant
-	 *
-	 * @return Character|null
-	 */
-	public function getOccupant(): ?Character {
-		return $this->occupant;
-	}
-
-	/**
-	 * Set settlement
-	 *
-	 * @param Settlement|null $settlement
-	 *
-	 * @return Place
-	 */
-	public function setSettlement(Settlement $settlement = null): static {
-		$this->settlement = $settlement;
-
-		return $this;
-	}
-
-	/**
-	 * Get settlement
-	 *
-	 * @return Settlement|null
-	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
-	}
-
-	/**
-	 * Set realm
-	 *
-	 * @param Realm|null $realm
-	 *
-	 * @return Place
-	 */
-	public function setRealm(Realm $realm = null): static {
-		$this->realm = $realm;
-
-		return $this;
-	}
-
-	/**
-	 * Get realm
+	 * Get occupier
 	 *
 	 * @return Realm|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
-	}
-
-	/**
-	 * Set owning_realm
-	 *
-	 * @param Realm|null $owningRealm
-	 *
-	 * @return Place
-	 */
-	public function setOwningRealm(Realm $owningRealm = null): static {
-		$this->owning_realm = $owningRealm;
-
-		return $this;
-	}
-
-	/**
-	 * Get owning_realm
-	 *
-	 * @return Realm|null
-	 */
-	public function getOwningRealm(): ?Realm {
-		return $this->owning_realm;
-	}
-
-	/**
-	 * Set hosting_realm
-	 *
-	 * @param Realm|null $hostingRealm
-	 *
-	 * @return Place
-	 */
-	public function setHostingRealm(Realm $hostingRealm = null): static {
-		$this->hosting_realm = $hostingRealm;
-
-		return $this;
-	}
-
-	/**
-	 * Get hosting_realm
-	 *
-	 * @return Realm|null
-	 */
-	public function getHostingRealm(): ?Realm {
-		return $this->hosting_realm;
+	public function getOccupier(): ?Realm {
+		return $this->occupier;
 	}
 
 	/**
@@ -1297,37 +1328,6 @@ class Place {
 		$this->occupier = $occupier;
 
 		return $this;
-	}
-
-	/**
-	 * Get occupier
-	 *
-	 * @return Realm|null
-	 */
-	public function getOccupier(): ?Realm {
-		return $this->occupier;
-	}
-
-	/**
-	 * Set geo_data
-	 *
-	 * @param GeoData|null $geoData
-	 *
-	 * @return Place
-	 */
-	public function setGeoData(GeoData $geoData = null): static {
-		$this->geo_data = $geoData;
-
-		return $this;
-	}
-
-	/**
-	 * Get geo_data
-	 *
-	 * @return GeoData|null
-	 */
-	public function getGeoData(): ?GeoData {
-		return $this->geo_data;
 	}
 
 	/**

@@ -10,9 +10,18 @@ class CharacterStyle {
 	private int $theory_high;
 	private int $practice_high;
 	private DateTime $updated;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $character;
 	private ?Style $style;
+
+	/**
+	 * Get theory
+	 *
+	 * @return integer
+	 */
+	public function getTheory(): int {
+		return $this->theory;
+	}
 
 	/**
 	 * Set theory
@@ -28,12 +37,12 @@ class CharacterStyle {
 	}
 
 	/**
-	 * Get theory
+	 * Get practice
 	 *
 	 * @return integer
 	 */
-	public function getTheory(): int {
-		return $this->theory;
+	public function getPractice(): int {
+		return $this->practice;
 	}
 
 	/**
@@ -50,12 +59,12 @@ class CharacterStyle {
 	}
 
 	/**
-	 * Get practice
+	 * Get theory_high
 	 *
 	 * @return integer
 	 */
-	public function getPractice(): int {
-		return $this->practice;
+	public function getTheoryHigh(): int {
+		return $this->theory_high;
 	}
 
 	/**
@@ -72,12 +81,12 @@ class CharacterStyle {
 	}
 
 	/**
-	 * Get theory_high
+	 * Get practice_high
 	 *
 	 * @return integer
 	 */
-	public function getTheoryHigh(): int {
-		return $this->theory_high;
+	public function getPracticeHigh(): int {
+		return $this->practice_high;
 	}
 
 	/**
@@ -94,12 +103,12 @@ class CharacterStyle {
 	}
 
 	/**
-	 * Get practice_high
+	 * Get updated
 	 *
-	 * @return integer
+	 * @return DateTime
 	 */
-	public function getPracticeHigh(): int {
-		return $this->practice_high;
+	public function getUpdated(): DateTime {
+		return $this->updated;
 	}
 
 	/**
@@ -116,21 +125,21 @@ class CharacterStyle {
 	}
 
 	/**
-	 * Get updated
+	 * Get id
 	 *
-	 * @return DateTime
+	 * @return int|null
 	 */
-	public function getUpdated(): DateTime {
-		return $this->updated;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -147,12 +156,12 @@ class CharacterStyle {
 	}
 
 	/**
-	 * Get character
+	 * Get style
 	 *
-	 * @return Character|null
+	 * @return Style|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getStyle(): ?Style {
+		return $this->style;
 	}
 
 	/**
@@ -166,14 +175,5 @@ class CharacterStyle {
 		$this->style = $style;
 
 		return $this;
-	}
-
-	/**
-	 * Get style
-	 *
-	 * @return Style|null
-	 */
-	public function getStyle(): ?Style {
-		return $this->style;
 	}
 }

@@ -13,7 +13,7 @@ class Election {
 	private string $description;
 	private string $method;
 	private ?bool $routine;
-	private int $id;
+	private ?int $id = null;
 	private Collection $votes;
 	private Character $owner;
 	private ?Character $winner;
@@ -26,6 +26,15 @@ class Election {
 	 */
 	public function __construct() {
 		$this->votes = new ArrayCollection();
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -42,12 +51,12 @@ class Election {
 	}
 
 	/**
-	 * Get name
+	 * Get complete
 	 *
-	 * @return string
+	 * @return DateTime
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getComplete(): DateTime {
+		return $this->complete;
 	}
 
 	/**
@@ -64,34 +73,12 @@ class Election {
 	}
 
 	/**
-	 * Get complete
+	 * Get description
 	 *
-	 * @return DateTime
+	 * @return string
 	 */
-	public function getComplete(): DateTime {
-		return $this->complete;
-	}
-
-	/**
-	 * Set closed
-	 *
-	 * @param boolean $closed
-	 *
-	 * @return Election
-	 */
-	public function setClosed(bool $closed): static {
-		$this->closed = $closed;
-
-		return $this;
-	}
-
-	/**
-	 * Get closed
-	 *
-	 * @return boolean
-	 */
-	public function getClosed(): bool {
-		return $this->closed;
+	public function getDescription(): string {
+		return $this->description;
 	}
 
 	/**
@@ -108,12 +95,12 @@ class Election {
 	}
 
 	/**
-	 * Get description
+	 * Get method
 	 *
 	 * @return string
 	 */
-	public function getDescription(): string {
-		return $this->description;
+	public function getMethod(): string {
+		return $this->method;
 	}
 
 	/**
@@ -130,12 +117,12 @@ class Election {
 	}
 
 	/**
-	 * Get method
+	 * Get routine
 	 *
-	 * @return string
+	 * @return bool|null
 	 */
-	public function getMethod(): string {
-		return $this->method;
+	public function getRoutine(): ?bool {
+		return $this->routine;
 	}
 
 	/**
@@ -152,20 +139,11 @@ class Election {
 	}
 
 	/**
-	 * Get routine
-	 *
-	 * @return bool|null
-	 */
-	public function getRoutine(): ?bool {
-		return $this->routine;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -201,6 +179,15 @@ class Election {
 	}
 
 	/**
+	 * Get owner
+	 *
+	 * @return Character
+	 */
+	public function getOwner(): Character {
+		return $this->owner;
+	}
+
+	/**
 	 * Set owner
 	 *
 	 * @param Character|null $owner
@@ -214,12 +201,12 @@ class Election {
 	}
 
 	/**
-	 * Get owner
+	 * Get winner
 	 *
-	 * @return Character
+	 * @return Character|null
 	 */
-	public function getOwner(): Character {
-		return $this->owner;
+	public function getWinner(): ?Character {
+		return $this->winner;
 	}
 
 	/**
@@ -236,12 +223,12 @@ class Election {
 	}
 
 	/**
-	 * Get winner
+	 * Get realm
 	 *
-	 * @return Character|null
+	 * @return Realm|null
 	 */
-	public function getWinner(): ?Character {
-		return $this->winner;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -258,12 +245,12 @@ class Election {
 	}
 
 	/**
-	 * Get realm
+	 * Get association
 	 *
-	 * @return Realm|null
+	 * @return Association|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
+	public function getAssociation(): ?Association {
+		return $this->association;
 	}
 
 	/**
@@ -280,12 +267,12 @@ class Election {
 	}
 
 	/**
-	 * Get association
+	 * Get position
 	 *
-	 * @return Association|null
+	 * @return RealmPosition|null
 	 */
-	public function getAssociation(): ?Association {
-		return $this->association;
+	public function getPosition(): ?RealmPosition {
+		return $this->position;
 	}
 
 	/**
@@ -301,17 +288,30 @@ class Election {
 		return $this;
 	}
 
-	/**
-	 * Get position
-	 *
-	 * @return RealmPosition|null
-	 */
-	public function getPosition(): ?RealmPosition {
-		return $this->position;
-	}
-
 	public function isClosed(): ?bool {
 		return $this->closed;
+	}
+
+	/**
+	 * Get closed
+	 *
+	 * @return boolean
+	 */
+	public function getClosed(): bool {
+		return $this->closed;
+	}
+
+	/**
+	 * Set closed
+	 *
+	 * @param boolean $closed
+	 *
+	 * @return Election
+	 */
+	public function setClosed(bool $closed): static {
+		$this->closed = $closed;
+
+		return $this;
 	}
 
 	public function isRoutine(): ?bool {

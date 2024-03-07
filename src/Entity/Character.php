@@ -9,6 +9,12 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class Character {
+	public int $full_health = 100;
+	protected bool|Character $ultimate = false;
+	protected ?ArrayCollection $my_realms = null;
+	protected ?ArrayCollection $my_houses = null;
+	protected ?ArrayCollection $my_assocs = null;
+	protected ?ArrayCollection $my_rulerships = null;
 	private string $name;
 	private ?bool $battling;
 	private ?string $known_as;
@@ -45,7 +51,7 @@ class Character {
 	private ?bool $non_hetero_options;
 	private ?bool $oath_current;
 	private ?DateTime $oath_time;
-	private int $id;
+	private ?int $id = null;
 	private ?CharacterBackground $background;
 	private ?EventLog $log;
 	private ?Dungeoneer $dungeoneer;
@@ -123,12 +129,6 @@ class Character {
 	private Collection $partnerships;
 	private Collection $positions;
 	private Collection $battlegroups;
-	protected bool|Character $ultimate = false;
-	protected ?ArrayCollection $my_realms = null;
-	protected ?ArrayCollection $my_houses = null;
-	protected ?ArrayCollection $my_assocs = null;
-	protected ?ArrayCollection $my_rulerships = null;
-	public int $full_health = 100;
 
 	public function __construct() {
 		$this->achievements = new ArrayCollection();
@@ -194,6 +194,10 @@ class Character {
 		return $this->name;
 	}
 
+	public function getListName(): string {
+		return $this->getName() . ' (ID: ' . $this->id . ')';
+	}
+
 	public function getName(): string {
 		// override to incorporate the known-as part
 		if ($this->getKnownAs() == null) {
@@ -203,8 +207,39 @@ class Character {
 		}
 	}
 
-	public function getListName(): string {
-		return $this->getName() . ' (ID: ' . $this->id . ')';
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return Character
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
+
+		return $this;
+	}
+
+	/**
+	 * Get known_as
+	 *
+	 * @return string|null
+	 */
+	public function getKnownAs(): ?string {
+		return $this->known_as;
+	}
+
+	/**
+	 * Set known_as
+	 *
+	 * @param string|null $knownAs
+	 *
+	 * @return Character
+	 */
+	public function setKnownAs(string $knownAs = null): static {
+		$this->known_as = $knownAs;
+
+		return $this;
 	}
 
 	public function DaysInGame(): false|int {
@@ -215,8 +250,64 @@ class Character {
 		return !$this->findRulerships()->isEmpty();
 	}
 
+	public function findRulerships(): ?ArrayCollection {
+		if (!$this->my_rulerships) {
+			$this->my_rulerships = new ArrayCollection;
+			foreach ($this->positions as $position) {
+				if ($position->getRuler()) {
+					$this->my_rulerships->add($position->getRealm());
+				}
+			}
+		}
+		return $this->my_rulerships;
+	}
+
+	/**
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
+
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return Character
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
+
+		return $this;
+	}
+
 	public function isNPC(): bool {
 		return $this->npc;
+	}
+
+	/**
+	 * Get npc
+	 *
+	 * @return boolean
+	 */
+	public function getNpc(): bool {
+		return $this->npc;
+	}
+
+	/**
+	 * Set npc
+	 *
+	 * @param boolean|null $npc
+	 *
+	 * @return Character
+	 */
+	public function setNpc(?bool $npc): static {
+		$this->npc = $npc;
+
+		return $this;
 	}
 
 	public function isTrial(): bool {
@@ -234,16 +325,17 @@ class Character {
 		}
 	}
 
-	public function findRulerships(): ?ArrayCollection {
-		if (!$this->my_rulerships) {
-			$this->my_rulerships = new ArrayCollection;
-			foreach ($this->positions as $position) {
-				if ($position->getRuler()) {
-					$this->my_rulerships->add($position->getRealm());
-				}
-			}
-		}
-		return $this->my_rulerships;
+	/**
+	 * Get actions
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getActions(): ArrayCollection|Collection {
+		return $this->actions;
+	}
+
+	public function getType(): string {
+		return 'first one';
 	}
 
 	public function findHighestRulership() {
@@ -261,10 +353,6 @@ class Character {
 		return $highest;
 	}
 
-	public function isPrisoner(): bool {
-		if ($this->getPrisonerOf()) return true; else return false;
-	}
-
 	public function hasVisiblePartners(): bool {
 		foreach ($this->getPartnerships() as $ps) {
 			if ($ps->getActive() && $ps->getPublic()) {
@@ -274,12 +362,17 @@ class Character {
 		return false;
 	}
 
-	public function getFather() {
-		return $this->getFatherOrMother(true);
+	/**
+	 * Get partnerships
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getPartnerships(): ArrayCollection|Collection {
+		return $this->partnerships;
 	}
 
-	public function getMother() {
-		return $this->getFatherOrMother(false);
+	public function getFather() {
+		return $this->getFatherOrMother(true);
 	}
 
 	private function getFatherOrMother($male) {
@@ -287,6 +380,19 @@ class Character {
 			if ($parent->getMale() == $male) return $parent;
 		}
 		return null;
+	}
+
+	/**
+	 * Get parents
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getParents(): ArrayCollection|Collection {
+		return $this->parents;
+	}
+
+	public function getMother() {
+		return $this->getFatherOrMother(false);
 	}
 
 	public function findImmediateRelatives(): ArrayCollection {
@@ -309,8 +415,13 @@ class Character {
 		return $relatives;
 	}
 
-	public function healthValue(): float|int {
-		return max(0.0, ($this->full_health - $this->getWounded())) / $this->full_health;
+	/**
+	 * Get children
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getChildren(): ArrayCollection|Collection {
+		return $this->children;
 	}
 
 	public function healthStatus(): string {
@@ -320,6 +431,32 @@ class Character {
 		if ($h > 0.5) return 'moderately';
 		if ($h > 0.25) return 'seriously';
 		return 'mortally';
+	}
+
+	public function healthValue(): float|int {
+		return max(0.0, ($this->full_health - $this->getWounded())) / $this->full_health;
+	}
+
+	/**
+	 * Get wounded
+	 *
+	 * @return integer
+	 */
+	public function getWounded(): int {
+		return $this->wounded;
+	}
+
+	/**
+	 * Set wounded
+	 *
+	 * @param integer|null $wounded
+	 *
+	 * @return Character
+	 */
+	public function setWounded(?int $wounded): static {
+		$this->wounded = $wounded;
+
+		return $this;
 	}
 
 	public function isActive($include_wounded = false, $include_slumbering = false): bool {
@@ -333,11 +470,51 @@ class Character {
 		return true;
 	}
 
+	public function isPrisoner(): bool {
+		if ($this->getPrisonerOf()) return true; else return false;
+	}
+
+	/**
+	 * Get prisoner_of
+	 *
+	 * @return Character|null
+	 */
+	public function getPrisonerOf(): ?Character {
+		return $this->prisoner_of;
+	}
+
+	/**
+	 * Set prisoner_of
+	 *
+	 * @param Character|null $prisonerOf
+	 *
+	 * @return Character
+	 */
+	public function setPrisonerOf(Character $prisonerOf = null): static {
+		$this->prisoner_of = $prisonerOf;
+
+		return $this;
+	}
+
 	public function isInBattle(): bool {
 		// FIXME: in dispatcher, we simply check if we're in a battlegroup...
 		if ($this->hasAction('military.battle')) return true;
 		if ($this->hasAction('settlement.attack')) return true;
 		return false;
+	}
+
+	public function hasAction($key): bool {
+		return ($this->findActions($key)->count() > 0);
+	}
+
+	public function findActions($key): ArrayCollection {
+		return $this->actions->filter(function ($entry) use ($key) {
+			if (is_array($key)) {
+				return in_array($entry->getType(), $key);
+			} else {
+				return ($entry->getType() == $key);
+			}
+		});
 	}
 
 	public function isLooting(): bool {
@@ -366,6 +543,10 @@ class Character {
 		return $size;
 	}
 
+	public function getAvailableEntourageOfType($type): ArrayCollection {
+		return $this->getEntourageOfType($type, true);
+	}
+
 	public function getEntourageOfType($type, $only_available = false): ArrayCollection {
 		if (is_object($type)) {
 			return $this->entourage->filter(function ($entry) use ($type, $only_available) {
@@ -385,16 +566,6 @@ class Character {
 				}
 			});
 		}
-	}
-
-	public function getAvailableEntourageOfType($type): ArrayCollection {
-		return $this->getEntourageOfType($type, true);
-	}
-
-	public function getLivingEntourage(): ArrayCollection|Collection {
-		return $this->getEntourage()->filter(function ($entry) {
-			return ($entry->isAlive());
-		});
 	}
 
 	public function getDeadEntourage(): ArrayCollection|Collection {
@@ -425,6 +596,21 @@ class Character {
 		return $data;
 	}
 
+	public function getLivingEntourage(): ArrayCollection|Collection {
+		return $this->getEntourage()->filter(function ($entry) {
+			return ($entry->isAlive());
+		});
+	}
+
+	/**
+	 * Get entourage
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getEntourage(): ArrayCollection|Collection {
+		return $this->entourage;
+	}
+
 	public function getGender(): string {
 		if ($this->male) return "male"; else return "female";
 	}
@@ -439,8 +625,9 @@ class Character {
 		};
 	}
 
-	public function isAlive(): bool {
-		return $this->getAlive();
+	public function isUltimate(): bool {
+		if ($this->findUltimate() == $this) return true;
+		return false;
 	}
 
 	public function findUltimate(): bool|Character {
@@ -458,9 +645,26 @@ class Character {
 		return $this->ultimate;
 	}
 
-	public function isUltimate(): bool {
-		if ($this->findUltimate() == $this) return true;
-		return false;
+	/**
+	 * Get liege
+	 *
+	 * @return Character|null
+	 */
+	public function getLiege(): ?Character {
+		return $this->liege;
+	}
+
+	/**
+	 * Set liege
+	 *
+	 * @param Character|null $liege
+	 *
+	 * @return Character
+	 */
+	public function setLiege(Character $liege = null): static {
+		$this->liege = $liege;
+
+		return $this;
 	}
 
 	public function findRealms($check_lord = true): ?ArrayCollection {
@@ -527,6 +731,118 @@ class Character {
 		return $realms;
 	}
 
+	/**
+	 * Get positions
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getPositions(): ArrayCollection|Collection {
+		return $this->positions;
+	}
+
+	/**
+	 * Get owned_settlements
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getOwnedSettlements(): ArrayCollection|Collection {
+		return $this->owned_settlements;
+	}
+
+	/**
+	 * Get owned_places
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getOwnedPlaces(): ArrayCollection|Collection {
+		return $this->owned_places;
+	}
+
+	public function findAllegiance(): Realm|RealmPosition|Settlement|Place|Character|null {
+		if ($this->realm) {
+			return $this->getRealm();
+		}
+		if ($this->liege_land) {
+			return $this->getLiegeLand();
+		}
+		if ($this->liege_place) {
+			return $this->getLiegePlace();
+		}
+		if ($this->liege_position) {
+			return $this->getLiegePosition();
+		}
+		if ($this->liege) {
+			return $this->getLiege();
+		}
+		return null;
+	}
+
+	/**
+	 * Get liege_land
+	 *
+	 * @return Settlement|null
+	 */
+	public function getLiegeLand(): ?Settlement {
+		return $this->liege_land;
+	}
+
+	/**
+	 * Set liege_land
+	 *
+	 * @param Settlement|null $liegeLand
+	 *
+	 * @return Character
+	 */
+	public function setLiegeLand(Settlement $liegeLand = null): static {
+		$this->liege_land = $liegeLand;
+
+		return $this;
+	}
+
+	/**
+	 * Get liege_place
+	 *
+	 * @return Place|null
+	 */
+	public function getLiegePlace(): ?Place {
+		return $this->liege_place;
+	}
+
+	/**
+	 * Set liege_place
+	 *
+	 * @param Place|null $liegePlace
+	 *
+	 * @return Character
+	 */
+	public function setLiegePlace(Place $liegePlace = null): static {
+		$this->liege_place = $liegePlace;
+
+		return $this;
+	}
+
+	/**
+	 * Get liege_position
+	 *
+	 * @return RealmPosition|null
+	 */
+	public function getLiegePosition(): ?RealmPosition {
+		return $this->liege_position;
+	}
+
+	/**
+	 * Set liege_position
+	 *
+	 * @param RealmPosition|null $liegePosition
+	 *
+	 * @return Character
+	 */
+	public function setLiegePosition(RealmPosition $liegePosition = null): static {
+		$this->liege_position = $liegePosition;
+
+		return $this;
+	}
+
 	public function findHouses(): ?ArrayCollection {
 		if ($this->my_houses != null) return $this->my_houses;
 		$houses = new ArrayCollection;
@@ -544,6 +860,28 @@ class Character {
 		return $houses;
 	}
 
+	/**
+	 * Get house
+	 *
+	 * @return House|null
+	 */
+	public function getHouse(): ?House {
+		return $this->house;
+	}
+
+	/**
+	 * Set house
+	 *
+	 * @param House|null $house
+	 *
+	 * @return Character
+	 */
+	public function setHouse(House $house = null): static {
+		$this->house = $house;
+
+		return $this;
+	}
+
 	public function findAssociations(): ?ArrayCollection {
 		if ($this->my_assocs != null) return $this->my_assocs;
 		$assocs = new ArrayCollection;
@@ -552,6 +890,15 @@ class Character {
 		}
 		$this->my_assocs = $assocs;
 		return $assocs;
+	}
+
+	/**
+	 * Get association_memberships
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getAssociationMemberships(): ArrayCollection|Collection {
+		return $this->association_memberships;
 	}
 
 	public function findSubcreateableAssociations($except = null): ArrayCollection {
@@ -583,6 +930,15 @@ class Character {
 		return false;
 	}
 
+	/**
+	 * Get readable_logs
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getReadableLogs(): ArrayCollection|Collection {
+		return $this->readable_logs;
+	}
+
 	public function countNewEvents() {
 		$count = 0;
 		foreach ($this->getReadableLogs() as $log) {
@@ -601,6 +957,15 @@ class Character {
 		return false;
 	}
 
+	/**
+	 * Get conv_permissions
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getConvPermissions(): ArrayCollection|Collection {
+		return $this->conv_permissions;
+	}
+
 	public function countNewMessages() {
 		$permissions = $this->getConvPermissions()->filter(function ($entry) {
 			return $entry->getUnread() > 0;
@@ -613,20 +978,6 @@ class Character {
 			return $total;
 		}
 		return $total;
-	}
-
-	public function findActions($key): ArrayCollection {
-		return $this->actions->filter(function ($entry) use ($key) {
-			if (is_array($key)) {
-				return in_array($entry->getType(), $key);
-			} else {
-				return ($entry->getType() == $key);
-			}
-		});
-	}
-
-	public function hasAction($key): bool {
-		return ($this->findActions($key)->count() > 0);
 	}
 
 	public function findForeignAffairsRealms(): ?ArrayCollection {
@@ -646,6 +997,22 @@ class Character {
 		}
 	}
 
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
+
+	public function hasNoSoldiers(): bool {
+		if ($this->countSoldiers() == 0) {
+			return true;
+		}
+		return false;
+	}
+
 	public function countSoldiers() {
 		$count = 0;
 		if (!$this->getUnits()->isEmpty()) {
@@ -656,30 +1023,13 @@ class Character {
 		return $count;
 	}
 
-	public function hasNoSoldiers(): bool {
-		if ($this->countSoldiers() == 0) {
-			return true;
-		}
-		return false;
-	}
-
-	public function findAllegiance(): Realm|RealmPosition|Settlement|Place|Character|null {
-		if ($this->realm) {
-			return $this->getRealm();
-		}
-		if ($this->liege_land) {
-			return $this->getLiegeLand();
-		}
-		if ($this->liege_place) {
-			return $this->getLiegePlace();
-		}
-		if ($this->liege_position) {
-			return $this->getLiegePosition();
-		}
-		if ($this->liege) {
-			return $this->getLiege();
-		}
-		return null;
+	/**
+	 * Get units
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getUnits(): ArrayCollection|Collection {
+		return $this->units;
 	}
 
 	public function findVassals(): ArrayCollection {
@@ -712,6 +1062,24 @@ class Character {
 			}
 		}
 		return $vassals;
+	}
+
+	/**
+	 * Get vassals
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getVassals(): ArrayCollection|Collection {
+		return $this->vassals;
+	}
+
+	/**
+	 * Get ambassadorships
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getAmbassadorships(): ArrayCollection|Collection {
+		return $this->ambassadorships;
 	}
 
 	public function findPrimaryRealm(): ?Realm {
@@ -772,6 +1140,24 @@ class Character {
 		return $all;
 	}
 
+	/**
+	 * Get occupied_settlements
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getOccupiedSettlements(): ArrayCollection|Collection {
+		return $this->occupied_settlements;
+	}
+
+	/**
+	 * Get stewarding_settlements
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getStewardingSettlements(): ArrayCollection|Collection {
+		return $this->stewarding_settlements;
+	}
+
 	public function findAnswerableDuels(): ArrayCollection {
 		$all = new ArrayCollection;
 		foreach ($this->getActivityParticipation() as $each) {
@@ -783,8 +1169,13 @@ class Character {
 		return $all;
 	}
 
-	public function getType(): string {
-		return 'first one';
+	/**
+	 * Get activity_participation
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getActivityParticipation(): ArrayCollection|Collection {
+		return $this->activity_participation;
 	}
 
 	public function findSkill(SkillType $skill) {
@@ -797,16 +1188,12 @@ class Character {
 	}
 
 	/**
-	 * Set name
+	 * Get battling
 	 *
-	 * @param string $name
-	 *
-	 * @return Character
+	 * @return bool|null
 	 */
-	public function setName(string $name): static {
-		$this->name = $name;
-
-		return $this;
+	public function getBattling(): ?bool {
+		return $this->battling;
 	}
 
 	/**
@@ -823,34 +1210,12 @@ class Character {
 	}
 
 	/**
-	 * Get battling
-	 *
-	 * @return bool|null
-	 */
-	public function getBattling(): ?bool {
-		return $this->battling;
-	}
-
-	/**
-	 * Set known_as
-	 *
-	 * @param string|null $knownAs
-	 *
-	 * @return Character
-	 */
-	public function setKnownAs(string $knownAs = null): static {
-		$this->known_as = $knownAs;
-
-		return $this;
-	}
-
-	/**
-	 * Get known_as
+	 * Get system
 	 *
 	 * @return string|null
 	 */
-	public function getKnownAs(): ?string {
-		return $this->known_as;
+	public function getSystem(): ?string {
+		return $this->system;
 	}
 
 	/**
@@ -867,34 +1232,16 @@ class Character {
 	}
 
 	/**
-	 * Get system
-	 *
-	 * @return string|null
-	 */
-	public function getSystem(): ?string {
-		return $this->system;
-	}
-
-	/**
-	 * Set male
-	 *
-	 * @param boolean $male
-	 *
-	 * @return Character
-	 */
-	public function setMale(bool $male): static {
-		$this->male = $male;
-
-		return $this;
-	}
-
-	/**
-	 * Get male
+	 * Get alive
 	 *
 	 * @return boolean
 	 */
-	public function getMale(): bool {
-		return $this->male;
+	public function getAlive(): bool {
+		return $this->alive;
+	}
+
+	public function isAlive(): bool {
+		return $this->getAlive();
 	}
 
 	/**
@@ -911,12 +1258,12 @@ class Character {
 	}
 
 	/**
-	 * Get alive
+	 * Get retired
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getAlive(): bool {
-		return $this->alive;
+	public function getRetired(): ?bool {
+		return $this->retired;
 	}
 
 	/**
@@ -933,12 +1280,12 @@ class Character {
 	}
 
 	/**
-	 * Get retired
+	 * Get retired_on
 	 *
-	 * @return bool|null
+	 * @return DateTime|null
 	 */
-	public function getRetired(): ?bool {
-		return $this->retired;
+	public function getRetiredOn(): ?DateTime {
+		return $this->retired_on;
 	}
 
 	/**
@@ -955,12 +1302,12 @@ class Character {
 	}
 
 	/**
-	 * Get retired_on
+	 * Get generation
 	 *
-	 * @return DateTime|null
+	 * @return int|null
 	 */
-	public function getRetiredOn(): ?DateTime {
-		return $this->retired_on;
+	public function getGeneration(): ?int {
+		return $this->generation;
 	}
 
 	/**
@@ -977,12 +1324,12 @@ class Character {
 	}
 
 	/**
-	 * Get generation
+	 * Get genome
 	 *
-	 * @return int|null
+	 * @return string
 	 */
-	public function getGeneration(): ?int {
-		return $this->generation;
+	public function getGenome(): string {
+		return $this->genome;
 	}
 
 	/**
@@ -999,12 +1346,12 @@ class Character {
 	}
 
 	/**
-	 * Get genome
+	 * Get magic
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getGenome(): string {
-		return $this->genome;
+	public function getMagic(): ?int {
+		return $this->magic;
 	}
 
 	/**
@@ -1021,12 +1368,12 @@ class Character {
 	}
 
 	/**
-	 * Get magic
+	 * Get list
 	 *
-	 * @return int|null
+	 * @return integer
 	 */
-	public function getMagic(): ?int {
-		return $this->magic;
+	public function getList(): int {
+		return $this->list;
 	}
 
 	/**
@@ -1043,12 +1390,12 @@ class Character {
 	}
 
 	/**
-	 * Get list
+	 * Get created
 	 *
-	 * @return integer
+	 * @return DateTime
 	 */
-	public function getList(): int {
-		return $this->list;
+	public function getCreated(): DateTime {
+		return $this->created;
 	}
 
 	/**
@@ -1065,12 +1412,12 @@ class Character {
 	}
 
 	/**
-	 * Get created
+	 * Get house_join_date
 	 *
-	 * @return DateTime
+	 * @return DateTime|null
 	 */
-	public function getCreated(): DateTime {
-		return $this->created;
+	public function getHouseJoinDate(): ?DateTime {
+		return $this->house_join_date;
 	}
 
 	/**
@@ -1087,12 +1434,12 @@ class Character {
 	}
 
 	/**
-	 * Get house_join_date
+	 * Get last_access
 	 *
-	 * @return DateTime|null
+	 * @return DateTime
 	 */
-	public function getHouseJoinDate(): ?DateTime {
-		return $this->house_join_date;
+	public function getLastAccess(): DateTime {
+		return $this->last_access;
 	}
 
 	/**
@@ -1109,12 +1456,16 @@ class Character {
 	}
 
 	/**
-	 * Get last_access
+	 * Get slumbering
 	 *
-	 * @return DateTime
+	 * @return boolean
 	 */
-	public function getLastAccess(): DateTime {
-		return $this->last_access;
+	public function getSlumbering(): bool {
+		return $this->slumbering;
+	}
+
+	public function isSlumbering(): ?bool {
+		return $this->slumbering;
 	}
 
 	/**
@@ -1131,34 +1482,12 @@ class Character {
 	}
 
 	/**
-	 * Get slumbering
+	 * Get location
 	 *
-	 * @return boolean
+	 * @return Point|null
 	 */
-	public function getSlumbering(): bool {
-		return $this->slumbering;
-	}
-
-	/**
-	 * Set special
-	 *
-	 * @param boolean $special
-	 *
-	 * @return Character
-	 */
-	public function setSpecial(bool $special): static {
-		$this->special = $special;
-
-		return $this;
-	}
-
-	/**
-	 * Get special
-	 *
-	 * @return boolean
-	 */
-	public function getSpecial(): bool {
-		return $this->special;
+	public function getLocation(): ?Point {
+		return $this->location;
 	}
 
 	/**
@@ -1175,12 +1504,12 @@ class Character {
 	}
 
 	/**
-	 * Get location
+	 * Get travel
 	 *
-	 * @return Point|null
+	 * @return linestring|null
 	 */
-	public function getLocation(): ?Point {
-		return $this->location;
+	public function getTravel(): ?LineString {
+		return $this->travel;
 	}
 
 	/**
@@ -1197,100 +1526,12 @@ class Character {
 	}
 
 	/**
-	 * Get travel
+	 * Get progress
 	 *
-	 * @return linestring|null
+	 * @return float|null
 	 */
-	public function getTravel(): ?LineString {
-		return $this->travel;
-	}
-
-	/**
-	 * Set travel_locked
-	 *
-	 * @param boolean $travelLocked
-	 *
-	 * @return Character
-	 */
-	public function setTravelLocked(bool $travelLocked): static {
-		$this->travel_locked = $travelLocked;
-
-		return $this;
-	}
-
-	/**
-	 * Get travel_locked
-	 *
-	 * @return boolean
-	 */
-	public function getTravelLocked(): bool {
-		return $this->travel_locked;
-	}
-
-	/**
-	 * Set travel_enter
-	 *
-	 * @param boolean $travelEnter
-	 *
-	 * @return Character
-	 */
-	public function setTravelEnter(bool $travelEnter): static {
-		$this->travel_enter = $travelEnter;
-
-		return $this;
-	}
-
-	/**
-	 * Get travel_enter
-	 *
-	 * @return boolean
-	 */
-	public function getTravelEnter(): bool {
-		return $this->travel_enter;
-	}
-
-	/**
-	 * Set travel_at_sea
-	 *
-	 * @param boolean $travelAtSea
-	 *
-	 * @return Character
-	 */
-	public function setTravelAtSea(bool $travelAtSea): static {
-		$this->travel_at_sea = $travelAtSea;
-
-		return $this;
-	}
-
-	/**
-	 * Get travel_at_sea
-	 *
-	 * @return boolean
-	 */
-	public function getTravelAtSea(): bool {
-		return $this->travel_at_sea;
-	}
-
-	/**
-	 * Set travel_disembark
-	 *
-	 * @param boolean $travelDisembark
-	 *
-	 * @return Character
-	 */
-	public function setTravelDisembark(bool $travelDisembark): static {
-		$this->travel_disembark = $travelDisembark;
-
-		return $this;
-	}
-
-	/**
-	 * Get travel_disembark
-	 *
-	 * @return boolean
-	 */
-	public function getTravelDisembark(): bool {
-		return $this->travel_disembark;
+	public function getProgress(): ?float {
+		return $this->progress;
 	}
 
 	/**
@@ -1307,12 +1548,12 @@ class Character {
 	}
 
 	/**
-	 * Get progress
+	 * Get speed
 	 *
 	 * @return float|null
 	 */
-	public function getProgress(): ?float {
-		return $this->progress;
+	public function getSpeed(): ?float {
+		return $this->speed;
 	}
 
 	/**
@@ -1329,34 +1570,12 @@ class Character {
 	}
 
 	/**
-	 * Get speed
-	 *
-	 * @return float|null
-	 */
-	public function getSpeed(): ?float {
-		return $this->speed;
-	}
-
-	/**
-	 * Set wounded
-	 *
-	 * @param integer|null $wounded
-	 *
-	 * @return Character
-	 */
-	public function setWounded(?int $wounded): static {
-		$this->wounded = $wounded;
-
-		return $this;
-	}
-
-	/**
-	 * Get wounded
+	 * Get gold
 	 *
 	 * @return integer
 	 */
-	public function getWounded(): int {
-		return $this->wounded;
+	public function getGold(): int {
+		return $this->gold;
 	}
 
 	/**
@@ -1373,34 +1592,12 @@ class Character {
 	}
 
 	/**
-	 * Get gold
+	 * Get spotting_distance
 	 *
 	 * @return integer
 	 */
-	public function getGold(): int {
-		return $this->gold;
-	}
-
-	/**
-	 * Set npc
-	 *
-	 * @param boolean|null $npc
-	 *
-	 * @return Character
-	 */
-	public function setNpc(?bool $npc): static {
-		$this->npc = $npc;
-
-		return $this;
-	}
-
-	/**
-	 * Get npc
-	 *
-	 * @return boolean
-	 */
-	public function getNpc(): bool {
-		return $this->npc;
+	public function getSpottingDistance(): int {
+		return $this->spotting_distance;
 	}
 
 	/**
@@ -1417,12 +1614,12 @@ class Character {
 	}
 
 	/**
-	 * Get spotting_distance
+	 * Get visibility
 	 *
 	 * @return integer
 	 */
-	public function getSpottingDistance(): int {
-		return $this->spotting_distance;
+	public function getVisibility(): int {
+		return $this->visibility;
 	}
 
 	/**
@@ -1439,12 +1636,12 @@ class Character {
 	}
 
 	/**
-	 * Get visibility
+	 * Get auto_read_realms
 	 *
-	 * @return integer
+	 * @return bool|null
 	 */
-	public function getVisibility(): int {
-		return $this->visibility;
+	public function getAutoReadRealms(): ?bool {
+		return $this->auto_read_realms;
 	}
 
 	/**
@@ -1461,12 +1658,12 @@ class Character {
 	}
 
 	/**
-	 * Get auto_read_realms
+	 * Get auto_read_assocs
 	 *
 	 * @return bool|null
 	 */
-	public function getAutoReadRealms(): ?bool {
-		return $this->auto_read_realms;
+	public function getAutoReadAssocs(): ?bool {
+		return $this->auto_read_assocs;
 	}
 
 	/**
@@ -1483,12 +1680,12 @@ class Character {
 	}
 
 	/**
-	 * Get auto_read_assocs
+	 * Get auto_read_house
 	 *
 	 * @return bool|null
 	 */
-	public function getAutoReadAssocs(): ?bool {
-		return $this->auto_read_assocs;
+	public function getAutoReadHouse(): ?bool {
+		return $this->auto_read_house;
 	}
 
 	/**
@@ -1505,12 +1702,12 @@ class Character {
 	}
 
 	/**
-	 * Get auto_read_house
+	 * Get non_hetero_options
 	 *
 	 * @return bool|null
 	 */
-	public function getAutoReadHouse(): ?bool {
-		return $this->auto_read_house;
+	public function getNonHeteroOptions(): ?bool {
+		return $this->non_hetero_options;
 	}
 
 	/**
@@ -1527,12 +1724,12 @@ class Character {
 	}
 
 	/**
-	 * Get non_hetero_options
+	 * Get oath_current
 	 *
 	 * @return bool|null
 	 */
-	public function getNonHeteroOptions(): ?bool {
-		return $this->non_hetero_options;
+	public function getOathCurrent(): ?bool {
+		return $this->oath_current;
 	}
 
 	/**
@@ -1549,12 +1746,12 @@ class Character {
 	}
 
 	/**
-	 * Get oath_current
+	 * Get oath_time
 	 *
-	 * @return bool|null
+	 * @return DateTime|null
 	 */
-	public function getOathCurrent(): ?bool {
-		return $this->oath_current;
+	public function getOathTime(): ?DateTime {
+		return $this->oath_time;
 	}
 
 	/**
@@ -1571,21 +1768,12 @@ class Character {
 	}
 
 	/**
-	 * Get oath_time
+	 * Get background
 	 *
-	 * @return DateTime|null
+	 * @return CharacterBackground|null
 	 */
-	public function getOathTime(): ?DateTime {
-		return $this->oath_time;
-	}
-
-	/**
-	 * Get id
-	 *
-	 * @return integer
-	 */
-	public function getId(): int {
-		return $this->id;
+	public function getBackground(): ?CharacterBackground {
+		return $this->background;
 	}
 
 	/**
@@ -1602,12 +1790,12 @@ class Character {
 	}
 
 	/**
-	 * Get background
+	 * Get log
 	 *
-	 * @return CharacterBackground|null
+	 * @return EventLog|null
 	 */
-	public function getBackground(): ?CharacterBackground {
-		return $this->background;
+	public function getLog(): ?EventLog {
+		return $this->log;
 	}
 
 	/**
@@ -1624,12 +1812,12 @@ class Character {
 	}
 
 	/**
-	 * Get log
+	 * Get dungeoneer
 	 *
-	 * @return EventLog|null
+	 * @return Dungeoneer|null
 	 */
-	public function getLog(): ?EventLog {
-		return $this->log;
+	public function getDungeoneer(): ?Dungeoneer {
+		return $this->dungeoneer;
 	}
 
 	/**
@@ -1646,12 +1834,12 @@ class Character {
 	}
 
 	/**
-	 * Get dungeoneer
+	 * Get head_of_house
 	 *
-	 * @return Dungeoneer|null
+	 * @return House
 	 */
-	public function getDungeoneer(): ?Dungeoneer {
-		return $this->dungeoneer;
+	public function getHeadOfHouse(): House {
+		return $this->head_of_house;
 	}
 
 	/**
@@ -1668,12 +1856,12 @@ class Character {
 	}
 
 	/**
-	 * Get head_of_house
+	 * Get active_report
 	 *
-	 * @return House
+	 * @return BattleReportCharacter|null
 	 */
-	public function getHeadOfHouse(): House {
-		return $this->head_of_house;
+	public function getActiveReport(): ?BattleReportCharacter {
+		return $this->active_report;
 	}
 
 	/**
@@ -1690,12 +1878,12 @@ class Character {
 	}
 
 	/**
-	 * Get active_report
+	 * Get local_conversation
 	 *
-	 * @return BattleReportCharacter|null
+	 * @return Conversation|null
 	 */
-	public function getActiveReport(): ?BattleReportCharacter {
-		return $this->active_report;
+	public function getLocalConversation(): ?Conversation {
+		return $this->local_conversation;
 	}
 
 	/**
@@ -1709,15 +1897,6 @@ class Character {
 		$this->local_conversation = $localConversation;
 
 		return $this;
-	}
-
-	/**
-	 * Get local_conversation
-	 *
-	 * @return Conversation|null
-	 */
-	public function getLocalConversation(): ?Conversation {
-		return $this->local_conversation;
 	}
 
 	/**
@@ -1898,15 +2077,6 @@ class Character {
 	}
 
 	/**
-	 * Get readable_logs
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getReadableLogs(): ArrayCollection|Collection {
-		return $this->readable_logs;
-	}
-
-	/**
 	 * Add newspapers_editor
 	 *
 	 * @param NewsEditor $newspapersEditor
@@ -2084,15 +2254,6 @@ class Character {
 	}
 
 	/**
-	 * Get actions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getActions(): ArrayCollection|Collection {
-		return $this->actions;
-	}
-
-	/**
 	 * Add votes
 	 *
 	 * @param Vote $votes
@@ -2146,15 +2307,6 @@ class Character {
 	}
 
 	/**
-	 * Get owned_settlements
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getOwnedSettlements(): ArrayCollection|Collection {
-		return $this->owned_settlements;
-	}
-
-	/**
 	 * Add stewarding_settlements
 	 *
 	 * @param Settlement $stewardingSettlements
@@ -2174,15 +2326,6 @@ class Character {
 	 */
 	public function removeStewardingSettlement(Settlement $stewardingSettlements): void {
 		$this->stewarding_settlements->removeElement($stewardingSettlements);
-	}
-
-	/**
-	 * Get stewarding_settlements
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getStewardingSettlements(): ArrayCollection|Collection {
-		return $this->stewarding_settlements;
 	}
 
 	/**
@@ -2239,15 +2382,6 @@ class Character {
 	}
 
 	/**
-	 * Get occupied_settlements
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getOccupiedSettlements(): ArrayCollection|Collection {
-		return $this->occupied_settlements;
-	}
-
-	/**
 	 * Add vassals
 	 *
 	 * @param Character $vassals
@@ -2267,15 +2401,6 @@ class Character {
 	 */
 	public function removeVassal(Character $vassals): void {
 		$this->vassals->removeElement($vassals);
-	}
-
-	/**
-	 * Get vassals
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getVassals(): ArrayCollection|Collection {
-		return $this->vassals;
 	}
 
 	/**
@@ -2329,15 +2454,6 @@ class Character {
 	 */
 	public function removeEntourage(Entourage $entourage): void {
 		$this->entourage->removeElement($entourage);
-	}
-
-	/**
-	 * Get entourage
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getEntourage(): ArrayCollection|Collection {
-		return $this->entourage;
 	}
 
 	/**
@@ -2456,15 +2572,6 @@ class Character {
 	}
 
 	/**
-	 * Get owned_places
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getOwnedPlaces(): ArrayCollection|Collection {
-		return $this->owned_places;
-	}
-
-	/**
 	 * Add created_places
 	 *
 	 * @param Place $createdPlaces
@@ -2546,15 +2653,6 @@ class Character {
 	 */
 	public function removeAmbassadorship(Place $ambassadorships): void {
 		$this->ambassadorships->removeElement($ambassadorships);
-	}
-
-	/**
-	 * Get ambassadorships
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getAmbassadorships(): ArrayCollection|Collection {
-		return $this->ambassadorships;
 	}
 
 	/**
@@ -2797,15 +2895,6 @@ class Character {
 	}
 
 	/**
-	 * Get units
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getUnits(): ArrayCollection|Collection {
-		return $this->units;
-	}
-
-	/**
 	 * Add marshalling_units
 	 *
 	 * @param Unit $marshallingUnits
@@ -2952,15 +3041,6 @@ class Character {
 	}
 
 	/**
-	 * Get conv_permissions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getConvPermissions(): ArrayCollection|Collection {
-		return $this->conv_permissions;
-	}
-
-	/**
 	 * Add messages
 	 *
 	 * @param Message $messages
@@ -3042,15 +3122,6 @@ class Character {
 	 */
 	public function removeActivityParticipation(ActivityParticipant $activityParticipation): void {
 		$this->activity_participation->removeElement($activityParticipation);
-	}
-
-	/**
-	 * Get activity_participation
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getActivityParticipation(): ArrayCollection|Collection {
-		return $this->activity_participation;
 	}
 
 	/**
@@ -3200,12 +3271,12 @@ class Character {
 	}
 
 	/**
-	 * Get association_memberships
+	 * Get weapon
 	 *
-	 * @return ArrayCollection|Collection
+	 * @return EquipmentType|null
 	 */
-	public function getAssociationMemberships(): ArrayCollection|Collection {
-		return $this->association_memberships;
+	public function getWeapon(): ?EquipmentType {
+		return $this->weapon;
 	}
 
 	/**
@@ -3222,12 +3293,12 @@ class Character {
 	}
 
 	/**
-	 * Get weapon
+	 * Get armour
 	 *
 	 * @return EquipmentType|null
 	 */
-	public function getWeapon(): ?EquipmentType {
-		return $this->weapon;
+	public function getArmour(): ?EquipmentType {
+		return $this->armour;
 	}
 
 	/**
@@ -3244,12 +3315,12 @@ class Character {
 	}
 
 	/**
-	 * Get armour
+	 * Get equipment
 	 *
 	 * @return EquipmentType|null
 	 */
-	public function getArmour(): ?EquipmentType {
-		return $this->armour;
+	public function getEquipment(): ?EquipmentType {
+		return $this->equipment;
 	}
 
 	/**
@@ -3266,12 +3337,12 @@ class Character {
 	}
 
 	/**
-	 * Get equipment
+	 * Get mount
 	 *
 	 * @return EquipmentType|null
 	 */
-	public function getEquipment(): ?EquipmentType {
-		return $this->equipment;
+	public function getMount(): ?EquipmentType {
+		return $this->mount;
 	}
 
 	/**
@@ -3288,34 +3359,12 @@ class Character {
 	}
 
 	/**
-	 * Get mount
+	 * Get user
 	 *
-	 * @return EquipmentType|null
+	 * @return User|null
 	 */
-	public function getMount(): ?EquipmentType {
-		return $this->mount;
-	}
-
-	/**
-	 * Set prisoner_of
-	 *
-	 * @param Character|null $prisonerOf
-	 *
-	 * @return Character
-	 */
-	public function setPrisonerOf(Character $prisonerOf = null): static {
-		$this->prisoner_of = $prisonerOf;
-
-		return $this;
-	}
-
-	/**
-	 * Get prisoner_of
-	 *
-	 * @return Character|null
-	 */
-	public function getPrisonerOf(): ?Character {
-		return $this->prisoner_of;
+	public function getUser(): ?User {
+		return $this->user;
 	}
 
 	/**
@@ -3332,12 +3381,12 @@ class Character {
 	}
 
 	/**
-	 * Get user
+	 * Get crest
 	 *
-	 * @return User|null
+	 * @return Heraldry|null
 	 */
-	public function getUser(): ?User {
-		return $this->user;
+	public function getCrest(): ?Heraldry {
+		return $this->crest;
 	}
 
 	/**
@@ -3354,34 +3403,12 @@ class Character {
 	}
 
 	/**
-	 * Get crest
-	 *
-	 * @return Heraldry|null
-	 */
-	public function getCrest(): ?Heraldry {
-		return $this->crest;
-	}
-
-	/**
-	 * Set liege
-	 *
-	 * @param Character|null $liege
-	 *
-	 * @return Character
-	 */
-	public function setLiege(Character $liege = null): static {
-		$this->liege = $liege;
-
-		return $this;
-	}
-
-	/**
-	 * Get liege
+	 * Get successor
 	 *
 	 * @return Character|null
 	 */
-	public function getLiege(): ?Character {
-		return $this->liege;
+	public function getSuccessor(): ?Character {
+		return $this->successor;
 	}
 
 	/**
@@ -3398,12 +3425,12 @@ class Character {
 	}
 
 	/**
-	 * Get successor
+	 * Get inside_settlement
 	 *
-	 * @return Character|null
+	 * @return Settlement|null
 	 */
-	public function getSuccessor(): ?Character {
-		return $this->successor;
+	public function getInsideSettlement(): ?Settlement {
+		return $this->inside_settlement;
 	}
 
 	/**
@@ -3420,12 +3447,12 @@ class Character {
 	}
 
 	/**
-	 * Get inside_settlement
+	 * Get inside_place
 	 *
-	 * @return Settlement|null
+	 * @return Place|null
 	 */
-	public function getInsideSettlement(): ?Settlement {
-		return $this->inside_settlement;
+	public function getInsidePlace(): ?Place {
+		return $this->inside_place;
 	}
 
 	/**
@@ -3442,34 +3469,12 @@ class Character {
 	}
 
 	/**
-	 * Get inside_place
+	 * Get used_portal
 	 *
-	 * @return Place|null
+	 * @return Portal|null
 	 */
-	public function getInsidePlace(): ?Place {
-		return $this->inside_place;
-	}
-
-	/**
-	 * Set house
-	 *
-	 * @param House|null $house
-	 *
-	 * @return Character
-	 */
-	public function setHouse(House $house = null): static {
-		$this->house = $house;
-
-		return $this;
-	}
-
-	/**
-	 * Get house
-	 *
-	 * @return House|null
-	 */
-	public function getHouse(): ?House {
-		return $this->house;
+	public function getUsedPortal(): ?Portal {
+		return $this->used_portal;
 	}
 
 	/**
@@ -3486,100 +3491,12 @@ class Character {
 	}
 
 	/**
-	 * Get used_portal
+	 * Get faith
 	 *
-	 * @return Portal|null
+	 * @return Association|null
 	 */
-	public function getUsedPortal(): ?Portal {
-		return $this->used_portal;
-	}
-
-	/**
-	 * Set realm
-	 *
-	 * @param Realm|null $realm
-	 *
-	 * @return Character
-	 */
-	public function setRealm(Realm $realm = null): static {
-		$this->realm = $realm;
-
-		return $this;
-	}
-
-	/**
-	 * Get realm
-	 *
-	 * @return Realm|null
-	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
-	}
-
-	/**
-	 * Set liege_land
-	 *
-	 * @param Settlement|null $liegeLand
-	 *
-	 * @return Character
-	 */
-	public function setLiegeLand(Settlement $liegeLand = null): static {
-		$this->liege_land = $liegeLand;
-
-		return $this;
-	}
-
-	/**
-	 * Get liege_land
-	 *
-	 * @return Settlement|null
-	 */
-	public function getLiegeLand(): ?Settlement {
-		return $this->liege_land;
-	}
-
-	/**
-	 * Set liege_place
-	 *
-	 * @param Place|null $liegePlace
-	 *
-	 * @return Character
-	 */
-	public function setLiegePlace(Place $liegePlace = null): static {
-		$this->liege_place = $liegePlace;
-
-		return $this;
-	}
-
-	/**
-	 * Get liege_place
-	 *
-	 * @return Place|null
-	 */
-	public function getLiegePlace(): ?Place {
-		return $this->liege_place;
-	}
-
-	/**
-	 * Set liege_position
-	 *
-	 * @param RealmPosition|null $liegePosition
-	 *
-	 * @return Character
-	 */
-	public function setLiegePosition(RealmPosition $liegePosition = null): static {
-		$this->liege_position = $liegePosition;
-
-		return $this;
-	}
-
-	/**
-	 * Get liege_position
-	 *
-	 * @return RealmPosition|null
-	 */
-	public function getLiegePosition(): ?RealmPosition {
-		return $this->liege_position;
+	public function getFaith(): ?Association {
+		return $this->faith;
 	}
 
 	/**
@@ -3593,15 +3510,6 @@ class Character {
 		$this->faith = $faith;
 
 		return $this;
-	}
-
-	/**
-	 * Get faith
-	 *
-	 * @return Association|null
-	 */
-	public function getFaith(): ?Association {
-		return $this->faith;
 	}
 
 	/**
@@ -3627,15 +3535,6 @@ class Character {
 	}
 
 	/**
-	 * Get children
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getChildren(): ArrayCollection|Collection {
-		return $this->children;
-	}
-
-	/**
 	 * Add parents
 	 *
 	 * @param Character $parents
@@ -3655,15 +3554,6 @@ class Character {
 	 */
 	public function removeParent(Character $parents): void {
 		$this->parents->removeElement($parents);
-	}
-
-	/**
-	 * Get parents
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getParents(): ArrayCollection|Collection {
-		return $this->parents;
 	}
 
 	/**
@@ -3689,15 +3579,6 @@ class Character {
 	}
 
 	/**
-	 * Get partnerships
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getPartnerships(): ArrayCollection|Collection {
-		return $this->partnerships;
-	}
-
-	/**
 	 * Add positions
 	 *
 	 * @param RealmPosition $positions
@@ -3717,15 +3598,6 @@ class Character {
 	 */
 	public function removePosition(RealmPosition $positions): void {
 		$this->positions->removeElement($positions);
-	}
-
-	/**
-	 * Get positions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getPositions(): ArrayCollection|Collection {
-		return $this->positions;
 	}
 
 	/**
@@ -3767,32 +3639,160 @@ class Character {
 		return $this->male;
 	}
 
-	public function isRetired(): ?bool {
-		return $this->retired;
+	/**
+	 * Get male
+	 *
+	 * @return boolean
+	 */
+	public function getMale(): bool {
+		return $this->male;
 	}
 
-	public function isSlumbering(): ?bool {
-		return $this->slumbering;
+	/**
+	 * Set male
+	 *
+	 * @param boolean $male
+	 *
+	 * @return Character
+	 */
+	public function setMale(bool $male): static {
+		$this->male = $male;
+
+		return $this;
+	}
+
+	public function isRetired(): ?bool {
+		return $this->retired;
 	}
 
 	public function isSpecial(): ?bool {
 		return $this->special;
 	}
 
+	/**
+	 * Get special
+	 *
+	 * @return boolean
+	 */
+	public function getSpecial(): bool {
+		return $this->special;
+	}
+
+	/**
+	 * Set special
+	 *
+	 * @param boolean $special
+	 *
+	 * @return Character
+	 */
+	public function setSpecial(bool $special): static {
+		$this->special = $special;
+
+		return $this;
+	}
+
 	public function isTravelLocked(): ?bool {
 		return $this->travel_locked;
+	}
+
+	/**
+	 * Get travel_locked
+	 *
+	 * @return boolean
+	 */
+	public function getTravelLocked(): bool {
+		return $this->travel_locked;
+	}
+
+	/**
+	 * Set travel_locked
+	 *
+	 * @param boolean $travelLocked
+	 *
+	 * @return Character
+	 */
+	public function setTravelLocked(bool $travelLocked): static {
+		$this->travel_locked = $travelLocked;
+
+		return $this;
 	}
 
 	public function isTravelEnter(): ?bool {
 		return $this->travel_enter;
 	}
 
+	/**
+	 * Get travel_enter
+	 *
+	 * @return boolean
+	 */
+	public function getTravelEnter(): bool {
+		return $this->travel_enter;
+	}
+
+	/**
+	 * Set travel_enter
+	 *
+	 * @param boolean $travelEnter
+	 *
+	 * @return Character
+	 */
+	public function setTravelEnter(bool $travelEnter): static {
+		$this->travel_enter = $travelEnter;
+
+		return $this;
+	}
+
 	public function isTravelAtSea(): ?bool {
 		return $this->travel_at_sea;
 	}
 
+	/**
+	 * Get travel_at_sea
+	 *
+	 * @return boolean
+	 */
+	public function getTravelAtSea(): bool {
+		return $this->travel_at_sea;
+	}
+
+	/**
+	 * Set travel_at_sea
+	 *
+	 * @param boolean $travelAtSea
+	 *
+	 * @return Character
+	 */
+	public function setTravelAtSea(bool $travelAtSea): static {
+		$this->travel_at_sea = $travelAtSea;
+
+		return $this;
+	}
+
 	public function isTravelDisembark(): ?bool {
 		return $this->travel_disembark;
+	}
+
+	/**
+	 * Get travel_disembark
+	 *
+	 * @return boolean
+	 */
+	public function getTravelDisembark(): bool {
+		return $this->travel_disembark;
+	}
+
+	/**
+	 * Set travel_disembark
+	 *
+	 * @param boolean $travelDisembark
+	 *
+	 * @return Character
+	 */
+	public function setTravelDisembark(bool $travelDisembark): static {
+		$this->travel_disembark = $travelDisembark;
+
+		return $this;
 	}
 
 	public function isAutoReadRealms(): ?bool {

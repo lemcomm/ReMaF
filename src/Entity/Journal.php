@@ -19,11 +19,18 @@ class Journal {
 	private ?bool $GM_private;
 	private ?bool $GM_graphic;
 	private string $language;
-	private int $id;
+	private ?int $id = null;
 	private Collection $reports;
 	private ?Character $character;
 	private ?BattleReport $battle_report;
 	private ?ActivityReport $activity_report;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->reports = new ArrayCollection();
+	}
 
 	public function isPrivate(): bool {
 		if (!$this->public || $this->GM_private) {
@@ -39,15 +46,39 @@ class Journal {
 		return false;
 	}
 
+	/**
+	 * Get graphic
+	 *
+	 * @return boolean
+	 */
+	public function getGraphic(): bool {
+		return $this->graphic;
+	}
+
+	/**
+	 * Set graphic
+	 *
+	 * @param boolean $graphic
+	 *
+	 * @return Journal
+	 */
+	public function setGraphic(bool $graphic): static {
+		$this->graphic = $graphic;
+
+		return $this;
+	}
+
 	public function length(): int {
 		return strlen($this->entry);
 	}
 
 	/**
-	 * Constructor
+	 * Get topic
+	 *
+	 * @return string
 	 */
-	public function __construct() {
-		$this->reports = new ArrayCollection();
+	public function getTopic(): string {
+		return $this->topic;
 	}
 
 	/**
@@ -64,12 +95,12 @@ class Journal {
 	}
 
 	/**
-	 * Get topic
+	 * Get entry
 	 *
 	 * @return string
 	 */
-	public function getTopic(): string {
-		return $this->topic;
+	public function getEntry(): string {
+		return $this->entry;
 	}
 
 	/**
@@ -86,12 +117,12 @@ class Journal {
 	}
 
 	/**
-	 * Get entry
+	 * Get date
 	 *
-	 * @return string
+	 * @return DateTime
 	 */
-	public function getEntry(): string {
-		return $this->entry;
+	public function getDate(): DateTime {
+		return $this->date;
 	}
 
 	/**
@@ -108,12 +139,12 @@ class Journal {
 	}
 
 	/**
-	 * Get date
+	 * Get cycle
 	 *
-	 * @return DateTime
+	 * @return integer
 	 */
-	public function getDate(): DateTime {
-		return $this->date;
+	public function getCycle(): int {
+		return $this->cycle;
 	}
 
 	/**
@@ -130,12 +161,16 @@ class Journal {
 	}
 
 	/**
-	 * Get cycle
+	 * Get public
 	 *
-	 * @return integer
+	 * @return boolean
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getPublic(): bool {
+		return $this->public;
+	}
+
+	public function isPublic(): ?bool {
+		return $this->public;
 	}
 
 	/**
@@ -152,56 +187,12 @@ class Journal {
 	}
 
 	/**
-	 * Get public
+	 * Get pending_review
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getPublic(): bool {
-		return $this->public;
-	}
-
-	/**
-	 * Set graphic
-	 *
-	 * @param boolean $graphic
-	 *
-	 * @return Journal
-	 */
-	public function setGraphic(bool $graphic): static {
-		$this->graphic = $graphic;
-
-		return $this;
-	}
-
-	/**
-	 * Get graphic
-	 *
-	 * @return boolean
-	 */
-	public function getGraphic(): bool {
-		return $this->graphic;
-	}
-
-	/**
-	 * Set ooc
-	 *
-	 * @param boolean $ooc
-	 *
-	 * @return Journal
-	 */
-	public function setOoc(bool $ooc): static {
-		$this->ooc = $ooc;
-
-		return $this;
-	}
-
-	/**
-	 * Get ooc
-	 *
-	 * @return boolean
-	 */
-	public function getOoc(): bool {
-		return $this->ooc;
+	public function getPendingReview(): ?bool {
+		return $this->pending_review;
 	}
 
 	/**
@@ -218,34 +209,12 @@ class Journal {
 	}
 
 	/**
-	 * Get pending_review
+	 * Get GM_private
 	 *
 	 * @return bool|null
 	 */
-	public function getPendingReview(): ?bool {
-		return $this->pending_review;
-	}
-
-	/**
-	 * Set GM_reviewed
-	 *
-	 * @param boolean $gMReviewed
-	 *
-	 * @return Journal
-	 */
-	public function setGMReviewed(bool $gMReviewed): static {
-		$this->GM_reviewed = $gMReviewed;
-
-		return $this;
-	}
-
-	/**
-	 * Get GM_reviewed
-	 *
-	 * @return boolean
-	 */
-	public function getGMReviewed(): bool {
-		return $this->GM_reviewed;
+	public function getGMPrivate(): ?bool {
+		return $this->GM_private;
 	}
 
 	/**
@@ -262,12 +231,12 @@ class Journal {
 	}
 
 	/**
-	 * Get GM_private
+	 * Get GM_graphic
 	 *
 	 * @return bool|null
 	 */
-	public function getGMPrivate(): ?bool {
-		return $this->GM_private;
+	public function getGMGraphic(): ?bool {
+		return $this->GM_graphic;
 	}
 
 	/**
@@ -284,12 +253,12 @@ class Journal {
 	}
 
 	/**
-	 * Get GM_graphic
+	 * Get language
 	 *
-	 * @return bool|null
+	 * @return string
 	 */
-	public function getGMGraphic(): ?bool {
-		return $this->GM_graphic;
+	public function getLanguage(): string {
+		return $this->language;
 	}
 
 	/**
@@ -306,20 +275,11 @@ class Journal {
 	}
 
 	/**
-	 * Get language
-	 *
-	 * @return string
-	 */
-	public function getLanguage(): string {
-		return $this->language;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -355,6 +315,15 @@ class Journal {
 	}
 
 	/**
+	 * Get character
+	 *
+	 * @return Character
+	 */
+	public function getCharacter(): Character {
+		return $this->character;
+	}
+
+	/**
 	 * Set character
 	 *
 	 * @param Character|null $character
@@ -368,12 +337,12 @@ class Journal {
 	}
 
 	/**
-	 * Get character
+	 * Get battle_report
 	 *
-	 * @return Character
+	 * @return BattleReport
 	 */
-	public function getCharacter(): Character {
-		return $this->character;
+	public function getBattleReport(): BattleReport {
+		return $this->battle_report;
 	}
 
 	/**
@@ -390,12 +359,12 @@ class Journal {
 	}
 
 	/**
-	 * Get battle_report
+	 * Get activity_report
 	 *
-	 * @return BattleReport
+	 * @return ActivityReport
 	 */
-	public function getBattleReport(): BattleReport {
-		return $this->battle_report;
+	public function getActivityReport(): ActivityReport {
+		return $this->activity_report;
 	}
 
 	/**
@@ -411,21 +380,30 @@ class Journal {
 		return $this;
 	}
 
-	/**
-	 * Get activity_report
-	 *
-	 * @return ActivityReport
-	 */
-	public function getActivityReport(): ActivityReport {
-		return $this->activity_report;
-	}
-
-	public function isPublic(): ?bool {
-		return $this->public;
-	}
-
 	public function isOoc(): ?bool {
 		return $this->ooc;
+	}
+
+	/**
+	 * Get ooc
+	 *
+	 * @return boolean
+	 */
+	public function getOoc(): bool {
+		return $this->ooc;
+	}
+
+	/**
+	 * Set ooc
+	 *
+	 * @param boolean $ooc
+	 *
+	 * @return Journal
+	 */
+	public function setOoc(bool $ooc): static {
+		$this->ooc = $ooc;
+
+		return $this;
 	}
 
 	public function isPendingReview(): ?bool {
@@ -434,6 +412,28 @@ class Journal {
 
 	public function isGMReviewed(): ?bool {
 		return $this->GM_reviewed;
+	}
+
+	/**
+	 * Get GM_reviewed
+	 *
+	 * @return boolean
+	 */
+	public function getGMReviewed(): bool {
+		return $this->GM_reviewed;
+	}
+
+	/**
+	 * Set GM_reviewed
+	 *
+	 * @param boolean $gMReviewed
+	 *
+	 * @return Journal
+	 */
+	public function setGMReviewed(bool $gMReviewed): static {
+		$this->GM_reviewed = $gMReviewed;
+
+		return $this;
 	}
 
 	public function isGMPrivate(): ?bool {

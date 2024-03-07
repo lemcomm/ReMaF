@@ -10,7 +10,7 @@ class GeoFeature {
 	private float $workers;
 	private bool $active;
 	private int $condition;
-	private int $id;
+	private ?int $id = null;
 	private ?Settlement $settlement;
 	private ?Place $place;
 	private ?FeatureType $type;
@@ -35,6 +35,15 @@ class GeoFeature {
 	}
 
 	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
+
+	/**
 	 * Set name
 	 *
 	 * @param string $name
@@ -48,12 +57,12 @@ class GeoFeature {
 	}
 
 	/**
-	 * Get name
+	 * Get location
 	 *
-	 * @return string
+	 * @return point
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getLocation(): Point {
+		return $this->location;
 	}
 
 	/**
@@ -70,12 +79,12 @@ class GeoFeature {
 	}
 
 	/**
-	 * Get location
+	 * Get workers
 	 *
-	 * @return point
+	 * @return float
 	 */
-	public function getLocation(): Point {
-		return $this->location;
+	public function getWorkers(): float {
+		return $this->workers;
 	}
 
 	/**
@@ -92,34 +101,12 @@ class GeoFeature {
 	}
 
 	/**
-	 * Get workers
+	 * Get condition
 	 *
-	 * @return float
+	 * @return integer
 	 */
-	public function getWorkers(): float {
-		return $this->workers;
-	}
-
-	/**
-	 * Set active
-	 *
-	 * @param boolean $active
-	 *
-	 * @return GeoFeature
-	 */
-	public function setActive(bool $active): static {
-		$this->active = $active;
-
-		return $this;
-	}
-
-	/**
-	 * Get active
-	 *
-	 * @return boolean
-	 */
-	public function getActive(): bool {
-		return $this->active;
+	public function getCondition(): int {
+		return $this->condition;
 	}
 
 	/**
@@ -136,21 +123,21 @@ class GeoFeature {
 	}
 
 	/**
-	 * Get condition
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCondition(): int {
-		return $this->condition;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get settlement
 	 *
-	 * @return integer
+	 * @return Settlement|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -167,12 +154,12 @@ class GeoFeature {
 	}
 
 	/**
-	 * Get settlement
+	 * Get place
 	 *
-	 * @return Settlement|null
+	 * @return Place|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getPlace(): ?Place {
+		return $this->place;
 	}
 
 	/**
@@ -189,12 +176,12 @@ class GeoFeature {
 	}
 
 	/**
-	 * Get place
+	 * Get type
 	 *
-	 * @return Place|null
+	 * @return FeatureType|null
 	 */
-	public function getPlace(): ?Place {
-		return $this->place;
+	public function getType(): ?FeatureType {
+		return $this->type;
 	}
 
 	/**
@@ -211,12 +198,12 @@ class GeoFeature {
 	}
 
 	/**
-	 * Get type
+	 * Get geo_data
 	 *
-	 * @return FeatureType|null
+	 * @return GeoData|null
 	 */
-	public function getType(): ?FeatureType {
-		return $this->type;
+	public function getGeoData(): ?GeoData {
+		return $this->geo_data;
 	}
 
 	/**
@@ -232,16 +219,29 @@ class GeoFeature {
 		return $this;
 	}
 
-	/**
-	 * Get geo_data
-	 *
-	 * @return GeoData|null
-	 */
-	public function getGeoData(): ?GeoData {
-		return $this->geo_data;
-	}
-
 	public function isActive(): ?bool {
 		return $this->active;
+	}
+
+	/**
+	 * Get active
+	 *
+	 * @return boolean
+	 */
+	public function getActive(): bool {
+		return $this->active;
+	}
+
+	/**
+	 * Set active
+	 *
+	 * @param boolean $active
+	 *
+	 * @return GeoFeature
+	 */
+	public function setActive(bool $active): static {
+		$this->active = $active;
+
+		return $this;
 	}
 }

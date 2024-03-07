@@ -15,7 +15,7 @@ class Law {
 	private ?DateTime $repealed_on;
 	private ?DateTime $invalidated_on;
 	private ?int $sol_cycles;
-	private int $id;
+	private ?int $id = null;
 	private ?Law $invalidated_by;
 	private ?Law $invalidates;
 	private ?Character $enacted_by;
@@ -42,6 +42,15 @@ class Law {
 	}
 
 	/**
+	 * Get title
+	 *
+	 * @return string|null
+	 */
+	public function getTitle(): ?string {
+		return $this->title;
+	}
+
+	/**
 	 * Set title
 	 *
 	 * @param string|null $title
@@ -55,12 +64,12 @@ class Law {
 	}
 
 	/**
-	 * Get title
+	 * Get description
 	 *
 	 * @return string|null
 	 */
-	public function getTitle(): ?string {
-		return $this->title;
+	public function getDescription(): ?string {
+		return $this->description;
 	}
 
 	/**
@@ -77,12 +86,12 @@ class Law {
 	}
 
 	/**
-	 * Get description
+	 * Get mandatory
 	 *
-	 * @return string|null
+	 * @return bool|null
 	 */
-	public function getDescription(): ?string {
-		return $this->description;
+	public function getMandatory(): ?bool {
+		return $this->mandatory;
 	}
 
 	/**
@@ -99,12 +108,12 @@ class Law {
 	}
 
 	/**
-	 * Get mandatory
+	 * Get cascades
 	 *
 	 * @return bool|null
 	 */
-	public function getMandatory(): ?bool {
-		return $this->mandatory;
+	public function getCascades(): ?bool {
+		return $this->cascades;
 	}
 
 	/**
@@ -121,12 +130,12 @@ class Law {
 	}
 
 	/**
-	 * Get cascades
+	 * Get value
 	 *
-	 * @return bool|null
+	 * @return string|null
 	 */
-	public function getCascades(): ?bool {
-		return $this->cascades;
+	public function getValue(): ?string {
+		return $this->value;
 	}
 
 	/**
@@ -143,12 +152,12 @@ class Law {
 	}
 
 	/**
-	 * Get value
+	 * Get enacted
 	 *
-	 * @return string|null
+	 * @return DateTime|null
 	 */
-	public function getValue(): ?string {
-		return $this->value;
+	public function getEnacted(): ?DateTime {
+		return $this->enacted;
 	}
 
 	/**
@@ -165,12 +174,12 @@ class Law {
 	}
 
 	/**
-	 * Get enacted
+	 * Get cycle
 	 *
-	 * @return DateTime|null
+	 * @return int|null
 	 */
-	public function getEnacted(): ?DateTime {
-		return $this->enacted;
+	public function getCycle(): ?int {
+		return $this->cycle;
 	}
 
 	/**
@@ -187,12 +196,12 @@ class Law {
 	}
 
 	/**
-	 * Get cycle
+	 * Get repealed_on
 	 *
-	 * @return int|null
+	 * @return DateTime|null
 	 */
-	public function getCycle(): ?int {
-		return $this->cycle;
+	public function getRepealedOn(): ?DateTime {
+		return $this->repealed_on;
 	}
 
 	/**
@@ -209,12 +218,12 @@ class Law {
 	}
 
 	/**
-	 * Get repealed_on
+	 * Get invalidated_on
 	 *
 	 * @return DateTime|null
 	 */
-	public function getRepealedOn(): ?DateTime {
-		return $this->repealed_on;
+	public function getInvalidatedOn(): ?DateTime {
+		return $this->invalidated_on;
 	}
 
 	/**
@@ -231,12 +240,12 @@ class Law {
 	}
 
 	/**
-	 * Get invalidated_on
+	 * Get sol_cycles
 	 *
-	 * @return DateTime|null
+	 * @return int|null
 	 */
-	public function getInvalidatedOn(): ?DateTime {
-		return $this->invalidated_on;
+	public function getSolCycles(): ?int {
+		return $this->sol_cycles;
 	}
 
 	/**
@@ -253,21 +262,21 @@ class Law {
 	}
 
 	/**
-	 * Get sol_cycles
+	 * Get id
 	 *
 	 * @return int|null
 	 */
-	public function getSolCycles(): ?int {
-		return $this->sol_cycles;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get invalidated_by
 	 *
-	 * @return integer
+	 * @return Law|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getInvalidatedBy(): ?Law {
+		return $this->invalidated_by;
 	}
 
 	/**
@@ -284,12 +293,12 @@ class Law {
 	}
 
 	/**
-	 * Get invalidated_by
+	 * Get invalidates
 	 *
 	 * @return Law|null
 	 */
-	public function getInvalidatedBy(): ?Law {
-		return $this->invalidated_by;
+	public function getInvalidates(): ?Law {
+		return $this->invalidates;
 	}
 
 	/**
@@ -306,12 +315,12 @@ class Law {
 	}
 
 	/**
-	 * Get invalidates
+	 * Get enacted_by
 	 *
-	 * @return Law|null
+	 * @return Character|null
 	 */
-	public function getInvalidates(): ?Law {
-		return $this->invalidates;
+	public function getEnactedBy(): ?Character {
+		return $this->enacted_by;
 	}
 
 	/**
@@ -328,12 +337,12 @@ class Law {
 	}
 
 	/**
-	 * Get enacted_by
+	 * Get repealed_by
 	 *
 	 * @return Character|null
 	 */
-	public function getEnactedBy(): ?Character {
-		return $this->enacted_by;
+	public function getRepealedBy(): ?Character {
+		return $this->repealed_by;
 	}
 
 	/**
@@ -350,12 +359,12 @@ class Law {
 	}
 
 	/**
-	 * Get repealed_by
+	 * Get association
 	 *
-	 * @return Character|null
+	 * @return Association|null
 	 */
-	public function getRepealedBy(): ?Character {
-		return $this->repealed_by;
+	public function getAssociation(): ?Association {
+		return $this->association;
 	}
 
 	/**
@@ -372,12 +381,12 @@ class Law {
 	}
 
 	/**
-	 * Get association
+	 * Get settlement
 	 *
-	 * @return Association|null
+	 * @return Settlement|null
 	 */
-	public function getAssociation(): ?Association {
-		return $this->association;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -394,12 +403,12 @@ class Law {
 	}
 
 	/**
-	 * Get settlement
+	 * Get realm
 	 *
-	 * @return Settlement|null
+	 * @return Realm|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -416,12 +425,12 @@ class Law {
 	}
 
 	/**
-	 * Get realm
+	 * Get type
 	 *
-	 * @return Realm|null
+	 * @return LawType|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
+	public function getType(): ?LawType {
+		return $this->type;
 	}
 
 	/**
@@ -435,15 +444,6 @@ class Law {
 		$this->type = $type;
 
 		return $this;
-	}
-
-	/**
-	 * Get type
-	 *
-	 * @return LawType|null
-	 */
-	public function getType(): ?LawType {
-		return $this->type;
 	}
 
 	public function isMandatory(): ?bool {

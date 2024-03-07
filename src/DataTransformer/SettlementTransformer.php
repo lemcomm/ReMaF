@@ -2,6 +2,7 @@
 
 namespace App\DataTransformer;
 
+use App\Entity\Settlement;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
@@ -26,7 +27,7 @@ class SettlementTransformer implements DataTransformerInterface {
 			return null;
 		}
 
-		$settlement = $this->em->getRepository('BM2SiteBundle:Settlement')->findOneByName($name);
+		$settlement = $this->em->getRepository(Settlement::class)->findOneByName($name);
 
 		if (null === $settlement) {
 			throw new TransformationFailedException(sprintf(

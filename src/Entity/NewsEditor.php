@@ -7,9 +7,22 @@ class NewsEditor {
 	private bool $author;
 	private bool $editor;
 	private bool $owner;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $character;
 	private ?NewsPaper $paper;
+
+	/**
+	 * Get publisher
+	 *
+	 * @return boolean
+	 */
+	public function getPublisher(): bool {
+		return $this->publisher;
+	}
+
+	public function isPublisher(): ?bool {
+		return $this->publisher;
+	}
 
 	/**
 	 * Set publisher
@@ -25,56 +38,16 @@ class NewsEditor {
 	}
 
 	/**
-	 * Get publisher
+	 * Get owner
 	 *
 	 * @return boolean
 	 */
-	public function getPublisher(): bool {
-		return $this->publisher;
+	public function getOwner(): bool {
+		return $this->owner;
 	}
 
-	/**
-	 * Set author
-	 *
-	 * @param boolean $author
-	 *
-	 * @return NewsEditor
-	 */
-	public function setAuthor(bool $author): static {
-		$this->author = $author;
-
-		return $this;
-	}
-
-	/**
-	 * Get author
-	 *
-	 * @return boolean
-	 */
-	public function getAuthor(): bool {
-		return $this->author;
-	}
-
-	/**
-	 * Set editor
-	 *
-	 * @param boolean $editor
-	 *
-	 * @return NewsEditor
-	 */
-	public function setEditor(bool $editor): static {
-		$this->editor = $editor;
-
-		return $this;
-	}
-
-	/**
-	 * Get editor
-	 *
-	 * @return boolean
-	 */
-	public function getEditor(): bool {
-		return $this->editor;
+	public function isOwner(): ?bool {
+		return $this->owner;
 	}
 
 	/**
@@ -91,21 +64,21 @@ class NewsEditor {
 	}
 
 	/**
-	 * Get owner
+	 * Get id
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getOwner(): bool {
-		return $this->owner;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -122,12 +95,12 @@ class NewsEditor {
 	}
 
 	/**
-	 * Get character
+	 * Get paper
 	 *
-	 * @return Character|null
+	 * @return NewsPaper|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getPaper(): ?NewsPaper {
+		return $this->paper;
 	}
 
 	/**
@@ -143,28 +116,55 @@ class NewsEditor {
 		return $this;
 	}
 
-	/**
-	 * Get paper
-	 *
-	 * @return NewsPaper|null
-	 */
-	public function getPaper(): ?NewsPaper {
-		return $this->paper;
-	}
-
-	public function isPublisher(): ?bool {
-		return $this->publisher;
-	}
-
 	public function isAuthor(): ?bool {
 		return $this->author;
+	}
+
+	/**
+	 * Get author
+	 *
+	 * @return boolean
+	 */
+	public function getAuthor(): bool {
+		return $this->author;
+	}
+
+	/**
+	 * Set author
+	 *
+	 * @param boolean $author
+	 *
+	 * @return NewsEditor
+	 */
+	public function setAuthor(bool $author): static {
+		$this->author = $author;
+
+		return $this;
 	}
 
 	public function isEditor(): ?bool {
 		return $this->editor;
 	}
 
-	public function isOwner(): ?bool {
-		return $this->owner;
+	/**
+	 * Get editor
+	 *
+	 * @return boolean
+	 */
+	public function getEditor(): bool {
+		return $this->editor;
+	}
+
+	/**
+	 * Set editor
+	 *
+	 * @param boolean $editor
+	 *
+	 * @return NewsEditor
+	 */
+	public function setEditor(bool $editor): static {
+		$this->editor = $editor;
+
+		return $this;
 	}
 }

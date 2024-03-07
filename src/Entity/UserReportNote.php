@@ -12,9 +12,18 @@ class UserReportNote {
 	private DateTime $date;
 	private bool $pending;
 	private string $verdict;
-	private int $id;
+	private ?int $id = null;
 	private ?User $from;
 	private ?UserReport $report;
+
+	/**
+	 * Get text
+	 *
+	 * @return string
+	 */
+	public function getText(): string {
+		return $this->text;
+	}
 
 	/**
 	 * Set text
@@ -30,12 +39,12 @@ class UserReportNote {
 	}
 
 	/**
-	 * Get text
+	 * Get date
 	 *
-	 * @return string
+	 * @return DateTime
 	 */
-	public function getText(): string {
-		return $this->text;
+	public function getDate(): DateTime {
+		return $this->date;
 	}
 
 	/**
@@ -52,34 +61,12 @@ class UserReportNote {
 	}
 
 	/**
-	 * Get date
+	 * Get verdict
 	 *
-	 * @return DateTime
+	 * @return string
 	 */
-	public function getDate(): DateTime {
-		return $this->date;
-	}
-
-	/**
-	 * Set pending
-	 *
-	 * @param boolean $pending
-	 *
-	 * @return UserReportNote
-	 */
-	public function setPending(bool $pending): static {
-		$this->pending = $pending;
-
-		return $this;
-	}
-
-	/**
-	 * Get pending
-	 *
-	 * @return boolean
-	 */
-	public function getPending(): bool {
-		return $this->pending;
+	public function getVerdict(): string {
+		return $this->verdict;
 	}
 
 	/**
@@ -96,21 +83,21 @@ class UserReportNote {
 	}
 
 	/**
-	 * Get verdict
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getVerdict(): string {
-		return $this->verdict;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get from
 	 *
-	 * @return integer
+	 * @return User|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getFrom(): ?User {
+		return $this->from;
 	}
 
 	/**
@@ -127,12 +114,12 @@ class UserReportNote {
 	}
 
 	/**
-	 * Get from
+	 * Get report
 	 *
-	 * @return User|null
+	 * @return UserReport|null
 	 */
-	public function getFrom(): ?User {
-		return $this->from;
+	public function getReport(): ?UserReport {
+		return $this->report;
 	}
 
 	/**
@@ -148,16 +135,29 @@ class UserReportNote {
 		return $this;
 	}
 
-	/**
-	 * Get report
-	 *
-	 * @return UserReport|null
-	 */
-	public function getReport(): ?UserReport {
-		return $this->report;
-	}
-
 	public function isPending(): ?bool {
 		return $this->pending;
+	}
+
+	/**
+	 * Get pending
+	 *
+	 * @return boolean
+	 */
+	public function getPending(): bool {
+		return $this->pending;
+	}
+
+	/**
+	 * Set pending
+	 *
+	 * @param boolean $pending
+	 *
+	 * @return UserReportNote
+	 */
+	public function setPending(bool $pending): static {
+		$this->pending = $pending;
+
+		return $this;
 	}
 }

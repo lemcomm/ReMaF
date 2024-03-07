@@ -9,10 +9,19 @@ class GeoResource {
 	private int $storage;
 	private int $buildings_base;
 	private int $buildings_bonus;
-	private int $id;
+	private ?int $id = null;
 	private ?Settlement $settlement;
 	private ?GeoData $geo_data;
 	private ?ResourceType $type;
+
+	/**
+	 * Get amount
+	 *
+	 * @return integer
+	 */
+	public function getAmount(): int {
+		return $this->amount;
+	}
 
 	/**
 	 * Set amount
@@ -28,12 +37,12 @@ class GeoResource {
 	}
 
 	/**
-	 * Get amount
+	 * Get supply
 	 *
-	 * @return integer
+	 * @return float
 	 */
-	public function getAmount(): int {
-		return $this->amount;
+	public function getSupply(): float {
+		return $this->supply;
 	}
 
 	/**
@@ -50,12 +59,12 @@ class GeoResource {
 	}
 
 	/**
-	 * Get supply
+	 * Get mod
 	 *
 	 * @return float
 	 */
-	public function getSupply(): float {
-		return $this->supply;
+	public function getMod(): float {
+		return $this->mod;
 	}
 
 	/**
@@ -72,12 +81,12 @@ class GeoResource {
 	}
 
 	/**
-	 * Get mod
+	 * Get storage
 	 *
-	 * @return float
+	 * @return integer
 	 */
-	public function getMod(): float {
-		return $this->mod;
+	public function getStorage(): int {
+		return $this->storage;
 	}
 
 	/**
@@ -94,12 +103,12 @@ class GeoResource {
 	}
 
 	/**
-	 * Get storage
+	 * Get buildings_base
 	 *
 	 * @return integer
 	 */
-	public function getStorage(): int {
-		return $this->storage;
+	public function getBuildingsBase(): int {
+		return $this->buildings_base;
 	}
 
 	/**
@@ -116,12 +125,12 @@ class GeoResource {
 	}
 
 	/**
-	 * Get buildings_base
+	 * Get buildings_bonus
 	 *
 	 * @return integer
 	 */
-	public function getBuildingsBase(): int {
-		return $this->buildings_base;
+	public function getBuildingsBonus(): int {
+		return $this->buildings_bonus;
 	}
 
 	/**
@@ -138,21 +147,21 @@ class GeoResource {
 	}
 
 	/**
-	 * Get buildings_bonus
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getBuildingsBonus(): int {
-		return $this->buildings_bonus;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get settlement
 	 *
-	 * @return integer
+	 * @return Settlement|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -169,12 +178,12 @@ class GeoResource {
 	}
 
 	/**
-	 * Get settlement
+	 * Get geo_data
 	 *
-	 * @return Settlement|null
+	 * @return GeoData|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getGeoData(): ?GeoData {
+		return $this->geo_data;
 	}
 
 	/**
@@ -191,12 +200,12 @@ class GeoResource {
 	}
 
 	/**
-	 * Get geo_data
+	 * Get type
 	 *
-	 * @return GeoData|null
+	 * @return ResourceType|null
 	 */
-	public function getGeoData(): ?GeoData {
-		return $this->geo_data;
+	public function getType(): ?ResourceType {
+		return $this->type;
 	}
 
 	/**
@@ -210,14 +219,5 @@ class GeoResource {
 		$this->type = $type;
 
 		return $this;
-	}
-
-	/**
-	 * Get type
-	 *
-	 * @return ResourceType|null
-	 */
-	public function getType(): ?ResourceType {
-		return $this->type;
 	}
 }

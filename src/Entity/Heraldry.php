@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Entity;
 
@@ -12,75 +12,83 @@ class Heraldry {
 	private ?string $charge_colour;
 	private bool $shading;
 	private string $svg;
-	private int $id;
+	private ?int $id = null;
 	private ?User $user;
 
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Heraldry
-     */
-    public function setName(string $name): static {
-        $this->name = $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return Heraldry
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName(): string {
-        return $this->name;
-    }
+	/**
+	 * Get shield
+	 *
+	 * @return string
+	 */
+	public function getShield(): string {
+		return $this->shield;
+	}
 
-    /**
-     * Set shield
-     *
-     * @param string $shield
-     *
-     * @return Heraldry
-     */
-    public function setShield(string $shield): static {
-        $this->shield = $shield;
+	/**
+	 * Set shield
+	 *
+	 * @param string $shield
+	 *
+	 * @return Heraldry
+	 */
+	public function setShield(string $shield): static {
+		$this->shield = $shield;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get shield
-     *
-     * @return string 
-     */
-    public function getShield(): string {
-        return $this->shield;
-    }
+	/**
+	 * Get shield_colour
+	 *
+	 * @return string
+	 */
+	public function getShieldColour(): string {
+		return $this->shield_colour;
+	}
 
-    /**
-     * Set shield_colour
-     *
-     * @param string $shieldColour
-     *
-     * @return Heraldry
-     */
-    public function setShieldColour(string $shieldColour): static {
-        $this->shield_colour = $shieldColour;
+	/**
+	 * Set shield_colour
+	 *
+	 * @param string $shieldColour
+	 *
+	 * @return Heraldry
+	 */
+	public function setShieldColour(string $shieldColour): static {
+		$this->shield_colour = $shieldColour;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get shield_colour
-     *
-     * @return string 
-     */
-    public function getShieldColour(): string {
-        return $this->shield_colour;
-    }
+	/**
+	 * Get pattern
+	 *
+	 * @return string|null
+	 */
+	public function getPattern(): ?string {
+		return $this->pattern;
+	}
 
 	/**
 	 * Set pattern
@@ -89,163 +97,154 @@ class Heraldry {
 	 *
 	 * @return Heraldry
 	 */
-    public function setPattern(?string $pattern): static {
-        $this->pattern = $pattern;
+	public function setPattern(?string $pattern): static {
+		$this->pattern = $pattern;
 
-        return $this;
-    }
-
-	/**
-	 * Get pattern
-	 *
-	 * @return string|null
-	 */
-    public function getPattern(): ?string {
-        return $this->pattern;
-    }
-
-    /**
-     * Set pattern_colour
-     *
-     * @param string|null $patternColour
-     *
-     * @return Heraldry
-     */
-	public function setPatternColour(?string $patternColour): static {
-        $this->pattern_colour = $patternColour;
-
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * Get pattern_colour
 	 *
 	 * @return string|null
 	 */
-    public function getPatternColour(): ?string {
-        return $this->pattern_colour;
-    }
+	public function getPatternColour(): ?string {
+		return $this->pattern_colour;
+	}
 
-    /**
-     * Set charge
-     *
-     * @param string|null $charge
-     *
-     * @return Heraldry
-     */
-	public function setCharge(?string $charge): static {
-        $this->charge = $charge;
+	/**
+	 * Set pattern_colour
+	 *
+	 * @param string|null $patternColour
+	 *
+	 * @return Heraldry
+	 */
+	public function setPatternColour(?string $patternColour): static {
+		$this->pattern_colour = $patternColour;
 
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * Get charge
 	 *
 	 * @return string|null
 	 */
-    public function getCharge(): ?string {
-        return $this->charge;
-    }
+	public function getCharge(): ?string {
+		return $this->charge;
+	}
 
-    /**
-     * Set charge_colour
-     *
-     * @param string|null $chargeColour
-     *
-     * @return Heraldry
-     */
-	public function setChargeColour(?string $chargeColour): static {
-        $this->charge_colour = $chargeColour;
+	/**
+	 * Set charge
+	 *
+	 * @param string|null $charge
+	 *
+	 * @return Heraldry
+	 */
+	public function setCharge(?string $charge): static {
+		$this->charge = $charge;
 
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * Get charge_colour
 	 *
 	 * @return string|null
 	 */
-    public function getChargeColour(): ?string {
-        return $this->charge_colour;
-    }
+	public function getChargeColour(): ?string {
+		return $this->charge_colour;
+	}
 
-    /**
-     * Set shading
-     *
-     * @param boolean $shading
-     *
-     * @return Heraldry
-     */
-    public function setShading(bool $shading): static {
-        $this->shading = $shading;
+	/**
+	 * Set charge_colour
+	 *
+	 * @param string|null $chargeColour
+	 *
+	 * @return Heraldry
+	 */
+	public function setChargeColour(?string $chargeColour): static {
+		$this->charge_colour = $chargeColour;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get shading
-     *
-     * @return boolean 
-     */
-    public function getShading(): bool {
-        return $this->shading;
-    }
+	/**
+	 * Get shading
+	 *
+	 * @return boolean
+	 */
+	public function getShading(): bool {
+		return $this->shading;
+	}
 
-    /**
-     * Set svg
-     *
-     * @param string $svg
-     *
-     * @return Heraldry
-     */
-    public function setSvg(string $svg): static {
-        $this->svg = $svg;
+	public function isShading(): ?bool {
+		return $this->shading;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set shading
+	 *
+	 * @param boolean $shading
+	 *
+	 * @return Heraldry
+	 */
+	public function setShading(bool $shading): static {
+		$this->shading = $shading;
 
-    /**
-     * Get svg
-     *
-     * @return string 
-     */
-    public function getSvg(): string {
-        return $this->svg;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+	/**
+	 * Get svg
+	 *
+	 * @return string
+	 */
+	public function getSvg(): string {
+		return $this->svg;
+	}
 
-    /**
-     * Set user
-     *
-     * @param User|null $user
-     * @return Heraldry
-     */
-	public function setUser(User $user = null): static {
-        $this->user = $user;
+	/**
+	 * Set svg
+	 *
+	 * @param string $svg
+	 *
+	 * @return Heraldry
+	 */
+	public function setSvg(string $svg): static {
+		$this->svg = $svg;
 
-        return $this;
-    }
+		return $this;
+	}
+
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
 
 	/**
 	 * Get user
 	 *
 	 * @return User|null
 	 */
-    public function getUser(): ?User {
-        return $this->user;
-    }
+	public function getUser(): ?User {
+		return $this->user;
+	}
 
-    public function isShading(): ?bool
-    {
-        return $this->shading;
-    }
+	/**
+	 * Set user
+	 *
+	 * @param User|null $user
+	 *
+	 * @return Heraldry
+	 */
+	public function setUser(User $user = null): static {
+		$this->user = $user;
+
+		return $this;
+	}
 }

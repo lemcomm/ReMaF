@@ -6,7 +6,16 @@ class LawType {
 	private string $name;
 	private string $category;
 	private bool $allow_multiple;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -22,12 +31,12 @@ class LawType {
 	}
 
 	/**
-	 * Get name
+	 * Get category
 	 *
 	 * @return string
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getCategory(): string {
+		return $this->category;
 	}
 
 	/**
@@ -44,12 +53,16 @@ class LawType {
 	}
 
 	/**
-	 * Get category
+	 * Get allow_multiple
 	 *
-	 * @return string
+	 * @return boolean
 	 */
-	public function getCategory(): string {
-		return $this->category;
+	public function getAllowMultiple(): bool {
+		return $this->allow_multiple;
+	}
+
+	public function isAllowMultiple(): ?bool {
+		return $this->allow_multiple;
 	}
 
 	/**
@@ -66,24 +79,11 @@ class LawType {
 	}
 
 	/**
-	 * Get allow_multiple
-	 *
-	 * @return boolean
-	 */
-	public function getAllowMultiple(): bool {
-		return $this->allow_multiple;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
-	}
-
-	public function isAllowMultiple(): ?bool {
-		return $this->allow_multiple;
 	}
 }

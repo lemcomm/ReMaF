@@ -5,40 +5,38 @@ namespace App\Entity;
 /**
  * AssociationType
  */
-class AssociationType
-{
+class AssociationType {
 	private string $name;
-	private int $id;
+	private ?int $id = null;
 
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return AssociationType
-     */
-    public function setName(string $name): static {
-        $this->name = $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return AssociationType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName(): string {
-        return $this->name;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
 }

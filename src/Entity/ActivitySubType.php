@@ -5,43 +5,50 @@ namespace App\Entity;
 /**
  * ActivitySubType
  */
-class ActivitySubType
-{
+class ActivitySubType {
+	private ?int $id = null;
 	private string $name;
-	private int $id;
 	private ActivityType $type;
 
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return ActivitySubType
-     */
-    public function setName(string $name): static {
-        $this->name = $name;
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return ActivitySubType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName(): string {
-        return $this->name;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+	/**
+	 * Get type
+	 *
+	 * @return ActivityType|null
+	 */
+	public function getType(): ?ActivityType {
+		return $this->type;
+	}
 
 	/**
 	 * Set type
@@ -50,18 +57,9 @@ class ActivitySubType
 	 *
 	 * @return ActivitySubType
 	 */
-    public function setType(ActivityType $type = null): static {
-        $this->type = $type;
+	public function setType(ActivityType $type = null): static {
+		$this->type = $type;
 
-        return $this;
-    }
-
-	/**
-	 * Get type
-	 *
-	 * @return ActivityType|null
-	 */
-    public function getType(): ?ActivityType {
-        return $this->type;
-    }
+		return $this;
+	}
 }

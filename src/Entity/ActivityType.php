@@ -8,140 +8,137 @@ use Doctrine\Common\Collections\Collection;
 /**
  * ActivityType
  */
-class ActivityType
-{
+class ActivityType {
+	private ?int $id = null;
 	private string $name;
 	private bool $enabled;
-	private int $id;
 	private Collection $requires;
 	private Collection $subtypes;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->requires = new ArrayCollection();
-        $this->subtypes = new ArrayCollection();
-    }
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->requires = new ArrayCollection();
+		$this->subtypes = new ArrayCollection();
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return ActivityType
-     */
-    public function setName(string $name): static {
-        $this->name = $name;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return ActivityType
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName(): string {
-        return $this->name;
-    }
+		return $this;
+	}
 
-    /**
-     * Set enabled
-     *
-     * @param boolean $enabled
-     *
-     * @return ActivityType
-     */
-    public function setEnabled(bool $enabled): static {
-        $this->enabled = $enabled;
+	/**
+	 * Get enabled
+	 *
+	 * @return boolean
+	 */
+	public function getEnabled(): bool {
+		return $this->enabled;
+	}
 
-        return $this;
-    }
+	public function isEnabled(): ?bool {
+		return $this->enabled;
+	}
 
-    /**
-     * Get enabled
-     *
-     * @return boolean 
-     */
-    public function getEnabled(): bool {
-        return $this->enabled;
-    }
+	/**
+	 * Set enabled
+	 *
+	 * @param boolean $enabled
+	 *
+	 * @return ActivityType
+	 */
+	public function setEnabled(bool $enabled): static {
+		$this->enabled = $enabled;
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+		return $this;
+	}
 
-    /**
-     * Add requires
-     *
-     * @param ActivityRequirement $requires
-     *
-     * @return ActivityType
-     */
-    public function addRequire(ActivityRequirement $requires): static {
-        $this->requires[] = $requires;
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
 
-        return $this;
-    }
+	/**
+	 * Add requires
+	 *
+	 * @param ActivityRequirement $requires
+	 *
+	 * @return ActivityType
+	 */
+	public function addRequire(ActivityRequirement $requires): static {
+		$this->requires[] = $requires;
 
-    /**
-     * Remove requires
-     *
-     * @param ActivityRequirement $requires
-     */
-    public function removeRequire(ActivityRequirement $requires): void {
-        $this->requires->removeElement($requires);
-    }
+		return $this;
+	}
+
+	/**
+	 * Remove requires
+	 *
+	 * @param ActivityRequirement $requires
+	 */
+	public function removeRequire(ActivityRequirement $requires): void {
+		$this->requires->removeElement($requires);
+	}
 
 	/**
 	 * Get requires
 	 *
 	 * @return ArrayCollection|Collection
 	 */
-    public function getRequires(): ArrayCollection|Collection {
-        return $this->requires;
-    }
+	public function getRequires(): ArrayCollection|Collection {
+		return $this->requires;
+	}
 
-    /**
-     * Add subtypes
-     *
-     * @param ActivitySubType $subtypes
-     *
-     * @return ActivityType
-     */
-    public function addSubtype(ActivitySubType $subtypes): static {
-        $this->subtypes[] = $subtypes;
+	/**
+	 * Add subtypes
+	 *
+	 * @param ActivitySubType $subtypes
+	 *
+	 * @return ActivityType
+	 */
+	public function addSubtype(ActivitySubType $subtypes): static {
+		$this->subtypes[] = $subtypes;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove subtypes
-     *
-     * @param ActivitySubType $subtypes
-     */
-    public function removeSubtype(ActivitySubType $subtypes): void {
-        $this->subtypes->removeElement($subtypes);
-    }
+	/**
+	 * Remove subtypes
+	 *
+	 * @param ActivitySubType $subtypes
+	 */
+	public function removeSubtype(ActivitySubType $subtypes): void {
+		$this->subtypes->removeElement($subtypes);
+	}
 
 	/**
 	 * Get subtypes
 	 *
 	 * @return ArrayCollection|Collection
 	 */
-    public function getSubtypes(): ArrayCollection|Collection {
-        return $this->subtypes;
-    }
-
-    public function isEnabled(): ?bool
-    {
-        return $this->enabled;
-    }
+	public function getSubtypes(): ArrayCollection|Collection {
+		return $this->subtypes;
+	}
 }

@@ -10,7 +10,7 @@ class Siege {
 	private int $max_stage;
 	private bool $encircled;
 	private ?int $encirclement;
-	private int $id;
+	private ?int $id = null;
 	private ?Settlement $settlement;
 	private ?Place $place;
 	private ?BattleGroup $attacker;
@@ -60,17 +60,6 @@ class Siege {
 		return null;
 	}
 
-	public function getCharacters(): ArrayCollection {
-		$allsiegers = new ArrayCollection;
-		foreach ($this->groups as $group) {
-			foreach ($group->getCharacters() as $character) {
-				$allsiegers->add($character);
-			}
-		}
-
-		return $allsiegers;
-	}
-
 	public function updateEncirclement(): static {
 		$chars = $this->attacker->getCharacters();
 		$count = 0;
@@ -87,6 +76,26 @@ class Siege {
 		return $this;
 	}
 
+	public function getCharacters(): ArrayCollection {
+		$allsiegers = new ArrayCollection;
+		foreach ($this->groups as $group) {
+			foreach ($group->getCharacters() as $character) {
+				$allsiegers->add($character);
+			}
+		}
+
+		return $allsiegers;
+	}
+
+	/**
+	 * Get stage
+	 *
+	 * @return integer
+	 */
+	public function getStage(): int {
+		return $this->stage;
+	}
+
 	/**
 	 * Set stage
 	 *
@@ -101,12 +110,12 @@ class Siege {
 	}
 
 	/**
-	 * Get stage
+	 * Get max_stage
 	 *
 	 * @return integer
 	 */
-	public function getStage(): int {
-		return $this->stage;
+	public function getMaxStage(): int {
+		return $this->max_stage;
 	}
 
 	/**
@@ -123,34 +132,12 @@ class Siege {
 	}
 
 	/**
-	 * Get max_stage
+	 * Get encirclement
 	 *
 	 * @return integer
 	 */
-	public function getMaxStage(): int {
-		return $this->max_stage;
-	}
-
-	/**
-	 * Set encircled
-	 *
-	 * @param boolean|null $encircled
-	 *
-	 * @return Siege
-	 */
-	public function setEncircled(?bool $encircled = null): static {
-		$this->encircled = $encircled;
-
-		return $this;
-	}
-
-	/**
-	 * Get encircled
-	 *
-	 * @return bool|null
-	 */
-	public function getEncircled(): ?bool {
-		return $this->encircled;
+	public function getEncirclement(): int {
+		return $this->encirclement;
 	}
 
 	/**
@@ -167,21 +154,21 @@ class Siege {
 	}
 
 	/**
-	 * Get encirclement
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getEncirclement(): int {
-		return $this->encirclement;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get settlement
 	 *
-	 * @return integer
+	 * @return Settlement|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -198,12 +185,12 @@ class Siege {
 	}
 
 	/**
-	 * Get settlement
+	 * Get place
 	 *
-	 * @return Settlement|null
+	 * @return Place|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getPlace(): ?Place {
+		return $this->place;
 	}
 
 	/**
@@ -220,12 +207,12 @@ class Siege {
 	}
 
 	/**
-	 * Get place
+	 * Get attacker
 	 *
-	 * @return Place|null
+	 * @return BattleGroup|null
 	 */
-	public function getPlace(): ?Place {
-		return $this->place;
+	public function getAttacker(): ?BattleGroup {
+		return $this->attacker;
 	}
 
 	/**
@@ -239,15 +226,6 @@ class Siege {
 		$this->attacker = $attacker;
 
 		return $this;
-	}
-
-	/**
-	 * Get attacker
-	 *
-	 * @return BattleGroup|null
-	 */
-	public function getAttacker(): ?BattleGroup {
-		return $this->attacker;
 	}
 
 	/**
@@ -344,6 +322,15 @@ class Siege {
 	}
 
 	/**
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
+
+	/**
 	 * Set realm
 	 *
 	 * @param Realm|null $realm
@@ -357,12 +344,12 @@ class Siege {
 	}
 
 	/**
-	 * Get realm
+	 * Get war
 	 *
-	 * @return Realm|null
+	 * @return War|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
+	public function getWar(): ?War {
+		return $this->war;
 	}
 
 	/**
@@ -378,16 +365,29 @@ class Siege {
 		return $this;
 	}
 
-	/**
-	 * Get war
-	 *
-	 * @return War|null
-	 */
-	public function getWar(): ?War {
-		return $this->war;
-	}
-
 	public function isEncircled(): ?bool {
 		return $this->encircled;
+	}
+
+	/**
+	 * Get encircled
+	 *
+	 * @return bool|null
+	 */
+	public function getEncircled(): ?bool {
+		return $this->encircled;
+	}
+
+	/**
+	 * Set encircled
+	 *
+	 * @param boolean|null $encircled
+	 *
+	 * @return Siege
+	 */
+	public function setEncircled(?bool $encircled = null): static {
+		$this->encircled = $encircled;
+
+		return $this;
 	}
 }

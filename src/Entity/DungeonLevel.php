@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 class DungeonLevel {
 	private int $depth;
 	private int $scout_level;
-	private int $id;
+	private ?int $id = null;
 	private Collection $monsters;
 	private Collection $treasures;
 	private Dungeon $dungeon;
@@ -19,6 +19,15 @@ class DungeonLevel {
 	public function __construct() {
 		$this->monsters = new ArrayCollection();
 		$this->treasures = new ArrayCollection();
+	}
+
+	/**
+	 * Get depth
+	 *
+	 * @return integer
+	 */
+	public function getDepth(): int {
+		return $this->depth;
 	}
 
 	/**
@@ -35,12 +44,12 @@ class DungeonLevel {
 	}
 
 	/**
-	 * Get depth
+	 * Get scout_level
 	 *
 	 * @return integer
 	 */
-	public function getDepth(): int {
-		return $this->depth;
+	public function getScoutLevel(): int {
+		return $this->scout_level;
 	}
 
 	/**
@@ -57,20 +66,11 @@ class DungeonLevel {
 	}
 
 	/**
-	 * Get scout_level
-	 *
-	 * @return integer
-	 */
-	public function getScoutLevel(): int {
-		return $this->scout_level;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -137,6 +137,15 @@ class DungeonLevel {
 	}
 
 	/**
+	 * Get dungeon
+	 *
+	 * @return Dungeon|null
+	 */
+	public function getDungeon(): ?Dungeon {
+		return $this->dungeon;
+	}
+
+	/**
 	 * Set dungeon
 	 *
 	 * @param Dungeon|null $dungeon
@@ -147,14 +156,5 @@ class DungeonLevel {
 		$this->dungeon = $dungeon;
 
 		return $this;
-	}
-
-	/**
-	 * Get dungeon
-	 *
-	 * @return Dungeon|null
-	 */
-	public function getDungeon(): ?Dungeon {
-		return $this->dungeon;
 	}
 }

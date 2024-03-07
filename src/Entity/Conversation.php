@@ -18,7 +18,7 @@ class Conversation {
 	private ?int $cycle;
 	private ?DateTime $updated;
 	private bool $active;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $local_for;
 	private Collection $messages;
 	private Collection $permissions;
@@ -39,13 +39,17 @@ class Conversation {
 		return $this->getPermissions()->matching($criteria)->first()->getUnread();
 	}
 
-	public function findActivePermissions() {
-		$criteria = Criteria::create()->where(Criteria::expr()->eq("active", true));
-		return $this->getPermissions()->matching($criteria);
+	/**
+	 * Get permissions
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getPermissions(): ArrayCollection|Collection {
+		return $this->permissions;
 	}
 
-	public function findCharPermissions($char) {
-		$criteria = Criteria::create()->where(Criteria::expr()->eq("character", $char));
+	public function findActivePermissions() {
+		$criteria = Criteria::create()->where(Criteria::expr()->eq("active", true));
 		return $this->getPermissions()->matching($criteria);
 	}
 
@@ -57,6 +61,15 @@ class Conversation {
 	public function findLocalUnread() {
 		$criteria = Criteria::create()->where(Criteria::expr()->neq("read", true));
 		return $this->getMessages()->matching($criteria)->first();
+	}
+
+	/**
+	 * Get messages
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMessages(): ArrayCollection|Collection {
+		return $this->messages;
 	}
 
 	public function findRelevantPermissions(Character $char, $admin = false): ArrayCollection|Collection {
@@ -107,6 +120,37 @@ class Conversation {
 		return $return;
 	}
 
+	public function findCharPermissions($char) {
+		$criteria = Criteria::create()->where(Criteria::expr()->eq("character", $char));
+		return $this->getPermissions()->matching($criteria);
+	}
+
+	/**
+	 * Get active
+	 *
+	 * @return boolean
+	 */
+	public function getActive(): bool {
+		return $this->active;
+	}
+
+	public function isActive(): ?bool {
+		return $this->active;
+	}
+
+	/**
+	 * Set active
+	 *
+	 * @param boolean $active
+	 *
+	 * @return Conversation
+	 */
+	public function setActive(bool $active): static {
+		$this->active = $active;
+
+		return $this;
+	}
+
 	public function findMessages(Character $char): ArrayCollection {
 		$perms = $this->findCharPermissions($char);
 		$all = new ArrayCollection();
@@ -146,6 +190,15 @@ class Conversation {
 	}
 
 	/**
+	 * Get topic
+	 *
+	 * @return string
+	 */
+	public function getTopic(): string {
+		return $this->topic;
+	}
+
+	/**
 	 * Set topic
 	 *
 	 * @param string|null $topic
@@ -159,12 +212,12 @@ class Conversation {
 	}
 
 	/**
-	 * Get topic
+	 * Get system
 	 *
 	 * @return string
 	 */
-	public function getTopic(): string {
-		return $this->topic;
+	public function getSystem(): string {
+		return $this->system;
 	}
 
 	/**
@@ -181,12 +234,12 @@ class Conversation {
 	}
 
 	/**
-	 * Get system
+	 * Get type
 	 *
 	 * @return string
 	 */
-	public function getSystem(): string {
-		return $this->system;
+	public function getType(): string {
+		return $this->type;
 	}
 
 	/**
@@ -203,12 +256,12 @@ class Conversation {
 	}
 
 	/**
-	 * Get type
+	 * Get created
 	 *
-	 * @return string
+	 * @return DateTime
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getCreated(): DateTime {
+		return $this->created;
 	}
 
 	/**
@@ -225,12 +278,12 @@ class Conversation {
 	}
 
 	/**
-	 * Get created
+	 * Get cycle
 	 *
-	 * @return DateTime
+	 * @return integer
 	 */
-	public function getCreated(): DateTime {
-		return $this->created;
+	public function getCycle(): int {
+		return $this->cycle;
 	}
 
 	/**
@@ -247,12 +300,12 @@ class Conversation {
 	}
 
 	/**
-	 * Get cycle
+	 * Get updated
 	 *
-	 * @return integer
+	 * @return DateTime
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getUpdated(): DateTime {
+		return $this->updated;
 	}
 
 	/**
@@ -269,43 +322,21 @@ class Conversation {
 	}
 
 	/**
-	 * Get updated
-	 *
-	 * @return DateTime
-	 */
-	public function getUpdated(): DateTime {
-		return $this->updated;
-	}
-
-	/**
-	 * Set active
-	 *
-	 * @param boolean $active
-	 *
-	 * @return Conversation
-	 */
-	public function setActive(bool $active): static {
-		$this->active = $active;
-
-		return $this;
-	}
-
-	/**
-	 * Get active
-	 *
-	 * @return boolean
-	 */
-	public function getActive(): bool {
-		return $this->active;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get local_for
+	 *
+	 * @return Character|null
+	 */
+	public function getLocalFor(): ?Character {
+		return $this->local_for;
 	}
 
 	/**
@@ -319,15 +350,6 @@ class Conversation {
 		$this->local_for = $localFor;
 
 		return $this;
-	}
-
-	/**
-	 * Get local_for
-	 *
-	 * @return Character|null
-	 */
-	public function getLocalFor(): ?Character {
-		return $this->local_for;
 	}
 
 	/**
@@ -353,15 +375,6 @@ class Conversation {
 	}
 
 	/**
-	 * Get messages
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getMessages(): ArrayCollection|Collection {
-		return $this->messages;
-	}
-
-	/**
 	 * Add permissions
 	 *
 	 * @param ConversationPermission $permissions
@@ -384,12 +397,12 @@ class Conversation {
 	}
 
 	/**
-	 * Get permissions
+	 * Get realm
 	 *
-	 * @return ArrayCollection|Collection
+	 * @return Realm|null
 	 */
-	public function getPermissions(): ArrayCollection|Collection {
-		return $this->permissions;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -406,12 +419,12 @@ class Conversation {
 	}
 
 	/**
-	 * Get realm
+	 * Get house
 	 *
-	 * @return Realm|null
+	 * @return House|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
+	public function getHouse(): ?House {
+		return $this->house;
 	}
 
 	/**
@@ -428,12 +441,12 @@ class Conversation {
 	}
 
 	/**
-	 * Get house
+	 * Get association
 	 *
-	 * @return House|null
+	 * @return Association|null
 	 */
-	public function getHouse(): ?House {
-		return $this->house;
+	public function getAssociation(): ?Association {
+		return $this->association;
 	}
 
 	/**
@@ -447,18 +460,5 @@ class Conversation {
 		$this->association = $association;
 
 		return $this;
-	}
-
-	/**
-	 * Get association
-	 *
-	 * @return Association|null
-	 */
-	public function getAssociation(): ?Association {
-		return $this->association;
-	}
-
-	public function isActive(): ?bool {
-		return $this->active;
 	}
 }

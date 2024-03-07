@@ -4,8 +4,17 @@ namespace App\Entity;
 
 class PlaceSubType {
 	private string $name;
-	private int $id;
+	private ?int $id = null;
 	private ?PlaceType $place_type;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -21,21 +30,21 @@ class PlaceSubType {
 	}
 
 	/**
-	 * Get name
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get place_type
 	 *
-	 * @return integer
+	 * @return PlaceType|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getPlaceType(): ?PlaceType {
+		return $this->place_type;
 	}
 
 	/**
@@ -49,14 +58,5 @@ class PlaceSubType {
 		$this->place_type = $placeType;
 
 		return $this;
-	}
-
-	/**
-	 * Get place_type
-	 *
-	 * @return PlaceType|null
-	 */
-	public function getPlaceType(): ?PlaceType {
-		return $this->place_type;
 	}
 }

@@ -10,7 +10,7 @@ class Patreon {
 	private string $client_id;
 	private string $client_secret;
 	private string $return_uri;
-	private int $id;
+	private ?int $id = null;
 	private Collection $patrons;
 
 	/**
@@ -18,6 +18,15 @@ class Patreon {
 	 */
 	public function __construct() {
 		$this->patrons = new ArrayCollection();
+	}
+
+	/**
+	 * Get creator
+	 *
+	 * @return string
+	 */
+	public function getCreator(): string {
+		return $this->creator;
 	}
 
 	/**
@@ -34,12 +43,12 @@ class Patreon {
 	}
 
 	/**
-	 * Get creator
+	 * Get client_id
 	 *
 	 * @return string
 	 */
-	public function getCreator(): string {
-		return $this->creator;
+	public function getClientId(): string {
+		return $this->client_id;
 	}
 
 	/**
@@ -56,12 +65,12 @@ class Patreon {
 	}
 
 	/**
-	 * Get client_id
+	 * Get client_secret
 	 *
 	 * @return string
 	 */
-	public function getClientId(): string {
-		return $this->client_id;
+	public function getClientSecret(): string {
+		return $this->client_secret;
 	}
 
 	/**
@@ -78,12 +87,12 @@ class Patreon {
 	}
 
 	/**
-	 * Get client_secret
+	 * Get return_uri
 	 *
 	 * @return string
 	 */
-	public function getClientSecret(): string {
-		return $this->client_secret;
+	public function getReturnUri(): string {
+		return $this->return_uri;
 	}
 
 	/**
@@ -100,20 +109,11 @@ class Patreon {
 	}
 
 	/**
-	 * Get return_uri
-	 *
-	 * @return string
-	 */
-	public function getReturnUri(): string {
-		return $this->return_uri;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 

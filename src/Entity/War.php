@@ -9,7 +9,7 @@ class War {
 	private string $summary;
 	private string $description;
 	private int $timer;
-	private int $id;
+	private ?int $id = null;
 	private ?EventLog $log;
 	private Collection $targets;
 	private Collection $related_battles;
@@ -31,6 +31,28 @@ class War {
 
 	public function getName(): string {
 		return $this->getSummary();
+	}
+
+	/**
+	 * Get summary
+	 *
+	 * @return string
+	 */
+	public function getSummary(): string {
+		return $this->summary;
+	}
+
+	/**
+	 * Set summary
+	 *
+	 * @param string $summary
+	 *
+	 * @return War
+	 */
+	public function setSummary(string $summary): static {
+		$this->summary = $summary;
+
+		return $this;
 	}
 
 	public function getScore(): float|int {
@@ -75,6 +97,37 @@ class War {
 		}
 	}
 
+	/**
+	 * Get timer
+	 *
+	 * @return integer
+	 */
+	public function getTimer(): int {
+		return $this->timer;
+	}
+
+	/**
+	 * Set timer
+	 *
+	 * @param integer $timer
+	 *
+	 * @return War
+	 */
+	public function setTimer(int $timer): static {
+		$this->timer = $timer;
+
+		return $this;
+	}
+
+	/**
+	 * Get targets
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getTargets(): ArrayCollection|Collection {
+		return $this->targets;
+	}
+
 	public function getAttackers($include_self = true): bool|array {
 		if (!$this->attackers) {
 			$this->attackers = [];
@@ -102,6 +155,37 @@ class War {
 		}
 
 		return $attackers;
+	}
+
+	/**
+	 * Get realm
+	 *
+	 * @return Realm|null
+	 */
+	public function getRealm(): ?Realm {
+		return $this->realm;
+	}
+
+	/**
+	 * Set realm
+	 *
+	 * @param Realm|null $realm
+	 *
+	 * @return War
+	 */
+	public function setRealm(Realm $realm = null): static {
+		$this->realm = $realm;
+
+		return $this;
+	}
+
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	public function getDefenders(): bool|array {
@@ -137,25 +221,12 @@ class War {
 	}
 
 	/**
-	 * Set summary
-	 *
-	 * @param string $summary
-	 *
-	 * @return War
-	 */
-	public function setSummary(string $summary): static {
-		$this->summary = $summary;
-
-		return $this;
-	}
-
-	/**
-	 * Get summary
+	 * Get description
 	 *
 	 * @return string
 	 */
-	public function getSummary(): string {
-		return $this->summary;
+	public function getDescription(): string {
+		return $this->description;
 	}
 
 	/**
@@ -172,43 +243,12 @@ class War {
 	}
 
 	/**
-	 * Get description
+	 * Get log
 	 *
-	 * @return string
+	 * @return EventLog|null
 	 */
-	public function getDescription(): string {
-		return $this->description;
-	}
-
-	/**
-	 * Set timer
-	 *
-	 * @param integer $timer
-	 *
-	 * @return War
-	 */
-	public function setTimer(int $timer): static {
-		$this->timer = $timer;
-
-		return $this;
-	}
-
-	/**
-	 * Get timer
-	 *
-	 * @return integer
-	 */
-	public function getTimer(): int {
-		return $this->timer;
-	}
-
-	/**
-	 * Get id
-	 *
-	 * @return integer
-	 */
-	public function getId(): int {
-		return $this->id;
+	public function getLog(): ?EventLog {
+		return $this->log;
 	}
 
 	/**
@@ -222,15 +262,6 @@ class War {
 		$this->log = $log;
 
 		return $this;
-	}
-
-	/**
-	 * Get log
-	 *
-	 * @return EventLog|null
-	 */
-	public function getLog(): ?EventLog {
-		return $this->log;
 	}
 
 	/**
@@ -253,15 +284,6 @@ class War {
 	 */
 	public function removeTarget(WarTarget $targets): void {
 		$this->targets->removeElement($targets);
-	}
-
-	/**
-	 * Get targets
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getTargets(): ArrayCollection|Collection {
-		return $this->targets;
 	}
 
 	/**
@@ -355,27 +377,5 @@ class War {
 	 */
 	public function getSieges(): ArrayCollection|Collection {
 		return $this->sieges;
-	}
-
-	/**
-	 * Set realm
-	 *
-	 * @param Realm|null $realm
-	 *
-	 * @return War
-	 */
-	public function setRealm(Realm $realm = null): static {
-		$this->realm = $realm;
-
-		return $this;
-	}
-
-	/**
-	 * Get realm
-	 *
-	 * @return Realm|null
-	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
 	}
 }

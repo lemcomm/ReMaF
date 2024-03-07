@@ -3,10 +3,6 @@
 namespace App\Entity;
 
 class EquipmentType {
-	public function getNametrans(): string {
-		return 'item.' . $this->getName();
-	}
-
 	private string $name;
 	private ?string $icon;
 	private string $type;
@@ -15,10 +11,23 @@ class EquipmentType {
 	private int $defense;
 	private int $training_required;
 	private int $resupply_cost;
-	private int $id;
+	private ?int $id = null;
 	private ?BuildingType $provider;
 	private ?BuildingType $trainer;
 	private ?SkillType $skill;
+
+	public function getNametrans(): string {
+		return 'item.' . $this->getName();
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -34,12 +43,12 @@ class EquipmentType {
 	}
 
 	/**
-	 * Get name
+	 * Get icon
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getIcon(): ?string {
+		return $this->icon;
 	}
 
 	/**
@@ -56,12 +65,12 @@ class EquipmentType {
 	}
 
 	/**
-	 * Get icon
+	 * Get type
 	 *
-	 * @return string|null
+	 * @return string
 	 */
-	public function getIcon(): ?string {
-		return $this->icon;
+	public function getType(): string {
+		return $this->type;
 	}
 
 	/**
@@ -78,12 +87,12 @@ class EquipmentType {
 	}
 
 	/**
-	 * Get type
+	 * Get ranged
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getRanged(): int {
+		return $this->ranged;
 	}
 
 	/**
@@ -100,12 +109,12 @@ class EquipmentType {
 	}
 
 	/**
-	 * Get ranged
+	 * Get melee
 	 *
 	 * @return integer
 	 */
-	public function getRanged(): int {
-		return $this->ranged;
+	public function getMelee(): int {
+		return $this->melee;
 	}
 
 	/**
@@ -122,12 +131,12 @@ class EquipmentType {
 	}
 
 	/**
-	 * Get melee
+	 * Get defense
 	 *
 	 * @return integer
 	 */
-	public function getMelee(): int {
-		return $this->melee;
+	public function getDefense(): int {
+		return $this->defense;
 	}
 
 	/**
@@ -144,12 +153,12 @@ class EquipmentType {
 	}
 
 	/**
-	 * Get defense
+	 * Get training_required
 	 *
 	 * @return integer
 	 */
-	public function getDefense(): int {
-		return $this->defense;
+	public function getTrainingRequired(): int {
+		return $this->training_required;
 	}
 
 	/**
@@ -166,12 +175,12 @@ class EquipmentType {
 	}
 
 	/**
-	 * Get training_required
+	 * Get resupply_cost
 	 *
 	 * @return integer
 	 */
-	public function getTrainingRequired(): int {
-		return $this->training_required;
+	public function getResupplyCost(): int {
+		return $this->resupply_cost;
 	}
 
 	/**
@@ -188,21 +197,21 @@ class EquipmentType {
 	}
 
 	/**
-	 * Get resupply_cost
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getResupplyCost(): int {
-		return $this->resupply_cost;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get provider
 	 *
-	 * @return integer
+	 * @return BuildingType|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getProvider(): ?BuildingType {
+		return $this->provider;
 	}
 
 	/**
@@ -219,12 +228,12 @@ class EquipmentType {
 	}
 
 	/**
-	 * Get provider
+	 * Get trainer
 	 *
 	 * @return BuildingType|null
 	 */
-	public function getProvider(): ?BuildingType {
-		return $this->provider;
+	public function getTrainer(): ?BuildingType {
+		return $this->trainer;
 	}
 
 	/**
@@ -241,12 +250,12 @@ class EquipmentType {
 	}
 
 	/**
-	 * Get trainer
+	 * Get skill
 	 *
-	 * @return BuildingType|null
+	 * @return SkillType|null
 	 */
-	public function getTrainer(): ?BuildingType {
-		return $this->trainer;
+	public function getSkill(): ?SkillType {
+		return $this->skill;
 	}
 
 	/**
@@ -260,14 +269,5 @@ class EquipmentType {
 		$this->skill = $skill;
 
 		return $this;
-	}
-
-	/**
-	 * Get skill
-	 *
-	 * @return SkillType|null
-	 */
-	public function getSkill(): ?SkillType {
-		return $this->skill;
 	}
 }

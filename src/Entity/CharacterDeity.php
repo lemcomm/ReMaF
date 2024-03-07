@@ -6,9 +6,18 @@ use DateTime;
 
 class CharacterDeity {
 	private DateTime $start;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $character;
 	private ?Deity $deity;
+
+	/**
+	 * Get start
+	 *
+	 * @return DateTime
+	 */
+	public function getStart(): DateTime {
+		return $this->start;
+	}
 
 	/**
 	 * Set start
@@ -24,21 +33,21 @@ class CharacterDeity {
 	}
 
 	/**
-	 * Get start
+	 * Get id
 	 *
-	 * @return DateTime
+	 * @return int|null
 	 */
-	public function getStart(): DateTime {
-		return $this->start;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -55,12 +64,12 @@ class CharacterDeity {
 	}
 
 	/**
-	 * Get character
+	 * Get deity
 	 *
-	 * @return Character|null
+	 * @return Deity|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getDeity(): ?Deity {
+		return $this->deity;
 	}
 
 	/**
@@ -74,14 +83,5 @@ class CharacterDeity {
 		$this->deity = $deity;
 
 		return $this;
-	}
-
-	/**
-	 * Get deity
-	 *
-	 * @return Deity|null
-	 */
-	public function getDeity(): ?Deity {
-		return $this->deity;
 	}
 }

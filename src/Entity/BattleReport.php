@@ -7,29 +7,6 @@ use Doctrine\Common\Collections\Collection;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class BattleReport {
-	public function getName(): string {
-		return "battle"; // TODO: something better? this is used for links
-	}
-
-	public function checkForObserver(Character $char): bool {
-		foreach ($this->observers as $each) {
-			if ($each->getCharacter() === $char) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public function countPublicJournals(): int {
-		$i = 0;
-		foreach ($this->journals as $each) {
-			if ($each->getPublic()) {
-				$i++;
-			}
-		}
-		return $i;
-	}
-
 	private int $cycle;
 	private Point $location;
 	private array $location_name;
@@ -45,7 +22,7 @@ class BattleReport {
 	private int $count;
 	private int $epicness;
 	private string $debug;
-	private int $id;
+	private ?int $id = null;
 	private BattleReportGroup $primary_attacker;
 	private BattleReportGroup $primary_defender;
 	private Collection $participants;
@@ -69,6 +46,38 @@ class BattleReport {
 		$this->defense_buildings = new ArrayCollection();
 	}
 
+	public function getName(): string {
+		return "battle"; // TODO: something better? this is used for links
+	}
+
+	public function checkForObserver(Character $char): bool {
+		foreach ($this->observers as $each) {
+			if ($each->getCharacter() === $char) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function countPublicJournals(): int {
+		$i = 0;
+		foreach ($this->journals as $each) {
+			if ($each->getPublic()) {
+				$i++;
+			}
+		}
+		return $i;
+	}
+
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
+
 	/**
 	 * Set cycle
 	 *
@@ -83,12 +92,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get cycle
+	 * Get location
 	 *
-	 * @return integer
+	 * @return point
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getLocation(): Point {
+		return $this->location;
 	}
 
 	/**
@@ -105,12 +114,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get location
+	 * Get location_name
 	 *
-	 * @return point
+	 * @return array|null
 	 */
-	public function getLocation(): Point {
-		return $this->location;
+	public function getLocationName(): ?array {
+		return $this->location_name;
 	}
 
 	/**
@@ -127,12 +136,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get location_name
+	 * Get assault
 	 *
-	 * @return array|null
+	 * @return boolean
 	 */
-	public function getLocationName(): ?array {
-		return $this->location_name;
+	public function getAssault(): bool {
+		return $this->assault;
 	}
 
 	/**
@@ -149,12 +158,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get assault
+	 * Get sortie
 	 *
 	 * @return boolean
 	 */
-	public function getAssault(): bool {
-		return $this->assault;
+	public function getSortie(): bool {
+		return $this->sortie;
 	}
 
 	/**
@@ -171,12 +180,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get sortie
+	 * Get urban
 	 *
 	 * @return boolean
 	 */
-	public function getSortie(): bool {
-		return $this->sortie;
+	public function getUrban(): bool {
+		return $this->urban;
 	}
 
 	/**
@@ -193,12 +202,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get urban
+	 * Get defender_group_id
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getUrban(): bool {
-		return $this->urban;
+	public function getDefenderGroupId(): ?int {
+		return $this->defender_group_id;
 	}
 
 	/**
@@ -215,12 +224,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get defender_group_id
+	 * Get start
 	 *
-	 * @return int|null
+	 * @return array
 	 */
-	public function getDefenderGroupId(): ?int {
-		return $this->defender_group_id;
+	public function getStart(): array {
+		return $this->start;
 	}
 
 	/**
@@ -237,12 +246,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get start
+	 * Get combat
 	 *
 	 * @return array
 	 */
-	public function getStart(): array {
-		return $this->start;
+	public function getCombat(): array {
+		return $this->combat;
 	}
 
 	/**
@@ -259,12 +268,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get combat
+	 * Get hunt
 	 *
 	 * @return array
 	 */
-	public function getCombat(): array {
-		return $this->combat;
+	public function getHunt(): array {
+		return $this->hunt;
 	}
 
 	/**
@@ -281,12 +290,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get hunt
+	 * Get finish
 	 *
 	 * @return array
 	 */
-	public function getHunt(): array {
-		return $this->hunt;
+	public function getFinish(): array {
+		return $this->finish;
 	}
 
 	/**
@@ -303,12 +312,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get finish
+	 * Get completed
 	 *
-	 * @return array
+	 * @return boolean
 	 */
-	public function getFinish(): array {
-		return $this->finish;
+	public function getCompleted(): bool {
+		return $this->completed;
 	}
 
 	/**
@@ -325,12 +334,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get completed
+	 * Get count
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getCompleted(): bool {
-		return $this->completed;
+	public function getCount(): ?int {
+		return $this->count;
 	}
 
 	/**
@@ -347,12 +356,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get count
+	 * Get epicness
 	 *
 	 * @return int|null
 	 */
-	public function getCount(): ?int {
-		return $this->count;
+	public function getEpicness(): ?int {
+		return $this->epicness;
 	}
 
 	/**
@@ -369,12 +378,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get epicness
+	 * Get debug
 	 *
-	 * @return int|null
+	 * @return string
 	 */
-	public function getEpicness(): ?int {
-		return $this->epicness;
+	public function getDebug(): string {
+		return $this->debug;
 	}
 
 	/**
@@ -391,21 +400,21 @@ class BattleReport {
 	}
 
 	/**
-	 * Get debug
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getDebug(): string {
-		return $this->debug;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get primary_attacker
 	 *
-	 * @return integer
+	 * @return BattleReportGroup|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getPrimaryAttacker(): ?BattleReportGroup {
+		return $this->primary_attacker;
 	}
 
 	/**
@@ -422,12 +431,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get primary_attacker
+	 * Get primary_defender
 	 *
 	 * @return BattleReportGroup|null
 	 */
-	public function getPrimaryAttacker(): ?BattleReportGroup {
-		return $this->primary_attacker;
+	public function getPrimaryDefender(): ?BattleReportGroup {
+		return $this->primary_defender;
 	}
 
 	/**
@@ -441,15 +450,6 @@ class BattleReport {
 		$this->primary_defender = $primaryDefender;
 
 		return $this;
-	}
-
-	/**
-	 * Get primary_defender
-	 *
-	 * @return BattleReportGroup|null
-	 */
-	public function getPrimaryDefender(): ?BattleReportGroup {
-		return $this->primary_defender;
 	}
 
 	/**
@@ -577,6 +577,15 @@ class BattleReport {
 	}
 
 	/**
+	 * Get settlement
+	 *
+	 * @return Settlement|null
+	 */
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
+	}
+
+	/**
 	 * Set settlement
 	 *
 	 * @param Settlement|null $settlement
@@ -590,12 +599,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get settlement
+	 * Get place
 	 *
-	 * @return Settlement|null
+	 * @return Place|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getPlace(): ?Place {
+		return $this->place;
 	}
 
 	/**
@@ -612,12 +621,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get place
+	 * Get war
 	 *
-	 * @return Place|null
+	 * @return War|null
 	 */
-	public function getPlace(): ?Place {
-		return $this->place;
+	public function getWar(): ?War {
+		return $this->war;
 	}
 
 	/**
@@ -634,12 +643,12 @@ class BattleReport {
 	}
 
 	/**
-	 * Get war
+	 * Get siege
 	 *
-	 * @return War|null
+	 * @return Siege|null
 	 */
-	public function getWar(): ?War {
-		return $this->war;
+	public function getSiege(): ?Siege {
+		return $this->siege;
 	}
 
 	/**
@@ -653,15 +662,6 @@ class BattleReport {
 		$this->siege = $siege;
 
 		return $this;
-	}
-
-	/**
-	 * Get siege
-	 *
-	 * @return Siege|null
-	 */
-	public function getSiege(): ?Siege {
-		return $this->siege;
 	}
 
 	/**

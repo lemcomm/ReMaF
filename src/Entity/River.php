@@ -7,7 +7,16 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
 class River {
 	private string $name;
 	private linestring $course;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -23,12 +32,12 @@ class River {
 	}
 
 	/**
-	 * Get name
+	 * Get course
 	 *
-	 * @return string
+	 * @return linestring
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getCourse(): LineString {
+		return $this->course;
 	}
 
 	/**
@@ -45,20 +54,11 @@ class River {
 	}
 
 	/**
-	 * Get course
-	 *
-	 * @return linestring
-	 */
-	public function getCourse(): LineString {
-		return $this->course;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 }

@@ -45,8 +45,8 @@ class ProcessFamiliarityCommand extends AbstractProcessCommand {
 	}
 
 	private function decayFamiliarity() {
-		$this->em->createQuery('UPDATE BM2SiteBundle:RegionFamiliarity f SET f.amount=f.amount-1')->execute();
-		$this->em->createQuery('DELETE FROM BM2SiteBundle:RegionFamiliarity f WHERE f.amount <= 0')->execute();
+		$this->em->createQuery('UPDATE App:RegionFamiliarity f SET f.amount=f.amount-1')->execute();
+		$this->em->createQuery('DELETE FROM App:RegionFamiliarity f WHERE f.amount <= 0')->execute();
 	}
 
 }

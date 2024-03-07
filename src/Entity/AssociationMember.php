@@ -7,37 +7,44 @@ use DateTime;
 /**
  * AssociationMember
  */
-class AssociationMember
-{
+class AssociationMember {
 	private DateTime $join_date;
 	private DateTime $rank_date;
-	private int $id;
+	private ?int $id = null;
 	private Association $association;
 	private Character $character;
 	private AssociationRank $rank;
 
+	/**
+	 * Get join_date
+	 *
+	 * @return DateTime
+	 */
+	public function getJoinDate(): DateTime {
+		return $this->join_date;
+	}
 
-    /**
-     * Set join_date
-     *
-     * @param DateTime $joinDate
-     *
-     * @return AssociationMember
-     */
-    public function setJoinDate(DateTime $joinDate): static {
-        $this->join_date = $joinDate;
+	/**
+	 * Set join_date
+	 *
+	 * @param DateTime $joinDate
+	 *
+	 * @return AssociationMember
+	 */
+	public function setJoinDate(DateTime $joinDate): static {
+		$this->join_date = $joinDate;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Get join_date
-     *
-     * @return DateTime
-     */
-    public function getJoinDate(): DateTime {
-        return $this->join_date;
-    }
+	/**
+	 * Get rank_date
+	 *
+	 * @return DateTime|null
+	 */
+	public function getRankDate(): ?DateTime {
+		return $this->rank_date;
+	}
 
 	/**
 	 * Set rank_date
@@ -46,29 +53,29 @@ class AssociationMember
 	 *
 	 * @return AssociationMember
 	 */
-    public function setRankDate(DateTime $rankDate = null): static {
-        $this->rank_date = $rankDate;
+	public function setRankDate(DateTime $rankDate = null): static {
+		$this->rank_date = $rankDate;
 
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
-	 * Get rank_date
+	 * Get id
 	 *
-	 * @return DateTime|null
+	 * @return int|null
 	 */
-    public function getRankDate(): ?DateTime {
-        return $this->rank_date;
-    }
+	public function getId(): ?int {
+		return $this->id;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+	/**
+	 * Get association
+	 *
+	 * @return Association|null
+	 */
+	public function getAssociation(): ?Association {
+		return $this->association;
+	}
 
 	/**
 	 * Set association
@@ -77,62 +84,53 @@ class AssociationMember
 	 *
 	 * @return AssociationMember
 	 */
-    public function setAssociation(Association $association = null): static {
-        $this->association = $association;
+	public function setAssociation(Association $association = null): static {
+		$this->association = $association;
 
-        return $this;
-    }
-
-	/**
-	 * Get association
-	 *
-	 * @return Association|null
-	 */
-    public function getAssociation(): ?Association {
-        return $this->association;
-    }
-
-    /**
-     * Set character
-     *
-     * @param Character|null $character
-     *
-     * @return AssociationMember
-     */
-	public function setCharacter(Character $character = null): static {
-        $this->character = $character;
-
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * Get character
 	 *
 	 * @return Character|null
 	 */
-    public function getCharacter(): ?Character {
-        return $this->character;
-    }
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
 
-    /**
-     * Set rank
-     *
-     * @param AssociationRank|null $rank
-     *
-     * @return AssociationMember
-     */
-	public function setRank(AssociationRank $rank = null): static {
-        $this->rank = $rank;
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return AssociationMember
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * Get rank
 	 *
 	 * @return AssociationRank|null
 	 */
-    public function getRank(): ?AssociationRank {
-        return $this->rank;
-    }
+	public function getRank(): ?AssociationRank {
+		return $this->rank;
+	}
+
+	/**
+	 * Set rank
+	 *
+	 * @param AssociationRank|null $rank
+	 *
+	 * @return AssociationMember
+	 */
+	public function setRank(AssociationRank $rank = null): static {
+		$this->rank = $rank;
+
+		return $this;
+	}
 }

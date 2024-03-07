@@ -11,6 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityManager;
 
 use BM2\SiteBundle\Entity\Character;
+use Symfony\Component\Validator\Constraints\Valid;
 
 /**
  * Form for updating settlement owner permissions.
@@ -51,7 +52,7 @@ class SettlementPermissionsSetType extends AbstractType {
 				],
 				'allow_add'	=> true,
 				'allow_delete' => true,
-				'cascade_validation' => true
+				'constraints' => new Valid(),
 			));
 		} else {
 			$builder->add('occupation_permissions', CollectionType::class, array(
@@ -62,7 +63,7 @@ class SettlementPermissionsSetType extends AbstractType {
 				],
 				'allow_add'	=> true,
 				'allow_delete' => true,
-				'cascade_validation' => true
+				'constraints' => new Valid(),
 			));
 		}
 	}

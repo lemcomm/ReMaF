@@ -6,6 +6,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class Soldier extends NPC {
+	protected int $morale = 0;
+	protected bool $is_fortified = false;
+	protected int $ranged = -1;
+	protected int $melee = -1;
+	protected int $defense = -1;
+	protected int $rDefense = -1;
+	protected int $charge = -1;
+	protected bool $isNoble = false;
+	protected bool $isFighting = false;
+	protected int $attacks = 0;
+	protected int $casualties = 0;
+	protected int $xp_gained = 0;
 	private float $training;
 	private int $training_required;
 	private int $group;
@@ -17,7 +29,7 @@ class Soldier extends NPC {
 	private ?bool $has_mount;
 	private ?int $travel_days;
 	private ?string $destination;
-	private int $id;
+	private ?int $id = null;
 	private Collection $events;
 	private ?EquipmentType $weapon;
 	private ?EquipmentType $armour;
@@ -33,18 +45,6 @@ class Soldier extends NPC {
 	private ?Unit $unit;
 	private ?SiegeEquipment $manning_equipment;
 	private ?Collection $part_of_requests;
-	protected int $morale = 0;
-	protected bool $is_fortified = false;
-	protected int $ranged = -1;
-	protected int $melee = -1;
-	protected int $defense = -1;
-	protected int $rDefense = -1;
-	protected int $charge = -1;
-	protected bool $isNoble = false;
-	protected bool $isFighting = false;
-	protected int $attacks = 0;
-	protected int $casualties = 0;
-	protected int $xp_gained = 0;
 
 	/**
 	 * Constructor
@@ -58,6 +58,99 @@ class Soldier extends NPC {
 		$base = $this->getBase() ? $this->getBase()->getId() : "%";
 		$char = $this->getCharacter() ? $this->getCharacter()->getId() : "%";
 		return "soldier #$this->id ({$this->getName()}, {$this->getType()}, base $base, char $char)";
+	}
+
+	/**
+	 * Get base
+	 *
+	 * @return Settlement|null
+	 */
+	public function getBase(): ?Settlement {
+		return $this->base;
+	}
+
+	/**
+	 * Set base
+	 *
+	 * @param Settlement|null $base
+	 *
+	 * @return Soldier
+	 */
+	public function setBase(Settlement $base = null): static {
+		$this->base = $base;
+
+		return $this;
+	}
+
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
+
+	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
+
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return Soldier
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
+
+		return $this;
+	}
+
+	public function getType(): string {
+		if ($this->isNoble) return 'noble';
+		if (!$this->weapon && !$this->armour && !$this->equipment) return 'rabble';
+
+		$def = 0;
+		if ($this->armour) {
+			$def += $this->armour->getDefense();
+		}
+		if ($this->equipment) {
+			$def += $this->equipment->getDefense();
+		}
+
+		if ($this->mount) {
+			if ($this->weapon && $this->weapon->getRanged() > 0) {
+				return 'mounted archer';
+			} else {
+				if ($def >= 90) {
+					return 'heavy cavalry';
+				} else {
+					return 'light cavalry';
+				}
+			}
+		}
+		if ($this->weapon && $this->weapon->getRanged() > 0) {
+			if ($def >= 50) {
+				return 'armoured archer';
+			} else {
+				return 'archer';
+			}
+		}
+		if ($this->armour && $this->armour->getDefense() >= 70) {
+			return 'heavy infantry';
+		}
+
+		if ($def >= 60) {
+			return 'medium infantry';
+		}
+		return 'light infantry';
 	}
 
 	public function isActive($include_routed = false, $militia = false): bool {
@@ -79,17 +172,87 @@ class Soldier extends NPC {
 		return true;
 	}
 
-	public function wound($value = 1): static {
-		parent::wound($value);
-		if ($this->getType() == 'noble') {
-			$this->getCharacter()->setWounded($this->getCharacter()->getWounded() + $value);
-		}
+	/**
+	 * Get training_required
+	 *
+	 * @return integer
+	 */
+	public function getTrainingRequired(): int {
+		return $this->training_required;
+	}
+
+	/**
+	 * Set training_required
+	 *
+	 * @param integer $trainingRequired
+	 *
+	 * @return Soldier
+	 */
+	public function setTrainingRequired(int $trainingRequired): static {
+		$this->training_required = $trainingRequired;
+
+		return $this;
+	}
+
+	/**
+	 * Get travel_days
+	 *
+	 * @return int|null
+	 */
+	public function getTravelDays(): ?int {
+		return $this->travel_days;
+	}
+
+	/**
+	 * Set travel_days
+	 *
+	 * @param integer $travelDays
+	 *
+	 * @return Soldier
+	 */
+	public function setTravelDays(int $travelDays): static {
+		$this->travel_days = $travelDays;
+
 		return $this;
 	}
 
 	public function getWounded($character_real = false): int {
 		if (!$character_real || $this->getType() != 'noble') return parent::getWounded();
 		return $this->getCharacter()->getWounded();
+	}
+
+	public function isRouted(): bool {
+		return $this->getRouted();
+	}
+
+	/**
+	 * Get routed
+	 *
+	 * @return boolean
+	 */
+	public function getRouted(): bool {
+		return $this->routed;
+	}
+
+	/**
+	 * Set routed
+	 *
+	 * @param boolean $routed
+	 *
+	 * @return Soldier
+	 */
+	public function setRouted(bool $routed): static {
+		$this->routed = $routed;
+
+		return $this;
+	}
+
+	public function wound($value = 1): static {
+		parent::wound($value);
+		if ($this->getType() == 'noble') {
+			$this->getCharacter()->setWounded($this->getCharacter()->getWounded() + $value);
+		}
+		return $this;
 	}
 
 	public function setFighting($value): static {
@@ -155,44 +318,26 @@ class Soldier extends NPC {
 		return $this->getUnit()->getSoldiers();
 	}
 
-	public function getType(): string {
-		if ($this->isNoble) return 'noble';
-		if (!$this->weapon && !$this->armour && !$this->equipment) return 'rabble';
+	/**
+	 * Get unit
+	 *
+	 * @return Unit|null
+	 */
+	public function getUnit(): ?Unit {
+		return $this->unit;
+	}
 
-		$def = 0;
-		if ($this->armour) {
-			$def += $this->armour->getDefense();
-		}
-		if ($this->equipment) {
-			$def += $this->equipment->getDefense();
-		}
+	/**
+	 * Set unit
+	 *
+	 * @param Unit|null $unit
+	 *
+	 * @return Soldier
+	 */
+	public function setUnit(Unit $unit = null): static {
+		$this->unit = $unit;
 
-		if ($this->mount) {
-			if ($this->weapon && $this->weapon->getRanged() > 0) {
-				return 'mounted archer';
-			} else {
-				if ($def >= 90) {
-					return 'heavy cavalry';
-				} else {
-					return 'light cavalry';
-				}
-			}
-		}
-		if ($this->weapon && $this->weapon->getRanged() > 0) {
-			if ($def >= 50) {
-				return 'armoured archer';
-			} else {
-				return 'archer';
-			}
-		}
-		if ($this->armour && $this->armour->getDefense() >= 70) {
-			return 'heavy infantry';
-		}
-
-		if ($def >= 60) {
-			return 'medium infantry';
-		}
-		return 'light infantry';
+		return $this;
 	}
 
 	public function getVisualSize(): int {
@@ -225,24 +370,15 @@ class Soldier extends NPC {
 		return $this;
 	}
 
-	public function getWeapon(): ?EquipmentType {
-		if ($this->has_weapon) return $this->weapon;
-		return null;
-	}
-
 	public function getArmour(): ?EquipmentType {
 		if ($this->has_armour) return $this->armour;
 		return null;
 	}
 
-	public function getEquipment(): ?EquipmentType {
-		if ($this->has_equipment) return $this->equipment;
-		return null;
-	}
-
-	public function getMount(): ?EquipmentType {
-		if ($this->has_mount) return $this->mount;
-		return null;
+	public function setArmour(EquipmentType $item = null): static {
+		$this->armour = $item;
+		$this->has_armour = true;
+		return $this;
 	}
 
 	public function getTrainedWeapon(): ?EquipmentType {
@@ -259,30 +395,6 @@ class Soldier extends NPC {
 
 	public function getTrainedMount(): ?EquipmentType {
 		return $this->mount;
-	}
-
-	public function setWeapon(EquipmentType $item = null): static {
-		$this->weapon = $item;
-		$this->has_weapon = true;
-		return $this;
-	}
-
-	public function setArmour(EquipmentType $item = null): static {
-		$this->armour = $item;
-		$this->has_armour = true;
-		return $this;
-	}
-
-	public function setEquipment(EquipmentType $item = null): static {
-		$this->equipment = $item;
-		$this->has_equipment = true;
-		return $this;
-	}
-
-	public function setMount(EquipmentType $item = null): static {
-		$this->mount = $item;
-		$this->has_mount = true;
-		return $this;
 	}
 
 	public function dropWeapon(): static {
@@ -313,10 +425,6 @@ class Soldier extends NPC {
 		return $this->isNoble;
 	}
 
-	public function isRouted(): bool {
-		return $this->getRouted();
-	}
-
 	public function isMilitia(): bool {
 		return ($this->getTrainingRequired() <= 0);
 	}
@@ -333,12 +441,45 @@ class Soldier extends NPC {
 		}
 	}
 
+	public function getWeapon(): ?EquipmentType {
+		if ($this->has_weapon) return $this->weapon;
+		return null;
+	}
+
+	public function setWeapon(EquipmentType $item = null): static {
+		$this->weapon = $item;
+		$this->has_weapon = true;
+		return $this;
+	}
+
 	public function isLancer(): bool {
 		if ($this->getMount() && $this->getEquipment() && $this->getEquipment()->getName() == 'Lance') {
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	public function getMount(): ?EquipmentType {
+		if ($this->has_mount) return $this->mount;
+		return null;
+	}
+
+	public function setMount(EquipmentType $item = null): static {
+		$this->mount = $item;
+		$this->has_mount = true;
+		return $this;
+	}
+
+	public function getEquipment(): ?EquipmentType {
+		if ($this->has_equipment) return $this->equipment;
+		return null;
+	}
+
+	public function setEquipment(EquipmentType $item = null): static {
+		$this->equipment = $item;
+		$this->has_equipment = true;
+		return $this;
 	}
 
 	public function MeleePower(): int {
@@ -398,14 +539,23 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Set training
+	 * Get liege
 	 *
-	 * @param float $training
+	 * @return Character|null
+	 */
+	public function getLiege(): ?Character {
+		return $this->liege;
+	}
+
+	/**
+	 * Set liege
+	 *
+	 * @param Character|null $liege
 	 *
 	 * @return Soldier
 	 */
-	public function setTraining(float $training): static {
-		$this->training = $training;
+	public function setLiege(Character $liege = null): static {
+		$this->liege = $liege;
 
 		return $this;
 	}
@@ -420,25 +570,25 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Set training_required
+	 * Set training
 	 *
-	 * @param integer $trainingRequired
+	 * @param float $training
 	 *
 	 * @return Soldier
 	 */
-	public function setTrainingRequired(int $trainingRequired): static {
-		$this->training_required = $trainingRequired;
+	public function setTraining(float $training): static {
+		$this->training = $training;
 
 		return $this;
 	}
 
 	/**
-	 * Get training_required
+	 * Get group
 	 *
 	 * @return integer
 	 */
-	public function getTrainingRequired(): int {
-		return $this->training_required;
+	public function getGroup(): int {
+		return $this->group;
 	}
 
 	/**
@@ -455,34 +605,12 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Get group
+	 * Get assigned_since
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getGroup(): int {
-		return $this->group;
-	}
-
-	/**
-	 * Set routed
-	 *
-	 * @param boolean $routed
-	 *
-	 * @return Soldier
-	 */
-	public function setRouted(bool $routed): static {
-		$this->routed = $routed;
-
-		return $this;
-	}
-
-	/**
-	 * Get routed
-	 *
-	 * @return boolean
-	 */
-	public function getRouted(): bool {
-		return $this->routed;
+	public function getAssignedSince(): ?int {
+		return $this->assigned_since;
 	}
 
 	/**
@@ -499,12 +627,16 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Get assigned_since
+	 * Get has_weapon
 	 *
-	 * @return int|null
+	 * @return boolean
 	 */
-	public function getAssignedSince(): ?int {
-		return $this->assigned_since;
+	public function getHasWeapon(): bool {
+		return $this->has_weapon;
+	}
+
+	public function isHasWeapon(): ?bool {
+		return $this->has_weapon;
 	}
 
 	/**
@@ -521,12 +653,16 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Get has_weapon
+	 * Get has_armour
 	 *
 	 * @return boolean
 	 */
-	public function getHasWeapon(): bool {
-		return $this->has_weapon;
+	public function getHasArmour(): bool {
+		return $this->has_armour;
+	}
+
+	public function isHasArmour(): ?bool {
+		return $this->has_armour;
 	}
 
 	/**
@@ -543,34 +679,12 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Get has_armour
+	 * Get has_mount
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getHasArmour(): bool {
-		return $this->has_armour;
-	}
-
-	/**
-	 * Set has_equipment
-	 *
-	 * @param boolean $hasEquipment
-	 *
-	 * @return Soldier
-	 */
-	public function setHasEquipment(bool $hasEquipment): static {
-		$this->has_equipment = $hasEquipment;
-
-		return $this;
-	}
-
-	/**
-	 * Get has_equipment
-	 *
-	 * @return boolean
-	 */
-	public function getHasEquipment(): bool {
-		return $this->has_equipment;
+	public function getHasMount(): ?bool {
+		return $this->has_mount;
 	}
 
 	/**
@@ -587,34 +701,12 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Get has_mount
+	 * Get destination
 	 *
-	 * @return bool|null
+	 * @return string|null
 	 */
-	public function getHasMount(): ?bool {
-		return $this->has_mount;
-	}
-
-	/**
-	 * Set travel_days
-	 *
-	 * @param integer $travelDays
-	 *
-	 * @return Soldier
-	 */
-	public function setTravelDays(int $travelDays): static {
-		$this->travel_days = $travelDays;
-
-		return $this;
-	}
-
-	/**
-	 * Get travel_days
-	 *
-	 * @return int|null
-	 */
-	public function getTravelDays(): ?int {
-		return $this->travel_days;
+	public function getDestination(): ?string {
+		return $this->destination;
 	}
 
 	/**
@@ -628,24 +720,6 @@ class Soldier extends NPC {
 		$this->destination = $destination;
 
 		return $this;
-	}
-
-	/**
-	 * Get destination
-	 *
-	 * @return string|null
-	 */
-	public function getDestination(): ?string {
-		return $this->destination;
-	}
-
-	/**
-	 * Get id
-	 *
-	 * @return integer
-	 */
-	public function getId(): int {
-		return $this->id;
 	}
 
 	/**
@@ -680,6 +754,15 @@ class Soldier extends NPC {
 	}
 
 	/**
+	 * Get old_weapon
+	 *
+	 * @return EquipmentType|null
+	 */
+	public function getOldWeapon(): ?EquipmentType {
+		return $this->old_weapon;
+	}
+
+	/**
 	 * Set old_weapon
 	 *
 	 * @param EquipmentType|null $oldWeapon
@@ -693,12 +776,12 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Get old_weapon
+	 * Get old_armour
 	 *
 	 * @return EquipmentType|null
 	 */
-	public function getOldWeapon(): ?EquipmentType {
-		return $this->old_weapon;
+	public function getOldArmour(): ?EquipmentType {
+		return $this->old_armour;
 	}
 
 	/**
@@ -715,12 +798,12 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Get old_armour
+	 * Get old_equipment
 	 *
 	 * @return EquipmentType|null
 	 */
-	public function getOldArmour(): ?EquipmentType {
-		return $this->old_armour;
+	public function getOldEquipment(): ?EquipmentType {
+		return $this->old_equipment;
 	}
 
 	/**
@@ -737,12 +820,12 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Get old_equipment
+	 * Get old_mount
 	 *
 	 * @return EquipmentType|null
 	 */
-	public function getOldEquipment(): ?EquipmentType {
-		return $this->old_equipment;
+	public function getOldMount(): ?EquipmentType {
+		return $this->old_mount;
 	}
 
 	/**
@@ -759,100 +842,12 @@ class Soldier extends NPC {
 	}
 
 	/**
-	 * Get old_mount
+	 * Get manning_equipment
 	 *
-	 * @return EquipmentType|null
+	 * @return SiegeEquipment|null
 	 */
-	public function getOldMount(): ?EquipmentType {
-		return $this->old_mount;
-	}
-
-	/**
-	 * Set character
-	 *
-	 * @param Character|null $character
-	 *
-	 * @return Soldier
-	 */
-	public function setCharacter(Character $character = null): static {
-		$this->character = $character;
-
-		return $this;
-	}
-
-	/**
-	 * Get character
-	 *
-	 * @return Character|null
-	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
-	}
-
-	/**
-	 * Set base
-	 *
-	 * @param Settlement|null $base
-	 *
-	 * @return Soldier
-	 */
-	public function setBase(Settlement $base = null): static {
-		$this->base = $base;
-
-		return $this;
-	}
-
-	/**
-	 * Get base
-	 *
-	 * @return Settlement|null
-	 */
-	public function getBase(): ?Settlement {
-		return $this->base;
-	}
-
-	/**
-	 * Set liege
-	 *
-	 * @param Character|null $liege
-	 *
-	 * @return Soldier
-	 */
-	public function setLiege(Character $liege = null): static {
-		$this->liege = $liege;
-
-		return $this;
-	}
-
-	/**
-	 * Get liege
-	 *
-	 * @return Character|null
-	 */
-	public function getLiege(): ?Character {
-		return $this->liege;
-	}
-
-	/**
-	 * Set unit
-	 *
-	 * @param Unit|null $unit
-	 *
-	 * @return Soldier
-	 */
-	public function setUnit(Unit $unit = null): static {
-		$this->unit = $unit;
-
-		return $this;
-	}
-
-	/**
-	 * Get unit
-	 *
-	 * @return Unit|null
-	 */
-	public function getUnit(): ?Unit {
-		return $this->unit;
+	public function getManningEquipment(): ?SiegeEquipment {
+		return $this->manning_equipment;
 	}
 
 	/**
@@ -866,15 +861,6 @@ class Soldier extends NPC {
 		$this->manning_equipment = $manningEquipment;
 
 		return $this;
-	}
-
-	/**
-	 * Get manning_equipment
-	 *
-	 * @return SiegeEquipment|null
-	 */
-	public function getManningEquipment(): ?SiegeEquipment {
-		return $this->manning_equipment;
 	}
 
 	/**
@@ -908,16 +894,30 @@ class Soldier extends NPC {
 		return $this->part_of_requests;
 	}
 
-	public function isHasWeapon(): ?bool {
-		return $this->has_weapon;
-	}
-
-	public function isHasArmour(): ?bool {
-		return $this->has_armour;
-	}
-
 	public function isHasEquipment(): ?bool {
 		return $this->has_equipment;
+	}
+
+	/**
+	 * Get has_equipment
+	 *
+	 * @return boolean
+	 */
+	public function getHasEquipment(): bool {
+		return $this->has_equipment;
+	}
+
+	/**
+	 * Set has_equipment
+	 *
+	 * @param boolean $hasEquipment
+	 *
+	 * @return Soldier
+	 */
+	public function setHasEquipment(bool $hasEquipment): static {
+		$this->has_equipment = $hasEquipment;
+
+		return $this;
 	}
 
 	public function isHasMount(): ?bool {

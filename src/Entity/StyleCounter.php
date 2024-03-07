@@ -3,17 +3,26 @@
 namespace App\Entity;
 
 class StyleCounter {
-	private int $id;
+	private ?int $id = null;
 	private Style $style;
 	private SkillType $counters;
 
 	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get style
+	 *
+	 * @return Style|null
+	 */
+	public function getStyle(): ?Style {
+		return $this->style;
 	}
 
 	/**
@@ -30,12 +39,12 @@ class StyleCounter {
 	}
 
 	/**
-	 * Get style
+	 * Get counters
 	 *
-	 * @return Style|null
+	 * @return SkillType|null
 	 */
-	public function getStyle(): ?Style {
-		return $this->style;
+	public function getCounters(): ?SkillType {
+		return $this->counters;
 	}
 
 	/**
@@ -49,14 +58,5 @@ class StyleCounter {
 		$this->counters = $counters;
 
 		return $this;
-	}
-
-	/**
-	 * Get counters
-	 *
-	 * @return SkillType|null
-	 */
-	public function getCounters(): ?SkillType {
-		return $this->counters;
 	}
 }

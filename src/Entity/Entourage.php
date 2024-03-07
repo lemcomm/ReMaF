@@ -3,17 +3,26 @@
 namespace App\Entity;
 
 class Entourage extends NPC {
-	public function isEntourage(): true {
-		return true;
-	}
-
 	private int $supply;
-	private int $id;
+	private ?int $id = null;
 	private ?EntourageType $type;
 	private ?Action $action;
 	private ?Character $character;
 	private ?Character $liege;
 	private ?EquipmentType $equipment;
+
+	public function isEntourage(): true {
+		return true;
+	}
+
+	/**
+	 * Get supply
+	 *
+	 * @return integer
+	 */
+	public function getSupply(): int {
+		return $this->supply;
+	}
 
 	/**
 	 * Set supply
@@ -29,21 +38,21 @@ class Entourage extends NPC {
 	}
 
 	/**
-	 * Get supply
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getSupply(): int {
-		return $this->supply;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get type
 	 *
-	 * @return integer
+	 * @return EntourageType|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getType(): ?EntourageType {
+		return $this->type;
 	}
 
 	/**
@@ -60,12 +69,12 @@ class Entourage extends NPC {
 	}
 
 	/**
-	 * Get type
+	 * Get action
 	 *
-	 * @return EntourageType|null
+	 * @return Action|null
 	 */
-	public function getType(): ?EntourageType {
-		return $this->type;
+	public function getAction(): ?Action {
+		return $this->action;
 	}
 
 	/**
@@ -82,12 +91,12 @@ class Entourage extends NPC {
 	}
 
 	/**
-	 * Get action
+	 * Get character
 	 *
-	 * @return Action|null
+	 * @return Character|null
 	 */
-	public function getAction(): ?Action {
-		return $this->action;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -104,12 +113,12 @@ class Entourage extends NPC {
 	}
 
 	/**
-	 * Get character
+	 * Get liege
 	 *
 	 * @return Character|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getLiege(): ?Character {
+		return $this->liege;
 	}
 
 	/**
@@ -126,12 +135,12 @@ class Entourage extends NPC {
 	}
 
 	/**
-	 * Get liege
+	 * Get equipment
 	 *
-	 * @return Character|null
+	 * @return EquipmentType|null
 	 */
-	public function getLiege(): ?Character {
-		return $this->liege;
+	public function getEquipment(): ?EquipmentType {
+		return $this->equipment;
 	}
 
 	/**
@@ -145,14 +154,5 @@ class Entourage extends NPC {
 		$this->equipment = $equipment;
 
 		return $this;
-	}
-
-	/**
-	 * Get equipment
-	 *
-	 * @return EquipmentType|null
-	 */
-	public function getEquipment(): ?EquipmentType {
-		return $this->equipment;
 	}
 }

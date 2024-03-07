@@ -7,8 +7,17 @@ class BattleReportStage {
 	private int $round;
 	private array $data;
 	private array $extra;
-	private int $id;
+	private ?int $id = null;
 	private BattleReportGroup $group_report;
+
+	/**
+	 * Get round
+	 *
+	 * @return integer
+	 */
+	public function getRound(): int {
+		return $this->round;
+	}
 
 	/**
 	 * Set round
@@ -24,12 +33,12 @@ class BattleReportStage {
 	}
 
 	/**
-	 * Get round
+	 * Get data
 	 *
-	 * @return integer
+	 * @return array
 	 */
-	public function getRound(): int {
-		return $this->round;
+	public function getData(): array {
+		return $this->data;
 	}
 
 	/**
@@ -46,12 +55,12 @@ class BattleReportStage {
 	}
 
 	/**
-	 * Get data
+	 * Get extra
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getData(): array {
-		return $this->data;
+	public function getExtra(): ?array {
+		return $this->extra;
 	}
 
 	/**
@@ -68,21 +77,21 @@ class BattleReportStage {
 	}
 
 	/**
-	 * Get extra
+	 * Get id
 	 *
-	 * @return array|null
+	 * @return int|null
 	 */
-	public function getExtra(): ?array {
-		return $this->extra;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get group_report
 	 *
-	 * @return integer
+	 * @return BattleReportGroup|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getGroupReport(): ?BattleReportGroup {
+		return $this->group_report;
 	}
 
 	/**
@@ -96,14 +105,5 @@ class BattleReportStage {
 		$this->group_report = $groupReport;
 
 		return $this;
-	}
-
-	/**
-	 * Get group_report
-	 *
-	 * @return BattleReportGroup|null
-	 */
-	public function getGroupReport(): ?BattleReportGroup {
-		return $this->group_report;
 	}
 }

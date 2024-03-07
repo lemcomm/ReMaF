@@ -7,8 +7,10 @@ use App\Entity\Character;
 use App\Entity\Listing;
 use App\Entity\Partnership;
 use App\Entity\Place;
+use App\Entity\PlacePermission;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
+use App\Entity\SettlementPermission;
 use App\Form\CharacterSelectType;
 use App\Form\ListingType;
 use App\Form\PartnershipsType;
@@ -417,7 +419,7 @@ class PoliticsController extends AbstractController {
 		$formOldView=null; $formNewView=null;
 
 		if ($type==null || $type=='old') {
-			$query = $em->createQuery('SELECT DISTINCT p FROM BM2SiteBundle:Partnership p JOIN p.partners c WHERE c = :me AND p.end_date IS NULL');
+			$query = $em->createQuery('SELECT DISTINCT p FROM App:Partnership p JOIN p.partners c WHERE c = :me AND p.end_date IS NULL');
 			$query->setParameter('me', $character);
 			$currentRelations = $query->getResult();
 			$formOld = $this->createForm(PartnershipsType::class, null, ['me'=>$character, 'newpartners'=>false, 'others'=>$currentRelations]);
@@ -462,7 +464,7 @@ class PoliticsController extends AbstractController {
 
 			foreach ($data['partnership'] as $id=>$change) {
 				if (!$change) continue;
-				$relation = $em->getRepository('BM2SiteBundle:Partnership')->find($id);
+				$relation = $em->getRepository(Partnership::class)->find($id);
 				switch ($change) {
 					case 'public':
 						// TODO: event posting
@@ -531,7 +533,7 @@ class PoliticsController extends AbstractController {
 		if ($formNew->isSubmitted() && $formNew->isSubmitted()) {
 			$data = $formNew->getData();
 
-			$partner = $em->getRepository('BM2SiteBundle:Character')->find($data['partner']);
+			$partner = $em->getRepository(Character::class)->find($data['partner']);
 			$relation = new Partnership;
 			$relation->setType($data['type']);
 			$relation->setPublic($data['public']);
@@ -599,12 +601,12 @@ class PoliticsController extends AbstractController {
 					$can_delete = false;
 					$locked_reasons[] = "descendants";
 				}
-				$using = $em->getRepository('BM2SiteBundle:SettlementPermission')->findByListing($listing);
+				$using = $em->getRepository(SettlementPermission::class)->findBy(['listing'=>$listing]);
 				if ($using && !empty($using)) {
 					$can_delete = false;
 					$locked_reasons[] = "used";
 				}
-				$usingPlaces = $em->getRepository('BM2SiteBundle:PlacePermission')->findByListing($listing);
+				$usingPlaces = $em->getRepository(PlacePermission::class)->findBy(['listing'=>$listing]);
 				if ($usingPlaces && !empty($usingPlaces)) {
 					$can_delete = false;
 					$locked_reasons[] = "used";

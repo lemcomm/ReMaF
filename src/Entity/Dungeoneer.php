@@ -13,7 +13,7 @@ class Dungeoneer {
 	private int $mod_defense;
 	private int $mod_power;
 	private bool $in_dungeon;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $character;
 	private ?DungeonCard $last_action;
 	private ?DungeonCard $current_action;
@@ -39,23 +39,32 @@ class Dungeoneer {
 		return $this->getParty()->getDungeon();
 	}
 
-	public function isInDungeon(): bool {
-		if ($this->getInDungeon() && $this->getParty() && $this->getParty()->getDungeon()) {
-			return true;
-		}
-		return false;
+	/**
+	 * Get party
+	 *
+	 * @return DungeonParty|null
+	 */
+	public function getParty(): ?DungeonParty {
+		return $this->party;
+	}
+
+	/**
+	 * Set party
+	 *
+	 * @param DungeonParty|null $party
+	 *
+	 * @return Dungeoneer
+	 */
+	public function setParty(DungeonParty $party = null): static {
+		$this->party = $party;
+
+		return $this;
 	}
 
 	public function getPower() {
 		// apply modifier, but it can never fall below 20%
 		$power = $this->power + $this->mod_power;
 		return (max($power, round($this->power / 20)));
-	}
-
-	public function getDefense() {
-		// apply modifier, but it can never fall below 20%
-		$defense = $this->defense + $this->mod_defense;
-		return (max($defense, round($this->defense / 20)));
 	}
 
 	/**
@@ -69,6 +78,12 @@ class Dungeoneer {
 		$this->power = $power;
 
 		return $this;
+	}
+
+	public function getDefense() {
+		// apply modifier, but it can never fall below 20%
+		$defense = $this->defense + $this->mod_defense;
+		return (max($defense, round($this->defense / 20)));
 	}
 
 	/**
@@ -85,6 +100,15 @@ class Dungeoneer {
 	}
 
 	/**
+	 * Get wounds
+	 *
+	 * @return integer
+	 */
+	public function getWounds(): int {
+		return $this->wounds;
+	}
+
+	/**
 	 * Set wounds
 	 *
 	 * @param integer $wounds
@@ -98,12 +122,12 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Get wounds
+	 * Get gold
 	 *
 	 * @return integer
 	 */
-	public function getWounds(): int {
-		return $this->wounds;
+	public function getGold(): int {
+		return $this->gold;
 	}
 
 	/**
@@ -120,12 +144,12 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Get gold
+	 * Get mod_defense
 	 *
 	 * @return integer
 	 */
-	public function getGold(): int {
-		return $this->gold;
+	public function getModDefense(): int {
+		return $this->mod_defense;
 	}
 
 	/**
@@ -142,12 +166,12 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Get mod_defense
+	 * Get mod_power
 	 *
 	 * @return integer
 	 */
-	public function getModDefense(): int {
-		return $this->mod_defense;
+	public function getModPower(): int {
+		return $this->mod_power;
 	}
 
 	/**
@@ -164,12 +188,19 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Get mod_power
+	 * Get in_dungeon
 	 *
-	 * @return integer
+	 * @return boolean
 	 */
-	public function getModPower(): int {
-		return $this->mod_power;
+	public function getInDungeon(): bool {
+		return $this->in_dungeon;
+	}
+
+	public function isInDungeon(): bool {
+		if ($this->getInDungeon() && $this->getParty() && $this->getParty()->getDungeon()) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -186,21 +217,21 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Get in_dungeon
+	 * Get id
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getInDungeon(): bool {
-		return $this->in_dungeon;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -217,12 +248,12 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Get character
+	 * Get last_action
 	 *
-	 * @return Character|null
+	 * @return DungeonCard|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getLastAction(): ?DungeonCard {
+		return $this->last_action;
 	}
 
 	/**
@@ -239,12 +270,12 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Get last_action
+	 * Get current_action
 	 *
 	 * @return DungeonCard|null
 	 */
-	public function getLastAction(): ?DungeonCard {
-		return $this->last_action;
+	public function getCurrentAction(): ?DungeonCard {
+		return $this->current_action;
 	}
 
 	/**
@@ -258,15 +289,6 @@ class Dungeoneer {
 		$this->current_action = $currentAction;
 
 		return $this;
-	}
-
-	/**
-	 * Get current_action
-	 *
-	 * @return DungeonCard|null
-	 */
-	public function getCurrentAction(): ?DungeonCard {
-		return $this->current_action;
 	}
 
 	/**
@@ -363,25 +385,12 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Set party
-	 *
-	 * @param DungeonParty|null $party
+	 * Get target_dungeoneer
 	 *
 	 * @return Dungeoneer
 	 */
-	public function setParty(DungeonParty $party = null): static {
-		$this->party = $party;
-
-		return $this;
-	}
-
-	/**
-	 * Get party
-	 *
-	 * @return DungeonParty|null
-	 */
-	public function getParty(): ?DungeonParty {
-		return $this->party;
+	public function getTargetDungeoneer(): Dungeoneer {
+		return $this->target_dungeoneer;
 	}
 
 	/**
@@ -398,12 +407,12 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Get target_dungeoneer
+	 * Get target_monster
 	 *
-	 * @return Dungeoneer
+	 * @return DungeonMonster
 	 */
-	public function getTargetDungeoneer(): Dungeoneer {
-		return $this->target_dungeoneer;
+	public function getTargetMonster(): DungeonMonster {
+		return $this->target_monster;
 	}
 
 	/**
@@ -420,12 +429,12 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Get target_monster
+	 * Get target_treasure
 	 *
-	 * @return DungeonMonster
+	 * @return DungeonTreasure
 	 */
-	public function getTargetMonster(): DungeonMonster {
-		return $this->target_monster;
+	public function getTargetTreasure(): DungeonTreasure {
+		return $this->target_treasure;
 	}
 
 	/**
@@ -439,14 +448,5 @@ class Dungeoneer {
 		$this->target_treasure = $targetTreasure;
 
 		return $this;
-	}
-
-	/**
-	 * Get target_treasure
-	 *
-	 * @return DungeonTreasure
-	 */
-	public function getTargetTreasure(): DungeonTreasure {
-		return $this->target_treasure;
 	}
 }

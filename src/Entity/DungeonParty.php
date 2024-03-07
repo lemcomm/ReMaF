@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 
 class DungeonParty {
 	private int $counter;
-	private int $id;
+	private ?int $id = null;
 	private ?Dungeon $dungeon;
 	private ?DungeonLevel $current_level;
 	private Collection $members;
@@ -34,6 +34,24 @@ class DungeonParty {
 	}
 
 	/**
+	 * Get members
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMembers(): ArrayCollection|Collection {
+		return $this->members;
+	}
+
+	/**
+	 * Get counter
+	 *
+	 * @return integer
+	 */
+	public function getCounter(): int {
+		return $this->counter;
+	}
+
+	/**
 	 * Set counter
 	 *
 	 * @param integer $counter
@@ -47,21 +65,21 @@ class DungeonParty {
 	}
 
 	/**
-	 * Get counter
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCounter(): int {
-		return $this->counter;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get dungeon
 	 *
-	 * @return integer
+	 * @return Dungeon|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getDungeon(): ?Dungeon {
+		return $this->dungeon;
 	}
 
 	/**
@@ -78,12 +96,12 @@ class DungeonParty {
 	}
 
 	/**
-	 * Get dungeon
+	 * Get current_level
 	 *
-	 * @return Dungeon|null
+	 * @return DungeonLevel|null
 	 */
-	public function getDungeon(): ?Dungeon {
-		return $this->dungeon;
+	public function getCurrentLevel(): ?DungeonLevel {
+		return $this->current_level;
 	}
 
 	/**
@@ -97,15 +115,6 @@ class DungeonParty {
 		$this->current_level = $currentLevel;
 
 		return $this;
-	}
-
-	/**
-	 * Get current_level
-	 *
-	 * @return DungeonLevel|null
-	 */
-	public function getCurrentLevel(): ?DungeonLevel {
-		return $this->current_level;
 	}
 
 	/**
@@ -128,15 +137,6 @@ class DungeonParty {
 	 */
 	public function removeMember(Dungeoneer $members): void {
 		$this->members->removeElement($members);
-	}
-
-	/**
-	 * Get members
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getMembers(): ArrayCollection|Collection {
-		return $this->members;
 	}
 
 	/**

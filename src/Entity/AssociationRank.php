@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
  * AssociationRank
  */
 class AssociationRank {
-	private int $id;
+	private ?int $id = null;
 	private string $name;
 	private int $level;
 	private bool $view_all;
@@ -37,10 +37,6 @@ class AssociationRank {
 		$this->descriptions = new ArrayCollection();
 	}
 
-	public function isOwner(): bool {
-		return $this->owner;
-	}
-
 	public function canSubcreate(): bool {
 		if ($this->owner || $this->subcreate) {
 			return true;
@@ -62,14 +58,16 @@ class AssociationRank {
 		return $this->build;
 	}
 
-	public function findAllKnownSubordinates(): ArrayCollection {
-		if ($this->owner || $this->view_all) {
+	public function findManageableSubordinates(): ArrayCollection|Collection {
+		if ($this->owner) {
+			return $this->association->getRanks();
+		} elseif ($this->manager && $this->view_all) {
 			return $this->findAllSubordinates();
+		} elseif ($this->manager) {
+			return $this->findAllKnownSubordinates();
+		} else {
+			return new ArrayCollection;
 		}
-		if ($this->view_down > 0) {
-			return $this->findKnownSubordinates(1, $this->view_down);
-		}
-		return new ArrayCollection();
 	}
 
 	public function findAllSubordinates(): ArrayCollection {
@@ -84,6 +82,25 @@ class AssociationRank {
 			}
 		}
 		return $subs;
+	}
+
+	/**
+	 * Get subordinates
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getSubordinates(): ArrayCollection|Collection {
+		return $this->subordinates;
+	}
+
+	public function findAllKnownSubordinates(): ArrayCollection {
+		if ($this->owner || $this->view_all) {
+			return $this->findAllSubordinates();
+		}
+		if ($this->view_down > 0) {
+			return $this->findKnownSubordinates(1, $this->view_down);
+		}
+		return new ArrayCollection();
 	}
 
 	public function findKnownSubordinates($depth, $max): ArrayCollection {
@@ -102,26 +119,14 @@ class AssociationRank {
 		return $subs;
 	}
 
-	public function findManageableSubordinates(): ArrayCollection|Collection {
-		if ($this->owner) {
-			return $this->association->getRanks();
-		} elseif ($this->manager && $this->view_all) {
-			return $this->findAllSubordinates();
-		} elseif ($this->manager) {
-			return $this->findAllKnownSubordinates();
-		} else {
-			return new ArrayCollection;
+	public function findAllKnownCharacters(): ArrayCollection {
+		$all = new ArrayCollection();
+		foreach ($this->findAllKnownRanks() as $rank) {
+			foreach ($rank->getMembers() as $mbr) {
+				$all->add($mbr->getCharacter());
+			}
 		}
-	}
-
-	public function findAllKnownSuperiors(): ArrayCollection {
-		if ($this->view_all) {
-			return $this->findAllSuperiors();
-		}
-		if ($this->view_up > 0) {
-			return $this->findKnownSuperiors(1, $this->view_up);
-		}
-		return new ArrayCollection();
+		return $all;
 	}
 
 	public function findAllKnownRanks(): ArrayCollection|Collection {
@@ -147,14 +152,14 @@ class AssociationRank {
 		return $all;
 	}
 
-	public function findAllKnownCharacters(): ArrayCollection {
-		$all = new ArrayCollection();
-		foreach ($this->findAllKnownRanks() as $rank) {
-			foreach ($rank->getMembers() as $mbr) {
-				$all->add($mbr->getCharacter());
-			}
+	public function findAllKnownSuperiors(): ArrayCollection {
+		if ($this->view_all) {
+			return $this->findAllSuperiors();
 		}
-		return $all;
+		if ($this->view_up > 0) {
+			return $this->findKnownSuperiors(1, $this->view_up);
+		}
+		return new ArrayCollection();
 	}
 
 	public function findAllSuperiors(): ArrayCollection {
@@ -172,6 +177,28 @@ class AssociationRank {
 		return $sups;
 	}
 
+	/**
+	 * Get superior
+	 *
+	 * @return AssociationRank|null
+	 */
+	public function getSuperior(): ?AssociationRank {
+		return $this->superior;
+	}
+
+	/**
+	 * Set superior
+	 *
+	 * @param AssociationRank|null $superior
+	 *
+	 * @return AssociationRank
+	 */
+	public function setSuperior(AssociationRank $superior = null): static {
+		$this->superior = $superior;
+
+		return $this;
+	}
+
 	public function findKnownSuperiors($depth, $max): ArrayCollection {
 		$sups = new ArrayCollection();
 		if ($mySup = $this->superior) {
@@ -187,6 +214,15 @@ class AssociationRank {
 
 		}
 		return $sups;
+	}
+
+	/**
+	 * Get members
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMembers(): ArrayCollection|Collection {
+		return $this->members;
 	}
 
 	public function findRankDifference($rank): int|string {
@@ -219,25 +255,34 @@ class AssociationRank {
 	}
 
 	/**
-	 * Set name
+	 * Get association
 	 *
-	 * @param string $name
+	 * @return Association|null
+	 */
+	public function getAssociation(): ?Association {
+		return $this->association;
+	}
+
+	/**
+	 * Set association
+	 *
+	 * @param Association|null $association
 	 *
 	 * @return AssociationRank
 	 */
-	public function setName(string $name): static {
-		$this->name = $name;
+	public function setAssociation(Association $association = null): static {
+		$this->association = $association;
 
 		return $this;
 	}
 
 	/**
-	 * Get name
+	 * Get level
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getLevel(): ?int {
+		return $this->level;
 	}
 
 	/**
@@ -254,12 +299,34 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get level
+	 * Get name
 	 *
-	 * @return int|null
+	 * @return string
 	 */
-	public function getLevel(): ?int {
-		return $this->level;
+	public function getName(): string {
+		return $this->name;
+	}
+
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return AssociationRank
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
+
+		return $this;
+	}
+
+	/**
+	 * Get view_all
+	 *
+	 * @return bool|null
+	 */
+	public function getViewAll(): ?bool {
+		return $this->view_all;
 	}
 
 	/**
@@ -276,12 +343,12 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get view_all
+	 * Get view_up
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getViewAll(): ?bool {
-		return $this->view_all;
+	public function getViewUp(): ?int {
+		return $this->view_up;
 	}
 
 	/**
@@ -298,12 +365,12 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get view_up
+	 * Get view_down
 	 *
 	 * @return int|null
 	 */
-	public function getViewUp(): ?int {
-		return $this->view_up;
+	public function getViewDown(): ?int {
+		return $this->view_down;
 	}
 
 	/**
@@ -320,12 +387,12 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get view_down
+	 * Get view_self
 	 *
-	 * @return int|null
+	 * @return bool|null
 	 */
-	public function getViewDown(): ?int {
-		return $this->view_down;
+	public function getViewSelf(): ?bool {
+		return $this->view_self;
 	}
 
 	/**
@@ -342,12 +409,16 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get view_self
+	 * Get owner
 	 *
 	 * @return bool|null
 	 */
-	public function getViewSelf(): ?bool {
-		return $this->view_self;
+	public function getOwner(): ?bool {
+		return $this->owner;
+	}
+
+	public function isOwner(): bool {
+		return $this->owner;
 	}
 
 	/**
@@ -364,12 +435,12 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get owner
+	 * Get manager
 	 *
 	 * @return bool|null
 	 */
-	public function getOwner(): ?bool {
-		return $this->owner;
+	public function getManager(): ?bool {
+		return $this->manager;
 	}
 
 	/**
@@ -386,12 +457,12 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get manager
+	 * Get build
 	 *
 	 * @return bool|null
 	 */
-	public function getManager(): ?bool {
-		return $this->manager;
+	public function getBuild(): ?bool {
+		return $this->build;
 	}
 
 	/**
@@ -408,12 +479,12 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get build
+	 * Get subcreate
 	 *
 	 * @return bool|null
 	 */
-	public function getBuild(): ?bool {
-		return $this->build;
+	public function getSubcreate(): ?bool {
+		return $this->subcreate;
 	}
 
 	/**
@@ -430,12 +501,12 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get subcreate
+	 * Get createAssocs
 	 *
 	 * @return bool|null
 	 */
-	public function getSubcreate(): ?bool {
-		return $this->subcreate;
+	public function getCreateAssocs(): ?bool {
+		return $this->createAssocs;
 	}
 
 	/**
@@ -452,21 +523,21 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get createAssocs
+	 * Get id
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getCreateAssocs(): ?bool {
-		return $this->createAssocs;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get description
 	 *
-	 * @return integer
+	 * @return Description|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getDescription(): ?Description {
+		return $this->description;
 	}
 
 	/**
@@ -480,15 +551,6 @@ class AssociationRank {
 		$this->description = $description;
 
 		return $this;
-	}
-
-	/**
-	 * Get description
-	 *
-	 * @return Description|null
-	 */
-	public function getDescription(): ?Description {
-		return $this->description;
 	}
 
 	/**
@@ -514,15 +576,6 @@ class AssociationRank {
 	}
 
 	/**
-	 * Get subordinates
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getSubordinates(): ArrayCollection|Collection {
-		return $this->subordinates;
-	}
-
-	/**
 	 * Add members
 	 *
 	 * @param AssociationMember $members
@@ -542,15 +595,6 @@ class AssociationRank {
 	 */
 	public function removeMember(AssociationMember $members): void {
 		$this->members->removeElement($members);
-	}
-
-	/**
-	 * Get members
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getMembers(): ArrayCollection|Collection {
-		return $this->members;
 	}
 
 	/**
@@ -582,49 +626,5 @@ class AssociationRank {
 	 */
 	public function getDescriptions(): ArrayCollection|Collection {
 		return $this->descriptions;
-	}
-
-	/**
-	 * Set superior
-	 *
-	 * @param AssociationRank|null $superior
-	 *
-	 * @return AssociationRank
-	 */
-	public function setSuperior(AssociationRank $superior = null): static {
-		$this->superior = $superior;
-
-		return $this;
-	}
-
-	/**
-	 * Get superior
-	 *
-	 * @return AssociationRank|null
-	 */
-	public function getSuperior(): ?AssociationRank {
-		return $this->superior;
-	}
-
-	/**
-	 * Set association
-	 *
-	 * @param Association|null $association
-	 *
-	 * @return AssociationRank
-	 */
-	public function setAssociation(Association $association = null): static {
-		$this->association = $association;
-
-		return $this;
-	}
-
-	/**
-	 * Get association
-	 *
-	 * @return Association|null
-	 */
-	public function getAssociation(): ?Association {
-		return $this->association;
 	}
 }

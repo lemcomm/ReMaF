@@ -63,7 +63,7 @@ class GameRunner {
 		}
 
 		$old = new \DateTime("-90 days");
-		$query = $this->em->createQuery('DELETE FROM BM2SiteBundle:UserLog u WHERE u.ts < :old');
+		$query = $this->em->createQuery('DELETE FROM App:UserLog u WHERE u.ts < :old');
 		$query->setParameter('old', $old);
 		$query->execute();
 

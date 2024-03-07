@@ -14,7 +14,7 @@ class Biome {
 	private float $travel;
 	private float $road_construction;
 	private float $feature_construction;
-	private int $id;
+	private ?int $id = null;
 	private Collection $geo_data;
 
 	/**
@@ -22,6 +22,15 @@ class Biome {
 	 */
 	public function __construct() {
 		$this->geo_data = new ArrayCollection();
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -38,12 +47,12 @@ class Biome {
 	}
 
 	/**
-	 * Get name
+	 * Get spot
 	 *
-	 * @return string
+	 * @return float
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getSpot(): float {
+		return $this->spot;
 	}
 
 	/**
@@ -60,12 +69,12 @@ class Biome {
 	}
 
 	/**
-	 * Get spot
+	 * Get travel
 	 *
 	 * @return float
 	 */
-	public function getSpot(): float {
-		return $this->spot;
+	public function getTravel(): float {
+		return $this->travel;
 	}
 
 	/**
@@ -82,12 +91,12 @@ class Biome {
 	}
 
 	/**
-	 * Get travel
+	 * Get road_construction
 	 *
 	 * @return float
 	 */
-	public function getTravel(): float {
-		return $this->travel;
+	public function getRoadConstruction(): float {
+		return $this->road_construction;
 	}
 
 	/**
@@ -104,12 +113,12 @@ class Biome {
 	}
 
 	/**
-	 * Get road_construction
+	 * Get feature_construction
 	 *
 	 * @return float
 	 */
-	public function getRoadConstruction(): float {
-		return $this->road_construction;
+	public function getFeatureConstruction(): float {
+		return $this->feature_construction;
 	}
 
 	/**
@@ -126,20 +135,11 @@ class Biome {
 	}
 
 	/**
-	 * Get feature_construction
-	 *
-	 * @return float
-	 */
-	public function getFeatureConstruction(): float {
-		return $this->feature_construction;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 

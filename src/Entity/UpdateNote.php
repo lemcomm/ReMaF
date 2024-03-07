@@ -9,7 +9,16 @@ class UpdateNote {
 	private string $version;
 	private string $title;
 	private string $text;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
 	/**
 	 * Set ts
@@ -25,12 +34,12 @@ class UpdateNote {
 	}
 
 	/**
-	 * Get ts
+	 * Get version
 	 *
-	 * @return DateTime
+	 * @return string
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getVersion(): string {
+		return $this->version;
 	}
 
 	/**
@@ -47,12 +56,12 @@ class UpdateNote {
 	}
 
 	/**
-	 * Get version
+	 * Get title
 	 *
 	 * @return string
 	 */
-	public function getVersion(): string {
-		return $this->version;
+	public function getTitle(): string {
+		return $this->title;
 	}
 
 	/**
@@ -69,12 +78,12 @@ class UpdateNote {
 	}
 
 	/**
-	 * Get title
+	 * Get text
 	 *
 	 * @return string
 	 */
-	public function getTitle(): string {
-		return $this->title;
+	public function getText(): string {
+		return $this->text;
 	}
 
 	/**
@@ -91,20 +100,11 @@ class UpdateNote {
 	}
 
 	/**
-	 * Get text
-	 *
-	 * @return string
-	 */
-	public function getText(): string {
-		return $this->text;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 }

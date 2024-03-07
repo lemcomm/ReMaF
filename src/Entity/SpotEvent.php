@@ -9,10 +9,19 @@ class SpotEvent {
 	private DateTime $ts;
 	private point $location;
 	private bool $current;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $spotter;
 	private ?Character $target;
 	private ?GeoFeature $tower;
+
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
 	/**
 	 * Set ts
@@ -28,12 +37,12 @@ class SpotEvent {
 	}
 
 	/**
-	 * Get ts
+	 * Get location
 	 *
-	 * @return DateTime
+	 * @return point
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getLocation(): Point {
+		return $this->location;
 	}
 
 	/**
@@ -50,12 +59,16 @@ class SpotEvent {
 	}
 
 	/**
-	 * Get location
+	 * Get current
 	 *
-	 * @return point
+	 * @return boolean
 	 */
-	public function getLocation(): Point {
-		return $this->location;
+	public function getCurrent(): bool {
+		return $this->current;
+	}
+
+	public function isCurrent(): ?bool {
+		return $this->current;
 	}
 
 	/**
@@ -72,21 +85,21 @@ class SpotEvent {
 	}
 
 	/**
-	 * Get current
+	 * Get id
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getCurrent(): bool {
-		return $this->current;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get spotter
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getSpotter(): ?Character {
+		return $this->spotter;
 	}
 
 	/**
@@ -103,12 +116,12 @@ class SpotEvent {
 	}
 
 	/**
-	 * Get spotter
+	 * Get target
 	 *
 	 * @return Character|null
 	 */
-	public function getSpotter(): ?Character {
-		return $this->spotter;
+	public function getTarget(): ?Character {
+		return $this->target;
 	}
 
 	/**
@@ -125,12 +138,12 @@ class SpotEvent {
 	}
 
 	/**
-	 * Get target
+	 * Get tower
 	 *
-	 * @return Character|null
+	 * @return GeoFeature|null
 	 */
-	public function getTarget(): ?Character {
-		return $this->target;
+	public function getTower(): ?GeoFeature {
+		return $this->tower;
 	}
 
 	/**
@@ -144,18 +157,5 @@ class SpotEvent {
 		$this->tower = $tower;
 
 		return $this;
-	}
-
-	/**
-	 * Get tower
-	 *
-	 * @return GeoFeature|null
-	 */
-	public function getTower(): ?GeoFeature {
-		return $this->tower;
-	}
-
-	public function isCurrent(): ?bool {
-		return $this->current;
 	}
 }

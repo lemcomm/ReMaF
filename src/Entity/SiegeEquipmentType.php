@@ -11,7 +11,16 @@ class SiegeEquipmentType {
 	private int $hours;
 	private int $soldiers;
 	private int $contacts;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -27,12 +36,16 @@ class SiegeEquipmentType {
 	}
 
 	/**
-	 * Get name
+	 * Get ranged
 	 *
-	 * @return string
+	 * @return boolean
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getRanged(): bool {
+		return $this->ranged;
+	}
+
+	public function isRanged(): ?bool {
+		return $this->ranged;
 	}
 
 	/**
@@ -49,12 +62,12 @@ class SiegeEquipmentType {
 	}
 
 	/**
-	 * Get ranged
+	 * Get hours
 	 *
-	 * @return boolean
+	 * @return integer
 	 */
-	public function getRanged(): bool {
-		return $this->ranged;
+	public function getHours(): int {
+		return $this->hours;
 	}
 
 	/**
@@ -71,12 +84,12 @@ class SiegeEquipmentType {
 	}
 
 	/**
-	 * Get hours
+	 * Get soldiers
 	 *
 	 * @return integer
 	 */
-	public function getHours(): int {
-		return $this->hours;
+	public function getSoldiers(): int {
+		return $this->soldiers;
 	}
 
 	/**
@@ -93,12 +106,12 @@ class SiegeEquipmentType {
 	}
 
 	/**
-	 * Get soldiers
+	 * Get contacts
 	 *
 	 * @return integer
 	 */
-	public function getSoldiers(): int {
-		return $this->soldiers;
+	public function getContacts(): int {
+		return $this->contacts;
 	}
 
 	/**
@@ -115,24 +128,11 @@ class SiegeEquipmentType {
 	}
 
 	/**
-	 * Get contacts
-	 *
-	 * @return integer
-	 */
-	public function getContacts(): int {
-		return $this->contacts;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
-	}
-
-	public function isRanged(): ?bool {
-		return $this->ranged;
 	}
 }

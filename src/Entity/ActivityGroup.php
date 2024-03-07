@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
  * ActivityGroup
  */
 class ActivityGroup {
-	private int $id;
+	private ?int $id = null;
 	private string $name;
 	private Collection $participants;
 	private Collection $bout_participation;
@@ -21,6 +21,15 @@ class ActivityGroup {
 	public function __construct() {
 		$this->participants = new ArrayCollection();
 		$this->bout_participation = new ArrayCollection();
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string|null
+	 */
+	public function getName(): ?string {
+		return $this->name;
 	}
 
 	/**
@@ -37,20 +46,11 @@ class ActivityGroup {
 	}
 
 	/**
-	 * Get name
-	 *
-	 * @return string|null
-	 */
-	public function getName(): ?string {
-		return $this->name;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -117,6 +117,15 @@ class ActivityGroup {
 	}
 
 	/**
+	 * Get activity
+	 *
+	 * @return Activity|null
+	 */
+	public function getActivity(): ?Activity {
+		return $this->activity;
+	}
+
+	/**
 	 * Set activity
 	 *
 	 * @param Activity|null $activity
@@ -127,14 +136,5 @@ class ActivityGroup {
 		$this->activity = $activity;
 
 		return $this;
-	}
-
-	/**
-	 * Get activity
-	 *
-	 * @return Activity|null
-	 */
-	public function getActivity(): ?Activity {
-		return $this->activity;
 	}
 }

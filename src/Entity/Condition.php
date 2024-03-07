@@ -6,11 +6,20 @@ class Condition {
 	private string $type;
 	private float $number_value;
 	private string $string_value;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $character;
 	private ?Realm $target_realm;
 	private ?Character $target_character;
 	private ?Trade $target_trade;
+
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
 	/**
 	 * Set type
@@ -26,12 +35,12 @@ class Condition {
 	}
 
 	/**
-	 * Get type
+	 * Get number_value
 	 *
-	 * @return string
+	 * @return float
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getNumberValue(): float {
+		return $this->number_value;
 	}
 
 	/**
@@ -48,12 +57,12 @@ class Condition {
 	}
 
 	/**
-	 * Get number_value
+	 * Get string_value
 	 *
-	 * @return float
+	 * @return string
 	 */
-	public function getNumberValue(): float {
-		return $this->number_value;
+	public function getStringValue(): string {
+		return $this->string_value;
 	}
 
 	/**
@@ -70,21 +79,21 @@ class Condition {
 	}
 
 	/**
-	 * Get string_value
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getStringValue(): string {
-		return $this->string_value;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -101,12 +110,12 @@ class Condition {
 	}
 
 	/**
-	 * Get character
+	 * Get target_realm
 	 *
-	 * @return Character|null
+	 * @return Realm|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getTargetRealm(): ?Realm {
+		return $this->target_realm;
 	}
 
 	/**
@@ -123,12 +132,12 @@ class Condition {
 	}
 
 	/**
-	 * Get target_realm
+	 * Get target_character
 	 *
-	 * @return Realm|null
+	 * @return Character|null
 	 */
-	public function getTargetRealm(): ?Realm {
-		return $this->target_realm;
+	public function getTargetCharacter(): ?Character {
+		return $this->target_character;
 	}
 
 	/**
@@ -145,12 +154,12 @@ class Condition {
 	}
 
 	/**
-	 * Get target_character
+	 * Get target_trade
 	 *
-	 * @return Character|null
+	 * @return Trade|null
 	 */
-	public function getTargetCharacter(): ?Character {
-		return $this->target_character;
+	public function getTargetTrade(): ?Trade {
+		return $this->target_trade;
 	}
 
 	/**
@@ -164,14 +173,5 @@ class Condition {
 		$this->target_trade = $targetTrade;
 
 		return $this;
-	}
-
-	/**
-	 * Get target_trade
-	 *
-	 * @return Trade|null
-	 */
-	public function getTargetTrade(): ?Trade {
-		return $this->target_trade;
 	}
 }

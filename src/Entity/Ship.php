@@ -7,8 +7,17 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 class Ship {
 	private ?Point $location;
 	private int $cycle;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $owner;
+
+	/**
+	 * Get location
+	 *
+	 * @return Point|null
+	 */
+	public function getLocation(): ?Point {
+		return $this->location;
+	}
 
 	/**
 	 * Set location
@@ -24,12 +33,12 @@ class Ship {
 	}
 
 	/**
-	 * Get location
+	 * Get cycle
 	 *
-	 * @return Point|null
+	 * @return integer
 	 */
-	public function getLocation(): ?Point {
-		return $this->location;
+	public function getCycle(): int {
+		return $this->cycle;
 	}
 
 	/**
@@ -46,21 +55,21 @@ class Ship {
 	}
 
 	/**
-	 * Get cycle
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get owner
 	 *
-	 * @return integer
+	 * @return Character
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getOwner(): Character {
+		return $this->owner;
 	}
 
 	/**
@@ -74,14 +83,5 @@ class Ship {
 		$this->owner = $owner;
 
 		return $this;
-	}
-
-	/**
-	 * Get owner
-	 *
-	 * @return Character
-	 */
-	public function getOwner(): Character {
-		return $this->owner;
 	}
 }

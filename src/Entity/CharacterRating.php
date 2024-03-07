@@ -12,7 +12,7 @@ class CharacterRating {
 	private int $honor;
 	private int $respect;
 	private DateTime $last_change;
-	private int $id;
+	private ?int $id = null;
 	private Collection $votes;
 	private ?Character $character;
 	private ?User $given_by_user;
@@ -22,6 +22,15 @@ class CharacterRating {
 	 */
 	public function __construct() {
 		$this->votes = new ArrayCollection();
+	}
+
+	/**
+	 * Get content
+	 *
+	 * @return string
+	 */
+	public function getContent(): string {
+		return $this->content;
 	}
 
 	/**
@@ -38,12 +47,12 @@ class CharacterRating {
 	}
 
 	/**
-	 * Get content
+	 * Get trust
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getContent(): string {
-		return $this->content;
+	public function getTrust(): int {
+		return $this->trust;
 	}
 
 	/**
@@ -60,12 +69,12 @@ class CharacterRating {
 	}
 
 	/**
-	 * Get trust
+	 * Get honor
 	 *
 	 * @return integer
 	 */
-	public function getTrust(): int {
-		return $this->trust;
+	public function getHonor(): int {
+		return $this->honor;
 	}
 
 	/**
@@ -82,12 +91,12 @@ class CharacterRating {
 	}
 
 	/**
-	 * Get honor
+	 * Get respect
 	 *
 	 * @return integer
 	 */
-	public function getHonor(): int {
-		return $this->honor;
+	public function getRespect(): int {
+		return $this->respect;
 	}
 
 	/**
@@ -104,12 +113,12 @@ class CharacterRating {
 	}
 
 	/**
-	 * Get respect
+	 * Get last_change
 	 *
-	 * @return integer
+	 * @return DateTime
 	 */
-	public function getRespect(): int {
-		return $this->respect;
+	public function getLastChange(): DateTime {
+		return $this->last_change;
 	}
 
 	/**
@@ -126,20 +135,11 @@ class CharacterRating {
 	}
 
 	/**
-	 * Get last_change
-	 *
-	 * @return DateTime
-	 */
-	public function getLastChange(): DateTime {
-		return $this->last_change;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -175,6 +175,15 @@ class CharacterRating {
 	}
 
 	/**
+	 * Get character
+	 *
+	 * @return Character|null
+	 */
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
+
+	/**
 	 * Set character
 	 *
 	 * @param Character|null $character
@@ -188,12 +197,12 @@ class CharacterRating {
 	}
 
 	/**
-	 * Get character
+	 * Get given_by_user
 	 *
-	 * @return Character|null
+	 * @return User|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getGivenByUser(): ?User {
+		return $this->given_by_user;
 	}
 
 	/**
@@ -207,14 +216,5 @@ class CharacterRating {
 		$this->given_by_user = $givenByUser;
 
 		return $this;
-	}
-
-	/**
-	 * Get given_by_user
-	 *
-	 * @return User|null
-	 */
-	public function getGivenByUser(): ?User {
-		return $this->given_by_user;
 	}
 }

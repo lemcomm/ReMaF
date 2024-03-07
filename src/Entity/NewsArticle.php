@@ -14,9 +14,18 @@ class NewsArticle {
 	private int $col;
 	private int $size_x;
 	private int $size_y;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $author;
 	private ?NewsEdition $edition;
+
+	/**
+	 * Get written
+	 *
+	 * @return DateTime
+	 */
+	public function getWritten(): DateTime {
+		return $this->written;
+	}
 
 	/**
 	 * Set written
@@ -32,12 +41,12 @@ class NewsArticle {
 	}
 
 	/**
-	 * Get written
+	 * Get updated
 	 *
-	 * @return DateTime
+	 * @return DateTime|null
 	 */
-	public function getWritten(): DateTime {
-		return $this->written;
+	public function getUpdated(): ?DateTime {
+		return $this->updated;
 	}
 
 	/**
@@ -54,12 +63,12 @@ class NewsArticle {
 	}
 
 	/**
-	 * Get updated
+	 * Get title
 	 *
-	 * @return DateTime|null
+	 * @return string
 	 */
-	public function getUpdated(): ?DateTime {
-		return $this->updated;
+	public function getTitle(): string {
+		return $this->title;
 	}
 
 	/**
@@ -76,12 +85,12 @@ class NewsArticle {
 	}
 
 	/**
-	 * Get title
+	 * Get content
 	 *
 	 * @return string
 	 */
-	public function getTitle(): string {
-		return $this->title;
+	public function getContent(): string {
+		return $this->content;
 	}
 
 	/**
@@ -98,12 +107,12 @@ class NewsArticle {
 	}
 
 	/**
-	 * Get content
+	 * Get position
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getContent(): string {
-		return $this->content;
+	public function getPosition(): int {
+		return $this->position;
 	}
 
 	/**
@@ -120,12 +129,12 @@ class NewsArticle {
 	}
 
 	/**
-	 * Get position
+	 * Get row
 	 *
 	 * @return integer
 	 */
-	public function getPosition(): int {
-		return $this->position;
+	public function getRow(): int {
+		return $this->row;
 	}
 
 	/**
@@ -142,12 +151,12 @@ class NewsArticle {
 	}
 
 	/**
-	 * Get row
+	 * Get col
 	 *
 	 * @return integer
 	 */
-	public function getRow(): int {
-		return $this->row;
+	public function getCol(): int {
+		return $this->col;
 	}
 
 	/**
@@ -164,12 +173,12 @@ class NewsArticle {
 	}
 
 	/**
-	 * Get col
+	 * Get size_x
 	 *
 	 * @return integer
 	 */
-	public function getCol(): int {
-		return $this->col;
+	public function getSizeX(): int {
+		return $this->size_x;
 	}
 
 	/**
@@ -186,12 +195,12 @@ class NewsArticle {
 	}
 
 	/**
-	 * Get size_x
+	 * Get size_y
 	 *
 	 * @return integer
 	 */
-	public function getSizeX(): int {
-		return $this->size_x;
+	public function getSizeY(): int {
+		return $this->size_y;
 	}
 
 	/**
@@ -208,21 +217,21 @@ class NewsArticle {
 	}
 
 	/**
-	 * Get size_y
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getSizeY(): int {
-		return $this->size_y;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get author
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getAuthor(): ?Character {
+		return $this->author;
 	}
 
 	/**
@@ -239,12 +248,12 @@ class NewsArticle {
 	}
 
 	/**
-	 * Get author
+	 * Get edition
 	 *
-	 * @return Character|null
+	 * @return NewsEdition|null
 	 */
-	public function getAuthor(): ?Character {
-		return $this->author;
+	public function getEdition(): ?NewsEdition {
+		return $this->edition;
 	}
 
 	/**
@@ -258,14 +267,5 @@ class NewsArticle {
 		$this->edition = $edition;
 
 		return $this;
-	}
-
-	/**
-	 * Get edition
-	 *
-	 * @return NewsEdition|null
-	 */
-	public function getEdition(): ?NewsEdition {
-		return $this->edition;
 	}
 }

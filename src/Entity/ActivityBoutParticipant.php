@@ -7,18 +7,26 @@ namespace App\Entity;
  * ActivityBoutParticipant
  */
 class ActivityBoutParticipant {
-
-	private int $id;
+	private ?int $id = null;
 	private ActivityBout $bout;
 	private ActivityParticipant $participant;
 
 	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get bout
+	 *
+	 * @return ActivityBout|null
+	 */
+	public function getBout(): ?ActivityBout {
+		return $this->bout;
 	}
 
 	/**
@@ -35,12 +43,12 @@ class ActivityBoutParticipant {
 	}
 
 	/**
-	 * Get bout
+	 * Get participant
 	 *
-	 * @return ActivityBout|null
+	 * @return ActivityParticipant|null
 	 */
-	public function getBout(): ?ActivityBout {
-		return $this->bout;
+	public function getParticipant(): ?ActivityParticipant {
+		return $this->participant;
 	}
 
 	/**
@@ -54,14 +62,5 @@ class ActivityBoutParticipant {
 		$this->participant = $participant;
 
 		return $this;
-	}
-
-	/**
-	 * Get participant
-	 *
-	 * @return ActivityParticipant|null
-	 */
-	public function getParticipant(): ?ActivityParticipant {
-		return $this->participant;
 	}
 }

@@ -6,7 +6,16 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
 
 class Cliff {
 	private linestring $path;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get path
+	 *
+	 * @return linestring
+	 */
+	public function getPath(): LineString {
+		return $this->path;
+	}
 
 	/**
 	 * Set path
@@ -22,20 +31,11 @@ class Cliff {
 	}
 
 	/**
-	 * Get path
-	 *
-	 * @return linestring
-	 */
-	public function getPath(): LineString {
-		return $this->path;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 }

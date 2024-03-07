@@ -7,7 +7,16 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\Polygon;
 class MapPOI {
 	private string $name;
 	private Polygon $geom;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -23,12 +32,12 @@ class MapPOI {
 	}
 
 	/**
-	 * Get name
+	 * Get geom
 	 *
-	 * @return string
+	 * @return polygon
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getGeom(): Polygon {
+		return $this->geom;
 	}
 
 	/**
@@ -45,20 +54,11 @@ class MapPOI {
 	}
 
 	/**
-	 * Get geom
-	 *
-	 * @return polygon
-	 */
-	public function getGeom(): Polygon {
-		return $this->geom;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 }

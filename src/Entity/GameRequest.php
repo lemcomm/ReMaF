@@ -16,7 +16,7 @@ class GameRequest {
 	private ?string $text;
 	private ?bool $accepted;
 	private ?bool $rejected;
-	private ?int $id;
+	private ?int $id = null;
 	private ?Character $from_character;
 	private ?Settlement $from_settlement;
 	private ?Realm $from_realm;
@@ -54,6 +54,15 @@ class GameRequest {
 	}
 
 	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
+
+	/**
 	 * Set type
 	 *
 	 * @param string $type
@@ -67,12 +76,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get type
+	 * Get created
 	 *
-	 * @return string
+	 * @return DateTime|null
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getCreated(): ?DateTime {
+		return $this->created;
 	}
 
 	/**
@@ -89,12 +98,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get created
+	 * Get expires
 	 *
 	 * @return DateTime|null
 	 */
-	public function getCreated(): ?DateTime {
-		return $this->created;
+	public function getExpires(): ?DateTime {
+		return $this->expires;
 	}
 
 	/**
@@ -111,12 +120,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get expires
+	 * Get number_value
 	 *
-	 * @return DateTime|null
+	 * @return float|null
 	 */
-	public function getExpires(): ?DateTime {
-		return $this->expires;
+	public function getNumberValue(): ?float {
+		return $this->number_value;
 	}
 
 	/**
@@ -133,12 +142,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get number_value
+	 * Get string_value
 	 *
-	 * @return float|null
+	 * @return string|null
 	 */
-	public function getNumberValue(): ?float {
-		return $this->number_value;
+	public function getStringValue(): ?string {
+		return $this->string_value;
 	}
 
 	/**
@@ -155,12 +164,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get string_value
+	 * Get subject
 	 *
 	 * @return string|null
 	 */
-	public function getStringValue(): ?string {
-		return $this->string_value;
+	public function getSubject(): ?string {
+		return $this->subject;
 	}
 
 	/**
@@ -177,12 +186,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get subject
+	 * Get text
 	 *
 	 * @return string|null
 	 */
-	public function getSubject(): ?string {
-		return $this->subject;
+	public function getText(): ?string {
+		return $this->text;
 	}
 
 	/**
@@ -199,12 +208,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get text
+	 * Get accepted
 	 *
-	 * @return string|null
+	 * @return bool|null
 	 */
-	public function getText(): ?string {
-		return $this->text;
+	public function getAccepted(): ?bool {
+		return $this->accepted;
 	}
 
 	/**
@@ -221,12 +230,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get accepted
+	 * Get rejected
 	 *
 	 * @return bool|null
 	 */
-	public function getAccepted(): ?bool {
-		return $this->accepted;
+	public function getRejected(): ?bool {
+		return $this->rejected;
 	}
 
 	/**
@@ -243,21 +252,21 @@ class GameRequest {
 	}
 
 	/**
-	 * Get rejected
-	 *
-	 * @return bool|null
-	 */
-	public function getRejected(): ?bool {
-		return $this->rejected;
-	}
-
-	/**
 	 * Get id
 	 *
 	 * @return int|null
 	 */
 	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get from_character
+	 *
+	 * @return Character|null
+	 */
+	public function getFromCharacter(): ?Character {
+		return $this->from_character;
 	}
 
 	/**
@@ -274,12 +283,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get from_character
+	 * Get from_settlement
 	 *
-	 * @return Character|null
+	 * @return Settlement|null
 	 */
-	public function getFromCharacter(): ?Character {
-		return $this->from_character;
+	public function getFromSettlement(): ?Settlement {
+		return $this->from_settlement;
 	}
 
 	/**
@@ -296,12 +305,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get from_settlement
+	 * Get from_realm
 	 *
-	 * @return Settlement|null
+	 * @return Realm|null
 	 */
-	public function getFromSettlement(): ?Settlement {
-		return $this->from_settlement;
+	public function getFromRealm(): ?Realm {
+		return $this->from_realm;
 	}
 
 	/**
@@ -318,12 +327,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get from_realm
+	 * Get from_house
 	 *
-	 * @return Realm|null
+	 * @return House|null
 	 */
-	public function getFromRealm(): ?Realm {
-		return $this->from_realm;
+	public function getFromHouse(): ?House {
+		return $this->from_house;
 	}
 
 	/**
@@ -340,12 +349,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get from_house
+	 * Get from_place
 	 *
-	 * @return House|null
+	 * @return Place|null
 	 */
-	public function getFromHouse(): ?House {
-		return $this->from_house;
+	public function getFromPlace(): ?Place {
+		return $this->from_place;
 	}
 
 	/**
@@ -362,12 +371,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get from_place
+	 * Get from_position
 	 *
-	 * @return Place|null
+	 * @return RealmPosition|null
 	 */
-	public function getFromPlace(): ?Place {
-		return $this->from_place;
+	public function getFromPosition(): ?RealmPosition {
+		return $this->from_position;
 	}
 
 	/**
@@ -384,12 +393,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get from_position
+	 * Get from_association
 	 *
-	 * @return RealmPosition|null
+	 * @return Association|null
 	 */
-	public function getFromPosition(): ?RealmPosition {
-		return $this->from_position;
+	public function getFromAssociation(): ?Association {
+		return $this->from_association;
 	}
 
 	/**
@@ -406,12 +415,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get from_association
+	 * Get to_character
 	 *
-	 * @return Association|null
+	 * @return Character|null
 	 */
-	public function getFromAssociation(): ?Association {
-		return $this->from_association;
+	public function getToCharacter(): ?Character {
+		return $this->to_character;
 	}
 
 	/**
@@ -428,12 +437,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get to_character
+	 * Get to_settlement
 	 *
-	 * @return Character|null
+	 * @return Settlement|null
 	 */
-	public function getToCharacter(): ?Character {
-		return $this->to_character;
+	public function getToSettlement(): ?Settlement {
+		return $this->to_settlement;
 	}
 
 	/**
@@ -450,12 +459,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get to_settlement
+	 * Get to_realm
 	 *
-	 * @return Settlement|null
+	 * @return Realm|null
 	 */
-	public function getToSettlement(): ?Settlement {
-		return $this->to_settlement;
+	public function getToRealm(): ?Realm {
+		return $this->to_realm;
 	}
 
 	/**
@@ -472,12 +481,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get to_realm
+	 * Get to_house
 	 *
-	 * @return Realm|null
+	 * @return House|null
 	 */
-	public function getToRealm(): ?Realm {
-		return $this->to_realm;
+	public function getToHouse(): ?House {
+		return $this->to_house;
 	}
 
 	/**
@@ -494,12 +503,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get to_house
+	 * Get to_place
 	 *
-	 * @return House|null
+	 * @return Place|null
 	 */
-	public function getToHouse(): ?House {
-		return $this->to_house;
+	public function getToPlace(): ?Place {
+		return $this->to_place;
 	}
 
 	/**
@@ -516,12 +525,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get to_place
+	 * Get to_position
 	 *
-	 * @return Place|null
+	 * @return RealmPosition|null
 	 */
-	public function getToPlace(): ?Place {
-		return $this->to_place;
+	public function getToPosition(): ?RealmPosition {
+		return $this->to_position;
 	}
 
 	/**
@@ -538,12 +547,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get to_position
+	 * Get to_association
 	 *
-	 * @return RealmPosition|null
+	 * @return Association|null
 	 */
-	public function getToPosition(): ?RealmPosition {
-		return $this->to_position;
+	public function getToAssociation(): ?Association {
+		return $this->to_association;
 	}
 
 	/**
@@ -560,12 +569,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get to_association
+	 * Get include_character
 	 *
-	 * @return Association|null
+	 * @return Character|null
 	 */
-	public function getToAssociation(): ?Association {
-		return $this->to_association;
+	public function getIncludeCharacter(): ?Character {
+		return $this->include_character;
 	}
 
 	/**
@@ -582,12 +591,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get include_character
+	 * Get include_settlement
 	 *
-	 * @return Character|null
+	 * @return Settlement|null
 	 */
-	public function getIncludeCharacter(): ?Character {
-		return $this->include_character;
+	public function getIncludeSettlement(): ?Settlement {
+		return $this->include_settlement;
 	}
 
 	/**
@@ -604,12 +613,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get include_settlement
+	 * Get include_realm
 	 *
-	 * @return Settlement|null
+	 * @return Realm|null
 	 */
-	public function getIncludeSettlement(): ?Settlement {
-		return $this->include_settlement;
+	public function getIncludeRealm(): ?Realm {
+		return $this->include_realm;
 	}
 
 	/**
@@ -626,12 +635,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get include_realm
+	 * Get include_house
 	 *
-	 * @return Realm|null
+	 * @return House|null
 	 */
-	public function getIncludeRealm(): ?Realm {
-		return $this->include_realm;
+	public function getIncludeHouse(): ?House {
+		return $this->include_house;
 	}
 
 	/**
@@ -648,12 +657,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get include_house
+	 * Get include_place
 	 *
-	 * @return House|null
+	 * @return Place|null
 	 */
-	public function getIncludeHouse(): ?House {
-		return $this->include_house;
+	public function getIncludePlace(): ?Place {
+		return $this->include_place;
 	}
 
 	/**
@@ -670,12 +679,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get include_place
+	 * Get include_position
 	 *
-	 * @return Place|null
+	 * @return RealmPosition|null
 	 */
-	public function getIncludePlace(): ?Place {
-		return $this->include_place;
+	public function getIncludePosition(): ?RealmPosition {
+		return $this->include_position;
 	}
 
 	/**
@@ -692,12 +701,12 @@ class GameRequest {
 	}
 
 	/**
-	 * Get include_position
+	 * Get include_association
 	 *
-	 * @return RealmPosition|null
+	 * @return Association|null
 	 */
-	public function getIncludePosition(): ?RealmPosition {
-		return $this->include_position;
+	public function getIncludeAssociation(): ?Association {
+		return $this->include_association;
 	}
 
 	/**
@@ -711,15 +720,6 @@ class GameRequest {
 		$this->include_association = $includeAssociation;
 
 		return $this;
-	}
-
-	/**
-	 * Get include_association
-	 *
-	 * @return Association|null
-	 */
-	public function getIncludeAssociation(): ?Association {
-		return $this->include_association;
 	}
 
 	/**

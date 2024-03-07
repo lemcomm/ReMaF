@@ -9,7 +9,7 @@ class NetExit {
 	private ?DateTimeInterface $last_seen = null;
 	private string $ip;
 	private string $type;
-	private int $id;
+	private ?int $id = null;
 
 	public function getTs(): ?DateTimeInterface {
 		return $this->ts;

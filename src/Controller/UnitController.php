@@ -53,13 +53,13 @@ class UnitController extends AbstractController {
                 $pm = $this->pm;
                 $settlement = $character->getInsideSettlement();
                 if ($settlement && ($pm->checkSettlementPermission($settlement, $character, 'units'))) {
-                        $query = $em->createQuery('SELECT u FROM BM2SiteBundle:Unit u JOIN BM2SiteBundle:UnitSettings s WHERE (u.character = :char OR u.settlement = :settlement OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY s.name ASC');
+                        $query = $em->createQuery('SELECT u FROM App:Unit u JOIN App:UnitSettings s WHERE (u.character = :char OR u.settlement = :settlement OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY s.name ASC');
                         $query->setParameters(array('char'=>$character, 'settlement'=>$character->getInsideSettlement()));
                 } elseif ($character->getInsideSettlement()) {
-                        $query = $em->createQuery('SELECT u FROM BM2SiteBundle:Unit u JOIN BM2SiteBundle:UnitSettings s WHERE (u.character = :char OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY s.name ASC');
+                        $query = $em->createQuery('SELECT u FROM App:Unit u JOIN App:UnitSettings s WHERE (u.character = :char OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY s.name ASC');
                         $query->setParameters(array('char'=>$character, 'settlement'=>$character->getInsideSettlement()));
                 } else {
-                        $query = $em->createQuery('SELECT u FROM BM2SiteBundle:Unit u JOIN BM2SiteBundle:UnitSettings s WHERE u.character = :char AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY s.name ASC');
+                        $query = $em->createQuery('SELECT u FROM App:Unit u JOIN App:UnitSettings s WHERE u.character = :char AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY s.name ASC');
                         $query->setParameter('char', $character);
                 }
                 return $query->getResult();
@@ -68,7 +68,7 @@ class UnitController extends AbstractController {
         private function findMarshalledUnits(Character $character) {
                 $em = $this->em;
                 if ($character->getInsideSettlement()) {
-                        $query = $em->createQuery('SELECT u FROM BM2SiteBundle:Unit u JOIN BM2SiteBundle:UnitSettings s WHERE u.marshal = :char AND u.settlement = :settlement ORDER BY s.name ASC');
+                        $query = $em->createQuery('SELECT u FROM App:Unit u JOIN App:UnitSettings s WHERE u.marshal = :char AND u.settlement = :settlement ORDER BY s.name ASC');
                         $query->setParameters(array('char'=>$character, 'settlement'=>$character->getInsideSettlement()));
                         return $query->getResult();
                 } else {
@@ -636,8 +636,7 @@ class UnitController extends AbstractController {
      		}
      		$em = $this->em;
 
-                $query = $em->createQuery('SELECT COUNT(s) as number, SUM(s.training_required) AS training FROM BM2SiteBundle:Soldier s JOIN s.unit u WHERE u.settlement = :here AND s.training_required > 0');
-                #$query = $em->createQuery('SELECT COUNT(s) as number, SUM(s.training_required) AS training FROM BM2SiteBundle:Soldier s WHERE s.base = :here AND s.training_required > 0');
+                $query = $em->createQuery('SELECT COUNT(s) as number, SUM(s.training_required) AS training FROM App:Soldier s JOIN s.unit u WHERE u.settlement = :here AND s.training_required > 0');
      		$query->setParameter('here', $settlement);
      		$allocated = $query->getSingleResult();
                 $allUnits = $settlement->getUnits();

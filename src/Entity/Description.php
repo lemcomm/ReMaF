@@ -8,7 +8,7 @@ class Description {
 	private DateTime $ts;
 	private int $cycle;
 	private string $text;
-	private int $id;
+	private ?int $id = null;
 	private ?Artifact $active_artifact;
 	private ?Settlement $active_settlement;
 	private ?Place $active_place;
@@ -34,6 +34,15 @@ class Description {
 	private ?Character $updater;
 
 	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
+
+	/**
 	 * Set ts
 	 *
 	 * @param DateTime $ts
@@ -47,12 +56,12 @@ class Description {
 	}
 
 	/**
-	 * Get ts
+	 * Get cycle
 	 *
-	 * @return DateTime
+	 * @return integer
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getCycle(): int {
+		return $this->cycle;
 	}
 
 	/**
@@ -69,12 +78,12 @@ class Description {
 	}
 
 	/**
-	 * Get cycle
+	 * Get text
 	 *
-	 * @return integer
+	 * @return string
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getText(): string {
+		return $this->text;
 	}
 
 	/**
@@ -91,21 +100,21 @@ class Description {
 	}
 
 	/**
-	 * Get text
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getText(): string {
-		return $this->text;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get active_artifact
 	 *
-	 * @return integer
+	 * @return Artifact|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getActiveArtifact(): ?Artifact {
+		return $this->active_artifact;
 	}
 
 	/**
@@ -122,12 +131,12 @@ class Description {
 	}
 
 	/**
-	 * Get active_artifact
+	 * Get active_settlement
 	 *
-	 * @return Artifact|null
+	 * @return Settlement|null
 	 */
-	public function getActiveArtifact(): ?Artifact {
-		return $this->active_artifact;
+	public function getActiveSettlement(): ?Settlement {
+		return $this->active_settlement;
 	}
 
 	/**
@@ -144,12 +153,12 @@ class Description {
 	}
 
 	/**
-	 * Get active_settlement
+	 * Get active_place
 	 *
-	 * @return Settlement|null
+	 * @return Place|null
 	 */
-	public function getActiveSettlement(): ?Settlement {
-		return $this->active_settlement;
+	public function getActivePlace(): ?Place {
+		return $this->active_place;
 	}
 
 	/**
@@ -166,12 +175,12 @@ class Description {
 	}
 
 	/**
-	 * Get active_place
+	 * Get active_realm
 	 *
-	 * @return Place|null
+	 * @return Realm|null
 	 */
-	public function getActivePlace(): ?Place {
-		return $this->active_place;
+	public function getActiveRealm(): ?Realm {
+		return $this->active_realm;
 	}
 
 	/**
@@ -188,12 +197,12 @@ class Description {
 	}
 
 	/**
-	 * Get active_realm
+	 * Get active_house
 	 *
-	 * @return Realm|null
+	 * @return House|null
 	 */
-	public function getActiveRealm(): ?Realm {
-		return $this->active_realm;
+	public function getActiveHouse(): ?House {
+		return $this->active_house;
 	}
 
 	/**
@@ -210,12 +219,12 @@ class Description {
 	}
 
 	/**
-	 * Get active_house
+	 * Get active_portal
 	 *
-	 * @return House|null
+	 * @return Portal|null
 	 */
-	public function getActiveHouse(): ?House {
-		return $this->active_house;
+	public function getActivePortal(): ?Portal {
+		return $this->active_portal;
 	}
 
 	/**
@@ -232,12 +241,12 @@ class Description {
 	}
 
 	/**
-	 * Get active_portal
+	 * Get active_association
 	 *
-	 * @return Portal|null
+	 * @return Association|null
 	 */
-	public function getActivePortal(): ?Portal {
-		return $this->active_portal;
+	public function getActiveAssociation(): ?Association {
+		return $this->active_association;
 	}
 
 	/**
@@ -254,12 +263,12 @@ class Description {
 	}
 
 	/**
-	 * Get active_association
+	 * Get active_association_rank
 	 *
-	 * @return Association|null
+	 * @return AssociationRank|null
 	 */
-	public function getActiveAssociation(): ?Association {
-		return $this->active_association;
+	public function getActiveAssociationRank(): ?AssociationRank {
+		return $this->active_association_rank;
 	}
 
 	/**
@@ -276,12 +285,12 @@ class Description {
 	}
 
 	/**
-	 * Get active_association_rank
+	 * Get active_deity
 	 *
-	 * @return AssociationRank|null
+	 * @return Deity|null
 	 */
-	public function getActiveAssociationRank(): ?AssociationRank {
-		return $this->active_association_rank;
+	public function getActiveDeity(): ?Deity {
+		return $this->active_deity;
 	}
 
 	/**
@@ -298,12 +307,12 @@ class Description {
 	}
 
 	/**
-	 * Get active_deity
+	 * Get active_user
 	 *
-	 * @return Deity|null
+	 * @return User|null
 	 */
-	public function getActiveDeity(): ?Deity {
-		return $this->active_deity;
+	public function getActiveUser(): ?User {
+		return $this->active_user;
 	}
 
 	/**
@@ -320,12 +329,12 @@ class Description {
 	}
 
 	/**
-	 * Get active_user
+	 * Get previous
 	 *
-	 * @return User|null
+	 * @return Description|null
 	 */
-	public function getActiveUser(): ?User {
-		return $this->active_user;
+	public function getPrevious(): ?Description {
+		return $this->previous;
 	}
 
 	/**
@@ -342,12 +351,12 @@ class Description {
 	}
 
 	/**
-	 * Get previous
+	 * Get next
 	 *
 	 * @return Description|null
 	 */
-	public function getPrevious(): ?Description {
-		return $this->previous;
+	public function getNext(): ?Description {
+		return $this->next;
 	}
 
 	/**
@@ -364,12 +373,12 @@ class Description {
 	}
 
 	/**
-	 * Get next
+	 * Get artifact
 	 *
-	 * @return Description|null
+	 * @return Artifact|null
 	 */
-	public function getNext(): ?Description {
-		return $this->next;
+	public function getArtifact(): ?Artifact {
+		return $this->artifact;
 	}
 
 	/**
@@ -386,12 +395,12 @@ class Description {
 	}
 
 	/**
-	 * Get artifact
+	 * Get settlement
 	 *
-	 * @return Artifact|null
+	 * @return Settlement|null
 	 */
-	public function getArtifact(): ?Artifact {
-		return $this->artifact;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -408,12 +417,12 @@ class Description {
 	}
 
 	/**
-	 * Get settlement
+	 * Get place
 	 *
-	 * @return Settlement|null
+	 * @return Place|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getPlace(): ?Place {
+		return $this->place;
 	}
 
 	/**
@@ -430,12 +439,12 @@ class Description {
 	}
 
 	/**
-	 * Get place
+	 * Get realm
 	 *
-	 * @return Place|null
+	 * @return Realm|null
 	 */
-	public function getPlace(): ?Place {
-		return $this->place;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -452,12 +461,12 @@ class Description {
 	}
 
 	/**
-	 * Get realm
+	 * Get house
 	 *
-	 * @return Realm|null
+	 * @return House|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
+	public function getHouse(): ?House {
+		return $this->house;
 	}
 
 	/**
@@ -474,12 +483,12 @@ class Description {
 	}
 
 	/**
-	 * Get house
+	 * Get portal
 	 *
-	 * @return House|null
+	 * @return Portal|null
 	 */
-	public function getHouse(): ?House {
-		return $this->house;
+	public function getPortal(): ?Portal {
+		return $this->portal;
 	}
 
 	/**
@@ -496,12 +505,12 @@ class Description {
 	}
 
 	/**
-	 * Get portal
+	 * Get association
 	 *
-	 * @return Portal|null
+	 * @return Association|null
 	 */
-	public function getPortal(): ?Portal {
-		return $this->portal;
+	public function getAssociation(): ?Association {
+		return $this->association;
 	}
 
 	/**
@@ -518,12 +527,12 @@ class Description {
 	}
 
 	/**
-	 * Get association
+	 * Get association_rank
 	 *
-	 * @return Association|null
+	 * @return AssociationRank|null
 	 */
-	public function getAssociation(): ?Association {
-		return $this->association;
+	public function getAssociationRank(): ?AssociationRank {
+		return $this->association_rank;
 	}
 
 	/**
@@ -540,12 +549,12 @@ class Description {
 	}
 
 	/**
-	 * Get association_rank
+	 * Get deity
 	 *
-	 * @return AssociationRank|null
+	 * @return Deity|null
 	 */
-	public function getAssociationRank(): ?AssociationRank {
-		return $this->association_rank;
+	public function getDeity(): ?Deity {
+		return $this->deity;
 	}
 
 	/**
@@ -562,12 +571,12 @@ class Description {
 	}
 
 	/**
-	 * Get deity
+	 * Get user
 	 *
-	 * @return Deity|null
+	 * @return User|null
 	 */
-	public function getDeity(): ?Deity {
-		return $this->deity;
+	public function getUser(): ?User {
+		return $this->user;
 	}
 
 	/**
@@ -584,12 +593,12 @@ class Description {
 	}
 
 	/**
-	 * Get user
+	 * Get updater
 	 *
-	 * @return User|null
+	 * @return Character|null
 	 */
-	public function getUser(): ?User {
-		return $this->user;
+	public function getUpdater(): ?Character {
+		return $this->updater;
 	}
 
 	/**
@@ -603,14 +612,5 @@ class Description {
 		$this->updater = $updater;
 
 		return $this;
-	}
-
-	/**
-	 * Get updater
-	 *
-	 * @return Character|null
-	 */
-	public function getUpdater(): ?Character {
-		return $this->updater;
 	}
 }

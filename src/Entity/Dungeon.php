@@ -11,7 +11,7 @@ class Dungeon {
 	private Point $location;
 	private int $tick;
 	private int $exploration_count;
-	private int $id;
+	private ?int $id = null;
 	private ?DungeonParty $party;
 	private Collection $levels;
 	private ?GeoData $geo_data;
@@ -29,100 +29,12 @@ class Dungeon {
 	}
 
 	/**
-	 * Set area
+	 * Get party
 	 *
-	 * @param string $area
-	 *
-	 * @return Dungeon
+	 * @return DungeonParty|null
 	 */
-	public function setArea(string $area): static {
-		$this->area = $area;
-
-		return $this;
-	}
-
-	/**
-	 * Get area
-	 *
-	 * @return string
-	 */
-	public function getArea(): string {
-		return $this->area;
-	}
-
-	/**
-	 * Set location
-	 *
-	 * @param point $location
-	 *
-	 * @return Dungeon
-	 */
-	public function setLocation(Point $location): static {
-		$this->location = $location;
-
-		return $this;
-	}
-
-	/**
-	 * Get location
-	 *
-	 * @return point
-	 */
-	public function getLocation(): Point {
-		return $this->location;
-	}
-
-	/**
-	 * Set tick
-	 *
-	 * @param integer $tick
-	 *
-	 * @return Dungeon
-	 */
-	public function setTick(int $tick): static {
-		$this->tick = $tick;
-
-		return $this;
-	}
-
-	/**
-	 * Get tick
-	 *
-	 * @return integer
-	 */
-	public function getTick(): int {
-		return $this->tick;
-	}
-
-	/**
-	 * Set exploration_count
-	 *
-	 * @param integer $explorationCount
-	 *
-	 * @return Dungeon
-	 */
-	public function setExplorationCount(int $explorationCount): static {
-		$this->exploration_count = $explorationCount;
-
-		return $this;
-	}
-
-	/**
-	 * Get exploration_count
-	 *
-	 * @return integer
-	 */
-	public function getExplorationCount(): int {
-		return $this->exploration_count;
-	}
-
-	/**
-	 * Get id
-	 *
-	 * @return integer
-	 */
-	public function getId(): int {
-		return $this->id;
+	public function getParty(): ?DungeonParty {
+		return $this->party;
 	}
 
 	/**
@@ -139,12 +51,100 @@ class Dungeon {
 	}
 
 	/**
-	 * Get party
+	 * Get area
 	 *
-	 * @return DungeonParty|null
+	 * @return string
 	 */
-	public function getParty(): ?DungeonParty {
-		return $this->party;
+	public function getArea(): string {
+		return $this->area;
+	}
+
+	/**
+	 * Set area
+	 *
+	 * @param string $area
+	 *
+	 * @return Dungeon
+	 */
+	public function setArea(string $area): static {
+		$this->area = $area;
+
+		return $this;
+	}
+
+	/**
+	 * Get location
+	 *
+	 * @return point
+	 */
+	public function getLocation(): Point {
+		return $this->location;
+	}
+
+	/**
+	 * Set location
+	 *
+	 * @param point $location
+	 *
+	 * @return Dungeon
+	 */
+	public function setLocation(Point $location): static {
+		$this->location = $location;
+
+		return $this;
+	}
+
+	/**
+	 * Get tick
+	 *
+	 * @return integer
+	 */
+	public function getTick(): int {
+		return $this->tick;
+	}
+
+	/**
+	 * Set tick
+	 *
+	 * @param integer $tick
+	 *
+	 * @return Dungeon
+	 */
+	public function setTick(int $tick): static {
+		$this->tick = $tick;
+
+		return $this;
+	}
+
+	/**
+	 * Get exploration_count
+	 *
+	 * @return integer
+	 */
+	public function getExplorationCount(): int {
+		return $this->exploration_count;
+	}
+
+	/**
+	 * Set exploration_count
+	 *
+	 * @param integer $explorationCount
+	 *
+	 * @return Dungeon
+	 */
+	public function setExplorationCount(int $explorationCount): static {
+		$this->exploration_count = $explorationCount;
+
+		return $this;
+	}
+
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
@@ -179,6 +179,15 @@ class Dungeon {
 	}
 
 	/**
+	 * Get geo_data
+	 *
+	 * @return GeoData|null
+	 */
+	public function getGeoData(): ?GeoData {
+		return $this->geo_data;
+	}
+
+	/**
 	 * Set geo_data
 	 *
 	 * @param GeoData|null $geoData
@@ -189,14 +198,5 @@ class Dungeon {
 		$this->geo_data = $geoData;
 
 		return $this;
-	}
-
-	/**
-	 * Get geo_data
-	 *
-	 * @return GeoData|null
-	 */
-	public function getGeoData(): ?GeoData {
-		return $this->geo_data;
 	}
 }

@@ -11,6 +11,7 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
  * ActivityReport
  */
 class ActivityReport {
+	private ?int $id = null;
 	private int $cycle;
 	private Point $location;
 	private array $location_name;
@@ -18,7 +19,6 @@ class ActivityReport {
 	private int $count;
 	private string $debug;
 	private DateTime $ts;
-	private int $id;
 	private Activity $activity;
 	private Collection $characters;
 	private Collection $groups;
@@ -60,6 +60,15 @@ class ActivityReport {
 	}
 
 	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
+
+	/**
 	 * Set cycle
 	 *
 	 * @param integer $cycle
@@ -73,12 +82,12 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get cycle
+	 * Get location
 	 *
-	 * @return integer
+	 * @return point
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getLocation(): Point {
+		return $this->location;
 	}
 
 	/**
@@ -95,12 +104,12 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get location
+	 * Get location_name
 	 *
-	 * @return point
+	 * @return array|null
 	 */
-	public function getLocation(): Point {
-		return $this->location;
+	public function getLocationName(): ?array {
+		return $this->location_name;
 	}
 
 	/**
@@ -117,12 +126,16 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get location_name
+	 * Get completed
 	 *
-	 * @return array|null
+	 * @return boolean
 	 */
-	public function getLocationName(): ?array {
-		return $this->location_name;
+	public function getCompleted(): bool {
+		return $this->completed;
+	}
+
+	public function isCompleted(): ?bool {
+		return $this->completed;
 	}
 
 	/**
@@ -139,12 +152,12 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get completed
+	 * Get count
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getCompleted(): bool {
-		return $this->completed;
+	public function getCount(): ?int {
+		return $this->count;
 	}
 
 	/**
@@ -161,12 +174,12 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get count
+	 * Get debug
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getCount(): ?int {
-		return $this->count;
+	public function getDebug(): ?string {
+		return $this->debug;
 	}
 
 	/**
@@ -183,12 +196,12 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get debug
+	 * Get ts
 	 *
-	 * @return string|null
+	 * @return DateTime
 	 */
-	public function getDebug(): ?string {
-		return $this->debug;
+	public function getTs(): DateTime {
+		return $this->ts;
 	}
 
 	/**
@@ -205,21 +218,21 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get ts
+	 * Get id
 	 *
-	 * @return DateTime
+	 * @return int|null
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get activity
 	 *
-	 * @return integer
+	 * @return Activity|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getActivity(): ?Activity {
+		return $this->activity;
 	}
 
 	/**
@@ -233,15 +246,6 @@ class ActivityReport {
 		$this->activity = $activity;
 
 		return $this;
-	}
-
-	/**
-	 * Get activity
-	 *
-	 * @return Activity|null
-	 */
-	public function getActivity(): ?Activity {
-		return $this->activity;
 	}
 
 	/**
@@ -369,6 +373,15 @@ class ActivityReport {
 	}
 
 	/**
+	 * Get type
+	 *
+	 * @return ActivityType|null
+	 */
+	public function getType(): ?ActivityType {
+		return $this->type;
+	}
+
+	/**
 	 * Set type
 	 *
 	 * @param ActivityType|null $type
@@ -382,12 +395,12 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get type
+	 * Get subtype
 	 *
-	 * @return ActivityType|null
+	 * @return ActivitySubType|null
 	 */
-	public function getType(): ?ActivityType {
-		return $this->type;
+	public function getSubtype(): ?ActivitySubType {
+		return $this->subtype;
 	}
 
 	/**
@@ -404,12 +417,12 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get subtype
+	 * Get settlement
 	 *
-	 * @return ActivitySubType|null
+	 * @return Settlement|null
 	 */
-	public function getSubtype(): ?ActivitySubType {
-		return $this->subtype;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -426,12 +439,12 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get settlement
+	 * Get place
 	 *
-	 * @return Settlement|null
+	 * @return Place|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getPlace(): ?Place {
+		return $this->place;
 	}
 
 	/**
@@ -448,12 +461,12 @@ class ActivityReport {
 	}
 
 	/**
-	 * Get place
+	 * Get geo_data
 	 *
-	 * @return Place|null
+	 * @return GeoData|null
 	 */
-	public function getPlace(): ?Place {
-		return $this->place;
+	public function getGeoData(): ?GeoData {
+		return $this->geo_data;
 	}
 
 	/**
@@ -467,18 +480,5 @@ class ActivityReport {
 		$this->geo_data = $geoData;
 
 		return $this;
-	}
-
-	/**
-	 * Get geo_data
-	 *
-	 * @return GeoData|null
-	 */
-	public function getGeoData(): ?GeoData {
-		return $this->geo_data;
-	}
-
-	public function isCompleted(): ?bool {
-		return $this->completed;
 	}
 }

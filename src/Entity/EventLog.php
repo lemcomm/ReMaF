@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class EventLog {
-	private int $id;
+	private ?int $id = null;
 	private ?Settlement $settlement;
 	private ?Realm $realm;
 	private ?Character $character;
@@ -19,6 +19,14 @@ class EventLog {
 	private ?Association $association;
 	private Collection $events;
 	private Collection $metadatas;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->events = new ArrayCollection();
+		$this->metadatas = new ArrayCollection();
+	}
 
 	public function getType(): false|string {
 		if ($this->settlement) return 'settlement';
@@ -60,20 +68,21 @@ class EventLog {
 	}
 
 	/**
-	 * Constructor
+	 * Get id
+	 *
+	 * @return int|null
 	 */
-	public function __construct() {
-		$this->events = new ArrayCollection();
-		$this->metadatas = new ArrayCollection();
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get settlement
 	 *
-	 * @return integer
+	 * @return Settlement|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -90,12 +99,12 @@ class EventLog {
 	}
 
 	/**
-	 * Get settlement
+	 * Get realm
 	 *
-	 * @return Settlement|null
+	 * @return Realm|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -112,12 +121,12 @@ class EventLog {
 	}
 
 	/**
-	 * Get realm
+	 * Get character
 	 *
-	 * @return Realm|null
+	 * @return Character|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -134,12 +143,12 @@ class EventLog {
 	}
 
 	/**
-	 * Get character
+	 * Get quest
 	 *
-	 * @return Character|null
+	 * @return Quest|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getQuest(): ?Quest {
+		return $this->quest;
 	}
 
 	/**
@@ -156,12 +165,12 @@ class EventLog {
 	}
 
 	/**
-	 * Get quest
+	 * Get artifact
 	 *
-	 * @return Quest|null
+	 * @return Artifact|null
 	 */
-	public function getQuest(): ?Quest {
-		return $this->quest;
+	public function getArtifact(): ?Artifact {
+		return $this->artifact;
 	}
 
 	/**
@@ -178,12 +187,12 @@ class EventLog {
 	}
 
 	/**
-	 * Get artifact
+	 * Get war
 	 *
-	 * @return Artifact|null
+	 * @return War|null
 	 */
-	public function getArtifact(): ?Artifact {
-		return $this->artifact;
+	public function getWar(): ?War {
+		return $this->war;
 	}
 
 	/**
@@ -200,12 +209,12 @@ class EventLog {
 	}
 
 	/**
-	 * Get war
+	 * Get place
 	 *
-	 * @return War|null
+	 * @return Place|null
 	 */
-	public function getWar(): ?War {
-		return $this->war;
+	public function getPlace(): ?Place {
+		return $this->place;
 	}
 
 	/**
@@ -222,12 +231,12 @@ class EventLog {
 	}
 
 	/**
-	 * Get place
+	 * Get house
 	 *
-	 * @return Place|null
+	 * @return House|null
 	 */
-	public function getPlace(): ?Place {
-		return $this->place;
+	public function getHouse(): ?House {
+		return $this->house;
 	}
 
 	/**
@@ -244,12 +253,12 @@ class EventLog {
 	}
 
 	/**
-	 * Get house
+	 * Get unit
 	 *
-	 * @return House|null
+	 * @return Unit|null
 	 */
-	public function getHouse(): ?House {
-		return $this->house;
+	public function getUnit(): ?Unit {
+		return $this->unit;
 	}
 
 	/**
@@ -266,12 +275,12 @@ class EventLog {
 	}
 
 	/**
-	 * Get unit
+	 * Get association
 	 *
-	 * @return Unit|null
+	 * @return Association|null
 	 */
-	public function getUnit(): ?Unit {
-		return $this->unit;
+	public function getAssociation(): ?Association {
+		return $this->association;
 	}
 
 	/**
@@ -285,15 +294,6 @@ class EventLog {
 		$this->association = $association;
 
 		return $this;
-	}
-
-	/**
-	 * Get association
-	 *
-	 * @return Association|null
-	 */
-	public function getAssociation(): ?Association {
-		return $this->association;
 	}
 
 	/**

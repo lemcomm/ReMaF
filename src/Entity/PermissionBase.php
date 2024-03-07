@@ -7,12 +7,21 @@ namespace App\Entity;
  * DO NOT
  */
 class PermissionBase {
-	private ?int $value;
-	private ?int $value_remaining;
-	private ?int $reserve;
-	private int $id;
-	private ?Permission $permission;
-	private ?Listing $listing;
+	protected ?int $value = null;
+	protected ?int $value_remaining = null;
+	protected ?int $reserve = null;
+	protected ?int $id = null;
+	protected ?Permission $permission;
+	protected ?Listing $listing;
+
+	/**
+	 * Get value
+	 *
+	 * @return int|null
+	 */
+	public function getValue(): ?int {
+		return $this->value;
+	}
 
 	/**
 	 * Set value
@@ -28,12 +37,12 @@ class PermissionBase {
 	}
 
 	/**
-	 * Get value
+	 * Get value_remaining
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getValue(): int {
-		return $this->value;
+	public function getValueRemaining(): ?int {
+		return $this->value_remaining;
 	}
 
 	/**
@@ -50,12 +59,12 @@ class PermissionBase {
 	}
 
 	/**
-	 * Get value_remaining
+	 * Get reserve
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getValueRemaining(): int {
-		return $this->value_remaining;
+	public function getReserve(): ?int {
+		return $this->reserve;
 	}
 
 	/**
@@ -72,21 +81,21 @@ class PermissionBase {
 	}
 
 	/**
-	 * Get reserve
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getReserve(): int {
-		return $this->reserve;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get permission
 	 *
-	 * @return integer
+	 * @return Permission|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getPermission(): ?Permission {
+		return $this->permission;
 	}
 
 	/**
@@ -103,12 +112,12 @@ class PermissionBase {
 	}
 
 	/**
-	 * Get permission
+	 * Get listing
 	 *
-	 * @return Permission
+	 * @return Listing|null
 	 */
-	public function getPermission(): Permission {
-		return $this->permission;
+	public function getListing(): ?Listing {
+		return $this->listing;
 	}
 
 	/**
@@ -122,14 +131,5 @@ class PermissionBase {
 		$this->listing = $listing;
 
 		return $this;
-	}
-
-	/**
-	 * Get listing
-	 *
-	 * @return Listing
-	 */
-	public function getListing(): Listing {
-		return $this->listing;
 	}
 }

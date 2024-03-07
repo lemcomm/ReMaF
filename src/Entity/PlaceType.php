@@ -14,7 +14,7 @@ class PlaceType {
 	private ?bool $spawnable;
 	private ?bool $vassals;
 	private ?bool $associations;
-	private int $id;
+	private ?int $id = null;
 	private Collection $subtypes;
 
 	/**
@@ -22,6 +22,15 @@ class PlaceType {
 	 */
 	public function __construct() {
 		$this->subtypes = new ArrayCollection();
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -38,12 +47,12 @@ class PlaceType {
 	}
 
 	/**
-	 * Get name
+	 * Get requires
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getRequires(): ?string {
+		return $this->requires;
 	}
 
 	/**
@@ -60,12 +69,12 @@ class PlaceType {
 	}
 
 	/**
-	 * Get requires
+	 * Get visible
 	 *
-	 * @return string|null
+	 * @return boolean
 	 */
-	public function getRequires(): ?string {
-		return $this->requires;
+	public function getVisible(): bool {
+		return $this->visible;
 	}
 
 	/**
@@ -82,12 +91,12 @@ class PlaceType {
 	}
 
 	/**
-	 * Get visible
+	 * Get defensible
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getVisible(): bool {
-		return $this->visible;
+	public function getDefensible(): ?bool {
+		return $this->defensible;
 	}
 
 	/**
@@ -104,12 +113,12 @@ class PlaceType {
 	}
 
 	/**
-	 * Get defensible
+	 * Get public
 	 *
 	 * @return bool|null
 	 */
-	public function getDefensible(): ?bool {
-		return $this->defensible;
+	public function getPublic(): ?bool {
+		return $this->public;
 	}
 
 	/**
@@ -126,12 +135,12 @@ class PlaceType {
 	}
 
 	/**
-	 * Get public
+	 * Get spawnable
 	 *
 	 * @return bool|null
 	 */
-	public function getPublic(): ?bool {
-		return $this->public;
+	public function getSpawnable(): ?bool {
+		return $this->spawnable;
 	}
 
 	/**
@@ -148,12 +157,12 @@ class PlaceType {
 	}
 
 	/**
-	 * Get spawnable
+	 * Get vassals
 	 *
 	 * @return bool|null
 	 */
-	public function getSpawnable(): ?bool {
-		return $this->spawnable;
+	public function getVassals(): ?bool {
+		return $this->vassals;
 	}
 
 	/**
@@ -170,12 +179,12 @@ class PlaceType {
 	}
 
 	/**
-	 * Get vassals
+	 * Get associations
 	 *
-	 * @return bool|null
+	 * @return boolean
 	 */
-	public function getVassals(): ?bool {
-		return $this->vassals;
+	public function getAssociations(): bool {
+		return $this->associations;
 	}
 
 	/**
@@ -192,20 +201,11 @@ class PlaceType {
 	}
 
 	/**
-	 * Get associations
-	 *
-	 * @return boolean
-	 */
-	public function getAssociations(): bool {
-		return $this->associations;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 

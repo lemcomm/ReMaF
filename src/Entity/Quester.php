@@ -10,9 +10,18 @@ class Quester {
 	private ?int $reward_received;
 	private string $owner_comment;
 	private string $quester_comment;
-	private int $id;
+	private ?int $id = null;
 	private Character $character;
 	private Quest $quest;
+
+	/**
+	 * Get started
+	 *
+	 * @return integer
+	 */
+	public function getStarted(): int {
+		return $this->started;
+	}
 
 	/**
 	 * Set started
@@ -28,12 +37,12 @@ class Quester {
 	}
 
 	/**
-	 * Get started
+	 * Get claim_completed
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getStarted(): int {
-		return $this->started;
+	public function getClaimCompleted(): ?int {
+		return $this->claim_completed;
 	}
 
 	/**
@@ -50,12 +59,12 @@ class Quester {
 	}
 
 	/**
-	 * Get claim_completed
+	 * Get confirmed_completed
 	 *
 	 * @return int|null
 	 */
-	public function getClaimCompleted(): ?int {
-		return $this->claim_completed;
+	public function getConfirmedCompleted(): ?int {
+		return $this->confirmed_completed;
 	}
 
 	/**
@@ -72,12 +81,12 @@ class Quester {
 	}
 
 	/**
-	 * Get confirmed_completed
+	 * Get reward_received
 	 *
 	 * @return int|null
 	 */
-	public function getConfirmedCompleted(): ?int {
-		return $this->confirmed_completed;
+	public function getRewardReceived(): ?int {
+		return $this->reward_received;
 	}
 
 	/**
@@ -94,12 +103,12 @@ class Quester {
 	}
 
 	/**
-	 * Get reward_received
+	 * Get owner_comment
 	 *
-	 * @return int|null
+	 * @return string
 	 */
-	public function getRewardReceived(): ?int {
-		return $this->reward_received;
+	public function getOwnerComment(): string {
+		return $this->owner_comment;
 	}
 
 	/**
@@ -116,12 +125,12 @@ class Quester {
 	}
 
 	/**
-	 * Get owner_comment
+	 * Get quester_comment
 	 *
 	 * @return string
 	 */
-	public function getOwnerComment(): string {
-		return $this->owner_comment;
+	public function getQuesterComment(): string {
+		return $this->quester_comment;
 	}
 
 	/**
@@ -138,21 +147,21 @@ class Quester {
 	}
 
 	/**
-	 * Get quester_comment
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getQuesterComment(): string {
-		return $this->quester_comment;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -169,12 +178,12 @@ class Quester {
 	}
 
 	/**
-	 * Get character
+	 * Get quest
 	 *
-	 * @return Character|null
+	 * @return Quest|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getQuest(): ?Quest {
+		return $this->quest;
 	}
 
 	/**
@@ -188,14 +197,5 @@ class Quester {
 		$this->quest = $quest;
 
 		return $this;
-	}
-
-	/**
-	 * Get quest
-	 *
-	 * @return Quest|null
-	 */
-	public function getQuest(): ?Quest {
-		return $this->quest;
 	}
 }

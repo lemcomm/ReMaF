@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
  * ActivityBout
  */
 class ActivityBout {
-	private int $id;
+	private ?int $id = null;
 	private Collection $participants;
 	private Collection $groups;
 	private ActivitySubType $type;
@@ -26,9 +26,9 @@ class ActivityBout {
 	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -95,6 +95,15 @@ class ActivityBout {
 	}
 
 	/**
+	 * Get type
+	 *
+	 * @return ActivitySubType|null
+	 */
+	public function getType(): ?ActivitySubType {
+		return $this->type;
+	}
+
+	/**
 	 * Set type
 	 *
 	 * @param ActivitySubType|null $type
@@ -108,12 +117,12 @@ class ActivityBout {
 	}
 
 	/**
-	 * Get type
+	 * Get activity
 	 *
-	 * @return ActivitySubType|null
+	 * @return Activity|null
 	 */
-	public function getType(): ?ActivitySubType {
-		return $this->type;
+	public function getActivity(): ?Activity {
+		return $this->activity;
 	}
 
 	/**
@@ -127,14 +136,5 @@ class ActivityBout {
 		$this->activity = $activity;
 
 		return $this;
-	}
-
-	/**
-	 * Get activity
-	 *
-	 * @return Activity|null
-	 */
-	public function getActivity(): ?Activity {
-		return $this->activity;
 	}
 }

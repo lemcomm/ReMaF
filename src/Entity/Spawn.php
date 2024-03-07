@@ -10,6 +10,15 @@ class Spawn {
 	private ?Association $association;
 
 	/**
+	 * Get active
+	 *
+	 * @return boolean
+	 */
+	public function getActive(): bool {
+		return $this->active;
+	}
+
+	/**
 	 * Set active
 	 *
 	 * @param boolean $active
@@ -23,12 +32,12 @@ class Spawn {
 	}
 
 	/**
-	 * Get active
+	 * Get place
 	 *
-	 * @return boolean
+	 * @return Place|null
 	 */
-	public function getActive(): bool {
-		return $this->active;
+	public function getPlace(): ?Place {
+		return $this->place;
 	}
 
 	/**
@@ -45,12 +54,12 @@ class Spawn {
 	}
 
 	/**
-	 * Get place
+	 * Get house
 	 *
-	 * @return Place|null
+	 * @return House|null
 	 */
-	public function getPlace(): ?Place {
-		return $this->place;
+	public function getHouse(): ?House {
+		return $this->house;
 	}
 
 	/**
@@ -67,12 +76,12 @@ class Spawn {
 	}
 
 	/**
-	 * Get house
+	 * Get realm
 	 *
-	 * @return House|null
+	 * @return Realm|null
 	 */
-	public function getHouse(): ?House {
-		return $this->house;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -89,12 +98,12 @@ class Spawn {
 	}
 
 	/**
-	 * Get realm
+	 * Get association
 	 *
-	 * @return Realm|null
+	 * @return Association|null
 	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
+	public function getAssociation(): ?Association {
+		return $this->association;
 	}
 
 	/**
@@ -108,14 +117,5 @@ class Spawn {
 		$this->association = $association;
 
 		return $this;
-	}
-
-	/**
-	 * Get association
-	 *
-	 * @return Association|null
-	 */
-	public function getAssociation(): ?Association {
-		return $this->association;
 	}
 }

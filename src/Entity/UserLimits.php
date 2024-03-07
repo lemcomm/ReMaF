@@ -11,6 +11,15 @@ class UserLimits {
 	private User $user;
 
 	/**
+	 * Get artifacts
+	 *
+	 * @return integer
+	 */
+	public function getArtifacts(): int {
+		return $this->artifacts;
+	}
+
+	/**
 	 * Set artifacts
 	 *
 	 * @param integer $artifacts
@@ -24,12 +33,12 @@ class UserLimits {
 	}
 
 	/**
-	 * Get artifacts
+	 * Get places_date
 	 *
-	 * @return integer
+	 * @return DateTime
 	 */
-	public function getArtifacts(): int {
-		return $this->artifacts;
+	public function getPlacesDate(): DateTime {
+		return $this->places_date;
 	}
 
 	/**
@@ -46,12 +55,12 @@ class UserLimits {
 	}
 
 	/**
-	 * Get places_date
+	 * Get places
 	 *
-	 * @return DateTime
+	 * @return integer
 	 */
-	public function getPlacesDate(): DateTime {
-		return $this->places_date;
+	public function getPlaces(): int {
+		return $this->places;
 	}
 
 	/**
@@ -68,12 +77,12 @@ class UserLimits {
 	}
 
 	/**
-	 * Get places
+	 * Get user
 	 *
-	 * @return integer
+	 * @return User
 	 */
-	public function getPlaces(): int {
-		return $this->places;
+	public function getUser(): User {
+		return $this->user;
 	}
 
 	/**
@@ -87,14 +96,5 @@ class UserLimits {
 		$this->user = $user;
 
 		return $this;
-	}
-
-	/**
-	 * Get user
-	 *
-	 * @return User
-	 */
-	public function getUser(): User {
-		return $this->user;
 	}
 }

@@ -11,7 +11,7 @@ class DungeonMonsterType {
 	private int $attacks;
 	private int $defense;
 	private int $wounds;
-	private int $id;
+	private ?int $id = null;
 
 	public function getPoints(): float|int {
 		return ($this->power + $this->defense) * $this->wounds * $this->attacks;
@@ -23,6 +23,15 @@ class DungeonMonsterType {
 
 	public function getResilience(): float {
 		return round(($this->defense * $this->wounds) / 10);
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -39,12 +48,12 @@ class DungeonMonsterType {
 	}
 
 	/**
-	 * Get name
+	 * Get class
 	 *
-	 * @return string
+	 * @return array
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getClass(): array {
+		return $this->class;
 	}
 
 	/**
@@ -61,12 +70,12 @@ class DungeonMonsterType {
 	}
 
 	/**
-	 * Get class
+	 * Get areas
 	 *
 	 * @return array
 	 */
-	public function getClass(): array {
-		return $this->class;
+	public function getAreas(): array {
+		return $this->areas;
 	}
 
 	/**
@@ -83,12 +92,12 @@ class DungeonMonsterType {
 	}
 
 	/**
-	 * Get areas
+	 * Get min_depth
 	 *
-	 * @return array
+	 * @return integer
 	 */
-	public function getAreas(): array {
-		return $this->areas;
+	public function getMinDepth(): int {
+		return $this->min_depth;
 	}
 
 	/**
@@ -105,12 +114,12 @@ class DungeonMonsterType {
 	}
 
 	/**
-	 * Get min_depth
+	 * Get power
 	 *
 	 * @return integer
 	 */
-	public function getMinDepth(): int {
-		return $this->min_depth;
+	public function getPower(): int {
+		return $this->power;
 	}
 
 	/**
@@ -127,12 +136,12 @@ class DungeonMonsterType {
 	}
 
 	/**
-	 * Get power
+	 * Get attacks
 	 *
 	 * @return integer
 	 */
-	public function getPower(): int {
-		return $this->power;
+	public function getAttacks(): int {
+		return $this->attacks;
 	}
 
 	/**
@@ -149,12 +158,12 @@ class DungeonMonsterType {
 	}
 
 	/**
-	 * Get attacks
+	 * Get defense
 	 *
 	 * @return integer
 	 */
-	public function getAttacks(): int {
-		return $this->attacks;
+	public function getDefense(): int {
+		return $this->defense;
 	}
 
 	/**
@@ -171,12 +180,12 @@ class DungeonMonsterType {
 	}
 
 	/**
-	 * Get defense
+	 * Get wounds
 	 *
 	 * @return integer
 	 */
-	public function getDefense(): int {
-		return $this->defense;
+	public function getWounds(): int {
+		return $this->wounds;
 	}
 
 	/**
@@ -193,20 +202,11 @@ class DungeonMonsterType {
 	}
 
 	/**
-	 * Get wounds
-	 *
-	 * @return integer
-	 */
-	public function getWounds(): int {
-		return $this->wounds;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 }

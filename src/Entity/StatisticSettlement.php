@@ -9,9 +9,18 @@ class StatisticSettlement {
 	private int $militia;
 	private float $starvation;
 	private int $war_fatigue;
-	private int $id;
+	private ?int $id = null;
 	private ?Settlement $settlement;
 	private ?Realm $realm;
+
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
 	/**
 	 * Set cycle
@@ -27,12 +36,12 @@ class StatisticSettlement {
 	}
 
 	/**
-	 * Get cycle
+	 * Get population
 	 *
 	 * @return integer
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getPopulation(): int {
+		return $this->population;
 	}
 
 	/**
@@ -49,12 +58,12 @@ class StatisticSettlement {
 	}
 
 	/**
-	 * Get population
+	 * Get thralls
 	 *
 	 * @return integer
 	 */
-	public function getPopulation(): int {
-		return $this->population;
+	public function getThralls(): int {
+		return $this->thralls;
 	}
 
 	/**
@@ -71,12 +80,12 @@ class StatisticSettlement {
 	}
 
 	/**
-	 * Get thralls
+	 * Get militia
 	 *
 	 * @return integer
 	 */
-	public function getThralls(): int {
-		return $this->thralls;
+	public function getMilitia(): int {
+		return $this->militia;
 	}
 
 	/**
@@ -93,12 +102,12 @@ class StatisticSettlement {
 	}
 
 	/**
-	 * Get militia
+	 * Get starvation
 	 *
-	 * @return integer
+	 * @return float
 	 */
-	public function getMilitia(): int {
-		return $this->militia;
+	public function getStarvation(): float {
+		return $this->starvation;
 	}
 
 	/**
@@ -115,12 +124,12 @@ class StatisticSettlement {
 	}
 
 	/**
-	 * Get starvation
+	 * Get war_fatigue
 	 *
-	 * @return float
+	 * @return integer
 	 */
-	public function getStarvation(): float {
-		return $this->starvation;
+	public function getWarFatigue(): int {
+		return $this->war_fatigue;
 	}
 
 	/**
@@ -137,21 +146,21 @@ class StatisticSettlement {
 	}
 
 	/**
-	 * Get war_fatigue
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getWarFatigue(): int {
-		return $this->war_fatigue;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get settlement
 	 *
-	 * @return integer
+	 * @return Settlement|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -168,12 +177,12 @@ class StatisticSettlement {
 	}
 
 	/**
-	 * Get settlement
+	 * Get realm
 	 *
-	 * @return Settlement|null
+	 * @return Realm|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -187,14 +196,5 @@ class StatisticSettlement {
 		$this->realm = $realm;
 
 		return $this;
-	}
-
-	/**
-	 * Get realm
-	 *
-	 * @return Realm|null
-	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
 	}
 }

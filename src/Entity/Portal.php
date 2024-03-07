@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class Portal {
-	private int $id;
+	private ?int $id = null;
 	private ?Description $description;
 	private Collection $descriptions;
 	private Collection $recently_used_by;
@@ -34,10 +34,19 @@ class Portal {
 	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get description
+	 *
+	 * @return Description|null
+	 */
+	public function getDescription(): ?Description {
+		return $this->description;
 	}
 
 	/**
@@ -51,15 +60,6 @@ class Portal {
 		$this->description = $description;
 
 		return $this;
-	}
-
-	/**
-	 * Get description
-	 *
-	 * @return Description|null
-	 */
-	public function getDescription(): ?Description {
-		return $this->description;
 	}
 
 	/**
@@ -125,6 +125,15 @@ class Portal {
 	}
 
 	/**
+	 * Get maintainer
+	 *
+	 * @return Character|null
+	 */
+	public function getMaintainer(): ?Character {
+		return $this->maintainer;
+	}
+
+	/**
 	 * Set maintainer
 	 *
 	 * @param Character|null $maintainer
@@ -138,12 +147,12 @@ class Portal {
 	}
 
 	/**
-	 * Get maintainer
+	 * Get origin
 	 *
-	 * @return Character|null
+	 * @return Place|null
 	 */
-	public function getMaintainer(): ?Character {
-		return $this->maintainer;
+	public function getOrigin(): ?Place {
+		return $this->origin;
 	}
 
 	/**
@@ -160,12 +169,12 @@ class Portal {
 	}
 
 	/**
-	 * Get origin
+	 * Get destination
 	 *
 	 * @return Place|null
 	 */
-	public function getOrigin(): ?Place {
-		return $this->origin;
+	public function getDestination(): ?Place {
+		return $this->destination;
 	}
 
 	/**
@@ -182,12 +191,12 @@ class Portal {
 	}
 
 	/**
-	 * Get destination
+	 * Get origin_access
 	 *
-	 * @return Place|null
+	 * @return Listing|null
 	 */
-	public function getDestination(): ?Place {
-		return $this->destination;
+	public function getOriginAccess(): ?Listing {
+		return $this->origin_access;
 	}
 
 	/**
@@ -204,12 +213,12 @@ class Portal {
 	}
 
 	/**
-	 * Get origin_access
+	 * Get dest_access
 	 *
 	 * @return Listing|null
 	 */
-	public function getOriginAccess(): ?Listing {
-		return $this->origin_access;
+	public function getDestAccess(): ?Listing {
+		return $this->dest_access;
 	}
 
 	/**
@@ -223,14 +232,5 @@ class Portal {
 		$this->dest_access = $destAccess;
 
 		return $this;
-	}
-
-	/**
-	 * Get dest_access
-	 *
-	 * @return Listing|null
-	 */
-	public function getDestAccess(): ?Listing {
-		return $this->dest_access;
 	}
 }

@@ -12,8 +12,17 @@ class UnitSettings {
 	private ?bool $renamable;
 	private ?float $retreat_threshold;
 	private ?bool $reinforcements;
-	private int $id;
+	private ?int $id = null;
 	private ?Unit $unit;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -29,12 +38,12 @@ class UnitSettings {
 	}
 
 	/**
-	 * Get name
+	 * Get strategy
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getStrategy(): ?string {
+		return $this->strategy;
 	}
 
 	/**
@@ -51,12 +60,12 @@ class UnitSettings {
 	}
 
 	/**
-	 * Get strategy
+	 * Get tactic
 	 *
 	 * @return string|null
 	 */
-	public function getStrategy(): ?string {
-		return $this->strategy;
+	public function getTactic(): ?string {
+		return $this->tactic;
 	}
 
 	/**
@@ -73,12 +82,12 @@ class UnitSettings {
 	}
 
 	/**
-	 * Get tactic
+	 * Get respect_fort
 	 *
-	 * @return string|null
+	 * @return bool|null
 	 */
-	public function getTactic(): ?string {
-		return $this->tactic;
+	public function getRespectFort(): ?bool {
+		return $this->respect_fort;
 	}
 
 	/**
@@ -95,12 +104,12 @@ class UnitSettings {
 	}
 
 	/**
-	 * Get respect_fort
+	 * Get line
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getRespectFort(): ?bool {
-		return $this->respect_fort;
+	public function getLine(): ?int {
+		return $this->line;
 	}
 
 	/**
@@ -117,12 +126,12 @@ class UnitSettings {
 	}
 
 	/**
-	 * Get line
+	 * Get siege_orders
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getLine(): ?int {
-		return $this->line;
+	public function getSiegeOrders(): ?string {
+		return $this->siege_orders;
 	}
 
 	/**
@@ -139,12 +148,12 @@ class UnitSettings {
 	}
 
 	/**
-	 * Get siege_orders
+	 * Get renamable
 	 *
-	 * @return string|null
+	 * @return bool|null
 	 */
-	public function getSiegeOrders(): ?string {
-		return $this->siege_orders;
+	public function getRenamable(): ?bool {
+		return $this->renamable;
 	}
 
 	/**
@@ -161,12 +170,12 @@ class UnitSettings {
 	}
 
 	/**
-	 * Get renamable
+	 * Get retreat_threshold
 	 *
-	 * @return bool|null
+	 * @return float|null
 	 */
-	public function getRenamable(): ?bool {
-		return $this->renamable;
+	public function getRetreatThreshold(): ?float {
+		return $this->retreat_threshold;
 	}
 
 	/**
@@ -183,12 +192,12 @@ class UnitSettings {
 	}
 
 	/**
-	 * Get retreat_threshold
+	 * Get reinforcements
 	 *
-	 * @return float|null
+	 * @return bool|null
 	 */
-	public function getRetreatThreshold(): ?float {
-		return $this->retreat_threshold;
+	public function getReinforcements(): ?bool {
+		return $this->reinforcements;
 	}
 
 	/**
@@ -205,21 +214,21 @@ class UnitSettings {
 	}
 
 	/**
-	 * Get reinforcements
+	 * Get id
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getReinforcements(): ?bool {
-		return $this->reinforcements;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get unit
 	 *
-	 * @return integer
+	 * @return Unit|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getUnit(): ?Unit {
+		return $this->unit;
 	}
 
 	/**
@@ -233,14 +242,5 @@ class UnitSettings {
 		$this->unit = $unit;
 
 		return $this;
-	}
-
-	/**
-	 * Get unit
-	 *
-	 * @return Unit|null
-	 */
-	public function getUnit(): ?Unit {
-		return $this->unit;
 	}
 }

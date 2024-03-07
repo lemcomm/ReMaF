@@ -6,17 +6,26 @@ namespace App\Entity;
  * ActivityBoutGroup
  */
 class ActivityBoutGroup {
-	private int $id;
+	private ?int $id = null;
 	private ActivityBout $bout;
 	private ActivityGroup $group;
 
 	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get bout
+	 *
+	 * @return ActivityBout|null
+	 */
+	public function getBout(): ?ActivityBout {
+		return $this->bout;
 	}
 
 	/**
@@ -33,12 +42,12 @@ class ActivityBoutGroup {
 	}
 
 	/**
-	 * Get bout
+	 * Get group
 	 *
-	 * @return ActivityBout|null
+	 * @return ActivityGroup|null
 	 */
-	public function getBout(): ?ActivityBout {
-		return $this->bout;
+	public function getGroup(): ?ActivityGroup {
+		return $this->group;
 	}
 
 	/**
@@ -52,14 +61,5 @@ class ActivityBoutGroup {
 		$this->group = $group;
 
 		return $this;
-	}
-
-	/**
-	 * Get group
-	 *
-	 * @return ActivityGroup|null
-	 */
-	public function getGroup(): ?ActivityGroup {
-		return $this->group;
 	}
 }

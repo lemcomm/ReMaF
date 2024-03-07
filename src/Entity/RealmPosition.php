@@ -25,7 +25,7 @@ class RealmPosition {
 	private ?bool $keeponslumber;
 	private ?int $minholders;
 	private ?bool $have_vassals;
-	private int $id;
+	private ?int $id = null;
 	private Collection $elections;
 	private Collection $vassals;
 	private Collection $requests;
@@ -54,6 +54,15 @@ class RealmPosition {
 	}
 
 	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
+
+	/**
 	 * Set name
 	 *
 	 * @param string $name
@@ -67,12 +76,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get name
+	 * Get rank
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getRank(): ?int {
+		return $this->rank;
 	}
 
 	/**
@@ -89,12 +98,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get rank
+	 * Get description
 	 *
-	 * @return int|null
+	 * @return string
 	 */
-	public function getRank(): ?int {
-		return $this->rank;
+	public function getDescription(): string {
+		return $this->description;
 	}
 
 	/**
@@ -111,12 +120,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get description
+	 * Get ruler
 	 *
-	 * @return string
+	 * @return boolean
 	 */
-	public function getDescription(): string {
-		return $this->description;
+	public function getRuler(): bool {
+		return $this->ruler;
 	}
 
 	/**
@@ -133,12 +142,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get ruler
+	 * Get legislative
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getRuler(): bool {
-		return $this->ruler;
+	public function getLegislative(): ?bool {
+		return $this->legislative;
 	}
 
 	/**
@@ -155,12 +164,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get legislative
+	 * Get elected
 	 *
-	 * @return bool|null
+	 * @return boolean
 	 */
-	public function getLegislative(): ?bool {
-		return $this->legislative;
+	public function getElected(): bool {
+		return $this->elected;
 	}
 
 	/**
@@ -177,12 +186,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get elected
+	 * Get electiontype
 	 *
-	 * @return boolean
+	 * @return string|null
 	 */
-	public function getElected(): bool {
-		return $this->elected;
+	public function getElectiontype(): ?string {
+		return $this->electiontype;
 	}
 
 	/**
@@ -199,12 +208,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get electiontype
+	 * Get inherit
 	 *
-	 * @return string|null
+	 * @return boolean
 	 */
-	public function getElectiontype(): ?string {
-		return $this->electiontype;
+	public function getInherit(): bool {
+		return $this->inherit;
 	}
 
 	/**
@@ -221,12 +230,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get inherit
+	 * Get term
 	 *
-	 * @return boolean
+	 * @return integer
 	 */
-	public function getInherit(): bool {
-		return $this->inherit;
+	public function getTerm(): int {
+		return $this->term;
 	}
 
 	/**
@@ -243,12 +252,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get term
+	 * Get year
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getTerm(): int {
-		return $this->term;
+	public function getYear(): ?int {
+		return $this->year;
 	}
 
 	/**
@@ -265,12 +274,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get year
+	 * Get week
 	 *
 	 * @return int|null
 	 */
-	public function getYear(): ?int {
-		return $this->year;
+	public function getWeek(): ?int {
+		return $this->week;
 	}
 
 	/**
@@ -287,12 +296,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get week
+	 * Get cycle
 	 *
 	 * @return int|null
 	 */
-	public function getWeek(): ?int {
-		return $this->week;
+	public function getCycle(): ?int {
+		return $this->cycle;
 	}
 
 	/**
@@ -309,12 +318,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get cycle
+	 * Get drop_cycle
 	 *
 	 * @return int|null
 	 */
-	public function getCycle(): ?int {
-		return $this->cycle;
+	public function getDropCycle(): ?int {
+		return $this->drop_cycle;
 	}
 
 	/**
@@ -331,12 +340,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get drop_cycle
+	 * Get current_term_ends
 	 *
-	 * @return int|null
+	 * @return DateTime|null
 	 */
-	public function getDropCycle(): ?int {
-		return $this->drop_cycle;
+	public function getCurrentTermEnds(): ?DateTime {
+		return $this->current_term_ends;
 	}
 
 	/**
@@ -353,12 +362,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get current_term_ends
+	 * Get retired
 	 *
-	 * @return DateTime|null
+	 * @return bool|null
 	 */
-	public function getCurrentTermEnds(): ?DateTime {
-		return $this->current_term_ends;
+	public function getRetired(): ?bool {
+		return $this->retired;
 	}
 
 	/**
@@ -375,12 +384,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get retired
+	 * Get keeponslumber
 	 *
 	 * @return bool|null
 	 */
-	public function getRetired(): ?bool {
-		return $this->retired;
+	public function getKeeponslumber(): ?bool {
+		return $this->keeponslumber;
 	}
 
 	/**
@@ -397,12 +406,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get keeponslumber
+	 * Get minholders
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getKeeponslumber(): ?bool {
-		return $this->keeponslumber;
+	public function getMinholders(): ?int {
+		return $this->minholders;
 	}
 
 	/**
@@ -419,12 +428,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get minholders
+	 * Get have_vassals
 	 *
-	 * @return int|null
+	 * @return bool|null
 	 */
-	public function getMinholders(): ?int {
-		return $this->minholders;
+	public function getHaveVassals(): ?bool {
+		return $this->have_vassals;
 	}
 
 	/**
@@ -441,20 +450,11 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get have_vassals
-	 *
-	 * @return bool|null
-	 */
-	public function getHaveVassals(): ?bool {
-		return $this->have_vassals;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -614,6 +614,15 @@ class RealmPosition {
 	}
 
 	/**
+	 * Get type
+	 *
+	 * @return PositionType|null
+	 */
+	public function getType(): ?PositionType {
+		return $this->type;
+	}
+
+	/**
 	 * Set type
 	 *
 	 * @param PositionType|null $type
@@ -627,12 +636,12 @@ class RealmPosition {
 	}
 
 	/**
-	 * Get type
+	 * Get realm
 	 *
-	 * @return PositionType|null
+	 * @return Realm|null
 	 */
-	public function getType(): ?PositionType {
-		return $this->type;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -646,15 +655,6 @@ class RealmPosition {
 		$this->realm = $realm;
 
 		return $this;
-	}
-
-	/**
-	 * Get realm
-	 *
-	 * @return Realm|null
-	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
 	}
 
 	/**

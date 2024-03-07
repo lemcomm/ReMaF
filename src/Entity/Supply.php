@@ -5,9 +5,18 @@ namespace App\Entity;
 class Supply {
 	private string $type;
 	private int $quantity;
-	private int $id;
+	private ?int $id = null;
 	private ?Unit $unit;
 	private ?Settlement $origin;
+
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
 	/**
 	 * Set type
@@ -23,12 +32,12 @@ class Supply {
 	}
 
 	/**
-	 * Get type
+	 * Get quantity
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getQuantity(): int {
+		return $this->quantity;
 	}
 
 	/**
@@ -45,21 +54,21 @@ class Supply {
 	}
 
 	/**
-	 * Get quantity
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getQuantity(): int {
-		return $this->quantity;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get unit
 	 *
-	 * @return integer
+	 * @return Unit|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getUnit(): ?Unit {
+		return $this->unit;
 	}
 
 	/**
@@ -76,12 +85,12 @@ class Supply {
 	}
 
 	/**
-	 * Get unit
+	 * Get origin
 	 *
-	 * @return Unit|null
+	 * @return Settlement|null
 	 */
-	public function getUnit(): ?Unit {
-		return $this->unit;
+	public function getOrigin(): ?Settlement {
+		return $this->origin;
 	}
 
 	/**
@@ -95,14 +104,5 @@ class Supply {
 		$this->origin = $origin;
 
 		return $this;
-	}
-
-	/**
-	 * Get origin
-	 *
-	 * @return Settlement|null
-	 */
-	public function getOrigin(): ?Settlement {
-		return $this->origin;
 	}
 }

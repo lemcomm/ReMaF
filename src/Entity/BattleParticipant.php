@@ -13,10 +13,19 @@ class BattleParticipant {
 	private array $start;
 	private array $combat;
 	private array $finish;
-	private int $id;
+	private ?int $id = null;
 	private BattleReport $battle_report;
 	private Character $character;
 	private Character $captured_by;
+
+	/**
+	 * Get group_id
+	 *
+	 * @return integer
+	 */
+	public function getGroupId(): int {
+		return $this->group_id;
+	}
 
 	/**
 	 * Set group_id
@@ -32,12 +41,12 @@ class BattleParticipant {
 	}
 
 	/**
-	 * Get group_id
+	 * Get standing
 	 *
-	 * @return integer
+	 * @return boolean
 	 */
-	public function getGroupId(): int {
-		return $this->group_id;
+	public function getStanding(): bool {
+		return $this->standing;
 	}
 
 	/**
@@ -54,12 +63,12 @@ class BattleParticipant {
 	}
 
 	/**
-	 * Get standing
+	 * Get wounded
 	 *
 	 * @return boolean
 	 */
-	public function getStanding(): bool {
-		return $this->standing;
+	public function getWounded(): bool {
+		return $this->wounded;
 	}
 
 	/**
@@ -76,12 +85,12 @@ class BattleParticipant {
 	}
 
 	/**
-	 * Get wounded
+	 * Get killed
 	 *
 	 * @return boolean
 	 */
-	public function getWounded(): bool {
-		return $this->wounded;
+	public function getKilled(): bool {
+		return $this->killed;
 	}
 
 	/**
@@ -98,12 +107,12 @@ class BattleParticipant {
 	}
 
 	/**
-	 * Get killed
+	 * Get start
 	 *
-	 * @return boolean
+	 * @return array
 	 */
-	public function getKilled(): bool {
-		return $this->killed;
+	public function getStart(): array {
+		return $this->start;
 	}
 
 	/**
@@ -120,12 +129,12 @@ class BattleParticipant {
 	}
 
 	/**
-	 * Get start
+	 * Get combat
 	 *
 	 * @return array
 	 */
-	public function getStart(): array {
-		return $this->start;
+	public function getCombat(): array {
+		return $this->combat;
 	}
 
 	/**
@@ -142,12 +151,12 @@ class BattleParticipant {
 	}
 
 	/**
-	 * Get combat
+	 * Get finish
 	 *
 	 * @return array
 	 */
-	public function getCombat(): array {
-		return $this->combat;
+	public function getFinish(): array {
+		return $this->finish;
 	}
 
 	/**
@@ -164,21 +173,21 @@ class BattleParticipant {
 	}
 
 	/**
-	 * Get finish
+	 * Get id
 	 *
-	 * @return array
+	 * @return int|null
 	 */
-	public function getFinish(): array {
-		return $this->finish;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get battle_report
 	 *
-	 * @return integer
+	 * @return BattleReport|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getBattleReport(): ?BattleReport {
+		return $this->battle_report;
 	}
 
 	/**
@@ -195,12 +204,12 @@ class BattleParticipant {
 	}
 
 	/**
-	 * Get battle_report
+	 * Get character
 	 *
-	 * @return BattleReport|null
+	 * @return Character|null
 	 */
-	public function getBattleReport(): ?BattleReport {
-		return $this->battle_report;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -217,12 +226,12 @@ class BattleParticipant {
 	}
 
 	/**
-	 * Get character
+	 * Get captured_by
 	 *
 	 * @return Character|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getCapturedBy(): ?Character {
+		return $this->captured_by;
 	}
 
 	/**
@@ -236,14 +245,5 @@ class BattleParticipant {
 		$this->captured_by = $capturedBy;
 
 		return $this;
-	}
-
-	/**
-	 * Get captured_by
-	 *
-	 * @return Character|null
-	 */
-	public function getCapturedBy(): ?Character {
-		return $this->captured_by;
 	}
 }

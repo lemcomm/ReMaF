@@ -3,17 +3,18 @@
 namespace App\Entity;
 
 class SettlementPermission extends PermissionBase {
-	#Inherited Properties
-	private ?int $value;
-	private ?int $value_remaining;
-	private ?int $reserve;
-	private int $id;
-	private ?Permission $permission;
-	private ?Listing $listing;
-
 	#Local Properties
 	private ?Settlement $settlement;
 	private ?Settlement $occupied_settlement;
+
+	/**
+	 * Get settlement
+	 *
+	 * @return Settlement|null
+	 */
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
+	}
 
 	/**
 	 * Set settlement
@@ -29,12 +30,12 @@ class SettlementPermission extends PermissionBase {
 	}
 
 	/**
-	 * Get settlement
+	 * Get occupied_settlement
 	 *
 	 * @return Settlement|null
 	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
+	public function getOccupiedSettlement(): ?Settlement {
+		return $this->occupied_settlement;
 	}
 
 	/**
@@ -48,14 +49,5 @@ class SettlementPermission extends PermissionBase {
 		$this->occupied_settlement = $occupiedSettlement;
 
 		return $this;
-	}
-
-	/**
-	 * Get occupied_settlement
-	 *
-	 * @return Settlement|null
-	 */
-	public function getOccupiedSettlement(): ?Settlement {
-		return $this->occupied_settlement;
 	}
 }

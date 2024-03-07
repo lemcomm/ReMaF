@@ -11,7 +11,7 @@ class Style {
 	private float $neutrality;
 	private float $distance;
 	private float $initiative;
-	private int $id;
+	private ?int $id = null;
 	private Collection|ArrayCollection $users;
 	private Collection|ArrayCollection $counters;
 	private Character $creator;
@@ -24,6 +24,15 @@ class Style {
 	public function __construct() {
 		$this->users = new ArrayCollection();
 		$this->counters = new ArrayCollection();
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -40,12 +49,12 @@ class Style {
 	}
 
 	/**
-	 * Get name
+	 * Get formal_name
 	 *
 	 * @return string
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getFormalName(): string {
+		return $this->formal_name;
 	}
 
 	/**
@@ -62,12 +71,12 @@ class Style {
 	}
 
 	/**
-	 * Get formal_name
+	 * Get neutrality
 	 *
-	 * @return string
+	 * @return float
 	 */
-	public function getFormalName(): string {
-		return $this->formal_name;
+	public function getNeutrality(): float {
+		return $this->neutrality;
 	}
 
 	/**
@@ -84,12 +93,12 @@ class Style {
 	}
 
 	/**
-	 * Get neutrality
+	 * Get distance
 	 *
 	 * @return float
 	 */
-	public function getNeutrality(): float {
-		return $this->neutrality;
+	public function getDistance(): float {
+		return $this->distance;
 	}
 
 	/**
@@ -106,12 +115,12 @@ class Style {
 	}
 
 	/**
-	 * Get distance
+	 * Get initiative
 	 *
 	 * @return float
 	 */
-	public function getDistance(): float {
-		return $this->distance;
+	public function getInitiative(): float {
+		return $this->initiative;
 	}
 
 	/**
@@ -128,20 +137,11 @@ class Style {
 	}
 
 	/**
-	 * Get initiative
-	 *
-	 * @return float
-	 */
-	public function getInitiative(): float {
-		return $this->initiative;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -208,6 +208,15 @@ class Style {
 	}
 
 	/**
+	 * Get creator
+	 *
+	 * @return Character|null
+	 */
+	public function getCreator(): ?Character {
+		return $this->creator;
+	}
+
+	/**
 	 * Set creator
 	 *
 	 * @param Character|null $creator
@@ -221,12 +230,12 @@ class Style {
 	}
 
 	/**
-	 * Get creator
+	 * Get item
 	 *
-	 * @return Character|null
+	 * @return ItemType|null
 	 */
-	public function getCreator(): ?Character {
-		return $this->creator;
+	public function getItem(): ?ItemType {
+		return $this->item;
 	}
 
 	/**
@@ -243,12 +252,12 @@ class Style {
 	}
 
 	/**
-	 * Get item
+	 * Get augments
 	 *
-	 * @return ItemType|null
+	 * @return SkillType|null
 	 */
-	public function getItem(): ?ItemType {
-		return $this->item;
+	public function getAugments(): ?SkillType {
+		return $this->augments;
 	}
 
 	/**
@@ -262,14 +271,5 @@ class Style {
 		$this->augments = $augments;
 
 		return $this;
-	}
-
-	/**
-	 * Get augments
-	 *
-	 * @return SkillType|null
-	 */
-	public function getAugments(): ?SkillType {
-		return $this->augments;
 	}
 }

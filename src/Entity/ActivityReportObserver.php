@@ -6,9 +6,7 @@ namespace App\Entity;
  * ActivityReportObserver
  */
 class ActivityReportObserver {
-
-
-	private int $id;
+	private ?int $id = null;
 	private ActivityReport $activity_report;
 	private Character $character;
 
@@ -16,14 +14,23 @@ class ActivityReportObserver {
 		return $this->setActivityReport($report);
 	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
+
+	/**
+	 * Get activity_report
+	 *
+	 * @return ActivityReport
+	 */
+	public function getActivityReport(): ActivityReport {
+		return $this->activity_report;
+	}
 
 	/**
 	 * Set activity_report
@@ -32,40 +39,31 @@ class ActivityReportObserver {
 	 *
 	 * @return ActivityReportObserver
 	 */
-    public function setActivityReport(ActivityReport $activityReport = null): static {
-        $this->activity_report = $activityReport;
+	public function setActivityReport(ActivityReport $activityReport = null): static {
+		$this->activity_report = $activityReport;
 
-        return $this;
-    }
-
-    /**
-     * Get activity_report
-     *
-     * @return ActivityReport
-     */
-    public function getActivityReport(): ActivityReport {
-        return $this->activity_report;
-    }
-
-    /**
-     * Set character
-     *
-     * @param Character|null $character
-     *
-     * @return ActivityReportObserver
-     */
-	public function setCharacter(Character $character = null): static {
-        $this->character = $character;
-
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * Get character
 	 *
 	 * @return Character|null
 	 */
-    public function getCharacter(): ?Character {
-        return $this->character;
-    }
+	public function getCharacter(): ?Character {
+		return $this->character;
+	}
+
+	/**
+	 * Set character
+	 *
+	 * @param Character|null $character
+	 *
+	 * @return ActivityReportObserver
+	 */
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
+
+		return $this;
+	}
 }

@@ -5,7 +5,16 @@ namespace App\Entity;
 class Setting {
 	private string $name;
 	private string $value;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -21,12 +30,12 @@ class Setting {
 	}
 
 	/**
-	 * Get name
+	 * Get value
 	 *
 	 * @return string
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getValue(): string {
+		return $this->value;
 	}
 
 	/**
@@ -43,20 +52,11 @@ class Setting {
 	}
 
 	/**
-	 * Get value
-	 *
-	 * @return string
-	 */
-	public function getValue(): string {
-		return $this->value;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 }

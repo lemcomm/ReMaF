@@ -30,7 +30,7 @@ class DataTroopsCommand extends Command {
 
 		echo '{"type":"FeatureCollection","features":[';
 
-		$query = $this->em->createQuery('SELECT c, ST_AsGeoJSON(c.location) as json FROM BM2SiteBundle:Character c WHERE c.alive = true AND c.location IS NOT NULL');
+		$query = $this->em->createQuery('SELECT c, ST_AsGeoJSON(c.location) as json FROM App:Character c WHERE c.alive = true AND c.location IS NOT NULL');
 		foreach ($query->getResult() as $data) {
 			$character = $data[0];
 			$size = $character->getVisualSize();
@@ -46,7 +46,7 @@ class DataTroopsCommand extends Command {
 			echo json_encode($data);
 		}
 
-		$query = $this->em->createQuery('SELECT s, ST_AsGeoJSON(g.center) as json FROM BM2SiteBundle:Settlement s JOIN s.geo_data g');
+		$query = $this->em->createQuery('SELECT s, ST_AsGeoJSON(g.center) as json FROM App:Settlement s JOIN s.geo_data g');
 		foreach ($query->getResult() as $data) {
 			$settlement = $data[0];
 			$militia = $settlement->getActiveMilitia();

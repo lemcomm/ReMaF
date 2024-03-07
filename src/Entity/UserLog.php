@@ -9,7 +9,7 @@ class UserLog {
 	private string $route;
 	private string $agent;
 	private DateTime $ts;
-	private int $id;
+	private ?int $id = null;
 	private User $user;
 
 	public function getIp(): string {
@@ -32,7 +32,7 @@ class UserLog {
 		return $this;
 	}
 
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 

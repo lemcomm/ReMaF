@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class Action {
-	private int $id;
+	private ?int $id = null;
 	private string $type;
 	private DateTime $started;
 	private DateTime $complete;
@@ -52,18 +52,12 @@ class Action {
 		$this->target_battlegroup?->removeRelatedAction($this);
 	}
 
-	public function setType($type): static {
-		$this->type = $type;
-
-		return $this;
-	}
-
 	public function getType(): string {
 		return $this->type;
 	}
 
-	public function setStarted($started = null): static {
-		$this->started = $started;
+	public function setType($type): static {
+		$this->type = $type;
 
 		return $this;
 	}
@@ -72,8 +66,8 @@ class Action {
 		return $this->started;
 	}
 
-	public function setComplete($complete = null): static {
-		$this->complete = $complete;
+	public function setStarted($started = null): static {
+		$this->started = $started;
 
 		return $this;
 	}
@@ -82,8 +76,8 @@ class Action {
 		return $this->complete;
 	}
 
-	public function setHidden($hidden): static {
-		$this->hidden = $hidden;
+	public function setComplete($complete = null): static {
+		$this->complete = $complete;
 
 		return $this;
 	}
@@ -92,8 +86,8 @@ class Action {
 		return $this->hidden;
 	}
 
-	public function setHourly($hourly): static {
-		$this->hourly = $hourly;
+	public function setHidden($hidden): static {
+		$this->hidden = $hidden;
 
 		return $this;
 	}
@@ -102,8 +96,8 @@ class Action {
 		return $this->hourly;
 	}
 
-	public function setCanCancel($canCancel): static {
-		$this->can_cancel = $canCancel;
+	public function setHourly($hourly): static {
+		$this->hourly = $hourly;
 
 		return $this;
 	}
@@ -112,8 +106,8 @@ class Action {
 		return $this->can_cancel;
 	}
 
-	public function setBlockTravel($blockTravel): static {
-		$this->block_travel = $blockTravel;
+	public function setCanCancel($canCancel): static {
+		$this->can_cancel = $canCancel;
 
 		return $this;
 	}
@@ -122,8 +116,8 @@ class Action {
 		return $this->block_travel;
 	}
 
-	public function setPriority($priority = null): static {
-		$this->priority = $priority;
+	public function setBlockTravel($blockTravel): static {
+		$this->block_travel = $blockTravel;
 
 		return $this;
 	}
@@ -132,8 +126,8 @@ class Action {
 		return $this->priority;
 	}
 
-	public function setNumberValue($numberValue = null): static {
-		$this->number_value = $numberValue;
+	public function setPriority($priority = null): static {
+		$this->priority = $priority;
 
 		return $this;
 	}
@@ -142,8 +136,8 @@ class Action {
 		return $this->number_value;
 	}
 
-	public function setStringValue($stringValue = null): static {
-		$this->string_value = $stringValue;
+	public function setNumberValue($numberValue = null): static {
+		$this->number_value = $numberValue;
 
 		return $this;
 	}
@@ -152,7 +146,13 @@ class Action {
 		return $this->string_value;
 	}
 
-	public function getId(): int {
+	public function setStringValue($stringValue = null): static {
+		$this->string_value = $stringValue;
+
+		return $this;
+	}
+
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -198,18 +198,12 @@ class Action {
 		return $this->opposing_actions;
 	}
 
-	public function setCharacter(Character $character = null): static {
-		$this->character = $character;
-
-		return $this;
-	}
-
 	public function getCharacter(): ?Character {
 		return $this->character;
 	}
 
-	public function setTargetRealm(Realm $targetRealm = null): static {
-		$this->target_realm = $targetRealm;
+	public function setCharacter(Character $character = null): static {
+		$this->character = $character;
 
 		return $this;
 	}
@@ -218,8 +212,8 @@ class Action {
 		return $this->target_realm;
 	}
 
-	public function setTargetSettlement(Settlement $targetSettlement = null): static {
-		$this->target_settlement = $targetSettlement;
+	public function setTargetRealm(Realm $targetRealm = null): static {
+		$this->target_realm = $targetRealm;
 
 		return $this;
 	}
@@ -228,8 +222,8 @@ class Action {
 		return $this->target_settlement;
 	}
 
-	public function setTargetPlace(Place $targetPlace = null): static {
-		$this->target_place = $targetPlace;
+	public function setTargetSettlement(Settlement $targetSettlement = null): static {
+		$this->target_settlement = $targetSettlement;
 
 		return $this;
 	}
@@ -238,8 +232,8 @@ class Action {
 		return $this->target_place;
 	}
 
-	public function setTargetCharacter(Character $targetCharacter = null): static {
-		$this->target_character = $targetCharacter;
+	public function setTargetPlace(Place $targetPlace = null): static {
+		$this->target_place = $targetPlace;
 
 		return $this;
 	}
@@ -248,8 +242,8 @@ class Action {
 		return $this->target_character;
 	}
 
-	public function setTargetSoldier(Soldier $targetSoldier = null): static {
-		$this->target_soldier = $targetSoldier;
+	public function setTargetCharacter(Character $targetCharacter = null): static {
+		$this->target_character = $targetCharacter;
 
 		return $this;
 	}
@@ -258,8 +252,8 @@ class Action {
 		return $this->target_soldier;
 	}
 
-	public function setTargetEntourageType(EntourageType $targetEntourageType = null): static {
-		$this->target_entourage_type = $targetEntourageType;
+	public function setTargetSoldier(Soldier $targetSoldier = null): static {
+		$this->target_soldier = $targetSoldier;
 
 		return $this;
 	}
@@ -268,8 +262,8 @@ class Action {
 		return $this->target_entourage_type;
 	}
 
-	public function setTargetEquipmentType(EquipmentType $targetEquipmentType = null): static {
-		$this->target_equipment_type = $targetEquipmentType;
+	public function setTargetEntourageType(EntourageType $targetEntourageType = null): static {
+		$this->target_entourage_type = $targetEntourageType;
 
 		return $this;
 	}
@@ -278,8 +272,8 @@ class Action {
 		return $this->target_equipment_type;
 	}
 
-	public function setTargetBattlegroup(BattleGroup $targetBattlegroup = null): static {
-		$this->target_battlegroup = $targetBattlegroup;
+	public function setTargetEquipmentType(EquipmentType $targetEquipmentType = null): static {
+		$this->target_equipment_type = $targetEquipmentType;
 
 		return $this;
 	}
@@ -288,8 +282,8 @@ class Action {
 		return $this->target_battlegroup;
 	}
 
-	public function setTargetListing(Listing $targetListing = null): static {
-		$this->target_listing = $targetListing;
+	public function setTargetBattlegroup(BattleGroup $targetBattlegroup = null): static {
+		$this->target_battlegroup = $targetBattlegroup;
 
 		return $this;
 	}
@@ -298,8 +292,8 @@ class Action {
 		return $this->target_listing;
 	}
 
-	public function setTargetSkill(SkillType $targetSkill = null): static {
-		$this->target_skill = $targetSkill;
+	public function setTargetListing(Listing $targetListing = null): static {
+		$this->target_listing = $targetListing;
 
 		return $this;
 	}
@@ -308,8 +302,8 @@ class Action {
 		return $this->target_skill;
 	}
 
-	public function setSupportedAction(Action $supportedAction = null): static {
-		$this->supported_action = $supportedAction;
+	public function setTargetSkill(SkillType $targetSkill = null): static {
+		$this->target_skill = $targetSkill;
 
 		return $this;
 	}
@@ -318,13 +312,19 @@ class Action {
 		return $this->supported_action;
 	}
 
-	public function setOpposedAction(Action $opposedAction = null): static {
-		$this->opposed_action = $opposedAction;
+	public function setSupportedAction(Action $supportedAction = null): static {
+		$this->supported_action = $supportedAction;
 
 		return $this;
 	}
 
 	public function getOpposedAction(): ?Action {
 		return $this->opposed_action;
+	}
+
+	public function setOpposedAction(Action $opposedAction = null): static {
+		$this->opposed_action = $opposedAction;
+
+		return $this;
 	}
 }

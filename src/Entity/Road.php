@@ -11,7 +11,7 @@ class Road {
 	private LineString $path;
 	private float $workers;
 	private int $condition;
-	private int $id;
+	private ?int $id = null;
 	private ?GeoData $geo_data;
 	private Collection $waypoints;
 
@@ -20,6 +20,15 @@ class Road {
 	 */
 	public function __construct() {
 		$this->waypoints = new ArrayCollection();
+	}
+
+	/**
+	 * Get quality
+	 *
+	 * @return integer
+	 */
+	public function getQuality(): int {
+		return $this->quality;
 	}
 
 	/**
@@ -36,12 +45,12 @@ class Road {
 	}
 
 	/**
-	 * Get quality
+	 * Get path
 	 *
-	 * @return integer
+	 * @return linestring
 	 */
-	public function getQuality(): int {
-		return $this->quality;
+	public function getPath(): LineString {
+		return $this->path;
 	}
 
 	/**
@@ -58,12 +67,12 @@ class Road {
 	}
 
 	/**
-	 * Get path
+	 * Get workers
 	 *
-	 * @return linestring
+	 * @return float
 	 */
-	public function getPath(): LineString {
-		return $this->path;
+	public function getWorkers(): float {
+		return $this->workers;
 	}
 
 	/**
@@ -80,12 +89,12 @@ class Road {
 	}
 
 	/**
-	 * Get workers
+	 * Get condition
 	 *
-	 * @return float
+	 * @return integer
 	 */
-	public function getWorkers(): float {
-		return $this->workers;
+	public function getCondition(): int {
+		return $this->condition;
 	}
 
 	/**
@@ -102,21 +111,21 @@ class Road {
 	}
 
 	/**
-	 * Get condition
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCondition(): int {
-		return $this->condition;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get geo_data
 	 *
-	 * @return integer
+	 * @return GeoData|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getGeoData(): ?GeoData {
+		return $this->geo_data;
 	}
 
 	/**
@@ -130,15 +139,6 @@ class Road {
 		$this->geo_data = $geoData;
 
 		return $this;
-	}
-
-	/**
-	 * Get geo_data
-	 *
-	 * @return GeoData|null
-	 */
-	public function getGeoData(): ?GeoData {
-		return $this->geo_data;
 	}
 
 	/**

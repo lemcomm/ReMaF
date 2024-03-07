@@ -9,9 +9,18 @@ class CreditHistory {
 	private ?int $bonus;
 	private DateTime $ts;
 	private string $type;
-	private int $id;
+	private ?int $id = null;
 	private ?UserPayment $payment;
 	private ?User $user;
+
+	/**
+	 * Get credits
+	 *
+	 * @return integer
+	 */
+	public function getCredits(): int {
+		return $this->credits;
+	}
 
 	/**
 	 * Set credits
@@ -27,12 +36,12 @@ class CreditHistory {
 	}
 
 	/**
-	 * Get credits
+	 * Get bonus
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCredits(): int {
-		return $this->credits;
+	public function getBonus(): ?int {
+		return $this->bonus;
 	}
 
 	/**
@@ -49,12 +58,12 @@ class CreditHistory {
 	}
 
 	/**
-	 * Get bonus
+	 * Get ts
 	 *
-	 * @return int|null
+	 * @return DateTime
 	 */
-	public function getBonus(): ?int {
-		return $this->bonus;
+	public function getTs(): DateTime {
+		return $this->ts;
 	}
 
 	/**
@@ -71,12 +80,12 @@ class CreditHistory {
 	}
 
 	/**
-	 * Get ts
+	 * Get type
 	 *
-	 * @return DateTime
+	 * @return string
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getType(): string {
+		return $this->type;
 	}
 
 	/**
@@ -93,21 +102,21 @@ class CreditHistory {
 	}
 
 	/**
-	 * Get type
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get payment
 	 *
-	 * @return integer
+	 * @return UserPayment|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getPayment(): ?UserPayment {
+		return $this->payment;
 	}
 
 	/**
@@ -124,12 +133,12 @@ class CreditHistory {
 	}
 
 	/**
-	 * Get payment
+	 * Get user
 	 *
-	 * @return UserPayment|null
+	 * @return User|null
 	 */
-	public function getPayment(): ?UserPayment {
-		return $this->payment;
+	public function getUser(): ?User {
+		return $this->user;
 	}
 
 	/**
@@ -143,14 +152,5 @@ class CreditHistory {
 		$this->user = $user;
 
 		return $this;
-	}
-
-	/**
-	 * Get user
-	 *
-	 * @return User|null
-	 */
-	public function getUser(): ?User {
-		return $this->user;
 	}
 }

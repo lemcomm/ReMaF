@@ -34,7 +34,16 @@ class StatisticGlobal {
 	private int $peasants;
 	private int $thralls;
 	private DateTime $ts;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get cycle
+	 *
+	 * @return integer
+	 */
+	public function getCycle(): int {
+		return $this->cycle;
+	}
 
 	/**
 	 * Set cycle
@@ -50,12 +59,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get cycle
+	 * Get users
 	 *
 	 * @return integer
 	 */
-	public function getCycle(): int {
-		return $this->cycle;
+	public function getUsers(): int {
+		return $this->users;
 	}
 
 	/**
@@ -72,12 +81,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get users
+	 * Get active_users
 	 *
 	 * @return integer
 	 */
-	public function getUsers(): int {
-		return $this->users;
+	public function getActiveUsers(): int {
+		return $this->active_users;
 	}
 
 	/**
@@ -94,12 +103,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get active_users
+	 * Get really_active_users
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getActiveUsers(): int {
-		return $this->active_users;
+	public function getReallyActiveUsers(): ?int {
+		return $this->really_active_users;
 	}
 
 	/**
@@ -116,12 +125,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get really_active_users
+	 * Get today_users
 	 *
 	 * @return int|null
 	 */
-	public function getReallyActiveUsers(): ?int {
-		return $this->really_active_users;
+	public function getTodayUsers(): ?int {
+		return $this->today_users;
 	}
 
 	/**
@@ -138,12 +147,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get today_users
+	 * Get ever_paid_users
 	 *
-	 * @return int|null
+	 * @return integer
 	 */
-	public function getTodayUsers(): ?int {
-		return $this->today_users;
+	public function getEverPaidUsers(): int {
+		return $this->ever_paid_users;
 	}
 
 	/**
@@ -160,12 +169,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get ever_paid_users
+	 * Get paying_users
 	 *
 	 * @return integer
 	 */
-	public function getEverPaidUsers(): int {
-		return $this->ever_paid_users;
+	public function getPayingUsers(): int {
+		return $this->paying_users;
 	}
 
 	/**
@@ -182,12 +191,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get paying_users
+	 * Get active_patrons
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getPayingUsers(): int {
-		return $this->paying_users;
+	public function getActivePatrons(): ?int {
+		return $this->active_patrons;
 	}
 
 	/**
@@ -204,12 +213,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get active_patrons
+	 * Get characters
 	 *
-	 * @return int|null
+	 * @return integer
 	 */
-	public function getActivePatrons(): ?int {
-		return $this->active_patrons;
+	public function getCharacters(): int {
+		return $this->characters;
 	}
 
 	/**
@@ -226,12 +235,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get characters
+	 * Get living_characters
 	 *
 	 * @return integer
 	 */
-	public function getCharacters(): int {
-		return $this->characters;
+	public function getLivingCharacters(): int {
+		return $this->living_characters;
 	}
 
 	/**
@@ -248,12 +257,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get living_characters
+	 * Get active_characters
 	 *
 	 * @return integer
 	 */
-	public function getLivingCharacters(): int {
-		return $this->living_characters;
+	public function getActiveCharacters(): int {
+		return $this->active_characters;
 	}
 
 	/**
@@ -270,12 +279,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get active_characters
+	 * Get deceased_characters
 	 *
 	 * @return integer
 	 */
-	public function getActiveCharacters(): int {
-		return $this->active_characters;
+	public function getDeceasedCharacters(): int {
+		return $this->deceased_characters;
 	}
 
 	/**
@@ -292,12 +301,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get deceased_characters
+	 * Get realms
 	 *
 	 * @return integer
 	 */
-	public function getDeceasedCharacters(): int {
-		return $this->deceased_characters;
+	public function getRealms(): int {
+		return $this->realms;
 	}
 
 	/**
@@ -314,12 +323,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get realms
+	 * Get major_realms
 	 *
 	 * @return integer
 	 */
-	public function getRealms(): int {
-		return $this->realms;
+	public function getMajorRealms(): int {
+		return $this->major_realms;
 	}
 
 	/**
@@ -336,12 +345,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get major_realms
+	 * Get buildings
 	 *
 	 * @return integer
 	 */
-	public function getMajorRealms(): int {
-		return $this->major_realms;
+	public function getBuildings(): int {
+		return $this->buildings;
 	}
 
 	/**
@@ -358,12 +367,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get buildings
+	 * Get constructions
 	 *
 	 * @return integer
 	 */
-	public function getBuildings(): int {
-		return $this->buildings;
+	public function getConstructions(): int {
+		return $this->constructions;
 	}
 
 	/**
@@ -380,12 +389,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get constructions
+	 * Get abandoned
 	 *
 	 * @return integer
 	 */
-	public function getConstructions(): int {
-		return $this->constructions;
+	public function getAbandoned(): int {
+		return $this->abandoned;
 	}
 
 	/**
@@ -402,12 +411,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get abandoned
+	 * Get features
 	 *
 	 * @return integer
 	 */
-	public function getAbandoned(): int {
-		return $this->abandoned;
+	public function getFeatures(): int {
+		return $this->features;
 	}
 
 	/**
@@ -424,12 +433,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get features
+	 * Get roads
 	 *
 	 * @return integer
 	 */
-	public function getFeatures(): int {
-		return $this->features;
+	public function getRoads(): int {
+		return $this->roads;
 	}
 
 	/**
@@ -446,12 +455,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get roads
+	 * Get trades
 	 *
 	 * @return integer
 	 */
-	public function getRoads(): int {
-		return $this->roads;
+	public function getTrades(): int {
+		return $this->trades;
 	}
 
 	/**
@@ -468,12 +477,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get trades
+	 * Get battles
 	 *
 	 * @return integer
 	 */
-	public function getTrades(): int {
-		return $this->trades;
+	public function getBattles(): int {
+		return $this->battles;
 	}
 
 	/**
@@ -490,12 +499,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get battles
+	 * Get soldiers
 	 *
 	 * @return integer
 	 */
-	public function getBattles(): int {
-		return $this->battles;
+	public function getSoldiers(): int {
+		return $this->soldiers;
 	}
 
 	/**
@@ -512,12 +521,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get soldiers
+	 * Get militia
 	 *
 	 * @return integer
 	 */
-	public function getSoldiers(): int {
-		return $this->soldiers;
+	public function getMilitia(): int {
+		return $this->militia;
 	}
 
 	/**
@@ -534,12 +543,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get militia
+	 * Get recruits
 	 *
 	 * @return integer
 	 */
-	public function getMilitia(): int {
-		return $this->militia;
+	public function getRecruits(): int {
+		return $this->recruits;
 	}
 
 	/**
@@ -556,12 +565,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get recruits
+	 * Get offers
 	 *
 	 * @return integer
 	 */
-	public function getRecruits(): int {
-		return $this->recruits;
+	public function getOffers(): int {
+		return $this->offers;
 	}
 
 	/**
@@ -578,12 +587,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get offers
+	 * Get entourage
 	 *
 	 * @return integer
 	 */
-	public function getOffers(): int {
-		return $this->offers;
+	public function getEntourage(): int {
+		return $this->entourage;
 	}
 
 	/**
@@ -600,12 +609,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get entourage
+	 * Get peasants
 	 *
 	 * @return integer
 	 */
-	public function getEntourage(): int {
-		return $this->entourage;
+	public function getPeasants(): int {
+		return $this->peasants;
 	}
 
 	/**
@@ -622,12 +631,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get peasants
+	 * Get thralls
 	 *
 	 * @return integer
 	 */
-	public function getPeasants(): int {
-		return $this->peasants;
+	public function getThralls(): int {
+		return $this->thralls;
 	}
 
 	/**
@@ -644,12 +653,12 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get thralls
+	 * Get ts
 	 *
-	 * @return integer
+	 * @return DateTime
 	 */
-	public function getThralls(): int {
-		return $this->thralls;
+	public function getTs(): DateTime {
+		return $this->ts;
 	}
 
 	/**
@@ -666,20 +675,11 @@ class StatisticGlobal {
 	}
 
 	/**
-	 * Get ts
-	 *
-	 * @return DateTime
-	 */
-	public function getTs(): DateTime {
-		return $this->ts;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 }

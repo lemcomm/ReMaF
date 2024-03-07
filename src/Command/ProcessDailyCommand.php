@@ -25,7 +25,7 @@ class ProcessDailyCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$query = $this->em->createQuery('UPDATE BM2SiteBundle:User u SET u.new_chars_limit = u.new_chars_limit +1 WHERE u.new_chars_limit < 10');
+		$query = $this->em->createQuery('UPDATE App:User u SET u.new_chars_limit = u.new_chars_limit +1 WHERE u.new_chars_limit < 10');
 		$query->execute();
 		$this->em->flush();
 	}

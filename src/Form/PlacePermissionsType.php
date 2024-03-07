@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Listing;
+use App\Entity\Permission;
+use App\Entity\Place;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -26,15 +28,16 @@ class PlacePermissionsType extends AbstractType {
 		$me = $options['me'];
 		$builder->add('place', EntityType::class, array(
 			'required' => true,
-			'class'=>'BM2SiteBundle:Place', 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($p) {
+			'class'=>Place::class, 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($p) {
 				return $er->createQueryBuilder('p')->where('p = :p')->setParameter('p',$p);
 			}
 		));
 		// TODO: filter according to what's available? (e.g. no permission for docks at regions with no coast)
+		// TODO: Rework these forms to not require 2n copies of these fields for every thing that uses permissions.
 		$builder->add('permission', EntityType::class, array(
 			'required' => true,
 			'choice_translation_domain' => true,
-			'class'=>'BM2SiteBundle:Permission',
+			'class'=>Permission::class,
 			'choice_label'=>'translation_string',
 			'query_builder'=>function(EntityRepository $er) {
 				return $er->createQueryBuilder('p')->where('p.class = :class')->setParameter('class', 'place');
@@ -49,7 +52,9 @@ class PlacePermissionsType extends AbstractType {
 		$builder->add('listing', EntityType::class, array(
 			'required' => true,
 			'placeholder'=>'perm.choose',
-			'class'=>Listing::class, 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($me) {
+			'class'=>Listing::class,
+			'choice_label'=>'name',
+			'query_builder'=>function(EntityRepository $er) use ($me) {
 				return $er->createQueryBuilder('l')->where('l.owner = :me')->setParameter('me',$me->getUser());
 			}
 		));

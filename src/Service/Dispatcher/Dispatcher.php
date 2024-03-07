@@ -1507,7 +1507,7 @@ class Dispatcher {
 			'maf_place_newplayer',
 			'place.newplayer.description',
 			'place.newplayer.longdesc',
-			array('place'=>$place->getId()),
+			array('id'=>$place->getId()),
 			array("%name%"=>$place->getName(), "%formalname%"=>$place->getFormalName())
 		);
 	}
@@ -1533,7 +1533,7 @@ class Dispatcher {
 			'maf_place_spawn_toggle',
 			'place.togglenewplayer.description',
 			'place.togglenewplayer.longdesc',
-			array('place'=>$place->getId()),
+			array('id'=>$place->getId()),
 			array("%name%"=>$place->getName(), "%formalname%"=>$place->getFormalName()),
 			array('spawn'=>$place->getSpawn()?true:false)
 		);
@@ -1682,6 +1682,51 @@ class Dispatcher {
 		}
 	}
 
+	public function militarySiegePlaceTest($ignored, $place): array {
+		# Grants you access to the page in which you can start a siege.
+		$char = $this->getCharacter();
+		if ($char->isPrisoner()) {
+			# Prisoners can't attack.
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.prisoner");
+		}
+		if ($char->isDoingAction('military.siege')) {
+			# Already doing.
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.already");
+		}
+		if ($char->getInsidePlace()) {
+			# Already inside.
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.insideplace");
+		}
+		if (!$place || ($place && !$place->isDefended())) {
+			# Can't attack nothing or empty places.
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.notdefended");
+		}
+		if ($char->isDoingAction('military.regroup')) {
+			# Busy regrouping.
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.regrouping");
+		}
+		if ($char->isDoingAction('military.evade')) {
+			# Busy avoiding battle.
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.evading");
+		}
+		if ($char->hasNoSoldiers()) {
+			# The guards laugh at your "siege".
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.nosoldiers");
+		}
+		if (($place->getOccupant() && $place->getOccupant() === $char) || (!$place->getOccupant() && $place->getOwner() === $char)) {
+			# No need to siege your own settlement.
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.location.yours");
+		}
+		if ($char->isInBattle()) {
+			# Busy fighting for life.
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.inbattle");
+		}
+		if ($char->DaysInGame()<2) {
+			# Too new.
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.fresh");
+		}
+		return $this->action("military.siege.start", "maf_war_siege_place", false, array('place'=>$place->getId(), 'action'=>'start'));
+	}
 	public function placeOccupationStartTest($check_duplicate, $place): array {
 		if (!$place) {
 			return array("name"=>"place.occupationstart.name", "description"=>"unavailable.noplace");

@@ -5,9 +5,18 @@ namespace App\Entity;
 class SettlementClaim {
 	private bool $enforceable;
 	private bool $priority;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $character;
 	private ?Settlement $settlement;
+
+	/**
+	 * Get enforceable
+	 *
+	 * @return boolean
+	 */
+	public function getEnforceable(): bool {
+		return $this->enforceable;
+	}
 
 	/**
 	 * Set enforceable
@@ -23,12 +32,12 @@ class SettlementClaim {
 	}
 
 	/**
-	 * Get enforceable
+	 * Get priority
 	 *
 	 * @return boolean
 	 */
-	public function getEnforceable(): bool {
-		return $this->enforceable;
+	public function getPriority(): bool {
+		return $this->priority;
 	}
 
 	/**
@@ -45,21 +54,21 @@ class SettlementClaim {
 	}
 
 	/**
-	 * Get priority
+	 * Get id
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getPriority(): bool {
-		return $this->priority;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -76,12 +85,12 @@ class SettlementClaim {
 	}
 
 	/**
-	 * Get character
+	 * Get settlement
 	 *
-	 * @return Character
+	 * @return Settlement|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getSettlement(): ?Settlement {
+		return $this->settlement;
 	}
 
 	/**
@@ -95,14 +104,5 @@ class SettlementClaim {
 		$this->settlement = $settlement;
 
 		return $this;
-	}
-
-	/**
-	 * Get settlement
-	 *
-	 * @return Settlement
-	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
 	}
 }

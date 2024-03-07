@@ -5,9 +5,22 @@ namespace App\Entity;
 class NewsReader {
 	private bool $read;
 	private bool $updated;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $character;
 	private ?NewsEdition $edition;
+
+	/**
+	 * Get read
+	 *
+	 * @return boolean
+	 */
+	public function getRead(): bool {
+		return $this->read;
+	}
+
+	public function isRead(): ?bool {
+		return $this->read;
+	}
 
 	/**
 	 * Set read
@@ -23,12 +36,16 @@ class NewsReader {
 	}
 
 	/**
-	 * Get read
+	 * Get updated
 	 *
 	 * @return boolean
 	 */
-	public function getRead(): bool {
-		return $this->read;
+	public function getUpdated(): bool {
+		return $this->updated;
+	}
+
+	public function isUpdated(): ?bool {
+		return $this->updated;
 	}
 
 	/**
@@ -45,21 +62,21 @@ class NewsReader {
 	}
 
 	/**
-	 * Get updated
+	 * Get id
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getUpdated(): bool {
-		return $this->updated;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -76,12 +93,12 @@ class NewsReader {
 	}
 
 	/**
-	 * Get character
+	 * Get edition
 	 *
-	 * @return Character|null
+	 * @return NewsEdition|null
 	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
+	public function getEdition(): ?NewsEdition {
+		return $this->edition;
 	}
 
 	/**
@@ -95,22 +112,5 @@ class NewsReader {
 		$this->edition = $edition;
 
 		return $this;
-	}
-
-	/**
-	 * Get edition
-	 *
-	 * @return NewsEdition|null
-	 */
-	public function getEdition(): ?NewsEdition {
-		return $this->edition;
-	}
-
-	public function isRead(): ?bool {
-		return $this->read;
-	}
-
-	public function isUpdated(): ?bool {
-		return $this->updated;
 	}
 }

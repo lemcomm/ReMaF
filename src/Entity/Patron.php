@@ -13,9 +13,18 @@ class Patron {
 	private ?int $credited;
 	private ?string $status;
 	private ?bool $update_needed;
-	private int $id;
+	private ?int $id = null;
 	private ?Patreon $creator;
 	private ?User $user;
+
+	/**
+	 * Get patreon_id
+	 *
+	 * @return int|null
+	 */
+	public function getPatreonId(): ?int {
+		return $this->patreon_id;
+	}
 
 	/**
 	 * Set patreon_id
@@ -31,12 +40,12 @@ class Patron {
 	}
 
 	/**
-	 * Get patreon_id
+	 * Get access_token
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getPatreonId(): ?int {
-		return $this->patreon_id;
+	public function getAccessToken(): ?string {
+		return $this->access_token;
 	}
 
 	/**
@@ -53,12 +62,12 @@ class Patron {
 	}
 
 	/**
-	 * Get access_token
+	 * Get refresh_token
 	 *
 	 * @return string|null
 	 */
-	public function getAccessToken(): ?string {
-		return $this->access_token;
+	public function getRefreshToken(): ?string {
+		return $this->refresh_token;
 	}
 
 	/**
@@ -75,12 +84,12 @@ class Patron {
 	}
 
 	/**
-	 * Get refresh_token
+	 * Get expires
 	 *
-	 * @return string|null
+	 * @return DateTime|null
 	 */
-	public function getRefreshToken(): ?string {
-		return $this->refresh_token;
+	public function getExpires(): ?DateTime {
+		return $this->expires;
 	}
 
 	/**
@@ -97,12 +106,12 @@ class Patron {
 	}
 
 	/**
-	 * Get expires
+	 * Get current_amount
 	 *
-	 * @return DateTime|null
+	 * @return int|null
 	 */
-	public function getExpires(): ?DateTime {
-		return $this->expires;
+	public function getCurrentAmount(): ?int {
+		return $this->current_amount;
 	}
 
 	/**
@@ -119,12 +128,12 @@ class Patron {
 	}
 
 	/**
-	 * Get current_amount
+	 * Get credited
 	 *
 	 * @return int|null
 	 */
-	public function getCurrentAmount(): ?int {
-		return $this->current_amount;
+	public function getCredited(): ?int {
+		return $this->credited;
 	}
 
 	/**
@@ -141,12 +150,12 @@ class Patron {
 	}
 
 	/**
-	 * Get credited
+	 * Get status
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getCredited(): ?int {
-		return $this->credited;
+	public function getStatus(): ?string {
+		return $this->status;
 	}
 
 	/**
@@ -163,12 +172,12 @@ class Patron {
 	}
 
 	/**
-	 * Get status
+	 * Get update_needed
 	 *
-	 * @return string|null
+	 * @return boolean
 	 */
-	public function getStatus(): ?string {
-		return $this->status;
+	public function getUpdateNeeded(): bool {
+		return $this->update_needed;
 	}
 
 	/**
@@ -185,21 +194,21 @@ class Patron {
 	}
 
 	/**
-	 * Get update_needed
+	 * Get id
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getUpdateNeeded(): bool {
-		return $this->update_needed;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get creator
 	 *
-	 * @return integer
+	 * @return Patreon|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCreator(): ?Patreon {
+		return $this->creator;
 	}
 
 	/**
@@ -216,12 +225,12 @@ class Patron {
 	}
 
 	/**
-	 * Get creator
+	 * Get user
 	 *
-	 * @return Patreon|null
+	 * @return User|null
 	 */
-	public function getCreator(): ?Patreon {
-		return $this->creator;
+	public function getUser(): ?User {
+		return $this->user;
 	}
 
 	/**
@@ -235,14 +244,5 @@ class Patron {
 		$this->user = $user;
 
 		return $this;
-	}
-
-	/**
-	 * Get user
-	 *
-	 * @return User|null
-	 */
-	public function getUser(): ?User {
-		return $this->user;
 	}
 }

@@ -2,6 +2,8 @@
 
 namespace App\Form;
 
+use App\Entity\Association;
+use App\Entity\AssociationType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -69,7 +71,7 @@ class AssocUpdateType extends AbstractType {
 			'required'=>true,
 			'placeholder' => 'assoc.form.select',
 			'attr' => array('title'=>'assoc.help.type'),
-			'class' => 'BM2SiteBundle:AssociationType',
+			'class' => AssociationType::class,
 			'choice_translation_domain' => true,
 			'choice_label' => 'name',
 			'choices' => $types,
@@ -102,7 +104,7 @@ class AssocUpdateType extends AbstractType {
 			'required'=>false,
 			'placeholder' => 'assoc.form.superior',
 			'attr' => array('title'=>'assoc.help.type'),
-			'class' => 'BM2SiteBundle:Association',
+			'class' => Association::class,
 			'choice_translation_domain' => true,
 			'choice_label' => 'name',
 			'choices' => $assocs,

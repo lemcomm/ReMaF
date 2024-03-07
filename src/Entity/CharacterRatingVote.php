@@ -4,9 +4,18 @@ namespace App\Entity;
 
 class CharacterRatingVote {
 	private int $value;
-	private int $id;
+	private ?int $id = null;
 	private ?CharacterRating $rating;
 	private ?User $user;
+
+	/**
+	 * Get value
+	 *
+	 * @return integer
+	 */
+	public function getValue(): int {
+		return $this->value;
+	}
 
 	/**
 	 * Set value
@@ -22,21 +31,21 @@ class CharacterRatingVote {
 	}
 
 	/**
-	 * Get value
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getValue(): int {
-		return $this->value;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get rating
 	 *
-	 * @return integer
+	 * @return CharacterRating|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getRating(): ?CharacterRating {
+		return $this->rating;
 	}
 
 	/**
@@ -53,12 +62,12 @@ class CharacterRatingVote {
 	}
 
 	/**
-	 * Get rating
+	 * Get user
 	 *
-	 * @return CharacterRating|null
+	 * @return User|null
 	 */
-	public function getRating(): ?CharacterRating {
-		return $this->rating;
+	public function getUser(): ?User {
+		return $this->user;
 	}
 
 	/**
@@ -72,14 +81,5 @@ class CharacterRatingVote {
 		$this->user = $user;
 
 		return $this;
-	}
-
-	/**
-	 * Get user
-	 *
-	 * @return User|null
-	 */
-	public function getUser(): ?User {
-		return $this->user;
 	}
 }

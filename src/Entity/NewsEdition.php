@@ -7,15 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class NewsEdition {
-	public function isPublished(): DateTime {
-		return $this->getPublished();
-	}
-
 	private int $number;
 	private bool $collection;
 	private ?int $published_cycle;
 	private ?DateTime $published;
-	private int $id;
+	private ?int $id = null;
 	private Collection $articles;
 	private Collection $readers;
 	private ?NewsPaper $paper;
@@ -28,70 +24,17 @@ class NewsEdition {
 		$this->readers = new ArrayCollection();
 	}
 
-	/**
-	 * Set number
-	 *
-	 * @param integer $number
-	 *
-	 * @return NewsEdition
-	 */
-	public function setNumber(int $number): static {
-		$this->number = $number;
-
-		return $this;
+	public function isPublished(): DateTime {
+		return $this->getPublished();
 	}
 
 	/**
-	 * Get number
+	 * Get published
 	 *
-	 * @return integer
+	 * @return DateTime|null
 	 */
-	public function getNumber(): int {
-		return $this->number;
-	}
-
-	/**
-	 * Set collection
-	 *
-	 * @param boolean $collection
-	 *
-	 * @return NewsEdition
-	 */
-	public function setCollection(bool $collection): static {
-		$this->collection = $collection;
-
-		return $this;
-	}
-
-	/**
-	 * Get collection
-	 *
-	 * @return boolean
-	 */
-	public function getCollection(): bool {
-		return $this->collection;
-	}
-
-	/**
-	 * Set published_cycle
-	 *
-	 * @param integer|null $publishedCycle
-	 *
-	 * @return NewsEdition
-	 */
-	public function setPublishedCycle(?int $publishedCycle): static {
-		$this->published_cycle = $publishedCycle;
-
-		return $this;
-	}
-
-	/**
-	 * Get published_cycle
-	 *
-	 * @return int|null
-	 */
-	public function getPublishedCycle(): ?int {
-		return $this->published_cycle;
+	public function getPublished(): ?DateTime {
+		return $this->published;
 	}
 
 	/**
@@ -108,20 +51,81 @@ class NewsEdition {
 	}
 
 	/**
-	 * Get published
+	 * Get number
 	 *
-	 * @return DateTime|null
+	 * @return integer
 	 */
-	public function getPublished(): ?DateTime {
-		return $this->published;
+	public function getNumber(): int {
+		return $this->number;
+	}
+
+	/**
+	 * Set number
+	 *
+	 * @param integer $number
+	 *
+	 * @return NewsEdition
+	 */
+	public function setNumber(int $number): static {
+		$this->number = $number;
+
+		return $this;
+	}
+
+	/**
+	 * Get collection
+	 *
+	 * @return boolean
+	 */
+	public function getCollection(): bool {
+		return $this->collection;
+	}
+
+	public function isCollection(): ?bool {
+		return $this->collection;
+	}
+
+	/**
+	 * Set collection
+	 *
+	 * @param boolean $collection
+	 *
+	 * @return NewsEdition
+	 */
+	public function setCollection(bool $collection): static {
+		$this->collection = $collection;
+
+		return $this;
+	}
+
+	/**
+	 * Get published_cycle
+	 *
+	 * @return int|null
+	 */
+	public function getPublishedCycle(): ?int {
+		return $this->published_cycle;
+	}
+
+	/**
+	 * Set published_cycle
+	 *
+	 * @param integer|null $publishedCycle
+	 *
+	 * @return NewsEdition
+	 */
+	public function setPublishedCycle(?int $publishedCycle): static {
+		$this->published_cycle = $publishedCycle;
+
+		return $this;
 	}
 
 	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -188,6 +192,15 @@ class NewsEdition {
 	}
 
 	/**
+	 * Get paper
+	 *
+	 * @return NewsPaper|null
+	 */
+	public function getPaper(): ?NewsPaper {
+		return $this->paper;
+	}
+
+	/**
 	 * Set paper
 	 *
 	 * @param NewsPaper|null $paper
@@ -198,18 +211,5 @@ class NewsEdition {
 		$this->paper = $paper;
 
 		return $this;
-	}
-
-	/**
-	 * Get paper
-	 *
-	 * @return NewsPaper|null
-	 */
-	public function getPaper(): ?NewsPaper {
-		return $this->paper;
-	}
-
-	public function isCollection(): ?bool {
-		return $this->collection;
 	}
 }

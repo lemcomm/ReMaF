@@ -1075,7 +1075,7 @@ class CharacterManager {
 						}
 						break;
 					case 'oldest':
-						$query = $this->em->createQuery('SELECT m FROM BM2SiteBundle:AssociationMember m WHERE m.association = :assoc and m.id != :rank ORDER BY m.join_date ASC')
+						$query = $this->em->createQuery('SELECT m FROM App:AssociationMember m WHERE m.association = :assoc and m.id != :rank ORDER BY m.join_date ASC')
 							->setParameters(['assoc'=>$assoc, 'rank'=>$mbr->getId()])
 							->setMaxResults(1);
 						$oldest = $query->getOneOrNullResult();

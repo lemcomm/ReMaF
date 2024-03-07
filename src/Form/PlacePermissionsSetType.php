@@ -7,6 +7,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Valid;
 
 class PlacePermissionsSetType extends AbstractType {
 	public function configureOptions(OptionsResolver $resolver) {
@@ -31,25 +32,25 @@ class PlacePermissionsSetType extends AbstractType {
 			}
 
 			$builder->add('permissions', CollectionType::class, array(
-				'type'		=> PlacePermissionsType::class,
+				'entry_type'		=> PlacePermissionsType::class,
 				'entry_options' => [
 					'me' => $me,
 					'p' => $p,
 				],
 				'allow_add'	=> true,
 				'allow_delete' => true,
-				'cascade_validation' => true
+				'constraints' => new Valid(),
 			));
 		} else {
 			$builder->add('permissions', CollectionType::class, array(
-				'type'		=> PlaceOccupationPermissionsType::class,
+				'entry_type'		=> PlaceOccupationPermissionsType::class,
 				'entry_options' => [
 					'me' => $me,
 					'p' => $p,
 				],
 				'allow_add'	=> true,
 				'allow_delete' => true,
-				'cascade_validation' => true
+				'constraints' => new Valid(),
 			));
 		}
 	}

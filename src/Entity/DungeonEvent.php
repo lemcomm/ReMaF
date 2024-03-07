@@ -8,8 +8,17 @@ class DungeonEvent {
 	private DateTime $ts;
 	private string $content;
 	private ?array $data;
-	private int $id;
+	private ?int $id = null;
 	private ?DungeonParty $party;
+
+	/**
+	 * Get ts
+	 *
+	 * @return DateTime
+	 */
+	public function getTs(): DateTime {
+		return $this->ts;
+	}
 
 	/**
 	 * Set ts
@@ -25,12 +34,12 @@ class DungeonEvent {
 	}
 
 	/**
-	 * Get ts
+	 * Get content
 	 *
-	 * @return DateTime
+	 * @return string
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getContent(): string {
+		return $this->content;
 	}
 
 	/**
@@ -47,12 +56,12 @@ class DungeonEvent {
 	}
 
 	/**
-	 * Get content
+	 * Get data
 	 *
-	 * @return string
+	 * @return array|null
 	 */
-	public function getContent(): string {
-		return $this->content;
+	public function getData(): ?array {
+		return $this->data;
 	}
 
 	/**
@@ -69,21 +78,21 @@ class DungeonEvent {
 	}
 
 	/**
-	 * Get data
+	 * Get id
 	 *
-	 * @return array|null
+	 * @return int|null
 	 */
-	public function getData(): ?array {
-		return $this->data;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get party
 	 *
-	 * @return integer
+	 * @return DungeonParty|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getParty(): ?DungeonParty {
+		return $this->party;
 	}
 
 	/**
@@ -97,14 +106,5 @@ class DungeonEvent {
 		$this->party = $party;
 
 		return $this;
-	}
-
-	/**
-	 * Get party
-	 *
-	 * @return DungeonParty|null
-	 */
-	public function getParty(): ?DungeonParty {
-		return $this->party;
 	}
 }

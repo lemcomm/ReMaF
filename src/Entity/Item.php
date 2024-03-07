@@ -5,16 +5,25 @@ namespace App\Entity;
 class Item {
 # Nothing to see here, civilian. Move along.
 
-	private int $id;
+	private ?int $id = null;
 	private ItemType $type;
 
 	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get type
+	 *
+	 * @return ItemType|null
+	 */
+	public function getType(): ?ItemType {
+		return $this->type;
 	}
 
 	/**
@@ -28,14 +37,5 @@ class Item {
 		$this->type = $type;
 
 		return $this;
-	}
-
-	/**
-	 * Get type
-	 *
-	 * @return ItemType|null
-	 */
-	public function getType(): ?ItemType {
-		return $this->type;
 	}
 }

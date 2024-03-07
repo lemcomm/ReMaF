@@ -9,9 +9,18 @@ class MailEntry {
 	private DateTime $ts;
 	private DateTime $send_time;
 	private string $content;
-	private int $id;
+	private ?int $id = null;
 	private User $user;
 	private Event $event;
+
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
+	}
 
 	/**
 	 * Set type
@@ -27,12 +36,12 @@ class MailEntry {
 	}
 
 	/**
-	 * Get type
+	 * Get ts
 	 *
-	 * @return string
+	 * @return DateTime
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getTs(): DateTime {
+		return $this->ts;
 	}
 
 	/**
@@ -49,12 +58,12 @@ class MailEntry {
 	}
 
 	/**
-	 * Get ts
+	 * Get send_time
 	 *
 	 * @return DateTime
 	 */
-	public function getTs(): DateTime {
-		return $this->ts;
+	public function getSendTime(): DateTime {
+		return $this->send_time;
 	}
 
 	/**
@@ -71,12 +80,12 @@ class MailEntry {
 	}
 
 	/**
-	 * Get send_time
+	 * Get content
 	 *
-	 * @return DateTime
+	 * @return string
 	 */
-	public function getSendTime(): DateTime {
-		return $this->send_time;
+	public function getContent(): string {
+		return $this->content;
 	}
 
 	/**
@@ -93,21 +102,21 @@ class MailEntry {
 	}
 
 	/**
-	 * Get content
+	 * Get id
 	 *
-	 * @return string
+	 * @return int|null
 	 */
-	public function getContent(): string {
-		return $this->content;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get user
 	 *
-	 * @return integer
+	 * @return User|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getUser(): ?User {
+		return $this->user;
 	}
 
 	/**
@@ -124,12 +133,12 @@ class MailEntry {
 	}
 
 	/**
-	 * Get user
+	 * Get event
 	 *
-	 * @return User|null
+	 * @return Event|null
 	 */
-	public function getUser(): ?User {
-		return $this->user;
+	public function getEvent(): ?Event {
+		return $this->event;
 	}
 
 	/**
@@ -143,14 +152,5 @@ class MailEntry {
 		$this->event = $event;
 
 		return $this;
-	}
-
-	/**
-	 * Get event
-	 *
-	 * @return Event|null
-	 */
-	public function getEvent(): ?Event {
-		return $this->event;
 	}
 }

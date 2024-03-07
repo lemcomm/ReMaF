@@ -8,8 +8,17 @@ class CharacterBackground {
 	private string $secrets;
 	private string $retirement;
 	private string $death;
-	private int $id;
+	private ?int $id = null;
 	private Character $character;
+
+	/**
+	 * Get appearance
+	 *
+	 * @return string|null
+	 */
+	public function getAppearance(): ?string {
+		return $this->appearance;
+	}
 
 	/**
 	 * Set appearance
@@ -25,12 +34,12 @@ class CharacterBackground {
 	}
 
 	/**
-	 * Get appearance
+	 * Get personality
 	 *
 	 * @return string|null
 	 */
-	public function getAppearance(): ?string {
-		return $this->appearance;
+	public function getPersonality(): ?string {
+		return $this->personality;
 	}
 
 	/**
@@ -47,12 +56,12 @@ class CharacterBackground {
 	}
 
 	/**
-	 * Get personality
+	 * Get secrets
 	 *
 	 * @return string|null
 	 */
-	public function getPersonality(): ?string {
-		return $this->personality;
+	public function getSecrets(): ?string {
+		return $this->secrets;
 	}
 
 	/**
@@ -69,12 +78,12 @@ class CharacterBackground {
 	}
 
 	/**
-	 * Get secrets
+	 * Get retirement
 	 *
 	 * @return string|null
 	 */
-	public function getSecrets(): ?string {
-		return $this->secrets;
+	public function getRetirement(): ?string {
+		return $this->retirement;
 	}
 
 	/**
@@ -91,12 +100,12 @@ class CharacterBackground {
 	}
 
 	/**
-	 * Get retirement
+	 * Get death
 	 *
 	 * @return string|null
 	 */
-	public function getRetirement(): ?string {
-		return $this->retirement;
+	public function getDeath(): ?string {
+		return $this->death;
 	}
 
 	/**
@@ -113,21 +122,21 @@ class CharacterBackground {
 	}
 
 	/**
-	 * Get death
+	 * Get id
 	 *
-	 * @return string|null
+	 * @return int|null
 	 */
-	public function getDeath(): ?string {
-		return $this->death;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get character
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getCharacter(): ?Character {
+		return $this->character;
 	}
 
 	/**
@@ -141,14 +150,5 @@ class CharacterBackground {
 		$this->character = $character;
 
 		return $this;
-	}
-
-	/**
-	 * Get character
-	 *
-	 * @return Character|null
-	 */
-	public function getCharacter(): ?Character {
-		return $this->character;
 	}
 }

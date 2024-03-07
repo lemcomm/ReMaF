@@ -5,7 +5,16 @@ namespace App\Entity;
 class ResourceType {
 	private string $name;
 	private float $gold_value;
-	private int $id;
+	private ?int $id = null;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -21,12 +30,12 @@ class ResourceType {
 	}
 
 	/**
-	 * Get name
+	 * Get gold_value
 	 *
-	 * @return string
+	 * @return float
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getGoldValue(): float {
+		return $this->gold_value;
 	}
 
 	/**
@@ -43,20 +52,11 @@ class ResourceType {
 	}
 
 	/**
-	 * Get gold_value
-	 *
-	 * @return float
-	 */
-	public function getGoldValue(): float {
-		return $this->gold_value;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 }

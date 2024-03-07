@@ -166,7 +166,7 @@ class SiegeType extends AbstractType {
 						'required'=>true,
 						'placeholder'=>'equipment.none'
 						'attr'=>array('title'=>'siege.help.equipmenttype'),
-						'class'=>'BM2SiteBundle:SiegeEquipmentType',
+						'class'=>'App:SiegeEquipmentType',
 						'choice_label'=>'nameTrans'
 						'query_builder'=>function(EntityRepository $er){
 							return $er->createQueryBuilder('e')->orderBy('e.name', 'ASC');

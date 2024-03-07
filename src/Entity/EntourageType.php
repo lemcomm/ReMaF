@@ -6,8 +6,17 @@ class EntourageType {
 	private string $name;
 	private int $training;
 	private ?string $icon;
-	private int $id;
+	private ?int $id = null;
 	private ?BuildingType $provider;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -23,12 +32,12 @@ class EntourageType {
 	}
 
 	/**
-	 * Get name
+	 * Get training
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getTraining(): int {
+		return $this->training;
 	}
 
 	/**
@@ -45,12 +54,12 @@ class EntourageType {
 	}
 
 	/**
-	 * Get training
+	 * Get icon
 	 *
-	 * @return integer
+	 * @return string|null
 	 */
-	public function getTraining(): int {
-		return $this->training;
+	public function getIcon(): ?string {
+		return $this->icon;
 	}
 
 	/**
@@ -67,21 +76,21 @@ class EntourageType {
 	}
 
 	/**
-	 * Get icon
+	 * Get id
 	 *
-	 * @return string|null
+	 * @return int|null
 	 */
-	public function getIcon(): ?string {
-		return $this->icon;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get provider
 	 *
-	 * @return integer
+	 * @return BuildingType|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getProvider(): ?BuildingType {
+		return $this->provider;
 	}
 
 	/**
@@ -95,14 +104,5 @@ class EntourageType {
 		$this->provider = $provider;
 
 		return $this;
-	}
-
-	/**
-	 * Get provider
-	 *
-	 * @return BuildingType|null
-	 */
-	public function getProvider(): ?BuildingType {
-		return $this->provider;
 	}
 }

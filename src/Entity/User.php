@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 ######[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
-	private ?int $id;
+	private ?int $id = null;
 	private ?string $display_name;
 	private ?DateTime $created;
 	private ?int $new_chars_limit;
@@ -102,6 +102,15 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		});
 	}
 
+	/**
+	 * Get characters
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+	public function getCharacters(): ArrayCollection|Collection|null {
+		return $this->characters;
+	}
+
 	public function getActiveCharacters(): ArrayCollection|ReadableCollection {
 		return $this->getCharacters()->filter(function ($entry) {
 			return ($entry->isAlive() == true && $entry->isNPC() == false && $entry->getRetired() == false);
@@ -140,6 +149,28 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		}
 	}
 
+	/**
+	 * Get created
+	 *
+	 * @return DateTime|null
+	 */
+	public function getCreated(): ?DateTime {
+		return $this->created;
+	}
+
+	/**
+	 * Set created
+	 *
+	 * @param DateTime $created
+	 *
+	 * @return User
+	 */
+	public function setCreated(DateTime $created): static {
+		$this->created = $created;
+
+		return $this;
+	}
+
 	public function isVeryNewPlayer(): bool {
 		$days = $this->getCreated()->diff(new DateTime("now"), true)->days;
 		if ($days < 7) {
@@ -162,8 +193,39 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		return $limit - $count;
 	}
 
+	/**
+	 * Get limits
+	 *
+	 * @return UserLimits|null
+	 */
+	public function getLimits(): ?UserLimits {
+		return $this->limits;
+	}
+
+	/**
+	 * Set limits
+	 *
+	 * @param UserLimits|null $limits
+	 *
+	 * @return User
+	 */
+	public function setLimits(UserLimits $limits = null): static {
+		$this->limits = $limits;
+
+		return $this;
+	}
+
 	public function getFreeArtifacts(): int {
 		return $this->getLimits()->getArtifacts() - $this->getArtifacts()->count();
+	}
+
+	/**
+	 * Get artifacts
+	 *
+	 * @return ArrayCollection|Collection|null
+	 */
+	public function getArtifacts(): ArrayCollection|Collection|null {
+		return $this->artifacts;
 	}
 
 	public function isBanned(): bool {
@@ -177,10 +239,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		return false;
 	}
 
-	public function getUserIdentifier(): string {
-		return strtolower($this->username);
-	}
-
 	public function getRoles(): array {
 		$roles = $this->roles;
 		$roles[] = 'ROLE_USER';
@@ -191,6 +249,10 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		$this->roles = $roles;
 
 		return $this;
+	}
+
+	public function getUserIdentifier(): string {
+		return strtolower($this->username);
 	}
 
 	public function getPassword(): string {
@@ -218,6 +280,15 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
+	 * Get ip
+	 *
+	 * @return string|null
+	 */
+	public function getIp(): ?string {
+		return $this->ip;
+	}
+
+	/**
 	 * Set ip
 	 *
 	 * @param string $ip
@@ -231,12 +302,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get ip
+	 * Get display_name
 	 *
 	 * @return string|null
 	 */
-	public function getIp(): ?string {
-		return $this->ip;
+	public function getDisplayName(): ?string {
+		return $this->display_name;
 	}
 
 	/**
@@ -253,12 +324,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get display_name
+	 * Get gm_name
 	 *
 	 * @return string|null
 	 */
-	public function getDisplayName(): ?string {
-		return $this->display_name;
+	public function getGmName(): ?string {
+		return $this->gm_name;
 	}
 
 	/**
@@ -275,12 +346,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get gm_name
+	 * Get public_admin
 	 *
-	 * @return string|null
+	 * @return bool|null
 	 */
-	public function getGmName(): ?string {
-		return $this->gm_name;
+	public function getPublicAdmin(): ?bool {
+		return $this->public_admin;
 	}
 
 	/**
@@ -297,34 +368,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get public_admin
+	 * Get new_chars_limit
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getPublicAdmin(): ?bool {
-		return $this->public_admin;
-	}
-
-	/**
-	 * Set created
-	 *
-	 * @param DateTime $created
-	 *
-	 * @return User
-	 */
-	public function setCreated(DateTime $created): static {
-		$this->created = $created;
-
-		return $this;
-	}
-
-	/**
-	 * Get created
-	 *
-	 * @return DateTime|null
-	 */
-	public function getCreated(): ?DateTime {
-		return $this->created;
+	public function getNewCharsLimit(): ?int {
+		return $this->new_chars_limit;
 	}
 
 	/**
@@ -341,12 +390,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get new_chars_limit
+	 * Get genome_set
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getNewCharsLimit(): ?int {
-		return $this->new_chars_limit;
+	public function getGenomeSet(): ?string {
+		return $this->genome_set;
 	}
 
 	/**
@@ -363,12 +412,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get genome_set
+	 * Get app_key
 	 *
 	 * @return string|null
 	 */
-	public function getGenomeSet(): ?string {
-		return $this->genome_set;
+	public function getAppKey(): ?string {
+		return $this->app_key;
 	}
 
 	/**
@@ -385,12 +434,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get app_key
+	 * Get email_opt_out_token
 	 *
 	 * @return string|null
 	 */
-	public function getAppKey(): ?string {
-		return $this->app_key;
+	public function getEmailOptOutToken(): ?string {
+		return $this->email_opt_out_token;
 	}
 
 	/**
@@ -407,12 +456,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get email_opt_out_token
+	 * Get email_delay
 	 *
 	 * @return string|null
 	 */
-	public function getEmailOptOutToken(): ?string {
-		return $this->email_opt_out_token;
+	public function getEmailDelay(): ?string {
+		return $this->email_delay;
 	}
 
 	/**
@@ -429,12 +478,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get email_delay
+	 * Get language
 	 *
 	 * @return string|null
 	 */
-	public function getEmailDelay(): ?string {
-		return $this->email_delay;
+	public function getLanguage(): ?string {
+		return $this->language;
 	}
 
 	/**
@@ -451,12 +500,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get language
+	 * Get notifications
 	 *
-	 * @return string|null
+	 * @return bool|null
 	 */
-	public function getLanguage(): ?string {
-		return $this->language;
+	public function getNotifications(): ?bool {
+		return $this->notifications;
 	}
 
 	/**
@@ -473,12 +522,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get notifications
+	 * Get newsletter
 	 *
 	 * @return bool|null
 	 */
-	public function getNotifications(): ?bool {
-		return $this->notifications;
+	public function getNewsletter(): ?bool {
+		return $this->newsletter;
 	}
 
 	/**
@@ -495,12 +544,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get newsletter
+	 * Get public
 	 *
 	 * @return bool|null
 	 */
-	public function getNewsletter(): ?bool {
-		return $this->newsletter;
+	public function getPublic(): ?bool {
+		return $this->public;
 	}
 
 	/**
@@ -517,12 +566,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get public
+	 * Get artifacts_limit
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getPublic(): ?bool {
-		return $this->public;
+	public function getArtifactsLimit(): ?int {
+		return $this->artifacts_limit;
 	}
 
 	/**
@@ -539,12 +588,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get artifacts_limit
+	 * Get next_spawn_time
 	 *
-	 * @return int|null
+	 * @return DateTime|null
 	 */
-	public function getArtifactsLimit(): ?int {
-		return $this->artifacts_limit;
+	public function getNextSpawnTime(): ?DateTime {
+		return $this->next_spawn_time;
 	}
 
 	/**
@@ -561,12 +610,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get next_spawn_time
+	 * Get show_patronage
 	 *
-	 * @return DateTime|null
+	 * @return bool|null
 	 */
-	public function getNextSpawnTime(): ?DateTime {
-		return $this->next_spawn_time;
+	public function getShowPatronage(): ?bool {
+		return $this->show_patronage;
 	}
 
 	/**
@@ -583,12 +632,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get show_patronage
+	 * Get account_level
 	 *
-	 * @return bool|null
+	 * @return int|null
 	 */
-	public function getShowPatronage(): ?bool {
-		return $this->show_patronage;
+	public function getAccountLevel(): ?int {
+		return $this->account_level;
 	}
 
 	/**
@@ -605,12 +654,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get account_level
+	 * Get old_account_level
 	 *
 	 * @return int|null
 	 */
-	public function getAccountLevel(): ?int {
-		return $this->account_level;
+	public function getOldAccountLevel(): ?int {
+		return $this->old_account_level;
 	}
 
 	/**
@@ -627,12 +676,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get old_account_level
+	 * Get vip_status
 	 *
 	 * @return int|null
 	 */
-	public function getOldAccountLevel(): ?int {
-		return $this->old_account_level;
+	public function getVipStatus(): ?int {
+		return $this->vip_status;
 	}
 
 	/**
@@ -649,12 +698,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get vip_status
+	 * Get paid_until
 	 *
-	 * @return int|null
+	 * @return DateTime|null
 	 */
-	public function getVipStatus(): ?int {
-		return $this->vip_status;
+	public function getPaidUntil(): ?DateTime {
+		return $this->paid_until;
 	}
 
 	/**
@@ -671,12 +720,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get paid_until
+	 * Get credits
 	 *
-	 * @return DateTime|null
+	 * @return int|null
 	 */
-	public function getPaidUntil(): ?DateTime {
-		return $this->paid_until;
+	public function getCredits(): ?int {
+		return $this->credits;
 	}
 
 	/**
@@ -693,12 +742,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get credits
+	 * Get restricted
 	 *
-	 * @return int|null
+	 * @return bool|null
 	 */
-	public function getCredits(): ?int {
-		return $this->credits;
+	public function getRestricted(): ?bool {
+		return $this->restricted;
 	}
 
 	/**
@@ -715,12 +764,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get restricted
+	 * Get description
 	 *
-	 * @return bool|null
+	 * @return Description|null
 	 */
-	public function getRestricted(): ?bool {
-		return $this->restricted;
+	public function getDescription(): ?Description {
+		return $this->description;
 	}
 
 	/**
@@ -737,12 +786,12 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get description
+	 * Get current_character
 	 *
-	 * @return Description|null
+	 * @return Character|null
 	 */
-	public function getDescription(): ?Description {
-		return $this->description;
+	public function getCurrentCharacter(): ?Character {
+		return $this->current_character;
 	}
 
 	/**
@@ -756,37 +805,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		$this->current_character = $currentCharacter;
 
 		return $this;
-	}
-
-	/**
-	 * Get current_character
-	 *
-	 * @return Character|null
-	 */
-	public function getCurrentCharacter(): ?Character {
-		return $this->current_character;
-	}
-
-	/**
-	 * Set limits
-	 *
-	 * @param UserLimits|null $limits
-	 *
-	 * @return User
-	 */
-	public function setLimits(UserLimits $limits = null): static {
-		$this->limits = $limits;
-
-		return $this;
-	}
-
-	/**
-	 * Get limits
-	 *
-	 * @return UserLimits|null
-	 */
-	public function getLimits(): ?UserLimits {
-		return $this->limits;
 	}
 
 	/**
@@ -905,15 +923,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	/**
-	 * Get characters
-	 *
-	 * @return ArrayCollection|Collection|null
-	 */
-	public function getCharacters(): ArrayCollection|Collection|null {
-		return $this->characters;
-	}
-
-	/**
 	 * Add ratings_given
 	 *
 	 * @param CharacterRating $ratingsGiven
@@ -995,15 +1004,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 */
 	public function removeArtifact(Artifact $artifacts) {
 		$this->artifacts->removeElement($artifacts);
-	}
-
-	/**
-	 * Get artifacts
-	 *
-	 * @return ArrayCollection|Collection|null
-	 */
-	public function getArtifacts(): ArrayCollection|Collection|null {
-		return $this->artifacts;
 	}
 
 	/**

@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 
 class SkillType {
 	private string $name;
-	private int $id;
+	private ?int $id = null;
 	private Collection $used_by;
 	private SkillCategory $category;
 
@@ -16,6 +16,15 @@ class SkillType {
 	 */
 	public function __construct() {
 		$this->used_by = new ArrayCollection();
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -32,20 +41,11 @@ class SkillType {
 	}
 
 	/**
-	 * Get name
-	 *
-	 * @return string
-	 */
-	public function getName(): string {
-		return $this->name;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -81,6 +81,15 @@ class SkillType {
 	}
 
 	/**
+	 * Get category
+	 *
+	 * @return SkillCategory|null
+	 */
+	public function getCategory(): ?SkillCategory {
+		return $this->category;
+	}
+
+	/**
 	 * Set category
 	 *
 	 * @param SkillCategory|null $category
@@ -91,14 +100,5 @@ class SkillType {
 		$this->category = $category;
 
 		return $this;
-	}
-
-	/**
-	 * Get category
-	 *
-	 * @return SkillCategory|null
-	 */
-	public function getCategory(): ?SkillCategory {
-		return $this->category;
 	}
 }

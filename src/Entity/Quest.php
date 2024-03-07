@@ -11,7 +11,7 @@ class Quest {
 	private string $reward;
 	private string $notes;
 	private bool $completed;
-	private int $id;
+	private ?int $id = null;
 	private EventLog $log;
 	private Collection $questers;
 	private Character $owner;
@@ -22,6 +22,15 @@ class Quest {
 	 */
 	public function __construct() {
 		$this->questers = new ArrayCollection();
+	}
+
+	/**
+	 * Get summary
+	 *
+	 * @return string
+	 */
+	public function getSummary(): string {
+		return $this->summary;
 	}
 
 	/**
@@ -38,12 +47,12 @@ class Quest {
 	}
 
 	/**
-	 * Get summary
+	 * Get description
 	 *
 	 * @return string
 	 */
-	public function getSummary(): string {
-		return $this->summary;
+	public function getDescription(): string {
+		return $this->description;
 	}
 
 	/**
@@ -60,12 +69,12 @@ class Quest {
 	}
 
 	/**
-	 * Get description
+	 * Get reward
 	 *
 	 * @return string
 	 */
-	public function getDescription(): string {
-		return $this->description;
+	public function getReward(): string {
+		return $this->reward;
 	}
 
 	/**
@@ -82,12 +91,12 @@ class Quest {
 	}
 
 	/**
-	 * Get reward
+	 * Get notes
 	 *
 	 * @return string
 	 */
-	public function getReward(): string {
-		return $this->reward;
+	public function getNotes(): string {
+		return $this->notes;
 	}
 
 	/**
@@ -104,12 +113,16 @@ class Quest {
 	}
 
 	/**
-	 * Get notes
+	 * Get completed
 	 *
-	 * @return string
+	 * @return boolean
 	 */
-	public function getNotes(): string {
-		return $this->notes;
+	public function getCompleted(): bool {
+		return $this->completed;
+	}
+
+	public function isCompleted(): ?bool {
+		return $this->completed;
 	}
 
 	/**
@@ -126,21 +139,21 @@ class Quest {
 	}
 
 	/**
-	 * Get completed
+	 * Get id
 	 *
-	 * @return boolean
+	 * @return int|null
 	 */
-	public function getCompleted(): bool {
-		return $this->completed;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get log
 	 *
-	 * @return integer
+	 * @return EventLog|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getLog(): ?EventLog {
+		return $this->log;
 	}
 
 	/**
@@ -154,15 +167,6 @@ class Quest {
 		$this->log = $log;
 
 		return $this;
-	}
-
-	/**
-	 * Get log
-	 *
-	 * @return EventLog|null
-	 */
-	public function getLog(): ?EventLog {
-		return $this->log;
 	}
 
 	/**
@@ -197,6 +201,15 @@ class Quest {
 	}
 
 	/**
+	 * Get owner
+	 *
+	 * @return Character|null
+	 */
+	public function getOwner(): ?Character {
+		return $this->owner;
+	}
+
+	/**
 	 * Set owner
 	 *
 	 * @param Character|null $owner
@@ -210,12 +223,12 @@ class Quest {
 	}
 
 	/**
-	 * Get owner
+	 * Get home
 	 *
-	 * @return Character|null
+	 * @return Settlement|null
 	 */
-	public function getOwner(): ?Character {
-		return $this->owner;
+	public function getHome(): ?Settlement {
+		return $this->home;
 	}
 
 	/**
@@ -229,18 +242,5 @@ class Quest {
 		$this->home = $home;
 
 		return $this;
-	}
-
-	/**
-	 * Get home
-	 *
-	 * @return Settlement|null
-	 */
-	public function getHome(): ?Settlement {
-		return $this->home;
-	}
-
-	public function isCompleted(): ?bool {
-		return $this->completed;
 	}
 }

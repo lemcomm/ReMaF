@@ -5,115 +5,122 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class SkillCategory
-{
+class SkillCategory {
 	private string $name;
-	private int $id;
+	private ?int $id = null;
 	private Collection $sub_categories;
 	private Collection $skills;
 	private SkillCategory $category;
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->sub_categories = new ArrayCollection();
-        $this->skills = new ArrayCollection();
-    }
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		$this->sub_categories = new ArrayCollection();
+		$this->skills = new ArrayCollection();
+	}
 
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return SkillCategory
-     */
-    public function setName(string $name): static {
-        $this->name = $name;
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
-        return $this;
-    }
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return SkillCategory
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
 
-    /**
-     * Get name
-     *
-     * @return string 
-     */
-    public function getName(): string {
-        return $this->name;
-    }
+		return $this;
+	}
 
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId(): int {
-        return $this->id;
-    }
+	/**
+	 * Get id
+	 *
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
+	}
 
-    /**
-     * Add sub_categories
-     *
-     * @param SkillCategory $subCategories
-     *
-     * @return SkillCategory
-     */
-    public function addSubCategory(SkillCategory $subCategories): static {
-        $this->sub_categories[] = $subCategories;
+	/**
+	 * Add sub_categories
+	 *
+	 * @param SkillCategory $subCategories
+	 *
+	 * @return SkillCategory
+	 */
+	public function addSubCategory(SkillCategory $subCategories): static {
+		$this->sub_categories[] = $subCategories;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove sub_categories
-     *
-     * @param SkillCategory $subCategories
-     */
-    public function removeSubCategory(SkillCategory $subCategories): void {
-        $this->sub_categories->removeElement($subCategories);
-    }
+	/**
+	 * Remove sub_categories
+	 *
+	 * @param SkillCategory $subCategories
+	 */
+	public function removeSubCategory(SkillCategory $subCategories): void {
+		$this->sub_categories->removeElement($subCategories);
+	}
 
 	/**
 	 * Get sub_categories
 	 *
 	 * @return ArrayCollection|Collection
 	 */
-    public function getSubCategories(): ArrayCollection|Collection {
-        return $this->sub_categories;
-    }
+	public function getSubCategories(): ArrayCollection|Collection {
+		return $this->sub_categories;
+	}
 
-    /**
-     * Add skills
-     *
-     * @param SkillType $skills
-     *
-     * @return SkillCategory
-     */
-    public function addSkill(SkillType $skills): static {
-        $this->skills[] = $skills;
+	/**
+	 * Add skills
+	 *
+	 * @param SkillType $skills
+	 *
+	 * @return SkillCategory
+	 */
+	public function addSkill(SkillType $skills): static {
+		$this->skills[] = $skills;
 
-        return $this;
-    }
+		return $this;
+	}
 
-    /**
-     * Remove skills
-     *
-     * @param SkillType $skills
-     */
-    public function removeSkill(SkillType $skills): void {
-        $this->skills->removeElement($skills);
-    }
+	/**
+	 * Remove skills
+	 *
+	 * @param SkillType $skills
+	 */
+	public function removeSkill(SkillType $skills): void {
+		$this->skills->removeElement($skills);
+	}
 
 	/**
 	 * Get skills
 	 *
 	 * @return ArrayCollection|Collection
 	 */
-    public function getSkills(): ArrayCollection|Collection {
-        return $this->skills;
-    }
+	public function getSkills(): ArrayCollection|Collection {
+		return $this->skills;
+	}
+
+	/**
+	 * Get category
+	 *
+	 * @return SkillCategory
+	 */
+	public function getCategory(): SkillCategory {
+		return $this->category;
+	}
 
 	/**
 	 * Set category
@@ -122,18 +129,9 @@ class SkillCategory
 	 *
 	 * @return SkillCategory
 	 */
-    public function setCategory(SkillCategory $category = null): static {
-        $this->category = $category;
+	public function setCategory(SkillCategory $category = null): static {
+		$this->category = $category;
 
-        return $this;
-    }
-
-    /**
-     * Get category
-     *
-     * @return SkillCategory
-     */
-    public function getCategory(): SkillCategory {
-        return $this->category;
-    }
+		return $this;
+	}
 }

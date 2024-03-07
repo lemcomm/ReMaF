@@ -15,7 +15,7 @@ class BuildingType {
 	private int $defenses;
 	private bool $special_conditions;
 	private array $built_in;
-	private int $id;
+	private ?int $id = null;
 	private Collection $resources;
 	private Collection $provides_entourage;
 	private Collection $provides_equipment;
@@ -45,6 +45,33 @@ class BuildingType {
 	}
 
 	/**
+	 * Get provides_equipment
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getProvidesEquipment(): ArrayCollection|Collection {
+		return $this->provides_equipment;
+	}
+
+	/**
+	 * Get provides_entourage
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getProvidesEntourage(): ArrayCollection|Collection {
+		return $this->provides_entourage;
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
+
+	/**
 	 * Set name
 	 *
 	 * @param string $name
@@ -58,12 +85,12 @@ class BuildingType {
 	}
 
 	/**
-	 * Get name
+	 * Get icon
 	 *
 	 * @return string
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getIcon(): string {
+		return $this->icon;
 	}
 
 	/**
@@ -80,12 +107,12 @@ class BuildingType {
 	}
 
 	/**
-	 * Get icon
+	 * Get build_hours
 	 *
-	 * @return string
+	 * @return integer
 	 */
-	public function getIcon(): string {
-		return $this->icon;
+	public function getBuildHours(): int {
+		return $this->build_hours;
 	}
 
 	/**
@@ -102,12 +129,12 @@ class BuildingType {
 	}
 
 	/**
-	 * Get build_hours
+	 * Get min_population
 	 *
 	 * @return integer
 	 */
-	public function getBuildHours(): int {
-		return $this->build_hours;
+	public function getMinPopulation(): int {
+		return $this->min_population;
 	}
 
 	/**
@@ -124,12 +151,12 @@ class BuildingType {
 	}
 
 	/**
-	 * Get min_population
+	 * Get auto_population
 	 *
 	 * @return integer
 	 */
-	public function getMinPopulation(): int {
-		return $this->min_population;
+	public function getAutoPopulation(): int {
+		return $this->auto_population;
 	}
 
 	/**
@@ -146,12 +173,12 @@ class BuildingType {
 	}
 
 	/**
-	 * Get auto_population
+	 * Get per_people
 	 *
 	 * @return integer
 	 */
-	public function getAutoPopulation(): int {
-		return $this->auto_population;
+	public function getPerPeople(): int {
+		return $this->per_people;
 	}
 
 	/**
@@ -168,12 +195,12 @@ class BuildingType {
 	}
 
 	/**
-	 * Get per_people
+	 * Get defenses
 	 *
 	 * @return integer
 	 */
-	public function getPerPeople(): int {
-		return $this->per_people;
+	public function getDefenses(): int {
+		return $this->defenses;
 	}
 
 	/**
@@ -190,12 +217,12 @@ class BuildingType {
 	}
 
 	/**
-	 * Get defenses
+	 * Get special_conditions
 	 *
-	 * @return integer
+	 * @return boolean
 	 */
-	public function getDefenses(): int {
-		return $this->defenses;
+	public function getSpecialConditions(): bool {
+		return $this->special_conditions;
 	}
 
 	/**
@@ -212,12 +239,12 @@ class BuildingType {
 	}
 
 	/**
-	 * Get special_conditions
+	 * Get built_in
 	 *
-	 * @return boolean
+	 * @return array|null
 	 */
-	public function getSpecialConditions(): bool {
-		return $this->special_conditions;
+	public function getBuiltIn(): ?array {
+		return $this->built_in;
 	}
 
 	/**
@@ -234,20 +261,11 @@ class BuildingType {
 	}
 
 	/**
-	 * Get built_in
-	 *
-	 * @return array|null
-	 */
-	public function getBuiltIn(): ?array {
-		return $this->built_in;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -305,15 +323,6 @@ class BuildingType {
 	}
 
 	/**
-	 * Get provides_entourage
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getProvidesEntourage(): ArrayCollection|Collection {
-		return $this->provides_entourage;
-	}
-
-	/**
 	 * Add provides_equipment
 	 *
 	 * @param EquipmentType $providesEquipment
@@ -333,15 +342,6 @@ class BuildingType {
 	 */
 	public function removeProvidesEquipment(EquipmentType $providesEquipment): void {
 		$this->provides_equipment->removeElement($providesEquipment);
-	}
-
-	/**
-	 * Get provides_equipment
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getProvidesEquipment(): ArrayCollection|Collection {
-		return $this->provides_equipment;
 	}
 
 	/**

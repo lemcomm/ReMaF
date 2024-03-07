@@ -9,9 +9,18 @@ class MapMarker {
 	private string $type;
 	private ?Point $location;
 	private int $placed;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $owner;
 	private ?Realm $realm;
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
 
 	/**
 	 * Set name
@@ -27,12 +36,12 @@ class MapMarker {
 	}
 
 	/**
-	 * Get name
+	 * Get type
 	 *
 	 * @return string
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getType(): string {
+		return $this->type;
 	}
 
 	/**
@@ -49,12 +58,12 @@ class MapMarker {
 	}
 
 	/**
-	 * Get type
+	 * Get location
 	 *
-	 * @return string
+	 * @return Point|null
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getLocation(): ?Point {
+		return $this->location;
 	}
 
 	/**
@@ -71,12 +80,12 @@ class MapMarker {
 	}
 
 	/**
-	 * Get location
+	 * Get placed
 	 *
-	 * @return Point|null
+	 * @return integer
 	 */
-	public function getLocation(): ?Point {
-		return $this->location;
+	public function getPlaced(): int {
+		return $this->placed;
 	}
 
 	/**
@@ -93,21 +102,21 @@ class MapMarker {
 	}
 
 	/**
-	 * Get placed
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getPlaced(): int {
-		return $this->placed;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get owner
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getOwner(): ?Character {
+		return $this->owner;
 	}
 
 	/**
@@ -124,12 +133,12 @@ class MapMarker {
 	}
 
 	/**
-	 * Get owner
+	 * Get realm
 	 *
-	 * @return Character|null
+	 * @return Realm|null
 	 */
-	public function getOwner(): ?Character {
-		return $this->owner;
+	public function getRealm(): ?Realm {
+		return $this->realm;
 	}
 
 	/**
@@ -143,14 +152,5 @@ class MapMarker {
 		$this->realm = $realm;
 
 		return $this;
-	}
-
-	/**
-	 * Get realm
-	 *
-	 * @return Realm|null
-	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
 	}
 }

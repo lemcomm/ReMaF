@@ -11,7 +11,7 @@ class Culture {
 	private bool $free;
 	private int $cost;
 	private array $contains;
-	private int $id;
+	private ?int $id = null;
 	private Collection $users;
 
 	/**
@@ -23,6 +23,15 @@ class Culture {
 
 	public function __toString() {
 		return "culture." . $this->name;
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
 	}
 
 	/**
@@ -39,12 +48,12 @@ class Culture {
 	}
 
 	/**
-	 * Get name
+	 * Get colour_hex
 	 *
 	 * @return string
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getColourHex(): string {
+		return $this->colour_hex;
 	}
 
 	/**
@@ -61,12 +70,16 @@ class Culture {
 	}
 
 	/**
-	 * Get colour_hex
+	 * Get free
 	 *
-	 * @return string
+	 * @return boolean
 	 */
-	public function getColourHex(): string {
-		return $this->colour_hex;
+	public function getFree(): bool {
+		return $this->free;
+	}
+
+	public function isFree(): ?bool {
+		return $this->free;
 	}
 
 	/**
@@ -83,12 +96,12 @@ class Culture {
 	}
 
 	/**
-	 * Get free
+	 * Get cost
 	 *
-	 * @return boolean
+	 * @return integer
 	 */
-	public function getFree(): bool {
-		return $this->free;
+	public function getCost(): int {
+		return $this->cost;
 	}
 
 	/**
@@ -105,12 +118,12 @@ class Culture {
 	}
 
 	/**
-	 * Get cost
+	 * Get contains
 	 *
-	 * @return integer
+	 * @return array
 	 */
-	public function getCost(): int {
-		return $this->cost;
+	public function getContains(): array {
+		return $this->contains;
 	}
 
 	/**
@@ -127,20 +140,11 @@ class Culture {
 	}
 
 	/**
-	 * Get contains
-	 *
-	 * @return array
-	 */
-	public function getContains(): array {
-		return $this->contains;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -173,9 +177,5 @@ class Culture {
 	 */
 	public function getUsers(): ArrayCollection|Collection {
 		return $this->users;
-	}
-
-	public function isFree(): ?bool {
-		return $this->free;
 	}
 }

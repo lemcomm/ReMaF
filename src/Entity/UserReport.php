@@ -11,7 +11,7 @@ class UserReport {
 	private string $text;
 	private bool $actioned;
 	private DateTime $date;
-	private int $id;
+	private ?int $id = null;
 	private Collection $notes;
 	private Collection $against;
 	private ?User $user;
@@ -23,6 +23,15 @@ class UserReport {
 	public function __construct() {
 		$this->notes = new ArrayCollection();
 		$this->against = new ArrayCollection();
+	}
+
+	/**
+	 * Get type
+	 *
+	 * @return string
+	 */
+	public function getType(): string {
+		return $this->type;
 	}
 
 	/**
@@ -39,12 +48,12 @@ class UserReport {
 	}
 
 	/**
-	 * Get type
+	 * Get text
 	 *
 	 * @return string
 	 */
-	public function getType(): string {
-		return $this->type;
+	public function getText(): string {
+		return $this->text;
 	}
 
 	/**
@@ -61,34 +70,12 @@ class UserReport {
 	}
 
 	/**
-	 * Get text
+	 * Get date
 	 *
-	 * @return string
+	 * @return DateTime
 	 */
-	public function getText(): string {
-		return $this->text;
-	}
-
-	/**
-	 * Set actioned
-	 *
-	 * @param boolean $actioned
-	 *
-	 * @return UserReport
-	 */
-	public function setActioned(bool $actioned): static {
-		$this->actioned = $actioned;
-
-		return $this;
-	}
-
-	/**
-	 * Get actioned
-	 *
-	 * @return boolean
-	 */
-	public function getActioned(): bool {
-		return $this->actioned;
+	public function getDate(): DateTime {
+		return $this->date;
 	}
 
 	/**
@@ -105,20 +92,11 @@ class UserReport {
 	}
 
 	/**
-	 * Get date
-	 *
-	 * @return DateTime
-	 */
-	public function getDate(): DateTime {
-		return $this->date;
-	}
-
-	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
 	}
 
@@ -185,6 +163,15 @@ class UserReport {
 	}
 
 	/**
+	 * Get user
+	 *
+	 * @return User|null
+	 */
+	public function getUser(): ?User {
+		return $this->user;
+	}
+
+	/**
 	 * Set user
 	 *
 	 * @param User|null $user
@@ -198,12 +185,12 @@ class UserReport {
 	}
 
 	/**
-	 * Get user
+	 * Get journal
 	 *
-	 * @return User|null
+	 * @return Journal|null
 	 */
-	public function getUser(): ?User {
-		return $this->user;
+	public function getJournal(): ?Journal {
+		return $this->journal;
 	}
 
 	/**
@@ -219,16 +206,29 @@ class UserReport {
 		return $this;
 	}
 
-	/**
-	 * Get journal
-	 *
-	 * @return Journal|null
-	 */
-	public function getJournal(): ?Journal {
-		return $this->journal;
-	}
-
 	public function isActioned(): ?bool {
 		return $this->actioned;
+	}
+
+	/**
+	 * Get actioned
+	 *
+	 * @return boolean
+	 */
+	public function getActioned(): bool {
+		return $this->actioned;
+	}
+
+	/**
+	 * Set actioned
+	 *
+	 * @param boolean $actioned
+	 *
+	 * @return UserReport
+	 */
+	public function setActioned(bool $actioned): static {
+		$this->actioned = $actioned;
+
+		return $this;
 	}
 }

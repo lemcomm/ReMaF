@@ -3,17 +3,26 @@
 namespace App\Entity;
 
 class DeityAspect {
-	private int $id;
+	private ?int $id = null;
 	private ?Deity $deity;
 	private ?AspectType $aspect;
 
 	/**
 	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getId(): int {
+	public function getId(): ?int {
 		return $this->id;
+	}
+
+	/**
+	 * Get deity
+	 *
+	 * @return Deity|null
+	 */
+	public function getDeity(): ?Deity {
+		return $this->deity;
 	}
 
 	/**
@@ -30,12 +39,12 @@ class DeityAspect {
 	}
 
 	/**
-	 * Get deity
+	 * Get aspect
 	 *
-	 * @return Deity|null
+	 * @return AspectType|null
 	 */
-	public function getDeity(): ?Deity {
-		return $this->deity;
+	public function getAspect(): ?AspectType {
+		return $this->aspect;
 	}
 
 	/**
@@ -49,14 +58,5 @@ class DeityAspect {
 		$this->aspect = $aspect;
 
 		return $this;
-	}
-
-	/**
-	 * Get aspect
-	 *
-	 * @return AspectType|null
-	 */
-	public function getAspect(): ?AspectType {
-		return $this->aspect;
 	}
 }

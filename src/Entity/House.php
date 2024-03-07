@@ -6,14 +6,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 
-class House {
-	private string $name;
+class House extends Faction {
 	private ?string $motto;
 	private ?bool $active;
 	private ?string $private;
 	private ?string $secret;
 	private int $gold;
-	private int $id;
+	private ?int $id = null;
 	private ?Character $head;
 	private ?Description $description;
 	private ?SpawnDescription $spawn_description;
@@ -24,32 +23,30 @@ class House {
 	private Collection $cadets;
 	private Collection $descriptions;
 	private Collection $spawn_descriptions;
-	private Collection $requests;
-	private Collection $related_requests;
-	private Collection $part_of_requests;
-	private Collection $conversations;
 	private ?Heraldry $crest;
 	private ?Character $founder;
 	private ?Character $successor;
 	private ?House $superior;
 	private ?Settlement $inside_settlement;
-	protected House|bool $ultimate = false;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
+		parent::__construct();
 		$this->members = new ArrayCollection();
 		$this->cadets = new ArrayCollection();
 		$this->descriptions = new ArrayCollection();
 		$this->spawn_descriptions = new ArrayCollection();
-		$this->requests = new ArrayCollection();
-		$this->related_requests = new ArrayCollection();
-		$this->part_of_requests = new ArrayCollection();
-		$this->conversations = new ArrayCollection();
 	}
 
 	#TODO: Rework Houses to use the same heirarchy reference as Realms and Associations.
+
+	public function isUltimate(): bool {
+		if ($this->findUltimate() == $this) return true;
+		return false;
+	}
+
 	public function findUltimate(): House|bool {
 		if ($this->ultimate !== false) {
 			return $this->ultimate;
@@ -65,9 +62,26 @@ class House {
 		return $this->ultimate;
 	}
 
-	public function isUltimate(): bool {
-		if ($this->findUltimate() == $this) return true;
-		return false;
+	/**
+	 * Get superior
+	 *
+	 * @return House|null
+	 */
+	public function getSuperior(): ?House {
+		return $this->superior;
+	}
+
+	/**
+	 * Set superior
+	 *
+	 * @param House|null $superior
+	 *
+	 * @return House
+	 */
+	public function setSuperior(House $superior = null): static {
+		$this->superior = $superior;
+
+		return $this;
 	}
 
 	public function findActivePlayers(): ArrayCollection {
@@ -80,17 +94,6 @@ class House {
 		return $users;
 	}
 
-	public function findAllLiving(): ArrayCollection {
-		$all_living = new ArrayCollection;
-		$all_members = $this->findAllMembers();
-		foreach ($all_members as $member) {
-			if ($member->isAlive()) {
-				$all_living[] = $member;
-			}
-		}
-		return $all_living;
-	}
-
 	public function findAllActive(): ArrayCollection {
 		$all_active = new ArrayCollection;
 		$all_members = $this->findAllMembers();
@@ -100,17 +103,6 @@ class House {
 			}
 		}
 		return $all_active;
-	}
-
-	public function findAllDead(): ArrayCollection {
-		$all_dead = new ArrayCollection;
-		$all_members = $this->findAllMembers();
-		foreach ($all_members as $member) {
-			if (!$member->isAlive()) {
-				$all_dead[] = $member;
-			}
-		}
-		return $all_dead;
 	}
 
 	public function findAllMembers($include_myself = true): ArrayCollection {
@@ -141,6 +133,46 @@ class House {
 		return $all_cadets;
 	}
 
+	/**
+	 * Get cadets
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getCadets(): ArrayCollection|Collection {
+		return $this->cadets;
+	}
+
+	/**
+	 * Get members
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMembers(): ArrayCollection|Collection {
+		return $this->members;
+	}
+
+	public function findAllLiving(): ArrayCollection {
+		$all_living = new ArrayCollection;
+		$all_members = $this->findAllMembers();
+		foreach ($all_members as $member) {
+			if ($member->isAlive()) {
+				$all_living[] = $member;
+			}
+		}
+		return $all_living;
+	}
+
+	public function findAllDead(): ArrayCollection {
+		$all_dead = new ArrayCollection;
+		$all_members = $this->findAllMembers();
+		foreach ($all_members as $member) {
+			if (!$member->isAlive()) {
+				$all_dead[] = $member;
+			}
+		}
+		return $all_dead;
+	}
+
 	public function findAllSuperiors($include_myself = false): ArrayCollection {
 		$all_sups = new ArrayCollection;
 		if ($include_myself) {
@@ -162,25 +194,12 @@ class House {
 	}
 
 	/**
-	 * Set name
-	 *
-	 * @param string $name
-	 *
-	 * @return House
-	 */
-	public function setName(string $name): static {
-		$this->name = $name;
-
-		return $this;
-	}
-
-	/**
-	 * Get name
+	 * Get motto
 	 *
 	 * @return string
 	 */
-	public function getName(): string {
-		return $this->name;
+	public function getMotto(): string {
+		return $this->motto;
 	}
 
 	/**
@@ -197,12 +216,12 @@ class House {
 	}
 
 	/**
-	 * Get motto
+	 * Get active
 	 *
-	 * @return string
+	 * @return boolean
 	 */
-	public function getMotto(): string {
-		return $this->motto;
+	public function getActive(): bool {
+		return $this->active;
 	}
 
 	/**
@@ -219,12 +238,12 @@ class House {
 	}
 
 	/**
-	 * Get active
+	 * Get private
 	 *
-	 * @return boolean
+	 * @return string|null
 	 */
-	public function getActive(): bool {
-		return $this->active;
+	public function getPrivate(): ?string {
+		return $this->private;
 	}
 
 	/**
@@ -241,12 +260,12 @@ class House {
 	}
 
 	/**
-	 * Get private
+	 * Get secret
 	 *
 	 * @return string|null
 	 */
-	public function getPrivate(): ?string {
-		return $this->private;
+	public function getSecret(): ?string {
+		return $this->secret;
 	}
 
 	/**
@@ -263,12 +282,12 @@ class House {
 	}
 
 	/**
-	 * Get secret
+	 * Get gold
 	 *
-	 * @return string|null
+	 * @return integer
 	 */
-	public function getSecret(): ?string {
-		return $this->secret;
+	public function getGold(): int {
+		return $this->gold;
 	}
 
 	/**
@@ -285,21 +304,21 @@ class House {
 	}
 
 	/**
-	 * Get gold
+	 * Get id
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getGold(): int {
-		return $this->gold;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
-	 * Get id
+	 * Get head
 	 *
-	 * @return integer
+	 * @return Character|null
 	 */
-	public function getId(): int {
-		return $this->id;
+	public function getHead(): ?Character {
+		return $this->head;
 	}
 
 	/**
@@ -316,12 +335,12 @@ class House {
 	}
 
 	/**
-	 * Get head
+	 * Get description
 	 *
-	 * @return Character|null
+	 * @return Description|null
 	 */
-	public function getHead(): ?Character {
-		return $this->head;
+	public function getDescription(): ?Description {
+		return $this->description;
 	}
 
 	/**
@@ -338,12 +357,12 @@ class House {
 	}
 
 	/**
-	 * Get description
+	 * Get spawn_description
 	 *
-	 * @return Description|null
+	 * @return SpawnDescription|null
 	 */
-	public function getDescription(): ?Description {
-		return $this->description;
+	public function getSpawnDescription(): ?SpawnDescription {
+		return $this->spawn_description;
 	}
 
 	/**
@@ -360,12 +379,12 @@ class House {
 	}
 
 	/**
-	 * Get spawn_description
+	 * Get log
 	 *
-	 * @return SpawnDescription|null
+	 * @return EventLog|null
 	 */
-	public function getSpawnDescription(): ?SpawnDescription {
-		return $this->spawn_description;
+	public function getLog(): ?EventLog {
+		return $this->log;
 	}
 
 	/**
@@ -382,12 +401,12 @@ class House {
 	}
 
 	/**
-	 * Get log
+	 * Get home
 	 *
-	 * @return EventLog|null
+	 * @return Place|null
 	 */
-	public function getLog(): ?EventLog {
-		return $this->log;
+	public function getHome(): ?Place {
+		return $this->home;
 	}
 
 	/**
@@ -404,12 +423,12 @@ class House {
 	}
 
 	/**
-	 * Get home
+	 * Get spawn
 	 *
-	 * @return Place|null
+	 * @return Spawn|null
 	 */
-	public function getHome(): ?Place {
-		return $this->home;
+	public function getSpawn(): ?Spawn {
+		return $this->spawn;
 	}
 
 	/**
@@ -423,15 +442,6 @@ class House {
 		$this->spawn = $spawn;
 
 		return $this;
-	}
-
-	/**
-	 * Get spawn
-	 *
-	 * @return Spawn|null
-	 */
-	public function getSpawn(): ?Spawn {
-		return $this->spawn;
 	}
 
 	/**
@@ -457,15 +467,6 @@ class House {
 	}
 
 	/**
-	 * Get members
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getMembers(): ArrayCollection|Collection {
-		return $this->members;
-	}
-
-	/**
 	 * Add cadets
 	 *
 	 * @param House $cadets
@@ -485,15 +486,6 @@ class House {
 	 */
 	public function removeCadet(House $cadets): void {
 		$this->cadets->removeElement($cadets);
-	}
-
-	/**
-	 * Get cadets
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getCadets(): ArrayCollection|Collection {
-		return $this->cadets;
 	}
 
 	/**
@@ -652,34 +644,12 @@ class House {
 	}
 
 	/**
-	 * Add conversations
+	 * Get crest
 	 *
-	 * @param Conversation $conversations
-	 *
-	 * @return House
+	 * @return Heraldry|null
 	 */
-	public function addConversation(Conversation $conversations): static {
-		$this->conversations[] = $conversations;
-
-		return $this;
-	}
-
-	/**
-	 * Remove conversations
-	 *
-	 * @param Conversation $conversations
-	 */
-	public function removeConversation(Conversation $conversations): void {
-		$this->conversations->removeElement($conversations);
-	}
-
-	/**
-	 * Get conversations
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getConversations(): ArrayCollection|Collection {
-		return $this->conversations;
+	public function getCrest(): ?Heraldry {
+		return $this->crest;
 	}
 
 	/**
@@ -696,12 +666,12 @@ class House {
 	}
 
 	/**
-	 * Get crest
+	 * Get founder
 	 *
-	 * @return Heraldry|null
+	 * @return Character|null
 	 */
-	public function getCrest(): ?Heraldry {
-		return $this->crest;
+	public function getFounder(): ?Character {
+		return $this->founder;
 	}
 
 	/**
@@ -718,12 +688,12 @@ class House {
 	}
 
 	/**
-	 * Get founder
+	 * Get successor
 	 *
 	 * @return Character|null
 	 */
-	public function getFounder(): ?Character {
-		return $this->founder;
+	public function getSuccessor(): ?Character {
+		return $this->successor;
 	}
 
 	/**
@@ -740,34 +710,12 @@ class House {
 	}
 
 	/**
-	 * Get successor
+	 * Get inside_settlement
 	 *
-	 * @return Character|null
+	 * @return Settlement|null
 	 */
-	public function getSuccessor(): ?Character {
-		return $this->successor;
-	}
-
-	/**
-	 * Set superior
-	 *
-	 * @param House|null $superior
-	 *
-	 * @return House
-	 */
-	public function setSuperior(House $superior = null): static {
-		$this->superior = $superior;
-
-		return $this;
-	}
-
-	/**
-	 * Get superior
-	 *
-	 * @return House|null
-	 */
-	public function getSuperior(): ?House {
-		return $this->superior;
+	public function getInsideSettlement(): ?Settlement {
+		return $this->inside_settlement;
 	}
 
 	/**
@@ -781,15 +729,6 @@ class House {
 		$this->inside_settlement = $insideSettlement;
 
 		return $this;
-	}
-
-	/**
-	 * Get inside_settlement
-	 *
-	 * @return Settlement|null
-	 */
-	public function getInsideSettlement(): ?Settlement {
-		return $this->inside_settlement;
 	}
 
 	public function isActive(): ?bool {
