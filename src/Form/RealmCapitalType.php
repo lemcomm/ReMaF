@@ -23,6 +23,7 @@ class RealmCapitalType extends AbstractType {
 
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 		$allrealms = $options['realm']->findAllInferiors(true);
+		$realms = [];
 		foreach ($allrealms as $realm) {
 			$realms[] = $realm->getId();
 		}

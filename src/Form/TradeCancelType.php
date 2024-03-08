@@ -22,7 +22,7 @@ class TradeCancelType extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 
 		$trades = $options['trades'];
-		if ($trades) {
+		if (!empty($trades)) {
 			$builder->add('trade', EntityType::class, array(
 				'class'=>Trade::class, 'choice_label'=>'id', 'query_builder'=>function(EntityRepository $er) use ($trades) {
 					$qb = $er->createQueryBuilder('r');

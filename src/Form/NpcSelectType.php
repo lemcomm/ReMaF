@@ -13,10 +13,6 @@ use Doctrine\ORM\EntityRepository;
 
 class NpcSelectType extends AbstractType {
 
-	public function getName() {
-		return 'npcselect';
-	}
-
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
 			'intention'	=> 'npc_select_5214',

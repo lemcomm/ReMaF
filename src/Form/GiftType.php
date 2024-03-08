@@ -13,10 +13,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class GiftType extends AbstractType {
 
-	public function getName() {
-		return 'gift';
-	}
-
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
 			'intention' => 'gift_131',

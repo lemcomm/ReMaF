@@ -4,6 +4,7 @@ namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,17 +15,18 @@ class EntourageRecruitType extends AbstractType {
 		$resolver->setDefaults(array(
 			'intention'       => 'recruit_23469',
 			'translation_domain' => 'actions',
-			'recruits' => []
 		));
+		$resolver->setRequired('entourage');
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 		$builder->add('recruits', FormType::class);
+		$entourage = $options['entourage'];
 
-		foreach ($this->recruits as $recruit) {
+		foreach ($entourage as $recruit) {
 			$builder->get('recruits')->add(
 				(string)$recruit['type']->getId(),
-				'integer',
+				IntegerType::class,
 				array(
 					'required' => false,
 					'attr' => array(

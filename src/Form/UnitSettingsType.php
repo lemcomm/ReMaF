@@ -95,7 +95,7 @@ class UnitSettingsType extends AbstractType {
 			$data = null;
 			if($settings) {
 				$data = $supplier;
-			} else if($char) {
+			} elseif($char) {
 				$data = $char->getInsideSettlement();
 			}
 

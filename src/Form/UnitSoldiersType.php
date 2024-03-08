@@ -7,6 +7,7 @@ use App\Entity\Unit;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
@@ -51,7 +52,7 @@ class UnitSoldiersType extends AbstractType {
 			$available_resupply->add($r['item']);
 		}
 
-		$builder->add('npcs', 'form');
+		$builder->add('npcs', FormType::class);
 		$in_battle = -1;
 		$is_looting = -1;
 		$unit = $options['unit'];
@@ -77,7 +78,7 @@ class UnitSoldiersType extends AbstractType {
 				}
 			}
 			$idstring = (string)$soldier->getId();
-			$builder->get('npcs')->add($idstring, 'form', array('label'=>$soldier->getName()));
+			$builder->get('npcs')->add($idstring, FormType::class, array('label'=>$soldier->getName()));
 			$field = $builder->get('npcs')->get($idstring);
 
 			if ($soldier->isLocked() || $is_looting) {

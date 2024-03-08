@@ -13,10 +13,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AssocSelectType extends AbstractType {
 
-	public function getName() {
-		return 'assoc';
-	}
-
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
 			'intention'     => 'asoc_90210',

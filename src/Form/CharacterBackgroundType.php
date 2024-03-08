@@ -35,7 +35,7 @@ class CharacterBackgroundType extends AbstractType {
 			'required'=>false
 		));
 
-		if ($options['alive'] == false) {
+		if (!$options['alive']) {
 			$builder->add('death', TextareaType::class, array(
 				'label'=>'meta.background.death',
 				'trim'=>true,

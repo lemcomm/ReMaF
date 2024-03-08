@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\GeoFeature;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
@@ -36,7 +37,7 @@ class DamageFeatureType extends AbstractType {
 				return $er->createQueryBuilder('f')->where('f IN (:features)')->orderBy('f.name')->setParameters(array('features'=>$features));
 		}));
 
-		$builder->add('submit', 'submit', array('label'=>'military.damage.submit'));
+		$builder->add('submit', SubmitType::class, array('label'=>'military.damage.submit'));
 	}
 
 

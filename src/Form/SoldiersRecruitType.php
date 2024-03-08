@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\EquipmentType;
+use App\Entity\Unit;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -62,7 +63,7 @@ class SoldiersRecruitType extends AbstractType {
 			$builder->add($field, EntityType::class, array(
 				'label'=>$field,
 				'placeholder'=>$field=='weapon'?'item.choose':'item.none',
-				'required'=>$field=='weapon'?true:false,
+				'required'=>$field=='weapon',
 				'choice_label'=>'nameTrans',
 				'class'=>EquipmentType::class,
 				'choice_translation_domain' => true,

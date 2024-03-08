@@ -853,63 +853,59 @@ class ActionsController extends AbstractController {
 		]);
 		$cancelform = $this->createForm(TradeCancelType::class, null, [
 			'trades' => $trades,
-			'character' => $character,
 		]);
 
 		$merchants = $character->getAvailableEntourageOfType('Merchant');
 
-		if ($request->isMethod('POST') && $request->request->has('trade')) {
-	                $form->handleRequest($request);
-                	if ($form->isSubmitted() && $form->isValid()) {
-				if ($manageable->contains($trade->getSource())) {
-					if ($trade->getAmount()>0) {
-						if ($trade->getSource()!=$settlement && $trade->getDestination()!=$settlement) {
-							$form->addError(new FormError("trade.allremote"));
-						} elseif ($trade->getSource()==$trade->getDestination()) {
-							$form->addError(new FormError("trade.same"));
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			if ($manageable->contains($trade->getSource())) {
+				if ($trade->getAmount()>0) {
+					if ($trade->getSource()!=$settlement && $trade->getDestination()!=$settlement) {
+						$form->addError(new FormError("trade.allremote"));
+					} elseif ($trade->getSource()==$trade->getDestination()) {
+						$form->addError(new FormError("trade.same"));
+					} else {
+						// TODO: check if we don't already have such a deal (same source, destination and resource)
+						// FIXME: $trade->getResourceType() is NULL sometimes, causing an error here?
+						$available = $this->econ->ResourceProduction($trade->getSource(), $trade->getResourceType()) + $this->econ->TradeBalance($trade->getSource(), $trade->getResourceType());
+						if ($trade->getAmount() > $available) {
+							$form->addError(new FormError("trade.toomuch"));
 						} else {
-							// TODO: check if we don't already have such a deal (same source, destination and resource)
-							// FIXME: $trade->getResourceType() is NULL sometimes, causing an error here?
-							$available = $this->econ->ResourceProduction($trade->getSource(), $trade->getResourceType()) + $this->econ->TradeBalance($trade->getSource(), $trade->getResourceType());
-							if ($trade->getAmount() > $available) {
-								$form->addError(new FormError("trade.toomuch"));
-							} else {
-								$trade->setTradecost($this->econ->TradeCostBetween($trade->getSource(), $trade->getDestination(), $merchants->count()>0));
-								if ($merchants->count() > 0 ) {
-									// remove a merchant!
-									$stay = $merchants->first();
-									$em->remove($stay);
-								}
-								$em->persist($trade);
-								$em->flush();
-								return $this->redirect($request->getUri());
+							$trade->setTradecost($this->econ->TradeCostBetween($trade->getSource(), $trade->getDestination(), $merchants->count()>0));
+							if ($merchants->count() > 0 ) {
+								// remove a merchant!
+								$stay = $merchants->first();
+								$em->remove($stay);
 							}
+							$em->persist($trade);
+							$em->flush();
+							return $this->redirect($request->getUri());
 						}
 					}
-				} else {
-					$form->addError(new FormError("trade.notmanaged"));
 				}
+			} else {
+				$form->addError(new FormError("trade.notmanaged"));
 			}
-		} elseif ($request->isMethod('POST') && $request->request->has('tradecancel')) {
-			$cancelform->handleRequest($request);
-			if ($cancelform->isSubmitted() && $cancelform->isValid()) {
-				$data = $cancelform->getData();
-				$trade = $data['trade'];
-				$source = $trade->getSource();
-				$dest = $trade->getDestination();
-				if (($allowed && ($source == $settlement || $dest == $settlement)) || (($dest->getOwner() == $character || $dest->getSteward() == $character) || ($source->getOwner() == $character || $dest->getSteward() == $character))) {
-					$this->hist->logEvent(
-						$trade->getDestination(),
-						'event.settlement.tradestop',
-						array('%amount%'=>$trade->getAmount(), '%resource%'=>$trade->getResourceType()->getName(), '%link-settlement%'=>$trade->getSource()->getId()),
-						History::MEDIUM, false, 20
-					);
-					$em->remove($trade);
-					$em->flush();
-					return $this->redirect($request->getUri());
-				} else {
-					$form->addError(new FormError("trade.notyourtrade"));
-				}
+		}
+		$cancelform->handleRequest($request);
+		if ($cancelform->isSubmitted() && $cancelform->isValid()) {
+			$data = $cancelform->getData();
+			$trade = $data['trade'];
+			$source = $trade->getSource();
+			$dest = $trade->getDestination();
+			if (($allowed && ($source == $settlement || $dest == $settlement)) || (($dest->getOwner() == $character || $dest->getSteward() == $character) || ($source->getOwner() == $character || $dest->getSteward() == $character))) {
+				$this->hist->logEvent(
+					$trade->getDestination(),
+					'event.settlement.tradestop',
+					array('%amount%'=>$trade->getAmount(), '%resource%'=>$trade->getResourceType()->getName(), '%link-settlement%'=>$trade->getSource()->getId()),
+					History::MEDIUM, false, 20
+				);
+				$em->remove($trade);
+				$em->flush();
+				return $this->redirect($request->getUri());
+			} else {
+				$form->addError(new FormError("trade.notyourtrade"));
 			}
 		}
 

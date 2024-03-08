@@ -74,20 +74,20 @@
 
 {% endblock %}
 
-{% if not app.request.isXmlHttpRequest %}
-	{% block includes %}
+{% block includes %}
+	{% if not app.request.isXmlHttpRequest %}
 		{{ parent() }}
 		<script src="{{ asset('tablesorter/jquery.tablesorter.min.js') }}"></script>
 		<script src="{{ asset('tablesorter/parsers/parser-input-select.js') }}"></script>
 		<script src="{{ asset('map/OpenLayers.js') }}"></script>
 		<script src="{{ asset('map/map.js') }}"></script>
-	{% endblock %}
-	{% block jquery %}
-		$("#estates").tablesorter({
-			sortList: [[0,0]],
-		});
-		{% include "element/mapstrings.js.twig" %}
-		mapinit('map', false, false, false);
-		addoutline('{{ poly }}', '#cccc20', 3, '#cccc20', 0.4);
-	{% endblock %}
-{% endif %}
+	{% endif %}
+{% endblock %}
+{% block jquery %}
+	$("#estates").tablesorter({
+		sortList: [[0,0]],
+	});
+	{% include "element/mapstrings.js.twig" %}
+	mapinit('map', false, false, false);
+	addoutline('{{ poly }}', '#cccc20', 3, '#cccc20', 0.4);
+{% endblock %}

@@ -113,8 +113,8 @@ class SiegeType extends AbstractType {
 				}
 			} elseif ($location instanceof Place) {
 				if (
-					(!$defLeader && $isDefender && $character->getInsidePlace() == $location && $place->getOwner() == $character)
-					|| (!$defLeader && $isDefender && !$place->getCharactersPresent()->contains($place->getOwner()))
+					(!$defLeader && $isDefender && $character->getInsidePlace() == $location && $location->getOwner() == $character)
+					|| (!$defLeader && $isDefender && !$location->getCharactersPresent()->contains($location->getOwner()))
 					|| (!$attLeader && $isAttacker)
 				) {
 					# No leader of your group? Defending lord can assume if present, otherwise any defender can. Any attacker can take control of leaderless attackers.
@@ -259,7 +259,7 @@ class SiegeType extends AbstractType {
 					));
 					break;
 			}
-		};
+		}
 		$builder->add('submit', SubmitType::class, array('label'=>'military.siege.submit'));
 	}
 }
