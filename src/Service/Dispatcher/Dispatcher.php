@@ -2137,7 +2137,7 @@ class Dispatcher {
 		if ( ! $this->permission_manager->checkRealmPermission($this->realm, $this->getCharacter(), 'diplomacy')) {
 			return array("name"=>$name, "description"=>"unavailable.notdiplomat");
 		}
-		return array("name"=>$name, "url"=>"maf_realm_join", "parameters"=>array('realm'=>$this->realm->getId()), "description"=>$desc);
+		return array("name"=>$name, "url"=>"maf_realm_join", "parameters"=>array('id'=>$this->realm->getId()), "description"=>$desc);
 	}
 
 	public function diplomacySubrealmTest(): array {

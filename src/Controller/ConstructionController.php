@@ -15,7 +15,10 @@ use App\Form\FeatureconstructionType;
 use App\Form\RoadconstructionType;
 use CrEOF\Geo\WKB\Parser as BinaryParser;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Exception;
+use LongitudeOne\Spatial\Exception\InvalidValueException;
 use LongitudeOne\Spatial\PHP\Types\Geometry\{Point, LineString};
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -23,7 +26,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Router;
 
 class ConstructionController extends AbstractController {
 
@@ -186,6 +188,11 @@ class ConstructionController extends AbstractController {
 		]);
 	}
 
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws InvalidValueException
+	 * @throws NoResultException
+	 */
 	#[Route ('/build/features', name:'maf_construction_features')]
 	public function featuresAction(Request $request): RedirectResponse|Response {
 		// TODO: add a way to remove / demolish features
@@ -208,7 +215,7 @@ class ConstructionController extends AbstractController {
 
 			if ($existing) {
 				foreach ($existing as $id=>$amount) {
-					if ($amount>0) { $totalworkers+=$amount; }
+					if ($amount>0) { $totalworkers+= (int) $amount; }
 				}
 				if ($settlement->getAvailableWorkforcePercent() + $settlement->getFeatureWorkersPercent() - $totalworkers < 0.0) {
 					$form->addError(new FormError("economy.toomany"));
@@ -317,6 +324,11 @@ class ConstructionController extends AbstractController {
 		return array($features, $active, $building, $workhours);
 	}
 
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws InvalidValueException
+	 * @throws NoResultException
+	 */
 	private function buildDocks($new): Point {
 		// find point to build the docks
 		$em = $this->em;
@@ -329,6 +341,11 @@ class ConstructionController extends AbstractController {
 		return new Point($p['value'][0], $p['value'][1]);
 	}
 
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 * @throws InvalidValueException
+	 */
 	private function buildBridge($new): Point {
 		// find point to build the bridge
 		$em = $this->em;
@@ -346,6 +363,11 @@ class ConstructionController extends AbstractController {
 		return $this->nearestBorderPoint($new, $geo);
 	}
 
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 * @throws InvalidValueException
+	 */
 	private function nearestBorderPoint($new, $geo): Point {
 		$em = $this->em;
 		$query = $em->createQuery('SELECT ST_ClosestPoint(ST_Boundary(g.poly), ST_POINT(:x,:y)) FROM App:GeoData g WHERE g = :geo');
@@ -382,7 +404,7 @@ class ConstructionController extends AbstractController {
 
 		$form = $this->createForm(BuildingconstructionType::class, null, ['existing'=>$settlement->getBuildings(), 'available'=>$available]);
 		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
+		if ($form->isSubmitted()) {
 			$data = $form->getData();
 			$totalworkers=0;
 
@@ -487,7 +509,7 @@ class ConstructionController extends AbstractController {
 	}
 
 	#[Route ('/build/abandon/{building}', name:'maf_construction_abandon', methods:['post'])]
-	public function abandonbuildingAction(Router $router, Building $building): RedirectResponse {
+	public function abandonbuildingAction(Building $building): RedirectResponse {
 		$character = $this->dispatcher->gateway('economyBuildingsTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -496,7 +518,7 @@ class ConstructionController extends AbstractController {
 		$building->abandon();
 		$this->em->flush();
 
-		return new RedirectResponse($router->generate('maf_construction_buildings'));
+		return $this->redirectToRoute('maf_construction_buildings');
 	}
 
 	#[Route ('/build/focus', name:'maf_construction_focus', methods:['post'])]

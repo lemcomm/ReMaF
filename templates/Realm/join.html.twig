@@ -14,7 +14,7 @@
 
 	{% if form is defined %}
 	{{ form_errors(form) }}
-	<form id="realmjoinform" class="wide" action="{{ path('maf_realm_join', {'realm':realm.id}) }}" method="post">
+	<form id="realmjoinform" class="wide" action="{{ path('maf_realm_join', {'id':realm.id}) }}" method="post">
 		{{ form_widget(form._token) }}
 		<table>
 			<thead><tr>

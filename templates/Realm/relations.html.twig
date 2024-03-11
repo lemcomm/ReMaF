@@ -18,14 +18,14 @@
 			<td>{{ link(relation.link) }}</td>
 			<td>
 				{% if relation.we is defined %}
-					<a href="{{ path('maf_realm_viewrelations', {'realm':realm.id, 'target':relation.they.id}) }}">
+					<a href="{{ path('maf_realm_viewrelations', {'realm':realm.id, 'target':relation.link.id}) }}">
 						{{ ('diplomacy.status.'~relation.we.status)|trans({}, 'politics') }}
 					</a>
 				{% endif %}
 			</td>
 			<td>
 				{% if relation.they is defined %}
-					<a href="{{ path('maf_realm_viewrelations', {'realm':relation.they.id, 'target':realm.id}) }}">
+					<a href="{{ path('maf_realm_viewrelations', {'realm':relation.link.id, 'target':realm.id}) }}">
 						{{ ('diplomacy.status.'~relation.they.status)|trans({}, 'politics') }}
 					</a>
 				{% endif %}

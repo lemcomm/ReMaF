@@ -54,7 +54,7 @@ class RoadconstructionType extends AbstractType {
 		$builder->get('new')->add('workers', PercentType::class,
 			array(
 				'required' => false,
-				'precision' => 2,
+				'scale' => 2,
 				'attr' => array('size'=>3, 'class' => 'assignment')
 			)
 		);

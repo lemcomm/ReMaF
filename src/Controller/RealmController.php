@@ -958,7 +958,7 @@ class RealmController extends AbstractController {
 		]);
 	}
 	
-	#[Route('/realm/{realm}/restore', name:'maf_realm_restore', requirements:['realm'=>'\d+'])]
+	#[Route('/realm/{id}/restore', name:'maf_realm_restore', requirements:['id'=>'\d+'])]
 	public function restoreAction(Realm $id): RedirectResponse {
 		$realm = $id;
 		$character = $this->gateway($realm, 'diplomacyRestoreTest');

@@ -16,12 +16,12 @@
 			<p>{{ result.message|trans({},"actions") }}</p>
 		{% endif %}
 	{% else %}
+		<form action="{{ path('maf_construction_buildings') }}" method="post">
 		{{ form_errors(form) }}
 		<div id="over20" class="warning hidden">{{ 'economy.build.warning.over20percent'|trans({}, "actions") }}</div>
 		<div id="over50" class="warning hidden">{{ 'economy.build.warning.over50percent'|trans({}, "actions") }}</div>
 		<div id="over100" class="error hidden">{{ 'economy.build.error.over100percent'|trans({}, "actions") }}</div>
 		{% if buildings is empty %}
-			<form action="{{ path('maf_construction_buildings') }}" method="post">
 			{{ form_widget(form._token) }}
 		{% else %}
 			<h3>{{ 'economy.build.existing'|trans({}, "actions")|title }}</h3>
@@ -42,8 +42,6 @@
 				{% endfor %}
 				</tbody>
 			</table>
-
-			<form action="{{ path('maf_construction_buildings') }}" method="post">
 			{{ form_widget(form._token) }}
 			<h3>{{ 'economy.build.underconstruction'|trans({},"actions")|title }}</h3>
 			<table id="buildingslist2">
