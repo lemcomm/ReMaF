@@ -1266,7 +1266,7 @@ class RealmController extends AbstractController {
 			->add('vote', ChoiceType::class, array(
 				'required'=>true,
 				'label'=>'votes.add.procontra',
-				'choices'=>array(1=>'votes.pro', -1=>'votes.contra')
+				'choices'=> ['votes.pro' => 1, 'votes.contra' => -1]
 				))
 			->add('submit', SubmitType::class, array(
 				'label'=>'votes.add.submit',
@@ -1274,7 +1274,7 @@ class RealmController extends AbstractController {
 			->getForm();
 
 		$addform=false; $voteform=false;
-		if ($request->isMethod('POST') && $submitted_form = $request->request->get("form")) {
+		if ($request->isMethod('POST') && $submitted_form = $request->request->all("form")) {
 			if (isset($submitted_form['targets'])) {
 				$voteform=true;
 			}
@@ -1320,7 +1320,7 @@ class RealmController extends AbstractController {
 
 		$form_votes = $this->createFormBuilder(null, array('translation_domain'=>'politics'))
 			->add('targets', CollectionType::class, array(
-			'type'		=> "text",
+			'entry_type'		=> TextType::class,
 			'allow_add'	=> true,
 			'allow_delete' => true,
 		))->getForm();
