@@ -1299,7 +1299,7 @@ class CharacterController extends AbstractController {
 				return $resp;
 			}
 			$em = $this->em;
-			$points = $request->request->get('route');
+			$points = $request->request->all('route');
 			$enter = $request->request->get('enter');
 			if ($enter===true or $enter == "true") {
 				$enter = true;
