@@ -4,9 +4,9 @@
 
 <h3>{{ artifact.name }}</h3>
 {% if artifact.description is not null and artifact.description.text is not null %}
-	<p>{{ artifact.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}</p>
+	<p>{{ artifact.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}</p>
 {% else %}
-	<p>{{ artifact.oldDescription|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}</p>
+	<p>{{ artifact.oldDescription|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}</p>
 {% endif %}
 {% if artifact.creator == app.user and artifact.owner is null %}
 	<a href="{{ path('maf_artifact_assign', {'id':artifact.id}) }}">give to character</a> {#

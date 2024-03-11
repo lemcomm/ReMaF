@@ -25,5 +25,14 @@ services:
 
     Doctrine\ORM\EntityManagerInterface: '@doctrine.orm.entity_manager'
 
+    # Initialize ~~strikethrough~~, autolinking for raw URLs, and table extensions in commonmark.
+    League\CommonMark\Extension\Strikethrough\StrikethroughExtension:
+        tags: [ 'twig.markdown.league_extension' ]
+    League\CommonMark\Extension\Autolink\AutolinkExtension:
+        tags: [ 'twig.markdown.league_extension' ]
+    League\CommonMark\Extension\Table\TableExtension:
+        tags: [ 'twig.markdown.league_extension' ]
+    League\CommonMark\Extension\DescriptionList\DescriptionListExtension:
+        tags: [ 'twig.markdown.league_extension' ]
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

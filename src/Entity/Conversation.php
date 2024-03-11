@@ -22,9 +22,9 @@ class Conversation {
 	private ?Character $local_for;
 	private Collection $messages;
 	private Collection $permissions;
-	private ?Realm $realm;
-	private ?House $house;
-	private ?Association $association;
+	private ?Realm $realm = null;
+	private ?House $house = null;
+	private ?Association $association = null;
 
 	/**
 	 * Constructor

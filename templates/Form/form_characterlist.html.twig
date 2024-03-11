@@ -1,5 +1,4 @@
 {% block choice_widget_expanded %}
-{% spaceless %}
 <div {{ block('widget_container_attributes') }}>
 	<ul class="simple">
 	{% for child in form %}
@@ -14,5 +13,4 @@
 	{% endfor %}
 	</ul>
 </div>
-{% endspaceless %}
 {% endblock choice_widget_expanded %}

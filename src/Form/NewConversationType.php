@@ -23,7 +23,7 @@ class NewConversationType extends AbstractType {
 			'contacts'	=> [],
 			'distance'	=> 0,
 			'settlement'	=> null,
-			'realm'		=> null,
+			'org'		=> null,
 		));
 		$resolver->setRequired(['char']);
 	}
@@ -39,12 +39,12 @@ class NewConversationType extends AbstractType {
 			'multiple' => false,
 			'required' => false,
 			'choices' => [
-				'letter' => 'type.letter',
-				'request' => 'type.request',
-				'orders' => 'type.orders',
-				'report' => 'type.report',
-				'rp' => 'type.rp',
-				'ooc' => 'type.ooc'
+				'type.letter' => 'letter',
+				'type.request' => 'request',
+				'type.orders' => 'orders',
+				'type.report' => 'report',
+				'type.rp' => 'rp',
+				'type.ooc' => 'ooc'
 			],
 			'empty_data' => 'letter'
 		]);
@@ -55,7 +55,7 @@ class NewConversationType extends AbstractType {
 			'required' => true
 		));
 
-		if (!$options['realm']) {
+		if (!$options['org']) {
 
 			$me = $options['char'];
 			$maxdistance = $options['distance'];
@@ -67,7 +67,9 @@ class NewConversationType extends AbstractType {
 					'multiple'=>true,
 					'expanded'=>true,
 					'label'=>'conversation.captor.label',
-					'class'=>Character::class, 'property'=>'name', 'query_builder'=>function(EntityRepository $er) use ($captor) {
+					'class'=>Character::class,
+					'choice_label'=>'name',
+					'query_builder'=>function(EntityRepository $er) use ($captor) {
 						$qb = $er->createQueryBuilder('c');
 						$qb->where('c.alive = true');
 						$qb->andWhere('c = :captor')->setParameter('captor', $captor);
@@ -80,7 +82,9 @@ class NewConversationType extends AbstractType {
 				'multiple'=>true,
 				'expanded'=>true,
 				'label'=>'conversation.nearby.label',
-				'class'=>Character::class, 'property'=>'name', 'query_builder'=>function(EntityRepository $er) use ($me, $maxdistance) {
+				'class'=>Character::class,
+				'choice_label'=>'name',
+				'query_builder'=>function(EntityRepository $er) use ($me, $maxdistance) {
 					$qb = $er->createQueryBuilder('c');
 					$qb->from('App\Entity\Character', 'me');
 					$qb->where('c.alive = true');
@@ -105,7 +109,9 @@ class NewConversationType extends AbstractType {
 					'multiple'=>true,
 					'expanded'=>true,
 					'label'=>'conversation.owner.label',
-					'class'=>Character::class, 'property'=>'name', 'query_builder'=>function(EntityRepository $er) use ($owner) {
+					'class'=>Character::class,
+					'choice_label'=>'name',
+					'query_builder'=>function(EntityRepository $er) use ($owner) {
 						$qb = $er->createQueryBuilder('c');
 						$qb->where('c.alive = true');
 						$qb->andWhere('c = :owner')->setParameter('owner', $owner);
@@ -123,7 +129,7 @@ class NewConversationType extends AbstractType {
 					'label' => 'conversation.recipients.label',
 					'placeholder' => 'conversation.recipients.empty',
 					'class' => Character::class,
-					'property' => 'name',
+					'choice_label' => 'name',
 					'query_builder'=>function(EntityRepository $er) use ($contacts) {
 						$qb = $er->createQueryBuilder('c');
 						$qb->where('c IN (:recipients)');

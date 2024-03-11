@@ -33,7 +33,7 @@
 			{{ 'character.start.players'|trans|raw }}: {{ realm.findActivePlayers.count }}<br>
 			{{ 'character.start.nobles'|trans|raw }}: {{ realm.findActiveMembers.count }}<br>
 			{{ 'character.start.regions'|trans|raw }}: {{ realm.findTerritory.count }}<br></p>
-			<p>{{ realm.spawnDescription.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}<br /><br />
+			<p>{{ realm.spawnDescription.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks}}<br /><br />
 			<a href="{{ path('maf_char_spawn_realm', {"realm":realm.id}) }}">{{ 'character.start.join.realm'|trans({"%name%":realm.name})|raw }}</a></p>
 		{% endfor %}
 	{% endif %}
@@ -51,7 +51,7 @@
 			{% endif %}</i><br>
 			{{ 'character.start.players'|trans|raw }}: {{ house.findActivePlayers.count }}<br>
 			{{ 'character.start.nobles'|trans|raw }}: {{ house.findAllActive.count }}<br>
-			<p>{{ house.spawnDescription.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}<br><br>
+			<p>{{ house.spawnDescription.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks}}<br><br>
 			<a href="{{ path('maf_char_spawn_house', {"house":house.id}) }}">{{ 'character.start.join.house'|trans({"%name%":house.name})|raw }}</a></p>
 		{% endfor %}
 	{% endif %}

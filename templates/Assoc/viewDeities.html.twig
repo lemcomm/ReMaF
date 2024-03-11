@@ -23,7 +23,7 @@
 			{{ deity.name }}
 		</dt>
 		<dd>
-			<p>{{deity.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}</p>
+			<p>{{deity.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks}}</p>
 			{% if owner and not deity.mainRecognizer %}
 				{#  Since you can always see your own rank, if there are no ranks either their's a bug or we don't have a rank. If we don't have a rank, we can't manage any ranks or create new ones. #}
 				<p><a href="{{ path('maf_assoc_deities_adopt', {'id':assoc.id, 'deity':deity.id}) }}">{{ 'assoc.route.adoptDeity.name'|trans({}) }}</a></p>
@@ -41,7 +41,7 @@
 				<p><a href="{{ path('maf_assoc_deities_remove', {'id':assoc.id, 'deity':deity.id}) }}">{{ 'assoc.route.removeDeity.name'|trans({}) }}</a></p>
 			{% endif %}
 			<p><i>{{ 'assoc.route.viewDeities.words'|trans({}) }}</i></p>
-			<p>{{each.words|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks}}</p>
+			<p>{{each.words|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks}}</p>
 		</dd>
 	{% endfor %}
 	</dl>

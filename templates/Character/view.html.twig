@@ -124,11 +124,11 @@
 {% endif %}
 
 {% if char.background.appearance and char.background.appearance is defined %}
-	{{ char.background.appearance|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+	{{ char.background.appearance|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
 {% endif %}
 {% if relationship %}
 	<h4>{{ 'character.personality'|trans|title }}</h4>
-	{{ char.background.personality|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+	{{ char.background.personality|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
 {% endif %}
 {% for parent in char.parents %}
 	{% if parent.male %}
@@ -167,11 +167,11 @@
 {% if char.retired or char.alive == false %}
 	{% if char.retired and char.background.retirement and char.background.retirement is defined %}
 		<h2>{{ 'meta.background.retirement.name'|trans({},"actions")|title }}</h2>
-		{{ char.background.retirement|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+		{{ char.background.retirement|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
 	{% endif %}
 	{% if char.alive == false and char.background.death and char.background.death is defined %}
 		<h2>{{ 'meta.background.death.name'|trans({},"actions")|title }}</h2>
-		{{ char.background.death|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+		{{ char.background.death|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
 	{% endif %}
 {% elseif char.location is null %}
 	<h2>{{ 'character.notstarted.title'|trans|title }}</h2>

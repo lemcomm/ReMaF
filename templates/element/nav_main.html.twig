@@ -25,7 +25,7 @@
 							<li><a href="{{ path('maf_char_entourage') }}">{{ 'npc.entourage2'|trans({'count': 10}) }}</a></li>
 						{% endif %}
 						{% if character.ownedSettlements is not empty %}
-							<li><a href="{{ path('maf_char_estates') }}">{{ 'estate'|trans({'choice': character.ownedSettlements|length}) }}</a></li>
+							<li><a href="{{ path('maf_char_estates') }}">{{ 'estate'|trans({'count': character.ownedSettlements|length}) }}</a></li>
 						{% endif %}
 					</ul>
 				</li>

@@ -14,9 +14,9 @@
 			{{ 'journal.view.by'|trans({'%character%':link(journal.getCharacter), "%day%":journal.getCycle|gametime("short"), "%ts%":journal.getDate|date}, "messages")|raw }}
 			{% set length = journal.length %}
 			{% if length > 500 %}
-				{{ ((journal.entry|slice(0,500))~'...')|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}<a href="{{ path('maf_journal', {"id":journal.id}) }}">Read more...</a></p>
+				{{ ((journal.entry|slice(0,500))~'...')|markdown_to_html|striptags|wikilinks }}<a href="{{ path('maf_journal', {"id":journal.id}) }}">Read more...</a></p>
 			{% else %}
-				{{ journal.entry|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><blockquote>')|wikilinks }}
+				{{ journal.entry|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
 			{% endif %}
 		</div>
 	{% endfor %}

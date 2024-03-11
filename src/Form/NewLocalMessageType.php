@@ -49,12 +49,12 @@ class NewLocalMessageType extends AbstractType {
 			'multiple' => false,
 			'required' => false,
 			'choices' => [
-				'letter' => 'type.letter',
-				'request' => 'type.request',
-				'orders' => 'type.orders',
-				'report' => 'type.report',
-				'rp' => 'type.rp',
-				'ooc' => 'type.ooc'
+				'type.letter' => 'letter',
+				'type.request' => 'request',
+				'type.orders' => 'orders',
+				'type.report' => 'report',
+				'type.rp' => 'rp',
+				'type.ooc' => 'ooc'
 			],
 			'empty_data' => 'letter'
 		]);
