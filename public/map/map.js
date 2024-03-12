@@ -564,7 +564,7 @@ function addsettlements(mode) {
 
 
 	// cultures
-
+	/* Removed. TODO: Add actual in-game cultures here eventually.
 	var style = new OpenLayers.Style({
 		strokeWidth: 0.5,
 		strokeColor: "${colour_hex}",
@@ -589,6 +589,7 @@ function addsettlements(mode) {
 	layer.setVisibility(false);
 	map.addLayer(layer);
 	map.setLayerIndex(layer, 110);
+	*/
 }
 
 function SettlementSelect(evt) {

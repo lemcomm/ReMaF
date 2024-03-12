@@ -174,7 +174,7 @@ class MapController extends AbstractController {
 		$query = $em->createQuery('SELECT g.id, b.name, g.humidity, ST_AsGeoJSON(g.poly) AS geopoly FROM App:GeoData g JOIN g.biome b WHERE g.passable=true AND ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), g.poly) = true');
 		$query->setParameters(array('ax'=>$lowleft[0], 'ay'=>$lowleft[1], 'bx'=>$upright[0], 'by'=>$upright[1]));
 		$iterableResult = $query->toIterable();
-		while (($row = $iterableResult->next()) !== false) {
+		while ($row = $iterableResult->next()) {
 			$r = array_shift($row);
 
 			$features[] = array(
@@ -196,7 +196,7 @@ class MapController extends AbstractController {
 		$query = $em->createQuery('SELECT p.id, p.name, ST_AsGeoJSON(p.geom) as geometry FROM App:MapPOI p WHERE ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), p.geom) = true');
 		$query->setParameters(array('ax'=>$lowleft[0], 'ay'=>$lowleft[1], 'bx'=>$upright[0], 'by'=>$upright[1]));
 		$iterableResult = $query->toIterable();
-		while (($row = $iterableResult->next()) !== false) {
+		while ($row = $iterableResult->next()) {
 			$r = array_shift($row);
 
 			$features[] = array(
@@ -361,7 +361,7 @@ class MapController extends AbstractController {
 		$query = $em->createQuery('SELECT g.id, c.name as culture, c.colour_hex as colour, ST_AsGeoJSON(g.poly) AS geopoly FROM App:GeoData g JOIN g.settlement s JOIN s.culture c WHERE g.passable=true AND ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), g.poly) = true');
 		$query->setParameters(array('ax'=>$lowleft[0], 'ay'=>$lowleft[1], 'bx'=>$upright[0], 'by'=>$upright[1]));
 		$iterableResult = $query->toIterable();
-		while (($row = $iterableResult->next()) !== false) {
+		while ($row = $iterableResult->next()) {
 			$r = array_shift($row);
 
 			$features[] = array(

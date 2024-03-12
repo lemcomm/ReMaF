@@ -742,7 +742,7 @@ class ActionsController extends AbstractController {
 			$settlement->setCulture($culture);
 			$this->em->flush();
 
-			return $this->render('Actions/changeculture.html.twig', [
+			return $this->render('Actions/changenames.html.twig', [
 				'settlement'=>$settlement,
 				'result'=>[
 					'success'=>true,
@@ -752,7 +752,7 @@ class ActionsController extends AbstractController {
 			]);
 		}
 
-		return $this->render('Actions/changeculture.html.twig', [
+		return $this->render('Actions/changenames.html.twig', [
 			'settlement'=>$settlement,
 			'form'=>$form->createView()
 		]);

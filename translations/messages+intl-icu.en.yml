@@ -174,7 +174,7 @@ map:
  marches:      Marches
  counties:     Counties
  baronies:     Baronies
- cultures:     Cultures
+ names:        Name Packs
  towers:       Towers
  features:     Structures
  markers:      Markers
@@ -419,31 +419,30 @@ account:
  artifacts:
   link:     Artifacts
  culture:
-  link:     Culture
-  title:    Culture
+  link:     Name Pack
+  title:    Name Pack
   intro: >
-    The core culture that Might & Fealty represents is Central European. You can buy access to other cultures and decide for each of
-    the settlements controlled by your characters which culture they belong to. Depending on the particular set, this always includes the
-    names of soldiers and entourage recruited there and can also include visuals such as buildings, troops and entourage.<br />
-    Once unlocked, a culture is yours forever and can be used by all of your characters as often as you like. You will also automatically get
-    any updates to a culture pack (such as added graphics).
-  owned:    Culture Packs you own
-  buyable:  Culture Packs you can buy
+    The main naming logic that Might & Fealty follows is Central European. You can buy access to other name packs and decide for each of
+    the settlements controlled by your characters which one they will use. Depending on the particular set, this always includes the
+    names of soldiers and entourage recruited there.<br />
+    Once unlocked, a name pack is yours forever and can be used by all of your characters as often as you like. You will also automatically get
+    any updates to a name pack.
+  owned:    Name Packs you own
+  buyable:  Name Packs you can buy
   buy:      Buy
-  name:     Culture
+  name:     Name Pack
   cost:     Cost
   contains: Contains
   contents:
    names:   Names
-  submit:   Buy selected culture pack(s)
-  change:   Change culture
+  submit:   Buy selected name pack(s)
+  change:   Change Name Pack
   upgrades: >
-    Culture packs are occasionally updated and extended, so a pack that does not contain graphics, for example, may
-    get them added in the future. If you by a culture pack, you will always get all updates for free.
+    Name packs are occasionally updated and extended. If you by a name pack, you will always get all updates for free.
   notenoughcredits:   You do not have enough credits for this purchase.
   bought:
-   title:   Culture Pack{count, plural, other {s}} Bought
-   intro:   "Congratulations, you have bought {amount} culture pack{count, plural, other {s}}:"
+   title:   Name Pack{count, plural, other {s}} Bought
+   intro:   "Congratulations, you have bought {amount} name pack{count, plural, other {s}}:"
    contains:  "this pack contains:"
  gift:
   link:     Gift to existing player
@@ -819,7 +818,7 @@ settlement:
    3:         Falling quickly
    4:         Falling dramatically
  geography:   Geography
- culture:     Culture
+ namepack:    Names
  biome:       Biome
  neighbours:  Neighbours
  political:   Political

@@ -384,23 +384,20 @@ control:
   queued: >
     The settlement leaders have been instructed to change the name of this place to "{newname}".<br />
     Maps and signs will be updated over the next few hours. You will see the change completed soon.
- culture:
-  name:         Change culture
-  description:  Change the culture of this settlement.
+ namepack:
+  name:         Change Name Pack
+  description:  Change the names used in this settlement.
   intro: >
-    As the lord of this <em>{current}</em> {type}, you can change its culture.<br />
-    The culture of a settlement defines its flair, visuals and the names of the entourage and soldiers recruited here.<br />
-    This should be used sparingly, as it would be unrealistic to change all the time. It also makes a lot more sense to
-    communicate with your neighors and set up cultural areas.<br />
+    As the lord of this <em>{current}</em> {type}, you can change the names allowed here.<br />
+    The central european name pack is available to everyone. Additional name packs can be bought on your account page (Credits and Gifts).
+    If you conquer a settlement utilizing a name pack you do not own, it will retain it but you can only change
+    settlements to use name packs you own.
     <br />
-    The central european culture is available to everyone. Additional cultures can be bought on your account page (Credits and Gifts).
-    If you conquer a settlement belonging to a culture you do not own, it will retain its culture, but you can only change
-    settlements to cultures you own.
-  newculture:   New culture
+  newnames:   New Allowed Names
   success: >
-    You have now declared that this place follows the {culture} culture.
+    You have now declared that this place uses {culture} names.
   queued: >
-    The settlement leaders have been instructed to adapt to a {culture} culture.<br />
+    The settlement leaders have been instructed to adapt to a {culture} set of names.<br />
     You will see the change completed soon.
  permissions:
   name:         Manage permissions

@@ -30,7 +30,7 @@ class CultureType extends AbstractType {
 		$old_culture = $options['old_culture'];
 		if ($options['available']) {
 			$builder->add('culture', EntityType::class, array(
-				'label' => 'settlement.culture',
+				'label' => 'settlement.namepack',
 				'required' => true,
 				'choice_translation_domain' => true,
 				'class'=>Culture::class,
@@ -48,7 +48,7 @@ class CultureType extends AbstractType {
 			$builder->add('submit', SubmitType::class, array('label'=>'account.culture.change'));
 		} else {
 			$builder->add('culture', EntityType::class, array(
-				'label' => 'settlement.culture',
+				'label' => 'settlement.namepack',
 				'multiple' => true,
 				'expanded' => true,
 				'required' => true,
