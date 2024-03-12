@@ -4,12 +4,8 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
-class BattleReport {
-	private int $cycle;
-	private Point $location;
-	private array $location_name;
+class BattleReport extends ReportBase {
 	private bool $assault;
 	private bool $sortie;
 	private bool $urban;
@@ -18,19 +14,11 @@ class BattleReport {
 	private array $combat;
 	private array $hunt;
 	private array $finish;
-	private bool $completed;
-	private int $count;
 	private int $epicness;
-	private string $debug;
-	private ?int $id = null;
 	private ?BattleReportGroup $primary_attacker;
 	private ?BattleReportGroup $primary_defender;
 	private Collection $participants;
 	private Collection $groups;
-	private Collection $observers;
-	private Collection $journals;
-	private ?Settlement $settlement;
-	private ?Place $place;
 	private ?War $war;
 	private ?Siege $siege;
 	private Collection $defense_buildings;
@@ -39,100 +27,14 @@ class BattleReport {
 	 * Constructor
 	 */
 	public function __construct() {
+		parent::__construct();
 		$this->participants = new ArrayCollection();
 		$this->groups = new ArrayCollection();
-		$this->observers = new ArrayCollection();
-		$this->journals = new ArrayCollection();
 		$this->defense_buildings = new ArrayCollection();
 	}
 
 	public function getName(): string {
 		return "battle"; // TODO: something better? this is used for links
-	}
-
-	public function checkForObserver(Character $char): bool {
-		foreach ($this->observers as $each) {
-			if ($each->getCharacter() === $char) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public function countPublicJournals(): int {
-		$i = 0;
-		foreach ($this->journals as $each) {
-			if ($each->getPublic()) {
-				$i++;
-			}
-		}
-		return $i;
-	}
-
-	/**
-	 * Get cycle
-	 *
-	 * @return integer
-	 */
-	public function getCycle(): int {
-		return $this->cycle;
-	}
-
-	/**
-	 * Set cycle
-	 *
-	 * @param integer $cycle
-	 *
-	 * @return BattleReport
-	 */
-	public function setCycle(int $cycle): static {
-		$this->cycle = $cycle;
-
-		return $this;
-	}
-
-	/**
-	 * Get location
-	 *
-	 * @return point
-	 */
-	public function getLocation(): Point {
-		return $this->location;
-	}
-
-	/**
-	 * Set location
-	 *
-	 * @param point $location
-	 *
-	 * @return BattleReport
-	 */
-	public function setLocation(Point $location): static {
-		$this->location = $location;
-
-		return $this;
-	}
-
-	/**
-	 * Get location_name
-	 *
-	 * @return array|null
-	 */
-	public function getLocationName(): ?array {
-		return $this->location_name;
-	}
-
-	/**
-	 * Set location_name
-	 *
-	 * @param array|null $locationName
-	 *
-	 * @return BattleReport
-	 */
-	public function setLocationName(array $locationName = null): static {
-		$this->location_name = $locationName;
-
-		return $this;
 	}
 
 	/**
@@ -312,50 +214,6 @@ class BattleReport {
 	}
 
 	/**
-	 * Get completed
-	 *
-	 * @return boolean
-	 */
-	public function getCompleted(): bool {
-		return $this->completed;
-	}
-
-	/**
-	 * Set completed
-	 *
-	 * @param boolean $completed
-	 *
-	 * @return BattleReport
-	 */
-	public function setCompleted(bool $completed): static {
-		$this->completed = $completed;
-
-		return $this;
-	}
-
-	/**
-	 * Get count
-	 *
-	 * @return int|null
-	 */
-	public function getCount(): ?int {
-		return $this->count;
-	}
-
-	/**
-	 * Set count
-	 *
-	 * @param integer|null $count
-	 *
-	 * @return BattleReport
-	 */
-	public function setCount(int $count = null): static {
-		$this->count = $count;
-
-		return $this;
-	}
-
-	/**
 	 * Get epicness
 	 *
 	 * @return int|null
@@ -375,37 +233,6 @@ class BattleReport {
 		$this->epicness = $epicness;
 
 		return $this;
-	}
-
-	/**
-	 * Get debug
-	 *
-	 * @return string
-	 */
-	public function getDebug(): string {
-		return $this->debug;
-	}
-
-	/**
-	 * Set debug
-	 *
-	 * @param string $debug
-	 *
-	 * @return BattleReport
-	 */
-	public function setDebug(string $debug): static {
-		$this->debug = $debug;
-
-		return $this;
-	}
-
-	/**
-	 * Get id
-	 *
-	 * @return int|null
-	 */
-	public function getId(): ?int {
-		return $this->id;
 	}
 
 	/**
@@ -512,112 +339,6 @@ class BattleReport {
 	 */
 	public function getGroups(): ArrayCollection|Collection {
 		return $this->groups;
-	}
-
-	/**
-	 * Add observers
-	 *
-	 * @param BattleReportObserver $observers
-	 *
-	 * @return BattleReport
-	 */
-	public function addObserver(BattleReportObserver $observers): static {
-		$this->observers[] = $observers;
-
-		return $this;
-	}
-
-	/**
-	 * Remove observers
-	 *
-	 * @param BattleReportObserver $observers
-	 */
-	public function removeObserver(BattleReportObserver $observers): void {
-		$this->observers->removeElement($observers);
-	}
-
-	/**
-	 * Get observers
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getObservers(): ArrayCollection|Collection {
-		return $this->observers;
-	}
-
-	/**
-	 * Add journals
-	 *
-	 * @param Journal $journals
-	 *
-	 * @return BattleReport
-	 */
-	public function addJournal(Journal $journals): static {
-		$this->journals[] = $journals;
-
-		return $this;
-	}
-
-	/**
-	 * Remove journals
-	 *
-	 * @param Journal $journals
-	 */
-	public function removeJournal(Journal $journals): void {
-		$this->journals->removeElement($journals);
-	}
-
-	/**
-	 * Get journals
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getJournals(): ArrayCollection|Collection {
-		return $this->journals;
-	}
-
-	/**
-	 * Get settlement
-	 *
-	 * @return Settlement|null
-	 */
-	public function getSettlement(): ?Settlement {
-		return $this->settlement;
-	}
-
-	/**
-	 * Set settlement
-	 *
-	 * @param Settlement|null $settlement
-	 *
-	 * @return BattleReport
-	 */
-	public function setSettlement(Settlement $settlement = null): static {
-		$this->settlement = $settlement;
-
-		return $this;
-	}
-
-	/**
-	 * Get place
-	 *
-	 * @return Place|null
-	 */
-	public function getPlace(): ?Place {
-		return $this->place;
-	}
-
-	/**
-	 * Set place
-	 *
-	 * @param Place|null $place
-	 *
-	 * @return BattleReport
-	 */
-	public function setPlace(Place $place = null): static {
-		$this->place = $place;
-
-		return $this;
 	}
 
 	/**

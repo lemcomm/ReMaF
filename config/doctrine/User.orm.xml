@@ -51,6 +51,7 @@
 		<one-to-many field="payments" target-entity="UserPayment" mapped-by="user" />
 		<one-to-many field="credit_history" target-entity="CreditHistory" mapped-by="user" />
 		<field name="restricted" type="boolean"/>
+		<field name="last_play" type="datetime" nullable="true"/>
 
 		<one-to-many field="characters" target-entity="Character" mapped-by="user" />
 		<one-to-one field="current_character" target-entity="Character"/>

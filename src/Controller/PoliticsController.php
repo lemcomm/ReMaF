@@ -240,7 +240,7 @@ class PoliticsController extends AbstractController {
 			->add('liege', ChoiceType::class, [
 			'label'=>'oath.offerto',
 			'required'=>true,
-			'empty_value'=>'oath.choose',
+			'empty_data'=>'oath.choose',
 			'translation_domain'=>'politics',
 			'choices'=>$options,
 			'choices_as_values'=>true,

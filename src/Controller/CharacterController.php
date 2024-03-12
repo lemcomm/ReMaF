@@ -1205,18 +1205,29 @@ class CharacterController extends AbstractController {
 		$form = $this->createFormBuilder()
 			->add('crest', EntityType::class, array(
 				'required' => false,
-				'empty_value'=>'form.choose',
-				'class'=>Heraldry::class, 'property'=>'id', 'query_builder'=>function(EntityRepository $er) use ($available) {
+				'empty_data'=>'form.choose',
+				'class'=>Heraldry::class,
+				'choice_label'=>'name',
+				'query_builder'=>function(EntityRepository $er) use ($available) {
 					return $er->createQueryBuilder('c')->where('c.id IN (:avail)')->setParameter('avail', $available);
 				}
 			))->getForm();
 		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
+		if ($form->isSubmitted()) {
 			$data = $form->getData();
-			$crest = $data['crest'];
-			$character->setCrest($crest);
-			$em = $this->em;
-			$em->flush();
+			$change = false;
+			if (array_key_exists('crest', $data) && in_array($data['crest']->getId(), $available)) {
+				$character->setCrest($data['crest']);
+				$change = true;
+			} elseif (array_key_exists('crest', $data)) {
+				$form->addError(new FormError('Requested Crest ID not available for this character.'));
+			} else {
+				$character->setCrest(null);
+				$change = true;
+			}
+			if ($change) {
+				$this->em->flush();
+			}
 			return $this->redirectToRoute('maf_char');
 		}
 

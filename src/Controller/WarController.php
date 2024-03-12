@@ -1117,7 +1117,7 @@ class WarController extends AbstractController {
 		$form = $this->createFormBuilder();
 		if (count($engagements) > 1) {
 			$form->add('bg', EntityType::class, array(
-				'empty_value' => 'military.dise',
+				'empty_data' => 'military.dise',
 				'label'=>'military.disengage.battles',
 				'translation_domain' => 'actions',
 				'multiple'=>true,

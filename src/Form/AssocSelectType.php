@@ -58,7 +58,7 @@ class AssocSelectType extends AbstractType {
 			'choices'=>$assocs,
 			'data'=>$me->getFaith()
 		));
-		if ($this->msg !== null) {
+		if ($msg !== null) {
 			$builder->add('message', TextareaType::class, [
 				'label' => $msg,
 				'translation_domain'=>$domain,

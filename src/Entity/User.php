@@ -39,7 +39,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	private ?int $artifacts_limit;
 	private ?string $token;
 	private ?string $reset_token;
-	private ?DateTimeInterface $reset_time;
+	private ?DateTime $reset_time;
 	private ?string $email_token;
 	private Collection $logs;
 	private Collection $security_logs;
@@ -73,7 +73,8 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	private ?string $confirmationToken = null;
 	private ?DateTime $passwordRequestedAt = null;
 	private ?array $roles = [];
-	private ?DateTimeInterface $last_password;
+	private ?DateTime $last_password;
+	private ?DateTime $last_play;
 
 	public function __construct() {
 		$this->payments = new ArrayCollection();
@@ -1393,21 +1394,31 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		return $this;
 	}
 
-	public function getLastPassword(): ?DateTimeInterface {
+	public function getLastPassword(): ?DateTime {
 		return $this->last_password;
 	}
 
-	public function setLastPassword(?DateTimeInterface $last_password): self {
+	public function setLastPassword(?DateTime $last_password): self {
 		$this->last_password = $last_password;
 
 		return $this;
 	}
 
-	public function getResetTime(): ?DateTimeInterface {
+	public function getLastPlay(): ?DateTime {
+		return $this->last_password;
+	}
+
+	public function setLastPlay(?DateTime $last_password): self {
+		$this->last_password = $last_password;
+
+		return $this;
+	}
+
+	public function getResetTime(): ?DateTime {
 		return $this->reset_time;
 	}
 
-	public function setResetTime(?DateTimeInterface $reset_time): self {
+	public function setResetTime(?DateTime $reset_time): self {
 		$this->reset_time = $reset_time;
 
 		return $this;

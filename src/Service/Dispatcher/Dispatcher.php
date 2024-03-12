@@ -2536,7 +2536,7 @@ class Dispatcher {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.background.name", "description"=>"unavailable.npc");
 		}
-		return array("name"=>"meta.heraldry.name", "url"=>"maf_heraldry", "description"=>"meta.heraldry.description");
+		return array("name"=>"meta.heraldry.name", "url"=>"maf_char_crest", "description"=>"meta.heraldry.description");
 	}
 
 	/* ========== Conversation Tests ========== */

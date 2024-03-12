@@ -5,9 +5,9 @@ namespace App\Entity;
 use DateTime;
 
 class EventMetadata {
-	private ?int $access_from;
-	private ?int $access_until;
-	private ?DateTime $last_access;
+	private ?int $access_from = null;
+	private ?int $access_until = null;
+	private ?DateTime $last_access = null;
 	private ?int $id = null;
 	private EventLog $log;
 	private Character $reader;

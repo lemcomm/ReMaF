@@ -637,6 +637,7 @@ class AccountController extends AbstractController {
 		$app->setSessionData($character);
 		switch ($logic) {
 			case 'play':
+				$user->setLastPlay(new \DateTime("now"));
 				$character->setLastAccess(new \DateTime("now"));
 				$character->setSlumbering(false);
 				if ($character->getSystem() == 'procd_inactive') {
