@@ -32,23 +32,23 @@ class PartnershipsOldType extends AbstractType {
 				$label = 'relation.choice.change';
 				$choices=array();
 				if (!$partnership->getPublic()) {
-					$choices['public'] = 'relation.choice.makepublic';
+					$choices['relation.choice.makepublic'] = 'public';
 				}
 				if ($partnership->getWithSex()) {
-					$choices['nosex'] = 'relation.choice.refusesex';
+					$choices['relation.choice.refusesex'] = 'nosex';
 				}
-				$choices['cancel'] = 'relation.choice.cancel';
+				$choices['relation.choice.cancel'] = 'cancel';
 			} else {
 				if ($partnership->getInitiator() == $options['me']) {
 					$label = 'relation.choice.stay';
 					$choices = array(
-						'withdraw' => 'relation.choice.withdraw'
+						'relation.choice.withdraw' => 'withdraw'
 					);
 				} else {
 					$label = 'relation.choice.decide';
 					$choices = array(
-						'accept' => 'relation.choice.accept',
-						'reject' => 'relation.choice.reject'
+						'relation.choice.accept' => 'accept',
+						'relation.choice.reject' => 'reject'
 					);					
 				}
 			}

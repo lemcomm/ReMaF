@@ -429,7 +429,7 @@ class ActionsController extends AbstractController {
 		$realms = $character->findRealms();
 		if ($realms->isEmpty()) {
 			$form = $this->createFormBuilder()
-				->add('submit', 'submit', array('label'=>$this->trans->trans('control.take.submit', array(), "actions")))
+				->add('submit', SubmitType::class, array('label'=>$this->trans->trans('control.take.submit', array(), "actions")))
 				->getForm();
 		} else {
 			$form = $this->createForm(RealmSelectType::class, null, ['realms'=>$realms, 'type'=> 'take']);

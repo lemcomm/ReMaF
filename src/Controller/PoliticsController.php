@@ -172,7 +172,7 @@ class PoliticsController extends AbstractController {
 		}
 
 		$form = $this->createFormBuilder()
-				->add('submit', 'submit', array('label'=>$this->trans->trans('vassals.disown.submit', array(), "politics")))
+				->add('submit', SubmitType::class, array('label'=>$this->trans->trans('vassals.disown.submit', array(), "politics")))
 				->getForm();
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -668,7 +668,7 @@ class PoliticsController extends AbstractController {
 
 		if ($can_delete) {
 			$form_delete = $this->createFormBuilder()
-				->add('submit', 'submit', array(
+				->add('submit', SubmitType::class, array(
 					'label'=>'lists.delete.submit',
 					'translation_domain' => 'politics'
 					))
