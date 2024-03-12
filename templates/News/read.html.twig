@@ -20,7 +20,7 @@
 			<li data-article="{{ article.id }}" data-row="{{ article.row }}" data-col="{{ article.col }}" data-sizex="{{ article.sizex }}" data-sizey="{{ article.sizey}}">
 				<h2>{{ article.title }}</h2>
 				<div class="author">{{ "news.article.author"|trans({"%name%":link(article.author)},"communication")|raw }}</div>
-				{{ article.content|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
+				{{ article.content|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 			</li>
 		{% endfor %}
 		</ul>

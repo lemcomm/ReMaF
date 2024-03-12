@@ -366,7 +366,7 @@
 
 	{% if settlement.description is not null %}
 		<h2>{{ 'settlement.description'|trans|title }}</h2>
-		{{ settlement.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
+		{{ settlement.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 	{% endif %}
 
 	<br class="clear" />

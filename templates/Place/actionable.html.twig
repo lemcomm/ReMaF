@@ -20,7 +20,7 @@
 					<i>{{ 'place.insidenow'|trans({},"places")|raw }}<br><br></i>
 				{% endif %}
 				{% if place.description %}
-					<p>{{ place.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}</p>
+					<p>{{ place.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}</p>
 				{% endif %}
 				{% if house %}
 					<i>{{ 'place.hosthouse'|trans({}, "places")|raw }}</i>
@@ -28,7 +28,7 @@
 					<h3>{{ house.name }}</h3>
 					{{ 'house.view.head'|trans({}, "politics")|raw }}: {% if house.head %}{{ link(house.head) }}{% else %}<i>{{ 'house.nohead'|trans({}, "politics") }}</i>{% endif %}
 					{% if house.description %}
-						{{ house.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
+						{{ house.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 					{% else %}
 						{{ 'house.nodesc'|trans({}, "politics")|raw }}
 					{% endif %}

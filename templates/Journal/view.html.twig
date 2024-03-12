@@ -13,7 +13,7 @@
 	<h2>{{ journal.topic|trans({}, "messages")|title }}</h2>
 	{{ 'journal.view.by'|trans({'%character%':link(journal.character), "%day%":journal.cycle|gametime("short"), "%ts%":journal.date|date}, "messages")|raw }}
 	<hr>
-	{{ journal.entry|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
+	{{ journal.entry|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 	</div>
 
 	{% if journal.character.journals.count > 0 %}

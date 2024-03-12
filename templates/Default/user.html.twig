@@ -76,7 +76,7 @@
 
 		<h3>{{ 'user.profile.profile'|trans }}</h3>
 		{% if viewedUser.description %}
-			{{ viewedUser.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
+			{{ viewedUser.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 			<hr>
 		{% else %}
 			<i>{{ 'user.profile.empty'|trans }}</i>

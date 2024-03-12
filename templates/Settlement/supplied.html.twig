@@ -5,7 +5,7 @@
 	<p>{{ 'control.supplied.intro'|trans({},"actions")|raw }}</p>
 	<hr>
         {% for unit in units %}
-                <h4>{{ unit.settings.name|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>') }}</h4><br>
+                <h4>{{ unit.settings.name|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>') }}</h4><br>
                 {{ 'unit.list.soldiers'|trans({},"actions")|raw }}: {{ 'unit.list.count'|trans({"%soldiers%":unit.getActiveSoldiers.count}, "actions") }}<br />
 		{% if unit.character == character %}
         		{{ 'unit.list.youcommand'|trans({}, "actions")|raw }}

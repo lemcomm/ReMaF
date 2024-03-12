@@ -16,7 +16,7 @@
 			{% if length > 500 %}
 				{{ ((journal.entry|slice(0,500))~'...')|markdown_to_html|striptags|wikilinks }}<a href="{{ path('maf_journal', {"id":journal.id}) }}">Read more...</a></p>
 			{% else %}
-				{{ journal.entry|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><img><a><dl><dt><dd>')|wikilinks }}
+				{{ journal.entry|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 			{% endif %}
 		</div>
 	{% endfor %}
@@ -45,7 +45,7 @@
 		{{ form_row(form.agreeTerms) }}
 		{{ form_end(form) }}
 	</div>
-	<div class="index_login"><form action="{{ path('maf_login') }}" method="post">
+	<div class="index_login">
 		<form action="{{ path('maf_login') }}" method="post">
 			<h2>{{ 'security.login.header'|trans({}, 'core') }}</h2>
 			{#<label for="username">Username: </label>#}
