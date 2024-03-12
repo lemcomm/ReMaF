@@ -1,7 +1,7 @@
 {% extends app.request.isXmlHttpRequest ? "ajax.html.twig" : "layout.html.twig" %}
 
 {% block content %}
-	<h2>{{ ('npc.'~entouragetype.name)|transchoice(1)|title }}</h2>
+	<h2>{{ ('npc.'~entouragetype.name)|trans({'count':1})|title }}</h2>
 	{{ ('description.'~entouragetype.name)|trans|raw }}
 
 	<h3>{{ 'req'|trans({},"economy") }}</h3>

@@ -273,6 +273,7 @@ class ConversationController extends AbstractController {
 		return $this->render('Conversation/newlocal.html.twig', [
 			'form' => $form->createView(),
 			'nearby' => $allNearby,
+			'gm' => false, #layout_wrapper.html.twig expects this to be defined, but there's no GM access to local convs yet.
 		]);
 	}
 

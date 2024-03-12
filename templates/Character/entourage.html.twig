@@ -65,7 +65,7 @@
 					{% endif %}
 				{% endif %}
 			</td>
-			<td>{{ ("npc."~man.type.name)|transchoice(1) }}</td>
+			<td>{{ ("npc."~man.type.name)|trans({'count':1}) }}</td>
 			{#<td align="right">{{ man.experience }}</td>#}
 			{% if not man.locked %}
 				<td>{{ form_widget(npc.action) }}</td>
