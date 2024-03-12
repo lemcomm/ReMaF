@@ -411,7 +411,16 @@ class CharacterController extends AbstractController {
 		$myHouse = null;
 		if ($realm) {
 			foreach ($realm->getSpawns() as $spawn) {
-				if ($spawn->getActive() && $spawn->getPlace()->getSpawnDescription() && $spawn->getPlace()->getDescription()) {
+				/** @var Place $place */
+				$place = $spawn->getPlace();
+				# Check this is an active spawn, the spawn is fully configured, and the spawn location isn't encircled.
+				if ($spawn->getActive() && $place->getSpawnDescription() && $place->getDescription() && (
+					(
+						!$place->getSiege() || !$place->getSiege()->getEncircled()
+					) || (
+						$place->getSettlement() && (!$place->getSettlement()->getSiege() || $place->getSettlement()->getSiege()->getEncircled())
+					)
+				)) {
 					$spawns->add($spawn);
 				}
 			}
