@@ -40,6 +40,7 @@ class LawManager {
 		'settlementInheritance' => [
 			'settlementInheritance.none'=>'none',
 			'settlementInheritance.characterInternal'=>'characterInternal',
+			'settlementInheritance.characterInclusive'=>'characterInclusive',
 			'settlementInheritance.characterAny'=>'characterAny',
 			'settlementInheritance.ruler'=>'ruler',
 			'settlementInheritance.liege'=>'liege',
@@ -48,6 +49,7 @@ class LawManager {
 		'placeInheritance' => [
 			'placeInheritance.none'=>'none',
 			'placeInheritance.characterInternal'=>'characterInternal',
+			'placeInheritance.characterInclusive'=>'characterInclusive',
 			'placeInheritance.characterAny'=>'characterAny',
 			'placeInheritance.ruler'=>'ruler',
 			'placeInheritance.liege'=>'liege',

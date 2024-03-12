@@ -863,6 +863,14 @@ class CharacterManager {
 						$this->$fail($char, $thing, 'lawnoinherit');
 					}
 					break;
+				case 'characterInclusive':
+					$sov = $realm->findUltimate();
+					if ($heir && $heir !== $char && $heir->isActive() && $heir->findRealms()->contains($sov)) {
+						$this->$bequeath($thing, $heir, $char, $via);
+					} else {
+						$this->$fail($char, $thing, 'lawnoinherit');
+					}
+					break;
 				case 'characterAny':
 					if ($heir && $heir !== $char && $heir->isActive()) {
 						$this->$bequeath($thing, $heir, $char, $via);

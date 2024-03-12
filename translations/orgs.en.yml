@@ -311,11 +311,14 @@ law:
     name:    Not Inherited
     desc:    Lord position will be vacant (Dangerous)
    characterInternal:
-    name:    Internal Successor Inheritance
-    desc:    Inherited by sucessor if they are within the realm.
+    name:    Specific Realm Successor Inheritance
+    desc:    Inherited by successor if they are within the realm.
+   characterInclusive:
+    name:    Same Sovereign Realm Successor Inheritance
+    desc:    Inherited by successor if they are within the same sovereign realm.
    characterAny:
     name:    Successor Inheritance
-    desc:    Inherited by succesor, regardless of realm affiliation.
+    desc:    Inherited by successor, regardless of realm affiliation.
    ruler:
     name:    Ruler Inherits
     desc:    Realm Ruler shall inherit settlements. If no ruler, defaults to successor if in realm.
@@ -334,6 +337,9 @@ law:
    characterInternal:
     name:    Internal Successor Inheritance
     desc:    Inherited by sucessor if they are within the realm.
+   characterInclusive:
+    name:    Same Sovereign Realm Successor Inheritance
+    desc:    Inherited by successor if they are within the same sovereign realm.
    characterAny:
     name:    Successor Inheritance
     desc:    Inherited by succesor, regardless of realm affiliation.

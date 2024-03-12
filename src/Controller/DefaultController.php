@@ -16,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class DefaultController extends AbstractController {
 
@@ -116,7 +117,7 @@ class DefaultController extends AbstractController {
 	}
 
     	#[Route ('/user/{user}', name:'maf_user')]
-	public function userAction(AuthorizationChecker $checker, EntityManagerInterface $em, $user): Response {
+	public function userAction(AuthorizationCheckerInterface $checker, EntityManagerInterface $em, $user): Response {
 		# This allows us to not have a user returned and sanitize the output. No user? Pretend they just private :)
 		$user = $em->getRepository(User::class)->findOneBy(['id'=>$user]);
 		$gm = $checker->isGranted('ROLE_OLYMPUS');
@@ -128,7 +129,7 @@ class DefaultController extends AbstractController {
 	}
 
 	#[Route ('/needIP', name:'maf_ip_req')]
-	public function ipReqAction(AppState $app, AuthorizationChecker $checker): Response {
+	public function ipReqAction(AppState $app, AuthorizationCheckerInterface $checker): Response {
 		if ($checker->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$app->logUser($this->getUser(), 'ip_req', true);
 		}
