@@ -31,7 +31,7 @@ class WorkerUpdateSpottingCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$em = $this->em;
 		$start = $input->getArgument('start');
 		$end = $input->getArgument('end');
@@ -82,6 +82,7 @@ class WorkerUpdateSpottingCommand extends  Command {
 			$char->setVisibility(round($visibility));
 		}
 		$em->flush();
+		return Command::SUCCESS;
 
 	}
 

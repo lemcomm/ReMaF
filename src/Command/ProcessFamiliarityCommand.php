@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,7 +26,7 @@ class ProcessFamiliarityCommand extends AbstractProcessCommand {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->opt_time = $input->getOption('time');
 
 		$this->start('distance from home');
@@ -42,6 +43,7 @@ class ProcessFamiliarityCommand extends AbstractProcessCommand {
 		$this->decayFamiliarity();
 		$this->process('familiarity', 'Character');
 		$this->finish('familiarity');
+		return Command::SUCCESS;
 	}
 
 	private function decayFamiliarity() {

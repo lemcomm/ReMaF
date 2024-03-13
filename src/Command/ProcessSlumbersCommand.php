@@ -33,7 +33,7 @@ class ProcessSlumbersCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$timing = $input->getOption('time');
 		if ($timing) {
 			$stopwatch = new Stopwatch();
@@ -80,6 +80,7 @@ class ProcessSlumbersCommand extends Command {
 			$this->log->info("Slumbers Cleanup: ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
 			$output->writeln("<info>Slumbers Cleanup: ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB</info>");
 		}
+		return Command::SUCCESS;
 	}
 
 }

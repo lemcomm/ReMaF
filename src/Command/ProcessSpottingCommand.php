@@ -5,6 +5,7 @@ namespace App\Command;
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,7 +32,7 @@ class ProcessSpottingCommand extends AbstractProcessCommand {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->output = $output;
 		$this->opt_time = $input->getOption('time');
 
@@ -58,6 +59,7 @@ class ProcessSpottingCommand extends AbstractProcessCommand {
 //		$this->process('spot:towers', 'Character');
 
 		$this->finish('spotting');
+		return Command::SUCCESS;
 	}
 
 }

@@ -32,30 +32,31 @@ class AbstractProcessCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
-		throw new \Exception("do not call this command directly");
+	protected function execute(InputInterface $input, OutputInterface $output): int {
+		$this->output->writeln("do not call this command directly");
+		return Command::INVALID;
 	}
 
-	protected function start($topic) {
+	protected function start($topic): void {
 		$this->output->writeln($topic.": starting...");
 		$this->stopwatch = new Stopwatch();
 		$this->stopwatch->start($topic);
 	}
 
-	protected function process($worker, $entity, $timeout=60) {
+	protected function process($worker, $entity, $timeout=60): void {
 		$min = $this->em->createQuery('SELECT MIN(e.id) FROM App:'.$entity.' e')->getSingleScalarResult();
 		$max = $this->em->createQuery('SELECT MAX(e.id) FROM App:'.$entity.' e')->getSingleScalarResult();
 
 		$batch_size = ceil((($max-$min)+1)/$this->parallel);
 		$pool = array();
-		$consoleDir = $this->getApplication()->getKernel()->getRootDir().'/console';
-		$env = '--env='.$this->getApplication()->getKernel()->getEnvironment();
+		$consoleDir = $_ENV['ROOT_DIR'].'/bin/console';
+		$php = $_ENV['PHP_CMD'];
 		for ($i=$min; $i<=$max; $i+=$batch_size) {
-			$top = $i+$batch_size-1;
-			$process = new Process(['php', $consoleDir, $env, 'maf:worker:'.$worker, $min, $top]);
+			$process = new Process([$php, $consoleDir, 'maf:worker:'.$worker, $i, $i+$batch_size-1]);
 			$process->setTimeout($timeout);
 			$process->start();
 			$pool[] = $process;
+			$i++;
 		}
 		$this->output->writeln($worker.": started ".count($pool)." jobs");
 		$running = 99;
@@ -78,7 +79,7 @@ class AbstractProcessCommand extends Command {
 
 	}
 
-	protected function finish($topic) {
+	protected function finish($topic): void {
 		$this->output->writeln($topic.': ...flushing...');
 		$this->em->flush();
 		if ($this->opt_time) {

@@ -31,6 +31,8 @@ class RoadNetworkCommand extends Command {
 
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		echo 'Command requires rework, but is not required for game function.';
+		return Command::SUCCESS;
 		$settlement_id = $input->getArgument('settlement');
 
 		$settlement = $this->em->getRepository(Settlement::class)->find($settlement_id);
@@ -48,11 +50,13 @@ class RoadNetworkCommand extends Command {
 	}
 
 	protected function getDestinations($feature, $travel_points, $distance=0) {
-		$query = $this->em->createQuery('SELECT r,ST_Length(r.path) as length,ST_Length(r.path)/r.quality as cost FROM App:Road r JOIN r.waypoints w WHERE w = :me');
+		$query = $this->em->createQuery('SELECT r,ST_Length(r.path) as length,ST_Length(r.path)/r.quality as cost FROM App:Road r JOIN r.waypoints w WHERE w = :me AND r.quality > 0');
 		$query->setParameter('me', $feature);
+
 
 		foreach ($query->getResult() as $row) {
 			$road = $row[0];
+
 			foreach ($road->getWaypoints() as $wp) {
 				if ($wp != $feature) {
 					// check if we exist

@@ -37,7 +37,7 @@ class WorkerBuildingconstructionCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$economy = $this->econ;
 		$history = $this->hist;
 		$start = $input->getArgument('start');
@@ -164,6 +164,7 @@ class WorkerBuildingconstructionCommand extends  Command {
 
 
 		$this->em->flush();
+		return Command::SUCCESS;
 	}
 
 	public function autoBuildings(Settlement $settlement): ArrayCollection {

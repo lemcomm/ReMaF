@@ -42,7 +42,7 @@ class WorkerTravelCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$interactions = $this->interactions;
 		$geography = $this->geo;
 		$history = $this->hist;
@@ -124,6 +124,7 @@ class WorkerTravelCommand extends  Command {
 		}
 
 		$this->em->flush();
+		return Command::SUCCESS;
 	}
 
 

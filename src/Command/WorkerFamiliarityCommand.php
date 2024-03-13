@@ -29,7 +29,7 @@ class WorkerFamiliarityCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$start = $input->getArgument('start');
 		$end = $input->getArgument('end');
 
@@ -37,6 +37,7 @@ class WorkerFamiliarityCommand extends  Command {
 		$this->updateByEstate($start, $end);
 
 		$this->em->flush();
+		return Command::SUCCESS;
 	}
 
 	private function updateByArea($start, $end) {

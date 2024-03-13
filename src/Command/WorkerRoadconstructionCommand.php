@@ -34,7 +34,7 @@ class WorkerRoadconstructionCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$em = $this->em;
 		$economy = $this->econ;
 		$history = $this->hist;
@@ -79,11 +79,9 @@ class WorkerRoadconstructionCommand extends  Command {
 			} else {
 				// TODO: check for deterioration
 			}
-
 		}
-
-
 		$em->flush();
+		return Command::SUCCESS;
 	}
 
 

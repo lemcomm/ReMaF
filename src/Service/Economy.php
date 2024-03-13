@@ -554,10 +554,13 @@ class Economy {
 	}
 
 	public function getSupplyTravelTime(Settlement $start, Unit $unit) {
-		if ($unit->getDefendingSettlement()) {
-			$distance = $this->geo->calculateDistanceBetweenSettlements($start, $unit->getDefendingSettlement());
-		} elseif ($unit->getCharacter()) {
+		echo 'S: '.$start->getId().' | U: '.$unit->getId();
+		if ($unit->getCharacter()) {
 			$distance = $this->geo->calculateDistanceToSettlement($unit->getCharacter(), $start);
+		} elseif ($unit->getDefendingSettlement()) {
+			$distance = $this->geo->calculateDistanceBetweenSettlements($start, $unit->getDefendingSettlement());
+		} elseif($unit->getSettlement() !== $start) {
+			$distance = $this->geo->calculateDistanceBetweenSettlements($start, $unit->getSettlement());
 		} elseif ($unit->getPlace()) {
 			$place = $unit->getPlace();
 			if ($place->getSettlement()) {
@@ -587,7 +590,7 @@ class Economy {
 
 		$qty = $count - $deduct;
 		$here = false;
-		if (!$unit->getCharacter() && $unit->getSettlement() === $settlement) {
+		if (!$unit->getCharacter() && (($unit->getDefendingSettlement() && $unit->getDefendingSettlement() === $settlement) || $unit->getSettlement() === $settlement)) {
 			$here = true;
 			$this->logger->info($unit->getId()." is inside it's settlement.");
 		} elseif ($unit->getCharacter() && $unit->getCharacter()->getInsideSettlement() === $settlement) {
@@ -746,9 +749,6 @@ class Economy {
 				$units = $this->FindFeedableUnits($settlement);
 				foreach ($units as $unit) {
 					$suppliedNPCs += $unit->getLivingSoldiers()->count();
-				}
-				if ($suppliedNPCs > 0) {
-					$suppliedNPCs = ceil($suppliedNPCs*0.75); #TODO: as funny as full effect would be :)
 				}
 				#$suppliedNPCs += $unit->getLivingEntourage()->count(); // TODO: Determine if we want to feed entourage or just pay them.
 				$need = $settlement->getPopulation() + $settlement->getThralls()*0.75 + $suppliedNPCs;

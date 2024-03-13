@@ -4,6 +4,7 @@ namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,7 +33,7 @@ class ProcessTravelCommand extends AbstractProcessCommand {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->output = $output;
 		$this->opt_time = $input->getOption('time');
 
@@ -45,6 +46,7 @@ class ProcessTravelCommand extends AbstractProcessCommand {
 		#$this->process('spotting', 'Character');
 
 		$this->finish('travel');
+		return Command::SUCCESS;
 	}
 
 	private function travelPreUpdates() {

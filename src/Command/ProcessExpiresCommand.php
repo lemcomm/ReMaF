@@ -31,7 +31,7 @@ class ProcessExpiresCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->output = $output;
 		$this->cycle = $this->common->getCycle();
 
@@ -41,6 +41,7 @@ class ProcessExpiresCommand extends Command {
 
 		$this->em->flush();
 		$this->output->writeln("...expires complete");
+		return Command::SUCCESS;
 	}
 
 	public function expireEvents() {

@@ -34,7 +34,7 @@ class WorkerFeatureconstructionCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$em = $this->em;
 		$economy = $this->econ;
 		$history = $this->hist;
@@ -76,6 +76,7 @@ class WorkerFeatureconstructionCommand extends  Command {
 
 
 		$em->flush();
+		return Command::SUCCESS;
 	}
 
 

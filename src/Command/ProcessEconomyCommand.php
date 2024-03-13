@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,7 +30,7 @@ class ProcessEconomyCommand extends AbstractProcessCommand {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->output = $output;
 		$this->opt_time = $input->getOption('time');
 
@@ -47,6 +48,7 @@ class ProcessEconomyCommand extends AbstractProcessCommand {
 		$this->process('construction:roads', 'GeoData');
 		$this->finish('construction');
 
+		return Command::SUCCESS;
 	}
 
 	protected function ExtraEffects() {

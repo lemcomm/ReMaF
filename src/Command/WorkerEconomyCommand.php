@@ -33,7 +33,7 @@ class WorkerEconomyCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 	        $logger = $this->logger;
 		$start = $input->getArgument('start');
 		$end = $input->getArgument('end');
@@ -105,6 +105,7 @@ class WorkerEconomyCommand extends  Command {
 
 		echo "...flushing...\n";
 		$this->em->flush();
+		return Command::SUCCESS;
 	}
 
 	/**

@@ -38,7 +38,7 @@ class WorkerScoutSpottingCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$start = $input->getArgument('start');
 		$end = $input->getArgument('end');
 
@@ -134,6 +134,7 @@ class WorkerScoutSpottingCommand extends  Command {
 		$this->spotResults($qb->getQuery(), 'estate');
 
 		$this->em->flush();
+		return Command::SUCCESS;
 	}
 
 
