@@ -15,7 +15,7 @@ class Election {
 	private ?bool $routine;
 	private ?int $id = null;
 	private Collection $votes;
-	private Character $owner;
+	private ?Character $owner;
 	private ?Character $winner;
 	private ?Realm $realm;
 	private ?Association $association;
@@ -194,7 +194,7 @@ class Election {
 	 *
 	 * @return Election
 	 */
-	public function setOwner(Character $owner = null): static {
+	public function setOwner(?Character $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;

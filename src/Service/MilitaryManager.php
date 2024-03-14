@@ -621,7 +621,7 @@ class MilitaryManager {
 			if ($data && $data['supplier']) {
 				$unit->setSupplier($data['supplier']);
 			}
-			$settings = $this->newUnitSettings($unit, $character, $data, $bulk);
+			$this->newUnitSettings($unit, $character, $data, $bulk);
 			foreach ($source->getSoldiersOld() as $soldier) {
 				$soldier->setCharacter(null);
 				$soldier->setBase(null);
@@ -653,6 +653,7 @@ class MilitaryManager {
 		$settings = new UnitSettings();
 		$this->em->persist($settings);
 		$settings->setUnit($unit);
+		$unit->setSettings($settings);
 		if ($data) {
 			$settings->setName($data['name']);
 			if ($data['strategy']) {
@@ -886,6 +887,7 @@ class MilitaryManager {
 				History::MEDIUM, false, 30
 			);
 		}
+		return true;
 	}
 
 	public function disbandUnit (Unit $unit, $bulk = false): true {
@@ -902,9 +904,23 @@ class MilitaryManager {
 				History::MEDIUM, false, 30
 			);
 		}
+		$this->disbandUnitSupplies($unit);
 		if (!$bulk) {
 			$this->em->flush();
 		}
 		return true;
+	}
+
+	public function disbandUnitSupplies(Unit $unit) {
+		if ($unit->getSupplies()->count() > 0) {
+			foreach ($unit->getSupplies() as $supply) {
+				$this->em->remove($supply);
+			}
+		}
+		if ($unit->getIncomingSupplies()->count() > 0) {
+			foreach ($unit->getIncomingSupplies() as $resupply) {
+				$this->em->remove($resupply);
+			}
+		}
 	}
 }

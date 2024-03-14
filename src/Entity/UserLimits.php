@@ -8,6 +8,8 @@ class UserLimits {
 	private int $artifacts;
 	private DateTime $places_date;
 	private int $places;
+	private bool $artifactSubBonus = false;
+	private bool $realmPack = false;
 	private User $user;
 
 	/**
@@ -29,6 +31,24 @@ class UserLimits {
 	public function setArtifacts(int $artifacts): static {
 		$this->artifacts = $artifacts;
 
+		return $this;
+	}
+
+	public function getArtifactSubBonus(): bool {
+		return $this->artifactSubBonus;
+	}
+
+	public function setArtifactSubBonus(bool $bonus): static {
+		$this->artifactSubBonus = $bonus;
+		return $this;
+	}
+
+	public function getRealmPack(): bool {
+		return $this->realmPack;
+	}
+
+	public function setRealmPack(bool $pack): static {
+		$this->realmPack = $pack;
 		return $this;
 	}
 

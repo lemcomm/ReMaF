@@ -6,7 +6,7 @@ use DateTime;
 
 class SoldierLog {
 	private string $content;
-	private array $data;
+	private ?array $data;
 	private DateTime $ts;
 	private int $cycle;
 	private ?int $id = null;
@@ -40,17 +40,21 @@ class SoldierLog {
 	 * @return array
 	 */
 	public function getData(): array {
-		return $this->data;
+		if (!$this->data) {
+			return [];
+		} else {
+			return $this->data;
+		}
 	}
 
 	/**
 	 * Set data
 	 *
-	 * @param array $data
+	 * @param array|null $data
 	 *
 	 * @return SoldierLog
 	 */
-	public function setData(array $data): static {
+	public function setData(?array $data): static {
 		$this->data = $data;
 
 		return $this;

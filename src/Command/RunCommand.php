@@ -34,7 +34,7 @@ class RunCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$which = $input->getArgument('which');
 		$opt_time = $input->getOption('time');
 		$opt_debug = $input->getOption('debug');
@@ -46,12 +46,13 @@ class RunCommand extends  Command {
 					$this->game->nextCycle(false);
 					$this->logger->info("update complete");
 					$output->writeln("<info>update complete</info>");
+					return Command::SUCCESS;
 				} else {
 					$this->logger->error("update error");
 					$output->writeln("<error>update complete</error>");
 					$this->note->spoolError("$which update error, exit code $complete");
+					return Command::FAILURE;
 				}
-				break;
 			case 'turn':
 				$output->writeln("<info>running turn:</info>");
 				$complete = $this->game->runCycle('turn', 1200, $opt_time, $opt_debug, $output);
@@ -59,12 +60,14 @@ class RunCommand extends  Command {
 					$this->game->nextCycle();
 					$this->logger->info("turn complete");
 					$output->writeln("<info>turn complete</info>");
+					return Command::SUCCESS;
 				} else {
 					$this->logger->error("turn error");
 					$output->writeln("<error>turn complete</error>");
 					$this->note->spoolError("$which turn error, exit code $complete");
+					return Command::FAILURE;
 				}
-				break;
 		}
+		return Command::SUCCESS;
 	}
 }

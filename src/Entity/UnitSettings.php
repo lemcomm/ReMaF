@@ -15,6 +15,10 @@ class UnitSettings {
 	private ?int $id = null;
 	private ?Unit $unit;
 
+	public function __toString() {
+		return 'UnitSettings: '.$this->name.' ('.$this->id.')';
+	}
+
 	/**
 	 * Get name
 	 *

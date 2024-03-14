@@ -5,8 +5,18 @@
 		<one-to-one field="user" target-entity="User" inversed-by="limits"/>
 
 		<field name="artifacts" type="integer"/>
+		<field name="artifactSubBonus" type="boolean">
+				<options>
+					<option name="default">false</option>
+				</options>
+		</field>
 		<field name="places_date" type="date"/>
 		<field name="places" type="integer"/>
+		<field name="realmPack" type="boolean">
+			<options>
+				<option name="default">false</option>
+			</options>
+		</field>
 
 	</entity>
 </doctrine-mapping>

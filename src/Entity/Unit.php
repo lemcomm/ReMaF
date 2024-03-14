@@ -33,6 +33,14 @@ class Unit {
 		$this->incoming_supplies = new ArrayCollection();
 	}
 
+	public function __toString() {
+		$txt = 'Unit: '.$this->id;
+		if ($this->settings) {
+			$txt .= ' Settings: '.$this->getSettings()->getId();
+		}
+		return $txt;
+	}
+
 	public function getVisualSize() {
 		$size = 0;
 		foreach ($this->soldiers as $soldier) {

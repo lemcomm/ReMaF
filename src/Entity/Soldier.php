@@ -27,8 +27,8 @@ class Soldier extends NPC {
 	private bool $has_armour;
 	private bool $has_equipment;
 	private ?bool $has_mount;
-	private ?int $travel_days;
-	private ?string $destination;
+	private ?int $travel_days = null;
+	private ?string $destination = null;
 	private ?int $id = null;
 	private Collection $events;
 	private ?EquipmentType $weapon;
@@ -206,11 +206,11 @@ class Soldier extends NPC {
 	/**
 	 * Set travel_days
 	 *
-	 * @param integer $travelDays
+	 * @param int|null $travelDays
 	 *
 	 * @return Soldier
 	 */
-	public function setTravelDays(int $travelDays): static {
+	public function setTravelDays(?int $travelDays): static {
 		$this->travel_days = $travelDays;
 
 		return $this;
@@ -377,7 +377,11 @@ class Soldier extends NPC {
 
 	public function setArmour(EquipmentType $item = null): static {
 		$this->armour = $item;
-		$this->has_armour = true;
+		if ($item) {
+			$this->has_armour = true;
+		} else {
+			$this->has_armour = false;
+		}
 		return $this;
 	}
 
@@ -448,7 +452,11 @@ class Soldier extends NPC {
 
 	public function setWeapon(EquipmentType $item = null): static {
 		$this->weapon = $item;
-		$this->has_weapon = true;
+		if ($item) {
+			$this->has_weapon = true;
+ 		} else {
+			$this->has_weapon = false;
+		}
 		return $this;
 	}
 
@@ -467,7 +475,11 @@ class Soldier extends NPC {
 
 	public function setMount(EquipmentType $item = null): static {
 		$this->mount = $item;
-		$this->has_mount = true;
+		if ($item) {
+			$this->has_mount = true;
+		} else {
+			$this->has_mount = false;
+		}
 		return $this;
 	}
 
@@ -478,7 +490,11 @@ class Soldier extends NPC {
 
 	public function setEquipment(EquipmentType $item = null): static {
 		$this->equipment = $item;
-		$this->has_equipment = true;
+		if ($item) {
+			$this->has_equipment = true;
+		} else {
+			$this->has_equipment = false;
+		}
 		return $this;
 	}
 
@@ -712,11 +728,11 @@ class Soldier extends NPC {
 	/**
 	 * Set destination
 	 *
-	 * @param string $destination
+	 * @param string|null $destination
 	 *
 	 * @return Soldier
 	 */
-	public function setDestination(string $destination): static {
+	public function setDestination(?string $destination): static {
 		$this->destination = $destination;
 
 		return $this;
@@ -892,10 +908,6 @@ class Soldier extends NPC {
 	 */
 	public function getPartOfRequests(): ArrayCollection|Collection|null {
 		return $this->part_of_requests;
-	}
-
-	public function isHasEquipment(): ?bool {
-		return $this->has_equipment;
 	}
 
 	/**

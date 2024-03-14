@@ -5,7 +5,7 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<field name="content" type="string"/>
-		<field name="data" type="array"/>
+		<field name="data" type="array" nullable="true"/>
 		<field name="ts" type="datetime"/>
 		<field name="cycle" type="integer"/>
 

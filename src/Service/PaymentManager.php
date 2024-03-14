@@ -57,6 +57,14 @@ class PaymentManager {
 				20 => $_ENV['STRIPEEUR20'],
 				50 => $_ENV['STRIPEEUR50'],
 				100 => $_ENV['STRIPEEUR100'],
+			],
+			'BRL' => [
+				2 => $_ENV['STRIPEBRL2'],
+				5 => $_ENV['STRIPEBRL5'],
+				10 => $_ENV['STRIPEBRL10'],
+				20 => $_ENV['STRIPEBRL20'],
+				50 => $_ENV['STRIPEBRL50'],
+				100 => $_ENV['STRIPEBRL100'],
 			]
 		];
 	}

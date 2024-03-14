@@ -2,11 +2,14 @@
 
 namespace App\Service;
 
+use App\Entity\Character;
 use App\Entity\Election;
 use App\Entity\RealmPosition;
 use App\Entity\Siege;
+use App\Entity\Soldier;
 use App\Entity\Supply;
 use App\Entity\Unit;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,6 +18,7 @@ use Doctrine\ORM\NoResultException;
 use LongitudeOne\Spatial\Exception\InvalidValueException;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
@@ -38,6 +42,8 @@ class GameRunner {
 	private int $bandits_ok_distance = 50000;
 	private int $batchsize=200;
 	private int $maxtime=2400;
+	private ?OutputInterface $outInt = null;
+	private bool $debugging = false;
 
 	public function __construct(EntityManagerInterface $em, CommonService $common, LoggerInterface $logger, ActionResolution $resolver, History $history, MilitaryManager $milman, Geography $geography, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm, WarManager $wm) {
 		$this->em = $em;
@@ -56,8 +62,10 @@ class GameRunner {
 		$this->cycle = $this->common->getCycle();
 	}
 
-	public function runCycle($type, $maxtime=1200, $timing=false): int {
-		$this->maxtime=$maxtime;
+	public function runCycle($type, $maxtime=1200, $timing=false, $debugging = false, OutputInterface $outInt = null): int {
+		$this->maxtime = $maxtime;
+		$this->debugging = $debugging;
+		$this->outInt = $outInt;
 
 		if ($timing) {
 			$stopwatch = new Stopwatch();
@@ -81,13 +89,25 @@ class GameRunner {
 				$complete = $this->$method_name();
 				if ($timing) {
 					$event = $stopwatch->stop($match[1]);
-					$this->logger->info($match[1].": ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
+					$this->output($match[1].": ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
 				}
 				if (!$complete) return 0;
 			}
 		}
 
 		return 1;
+	}
+
+	private function output(string $text) {
+		$this->logger->info($text);
+		$this->outInt?->writeln($text);
+	}
+
+	private function debug(string $text) {
+		if ($this->debugging) {
+			$this->logger->debug($text);
+		}
+		$this->output($text);
 	}
 
 	public function nextCycle($next_day=true): true {
@@ -123,7 +143,7 @@ class GameRunner {
 	public function runGameRequestCycle(): int {
 		$last = $this->common->getGlobal('cycle.gamerequest', 0);
 		if ($last==='complete') return 1;
-		$this->logger->info("Game Request Cycle...");
+		$this->output("Game Request Cycle...");
 
 		$now = new \DateTime("now");
 		$query = $this->em->createQuery('SELECT r FROM App:GameRequest r WHERE r.expires <= :now and r.id > :last ORDER BY r.id ASC')->setParameters(['now'=> $now, 'last'=>$last]);
@@ -134,7 +154,7 @@ class GameRunner {
 			foreach($row->getFromCharacter()->getUnits() as $unit) {
 				if ($unit->getSupplier()==$row->getToSettlement()) {
 					$char = $row->getFromCharacter();
-					$this->logger->info("  Character ".$char->getName()." (".$char->getId().") may be using request for food...");
+					$this->output("  Character ".$char->getName()." (".$char->getId().") may be using request for food...");
 					# Character supplier matches target settlement, we need to see if this is still a valid food source.
 
 					# Get all character realms.
@@ -188,7 +208,7 @@ class GameRunner {
 	public function runCharactersUpdatesCycle(): int {
 		$last = $this->common->getGlobal('cycle.characters', 0);
 		if ($last==='complete') return 1;
-		$this->logger->info("Characters Cycle...");
+		$this->output("Characters Cycle...");
 
 		// healing
 		$query = $this->em->createQuery('UPDATE App:Character c SET c.wounded=0 WHERE c.wounded <= 10');
@@ -196,15 +216,15 @@ class GameRunner {
 		$query = $this->em->createQuery('UPDATE App:Character c SET c.wounded=c.wounded-10 WHERE c.wounded > 10');
 		$query->execute();
 
-		$this->logger->info("  Checking for dead and slumbering characters that need sorting...");
+		$this->output("  Checking for dead and slumbering characters that need sorting...");
 		// NOTE: We're going to want to change this from c.system is null to something else, or build additional logic down the line, when we have more thant 'procd_inactive' as the system flag.
 		$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE (c.alive = false AND c.location IS NOT NULL AND (c.system IS NULL OR c.system <> :system)) OR (c.alive = true and c.slumbering = true AND (c.system IS NULL OR c.system <> :system))');
 		$query->setParameter('system', 'procd_inactive');
 		$result = $query->getResult();
 		if (count($result) > 0) {
-			$this->logger->info("  Sorting the dead from the slumbering...");
+			$this->output("  Sorting the dead from the slumbering...");
 		} else {
-			$this->logger->info("  No dead or slumbering found!");
+			$this->output("  No dead or slumbering found!");
 		}
 		$dead = [];
 		$slumbered = [];
@@ -225,53 +245,53 @@ class GameRunner {
 			}
 		}
 		if ($deadcount+$slumbercount != 0) {
-			$this->logger->info("  Sorting $deadcount dead and $slumbercount slumbering");
+			$this->output("  Sorting $deadcount dead and $slumbercount slumbering");
 		}
 		foreach ($dead as $charArray) {
 			$character = $charArray['obj'];
 			$heir = $charArray['heir'];
 			$via = $charArray['via'];
 			if ($character->getSystem() != 'procd_inactive') {
-				$this->logger->info("  ".$character->getName().", ".$character->getId()." is under review, as dead.");
+				$this->debug("  ".$character->getName().", ".$character->getId()." is under review, as dead.");
 				$character->setLocation(NULL)->setInsideSettlement(null)->setTravel(null)->setProgress(null)->setSpeed(null);
-				$this->logger->info("    Dead; removed from the map.");
+				$this->debug("    Dead; removed from the map.");
 				$captor = $character->getPrisonerOf();
 				if ($captor) {
-					$this->logger->info("    Captive. The dead are captive no more.");
+					$this->debug("    Captive. The dead are captive no more.");
 					$character->setPrisonerOf(null);
 					$captor->removePrisoner($character);
 				}
-				$this->logger->info("    Heir: ".($heir?$heir->getName():"(nobody)"));
+				$this->debug("    Heir: ".($heir?$heir->getName():"(nobody)"));
 				if ($character->getPositions()) {
-					$this->logger->info("    Positions detected");
+					$this->debug("    Positions detected");
 					foreach ($character->getPositions() as $position) {
 						if ($position->getRuler()) {
-							$this->logger->info("    ".$position->getName().", ".$position->getId().", is detected as ruler position.");
+							$this->debug("    ".$position->getName().", ".$position->getId().", is detected as ruler position.");
 							if ($heir) {
-								$this->logger->info("    ".$heir->getName()." inherits ".$position->getRealm()->getName());
+								$this->debug("    ".$heir->getName()." inherits ".$position->getRealm()->getName());
 								$this->cm->inheritRealm($position->getRealm(), $heir, $character, $via, 'death');
 							} else {
-								$this->logger->info("  No one inherits ".$position->getRealm()->getName());
+								$this->debug("  No one inherits ".$position->getRealm()->getName());
 								$this->cm->failInheritRealm($character, $position->getRealm(), 'death');
 							}
-							$this->logger->info("    Removing them from ".$position->getName());
+							$this->debug("    Removing them from ".$position->getName());
 							$position->removeHolder($character);
 							$character->removePosition($position);
-							$this->logger->info("    Removed.");
+							$this->debug("    Removed.");
 						} else if ($position->getInherit()) {
 							if ($heir) {
-								$this->logger->info("    ".$heir->getName()." inherits ".$position->getRealm()->getName());
+								$this->debug("    ".$heir->getName()." inherits ".$position->getRealm()->getName());
 								$this->cm->inheritPosition($position, $position->getRealm(), $heir, $character, $via, 'death');
 							} else {
-								$this->logger->info("    No one inherits ".$position->getName());
+								$this->debug("    No one inherits ".$position->getName());
 								$this->cm->failInheritPosition($character, $position, 'death');
 							}
-							$this->logger->info("    Removing them from ".$position->getName());
+							$this->debug("    Removing them from ".$position->getName());
 							$position->removeHolder($character);
 							$character->removePosition($position);
-							$this->logger->info("    Removed.");
+							$this->debug("    Removed.");
 						} else {
-							$this->logger->info("    No inheritance. Removing them from ".$position->getName());
+							$this->debug("    No inheritance. Removing them from ".$position->getName());
 							$this->history->logEvent(
 								$position->getRealm(),
 								'event.position.death',
@@ -280,12 +300,12 @@ class GameRunner {
 							);
 							$position->removeHolder($character);
 							$character->removePosition($position);
-							$this->logger->info("    Removed.");
+							$this->debug("    Removed.");
 						}
 					}
 				}
 				$character->setSystem('procd_inactive');
-				$this->logger->info("    Character set as known dead.");
+				$this->debug("    Character set as known dead.");
 			} else {
 				$knowndead++;
 			}
@@ -296,46 +316,46 @@ class GameRunner {
 			$heir = $charArray['heir'];
 			$via = $charArray['via'];
 			if ($character->getSystem() != 'procd_inactive') {
-				$this->logger->info("  ".$character->getName().", ".$character->getId()." is under review, as slumbering.");
-				$this->logger->info("    Heir: ".($heir?$heir->getName():"(nobody)"));
+				$this->debug("  ".$character->getName().", ".$character->getId()." is under review, as slumbering.");
+				$this->debug("    Heir: ".($heir?$heir->getName():"(nobody)"));
 				if ($character->getPositions()) {
 					foreach ($character->getPositions() as $position) {
 						if ($position->getRuler()) {
-							$this->logger->info("    ".$position->getName().", ".$position->getId().", is detected as ruler position.");
+							$this->debug("    ".$position->getName().", ".$position->getId().", is detected as ruler position.");
 							if ($heir) {
-								$this->logger->info("    ".$heir->getName()." inherits ".$position->getRealm()->getName());
+								$this->debug("    ".$heir->getName()." inherits ".$position->getRealm()->getName());
 								$this->cm->inheritRealm($position->getRealm(), $heir, $character, $via, 'slumber');
 							} else {
-								$this->logger->info("    No one inherits ".$position->getRealm()->getName());
+								$this->debug("    No one inherits ".$position->getRealm()->getName());
 								$this->cm->failInheritRealm($character, $position->getRealm(), 'slumber');
 							}
-							$this->logger->info("    Removing ".$character->getName()." from ".$position->getName());
+							$this->debug("    Removing ".$character->getName()." from ".$position->getName());
 							$position->removeHolder($character);
 							$character->removePosition($position);
-							$this->logger->info("    Removed.");
+							$this->debug("    Removed.");
 						} else if (!$position->getKeepOnSlumber() && $position->getInherit()) {
-							$this->logger->info($position->getName().", ".$position->getId().", is detected as non-ruler, inherited position.");
+							$this->debug($position->getName().", ".$position->getId().", is detected as non-ruler, inherited position.");
 							if ($heir) {
-								$this->logger->info("    ".$heir->getName()." inherits ".$position->getName());
+								$this->debug("    ".$heir->getName()." inherits ".$position->getName());
 								$this->cm->inheritPosition($position, $position->getRealm(), $heir, $character, $via, 'slumber');
 							} else {
-								$this->logger->info("    No one inherits ".$position->getName());
+								$this->debug("    No one inherits ".$position->getName());
 								$this->cm->failInheritPosition($character, $position, 'slumber');
 							}
-							$this->logger->info("    Removing ".$character->getName());
+							$this->debug("    Removing ".$character->getName());
 							$position->removeHolder($character);
 							$character->removePosition($position);
-							$this->logger->info("    Removed.");
+							$this->debug("    Removed.");
 						} else if (!$position->getKeepOnSlumber()) {
-							$this->logger->info("    ".$position->getName().", ".$position->getId().", is detected as non-ruler, non-inherited position.");
-							$this->logger->info("    Removing ".$character->getName());
+							$this->debug("    ".$position->getName().", ".$position->getId().", is detected as non-ruler, non-inherited position.");
+							$this->debug("    Removing ".$character->getName());
 							$this->cm->failInheritPosition($character, $position, 'slumber');
 							$position->removeHolder($character);
 							$character->removePosition($position);
-							$this->logger->info("    Removed.");
+							$this->debug("    Removed.");
 						} else {
-							$this->logger->info("    ".$position->getName().", ".$position->getId().", is detected as non-ruler position.");
-							$this->logger->info("    ".$position->getName()." is set to keep on slumber.");
+							$this->debug("    ".$position->getName().", ".$position->getId().", is detected as non-ruler position.");
+							$this->debug("    ".$position->getName()." is set to keep on slumber.");
 							$this->history->logEvent(
 								$position->getRealm(),
 								'event.position.inactivekept',
@@ -347,23 +367,23 @@ class GameRunner {
 					}
 				}
 				if ($character->getHeadOfHouse()) {
-					$this->logger->info("  Detectd character is head of house ID #".$character->getHeadOfHouse()->getId());
+					$this->debug("  Detectd character is head of house ID #".$character->getHeadOfHouse()->getId());
 					$this->cm->houseInheritance($character, 'slumber');
 				}
 				foreach ($character->getAssociationMemberships() as $mbrshp) {
 					$this->cm->assocInheritance($mbrshp);
 				}
 				$character->setSystem('procd_inactive');
-				$this->logger->info("  Character set as known slumber.");
+				$this->debug("  Character set as known slumber.");
 			} else {
 				$knownslumber++;
 			}
 			$this->em->flush();
 		}
 		if ($keeponslumbercount > 0) {
-			$this->logger->info("  $keeponslumbercount positions kept on slumber!");
+			$this->output("  $keeponslumbercount positions kept on slumber!");
 		}
-		$this->logger->info("  Counted $knownslumber known slumberers and $knowndead known dead.");
+		$this->output("  Counted $knownslumber known slumberers and $knowndead known dead.");
 		$this->common->setGlobal('cycle.characters', 'complete');
 		$this->em->flush();
 		$this->em->clear();
@@ -379,7 +399,7 @@ class GameRunner {
 	public function runNPCCycle(): int {
 		$last = $this->common->getGlobal('cycle.npcs', 0);
 		if ($last==='complete') return 1;
-		$this->logger->info("NPC Cycle...");
+		$this->output("NPC Cycle...");
 
 		$query = $this->em->createQuery('SELECT count(u.id) FROM App:User u WHERE u.account_level > 0');
 		$players = $query->getSingleScalarResult();
@@ -389,16 +409,16 @@ class GameRunner {
 		$active_npcs = $this->em->createQuery('SELECT count(c) FROM App:Character c WHERE c.npc = true AND c.alive = true')->getSingleScalarResult();
 		$cullability = $this->em->createQuery('SELECT count(c) FROM App:Character c WHERE c.npc = true AND c.alive = true and c.user IS NULL')->getSingleScalarResult();
 
-		$this->logger->info("  We want $want NPCs for $players players, we have $active_npcs");
+		$this->output("  We want $want NPCs for $players players, we have $active_npcs");
 		if (0 < $active_npcs AND $active_npcs < $want) {
 			$npc = $this->npc->createNPC();
-			$this->logger->info("  Created NPC ".$npc->getName());
+			$this->output("  Created NPC ".$npc->getName());
 		} else if ($active_npcs > $want AND $cullability > 0) {
 			# The greater than 2 is there to keep this from happening every single turn. We don't care about a couple extra.
 			$cullcount = $active_npcs - $want;
 			$culled = 0;
-			$this->logger->info("  Too many NPCs, attempting to cull $cullcount NPCs");
-			$this->logger->info("  If players have NPC's already, it's not possible to cull them, so don't freak out if you see this every turn.");
+			$this->output("  Too many NPCs, attempting to cull $cullcount NPCs");
+			$this->output("  If players have NPC's already, it's not possible to cull them, so don't freak out if you see this every turn.");
 
 			while ($culled < $cullcount) {
 				$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.npc = true AND c.alive = true AND c.user IS NULL');
@@ -406,20 +426,20 @@ class GameRunner {
 					if ($cullcount > $culled) {
 						$potentialculling->setAlive('FALSE');
 						$culled++;
-						$this->logger->info("NPC ".$potentialculling->getName()." has been culled");
+						$this->debug("NPC ".$potentialculling->getName()." has been culled");
 					}
 					if ($cullcount == $culled) {
-						$this->logger->info("Bandit population is within acceptable levels. ".$potentialculling->getName()." lives to see another day.");
+						$this->debug("Bandit population is within acceptable levels. ".$potentialculling->getName()." lives to see another day.");
 					}
 				}
 			}
 			if ($culled > 0) {
-				$this->logger->info("  It was not possible to conduct the needed cullings this turn.");
+				$this->output("  It was not possible to conduct the needed cullings this turn.");
 			}
 		}
 
 		if ($active_npcs > 0) {
-			$this->logger->info("  Proceeding to check for recyclable NPCs...");
+			$this->output("  Proceeding to check for recyclable NPCs...");
 			$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.npc = true');
 			foreach ($query->getResult() as $npc) {
 				if ($npc->isAlive()) {
@@ -431,10 +451,10 @@ class GameRunner {
 				}
 			}
 
-			$this->logger->info("  Proceeding to check for complaining bandit solders...");
+			$this->output("  Proceeding to check for complaining bandit solders...");
 			$query = $this->em->createQuery('SELECT s as soldier, c as character FROM App:Soldier s JOIN s.character c JOIN s.home h JOIN h.geo_data g WHERE c.npc = true AND s.alive = true AND s.distance_home > :okdistance');
 			$query->setParameter('okdistance', $this->bandits_ok_distance);
-			$this->logger->info("  ".count($query->getResult())." bandit soldiers complaining");
+			$this->output("  ".count($query->getResult())." bandit soldiers complaining");
 			$deserters = array();
 			foreach ($query->getResult() as $row) {
 				$index = $row['soldier']->getCharacter()->getId();
@@ -474,7 +494,7 @@ class GameRunner {
 				}
 			}
 		} else {
-			$this->logger->info("  No active NPCs.");
+			$this->output("  No active NPCs.");
 		}
 
 		$this->common->setGlobal('cycle.npcs', 'complete');
@@ -492,7 +512,7 @@ class GameRunner {
 		$last = $this->common->getGlobal('cycle.soldiers', 0);
 		if ($last==='complete') return 1;
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date -- Soldiers update...");
+		$this->output("$date -- Soldiers update...");
 
 		$query = $this->em->createQuery('UPDATE App:Soldier s SET s.locked=false');
 		$query->execute();
@@ -504,13 +524,13 @@ class GameRunner {
 		$query->execute();
 
 		// dead are rotting (to prevent running-around-with-a-thousand-dead abuses)
-		$this->logger->info("rotting...");
+		$this->output("rotting...");
 		$query = $this->em->createQuery('UPDATE App:Soldier s SET s.hungry = s.hungry +1 where s.alive = false');
 		$rotting = $query->execute();
 
 		$query = $this->em->createQuery('DELETE FROM App:Soldier s WHERE s.alive = false AND s.hungry > 40');
 		$deleted = $query->execute();
-		$this->logger->info("  $rotting soldiers rotting, $deleted were deleted");
+		$this->output("  $rotting soldiers rotting, $deleted were deleted");
 
 		$this->em->flush();
 
@@ -544,7 +564,7 @@ class GameRunner {
 
 		// wounded troops: heal or die
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date --   Heal or die...");
+		$this->output("$date --   Heal or die...");
 		$query = $this->em->createQuery('SELECT s FROM App:Soldier s WHERE s.wounded > 0');
 		$iterableResult = $query->toIterable();
 		$i=1;
@@ -559,7 +579,7 @@ class GameRunner {
 		$this->em->clear();
 
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date --   Processing units of slumberers...");
+		$this->output("$date --   Processing units of slumberers...");
 		$query = $this->em->createQuery('SELECT u FROM App:Unit u JOIN u.character c WHERE c.slumbering = true');
 		$result = $query->getResult();
 		foreach ($result as $unit) {
@@ -573,52 +593,58 @@ class GameRunner {
 			}
 		}
 		$this->em->flush();
+		$this->em->clear();
 
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date --   Checking for disbandable entourage.");
+		$this->output("$date --   Checking for disbandable entourage.");
 		$disband_entourage = 0;
-		$query = $this->em->createQuery('SELECT e, c, DATE_DIFF(CURRENT_DATE(), c.last_access) as days FROM App:Entourage e JOIN e.character c WHERE c.slumbering = true');
+		$query = $this->em->createQuery('SELECT e, c FROM App:Entourage e JOIN e.character c WHERE c.slumbering = true');
 		$iterableResult = $query->toIterable();
 		$i=1;
-		/*
-		 * TODO: Test that this works.
-		 * It used to be ->iterate rather than ->toIterable, which used to return a straight array with the objects at key 0.
-		 * It's still an iterable, but toIterable attempts to hydrate AND will populate the objects automatically.
-		 */
-		foreach ($iterableResult as $row) {
-			// meet the most stupid array return data setup imaginable - first return row is different, yeay!
-			$e = array_shift($row);
-			$entourage = $e[0];
-			if (isset($e['days'])) {
-				$days = $e['days'];
+		$now = new DateTime("now");
+		$charIndex = [];
+		foreach ($iterableResult as $e) {
+			/** @var Character $char */
+			$char = $e->getCharacter();
+			$cid = $char->getId();
+
+			# Since this can involve anywhere from 1 to thousands of entourage, we don't want to do time diff calcs *every single entourage*.
+			if (array_key_exists($cid, $charIndex)) {
+				$days = $charIndex[$cid];
 			} else {
-				$d = array_shift($row);
-				$days = $d['days'];
+				$clast = $char->getLastAccess();
+				$days = $clast->diff($now)->d;
+				$charIndex[$cid] = $days;
 			}
+
 			if (rand(0,200) < ($days-20)) {
 				$disband_entourage++;
-				$this->milman->disbandEntourage($entourage, $entourage->getCharacter());
+				$this->milman->disbandEntourage($e, $char);
 			}
 
 			if (($i++ % $this->batchsize) == 0) {
 				$this->em->flush();
+				$this->em->clear();
 			}
 		}
+		$charIndex = null;
+		unset($charIndex);
 		$this->em->flush();
+		$this->em->clear();
 
 		if ($disband_entourage > 0) {
 			$date = date("Y-m-d H:i:s");
-			$this->logger->info("$date --   Disbanded $disband_entourage entourage.");
+			$this->output("$date --   Disbanded $disband_entourage entourage.");
 		}
 
 		// Update Soldier travel times.
-		$this->logger->info("  Deducting a day from soldier travel times...");
+		$this->output("  Deducting a day from soldier travel times...");
 		$query = $this->em->createQuery('UPDATE App:Soldier s SET s.travel_days = (s.travel_days - 1) WHERE s.travel_days IS NOT NULL');
 		$query->execute();
 
 		// Update soldier recruit training times. This will also set the training times for units, so this and the above affect whether travel starts same day or next (I'm going with next day).
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date --   Checking on recruits...");
+		$this->output("$date --   Checking on recruits...");
 		$query = $this->em->createQuery('SELECT s FROM App:Settlement s WHERE s.id > 0');
 		foreach ($query->getResult() as $settlement) {
 			if (!$settlement->getSiege() || !$settlement->getSiege()->getEncircled()) {
@@ -628,12 +654,13 @@ class GameRunner {
 
 		// Update soldier arrivals to units based on travel times being at or below zero.
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date --   Checking if soldiers have arrived...");
+		$this->output("$date --   Checking if soldiers have arrived...");
 		$count = 0;
 		$query = $this->em->createQuery('SELECT s FROM App:Soldier s WHERE s.travel_days <= 0');
 		$units = [];
 		$skippables = [];
 		foreach ($query->getResult() as $soldier) {
+			/** @var Soldier $soldier */
 			$unit = $soldier->getUnit();
 
 			# Check for unit in chace of skippable units.
@@ -682,7 +709,7 @@ class GameRunner {
 					);
 				} else {
 					if (!$unit) {
-						$this->logger->alert("No unit found for ".$unit);
+						$this->debug("No unit found for ".$unit);
 					}
 					# We can also reach this because the character wasn't found, which can happen when a soldier arrives to a leaderless unit, which can happen for any number of legit reasons.
 				}
@@ -691,13 +718,13 @@ class GameRunner {
 		$this->em->flush();
 
 		// Update Unit travel times.
-		$this->logger->info("  Deducting a day from unit travel times...");
+		$this->output("  Deducting a day from unit travel times...");
 		$query = $this->em->createQuery('UPDATE App:Unit u SET u.travel_days = (u.travel_days - 1) WHERE u.travel_days IS NOT NULL');
 		$query->execute();
 
 		// Update Unit arrivals based on travel times being at or below zero.
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date --   Checking if units have arrived...");
+		$this->output("$date --   Checking if units have arrived...");
 		$count = 0;
 		$query = $this->em->createQuery('SELECT u FROM App:Unit u WHERE u.travel_days <= 0');
 		$units = [];
@@ -711,7 +738,7 @@ class GameRunner {
 			}
 			if (!$here) {
 				# Shouldn't be possible... but just in case.
-				$this->logger->error("ERROR: Unit ".$unit->getId()." returned to nowhere!");
+				$this->output("ERROR: Unit ".$unit->getId()." returned to nowhere!");
 				if ($unit->getCharacter()) {
 					$unit->setTravelDays(null);
 					$unit->setDestination(null);
@@ -763,7 +790,7 @@ class GameRunner {
 		$this->em->flush();
 
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date --   Checking if units have gotten supplies...");
+		$this->output("$date --   Checking if units have gotten supplies...");
 		$query = $this->em->createQuery('SELECT r FROM App:Resupply r WHERE r.travel_days <= 1');
 		$iterableResult = $query->toIterable();
 		foreach ($iterableResult as $resupply) {
@@ -793,7 +820,7 @@ class GameRunner {
 							$orig = $supply->getQuantity();
 							$supply->setQuantity($orig+$resupply->getQuantity());
 							$date = date("Y-m-d H:i:s");
-							$this->logger->info("$date --   Unit ".$unit->getId()." had supplies, and got ".$resupply->getQuantity()." more food...");
+							$this->debug("$date --   Unit ".$unit->getId()." had supplies, and got ".$resupply->getQuantity()." more food...");
 							break;
 						}
 					}
@@ -805,194 +832,213 @@ class GameRunner {
 					$supply->setType($resupply->getType());
 					$supply->setQuantity($resupply->getQuantity());
 					$date = date("Y-m-d H:i:s");
-					$this->logger->info("$date --   Unit ".$unit->getId()." had no supplies, but got ".$resupply->getQuantity()." food...");
+					$this->debug("$date --   Unit ".$unit->getId()." had no supplies, but got ".$resupply->getQuantity()." food...");
 				}
 			} else {
 				$date = date("Y-m-d H:i:s");
-				$this->logger->info("$date --   Unit ".$unit->getId()." is encircled, and thus skipped..");
+				$this->debug("$date --   Unit ".$unit->getId()." is encircled, and thus skipped..");
 			}
 			#TODO: Give the food to the attackers.
 			$this->em->remove($resupply);
 			$this->em->flush();
 		}
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date --   Checking if units have food to eat...");
+		$this->output("$date --   Checking if units have food to eat...");
 		$query = $this->em->createQuery('SELECT u FROM App:Unit u WHERE u.id > 0');
 		$iterableResult = $query->toIterable();
 		$fed = 0;
 		$starved = 0;
 		$killed = 0;
+		$batch = 0;
 		foreach ($iterableResult as $unit) {
-			$living = $unit->getLivingSoldiers();
-			$count = $living->count();
-			if ($count < 1) {
-				# No soldiers to feed. Skip!
-				$this->em->detach($unit); # Release this one from memory now that we're done with it.
-				continue;
-			}
-			$char = $unit->getCharacter();
-			$food = 0;
-			$fsupply = false;
-			foreach ($unit->getSupplies() as $fsupply) {
-				if ($fsupply->getType() === 'food') {
-					$food = $fsupply->getQuantity();
-					break;
+			#if (!$this->em->contains($unit)) {
+			#	# I have no idea how we have units in the database that aren't persisted.
+			#	$this->debug('Unit '.$unit->getId().' not persisted. Persisting...');
+			#	$this->em->merge($unit);
+			#	$this->debug('Unit ID is now '.$unit->getId());
+			#}
+			/** @var Unit $unit */
+			if ($unit->getDisbanded()) {
+				# Cleanup supplies for disbanded units.
+				$this->milman->disbandUnitSupplies($unit);
+			} else {
+				# Handle supplies for living units.
+				$living = $unit->getLivingSoldiers();
+				$count = $living->count();
+				if ($count < 1) {
+					continue;
 				}
-			}
-			$date = date("Y-m-d H:i:s");
-			if ($fsupply) {
-				$this->logger->info("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." from ".$fsupply->getId()." from unit ".$fsupply->getUnit()->getId()." and soldier count of ".$count);
-			} else {
-				$this->logger->info("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." and soldier count of ".$count);
-			}
-
-			if ($count <= $food) {
-				$short = 0;
-			} else {
-				$need = $count - $food;
+				$char = $unit->getCharacter();
+				$food = 0;
+				$fsupply = false;
+				foreach ($unit->getSupplies() as $fsupply) {
+					if ($fsupply->getType() === 'food') {
+						$food = $fsupply->getQuantity();
+						break;
+					}
+				}
 				$date = date("Y-m-d H:i:s");
-				$this->logger->info("$date --   Need ".$need." more food");
-				if ($char) {
-					$food_followers = $char->getEntourage()->filter(function($entry) {
-						return ($entry->getType()->getName()=='follower' && $entry->isAlive() && !$entry->getEquipment() && $entry->getSupply()>0);
-					})->toArray();
-					if (!empty($food_followers)) {
-						$this->logger->info("Checking followers...");
-						foreach ($food_followers as $ent) {
-							if ($ent->getSupply() > $need) {
-								$supply2 = $ent->getSupply()-$need;
-								$need = 0;
-								$ent->setSupply($supply2);
-								break;
-							} else {
-								$need = $need - $food;
-								$ent->setSupply(0);
+				if ($fsupply) {
+					$this->debug("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." from ".$fsupply->getId()." from unit ".$fsupply->getUnit()->getId()." and soldier count of ".$count);
+				} else {
+					$this->debug("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." and soldier count of ".$count);
+				}
+
+				if ($count <= $food) {
+					$short = 0;
+				} else {
+					$need = $count - $food;
+					$date = date("Y-m-d H:i:s");
+					$this->debug("$date --   Need ".$need." more food");
+					if ($char) {
+						$food_followers = $char->getEntourage()->filter(function($entry) {
+							return ($entry->getType()->getName()=='follower' && $entry->isAlive() && !$entry->getEquipment() && $entry->getSupply()>0);
+						})->toArray();
+						if (!empty($food_followers)) {
+							$this->debug("Checking followers...");
+							foreach ($food_followers as $ent) {
+								if ($ent->getSupply() > $need) {
+									$supply2 = $ent->getSupply()-$need;
+									$need = 0;
+									$ent->setSupply($supply2);
+									break;
+								} else {
+									$need = $need - $food;
+									$ent->setSupply(0);
+								}
 							}
 						}
 					}
+					if ($need > 0) {
+						$short = $need;
+					} else {
+						$short = 0;
+					}
+					$date = date("Y-m-d H:i:s");
+					$this->debug("$date --   Final short of ".$short);
 				}
-				if ($need > 0) {
-					$short = $need;
+				$available = $count-$short;
+				if ($available > 0) {
+					$var = $available/$count;
 				} else {
-					$short = 0;
+					$var = 0;
 				}
 				$date = date("Y-m-d H:i:s");
-				$this->logger->info("$date --   Final short of ".$short);
-			}
-			$available = $count-$short;
-			if ($available > 0) {
-				$var = $available/$count;
-			} else {
-				$var = 0;
-			}
-			$date = date("Y-m-d H:i:s");
-			$this->logger->info("$date --   Available food of ".$available." from a count of ".$count." less a short of ".$short);
-			$dead = 0;
-			$myfed = 0;
-			$mystarved = 0;
-			if ($var <= 0.9) {
-				$starve = 1 - $var;
-				$char = $unit->getCharacter();
-				if ($char) {
-					$severity = round(min($starve*6, 6)); # Soldiers starve at a rate of 6 hunger per day max. No food? Starve in 15 days.
-					$this->history->openLog($unit, $char);
-				} else {
-					$severity = round(min($starve*4, 4)); # Militia starve slower, 4 per day. Starve in 22.5 days.
-					$where = $unit->getSettlement();
-					if ($where) {
-						$owner = $where->getOwner();
-						if ($owner) {
-							$this->history->openLog($unit, $owner);
-						}
-						$steward = $where->getSteward();
-						if ($steward) {
-							$this->history->openLog($unit, $steward);
-						}
-						$marshal = $unit->getMarshal();
-						if ($marshal) {
-							$this->history->openLog($unit, $marshal);
-						}
-					}
-				}
-				if ($severity < 2) {
-					$this->history->logEvent(
-						$unit,
-						'event.unit.starvation.light',
-						array(),
-						History::MEDIUM, false, 30
-					);
-				} elseif ($severity < 4) {
-					$this->history->logEvent(
-						$unit,
-						'event.unit.starvation.medium',
-						array(),
-						History::MEDIUM, false, 30
-					);
-				} else {
-					$this->history->logEvent(
-						$unit,
-						'event.unit.starvation.high',
-						array(),
-						History::MEDIUM, false, 30
-					);
-				}
-				foreach ($living as $soldier) {
-					$soldier->makeHungry($severity);
-					// soldiers can take several days of starvation without danger of death, but slightly less than militia (because they move around, etc.)
-					if ($soldier->getHungry() > 90 && rand(90, 180) < $soldier->getHungry()) {
-						$soldier->kill();
-						$this->history->addToSoldierLog($soldier, 'starved');
-						$killed++;
-						$dead++;
+				$this->debug("$date --   Available food of ".$available." from a count of ".$count." less a short of ".$short);
+				$dead = 0;
+				$myfed = 0;
+				$mystarved = 0;
+				if ($var <= 0.9) {
+					$starve = 1 - $var;
+					$char = $unit->getCharacter();
+					if ($char) {
+						$severity = round(min($starve*6, 6)); # Soldiers starve at a rate of 6 hunger per day max. No food? Starve in 15 days.
+						$this->history->openLog($unit, $char);
 					} else {
-						$starved++;
-						$mystarved++;
+						$severity = round(min($starve*4, 4)); # Militia starve slower, 4 per day. Starve in 22.5 days.
+						$where = $unit->getSettlement();
+						if ($where) {
+							$owner = $where->getOwner();
+							if ($owner) {
+								$this->history->openLog($unit, $owner);
+							}
+							$steward = $where->getSteward();
+							if ($steward) {
+								$this->history->openLog($unit, $steward);
+							}
+							$marshal = $unit->getMarshal();
+							if ($marshal) {
+								$this->history->openLog($unit, $marshal);
+							}
+						}
 					}
-				}
-				if ($dead > 0) {
-					$this->history->logEvent(
-						$unit,
-						'event.unit.starvation.death',
-						array("%i%"=>$dead),
-						History::MEDIUM, false, 30
-					);
-					if ($unit->getCharacter()) {
+					if ($severity < 2) {
 						$this->history->logEvent(
-							$unit->getCharacter(),
-							'event.unit.starvation.death',
-							array("%link-unit%"=>$unit->getId()),
-							History::HIGH, false, 30
+							$unit,
+							'event.unit.starvation.light',
+							array(),
+							History::MEDIUM, false, 30
+						);
+					} elseif ($severity < 4) {
+						$this->history->logEvent(
+							$unit,
+							'event.unit.starvation.medium',
+							array(),
+							History::MEDIUM, false, 30
+						);
+					} else {
+						$this->history->logEvent(
+							$unit,
+							'event.unit.starvation.high',
+							array(),
+							History::MEDIUM, false, 30
 						);
 					}
-				}
-			} else {
-				foreach ($living as $soldier) {
-					$soldier->feed();
-					$fed++;
-					$myfed++;
-				}
-			}
-			if ($fsupply) {
-				$left = $food-$count;
-				if ($left < 0) {
-					$fsupply->setQuantity(0);
-					#$left = 0;
+					foreach ($living as $soldier) {
+						$soldier->makeHungry($severity);
+						// soldiers can take several days of starvation without danger of death, but slightly less than militia (because they move around, etc.)
+						if ($soldier->getHungry() > 90 && rand(90, 180) < $soldier->getHungry()) {
+							$soldier->kill();
+							$this->history->addToSoldierLog($soldier, 'starved');
+							$killed++;
+							$dead++;
+						} else {
+							$starved++;
+							$mystarved++;
+						}
+					}
+					if ($dead > 0) {
+						$this->history->logEvent(
+							$unit,
+							'event.unit.starvation.death',
+							array("%i%"=>$dead),
+							History::MEDIUM, false, 30
+						);
+						if ($unit->getCharacter()) {
+							$this->history->logEvent(
+								$unit->getCharacter(),
+								'event.unit.starvation.death',
+								array("%link-unit%"=>$unit->getId()),
+								History::HIGH, false, 30
+							);
+						}
+					}
 				} else {
-					$fsupply->setQuantity($left);
+					foreach ($living as $soldier) {
+						$soldier->feed();
+						$fed++;
+						$myfed++;
+					}
+				}
+				if ($fsupply) {
+					$left = $food-$count;
+					if ($left < 0) {
+						$fsupply->setQuantity(0);
+						#$left = 0;
+					} else {
+						$fsupply->setQuantity($left);
+					}
 				}
 			}
-			$this->em->flush();
+
+			if ($batch < 25) {
+				$batch++;
+				$this->em->flush();
+			} else {
+				$batch = 0;
+				$this->em->flush();
+				$this->em->clear();
+			}
 			#$date = date("Y-m-d H:i:s");
 			#$id = $unit->getId();
-			#$this->logger->info("$date --     Unit $id - Soldiers $count - Var $var - Food $food - Leftover of $left - Fed $myfed - Starved $mystarved - Killed $dead");
-			$this->em->detach($unit); # Release this one from memory now that we're done with it.
+			#$this->debug("$date --     Unit $id - Soldiers $count - Var $var - Food $food - Leftover of $left - Fed $myfed - Starved $mystarved - Killed $dead");
 		}
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date --     Fed $fed - Starved $starved - Killed $killed");
+		$this->output("$date --     Fed $fed - Starved $starved - Killed $killed");
 
 		// Update Unit resupply travel times.
 		$date = date("Y-m-d H:i:s");
-		$this->logger->info("$date --   Deducting a day from unit resupply times...");
+		$this->output("$date --   Deducting a day from unit resupply times...");
 		$query = $this->em->createQuery('UPDATE App:Resupply r SET r.travel_days = (r.travel_days - 1) WHERE r.travel_days IS NOT NULL');
 		$query->execute();
 
@@ -1007,7 +1053,7 @@ class GameRunner {
 	 * @noinspection PhpUnused
 	 */
 	public function updateSieges(): int  {
-		$this->logger->info("Sieges cleanup..");
+		$this->output("Sieges cleanup..");
 		$all = $this->em->getRepository(Siege::class)->findAll();
 		foreach ($all as $siege) {
 			$settlement = $siege->getSettlement();
@@ -1017,7 +1063,7 @@ class GameRunner {
 				$leader = $attacker->getLeader();
 				if ($settlement && ($leader->getInsideSettlement() === $settlement || ($leader->getInsidePlace() && $leader->getInsidePlace()->getSettlement() === $settlement))) {
 					# Attacking leader is somehow inside the settlement he is besieging, looks like siege should be over! :D
-					$this->logger->info("  Disbanding Siege ".$siege->getId()." for Settlement ".$settlement->getId());
+					$this->debug("  Disbanding Siege ".$siege->getId()." for Settlement ".$settlement->getId());
 					foreach ($siege->getCharacters() as $char) {
 						$this->history->logEvent(
 							$char,
@@ -1030,7 +1076,7 @@ class GameRunner {
 				}
 				if ($place && $leader->getInsidePlace() === $place) {
 					# Attacking leader is somehow inside the place he is besieging, looks like siege should be over! :D
-					$this->logger->info("  Disbanding Siege ".$siege->getId()." for Place ".$place->getId());
+					$this->debug("  Disbanding Siege ".$siege->getId()." for Place ".$place->getId());
 					foreach ($siege->getCharacters() as $char) {
 						$this->history->logEvent(
 							$char,
@@ -1070,7 +1116,7 @@ class GameRunner {
 		$last = $this->common->getGlobal('cycle.action', 0);
 		if ($last==='complete') return 1;
 		$last=(int)$last;
-		$this->logger->info("Actions Cycle...");
+		$this->output("Actions Cycle...");
 
 		if ($hourly) {
 			$querystring = 'SELECT a FROM App:Action a WHERE a.id>:last AND a.hourly = true ORDER BY a.id ASC';
@@ -1093,7 +1139,7 @@ class GameRunner {
 			}
 			$time_spent = microtime(true)-$time_start;
 			if ($time_spent > $this->maxtime) {
-				$this->logger->alert("maximum execution time reached");
+				$this->output("maximum execution time reached");
 			}
 		}
 		$this->em->flush();
@@ -1110,7 +1156,7 @@ class GameRunner {
 		$last = $this->common->getGlobal('cycle.resupply', 0);
 		if ($last==='complete') return 1;
         	$last=(int)$last;
-		$this->logger->info("Resupply Cycle...");
+		$this->output("Resupply Cycle...");
 
 		$max_supply = $this->common->getGlobal('supply.max_value', 800);
 		$max_items = $this->common->getGlobal('supply.max_items', 15);
@@ -1182,26 +1228,26 @@ class GameRunner {
 	public function runRealmsCycle(): int {
 		$last = $this->common->getGlobal('cycle.realm', 0);
 		if ($last==='complete') return 1;
-		$this->logger->info("Realms Cycle...");
+		$this->output("Realms Cycle...");
 
 		$timeout = new \DateTime("now");
 		$timeout->sub(new \DateInterval("P7D"));
 
 		$query = $this->em->createQuery('SELECT p FROM App:RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND p.ruler = true AND h.id IS NULL AND p NOT IN (SELECT y FROM App:Election x JOIN x.position y WHERE x.closed=false) GROUP BY p');
 		$result = $query->getResult();
-		$this->logger->notice("  Checking for inactive realms...");
+		$this->output("  Checking for inactive realms...");
 		# This one checks for realms that don't have rulers, while the next query checks for conversations.
 		# Since they can both result in different situations that reveal abandoned realms, we check twice.
 		foreach ($result as $position) {
 			$members = $position->getRealm()->findMembers(true, true);
 			if ($members->isEmpty()) {
-				$this->logger->notice("  Empty ruler position for realm ".$position->getRealm()->getName());
-				$this->logger->notice("  -- realm deserted, making inactive.");
+				$this->debug("  Empty ruler position for realm ".$position->getRealm()->getName());
+				$this->debug("  -- realm deserted, making inactive.");
 				$realm = $position->getRealm();
 				$this->rm->abandon($realm);
 			}
 		}
-		$this->logger->info("  Checking for missing realm conversations...");
+		$this->output("  Checking for missing realm conversations...");
 
 		$realmquery = $this->em->createQuery('SELECT r FROM App:Realm r WHERE r.active = true');
 		$realms = $realmquery->getResult();
@@ -1243,7 +1289,7 @@ class GameRunner {
 							}
 						}
 					} else {
-						$this->logger->notice("  ".$realm->getName()." deserted, making inactive.");
+						$this->debug("  ".$realm->getName()." deserted, making inactive.");
 						$deserted = true;
 						$this->rm->abandon($realm);
 						$msguser = false;
@@ -1252,7 +1298,7 @@ class GameRunner {
 				if ($msguser) {
 					$topic = $realm->getName().' Announcements';
 					$this->convman->newConversation(null, $members, $topic, null, null, $realm, 'announcements');
-					$this->logger->notice("  ".$realm->getName()." announcements created");
+					$this->debug("  ".$realm->getName()." announcements created");
 				}
 			}
 			if (!$general && !$deserted) {
@@ -1277,7 +1323,7 @@ class GameRunner {
 				if ($msguser) {
 					$topic = $realm->getName().' General Discussion';
 					$this->convman->newConversation(null, $members, $topic, null, null, $realm, 'general');
-					$this->logger->notice("  ".$realm->getName()." discussion created");
+					$this->debug("  ".$realm->getName()." discussion created");
 				}
 			}
 		}
@@ -1296,9 +1342,9 @@ class GameRunner {
 		$last = $this->common->getGlobal('cycle.houses', 0);
 		if ($last==='complete') return 1;
         	$last=(int)$last;
-		$this->logger->info("Houses Cycle...");
+		$this->output("Houses Cycle...");
 
-		$this->logger->info("  Checking for missing House conversations...");
+		$this->output("  Checking for missing House conversations...");
 
 		$query = $this->em->createQuery('SELECT h FROM App:House h WHERE h.id > :last AND (h.active = true OR h.active IS NULL)');
 		$query->setParameters(['last'=>$last]);
@@ -1328,12 +1374,12 @@ class GameRunner {
 			if (!$anno) {
 				$topic = $house->getName().' Announcements';
 				$this->convman->newConversation(null, null, $topic, null, null, $house, 'announcements');
-				$this->logger->notice("  ".$house->getName()." announcements created");
+				$this->debug("  ".$house->getName()." announcements created");
 			}
 			if (!$gen) {
 				$topic = $house->getName().' General Discussion';
 				$this->convman->newConversation(null, null, $topic, null, null, $house, 'general');
-				$this->logger->notice("  ".$house->getName()." general discussion created");
+				$this->debug("  ".$house->getName()." general discussion created");
 			}
 			if (($i++ % ($this->batchsize/5)) == 0) {
 				$this->common->setGlobal('cycle.houses', $last);
@@ -1357,9 +1403,9 @@ class GameRunner {
 		$last = $this->common->getGlobal('cycle.assocs', 0);
 		if ($last==='complete') return 1;
         	$last=(int)$last;
-		$this->logger->info("Associations Cycle...");
+		$this->output("Associations Cycle...");
 
-		$this->logger->info("  Checking for missing Assoc conversations...");
+		$this->output("  Checking for missing Assoc conversations...");
 
 		$query = $this->em->createQuery('SELECT a FROM App:Association a WHERE a.id > :last AND (a.active = true OR a.active IS NULL)');
 		$query->setParameters(['last'=>$last]);
@@ -1389,12 +1435,12 @@ class GameRunner {
 			if (!$anno) {
 				$topic = $assoc->getName().' Announcements';
 				$this->convman->newConversation(null, null, $topic, null, null, $assoc, 'announcements');
-				$this->logger->notice("  ".$assoc->getName()." announcements created");
+				$this->debug("  ".$assoc->getName()." announcements created");
 			}
 			if (!$gen) {
 				$topic = $assoc->getName().' General Discussion';
 				$this->convman->newConversation(null, null, $topic, null, null, $assoc, 'general');
-				$this->logger->notice("  ".$assoc->getName()." general discussion created");
+				$this->debug("  ".$assoc->getName()." general discussion created");
 			}
 			if (($i++ % ($this->batchsize/5)) == 0) {
 				$this->common->setGlobal('cycle.assocs', $last);
@@ -1418,8 +1464,8 @@ class GameRunner {
 		# Ideally, this does nothing. If it does something though, it just means we caught a character that should or shouldn't be part of a conversation and fixed it.
 		$lastRealm = $this->common->getGlobal('cycle.convs.realm', 0);
 		$lastRealm=(int)$lastRealm;
-		$this->logger->info("Conversation Cycle...");
-		$this->logger->info("  Updating realm conversation permissions...");
+		$this->output("Conversation Cycle...");
+		$this->output("  Updating realm conversation permissions...");
 		$query = $this->em->createQuery("SELECT r from App:Realm r WHERE r.active = TRUE AND r.id > :last ORDER BY r.id ASC");
 		$query->setParameters(['last'=>$lastRealm]);
 		$added = 0;
@@ -1431,7 +1477,7 @@ class GameRunner {
 		$i = 1;
 		foreach ($iterableResult as $realm) {
 			$lastRealm = $realm->getId();
-			$this->logger->info("  -- Updating ".$realm->getName()."...");
+			$this->debug("  -- Updating ".$realm->getName()."...");
 			$total++;
 			$members = $realm->findMembers();
 			foreach ($realm->getConversations() as $conv) {
@@ -1447,13 +1493,13 @@ class GameRunner {
 			}
 		}
 		$this->common->setGlobal('cycle.convs.realm', 'complete');
-		$this->logger->info("  Result: ".$total." realms, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
+		$this->output("  Result: ".$total." realms, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 		$this->em->flush();
 		$this->em->clear();
 
 		$lastHouse = $this->common->getGlobal('cycle.convs.house', 0);
 		$lastHouse=(int)$lastHouse;
-		$this->logger->info("  Updating house conversation permissions...");
+		$this->output("  Updating house conversation permissions...");
 		$query = $this->em->createQuery("SELECT h from App:House h WHERE (h.active = TRUE OR h.active IS NULL) AND h.id > :last ORDER BY h.id ASC");
 		$query->setParameters(['last'=>$lastHouse]);
 		$added = 0;
@@ -1464,7 +1510,7 @@ class GameRunner {
 		$i = 1;
 		foreach ($iterableResult as $house) {
 			$lastHouse = $house->getId();
-			$this->logger->info("  -- Updating ".$house->getName()."...");
+			$this->debug("  -- Updating ".$house->getName()."...");
 			$total++;
 			$members = $house->findAllActive();
 			foreach ($house->getConversations() as $conv) {
@@ -1482,11 +1528,11 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 		$this->common->setGlobal('cycle.convs.house', 'complete');
-		$this->logger->info("  Result: ".$total." houses, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
+		$this->output("  Result: ".$total." houses, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 
 		$lastAssoc = $this->common->getGlobal('cycle.convs.assoc', 0);
 		$lastAssoc=(int)$lastAssoc;
-		$this->logger->info("  Updating association conversation permissions...");
+		$this->output("  Updating association conversation permissions...");
 		$query = $this->em->createQuery("SELECT a from App:Association a WHERE (a.active = TRUE OR a.active IS NULL) AND a.id > :last ORDER BY a.id ASC");
 		$query->setParameters(['last'=>$lastAssoc]);
 		$added = 0;
@@ -1498,7 +1544,7 @@ class GameRunner {
 		$i = 1;
 		foreach ($iterableResult as $assoc) {
 			$lastAssoc = $assoc->getId();
-			$this->logger->info("  -- Updating ".$assoc->getName()."...");
+			$this->debug("  -- Updating ".$assoc->getName()."...");
 			$total++;
 			$members = $assoc->findAllMemberCharacters();
 			foreach ($assoc->getConversations() as $conv) {
@@ -1516,7 +1562,7 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 		$this->common->setGlobal('cycle.convs.assoc', 'complete');
-		$this->logger->info("  Result: ".$total." associations, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
+		$this->output("  Result: ".$total." associations, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 
 		$query = $this->em->createQuery('UPDATE App:Setting s SET s.value=0 WHERE s.name LIKE :cycle');
 		$query->setParameter('cycle', 'cycle.convs.'.'%');
@@ -1532,9 +1578,9 @@ class GameRunner {
 		$last = $this->common->getGlobal('cycle.positions', 0);
 		if ($last==='complete') return 1;
         	$last=(int)$last; #TODO: Low priority, but rewrite this as iterable.
-		$this->logger->info("Positions Cycle...");
+		$this->output("Positions Cycle...");
 
-		$this->logger->info("  Processing Finished Elections...");
+		$this->output("  Processing Finished Elections...");
 		$query = $this->em->createQuery('SELECT e FROM App:Election e WHERE e.closed = false AND e.complete < :now');
 		$query->setParameter('now', new \DateTime("now"));
 		$seenpositions = [];
@@ -1545,27 +1591,27 @@ class GameRunner {
 		Or rather, if the election was caused by the game itself. All other elections are ignored. --Andrew */
 
 		foreach ($query->getResult() as $election) {
-			$this->logger->info("-Reviewing election ".$election->getId());
+			$this->debug("-Reviewing election ".$election->getId());
 
 			/* dropIncumbents will drop ALL incumbents, so we don't care to do this mutliple times for the same position--it's a waste of processing cycles.
 			It's worth nothing that dropIncumbents only does anything on elections called by the game itself,
 			Which you can see if you go look at the method in the realm manager. */
 
 			if($election->getPosition()) {
-				$this->logger->info("--Position detected");
+				$this->debug("--Position detected");
 				if(!in_array($election->getPosition()->getId(), $seenpositions)) {
 					$this->rm->dropIncumbents($election);
 					$seenpositions[] = $election->getPosition()->getId();
-                                        $this->logger->info("---Dropped and tracked");
+                                        $this->debug("---Dropped and tracked");
 				} else {
-                                        $this->logger->info("---Already saw it");
+                                        $this->debug("---Already saw it");
 				}
 				$this->em->flush(); #Otherwise we can end up with duplicate key errors from the database.
 			}
 			$this->rm->countElection($election);
-                        $this->logger->info("--Counted.");
+                        $this->debug("--Counted.");
 		}
-		$this->logger->info("  Flushing Finished Elections...");
+		$this->output("  Flushing Finished Elections...");
 		$this->em->flush();
 
 		/* The bulk of the following code does the following:
@@ -1574,7 +1620,7 @@ class GameRunner {
 			3. Ensure all positions that should have more than one holder do.
 		These things will only happen if there is not already an election running for a given position though. */
 
-		$this->logger->info("  Checking realm rulers, vacant electeds, and minholders...");
+		$this->output("  Checking realm rulers, vacant electeds, and minholders...");
 		$timeout = new \DateTime("now");
 		$timeout->sub(new \DateInterval("P7D")); // hardcoded to 7 day intervals between election attempts
 		$query = $this->em->createQuery('SELECT p FROM App:RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND h.id IS NULL AND p NOT IN (SELECT y FROM App:Election x JOIN x.position y WHERE x.closed=false OR x.complete > :timeout) GROUP BY p');
@@ -1586,14 +1632,14 @@ class GameRunner {
 			$electionsneeded = 1;
 			$counter = 0;
 			if ($position->getRuler() && $position->getHolders()->count() == 0) {
-				$this->logger->notice("  Empty ruler position for realm ".$position->getRealm()->getName());
+				$this->debug("  Empty ruler position for realm ".$position->getRealm()->getName());
 				if (!$members->isEmpty()) {
 					if ($position->getMinholders()) {
 						$electionsneeded = $position->getMinholders() - $position->getHolders()->count();
 					}
 					while ($electionsneeded > 0) {
 						$counter++;
-						$this->logger->notice("  -- election triggered.");
+						$this->debug("  -- election triggered.");
 						$electiontype = 'noruler';
 						$election = $this->setupElection($position, $electiontype, false, $counter);
 
@@ -1607,13 +1653,13 @@ class GameRunner {
 			}
 			if (!$disablefurtherelections && !$position->getRuler() && $position->getHolders()->count() == 0 && $position->getElected() && !$position->getRetired()) {
 				if (!$members->isEmpty()) {
-					$this->logger->notice("  Empty realm position of ".$position->getName()." for realm ".$position->getRealm()->getName());
+					$this->debug("  Empty realm position of ".$position->getName()." for realm ".$position->getRealm()->getName());
 					if ($position->getMinholders()) {
 						$electionsneeded = $position->getMinholders() - $position->getHolders()->count();
 					}
 					while ($electionsneeded > 0) {
 						$counter++;
-						$this->logger->notice("  -- election ".$counter." triggered.");
+						$this->debug("  -- election ".$counter." triggered.");
 						$electiontype = 'vacantelected';
 						$election = $this->setupElection($position, $electiontype, false, $counter);
 
@@ -1627,7 +1673,7 @@ class GameRunner {
 			}
 			if (!$disablefurtherelections && $position->getHolders()->count() < $position->getMinholders() && $position->getElected() && !$position->getRetired()) {
 				if (!$members->isEmpty()) {
-					$this->logger->notice("  Realm position of ".$position->getName()." for realm ".$position->getRealm()->getName()." needs more holders.");
+					$this->debug("  Realm position of ".$position->getName()." for realm ".$position->getRealm()->getName()." needs more holders.");
 					if ($position->getMinholders()) {
 						$electionsneeded = $position->getMinholders() - $position->getHolders()->count();
 					}
@@ -1635,7 +1681,7 @@ class GameRunner {
 						$counter++;
 						$electiontype = 'shortholders';
 						$election = $this->setupElection($position, $electiontype, false, $counter);
-						$this->logger->notice("  -- election ".$counter." triggered.");
+						$this->debug("  -- election ".$counter." triggered.");
 
 						$msg = "Due to not having enough position holders, an automatic election number ".$counter." has been triggered for the elected position of ".$position->getName().". You are invited to vote - [vote:".$election->getId()."].";
 						$systemflag = 'announcements';
@@ -1647,35 +1693,35 @@ class GameRunner {
 		}
 		$this->em->flush();
 
-		$this->logger->info("  Checking for routine elections...");
+		$this->output("  Checking for routine elections...");
 		$cycle = $this->cycle;
 		$query = $this->em->createQuery("SELECT p FROM App:RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND p.elected = true AND (p.retired = false OR p.retired IS NULL) AND p.cycle <= :cycle AND p.cycle IS NOT NULL AND h.id IS NOT NULL AND p NOT IN (SELECT y FROM App:Election x JOIN x.position y WHERE x.closed=false OR x.complete > :timeout) GROUP BY p");
 		$query->setParameter('timeout', $timeout);
 		$query->setParameter('cycle', $cycle);
 		foreach ($query->getResult() as $position) {
-			$this->logger->info("  Updating ".$position->getName()." cycle count.");
+			$this->debug("  Updating ".$position->getName()." cycle count.");
 			switch ($position->getTerm()) {
 				case '30':
-					$this->logger->info("  -- Term 30 set, updating $cycle by 120.");
+					$this->debug("  -- Term 30 set, updating $cycle by 120.");
 					$position->setCycle($cycle+120);
 					break;
 				case '90':
-					$this->logger->info("  -- Term 90 set, updating $cycle by 360.");
+					$this->debug("  -- Term 90 set, updating $cycle by 360.");
 					$position->setCycle($cycle+360);
 					break;
 				case '365':
-					$this->logger->info("  -- Term 365 set, updating $cycle by 1440.");
+					$this->debug("  -- Term 365 set, updating $cycle by 1440.");
 					$position->setCycle($cycle+1440);
 					break;
 				case '0':
 				default:
-					$this->logger->info("  -- Term 0 set, updating cycle, year, and week to NULL.");
+					$this->debug("  -- Term 0 set, updating cycle, year, and week to NULL.");
 					$position->setYear(null);
 					$position->setWeek(null);
 					$position->setCycle(null);
 					break;
 			}
-			$this->logger->notice("  Calling election for ".$position->getName()." for realm ".$position->getRealm()->getName());
+			$this->debug("  Calling election for ".$position->getName()." for realm ".$position->getRealm()->getName());
 			$electionsneeded = 1;
 			$counter = 0;
 			if ($position->getMinholders()) {
@@ -1685,7 +1731,7 @@ class GameRunner {
 				$counter++;
 				$electiontype = 'routine';
 				$election = $this->setupElection($position, $electiontype, true, $counter);
-				$this->logger->notice("  -- election '.$counter.' triggered.");
+				$this->debug("  -- election '.$counter.' triggered.");
 				$msg = "Due to it being time for regular elections, an automatic election number ".$counter." has been triggered for the elected position of ".$position->getName().". You are invited to vote - [vote:".$election->getId()."].";
 				$systemflag = 'announcements';
 				$this->postToRealm($position, $systemflag, $msg);
@@ -1708,12 +1754,11 @@ class GameRunner {
 	public function runSeaFoodCycle(): int {
 		$last = $this->common->getGlobal('cycle.seafood', 0);
 		if ($last==='complete') return 1;
-		$this->logger->info("Sea Food Cycle...");
+		$this->output("Sea Food Cycle...");
 
 		$query = $this->em->createQuery("SELECT c FROM App:Character c, App:GeoData g JOIN g.biome b WHERE c.id > :last AND ST_Contains(g.poly, c.location) = true AND b.name IN ('ocean', 'water') ORDER BY c.id");
 		$query->setParameter('last', $last);
 		$iterableResult = $query->toIterable();
-		$complete = 0;
 		$i = 1;
 		foreach ($iterableResult as $character ) {
 			$lastChar = $character->getId();
@@ -1726,7 +1771,7 @@ class GameRunner {
 					$near = $this->geography->findNearestSettlementToPoint(new Point($land_location->getX(), $land_location->getY()));
 					if ($near) {
 						// FIXME: this can land me in ocean sometimes? Or simply doesn't work at all sometimes?
-						$this->logger->info("  ".$character->getName()." has been shipwrecked, landing near ".$near[0]->getName()." at ".$land_location->getX()." / ".$land_location->getY());
+						$this->debug("  ".$character->getName()." has been shipwrecked, landing near ".$near[0]->getName()." at ".$land_location->getX()." / ".$land_location->getY());
 						$character->setLocation($land_location);
 						$character->setTravel(null)->setProgress(null)->setSpeed(null)->setTravelAtSea(false)->setTravelDisembark(false);
 						$this->history->logEvent(
@@ -1747,7 +1792,7 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 		$this->common->setGlobal('cycle.seafood', 'complete');
-		return $complete;
+		return 1;
 	}
 
 	/**

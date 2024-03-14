@@ -37,7 +37,7 @@
 	</thead>
 	<tbody>
 		<tr class="center">
-			<td rowspan="2"><img src="https://images.ctfassets.net/fzn2n1nzq965/6XFEUA9FzMBMphYdcUab19/37a1e07201366a351f7956560ccac09d/Stripe_wordmark_-_slate.svg" height="120" alt="Stripe" /></th>
+			<td rowspan="3"><img src="https://images.ctfassets.net/fzn2n1nzq965/6XFEUA9FzMBMphYdcUab19/37a1e07201366a351f7956560ccac09d/Stripe_wordmark_-_slate.svg" height="120" alt="Stripe" /></td>
 			<td><a href="{{ path("maf_stripe", {"currency":"USD", "amount":2}) }}"><button>$2 (USD)</button></a></td>
 			<td><a href="{{ path("maf_stripe", {"currency":"USD", "amount":5}) }}"><button>$5 (USD)</button></a></td>
 			<td><a href="{{ path("maf_stripe", {"currency":"USD", "amount":10}) }}"><button>$10 (USD)</button></a></td>
@@ -52,6 +52,14 @@
 			<td><a href="{{ path("maf_stripe", {"currency":"EUR", "amount":20}) }}"><button>€20 (EUR)</button></a></td>
 			<td><a href="{{ path("maf_stripe", {"currency":"EUR", "amount":50}) }}"><button>€50 (EUR)</button></a></td>
 			<td><a href="{{ path("maf_stripe", {"currency":"EUR", "amount":100}) }}"><button>€100 (EUR)</button></a></td>
+		</tr>
+		<tr class="center">
+			<td><a href="{{ path("maf_stripe", {"currency":"BRL", "amount":2}) }}"><button>R$3 (BRL)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"BRL", "amount":5}) }}"><button>R$7.50 (BRL)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"BRL", "amount":10}) }}"><button>R$15 (BRL)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"BRL", "amount":20}) }}"><button>R$30 (BRL)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"BRL", "amount":50}) }}"><button>R$75 (BRL)</button></a></td>
+			<td><a href="{{ path("maf_stripe", {"currency":"BRL", "amount":100}) }}"><button>R$150 (BRL)</button></a></td>
 		</tr>
 	</tbody>
 </table>
