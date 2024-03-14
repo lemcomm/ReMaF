@@ -11,6 +11,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Patreon\API as PAPI;
 use Patreon\OAuth as POA;
+use Stripe\Checkout\Session as StripeSession;
+use Stripe\Stripe;
+use Stripe\StripeClient;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 
@@ -23,7 +26,8 @@ class PaymentManager {
 	private MailManager $mailer;
 	private AppState $app;
 	private mixed $ruleset;
-	private mixed $stripeSecret;
+	private string $stripeSecret;
+	private string $stripeVersion;
 	private array $stripePrices;
 	private array $patreonAlikes = ['patreon'];
 
@@ -36,6 +40,7 @@ class PaymentManager {
 		$this->app = $app;
 		$this->ruleset = $_ENV['RULESET'];
 		$this->stripeSecret = $_ENV['STRIPE_SECRET'];
+		$this->stripeVersion = $_ENV['STRIPE_VERSION'];
 		$this->stripePrices = [
 			'USD' => [
 				2 => $_ENV['STRIPEUSD2'],
@@ -161,7 +166,7 @@ class PaymentManager {
 								$updated = $this->refreshPatreonTokens($patron);
 							}
 							if ($updated) {
-								list($status, $entitlement) = $this->refreshPatreonPledge($patron);
+								[$status, $entitlement] = $this->refreshPatreonPledge($patron);
 								if ($status === false) {
 									# API failure. Only wayt staus would be false.
 									$this->logger->info("Patreon API failed to return expected format. Expected JSON, got: ".$entitlement);
@@ -383,7 +388,7 @@ class PaymentManager {
 		return true;
 	}
 
-	public function buildStripeIntent($currency, $amt, $user, $success, $cancel): \Stripe\Checkout\Session|string {
+	public function buildStripeIntent($currency, $amt, $user, $success, $cancel): StripeSession|string {
 		$prices = $this->stripePrices;
 		if (array_key_exists($currency, $prices)) {
 			$iCurrency = $prices[$currency];
@@ -396,8 +401,8 @@ class PaymentManager {
 			return 'notfound';
 		}
 
-		\Stripe\Stripe::setApiKey($this->stripeSecret);
-		$checkout = \Stripe\Checkout\Session::create([
+		Stripe::setApiKey($this->stripeSecret);
+		$checkout = StripeSession::create([
 			'line_items' => [[
 				'price' => $pID,
 				'quantity' => 1,
@@ -414,7 +419,6 @@ class PaymentManager {
 			'automatic_tax' => [
 				'enabled' => true,
 			],
-
 		]);
 		return $checkout;
 	}
@@ -431,7 +435,10 @@ class PaymentManager {
 	}
 
 	public function retrieveStripe($session): array {
-		$stripe = new \Stripe\StripeClient($this->stripeSecret);
+		$stripe = new StripeClient([
+			'api_key'=>$this->stripeSecret,
+			'stripe_version'=>'2023-10-16'
+		]);
 		return [$stripe->checkout->sessions->retrieve($session), $stripe->checkout->sessions->allLineItems($session)];
 	}
 
@@ -506,7 +513,7 @@ class PaymentManager {
 
 	public function account(User $user, $type, $amount, $transaction=null, $src='paypal'): true {
 		if ($type === 'Stripe Payment') {
-			list($currency, $amount) = $this->stripeAmtFromPid($amount);
+			[$currency, $amount] = $this->stripeAmtFromPid($amount);
 		} else {
 			$currency = 'USD';
 		}

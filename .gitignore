@@ -22,3 +22,7 @@
 ###> PHPStorm Project files ###
 /.idea
 ###< PHPStorm Project files ###
+
+###> Logs ###
+/*.log
+###< Logs ###
