@@ -439,7 +439,6 @@ account:
   change:   Change Name Pack
   upgrades: >
     Name packs are occasionally updated and extended. If you by a name pack, you will always get all updates for free.
-  notenoughcredits:   You do not have enough credits for this purchase.
   bought:
    title:   Name Pack{count, plural, =1 {} other {s}} Bought
    intro:   "Congratulations, you have bought {amount} name pack{count, plural, =1 {} other {s}}:"
@@ -455,15 +454,21 @@ account:
     other players if you so desire.<br><br>
     Like name packs and heraldry, these have zero mechanical impact in game, and the purchase goes 
     towards helping us offset the cost of maintaining the game server.
-  buy:      Buy
-  name:     Realm Pack
-  cost:     Cost
+  buy:      Buy Realm Pack
+  purchase: Complete Purchase
+  name:     Realm Title
+  min:      Minimum Tier
+  max:      Maximum Tier
+  paid:     Paid
+  free:     Free
   contains: Contains
   contents:
    designations: Realm Designations
    titles: Ruler Titles
-   tier:   Realm Tier
+   min:   Realm Minimum Tier
+   max:   Realm Maximum Tier
   bought: Thank you for your purchase. You will find these options availabe in game as part of the realm and realm position management screens.
+ notenoughcredits:   You do not have enough credits for this purchase.
 
  gift:
   link:     Gift to existing player

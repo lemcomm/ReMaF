@@ -693,8 +693,15 @@ class PaymentManager {
 		return $code;
 	}
 
-
-	public function spend(User $user, $type, $credits, $renew_subscription=false): bool {
+	/**
+	 * @param User   $user               User spending credits.
+	 * @param string $type               Spend type, like culture or realm pack
+	 * @param int    $credits            Positive integer for number of credits to deduct from user as spent
+	 * @param bool   $renew_subscription Flag to indicate a subscription renewal.
+	 *
+	 * @return bool
+	 */
+	public function spend(User $user, string $type, int $credits, bool $renew_subscription=false): bool {
 		if ($credits>0 && $user->getCredits()<$credits) {
 			return false;
 		}

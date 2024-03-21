@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Patron;
+use App\Entity\RealmDesignation;
 use App\Entity\User;
+use App\Form\AreYouSureType;
 use App\Form\CultureType;
 use App\Form\GiftType;
 use App\Form\SubscriptionType;
@@ -298,10 +300,9 @@ class PaymentController extends AbstractController {
 				$total += $buy->getCost();
 			}
 			if ($total > $user->getCredits()) {
-				$form->addError(new FormError($this->trans->trans("account.culture.notenoughcredits")));
+				$form->addError(new FormError($this->trans->trans("account.notenoughcredits")));
 			} else {
 				foreach ($buying as $buy) {
-					// TODO: error handling here?
 					$this->pay->spend($this->getUser(), "culture pack", $buy->getCost());
 					$user->getCultures()->add($buy);
 				}
@@ -317,6 +318,31 @@ class PaymentController extends AbstractController {
 		return $this->render('Payment/culture.html.twig', [
 			'cultures'=>$allcultures,
 			'namescount'=>$namescount,
+			'form'=>$form->createView()
+		]);
+	}
+
+	#[Route ('/payment/realmPack', name:'maf_payment_realmPack')]
+	public function realmPackAction(Request $request): Response {
+		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
+		$all = $this->em->createQuery('SELECT r FROM App:RealmDesignation r ORDER BY r.max_tier DESC, r.name ASC')->getResult();
+		$form = $this->createForm(AreYouSureType::class, null, ['translation_domain'=>'messages', 'label'=>'account.realmpack.select', 'submit'=>'account.realmpack.purchase']);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			if ($this->pay->spend($this->getUser(), "realm pack", 500)) {
+				$user->getUserLimits()->setRealmPack(true);
+				$this->em->flush();
+				$this->addFlash('notice', $this->trans->trans("account.realmpack.bought"));
+				return $this->redirectToRoute('maf_payment_credits');
+			} else {
+				$form->addError(new FormError($this->trans->trans("account.notenoughcredits")));
+			}
+		}
+		return $this->render('Payment/realmPack.html.twig', [
+			'desigs'=>$all,
 			'form'=>$form->createView()
 		]);
 	}

@@ -11,7 +11,7 @@ status:
   vassal:			    You are a vassal of %liege%.
   realm:        You are a member of %realm%
   ultimate:     You are an independent leader, but have not formed a realm yet.
-  liege:        Liege of:
+  liege:        "Liege of:"
   position:     "%position% of %realm%."
   househead:    You are head of the %house%
   housememb:    You are part of the %house%
@@ -36,7 +36,7 @@ status:
   positionvassal: "%He% is a vassal of the position of %liege% in %realm%."
   realm:        "%He% is a member of %realm%"
   ultimate:     "%He% is an independent leader, but has not formed a realm yet."
-  liege:        Liege of:
+  liege:        "Liege of:"
   househead:    "%He% is head of the %house%"
   housememb:    "%He% is part of the %house%"
   liegeplace:   "%He% is a knight of the place of %liege% in the realm of %realm%."
@@ -233,7 +233,7 @@ partners:
    Only public relationships will be shown to other players. Only relationships that include sex allow both partners to create
    new characters with these partners as parents.
  none:      You do not have any partnerships (such as a marriage or a liason) at this time.
- several:   You have several partnerships going at this time, namely:
+ several:   "You have several partnerships going at this time, namely:"
  new:
   name:     New relationships
   intro:    You can propose a new relation to any nearby character. He or she will have to accept in order for the relation to become active.
@@ -374,7 +374,9 @@ realm:
  colour:      Official Color
  language:    Official Language
  description2: Description
- designation: Designation
+ designation:
+  title:      Designation
+  empire:       Empire
  ruler:       Ruler|Rulers
  history:     Realm History
  details:     Realm Details
@@ -428,14 +430,14 @@ realm:
    inactive: Forbid new arrivals from joining here
 
 position:
- name:          Title:
+ name:          "Title:"
  description:   Formal Description
  elected:       Position is elected?
  inherit:       Position is inherited?
  rank:          In what order should this position appear on lists?
  type:          Type of Position
  keepslumber:   Position kept on slumber?
- term:          Length of Position Term:
+ term:          "Length of Position Term:"
  terms:
   0:            For Life
   365:          Four Game Years (1 Year Real Time)
@@ -541,7 +543,7 @@ diplomacy:
   via:          Available via
   submit:       Join realm
   noothers:     No realms to join available.
-  unavailable:  Realms that have nobles nearby but are not available to join, and the reasons why:
+  unavailable:  "Realms that have nobles nearby but are not available to join, and the reasons why:"
   unavail:
    type:        Does not have a higher designation than your realm.
    current:     Is your current superior realm.
@@ -603,7 +605,7 @@ diplomacy:
   theirstatus: Their status
   new:
    title:     New Relation
-   intro:     To create a diplomatic relation with a realm, follow this link:
+   intro:     "To create a diplomatic relation with a realm, follow this link:"
    link:      Create new relation
   edit:       Edit relation
   delete:     Remove our relation
@@ -667,7 +669,7 @@ lists:
   add:       Add new member
   del:       Remove
   none:      No members defined
-  inherited: Inherited rules:
+  inherited: "Inherited rules:"
  submit:     Update list
  updated:    The list has been updated.
  searchinfo: >
@@ -676,7 +678,7 @@ lists:
  changes:     You have unsaved changes.
  delete:
   submit:       Delete this list
-  locked:       You cannot delete this list at this time, because:
+  locked:       "You cannot delete this list at this time, because:"
   used:         It is used in settlement permissions.
   descendants:  Other lists inherit from it.
   done:         The list "%name%" has been deleted.
@@ -980,13 +982,13 @@ house:
      As a member of the defunct house of <b>%name%</b> it is within your abilities to re-establish the House under your control, regardless of what others may think about this.<br /><br />
      Please be aware though, that this puts you, specifically, in charge. If you want someone else to run the House, have them use this action instead.
   applicant:
-   preamble:    You've received a request to join the House from %link-character%, on %date%, as follows:
+   preamble:    "You've received a request to join the House from %link-character%, on %date%, as follows:"
    approve:     Approve
    approved:    The applcation from %character% has been approved.
    deny:        Deny
    denied:      The applcation from %character% has been denied.
   cadet:
-   preamble:    You've received an offer of cadetship from %link-character% of %link-house%, on %date%, as follows:
+   preamble:    "You've received an offer of cadetship from %link-character% of %link-house%, on %date%, as follows:"
    approve:     Approve
    approved:    The cadetship from %character% of %house% has been approved.
    deny:        Deny
@@ -999,13 +1001,13 @@ house:
    subject: Offer Subject
    text:    Offer Text
   uncadet:
-   preamble:    You've received an request for disassociation from %link-character% of the cadet %link-house%, on %date%, as follows:
+   preamble:    "You've received an request for disassociation from %link-character% of the cadet %link-house%, on %date%, as follows:"
    approve:     Approve
    approved:    The disassociation request from %character% of %house% has been approved.
    deny:        Deny
    denied:      The disassociation request from %character% of %house% has been denied.
   subcreate:
-   preamble:    You've received a request for the right to create a cadet house from %character%, on %date%, as follows:
+   preamble:    "You've received a request for the right to create a cadet house from %character%, on %date%, as follows:"
    approve:    Approve
    approved:   The request to create a cadet house has been approved.
    deny:       Deny

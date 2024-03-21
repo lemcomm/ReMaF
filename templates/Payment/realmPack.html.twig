@@ -1,0 +1,31 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+<h2>{{ 'account.realmpack.title'|trans|title }}</h2>
+<p>{{ 'account.realmpack.intro'|trans|raw }}</p>
+
+	<table>
+		<thead>
+			<tr>
+				<th>{{ 'account.realmpack.name'|trans }}</th>
+				<th>{{ 'account.realmpack.min'|trans }}</th>
+				<th>{{ 'account.realmpack.max'|trans }}</th>
+				<th>{{ 'account.realmpack.paid'|trans }}</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for desig in desigs %}
+				<tr>
+					<td>{{ ('realm.designation.'~desig.name)|trans({}, "politics") }}</td>
+					<td>{{ 'account.realmpack.min'|trans }}</td>
+					<td>{{ 'account.realmpack.max'|trans }}</td>
+					<td>{% if desig.paid %}
+						{{ 'account.realmpack.paid'|trans }}
+					{% else %}
+						{{ 'account.realmpack.free'|trans }}
+					{% endif %}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

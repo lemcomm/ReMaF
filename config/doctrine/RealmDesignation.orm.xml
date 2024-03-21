@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="App\Entity\RealmDesignation">
+		<id name="id" type="integer">
+			<generator strategy="IDENTITY"/>
+		</id>
+		<field name="paid" type="boolean" nullable="true"/>
+		<field name="min_tier" type="integer" nullable="true"/>
+		<field name="max_tier" type="integer" nullable="true"/>
+		<field name="name" type="string" nullable="true"/>
+	</entity>
+</doctrine-mapping>
