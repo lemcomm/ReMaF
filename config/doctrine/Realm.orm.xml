@@ -10,6 +10,7 @@
 		<many-to-one field="capital" target-entity="Settlement" inversed-by="capital_of"/>
 
 		<field name="type" type="smallint"/>
+		<many-to-one field="designation" target-entity="App\Entity\RealmDesignation"/>
 		<field name="colour_hex" type="string"/>
 		<field name="colour_rgb" type="string"/>
 		<field name="language" type="string" nullable="true"/>

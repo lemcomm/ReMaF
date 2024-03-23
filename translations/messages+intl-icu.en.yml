@@ -454,7 +454,7 @@ account:
     other players if you so desire.<br><br>
     Like name packs and heraldry, these have zero mechanical impact in game, and the purchase goes 
     towards helping us offset the cost of maintaining the game server.
-  buy:      Buy Realm Pack
+  select:      Buy Realm Pack
   purchase: Complete Purchase
   name:     Realm Title
   min:      Minimum Tier
@@ -468,6 +468,7 @@ account:
    min:   Realm Minimum Tier
    max:   Realm Maximum Tier
   bought: Thank you for your purchase. You will find these options availabe in game as part of the realm and realm position management screens.
+  already: You already own this pack.
  notenoughcredits:   You do not have enough credits for this purchase.
 
  gift:

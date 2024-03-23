@@ -41,6 +41,7 @@ class Realm extends Faction {
 	private ?Settlement $capital;
 	private ?Realm $superior;
 	private ?Place $capital_place;
+	private ?RealmDesignation $designation;
 
 	/**
 	 * Constructor
@@ -1226,6 +1227,15 @@ class Realm extends Faction {
 	public function setCapitalPlace(Place $capitalPlace = null): static {
 		$this->capital_place = $capitalPlace;
 
+		return $this;
+	}
+
+	public function getDesignation(): ?RealmDesignation {
+		return $this->designation;
+	}
+
+	public function setDesignation(RealmDesignation $designation = null): static {
+		$this->designation = $designation;
 		return $this;
 	}
 }

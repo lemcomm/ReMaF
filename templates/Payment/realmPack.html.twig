@@ -3,7 +3,6 @@
 {% block content %}
 <h2>{{ 'account.realmpack.title'|trans|title }}</h2>
 <p>{{ 'account.realmpack.intro'|trans|raw }}</p>
-
 	<table>
 		<thead>
 			<tr>
@@ -17,15 +16,24 @@
 			{% for desig in desigs %}
 				<tr>
 					<td>{{ ('realm.designation.'~desig.name)|trans({}, "politics") }}</td>
-					<td>{{ 'account.realmpack.min'|trans }}</td>
-					<td>{{ 'account.realmpack.max'|trans }}</td>
-					<td>{% if desig.paid %}
-						{{ 'account.realmpack.paid'|trans }}
-					{% else %}
-						{{ 'account.realmpack.free'|trans }}
-					{% endif %}</td>
+					<td>{{ desig.minTier }}</td>
+					<td>{{ desig.maxtier|trans }}</td>
+					<td>
+						{% if desig.paid %}
+							{{ 'yes'|trans }}
+						{% else %}
+							{{ 'no'|trans }}
+						{% endif %}
+					</td>
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
+	<br><br>
+	{% if not already %}
+		{{ form(form) }}
+	{% else %}
+		{{ 'account.realmpack.already'|trans }}
+	{% endif %}
+
 {% endblock %}

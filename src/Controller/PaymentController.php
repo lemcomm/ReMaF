@@ -332,8 +332,10 @@ class PaymentController extends AbstractController {
 		$form = $this->createForm(AreYouSureType::class, null, ['translation_domain'=>'messages', 'label'=>'account.realmpack.select', 'submit'=>'account.realmpack.purchase']);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			if ($this->pay->spend($this->getUser(), "realm pack", 500)) {
-				$user->getUserLimits()->setRealmPack(true);
+			if ($user->getLimits()->getRealmpack()) {
+				$form->addError(new FormError($this->trans->trans("account.alreadyowned")));
+			} elseif ($this->pay->spend($this->getUser(), "realm pack", 500)) {
+				$user->getLimits()->setRealmPack(true);
 				$this->em->flush();
 				$this->addFlash('notice', $this->trans->trans("account.realmpack.bought"));
 				return $this->redirectToRoute('maf_payment_credits');
@@ -342,6 +344,7 @@ class PaymentController extends AbstractController {
 			}
 		}
 		return $this->render('Payment/realmPack.html.twig', [
+			'already'=>$user->getLimits()->getRealmPack(),
 			'desigs'=>$all,
 			'form'=>$form->createView()
 		]);

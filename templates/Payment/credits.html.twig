@@ -20,12 +20,7 @@
 	<h3>{{ 'account.credits.shop'|trans|title }}</h3>
 	<p>{{ 'account.credits.shopdesc'|trans|raw }}</p>
 
-	<ul class="buttonlist">
-		<li><a href="{{ path("maf_heraldry") }}">{{ 'account.heraldry.link'|trans|title }}</a></li>
-		<li><a href="{{ path("maf_artifact_owned") }}">{{ 'account.artifacts.link'|trans|title }}</a></li>
-		<li><a href="{{ path("maf_payment_culture") }}">{{ 'account.culture.link'|trans|title }}</a></li>
-		<li><a href="{{ path("maf_payment_realmpack") }}">{{ 'account.realmpack.link'|trans|title }}</a></li>
-	</ul>
+	{% include "element/buyables.html.twig" %}
 
 </div>
 <div data-role="collapsible" class="topspace">

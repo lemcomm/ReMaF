@@ -2,11 +2,13 @@
 
 namespace App\Command;
 
+use App\Entity\RealmDesignation;
 use App\Service\GameRunner;
 use App\Service\NotificationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -22,8 +24,8 @@ class UpdateDatabaseCommand extends  Command {
 	}
 	protected function configure() {
 		$this
-			->setName('maf:database:update')
-			->setDescription('Update in-game database entries.')
+			->setName('maf:update:001')
+			->setDescription('Update pre-ReMaF to ReMaF')
 		;
 	}
 
@@ -46,6 +48,31 @@ class UpdateDatabaseCommand extends  Command {
 		$output->writeln('Updating Realms Complete');
 		$output->writeln('Updating User Payment Statuses');
 		$em->createQuery('UPDATE App:UserLimits u SET u.artifact_sub_bonus = true WHERE u.artifacts > 0');
+		$output->writeln('Loading Realm Designation Data');
+		$fixtureInput = new ArrayInput([
+			'command' => 'doctrine:fixtures:load',
+			'--group' => 'LoadRealmDesignationData',
+			'--append' => true,
+		]);
+		$this->getApplication()->doRun($fixtureInput, $output);
+		$output->writeln('Realm Designation Data Loaded');
+		$output->writeln('Updating Realm Designations');
+		$desRepo = $em->getRepository(RealmDesignation::class);
+		$des = $desRepo->findOneBy(['name'=>'empire'])->getId();
+		$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 9')->setParameters(['des'=>$des])->execute();
+		$des = $desRepo->findOneBy(['name'=>'kingdom'])->getId();
+		$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 8')->setParameters(['des'=>$des])->execute();
+		$des = $desRepo->findOneBy(['name'=>'principality'])->getId();
+		$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 7')->setParameters(['des'=>$des])->execute();
+		$des = $desRepo->findOneBy(['name'=>'duchy'])->getId();
+		$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 6')->setParameters(['des'=>$des])->execute();
+		$des = $desRepo->findOneBy(['name'=>'march'])->getId();
+		$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 5')->setParameters(['des'=>$des])->execute();
+		$des = $desRepo->findOneBy(['name'=>'county'])->getId();
+		$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 4')->setParameters(['des'=>$des])->execute();
+		$des = $desRepo->findOneBy(['name'=>'barony'])->getId();
+		$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 2')->setParameters(['des'=>$des])->execute();
+		$output->writeln('Realm Designations Updated');
 		return Command::SUCCESS;
 	}
 }

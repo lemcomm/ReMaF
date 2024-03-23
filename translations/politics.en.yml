@@ -377,11 +377,60 @@ realm:
  designation:
   title:      Designation
   empire:       Empire
+  high kingdom: High Kingdom
+  khaganate:    Khaganate
+  tsardom:      Tsardom
+  holy empire:  Holy Empire
+  shahanshahi:  Shahanshahi
+  kingdom:      Kingdom
+  grand republic: Grand Republic
+  khanate:      Khanate
+  shogunate:    Shogunate
+  holy kingdom: Holy Kingdom
+  shahlik:      Shahlik
+  malikate:     Malikate
+  principality: Principality
+  republic:     Republic
+  grand duchy:  Grand Duchy
+  archduchy:    Archduchy
+  holy state:   Holy State
+  archbishopric: Archbishopric
+  han:          Han
+  emirate:      Emirate
+  duchy:        Duchy
+  petty kingdom: Petty Kingdom
+  jarldom:      Jarldom
+  state:        State
+  holy order:   Holy Order
+  beylerbeylik: Beylerbeylik
+  march:        March
+  palatinate:   Palatinate
+  province:     Province
+  tribal kingdom: Tribal Kingdom
+  bishopric:    Bishopric
+  holy chapter: Holy Chapter
+  fanzhen:      Fanzhen
+  pashalik:     Pashalik
+  county:       County
+  earldom:      Earldom
+  beylik:       Beylik
+  viscounty:    Viscounty
+  district:     District
+  high chiefdom: High Chiefdom
+  sheikdom:     Sheikdom
+  barony:       Barony
+  chiefdom:     Chiefdom
+  baronet:      Baronet
+  lordship:     Lordship
+  municipality: Municipality
+  tribe:        Tribe
+  shoen:        Shoen
  ruler:       Ruler|Rulers
  history:     Realm History
  details:     Realm Details
  size:        Size
  type:
+  title: Tier
   1: Barony
   2: County
   3: March
