@@ -78,6 +78,12 @@
                                                                 {% endfor %}
                                                         </ul>
                                                 {% endif %}
+                                                <ul class="cmsg_flags">
+                                                    <li><button class="cmsg_icon icon-star3{% if message.findTag(char, "important") %} active{% endif %}" title="{{ 'flag.important'|trans({}, "conversations") }}" data-msg="{{ message.id }}" data-flag="important"></button></li>
+                                                    <li><button class="cmsg_icon icon-lightning{% if message.findTag(char, "act") %} active{% endif %}" title="{{ 'flag.act'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="act"></button></li>
+                                                    <li><button class="cmsg_icon icon-history{% if message.findTag(char, "remind") %} active{% endif %}" title="{{ 'flag.remind'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="remind"></button></li>
+                                                    <li><button class="cmsg_icon icon-drawer2{% if message.findTag(char, "keep") %} active{% endif %}" title="{{ 'flag.keep'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="keep"></button></li>
+                                                </ul>
                                         </div>
                                 {% endif %}
                         </div>

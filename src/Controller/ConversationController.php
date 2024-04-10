@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\MessageTag;
 use App\Service\ConversationManager;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\Geography;
@@ -386,7 +387,8 @@ class ConversationController extends AbstractController {
 		}
 		return $this->render('Conversation/recent.html.twig', [
 			'messages' => $all,
-			'period' => $window
+			'period' => $window,
+			'char' => $char
 		]);
 	}
 
@@ -470,6 +472,7 @@ class ConversationController extends AbstractController {
 				'known' => $known,
 				'archive'=> false,
 				'gm' => $gm,
+				'char' => $char
 			]);
 		} else {
 			if ($override) {
@@ -486,6 +489,7 @@ class ConversationController extends AbstractController {
 				'active'=> $override ? false : $lastPerm->getActive(),
 				'archive'=> false,
 				'gm' => $gm,
+				'char' => $char
 			]);
 		}
 	}
@@ -530,7 +534,8 @@ class ConversationController extends AbstractController {
 			'local'=> true,
 			'active'=> false,
 			'manager'=> false,
-			'archive'=> false
+			'archive'=> false,
+			'char' => $char
 		]);
 	}
 
@@ -888,7 +893,7 @@ class ConversationController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/conv//local/reply', name:'maf_conv_local_reply')]
+	#[Route ('/conv/local/reply', name:'maf_conv_local_reply')]
 	public function replyLocalAction(Request $request): RedirectResponse|Response {
                 $char = $this->dispatcher->gateway('conversationLocalReplyTest');
 
@@ -949,6 +954,47 @@ class ConversationController extends AbstractController {
 			return new RedirectResponse($this->generateUrl($url).'#'.$nextOldest[0]->getId());
 		} else {
 			return new RedirectResponse($this->generateUrl($url));
+		}
+	}
+
+	#[Route ('/conv/flag', name:'maf_conv_flag')]
+	public function messageFlagAction(Request $request): Response {
+		(int) $msg = $request->request->get('msg');
+		if ($msg) {
+			$msg = $this->em->getRepository(Message::class)->findOneBy(['id'=>$msg]);
+		} else {
+			return new Response('invalid msg');
+		}
+		if ($msg) {
+			(string) $flag = $request->request->get('flag');
+			if ($flag) {
+				$char = $this->dispatcher->gateway(test: 'conversationMessageFlagTest', option: $msg->getConversation());
+				if (! $char instanceof Character) {
+					return new Response('invalid user');
+				}
+				$tag = $msg->findTag($char);
+				if ($tag && $tag->getType() === $flag) {
+					$this->em->remove($tag);
+					$this->em->flush();
+					return new Response('removed');
+				} elseif ($tag) {
+					$tag->setType($flag);
+					$this->em->flush();
+					return new Response('changed');
+				} else {
+					$tag = new MessageTag;
+					$tag->setCharacter($char);
+					$tag->setMessage($msg);
+					$this->em->persist($tag);
+					$tag->setType($flag);
+					$this->em->flush();
+					return new Response('added');
+				}
+			} else {
+				return new Response('invalid flag');
+			}
+		} else {
+			return new Response('invalid msg');
 		}
 	}
 }

@@ -85,14 +85,15 @@
 								{% endfor %}
 							</ul>
 						{% endif %}
-						{# Flags currently removed.
-						<ul class="cmsg_flags">
-							<li><button class="cmsg_icon icon-star3{% if meta and meta.hasflagbyname("important") %} active{% endif %}" title="{{ 'flag.important'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="important"></button></li>
-							<li><button class="cmsg_icon icon-lightning{% if meta and meta.hasflagbyname("act") %} active{% endif %}" title="{{ 'flag.act'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="act"></button></li>
-							<li><button class="cmsg_icon icon-history{% if meta and meta.hasflagbyname("remind") %} active{% endif %}" title="{{ 'flag.remind'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="remind"></button></li>
-							<li><button class="cmsg_icon icon-drawer2{% if meta and meta.hasflagbyname("keep") %} active{% endif %}" title="{{ 'flag.keep'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="keep"></button></li>
-						</ul>
-						#}
+						{% if not archive %}
+							{% set tag = message.findTag(char) %}
+							<ul class="cmsg_flags">
+								<li><button class="cmsg_icon icon-star3{% if tag and tag.type == "important" %} active{% endif %}" title="{{ 'flag.important'|trans({}, "conversations") }}" data-msg="{{ message.id }}" data-flag="important"></button></li>
+								<li><button class="cmsg_icon icon-lightning{% if tag and  tag.type == "act" %} active{% endif %}" title="{{ 'flag.act'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="act"></button></li>
+								<li><button class="cmsg_icon icon-history{% if tag and  tag.type == "remind" %} active{% endif %}" title="{{ 'flag.remind'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="remind"></button></li>
+								<li><button class="cmsg_icon icon-drawer2{% if tag and  tag.type == "keep" %} active{% endif %}" title="{{ 'flag.keep'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="keep"></button></li>
+							</ul>
+						{% endif %}
 					</div>
 				{% else %}
 						<i>{{ (message.content ~ ' -- ' ~ (message.cycle|gametime("short")) ~ ' (' ~ (message.sent|date) ~ ')')|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}</i>

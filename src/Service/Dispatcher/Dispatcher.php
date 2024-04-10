@@ -2668,6 +2668,13 @@ class Dispatcher {
 		return ["name"=>"conv.localreply.name", "url"=>"maf_conv_local_reply", "description"=>"conv.localreply.description"];
 	}
 
+	public function conversationMessageFlagTest($ignored, Conversation $conv=null): array {
+		if ($conv && $conv->findCharPermissions($this->getCharacter())) {
+			return ["name"=>"conv.flag.name", "url"=>"maf_conv_flag", "description"=>"conv.flag.description"];
+		}
+		return ["name"=>"conv.flag", "description"=>"unavailable.nocharacter"];
+	}
+
 	/* ========== Journal Tests ============== */
 
 

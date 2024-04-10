@@ -36,13 +36,11 @@ class RealmPositionType extends AbstractType {
 			$is_ruler = false;
 		}
 
-		if (!$is_ruler) {
-			$builder->add('name', TextType::class, array(
-				'label'=>'position.name',
-				'required'=>true,
-				'attr' => array('size'=>20, 'maxlength'=>40)
-			));
-		}
+		$builder->add('name', TextType::class, array(
+			'label'=>'position.name',
+			'required'=>true,
+			'attr' => array('size'=>20, 'maxlength'=>40)
+		));
 		$builder->add('description', TextareaType::class, array(
 			'label'=>'position.description',
 			'required'=>true,

@@ -50,29 +50,20 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /*
 	FIXME: some of this stuff should be moved to the realm manager service
-*/
-
-/*
 	TODO: ability to group up sub-realms into a larger sub-realm (i.e. insert a level)
 */
 
 class RealmController extends AbstractController {
 
 	private array $hierarchy=[];
-	private Dispatcher $disp;
-	private EntityManagerInterface $em;
-	private TranslatorInterface $trans;
-	private History $hist;
-	private RealmManager $rm;
-	private Geography $geo;
 
-	public function __construct(Dispatcher $disp, EntityManagerInterface $em, Geography $geo, History $hist, RealmManager $rm, TranslatorInterface $trans) {
-		$this->disp = $disp;
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->hist = $hist;
-		$this->rm = $rm;
-		$this->trans = $trans;
+	public function __construct(
+		private Dispatcher $disp,
+		private EntityManagerInterface $em,
+		private Geography $geo,
+		private History $hist,
+		private RealmManager $rm,
+		private TranslatorInterface $trans) {
 	}
 	
 	private function gateway($realm=false, $test=false) {

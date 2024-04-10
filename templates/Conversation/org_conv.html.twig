@@ -31,7 +31,7 @@
 	{% endif %}
 
 	{% set in_hidden = false %}
-	{% include 'Conversation/msg_loop.html.twig' with {'messages': messages, 'privacy': privacy, 'known':known, 'in_hidden': in_hidden} %}
+	{% include 'Conversation/msg_loop.html.twig' with {'char':char, 'messages': messages, 'privacy': privacy, 'known':known, 'in_hidden': in_hidden} %}
 	{% if in_hidden == true %}
 		</div>
 	{% endif %}

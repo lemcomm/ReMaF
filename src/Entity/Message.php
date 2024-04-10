@@ -402,4 +402,13 @@ class Message {
 	public function isRead(): ?bool {
 		return $this->read;
 	}
+
+	public function findTag(Character $char) {
+		foreach ($this->getTags() as $tag) {
+			if ($tag->getCharacter() === $char) {
+				return $tag;
+			}
+		}
+		return false;
+	}
 }
