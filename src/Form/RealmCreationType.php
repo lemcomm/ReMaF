@@ -2,8 +2,11 @@
 
 namespace App\Form;
 
+use App\Entity\RealmDesignation;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -36,8 +39,8 @@ class RealmCreationType extends AbstractType {
 		));
 
 		$realmtypes = array();
-		for ($i=1;$i<7;$i++) {
-			$realmtypes[$i] = 'realm.type.'.$i;
+		for ($i=1;$i<9;$i++) {
+			$realmtypes['realm.type.'.$i] = $i;
 		}
 
 		$builder->add('type', ChoiceType::class, array(
@@ -46,5 +49,9 @@ class RealmCreationType extends AbstractType {
 			'label'=> 'realm.designation',
 			'placeholder' => 'realm.new.choose',
 		));
+
+		$builder->add('submit', SubmitType::class, [
+			'label'=>'realm.manage.submit'
+		]);
 	}
 }

@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Character;
 use App\Entity\Election;
 use App\Entity\Realm;
+use App\Entity\RealmDesignation;
 use App\Entity\RealmPosition;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -80,6 +81,7 @@ class RealmManager {
 		$realm->setType($type);
 		$realm->setColourHex('#cccccc');
 		$realm->setColourRgb('204,204,204');
+		$realm->setDesignation($this->em->getRepository(RealmDesignation::class)->findOneBy(['paid'=>false, 'max_tier'=>$type]));
 		$this->em->persist($realm);
 		$this->em->flush($realm); // or we don't have a realm ID that we need below
 

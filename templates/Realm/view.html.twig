@@ -34,7 +34,7 @@
 	<dt>{{ 'realm.name'|trans({},"politics") }}</dt>
 	<dd>{{ realm.name }}</dd>
 	<dt>{{ 'realm.designation.title'|trans({},"politics") }}</dt>
-	<dd>{{ ('realm.designation.'~realm.type)|trans({},"politics") }}</dd>
+	{% if realm.designation %}<dd>{{ ('realm.designation.'~realm.designation.name)|trans({},"politics") }}</dd>{% else %}<dd>{{ ('realm.type.'~realm.type)|trans({},"politics") }}</dd>{% endif %}
 	<dt>{{ 'realm.type.title'|trans({},"politics") }}</dt>
 	<dd>{{ ('realm.type.'~realm.type)|trans({},"politics") }}</dd>
 	<dt>{{ 'realm.capital.name0'|trans({},"politics") }}</dt>

@@ -230,7 +230,16 @@ class RealmController extends AbstractController {
 		} else {
 			$max = 0;
 		}
-		$form = $this->createForm(RealmManageType::class, $realm, ['min'=>$min, 'max'=>$max]);
+		if ($character->getUser()->getLimits()->getRealmPack()) {
+			$desigs = $this->em->createQuery('SELECT r FROM App:RealmDesignation r WHERE r.min_tier >= :type AND r.max_tier <= :type ORDER BY r.max_tier DESC, r.name ASC')
+				->setParameters(['type'=>$realm->getType()])
+				->getResult();
+		} else {
+			$desigs = $this->em->createQuery('SELECT r FROM App:RealmDesignation r WHERE r.min_tier >= :type AND r.max_tier <= :type AND r.paid = false ORDER BY r.max_tier DESC, r.name ASC')
+				->setParameters(['type'=>$realm->getType()])
+				->getResult();
+		}
+		$form = $this->createForm(RealmManageType::class, $realm, ['min'=>$min, 'max'=>$max, 'designations' => $desigs]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
@@ -253,6 +262,7 @@ class RealmController extends AbstractController {
 				}
 				$this->em->flush();
 				$this->addFlash('notice', $this->trans->trans('realm.manage.success', array(), 'politics'));
+				return $this->redirectToRoute('maf_politics_realms');
 			}
 		}
 
