@@ -129,6 +129,7 @@ class Character {
 	private Collection $partnerships;
 	private Collection $positions;
 	private Collection $battlegroups;
+	private Collection $chat_messages;
 
 	public function __construct() {
 		$this->achievements = new ArrayCollection();
@@ -184,6 +185,7 @@ class Character {
 		$this->partnerships = new ArrayCollection();
 		$this->positions = new ArrayCollection();
 		$this->battlegroups = new ArrayCollection();
+		$this->chat_messages = new ArrayCollection();
 	}
 
 	public function __toString() {
@@ -3795,19 +3797,34 @@ class Character {
 		return $this;
 	}
 
-	public function isAutoReadRealms(): ?bool {
-		return $this->auto_read_realms;
+	/**
+	 * Add messages
+	 *
+	 * @param ChatMessage $messages
+	 *
+	 * @return Character
+	 */
+	public function addChatMessage(ChatMessage $messages): static {
+		$this->chat_messages[] = $messages;
+
+		return $this;
 	}
 
-	public function isAutoReadAssocs(): ?bool {
-		return $this->auto_read_assocs;
+	/**
+	 * Remove messages
+	 *
+	 * @param ChatMessage $messages
+	 */
+	public function removeChatMessage(ChatMessage $messages): void {
+		$this->chat_messages->removeElement($messages);
 	}
 
-	public function isAutoReadHouse(): ?bool {
-		return $this->auto_read_house;
-	}
-
-	public function isNonHeteroOptions(): ?bool {
-		return $this->non_hetero_options;
+	/**
+	 * Get messages
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getChatMessages(): ArrayCollection|Collection {
+		return $this->chat_messages;
 	}
 }

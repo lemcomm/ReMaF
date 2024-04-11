@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\ChatMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Psr\Log\LoggerInterface;
@@ -110,22 +111,6 @@ class DungeonMaster {
 		return true;
 	}
 
-	public function postMessage(Dungeoneer $sender, $content): bool {
-		if (!$sender->isInDungeon()) {
-			return false;
-		}
-
-		$msg = new DungeonMessage;
-		$msg->setTs(new \DateTime("now"));
-		$msg->setSender($sender);
-		$msg->setParty($sender->getParty());
-		$msg->setContent($content);
-
-		$this->em->persist($msg);
-		return true;
-	}
-
-
 	public function joinDungeon(Dungeoneer $dungeoneer, Dungeon $dungeon): true|string {
 		if ($dungeoneer->isInDungeon()) {
 			return 'busy';
@@ -160,7 +145,7 @@ class DungeonMaster {
 
 
 	public function startDungeon(Dungeon $dungeon): void {
-		list($party, $missing, $wait) = $this->calculateTurnTime($dungeon);
+		[$party, $missing, $wait] = $this->calculateTurnTime($dungeon);
 		if ($party < $this->min_party_size) return; // party must consist of the minimum party size defined at top. --Andrew
 		if ($missing > $party*0.75) return; // don't start until at least three-quarters of the party has selected an action. Up from half. --Andrew
 		// FIXME: the above has the potential to blockade dungeons - long timer for kick?
@@ -179,7 +164,7 @@ class DungeonMaster {
 	}
 
 	public function runDungeon(Dungeon $dungeon): void {
-		list($party_size, $missing, $wait) = $this->calculateTurnTime($dungeon);
+		[$party_size, $missing, $wait] = $this->calculateTurnTime($dungeon);
 		if ($party_size==0) return; // no one here
 		if (!$dungeon->getCurrentLevel()) return; // not yet started
 		$party = $dungeon->getParty();

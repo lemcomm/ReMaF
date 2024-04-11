@@ -12,6 +12,7 @@ use App\Entity\GeoFeature;
 use App\Entity\Spawn;
 use App\Form\AreYouSureType;
 use App\Form\AssocSelectType;
+use App\Form\ChatType;
 use App\Form\DescriptionNewType;
 use App\Form\InteractionType;
 use App\Form\PlacePermissionsSetType;
@@ -32,6 +33,7 @@ use App\Service\Politics;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -849,5 +851,4 @@ class PlaceController extends AbstractController {
 			'form'=>$form->createView()
 		]);
 	}
-
 }

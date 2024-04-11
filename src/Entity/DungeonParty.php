@@ -2,16 +2,17 @@
 
 namespace App\Entity;
 
+use App\Interface\ChatLocationInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class DungeonParty {
+class DungeonParty implements ChatLocationInterface {
 	private int $counter;
 	private ?int $id = null;
 	private ?Dungeon $dungeon;
 	private ?DungeonLevel $current_level;
 	private Collection $members;
-	private Collection $messages;
+	private Collection $chat_messages;
 	private Collection $events;
 
 	/**
@@ -19,7 +20,7 @@ class DungeonParty {
 	 */
 	public function __construct() {
 		$this->members = new ArrayCollection();
-		$this->messages = new ArrayCollection();
+		$this->chat_messages = new ArrayCollection();
 		$this->events = new ArrayCollection();
 	}
 
@@ -142,12 +143,12 @@ class DungeonParty {
 	/**
 	 * Add messages
 	 *
-	 * @param DungeonMessage $messages
+	 * @param ChatMessage $messages
 	 *
 	 * @return DungeonParty
 	 */
-	public function addMessage(DungeonMessage $messages): static {
-		$this->messages[] = $messages;
+	public function addMessage(ChatMessage $messages): static {
+		$this->chat_messages[] = $messages;
 
 		return $this;
 	}
@@ -155,10 +156,10 @@ class DungeonParty {
 	/**
 	 * Remove messages
 	 *
-	 * @param DungeonMessage $messages
+	 * @param ChatMessage $messages
 	 */
-	public function removeMessage(DungeonMessage $messages): void {
-		$this->messages->removeElement($messages);
+	public function removeMessage(ChatMessage $messages): void {
+		$this->chat_messages->removeElement($messages);
 	}
 
 	/**
@@ -167,7 +168,7 @@ class DungeonParty {
 	 * @return ArrayCollection|Collection
 	 */
 	public function getMessages(): ArrayCollection|Collection {
-		return $this->messages;
+		return $this->chat_messages;
 	}
 
 	/**
@@ -199,5 +200,9 @@ class DungeonParty {
 	 */
 	public function getEvents(): ArrayCollection|Collection {
 		return $this->events;
+	}
+
+	public function getChatMembers(): ArrayCollection|Collection {
+		return $this->getActiveMembers();
 	}
 }

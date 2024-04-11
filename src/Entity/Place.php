@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
+use App\Interface\ChatLocationInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
-class Place {
+class Place implements ChatLocationInterface {
 	private string $name;
 	private string $formal_name;
 	private ?bool $visible;
@@ -55,6 +56,7 @@ class Place {
 	private ?Realm $occupier;
 	private ?GeoData $geo_data;
 	private Collection $upgrades;
+	private Collection $chat_messages;
 
 	/**
 	 * Constructor
@@ -79,6 +81,7 @@ class Place {
 		$this->associations = new ArrayCollection();
 		$this->battles = new ArrayCollection();
 		$this->upgrades = new ArrayCollection();
+		$this->chat_messages = new ArrayCollection();
 	}
 
 	public function isFortified(): bool {
@@ -117,6 +120,10 @@ class Place {
 			}
 		}
 		return $defenders;
+	}
+
+	public function getChatMembers(): ArrayCollection|Collection {
+		return $this->getCharactersPresent();
 	}
 
 	/**
@@ -1361,19 +1368,34 @@ class Place {
 		return $this->upgrades;
 	}
 
-	public function isVisible(): ?bool {
-		return $this->visible;
+	/**
+	 * Add messages
+	 *
+	 * @param ChatMessage $messages
+	 *
+	 * @return Place
+	 */
+	public function addMessage(ChatMessage $messages): static {
+		$this->chat_messages[] = $messages;
+
+		return $this;
 	}
 
-	public function isActive(): ?bool {
-		return $this->active;
+	/**
+	 * Remove messages
+	 *
+	 * @param ChatMessage $messages
+	 */
+	public function removeMessage(ChatMessage $messages): void {
+		$this->chat_messages->removeElement($messages);
 	}
 
-	public function isPublic(): ?bool {
-		return $this->public;
-	}
-
-	public function isDestroyed(): ?bool {
-		return $this->destroyed;
+	/**
+	 * Get messages
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMessages(): ArrayCollection|Collection {
+		return $this->chat_messages;
 	}
 }

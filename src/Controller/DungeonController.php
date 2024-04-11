@@ -148,39 +148,6 @@ class DungeonController extends AbstractController {
 	}
 
 	/**
-	 * @param Request $request
-	 * @return RedirectResponse|Response
-	 * @throws Exception
-	 */
-	#[Route ('/dungeon/chat', name:'maf_dungeon_chat')]
-	public function chatAction(Request $request): RedirectResponse|Response {
-		$dungeoneer = $this->gateway();
-
-		$chat = $this->createForm(ChatType::class);
-		$chat->handleRequest($request);
-		if ($chat->isSubmitted() && $chat->isValid()) {
-			$msg = $chat->getData();
-			if (strlen($msg->getContent())>200) {
-				$chat->addError(new FormError("chat.long"));
-			} else {
-				$msg->setSender($dungeoneer);
-				$msg->setTs(new DateTime("now"));
-				$msg->setParty($dungeoneer->getParty());
-				$dungeoneer->getParty()->addMessage($msg);
-				$this->em->persist($msg);
-				$this->em->flush();
-			}
-			return $this->redirectToRoute('maf_dungeon');
-		}
-
-		return $this->render('Dungeon/chat.html.twig', [
-			'dungeon' => $dungeoneer->getCurrentDungeon(),
-			'messages' => $dungeoneer->getParty()->getMessages(),
-			'chat' => $chat->createView()
-		]);
-	}
-
-	/**
 	 * @return Response
 	 * @throws Exception
 	 */

@@ -18,7 +18,6 @@
 		<one-to-many field="cards" target-entity="DungeonCard" mapped-by="owner"/>
 
 		<many-to-one field="party" target-entity="DungeonParty" inversed-by="members"/>
-		<one-to-many field="messages" target-entity="DungeonMessage" mapped-by="sender"/>
 
 		<many-to-one field="target_dungeoneer" target-entity="Dungeoneer" inversed-by="targeted_by"/>
 		<one-to-many field="targeted_by" target-entity="Dungeoneer" mapped-by="target_dungeoneer"/>

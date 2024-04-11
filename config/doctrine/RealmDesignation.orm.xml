@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<entity name="App\Entity\RealmDesignation">
+	<entity name="App\Entity\RealmDesignation" table="types.realm_designation">
 		<id name="id" type="integer">
 			<generator strategy="IDENTITY"/>
 		</id>

@@ -57,6 +57,7 @@ class Settlement {
 	private ?Realm $realm;
 	private ?Character $occupant;
 	private ?Realm $occupier;
+	private Collection $chat_messages;
 	private int $assignedRoads = -1;
 	private int $assignedBuildings = -1;
 	private int $assignedFeatures = -1;
@@ -93,6 +94,7 @@ class Settlement {
 		$this->vassals = new ArrayCollection();
 		$this->activities = new ArrayCollection();
 		$this->laws = new ArrayCollection();
+		$this->chat_messages = new ArrayCollection();
 	}
 
 	public function getPic(): string {
@@ -1737,7 +1739,38 @@ class Settlement {
 		return $this;
 	}
 
-	public function isFeedSoldiers(): ?bool {
-		return $this->feed_soldiers;
+	/**
+	 * Add messages
+	 *
+	 * @param ChatMessage $messages
+	 *
+	 * @return Settlement
+	 */
+	public function addMessage(ChatMessage $messages): static {
+		$this->chat_messages[] = $messages;
+
+		return $this;
+	}
+
+	/**
+	 * Remove messages
+	 *
+	 * @param ChatMessage $messages
+	 */
+	public function removeMessage(ChatMessage $messages): void {
+		$this->chat_messages->removeElement($messages);
+	}
+
+	/**
+	 * Get messages
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMessages(): ArrayCollection|Collection {
+		return $this->chat_messages;
+	}
+
+	public function getChatMembers(): Collection {
+		return $this->getCharactersPresent();
 	}
 }

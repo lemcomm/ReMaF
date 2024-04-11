@@ -323,37 +323,6 @@ class Dungeoneer {
 	}
 
 	/**
-	 * Add messages
-	 *
-	 * @param DungeonMessage $messages
-	 *
-	 * @return Dungeoneer
-	 */
-	public function addMessage(DungeonMessage $messages): static {
-		$this->messages[] = $messages;
-
-		return $this;
-	}
-
-	/**
-	 * Remove messages
-	 *
-	 * @param DungeonMessage $messages
-	 */
-	public function removeMessage(DungeonMessage $messages): void {
-		$this->messages->removeElement($messages);
-	}
-
-	/**
-	 * Get messages
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getMessages(): ArrayCollection|Collection {
-		return $this->messages;
-	}
-
-	/**
 	 * Add targeted_by
 	 *
 	 * @param Dungeoneer $targetedBy

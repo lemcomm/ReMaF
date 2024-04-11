@@ -162,5 +162,6 @@
 		<one-to-many field="founded_associations" target-entity="Association" mapped-by="founder"/>
 		<one-to-many field="association_memberships" target-entity="AssociationMember" mapped-by="character"/>
 		<many-to-one field="faith" target-entity="Association" inversed-by="followers"/>
+		<one-to-many field="chat_messages" target-entity="ChatMessage" mapped-by="sender" fetch="EXTRA_LAZY"/>
 	</entity>
 </doctrine-mapping>

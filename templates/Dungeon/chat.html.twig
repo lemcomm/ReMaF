@@ -4,7 +4,7 @@
 <h2>{{ 'dungeon.chat.title'|trans({}, "dungeons")|title }}</h2>
 <p>{{ 'dungeon.chat.intro'|trans({"%party%":dungeon.party.countactivemembers, "%area%":('area.'~dungeon.area)|trans({},"dungeons")}, "dungeons") }}</p>
 <hr />
-{{ form(chat, {'action':path('maf_dungeon_chat')}) }}
+{{ form(chat, {'action':path('maf_abstract_chat', {'type':'dungeon'})}) }}
 <hr />
 <dl class="messages">
 	{% for msg in messages %}

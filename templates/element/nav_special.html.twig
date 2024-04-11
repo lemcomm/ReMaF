@@ -82,7 +82,7 @@
 					<ul>
 						<li><a href="{{ path('maf_dungeon') }}">{{ 'dungeon.title'|trans({}, "dungeons") }}</a></li>
 						<li><a href="{{ path('maf_dungeon_events') }}">{{ 'dungeon.events.title'|trans({}, "dungeons") }}</a></li>
-						<li><a href="{{ path('maf_dungeon_chat') }}">{{ 'dungeon.chat.title'|trans({}, "dungeons") }}</a></li>
+						<li><a href="{{ path('maf_abstract_chat', {'type':'dungeon'}) }}">{{ 'dungeon.chat.title'|trans({}, "dungeons") }}</a></li>
 						<li><a href="{{ path('maf_dungeon_cards') }}">{{ 'cards.title'|trans({}, "dungeons") }}</a></li>
 					</ul>
 				</li>
