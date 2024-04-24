@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 
 class ChatType extends AbstractType {
 	public function configureOptions(OptionsResolver $resolver) {
@@ -23,8 +24,12 @@ class ChatType extends AbstractType {
 		$builder->add('content', TextType::class, array(
 			'label' => false,
 			'required' => true,
-			'max_length' => 200,
-			'attr' => array('placeholder'=>'dungeon.chat.hint')
+			'attr' => array('placeholder'=>'dungeon.chat.hint'),
+			'constraints' => [
+				new Length([
+					'max' => 500,
+				]),
+			],
 		));
 
 		$builder->add('submit', SubmitType::class, array('label'=>'dungeon.chat.submit'));

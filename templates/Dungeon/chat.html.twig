@@ -4,11 +4,11 @@
 <h2>{{ 'dungeon.chat.title'|trans({}, "dungeons")|title }}</h2>
 <p>{{ 'dungeon.chat.intro'|trans({"%party%":dungeon.party.countactivemembers, "%area%":('area.'~dungeon.area)|trans({},"dungeons")}, "dungeons") }}</p>
 <hr />
-{{ form(chat, {'action':path('maf_abstract_chat', {'type':'dungeon'})}) }}
+{{ form(chat, {'action':path('maf_chat_dungeon', {'type':'dungeon'})}) }}
 <hr />
 <dl class="messages">
 	{% for msg in messages %}
-	<dt>{{ link(msg.sender.character) }} <small>({{ msg.ts|date }})</small></dt>
+	<dt>{{ link(msg.sender) }} <small>({{ msg.ts|date }})</small></dt>
 	<dd>{{ msg.content }}</dd>
 	{% endfor %}
 </dl>

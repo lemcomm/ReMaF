@@ -77,6 +77,11 @@
 		<one-to-many field="associations" target-entity="AssociationPlace" mapped-by="place"/>
 
 		<one-to-many field="battles" target-entity="Battle" mapped-by="place" fetch="EXTRA_LAZY"/>
+		<one-to-many field="chat_messages" target-entity="ChatMessage" mapped-by="place" fetch="EXTRA_LAZY">
+			<order-by>
+				<order-by-field name="ts" direction="DESC"/>
+			</order-by>
+		</one-to-many>
 
 	</entity>
 </doctrine-mapping>

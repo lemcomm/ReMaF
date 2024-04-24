@@ -21,6 +21,7 @@ use App\Form\CharacterBackgroundType;
 use App\Form\CharacterLoadoutType;
 use App\Form\CharacterRatingType;
 use App\Form\CharacterSettingsType;
+use App\Form\ChatType;
 use App\Form\EntourageManageType;
 use App\Form\InteractionType;
 
@@ -128,7 +129,7 @@ class CharacterController extends AbstractController {
 	}
 
     	#[Route ('/char/summary', name:'maf_char_recent')]
-	public function summaryAction(GameRequestManager $grm): RedirectResponse|Response {
+	public function summaryAction(GameRequestManager $grm, Request $request): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -143,6 +144,13 @@ class CharacterController extends AbstractController {
 			}
 		}
 		$this->em->flush();
+		if ($here = $character->getInsideSettlement()) {
+			$chat = $this->createForm(ChatType::class);
+			$messages = $here->getMessages();
+		} else {
+			$chat = false;
+			$messages = false;
+		}
 		return $this->render('Character/summary.html.twig', [
 			'events' => $this->charman->findEvents($character),
 			'unread' => $this->conv->getUnreadConvPermissions($character),
@@ -153,7 +161,10 @@ class CharacterController extends AbstractController {
 			'spotrange' => $this->geo->calculateSpottingDistance($character),
 			'actrange' => $this->geo->calculateInteractionDistance($character),
 			'requests' => $grm->findAllManageableRequests($character),
-			'duels' => $character->findAnswerableDuels()
+			'duels' => $character->findAnswerableDuels(),
+			'chat' => $chat,
+			'messages' => $messages,
+			'settlement' => $here,
 		]);
 	}
 

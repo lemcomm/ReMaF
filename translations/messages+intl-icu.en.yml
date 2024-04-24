@@ -75,6 +75,19 @@ menu:
  journal:   Your Journal
  newjournal: New Journal Entry
 
+chat:
+ title:
+  settlement:  "{name} (Settlement) Chat"
+  place:       "{name} (Place) Chat"
+  dungeon:     "Dungeon Party Chat"
+ submit:       add message
+ intro:
+  settlement:  Other First Ones here have said the following recently...
+  place:       Other First Ones here have said the following recently...
+  dungeon:     You are exploring this {area} with a party of {party}. Talking helps to work together and get the best results.
+ hint:         Write a message and press enter
+ link:         View older messages
+
 user:
  profile:
   viewable: View User Profile

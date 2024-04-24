@@ -5,7 +5,7 @@
 	<div id="accordion">
 		<h3>{{ 'dungeon.chat.title'|trans({}, "dungeons")|title }}</h3>
 		<div>
-		{{ form(chat, {'action':path('maf_abstract_chat', {'type':'dungeon'})}) }}
+		{{ form(chat, {'action':path('maf_chat_dungeon', {'type':'dungeon'})}) }}
 		{% if dungeon.party.messages.count > 0 %}
 			<hr />
 			<dl class="messages">
@@ -16,7 +16,7 @@
 			</dl>
 			{% if dungeon.party.messages.count > messages|length %}
 				<hr />
-				<a href="{{ path("maf_abstract_chat", {'type':'dungeon'}) }}">{{ 'dungeon.chat.link'|trans({"%count%":dungeon.party.messages.count}, "dungeons") }}</a>
+				<a href="{{ path("maf_chat_dungeon") }}">{{ 'dungeon.chat.link'|trans({"%count%":dungeon.party.messages.count}, "dungeons") }}</a>
 			{% endif %}
 		{% endif %}
 		</div>

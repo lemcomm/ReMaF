@@ -2237,3 +2237,45 @@ button#hidetoggle {
 .topmargin {
 	margin-top: 2em;
 }
+
+/* Chat CSS */
+
+div.chat {
+    background: url("../images/bg.jpg") repeat scroll 0 0 #404040;
+    border: 2px solid #DC8E20; /* http://www.colourlovers.com/color/DC8E20/Dark_Gold_Spice */
+    border-bottom-left-radius: 0.5em;
+    border-top-right-radius: 1em;
+    box-shadow: -0.25em 0.25em 0.5em rgba(0, 0, 0, 0.75);
+    color: #eeeaf2; /* "edelweiss white" - http://www.colourlovers.com/palette/951046/lucky_moon_and_stars */
+    float: right;
+    padding: 0.25em 1em;
+    margin: -1em -2em 1em 1em;
+    width: 30%;
+    clear: right;
+}
+
+div.chat h1, div.chat h2, div.chat h3, div.chat h4 {
+    color: #dddddd;
+}
+
+div.chat a {
+    color: #ddf;
+}
+div.chat a:hover {
+    color: #ffffff;
+}
+
+#chat_content {
+    width: 100%;
+}
+#chat_submit {
+    display: none;
+}
+
+dl.messages dt {
+    float: none;
+}
+dl.messages dd {
+    margin-bottom: 1em;
+    margin-left: 1em;
+}

@@ -25,7 +25,7 @@ class ChatController extends AbstractController {
 	public function __construct(private AppState $app, private EntityManagerInterface $em) {}
 
 	#[Route ('/chat/check/{msg}/{target}', name:'maf_chat_check', requirements:['msg'=>'\d+', 'target'=>'[a-z0-9]'])]
-	public function chatCheckAction(Request $request, ChatMessage $msg, string $target): JsonResponse {
+	public function chatCheckAction(ChatMessage $msg, string $target): JsonResponse {
 		$here = $msg->findTarget();
 		$char = $this->app->getCharacter();
 		$decode = substr($target, 0, 1);
@@ -73,49 +73,123 @@ class ChatController extends AbstractController {
 		} else {
 			return new JsonResponse(['response'=>'invalid', 'data'=>'bad target']);
 		}
-
 	}
 
-	#[Route ('/chat/{type}', name:'maf_chat_page', requirements:['type'=>'[a-z]'])]
+	private function validateChatReferrer(string $ref): string|false {
+		if (in_array($ref, [
+			'maf_chat_settlement',
+			'maf_chat_dungeon',
+			'maf_chat_place',
+			'maf_char_recent',
+			'maf_dungeon'
+		])) {
+			return $ref;
+		}
+		return false;
+	}
+
+	#[Route ('/chat/settlement', name:'maf_chat_settlement', requirements:['type'=>'[a-z]'])]
+	public function chatSettlementAction(Request $request) {
+		/** @var Character $char */
+		$char = $this->app->getCharacter();
+		#TODO: Dispatcher check.
+		$here = $char->getInsideSettlement();
+		$chat = $this->createForm(ChatType::class);
+		$chat->handleRequest($request);
+		if ($chat->isSubmitted() && $chat->isValid()) {
+			/** @var ChatMessage $msg */
+			$msg = $chat->getData();
+			if (strlen($msg->getContent()) > 500) {
+				$chat->addError(new FormError("chat.long"));
+			} else {
+				$msg->setSender($char);
+				$msg->setTs(new DateTime("now"));
+				$msg->setSettlement($here);
+				$here->addMessage($msg);
+				$this->em->persist($msg);
+				$this->em->flush();
+			}
+			$source = $this->validateChatReferrer($request->query->get('source'));
+			if ($source) {
+				return $this->redirectToRoute($source);
+			} else {
+				return $this->redirectToRoute('maf_chat_settlement');
+			}
+		}
+		return $this->render('Settlement\chat.html.twig', [
+			'settlement' => $here,
+			'messages' => $here->getMessages(),
+			'chat' => $chat->createView(),
+		]);
+	}
+
+	#[Route ('/chat/place', name:'maf_chat_place', requirements:['type'=>'[a-z]'])]
 	public function chatAction(Request $request, string $type): Response {
 		/** @var Character $char */
 		$char = $this->app->getCharacter();
-		if ($type === 'settlement') {
+		$twig = 'Place\chat.html.twig';
+		$data = [
+			'place' => $here,
+			'messages' => $here->getMessages(),
+		];
 
-		} elseif ($type === 'place') {
-
-		} elseif ($type ===' dungeon') {
-			$dungeoneer = $char->getDungeoneer();
-			if ($dungeoneer->getInDungeon()) {
-				$chat = $this->createForm(ChatType::class);
-				$chat->handleRequest($request);
-				if ($chat->isSubmitted() && $chat->isValid()) {
-					$msg = $chat->getData();
-					if (strlen($msg->getContent())>500) {
-						$chat->addError(new FormError("chat.long"));
-					} else {
-						$msg->setSender($char);
-						$msg->setTs(new DateTime("now"));
-						$msg->setParty($char->getDungeoneer()->getParty());
-						$dungeoneer->getParty()->addMessage($msg);
-						$this->em->persist($msg);
-						$this->em->flush();
-					}
-					return $this->redirectToRoute('maf_dungeon');
-				}
-
-				return $this->render('Dungeon/chat.html.twig', [
-					'dungeon' => $dungeoneer->getCurrentDungeon(),
-					'messages' => $dungeoneer->getParty()->getMessages(),
-					'chat' => $chat->createView()
-				]);
+		$chat = $this->createForm(ChatType::class);
+		$chat->handleRequest($request);
+		if ($chat->isSubmitted() && $chat->isValid()) {
+			/** @var ChatMessage $msg */
+			$msg = $chat->getData();
+			if (strlen($msg->getContent()) > 500) {
+				$chat->addError(new FormError("chat.long"));
 			} else {
-				return new RedirectResponse($request->request->get('referrer'));
+				$msg->setSender($char);
+				$msg->setTs(new DateTime("now"));
+				$msg->setPlace($here);
+				$here->addMessage($msg);
+				$this->em->persist($msg);
+				$this->em->flush();
 			}
-		} elseif ($type === 'check') {
-
+			$source = $this->validateChatReferrer($request->query->get('source'));
+			if ($source) {
+				return $this->redirectToRoute($source);
+			} else {
+				return $this->redirectToRoute('maf_chat_place');
+			}
 		}
-		# How did you end up here?
-		return $this->redirectToRoute('maf_actions');
+		$data['chat'] = $chat->createView();
+		return $this->render($twig, $data);
+	}
+
+	#[Route ('/chat/dungeon', name:'maf_chat_dungeon', requirements:['type'=>'[a-z]'])]
+	public function chatDungeonAction(Request $request, string $type): Response {
+		/** @var Character $char */
+		$char = $this->app->getCharacter();
+		$here = $char->getDungeoneer()->getParty();
+		$chat = $this->createForm(ChatType::class);
+		$chat->handleRequest($request);
+		if ($chat->isSubmitted() && $chat->isValid()) {
+			/** @var ChatMessage $msg */
+			$msg = $chat->getData();
+			if (strlen($msg->getContent()) > 500) {
+				$chat->addError(new FormError("chat.long"));
+			} else {
+				$msg->setSender($char);
+				$msg->setTs(new DateTime("now"));
+				$msg->setParty($here);
+				$here->addMessage($msg);
+				$this->em->persist($msg);
+				$this->em->flush();
+			}
+			$source = $this->validateChatReferrer($request->query->get('source'));
+			if ($source) {
+				return $this->redirectToRoute($source);
+			} else {
+				return $this->redirectToRoute('maf_chat_dungeon');
+			}
+		}
+		return $this->render('Dungeon\chat.html.twig', [
+			'dungeon' => $char->getDungeoneer()->getCurrentDungeon(),
+			'messages' => $here->getMessages(),
+			'chat' => $chat->createView(),
+		]);
 	}
 }
