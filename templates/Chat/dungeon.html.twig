@@ -1,11 +1,15 @@
 {% extends "dungeonLayout.html.twig" %}
 
 {% block content %}
-<h2>{{ 'chat.dungeon.title'|trans({}, "actions")|title }}</h2>
-<p>{{ 'chat.dungeon.intro'|trans({"%party%":dungeon.party.countactivemembers, "%area%":('area.'~dungeon.area)|trans({},"dungeons")}, "actions") }}</p>
-<hr />
-{{ form(chat) }}
-<hr />
-{% include 'element/chat_base.html.twig' with {"messages": messages} %}
+    <h2>{{ 'chat.dungeon.title'|trans({}, "actions")|title }}</h2>
+    <p>{{ 'chat.dungeon.intro'|trans({"%party%":dungeon.party.countactivemembers, "%area%":('area.'~dungeon.area)|trans({},"dungeons")}, "actions") }}</p>
+    <hr />
+    {{ form(chat) }}
+    <hr />
+    {% include 'element/chat_base.html.twig' with {"messages": messages} %}
 
+{% endblock %}
+
+{% block jquery %}
+    {% include 'element/chat.js.twig' with {"lastMsgId":lastMsgId, "where":"d", "here":place} %}
 {% endblock %}

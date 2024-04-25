@@ -10,6 +10,7 @@ use App\Service\Dispatcher\Dispatcher;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -84,6 +85,27 @@ class ChatController extends AbstractController {
 		return false;
 	}
 
+	private function parseChatForm(FormInterface $chat, string $where, $here, Character $char) {
+		/** @var ChatMessage $msg */
+		$msg = $chat->getData();
+		$msg->setSender($char);
+		$msg->setTs(new DateTime("now"));
+		switch ($where) {
+			case 'settlement':
+				$msg->setSettlement($here);
+				break;
+			case 'place':
+				$msg->setPlace($here);
+				break;
+			case 'dungeon':
+				$msg->setParty($here);
+				break;
+		}
+		$here->addMessage($msg);
+		$this->em->persist($msg);
+		$this->em->flush();
+	}
+
 	#[Route ('/chat/settlement', name:'maf_chat_settlement')]
 	public function chatSettlementAction(Request $request) {
 		/** @var Character $char */
@@ -91,19 +113,17 @@ class ChatController extends AbstractController {
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
 		}
-		#TODO: Dispatcher check.
 		$here = $char->getInsideSettlement();
+		$messages = $here->getMessages();
+		if ($messages->count() > 0) {
+			$lastMsgId = $messages->first()->getId();
+		} else {
+			$lastMsgId = 0;
+		}
 		$chat = $this->createForm(ChatType::class);
 		$chat->handleRequest($request);
 		if ($chat->isSubmitted() && $chat->isValid()) {
-			/** @var ChatMessage $msg */
-			$msg = $chat->getData();
-			$msg->setSender($char);
-			$msg->setTs(new DateTime("now"));
-			$msg->setSettlement($here);
-			$here->addMessage($msg);
-			$this->em->persist($msg);
-			$this->em->flush();
+			$this->parseChatForm($chat, 'settlement', $here, $char);
 			$source = $request->query->get('source');
 			if ($source) {
 				$redirect = $this->validateChatReferrer($source);
@@ -115,8 +135,9 @@ class ChatController extends AbstractController {
 		}
 		return $this->render('Chat/settlement.html.twig', [
 			'settlement' => $here,
-			'messages' => $here->getMessages(),
+			'messages' => $messages,
 			'chat' => $chat->createView(),
+			'lastMsgId' => $lastMsgId,
 		]);
 	}
 
@@ -128,18 +149,16 @@ class ChatController extends AbstractController {
 			return $this->redirectToRoute($char);
 		}
 		$here = $char->getInsidePlace();
-
+		$messages = $here->getMessages();
+		if ($messages->count() > 0) {
+			$lastMsgId = $messages->first()->getId();
+		} else {
+			$lastMsgId = 0;
+		}
 		$chat = $this->createForm(ChatType::class);
 		$chat->handleRequest($request);
 		if ($chat->isSubmitted() && $chat->isValid()) {
-			/** @var ChatMessage $msg */
-			$msg = $chat->getData();
-			$msg->setSender($char);
-			$msg->setTs(new DateTime("now"));
-			$msg->setPlace($here);
-			$here->addMessage($msg);
-			$this->em->persist($msg);
-			$this->em->flush();
+			$this->parseChatForm($chat, 'place', $here, $char);
 			$source = $request->query->get('source');
 			if ($source) {
 				$redirect = $this->validateChatReferrer($source);
@@ -151,8 +170,9 @@ class ChatController extends AbstractController {
 		}
 		return $this->render('Chat/place.html.twig', [
 			'place' => $here,
-			'messages' => $here->getMessages(),
+			'messages' => $messages,
 			'chat' => $chat->createView(),
+			'lastMsgId' => $lastMsgId,
 		]);
 	}
 
@@ -162,17 +182,16 @@ class ChatController extends AbstractController {
 		$char = $this->app->getCharacter();
 		#TODO: Dispatcher (Dungeon??) check.
 		$here = $char->getDungeoneer()->getParty();
+		$messages = $here->getMessages();
+		if ($messages->count() > 0) {
+			$lastMsgId = $messages->first()->getId();
+		} else {
+			$lastMsgId = 0;
+		}
 		$chat = $this->createForm(ChatType::class);
 		$chat->handleRequest($request);
 		if ($chat->isSubmitted() && $chat->isValid()) {
-			/** @var ChatMessage $msg */
-			$msg = $chat->getData();
-			$msg->setSender($char);
-			$msg->setTs(new DateTime("now"));
-			$msg->setParty($here);
-			$here->addMessage($msg);
-			$this->em->persist($msg);
-			$this->em->flush();
+			$this->parseChatForm($chat, 'dungeon', $here, $char);
 			$source = $request->query->get('source');
 			if ($source) {
 				$redirect = $this->validateChatReferrer($source);
@@ -184,8 +203,9 @@ class ChatController extends AbstractController {
 		}
 		return $this->render('Chat/dungeon.html.twig', [
 			'dungeon' => $char->getDungeoneer()->getCurrentDungeon(),
-			'messages' => $here->getMessages(),
+			'messages' => $messages,
 			'chat' => $chat->createView(),
+			'lastMsgId' => $lastMsgId,
 		]);
 	}
 }

@@ -1,0 +1,74 @@
+
+// Begin chat auto-loader
+var chatTimeout = 5000;
+var missedMessages = 1;
+var missedLoops = 1;
+function chatWorker() {
+    // Import the last message Id from twig template.
+    var lastMsgId = {{ lastMsgId }};
+    // $where is a 1 char entity hinter for the chat/check/ route. $here is the settlement, place, or party of this chat.
+    var jsonUrl = '/chat/check/' + lastMsgId + '/{{ where }}' +  + {{ here.id }};
+    // Get the div that holds all of the chat messages.
+    var chatMessages = $('#chat_messages');
+    // Load a string of the translated months into jquery as an array. Yes, it works, and yes, this is cursed.
+    const monthNames = [{{ "months"|trans|raw }}];
+    const notification = new Audio( "/audio/message-notification.mp3" );
+
+    // Get JSON response of chat status.
+    // url is /chat/check/###/s###
+    // Return is always {'response': string, 'payload': array if response == 'new', else string}
+    $.getJSON(jsonUrl, function( data ) {
+        var messages = [];
+        if (data.response === 'new') {
+            // New mesages in payload, process them.
+            $.each( data.payload, function (key, value) {
+                if ( key > lastMsgId ) {
+                    lastMsgId = key;
+                }
+                var time = new Date(value.ts.date);
+                var minutes = String(time.getMinutes()).padStart(2, "0");
+                // Build chat message data for insert.
+                messages.unshift("<dt><a href='" +
+                    value.link +
+                    "'>" +
+                    value.name +
+                    "</a> <small>(" +
+                    monthNames[time.getMonth()] +
+                    " " +
+                    time.getDate() +
+                    ", " +
+                    time.getFullYear() +
+                    " " +
+                    time.getHours() +
+                    ":" +
+                    minutes +
+                    ")</small></dt><dd>" +
+                    value.text +
+                    "</dd>"
+                );
+            });
+            // Prepend chat messages to existing chat messages.
+            chatMessages.prepend( messages );
+            if (!document.hasFocus()) {
+                if (missedMessages === 2 * missedLoops) {
+                    notification.play();
+                    missedMessages = 1;
+                    missedLoops++;
+                } else {
+                    missedMessages++;
+                }
+            } else {
+                missedMessages = 1;
+                missedLoops = 1;
+            }
+            setTimeout( chatWorker, chatTimeout);
+        } else if (data.response === 'current') {
+            // nothing new, continue looping.
+            setTimeout( chatWorker, chatTimeout);
+        } else {
+            // payload invalid, throw error up and break.
+            chatMessages.prepend("<dt><i>The System</i></dt><dd>Chat connection error detected! Refresh page to continue.</dt>")
+        }
+    });
+}
+setTimeout( chatWorker, chatTimeout);
