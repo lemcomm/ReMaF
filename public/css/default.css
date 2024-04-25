@@ -969,6 +969,22 @@ div.act_actions a, a.actions_link {
     display: block;
 }
 
+a.purchasables {
+    background-color: #301010;
+    color: #ddf;
+    border: 2px solid #DC8E20; /* http://www.colourlovers.com/color/DC8E20/Dark_Gold_Spice */
+    border-radius: 0.5em;
+    font-weight: bold;
+    padding: 0.2em 0.2em 0.2em 0.2em;
+    margin-bottom: 1em;
+    text-align: center;
+    display: block;
+}
+
+ul.purchasables {
+    list-style-type: none;
+}
+
 a.actions_link {
     display: inline;
 }

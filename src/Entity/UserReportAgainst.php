@@ -6,7 +6,7 @@ use DateTime;
 
 class UserReportAgainst {
 	private DateTime $date;
-	private ?int $id = null;
+	private $id = null;
 	private ?User $added_by;
 	private ?User $user;
 	private ?UserReport $report;

@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 class MessageRecipient {
-	private ?int $id = null;
+	private $id = null;
 	private Message $message;
 	private Character $character;
 

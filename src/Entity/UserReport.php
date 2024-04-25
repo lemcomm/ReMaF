@@ -11,7 +11,7 @@ class UserReport {
 	private string $text;
 	private bool $actioned;
 	private DateTime $date;
-	private ?int $id = null;
+	private $id = null;
 	private Collection $notes;
 	private Collection $against;
 	private ?User $user;

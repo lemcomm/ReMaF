@@ -147,9 +147,15 @@ class CharacterController extends AbstractController {
 		if ($here = $character->getInsideSettlement()) {
 			$chat = $this->createForm(ChatType::class);
 			$messages = $here->getMessages();
+			if ($messages->count() > 0) {
+				$lastMsgId = $messages->first()->getId();
+			} else {
+				$lastMsgId = 0;
+			}
 		} else {
 			$chat = false;
 			$messages = false;
+			$lastMsgId = null;
 		}
 		return $this->render('Character/summary.html.twig', [
 			'events' => $this->charman->findEvents($character),
@@ -164,6 +170,7 @@ class CharacterController extends AbstractController {
 			'duels' => $character->findAnswerableDuels(),
 			'chat' => $chat,
 			'messages' => $messages,
+			'lastMsgId' => $lastMsgId,
 			'settlement' => $here,
 		]);
 	}

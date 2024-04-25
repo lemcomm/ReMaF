@@ -12,7 +12,7 @@ class UserReportNote {
 	private DateTime $date;
 	private bool $pending;
 	private string $verdict;
-	private ?int $id = null;
+	private $id = null;
 	private ?User $from;
 	private ?UserReport $report;
 

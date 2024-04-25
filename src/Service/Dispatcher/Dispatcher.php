@@ -100,6 +100,17 @@ class Dispatcher {
 		this is our main entrance, fetching the character data from the appstate as well as the nearest settlement
 		and then applying any (optional) test on the whole thing.
 	*/
+	/**
+	 * Gateway function to all other dispatcher functions.
+	 *
+	 * @param $test			* Function used to validate one or more routes.
+	 * @param $getSettlement	* Return nearest actionable settlement as $return[1].
+	 * @param $check_duplicate	* Passed through to test function to indicate a check for a duplicate action.
+	 * @param $getPlace		* Return nearest actionable place as $return[2] (with getSettlemnent as true) or $return[1].
+	 * @param $option		* Secondary pass through variable to enable some tests to not have to reverse lookup parameters.
+	 *
+	 * @return Character|array|mixed|null
+	 */
 	public function gateway($test=false, $getSettlement=false, $check_duplicate=true, $getPlace=false, $option=null) {
 		$character = $this->getCharacter();
 		if (! $character instanceof Character) {
@@ -141,6 +152,12 @@ class Dispatcher {
 		}
 	}
 
+	/**
+	 * Used to ensure that a character is not restricted (account has too many characters for sub level) or is not an NPC.
+	 * Returns true when tests pass, or a string error code.
+	 *
+	 * @return true|string
+	 */
 	protected function veryGenericTests(): true|string {
 		if ($this->getCharacter() instanceof Character) {
 			if ($this->getCharacter()->getUser()->getRestricted()) {
@@ -169,6 +186,14 @@ class Dispatcher {
 			$actions[] = $this->locationEnterTest(true);
 		} else {
 			$actions[] = array("name"=>"location.enter.name", "description"=>"unavailable.nosettlement");
+		}
+		$has = $this->chatSettlementTest();
+		if (isset($has['url'])) {
+			$actions[] = $has;
+		}
+		$has = $this->chatPlaceTest();
+		if (isset($has['url'])) {
+			$actions[] = $has;
 		}
 
 		if ($this->getLeaveablePlace()) {
@@ -225,6 +250,11 @@ class Dispatcher {
 		return array("name"=>"location.title", "elements"=>$actions);
 	}
 
+	/**
+	 * Returns same as veryGenericTests but bypasses the NPC check. Allows NPCs to do certain actions, like attack others.
+	 *
+	 * @return true|string
+	 */
 	protected function interActionsGenericTests(): true|string {
 		if ($this->veryGenericTests() === 'restricted') {
 			return 'restricted';
@@ -1181,6 +1211,27 @@ class Dispatcher {
 		}
 	}
 
+	/* ========== Chat Routes ========== */
+	public function chatSettlementTest(): array {
+		if (($check = $this->veryGenericTests()) !== true) {
+			return ["name"=>"chat.settlement.name", "description"=>"unavailable.$check"];
+		}
+		if (!$this->getCharacter()->getInsideSettlement()) {
+			return ["name"=>"chat.settlement.name", "description"=>"unavailable.nosettlement"];
+		}
+		return $this->action("chat.settlement", "maf_chat_settlement");
+	}
+
+	public function chatPlaceTest(): array {
+		if (($check = $this->veryGenericTests()) !== true) {
+			return ["name"=>"chat.place.name", "description"=>"unavailable.$check"];
+		}
+		if (!$this->getCharacter()->getInsideSettlement()) {
+			return ["name"=>"chat.place.name", "description"=>"unavailable.noplace"];
+		}
+		return $this->action("chat.place", "maf_chat_place");
+	}
+
 	/* ========== Personal Actions ========== */
 
 	public function personalRelationsTest(): array {
@@ -1876,7 +1927,7 @@ class Dispatcher {
 		if ($this->getCharacter()->isRuler()) {
 			return array("name"=>"realm.new.name", "description"=>"unavailable.haverealm");
 		}
-		list($valid, $settlements) = $this->checkVassals($this->getCharacter());
+		[$valid, $settlements] = $this->checkVassals($this->getCharacter());
 		if (!$valid) {
 			return array("name"=>"realm.new.name", "description"=>"unavailable.novassals");
 		}

@@ -13,6 +13,13 @@ maf_stripe_success:
     path: /payment/stripe_success
     controller: App\Controller\PaymentController::stripeSuccessAction
 
+maf_chat_check:
+    path: /chat/check/{msg}/{target}
+    controller: App\Controller\ChatController::chatCheckAction
+    requirements:
+        msg: '\d+'
+        target: '[a-z0-9]*'
+
 # Default routes, name must be "controllers"
 controllers:
     resource:

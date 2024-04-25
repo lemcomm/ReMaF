@@ -16,7 +16,7 @@ class Message {
 	private ?int $recipient_count;
 	private ?string $target;
 	private ?bool $read;
-	private ?int $id = null;
+	private $id = null;
 	private Collection $replies;
 	private Collection $tags;
 	private Collection $recipients;

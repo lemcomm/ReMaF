@@ -13,6 +13,7 @@ use App\Service\AppState;
 use App\Service\MailManager;
 use App\Service\NotificationManager;
 use App\Service\PaymentManager;
+use App\Service\UserManager;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -323,7 +324,7 @@ class PaymentController extends AbstractController {
 	}
 
 	#[Route ('/payment/realmPack', name:'maf_payment_realmPack')]
-	public function realmPackAction(Request $request): Response {
+	public function realmPackAction(UserManager $um, Request $request): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -332,6 +333,9 @@ class PaymentController extends AbstractController {
 		$form = $this->createForm(AreYouSureType::class, null, ['translation_domain'=>'messages', 'label'=>'account.realmpack.select', 'submit'=>'account.realmpack.purchase']);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
+			if (!$user->getLimits()) {
+				$um->createLimits($user);
+			}
 			if ($user->getLimits()->getRealmpack()) {
 				$form->addError(new FormError($this->trans->trans("account.alreadyowned")));
 			} elseif ($this->pay->spend($this->getUser(), "realm pack", 500)) {
@@ -346,6 +350,33 @@ class PaymentController extends AbstractController {
 		return $this->render('Payment/realmPack.html.twig', [
 			'already'=>$user->getLimits()->getRealmPack(),
 			'desigs'=>$all,
+			'form'=>$form->createView()
+		]);
+	}
+
+	#[Route ('/payment/artifact', name:'maf_payment_realmPack')]
+	public function purchaseArtifactAction(UserManager $um, Request $request): Response {
+		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
+		$form = $this->createForm(AreYouSureType::class, null, ['translation_domain'=>'messages', 'label'=>'account.artifacts.select', 'submit'=>'account.artifacts.purchase']);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			if (!$user->getLimits()) {
+				$um->createLimits($user);
+			}
+			if ($this->pay->spend($user, "artifact", 250)) {
+				$user->getLimits()->setArtifacts($user->getArtifacts()+1);
+				$this->em->flush();
+				$this->addFlash('notice', $this->trans->trans("account.artifacts.bought"));
+			} else {
+				$form->addError(new FormError($this->trans->trans("account.notenoughcredits")));
+			}
+			return $this->redirectToRoute('maf_payment_credits');
+		}
+		return $this->render('Payment/realmPack.html.twig', [
+			'already'=>$user->getLimits()->getArtifactsLimit(),
 			'form'=>$form->createView()
 		]);
 	}

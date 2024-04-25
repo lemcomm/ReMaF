@@ -151,8 +151,8 @@ class DefaultController extends AbstractController {
 		if ($url=="-") $url="";
 		if (preg_match('/^[a-z]{2}\//', $url)===1) {
 			if (substr($url, 0, 2)=='en') {
-        		throw $this->createNotFoundException('error.notfound.page');
-        	}
+				throw $this->createNotFoundException('error.notfound.page');
+			}
 			// unsupported locale - default to english - en
 			$locale = 'en';
 			$url = substr($url,3);

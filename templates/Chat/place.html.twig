@@ -1,0 +1,11 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+<h2>{{ 'chat.place.title'|trans({"name":place.name}, "actions")|title }}</h2>
+<p>{{ 'chat.place.intro'|trans({}, "actions") }}</p>
+<hr />
+{{ form(chat) }}
+<hr />
+{% include 'element/chat_base.html.twig' with {"messages": messages} %}
+
+{% endblock %}

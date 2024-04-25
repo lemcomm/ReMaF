@@ -291,8 +291,11 @@ class PaymentManager {
 			if (!$limits) {
 				$this->usermanager->createLimits($user);
 			} else {
-				if ($limits->getPlacesDate() <= $now)
-				$limits->setPlaces($limits->getPlaces()+1);
+				if (!$user->isNewPlayer()) {
+					$limits->setPlaces(4);
+				} else {
+					$limits->setPlaces(0);
+				}
 				if($user->getAccountLevel() >= 20) {
 					$limits->setPlacesDate($oneWeek);
 				} else {
@@ -585,10 +588,9 @@ class PaymentManager {
 			if (!$limits) {
 				$limits = $this->usermanager->createLimits($user);
 			}
-			if ($limits->getArtifacts()) {
+			if (!$limits->getArtifactSubBonus()) {
 				$limits->setArtifacts($limits->getArtifacts()+1);
-			} else {
-				$limits->setArtifacts(1);
+				$limits->setArtifactSubBonus(true);
 			}
 
 			if (!in_array($src, $this->patreonAlikes)) {

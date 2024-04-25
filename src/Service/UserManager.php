@@ -109,15 +109,9 @@ class UserManager {
 	public function createLimits(User $user) {
 		$limits = new UserLimits();
 		$limits->setUser($user);
-		if ($user->getAccountLevel() >= 20) {
-			$max = floor($user->getCreated()->diff(new \DateTime("now"), true)->days/7);
-			$limits->setPlacesDate(new \DateTime("+1 weeks"));
-		} else {
-			$max = floor($user->getCreated()->diff(new \DateTime("now"), true)->days/14);
-			$limits->setPlacesDate(new \DateTime("+2 week"));
-		}
-		$limits->setPlaces($max);
+		$limits->setPlaces(4);
 		$limits->setArtifacts(max(0, $user->getArtifactsLimit()));
+		$limits->setArtifactSubBonus(false);
 		$this->em->persist($limits);
 		return $limits;
 	}

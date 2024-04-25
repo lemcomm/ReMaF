@@ -119,6 +119,26 @@ queue:
  character:
   escape:       Escape
 
+chat:
+  settlement:
+    name:        Settlement Chat
+    title:       "{name} (Settlement) Chat"
+    intro:        Other First Ones here have said the following recently...
+    description: Talk to the locals?
+  place:
+    name:        Place Chat
+    title:       "{name} (Place) Chat"
+    intro:        Other First Ones here have said the following recently...
+    description: Talk to other visitors?
+  dungeon:
+    name:        Dungeon Party Chat
+    title:       Dungeon Party Chat
+    intro:       You are exploring this {area} with a party of {party}. Talking helps to work together and get the best results.
+    description: Keep up with your party?
+  submit:       Send message
+  hint:         Write a message and press enter
+  link:         View older messages
+
 location:
  title:         Local Interactions
  all:           All local interactions

@@ -102,7 +102,7 @@ class ActionsController extends AbstractController {
 			$pagetitle = $this->trans->trans('settlement.area', array(
 				'%name%' => $this->links->ObjectLink($settlement) ));
 		}
-		# I can't think of an instnace where we'd have a siege with no groups, but just in case...
+		# I can't think of an instance where we'd have a siege with no groups, but just in case...
 		$siege = (bool)$settlement->getSiege();
 		return $this->render('Actions/actions.html.twig', [
 			'pagetitle'=>$pagetitle,

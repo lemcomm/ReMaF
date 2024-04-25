@@ -161,10 +161,11 @@ Table headers are handled as translation strings from the character.list databas
 		</ul>
 		<hr />
 		<h4>{{ 'account.credits.shop'|trans|title }}</h4>
-		<ul class="horizontal">
-			<li><a class="actions_link" href="{{ path("maf_heraldry") }}">{{ 'account.heraldry.link'|trans|title }}</a></li>
-			<li><a class="actions_link" href="{{ path("maf_payment_culture") }}">{{ 'account.culture.link'|trans|title }}</a></li>
-			<li><a class="actions_link" href="{{ path("maf_payment_realmPack") }}">{{ 'account.realmpack.link'|trans|title }}</a></li>
+		<ul class="purchasables">
+			<li><a class="purchasables" href="{{ path("maf_heraldry") }}">{{ 'account.heraldry.link'|trans|title }}</a></li>
+			<li><a class="purchasables" href="{{ path("maf_artifact_owned") }}">{{ 'account.artifacts.link'|trans|title }}</a></li>
+			<li><a class="purchasables" href="{{ path("maf_payment_culture") }}">{{ 'account.culture.link'|trans|title }}</a></li>
+			<li><a class="purchasables" href="{{ path("maf_payment_realmPack") }}">{{ 'account.realmpack.link'|trans|title }}</a></li>
 		</ul>
 	</div>
 	<div class="subcontent inline_announcements">

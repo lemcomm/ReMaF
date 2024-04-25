@@ -15,7 +15,7 @@ class ConversationPermission {
 	private ?bool $owner;
 	private ?bool $manager;
 	private int $unread;
-	private ?int $id = null;
+	private $id = null;
 	private Conversation $conversation;
 	private Character $character;
 

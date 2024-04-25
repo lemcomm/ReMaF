@@ -1,20 +1,12 @@
 <div class="chat">
     <div id="accordion">
-        <h3>{{ 'chat.title.settlement'|trans({"%name%":settlement})|title }}</h3>
+        <h3>{{ 'chat.settlement.title'|trans({"%name%":settlement}, "actions")|title }}</h3>
         <div>
             {{ form(chat, {'action':path('maf_chat_settlement', {"source":sourcePath})}) }}
-            {% if messages.count > 0 %}
+            {% include 'element/chat_base.html.twig' with {"messages": messages} %}
+            {% if messages.count > 25 %}
                 <hr />
-                <dl class="messages" id="chat_messages">
-                    {% for msg in messages %}
-                        <dt>{{ link(msg.sender) }} <small>({{ msg.ts|date }})</small></dt>
-                        <dd>{{ msg.content }}</dd>
-                    {% endfor %}
-                </dl>
-                {% if messages.count > messages|length %}
-                    <hr />
-                    <a href="{{ path("maf_chat_settlement") }}">{{ 'chat.link'|trans({"%count%":messages.count}) }}</a>
-                {% endif %}
+                <a href="{{ path("maf_chat_settlement") }}">{{ 'chat.link'|trans({"%count%":messages.count}) }}</a>
             {% endif %}
         </div>
     </div>

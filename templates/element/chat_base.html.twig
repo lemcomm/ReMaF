@@ -1,0 +1,7 @@
+<dl class="messages" id="chat_messages">
+        {% set i = 0 %}
+        {% for msg in messages|slice(0,25) %}
+                <dt>{{ link(msg.sender) }} <small>({{ msg.ts|date }})</small></dt>
+                <dd>{{ msg.content }}</dd>
+        {% endfor %}
+</dl>
