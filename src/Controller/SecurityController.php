@@ -14,6 +14,7 @@ use App\Service\AppState;
 use App\Service\DescriptionManager;
 use App\Service\MailManager;
 
+use App\Service\NotificationManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -78,6 +79,7 @@ class SecurityController extends AbstractController {
 
 			#Log user creation time and set user to inactive.
 			$user->setCreated(new \DateTime("now"));
+			$user->setEmail(strtolower($form->get('email')->getData()));
 			$method = $_ENV['ACTIVATION'];
 			if ($method == 'email' || $method == 'manual') {
 				$user->setEnabled(false);
@@ -365,6 +367,97 @@ class SecurityController extends AbstractController {
 			}
 			$em->flush();
 			return new RedirectResponse($this->generateUrl('maf_account'));
+		}
+		return $this->render('Account/data.html.twig', [
+			'form' => $form->createView()
+		]);
+	}
+
+	#[Route ('/security/delete', name:'maf_account_delete')]
+	public function delete(EntityManagerInterface $em, TranslatorInterface $trans, NotificationManager $note, Request $request) {
+		/** @var User $user */
+		$user = $this->getUser();
+		if ($user->isBanned()) {
+			throw new AccessDeniedException($user->isBanned());
+		}
+
+		$form = $this->createForm(UserDeleteType::class);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$data = $form->getData();
+			if (strtolower($data['email']) === strtolower($user->getEmail())) {
+				$id = $user->getId();
+				$note->spoolError('Initiating deletion of account #'.$id.' at user request.');
+				foreach ($user->getLogs() as $each) {
+					# Keep old logs, as if they're being logged, they're probably a multi (or otherwise cheating).
+					$each->setOldUserId($id);
+					$each->setUser(null);
+				}
+				foreach ($user->getDescriptions() as $each) {
+					$each->setNext(null);
+				}
+				$em->flush();
+				foreach ($user->getDescriptions() as $each) {
+					$em->remove($each);
+				}
+				foreach ($user->getPayments() as $each) {
+					$each->setUser(null); #These serve as evidence that a transaction completed successfully on M&F's side.
+				}
+				foreach ($user->getCreditHistory() as $each) {
+					$em->remove($each);
+				}
+				foreach ($user->getCharacters() as $each) {
+					$each->setAbandonedBy($id);
+					$each->setUser(null);
+				}
+				foreach ($user->getRatingsGiven() as $each) {
+					$each->setGivenByUser(null);
+				}
+				foreach ($user->getRatingVotes() as $each) {
+					$em->remove($each);
+				}
+				foreach ($user->getArtifacts() as $each) {
+					$each->setUser(null);
+				}
+				foreach ($user->getListings() as $each) {
+					$each->setOwner(null);
+					#TODO: Cleanup function for removing orphaned lists that aren't used.
+				}
+				foreach ($user->getCrests() as $each) {
+					$each->setUser(null);
+				}
+				foreach ($user->getCultures() as $each) {
+					$em->remove($each);
+				}
+				foreach ($user->getPatronizing() as $each) {
+					$em->remove($each);
+				}
+				foreach ($user->getReports() as $each) {
+					$each->setOldUserId($id);
+					$each->setUser(null);
+				}
+				foreach ($user->getReportsAgainst() as $each) {
+					$each->setOldUserId($id);
+					$each->setUser(null);
+				}
+				foreach ($user->getAddedReportNotes() as $each) {
+					$each->setUser(null);
+				}
+				foreach ($user->getMailEntries() as $each) {
+					$em->remove($each);
+				}
+				$em->remove($user->getLimits());
+				foreach ($user->getKeys() as $each) {
+					$em->remove($each);
+				}
+				$em->flush();
+				$em->remove($user);
+				$note->spoolError('Account deleted successfully.');
+				$this->addFlash($trans->trans('user.deleted', [], 'core'));
+				return new RedirectResponse($this->generateUrl('maf_account'));
+			} else {
+				$form->addError($trans->trans('email.doesnotmatch', [], 'core'));
+			}
 		}
 		return $this->render('Account/data.html.twig', [
 			'form' => $form->createView()

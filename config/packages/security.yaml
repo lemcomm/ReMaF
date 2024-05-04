@@ -63,16 +63,18 @@ security:
     access_control:
         - { path: ^/(../)?(register|login)?$, roles: PUBLIC_ACCESS }
         - { path: ^/(../)?account/endemails, roles: PUBLIC_ACCESS } # This is authenticated with the token provided in the email, so no need to login.
+        - { path: ^/(../)?account, roles: ROLE_USER }
         - { path: ^/(../)?resetting$, roles: PUBLIC_ACCESS }
         - { path: ^/(../)?security/data$, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/(../)?security/keys$, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/(../)?security/delete, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/(../)?security/info, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/(../)?security, roles: PUBLIC_ACCESS }
         - { path: ^/(../)?admin, roles: ROLE_ADMIN }
         - { path: ^/(../)?olympus, roles: ROLE_OLYMPUS }
         - { path: ^/(../)?gamerequest, roles: ROLE_USER } # Without this, users will be locked out of the gamerequest path by the line below. --Andrew
         - { path: ^/(../)?game, roles: ROLE_ADMIN }
         - { path: ^/(../)?world, roles: ROLE_ADMIN }
-        - { path: ^/(../)?account, roles: ROLE_USER }
         - { path: ^/(../)?heraldry, roles: ROLE_USER }
         - { path: ^/(../)?payment, roles: ROLE_USER }
         - { path: ^/(../)?publications, roles: ROLE_USER }
@@ -98,6 +100,7 @@ security:
         - { path: ^/(../)?translator, roles: ROLE_USER }
         - { path: ^/(../)?unit, roles: ROLE_USER }
         - { path: ^/(../)?user, roles: ROLE_USER }
+        - { path: ^/(../)?chat, roles: ROLE_USER }
 
 when@test:
     security:

@@ -11,6 +11,7 @@ class UserLog {
 	private DateTime $ts;
 	private ?int $id = null;
 	private User $user;
+	private ?int $oldUserId = null;
 
 	public function getIp(): string {
 		return $this->ip;
@@ -62,6 +63,16 @@ class UserLog {
 
 	public function setAgent(string $agent): static {
 		$this->agent = $agent;
+
+		return $this;
+	}
+
+	public function getOldUserId(): int {
+		return $this->oldUserId;
+	}
+
+	public function setOldUserId(?int $id) {
+		$this->oldUserId = $id;
 
 		return $this;
 	}

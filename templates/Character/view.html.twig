@@ -6,7 +6,7 @@
 			<img src="{{ path("maf_heraldry_crest", {"id":char.crest.id}) }}"/>
 		</div>
 	{% endif %}
-	{% if not app.request.isXmlHttpRequest and char.user.vipstatus > 0 %}
+	{% if not app.request.isXmlHttpRequest and char.user and char.user.vipstatus > 0 %}
 	<div class="vip">
 		{% if char.user.vipstatus == 30 %}
 			<a href="{{ path("maf_vips") }}"><img src="{{ asset('images/vip-immortal.png') }}"/></a>

@@ -9,6 +9,7 @@ class UserReportAgainst {
 	private $id = null;
 	private ?User $added_by;
 	private ?User $user;
+	private ?int $oldUserId = null;
 	private ?UserReport $report;
 
 	/**
@@ -104,6 +105,16 @@ class UserReportAgainst {
 	 */
 	public function setReport(UserReport $report = null): static {
 		$this->report = $report;
+
+		return $this;
+	}
+
+	public function getOldUserId(): int {
+		return $this->oldUserId;
+	}
+
+	public function setOldUserId(?int $id) {
+		$this->oldUserId = $id;
 
 		return $this;
 	}

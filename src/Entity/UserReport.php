@@ -16,6 +16,7 @@ class UserReport {
 	private Collection $against;
 	private ?User $user;
 	private ?Journal $journal;
+	private ?int $oldUserId = null;
 
 	/**
 	 * Constructor
@@ -228,6 +229,16 @@ class UserReport {
 	 */
 	public function setActioned(bool $actioned): static {
 		$this->actioned = $actioned;
+
+		return $this;
+	}
+
+	public function getOldUserId(): int {
+		return $this->oldUserId;
+	}
+
+	public function setOldUserId(?int $id) {
+		$this->oldUserId = $id;
 
 		return $this;
 	}
