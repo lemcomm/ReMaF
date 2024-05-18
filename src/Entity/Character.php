@@ -22,7 +22,7 @@ class Character {
 	private bool $male;
 	private bool $alive;
 	private ?bool $retired;
-	private ?bool $abandonedBy;
+	private ?bool $abandoned_by;
 	private ?DateTime $retired_on;
 	private ?int $generation;
 	private string $genome;
@@ -1283,11 +1283,11 @@ class Character {
 	}
 
 	public function getAbandonedBy(): ?int {
-		return $this->abandonedBy;
+		return $this->abandoned_by;
 	}
 
 	public function setAbandonedBy(int $abandoned = null): static {
-		$this->abandonedBy = $abandoned;
+		$this->abandoned_by = $abandoned;
 
 		return $this;
 	}

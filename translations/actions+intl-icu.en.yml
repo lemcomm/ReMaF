@@ -350,6 +350,9 @@ control:
  takeX:
   name:         Defend against taking
   description:  Your estate is currently being claimed by others, oppose them.
+ faith:
+  name:         Change Local Faith
+  description:  Decide to which faith this settlement is aligned.
  changerealm:
   name:         Change realm allegiance.
   description:  Decide to which of your realms this settlement is aligned.

@@ -354,20 +354,21 @@ class PaymentController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/payment/artifact', name:'maf_payment_realmPack')]
+	#[Route ('/payment/artifact', name:'maf_payment_artifact')]
 	public function purchaseArtifactAction(UserManager $um, Request $request): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
+		$cost = 250;
 		$form = $this->createForm(AreYouSureType::class, null, ['translation_domain'=>'messages', 'label'=>'account.artifacts.select', 'submit'=>'account.artifacts.purchase']);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			if (!$user->getLimits()) {
 				$um->createLimits($user);
 			}
-			if ($this->pay->spend($user, "artifact", 250)) {
-				$user->getLimits()->setArtifacts($user->getArtifacts()+1);
+			if ($this->pay->spend($user, "artifact", $cost)) {
+				$user->getLimits()->setArtifacts($user->getLimits()->getArtifacts()+1);
 				$this->em->flush();
 				$this->addFlash('notice', $this->trans->trans("account.artifacts.bought"));
 			} else {
@@ -375,9 +376,11 @@ class PaymentController extends AbstractController {
 			}
 			return $this->redirectToRoute('maf_payment_credits');
 		}
-		return $this->render('Payment/realmPack.html.twig', [
-			'already'=>$user->getLimits()->getArtifactsLimit(),
-			'form'=>$form->createView()
+		return $this->render('Payment/artifact.html.twig', [
+			'slots'=>$user->getLimits()->getArtifacts(),
+			'used'=>$user->getArtifacts()->count(),
+			'form'=>$form->createView(),
+			'cost'=>$cost,
 		]);
 	}
 

@@ -1,0 +1,8 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+	<h2>{{ "realm.faith.name"|trans({},"politics")|title }}</h2>
+	<p>{{ "realm.faith.longdesc"|trans({},"politics")|raw }}</p>
+	{{ form(form) }}
+
+{% endblock %}

@@ -50,7 +50,7 @@ if (env === 'prod')  {
 	var basepath = security+"//"+host+"/app_"+env+".php/en/map/";
 }
 
-var tilecache_url = security+"//maps.mightandfealty.com/tilecache";
+var tilecache_url = security+"//maps."+host+"/tilecache";
 var imgpath = security+"//"+host+"/images/";
 var loadimg = imgpath+'loader.png';
 var tooltip;

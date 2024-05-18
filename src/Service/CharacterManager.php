@@ -328,8 +328,11 @@ class CharacterManager {
 					array("%link-character%"=>$character->getId()),
 					History::MEDIUM, true
 				);
-				// FIXME: it should drop into the gameworld instead
 				$artifact->setOwner(null);
+				$artifact->setLocation($character->getLocation());
+				$rand = (string) rand(1,91);
+				$when = new DateTime("+".$rand." days");
+				$artifact->setAvailableAfter($when);
 			}
 		}
 

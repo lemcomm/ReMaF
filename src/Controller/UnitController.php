@@ -692,7 +692,8 @@ class UnitController extends AbstractController {
      				}
      			}
      			$count = 0;
-     			$corruption = $economy->calculateCorruption($settlement);
+     			// $corruption = $economy->calculateCorruption($settlement); #Disabled mechanic.
+			$corruption = 0;
      			for ($i=0; $i<$data['number']; $i++) {
      				if ($soldier = $generator->randomSoldier($data['weapon'], $data['armour'], $data['equipment'], $data['mount'], $settlement, $corruption, $data['unit'])) {
      					$this->hist->addToSoldierLog(

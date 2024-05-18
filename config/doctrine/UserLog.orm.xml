@@ -5,7 +5,7 @@
                         <generator strategy="IDENTITY"/>
                 </id>
                 <many-to-one field="user" target-entity="User" inversed-by="logs"/>
-                <many-to-one field="old_user_id" type="integer" nullable="true"/>
+                <field name="old_user_id" type="integer" nullable="true"/>
 
                 <field name="ts" type="datetime"/>
                 <field name="ip" type="string"/>

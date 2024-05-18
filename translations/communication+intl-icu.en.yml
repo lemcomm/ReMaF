@@ -16,6 +16,7 @@ event:
   given:        Given to {character_2} by {character_1}.
   killer:       Taken by {character_1} through the killing of {character_2}.
   lost:         Lost upon the death of {character}.
+  found:        Found by {character}.
  feature:
   damaged:      "{character} has damaged the {featuretype} {name}. It will deteriorate further if no workers are assigned to repair."
   disabled:     "{character} has damaged the {featuretype} {name} so badly, it has become inoperative. It will deteriorate further if no workers are assigned to repair."
@@ -187,6 +188,7 @@ event:
   gotship:      You were given a ship by {character}. The ship made landfall nearby {remain} days ago.
   gotgold:      A messenger brought you a bag with {amount} gold from {character}.
   gotartifact:  You have received the {artifact} from {character}.
+  foundartifact:  You found the {artifact} during your travels.
   surrender:    "{character} has surrendered through the ancient geas of binding and is now at your mercy."
   surrenderto:  Has surrendered to {character} and become a prisoner.
   overwhelmed:  "{character} has been overwhelmed by your forces and forced to submit to the geas of binding."

@@ -45,5 +45,7 @@
 		<one-to-many field="deities" target-entity="AssociationDeity" mapped-by="association"/>
 		<one-to-many field="recognized_deities" target-entity="Deity" mapped-by="main_recognizer"/>
 		<one-to-many field="followers" target-entity="Character" mapped-by="faith"/>
+		<one-to-many field="follower_settlements" target-entity="Settlement" mapped-by="faith"/>
+		<one-to-many field="follower_realms" target-entity="Realm" mapped-by="faith"/>
 	</entity>
 </doctrine-mapping>

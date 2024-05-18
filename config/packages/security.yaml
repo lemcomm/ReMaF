@@ -82,7 +82,7 @@ security:
         - { path: ^/(../)?journal/[0-9]+, roles: PUBLIC_ACCESS }
         - { path: ^/(../)?journal, roles: ROLE_USER }
         - { path: ^/(../)?actions, roles: ROLE_USER }
-        - { path: ^/(../)?artifacts, roles: ROLE_USER }
+        - { path: ^/(../)?artifact, roles: ROLE_USER }
         - { path: ^/(../)?laws, roles: ROLE_USER }
         - { path: ^/(../)?politics, roles: ROLE_USER }
         - { path: ^/(../)?messages, roles: ROLE_USER }

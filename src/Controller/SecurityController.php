@@ -453,13 +453,13 @@ class SecurityController extends AbstractController {
 				$em->flush();
 				$em->remove($user);
 				$note->spoolError('Account deleted successfully.');
-				$this->addFlash($trans->trans('user.deleted', [], 'core'));
+				$this->addFlash($trans->trans('user.delete.success', [], 'core'));
 				return new RedirectResponse($this->generateUrl('maf_account'));
 			} else {
-				$form->addError($trans->trans('email.doesnotmatch', [], 'core'));
+				$form->addError($trans->trans('user.delete.emailmistmatch', [], 'core'));
 			}
 		}
-		return $this->render('Account/data.html.twig', [
+		return $this->render('Account/delete.html.twig', [
 			'form' => $form->createView()
 		]);
 	}

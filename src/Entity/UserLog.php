@@ -11,7 +11,7 @@ class UserLog {
 	private DateTime $ts;
 	private ?int $id = null;
 	private User $user;
-	private ?int $oldUserId = null;
+	private ?int $old_user_id = null;
 
 	public function getIp(): string {
 		return $this->ip;
@@ -68,11 +68,11 @@ class UserLog {
 	}
 
 	public function getOldUserId(): int {
-		return $this->oldUserId;
+		return $this->old_user_id;
 	}
 
 	public function setOldUserId(?int $id) {
-		$this->oldUserId = $id;
+		$this->old_user_id = $id;
 
 		return $this;
 	}

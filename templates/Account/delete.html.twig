@@ -1,0 +1,15 @@
+{% extends "layout.html.twig" %}
+
+{% trans_default_domain 'core' %}
+
+{% block content %}
+    <h2>{{ 'security.delete.title'|trans|title }}</h2>
+    {{ 'security.delete.info'|trans|raw }}
+
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+    {{ form_row(form.email) }}<br>
+    {{ form_row(form.sure) }}<br>
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

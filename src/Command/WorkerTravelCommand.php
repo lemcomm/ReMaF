@@ -2,12 +2,14 @@
 
 namespace App\Command;
 
+use App\Entity\Artifact;
 use App\Entity\Ship;
 use App\Service\CommonService;
 use App\Service\Geography;
 use App\Service\History;
 
 use App\Service\Interactions;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,7 +34,6 @@ class WorkerTravelCommand extends  Command {
 		parent::__construct();
 	}
 
-
 	protected function configure() {
 		$this
 			->setName('maf:worker:travel')
@@ -50,6 +51,7 @@ class WorkerTravelCommand extends  Command {
 		$start = $input->getArgument('start');
 		$end = $input->getArgument('end');
 		$speedmod = (float)$this->common->getGlobal('travel.speedmod', 0.15);
+		$artifactsNaN = false; #Artifact check short circuit flag.
 
 		// primary travel action - update our speed, check if we've arrived and update progress
 		$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.id >= :start AND c.id <= :end AND c.travel IS NOT NULL AND c.travel_locked = false');
@@ -121,6 +123,39 @@ class WorkerTravelCommand extends  Command {
 			} else {
 				$char->setProgress($progress);
 			}
+			if (!$artifactsNaN) {
+				$artifacts = $this->geo->findNearbyArtifacts($char);
+				if ($artifacts === 'none') {
+					$artifactsNaN = true;
+				} elseif ($artifacts instanceof Collection) {
+					$found = false;
+					/** @var Artifact $each */
+					foreach ($artifacts as $each) {
+						if ($found) {
+							break;
+						}
+						if (rand(1,100) > 85) {
+							$each->setOwner($char);
+							$each->setLocation();
+							$each->setAvailableAfter();
+							$this->hist->logEvent(
+								$each,
+								'event.artifact.found',
+								array("%link-character%"=>$char->getId()),
+								History::MEDIUM, true
+							);
+							$this->hist->logEvent(
+								$each,
+								'event.character.foundartifact',
+								array("%link-artifact%"=>$each->getId()),
+								History::MEDIUM, true
+							);
+						}
+						$found = true;
+					}
+				}
+			}
+
 		}
 
 		$this->em->flush();

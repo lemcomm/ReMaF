@@ -201,5 +201,4 @@ class CommonService {
 			$character->addAchievement($a);
 		}
 	}
-
 }

@@ -345,6 +345,7 @@ class Dispatcher {
 			$actions[] = $this->controlGrantTest(true);
 			$actions[] = $this->controlRenameTest(true);
 			$actions[] = $this->controlCultureTest(true);
+			$actions[] = $this->controlFaithTest(true, $settlement);
 			$actions[] = $this->controlStewardTest(true);
 			$actions[] = $this->controlSuppliedTest(true, $settlement);
 			$actions[] = $this->controlPermissionsTest(null, $settlement);
@@ -552,9 +553,10 @@ class Dispatcher {
 			$actions[] = $this->hierarchyElectionsTest();
 			$actions[] = $this->hierarchyRealmLawsTest(null, $realm);
 			if ($realm->findRulers()->contains($this->getCharacter())) {
-				# NOTE: We'll have to rework this later when othe positions can manage a realm.
+				# NOTE: We'll have to rework this later when other positions can manage a realm.
 				$actions[] = $this->hierarchyManageRealmTest();
 				$actions[] = $this->hierarchyManageDescriptionTest();
+				$actions[] = $this->hierarchyFaithTest();
 				$actions[] = $this->hierarchySelectCapitalTest();
 				$actions[] = $this->hierarchyNewPlayerInfoTest();
 				$actions[] = $this->hierarchyRealmSpawnsTest();
@@ -1086,6 +1088,16 @@ class Dispatcher {
 		return $this->action("control.abandon", "maf_settlement_abandon");
 	}
 
+	public function controlFaithTest($check_duplicate, $settlement): array {
+		if (($check = $this->veryGenericTests()) !== true) {
+			return array("name"=>"control.faith.name", "description"=>"unavailable.$check");
+		}
+		if ($settlement->getOwner() != $this->getCharacter() && $settlement->getOccupant() != $this->getCharacter()) {
+			return array("name"=>"control.faith.name", "description"=>"unavailable.notyours2");
+		}
+		return $this->action("control.faith", "maf_settlement_faith", false, array('id'=>$settlement->getId()));
+	}
+
 	public function controlSuppliedTest($check_duplicate, $settlement): array {
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"control.supplied.name", "description"=>"unavailable.$check");
@@ -1162,16 +1174,16 @@ class Dispatcher {
 
 	public function controlCultureTest($check_duplicate=false): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
-			return array("name"=>"control.culture.name", "description"=>"unavailable.$check");
+			return array("name"=>"control.namepack.name", "description"=>"unavailable.$check");
 		}
 		if (!$settlement = $this->getCharacter()->getInsideSettlement()) {
-			return array("name"=>"control.culture.name", "description"=>"unavailable.nosettlement");
+			return array("name"=>"control.namepack.name", "description"=>"unavailable.nosettlement");
 		}
 		$char = $this->getCharacter();
 		if ($settlement->getOwner() == $char || $settlement->getSteward() == $char) {
-			return $this->action("control.culture", "maf_actions_changeculture");
+			return $this->action("control.namepack", "maf_actions_changeculture");
 		} else {
-			return array("name"=>"control.culture.name", "description"=>"unavailable.notyours2");
+			return array("name"=>"control.namepack.name", "description"=>"unavailable.notyours2");
 		}
 	}
 
@@ -1956,6 +1968,20 @@ class Dispatcher {
 			return array("name"=>"realm.manage.name", "description"=>"unavailable.notleader");
 		} else {
 			return $this->action("realm.manage", "maf_realm_manage", true,
+				array('realm'=>$this->realm->getId()),
+				array("%name%"=>$this->realm->getName(), "%formalname%"=>$this->realm->getFormalName())
+			);
+		}
+	}
+
+	public function hierarchyFaithTest(): array {
+		if (($check = $this->politicsActionsGenericTests()) !== true) {
+			return array("name"=>"realm.faith.name", "description"=>"unavailable.$check");
+		}
+		if (!$this->realm->findRulers()->contains($this->getCharacter())) {
+			return array("name"=>"realm.faith.name", "description"=>"unavailable.notleader");
+		} else {
+			return $this->action("realm.faith", "maf_realm_faith", true,
 				array('realm'=>$this->realm->getId()),
 				array("%name%"=>$this->realm->getName(), "%formalname%"=>$this->realm->getFormalName())
 			);

@@ -564,6 +564,7 @@ class CharacterController extends AbstractController {
 			$em->flush();
 			$this->userman->calculateCharacterSpawnLimit($user, true); #This can return the date but we don't need it.
 			$em->flush();
+			$this->appstate->setSessionData($character);
 		} else {
 			$place = $spawn->getPlace();
 			$realm = $character->findPrimaryRealm();

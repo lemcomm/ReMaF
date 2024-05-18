@@ -40,6 +40,7 @@ class ArtifactsController extends AbstractController {
 
 		return $this->render('Artifacts/owned.html.twig', [
 			'artifacts'=>$user->getArtifacts(),
+			'slots'=>$user->getLimits()->getArtifacts()
 		]);
 	}
 

@@ -18,7 +18,8 @@ class AssocSelectType extends AbstractType {
 			'intention'     => 'asoc_90210',
 			'assocs'	=> [],
 			'type'		=> 'faith',
-			'me'		=> null
+			'me'		=> null,
+			'translation_domain' => 'orgs'
 		));
 	}
 

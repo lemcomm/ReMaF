@@ -87,6 +87,16 @@ assoc:
    intro: You can always decide that you simply which to, at least nominally, follow one faith or another that you're part of. Any Association that you are a member of that has named what their faith and followers is called is eligible to pick from. All regions you own will follow your choice here.
    success: You've successfully changed your official religion to that of %faith%.
    success2: You've successfully changed your official religion to that of not having one.
+   settlement:
+    name: Declare the Official Faith
+    intro: As lord, you can direct the mortals which faith is the most correct one for them to follow. As your word is law, they'll not object to changes.
+    success: You've successfully changed their official religion to that of %faith%.
+    success2: You've successfully changed their official religion to that of not having one.
+   realm:
+    name: Declare the Official Faith
+    intro: As ruler, you can direct the bureaucrats which faith is the official religion of your realm.
+    success: You've successfully changed the official religion to that of %faith%.
+    success2: You've successfully changed the official religion to that of not having one.
   manageRank:
    header: Update an Existing Rank
    name:   Manage %name%

@@ -122,6 +122,12 @@ security:
    failed: Unable to confirm email with a registered user. Bad combination passed.
    already: No confirmation needed. Disregarding request.
    success: Email successfully confirmed!
+ delete:
+  title: Delete Your Account
+  info: |
+   <p>You can request deletion of your account at any time, but this is a permanent action on your part that cannot be recovered from. To have an account again you would be required to make a brand new account.</p>
+   <p>The details of your account, such as username, email, etc., will be removed permanently. Credits you own will be voided and removed. Things you've created in game such as characters, artifacts, places of interest, will remain but may pass into an unowned status.</p>
+   <p>If you would like to proceed with account deletion, please confirm the email on your account below, check the box, and press the "Delete My Account" button.</p>
 
 form:
  email:
@@ -147,7 +153,10 @@ form:
  reset:
   password: Password
   repeat: Confirm Password
- setup:
+ delete:
+  sure: Confirm Deletetion
+  email: Account Email
+  submit: Delete My Account
  submit: Submit
  username:
   username: Username

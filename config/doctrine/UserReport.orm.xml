@@ -9,10 +9,10 @@
 		<field name="actioned" type="boolean"/>
 		<field name="date" type="datetime"/>
 		<many-to-one field="user" target-entity="User" inversed-by="reports"/>
-		<many-to-one field="old_user_id" type="integer" nullable="true"/>
+		<field name="old_user_id" type="integer" nullable="true"/>
 		<many-to-one field="journal" target-entity="Journal" inversed-by="reports"/>
 		<one-to-many field="notes" target-entity="UserReportNote" mapped-by="report"/>
 		<one-to-many field="against" target-entity="UserReportAgainst" mapped-by="report"/>
-		<many-to-one field="old_against_id" type="integer" nullable="true"/>
+		<field name="old_against_id" type="integer" nullable="true"/>
 	</entity>
 </doctrine-mapping>

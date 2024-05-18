@@ -16,7 +16,8 @@ class UserReport {
 	private Collection $against;
 	private ?User $user;
 	private ?Journal $journal;
-	private ?int $oldUserId = null;
+	private ?int $old_user_id = null;
+	private ?int $old_against_id = null;
 
 	/**
 	 * Constructor
@@ -234,11 +235,21 @@ class UserReport {
 	}
 
 	public function getOldUserId(): int {
-		return $this->oldUserId;
+		return $this->old_user_id;
 	}
 
 	public function setOldUserId(?int $id) {
-		$this->oldUserId = $id;
+		$this->old_user_id = $id;
+
+		return $this;
+	}
+
+	public function getOldAgainstId(): int {
+		return $this->old_against_id;
+	}
+
+	public function setOldAgainstId(?int $id) {
+		$this->old_against_id = $id;
 
 		return $this;
 	}

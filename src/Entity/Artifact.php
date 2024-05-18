@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class Artifact {
 	private ?int $id = null;
@@ -14,6 +16,8 @@ class Artifact {
 	private Collection $descriptions;
 	private Character $owner;
 	private User $creator;
+	private ?Point $location;
+	private DateTime $available_after;
 
 	/**
 	 * Constructor
@@ -190,6 +194,50 @@ class Artifact {
 	 */
 	public function setCreator(User $creator = null): static {
 		$this->creator = $creator;
+
+		return $this;
+	}
+
+	/**
+	 * Get location
+	 *
+	 * @return Point|null
+	 */
+	public function getLocation(): ?Point {
+		return $this->location;
+	}
+
+	/**
+	 * Set location
+	 *
+	 * @param point|null $location
+	 *
+	 * @return Artifact
+	 */
+	public function setLocation(Point $location = null): static {
+		$this->location = $location;
+
+		return $this;
+	}
+
+	/**
+	 * Get created
+	 *
+	 * @return DateTime
+	 */
+	public function getAvailableAfter(): DateTime {
+		return $this->available_after;
+	}
+
+	/**
+	 * Set created
+	 *
+	 * @param DateTime|null $available_after
+	 *
+	 * @return Artifact
+	 */
+	public function setAvailableAfter(DateTime $available_after = null): static {
+		$this->available_after = $available_after;
 
 		return $this;
 	}

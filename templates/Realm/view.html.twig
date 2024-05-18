@@ -51,6 +51,12 @@
 		<dt>{{ 'realm.language'|trans({},"politics") }}</dt>
 		<dd>{{ realm.language }}</dd>
 	{% endif %}
+	<dt>{{ 'realm.faith.view'|trans({}, "politics") }}</dt>
+	{% if realm.faith %}
+		<dd>{{ link(realm.faith) }}</dd>
+	{% else %}
+		<dd>{{ 'realm.faith.none'|trans({}, "politics")|raw }}</dd>
+	{% endif %}
 </dl>
 
 {% if realm.ultimate %}

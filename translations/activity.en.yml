@@ -83,7 +83,8 @@ report:
   very low:  Onlookers found their skill quite inferior,
 
  acc:
-  low:       but they were not confident in this opinion.
+  none:      but they had zero confidence in this opinion.
+  low:       but they were not very confident in this opinion.
   medium:    though they had mixed thoughts on it.
   high:      and were nearly unanimous in this view.
 

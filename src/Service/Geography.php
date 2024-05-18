@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Artifact;
 use App\Entity\Biome;
 use App\Entity\Character;
 use App\Entity\EntourageType;
@@ -16,6 +17,8 @@ use App\Entity\Setting;
 use App\Entity\Ship;
 use App\Entity\Settlement;
 
+use DateTime;
+use Doctrine\Common\Collections\Criteria;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -150,6 +153,25 @@ class Geography {
 		$query = $this->em->createQuery('SELECT f as feature, ST_AsGeoJSON(f.location) as json, t.name as typename FROM App:GeoFeature f JOIN f.type t, App:Character c WHERE c = :me AND t.name = :tower AND f.active = true AND ST_Distance(f.location, c.location) <= :maxdistance');
 		$query->setParameters(['me'=>$character, 'tower'=>'tower', 'maxdistance'=>$distance*0.5]);
 		return $query->getResult();
+	}
+
+	public function findNearbyArtifacts(Character $char) {
+		$now = new DateTime('now');
+		if ($this->em->createQuery('SELECT count(id) FROM App:Artifact WHERE location IS NOT NULL and available_after <= :now')->setParameters(['now'=>$now])->getSingleScalarResult() > 0) {
+			$distance = $this->calculateSpottingDistance($char);
+			$query = $this->em->createQuery('SELECT a FROM App:Artifact a WHERE location IS NOT NULL AND available_after <= :now AND ST_DWithin(a.location, :me, :maxdistance) = true');
+			$query->setParameters(['me'=>$char->getLocation(), 'maxdistance'=>$distance, 'now'=>$now]);
+			$result = $query->getResult();
+			if ($result->count() > 0) {
+				return $result;
+			} else {
+				# None nearby, return zero.
+				return 'zero';
+			}
+		} else {
+			# None exist, return short circuit value.
+			return 'none';
+		}
 	}
 
 	public function findRealmPolygon(Realm $realm, $format='text', $with_subs='true') {

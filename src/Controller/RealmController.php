@@ -8,8 +8,10 @@ use App\Entity\RealmPosition;
 use App\Entity\Character;
 use App\Entity\Election;
 use App\Entity\RealmRelation;
+use App\Entity\Settlement;
 use App\Entity\Spawn;
 use App\Entity\Vote;
+use App\Form\AssocSelectType;
 use App\Form\ElectionType;
 use App\Form\InteractionType;
 use App\Form\DescriptionNewType;
@@ -1164,6 +1166,40 @@ class RealmController extends AbstractController {
 			'they_to_us' => $they_to_us,
 			'member_of_source' => $member_of_source,
 			'member_of_target' => $member_of_target
+		]);
+	}
+
+	#[Route ('/realm/{realm}/faith', name:'maf_realm_faith', requirements:['id'=>'\d+', 'unit'=>'\d+'])]
+	public function faithAction(Request $request, Realm $realm) : RedirectResponse|Response {
+		$character = $this->gateway($realm, 'hierarchyFaithTest');
+		if (! $character instanceof Character) {
+			return $this->redirectToRoute($character);
+		}
+		$opts = new ArrayCollection();
+		foreach($character->findAssociations() as $assoc) {
+			if ($assoc->getFaithname() && $assoc->getFollowerName()) {
+				$opts->add($assoc);
+			}
+		}
+
+		$form = $this->createForm(AssocSelectType::class, null, ['assocs' => $opts, 'type' => 'faith', 'me' =>$character]);
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			$data = $form->getData();
+			$character->setFaith($data['target']);
+			$this->em->flush();
+			if ($data['target']) {
+				$this->addFlash('notice', $this->trans->trans('assoc.route.faith.settlement.success', array("%faith%"=>$data['target']->getFaithName()), 'orgs'));
+			} else {
+				$this->addFlash('notice', $this->trans->trans('assoc.route.faith.settlement.success2', array(), 'orgs'));
+			}
+
+			return $this->redirectToRoute('maf_actions');
+		}
+
+		return $this->render('Realm/faith.html.twig', [
+			'form'=>$form->createView(),
 		]);
 	}
 

@@ -73,6 +73,7 @@
 
 		<one-to-many field="activities" target-entity="Activity" mapped-by="settlement"/>
 		<one-to-many field="laws" target-entity="Law" mapped-by="settlement" fetch="EXTRA_LAZY"/>
+		<many-to-one field="faith" target-entity="Association" inversed-by="follower_settlements"/>
 
 		<one-to-many field="chat_messages" target-entity="ChatMessage" mapped-by="settlement" fetch="EXTRA_LAZY">
 			<order-by>

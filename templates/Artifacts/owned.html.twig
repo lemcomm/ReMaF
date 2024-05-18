@@ -2,38 +2,43 @@
 
 {% block content %}
 
-<h2>{{ "artifact.owned.title"|trans|title }}</h2>
-<table>
-	<thead><tr>
-		<th>Name</th>
-		<th>currently owned by</th>
-		<th></th>
-	</tr></thead>
-	<tbody>
-		{% for artifact in artifacts %}
-		<tr>
-			<td>{{ link(artifact) }}</td>
-			<td>
-				{% if artifact.owner %}
-					{{ link(artifact.owner) }}
-				{% else %}
-					(nobody)
-				{% endif %}
-			</td>
-			<td>
-				{% if artifact.owner is null %}
-					<a href="{{ path('maf_artifact_assign', {'id':artifact.id}) }}">give to character</a> {#
-					---
-					<a href="{{ path('maf_artifact_spawn', {'id':artifact.id}) }}">drop into world</a> #}
-				{% endif %}
-			</td>
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
+	{% set used = artifacts.count %}
 
-<h2>{{ "artifact.create.title"|trans|title }}</h2>
-
-<a href="{{ path('maf_artifact_create') }}">{{ "artifact.create.title"|trans }}</a>
-
+	<h2>{{ "artifact.owned.title"|trans|title }}</h2>
+	<p>{{ 'account.artifacts.intro'|trans|raw }}</p>
+	<p>{{ 'account.artifacts.current'|trans({"slots":slots, "used":used})|raw }}</p>
+	<table>
+		<thead><tr>
+			<th>Name</th>
+			<th>currently owned by</th>
+			<th></th>
+		</tr></thead>
+		<tbody>
+			{% for artifact in artifacts %}
+			<tr>
+				<td>{{ link(artifact) }}</td>
+				<td>
+					{% if artifact.owner %}
+						{{ link(artifact.owner) }}
+					{% else %}
+						(nobody)
+					{% endif %}
+				</td>
+				<td>
+					{% if artifact.owner is null %}
+						<a href="{{ path('maf_artifact_assign', {'id':artifact.id}) }}">give to character</a> {#
+						---
+						<a href="{{ path('maf_artifact_spawn', {'id':artifact.id}) }}">drop into world</a> #}
+					{% endif %}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<h2>{{ "artifact.create.title"|trans|title }}</h2>
+	{% if used < slots %}
+		<a href="{{ path('maf_artifact_create') }}">{{ "artifact.create.title"|trans }}</a>
+	{% else %}
+		{{ "account.artifacts.noslots"|trans|raw }} <a href="{{ path('maf_payment_artifact') }}">{{ 'account.artifacts.buymore2'|trans|raw }}</a>
+	{% endif %}
 {% endblock %}

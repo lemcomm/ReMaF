@@ -112,6 +112,13 @@
 		<br /><a href="{{ path('maf_actions_changerealm', {'id':settlement.id}) }}">{{ 'control.changerealm.name'|trans({},"actions") }}</a>
 	{% endif %}
 	</p>
+	<p class="condensed">
+	{% if settlement.faith %}
+		{{ 'settlement.faith'|trans({'%faith%':link(settlement.faith)})|raw }}
+	{% else %}
+		{{ 'settlement.nofaith'|trans }}
+	{% endif %}
+	</p>
 	<h4>{{ 'claim.title'|trans({},"politics")|title }}</h4>
 	{% set hasclaim = false %}
 	{% if settlement.claims is not empty %}

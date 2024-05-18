@@ -1,0 +1,13 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+	<h2>{{ 'account.artifacts.title'|trans|title }}</h2>
+	<p>{{ 'account.artifacts.intro'|trans|raw }}</p>
+	<p>{{ 'account.artifacts.current'|trans({"slots":slots, "used":used})|raw }}</p>
+	<p>{{ 'account.artifacts.buymore'|trans({"cost":cost})|raw }}</p>
+	{{ form_start(form) }}
+	{{ form_errors(form) }}
+	{{ form_row(form.sure) }}<br>
+	{{ form_row(form.submit) }}
+	{{ form_end(form) }}
+{% endblock %}

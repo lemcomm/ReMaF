@@ -7,6 +7,7 @@ use App\Entity\Permission;
 use App\Entity\ResourceType;
 use App\Entity\Settlement;
 use App\Entity\Unit;
+use App\Form\AssocSelectType;
 use App\Form\SettlementAbandonType;
 use App\Form\SettlementPermissionsSetType;
 use App\Form\DescriptionNewType;
@@ -18,6 +19,7 @@ use App\Service\Geography;
 use App\Service\History;
 
 use App\Service\Interactions;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -342,6 +344,40 @@ class SettlementController extends AbstractController {
 			$this->addFlash('notice', $this->trans->trans('control.supply.failure.notyours', [], 'actions'));
 		}
 		return $this->redirectToRoute('maf_settlement_supplied', ['id'=>$id->getId()]);
+	}
+
+	#[Route ('/settlement/{id}/faith', name:'maf_settlement_faith', requirements:['id'=>'\d+'])]
+	public function faithAction(Request $request, Settlement $id) : RedirectResponse|Response {
+		$character = $this->disp->gateway('controlFaithTest', false, true, false, $id);
+		if (! $character instanceof Character) {
+			return $this->redirectToRoute($character);
+		}
+		$opts = new ArrayCollection();
+		foreach($character->findAssociations() as $assoc) {
+			if ($assoc->getFaithname() && $assoc->getFollowerName()) {
+				$opts->add($assoc);
+			}
+		}
+
+		$form = $this->createForm(AssocSelectType::class, null, ['assocs' => $opts, 'type' => 'faith', 'me' =>$character]);
+		$form->handleRequest($request);
+
+		if ($form->isSubmitted() && $form->isValid()) {
+			$data = $form->getData();
+			$character->setFaith($data['target']);
+			$this->em->flush();
+			if ($data['target']) {
+				$this->addFlash('notice', $this->trans->trans('assoc.route.faith.settlement.success', array("%faith%"=>$data['target']->getFaithName()), 'orgs'));
+			} else {
+				$this->addFlash('notice', $this->trans->trans('assoc.route.faith.settlement.success2', array(), 'orgs'));
+			}
+
+			return $this->redirectToRoute('maf_actions');
+		}
+
+		return $this->render('Character/faith.html.twig', [
+			'form'=>$form->createView(),
+		]);
 	}
 
 }

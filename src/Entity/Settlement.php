@@ -62,6 +62,7 @@ class Settlement {
 	private int $assignedBuildings = -1;
 	private int $assignedFeatures = -1;
 	private int $employees = -1;
+	private ?Association $faith;
 
 	/**
 	 * Constructor
@@ -1772,5 +1773,27 @@ class Settlement {
 
 	public function getChatMembers(): Collection {
 		return $this->getCharactersPresent();
+	}
+
+	/**
+	 * Get faith
+	 *
+	 * @return Association|null
+	 */
+	public function getFaith(): ?Association {
+		return $this->faith;
+	}
+
+	/**
+	 * Set faith
+	 *
+	 * @param Association|null $faith
+	 *
+	 * @return Character
+	 */
+	public function setFaith(Association $faith = null): static {
+		$this->faith = $faith;
+
+		return $this;
 	}
 }

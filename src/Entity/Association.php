@@ -33,6 +33,8 @@ class Association extends Faction {
 	private Association $superior;
 	private Character $founder;
 	private Collection $followed_in;
+	private Collection $follower_settlements;
+	private Collection $follower_realms;
 
 	/**
 	 * Constructor
@@ -54,6 +56,8 @@ class Association extends Faction {
 		$this->recognized_deities = new ArrayCollection();
 		$this->followers = new ArrayCollection();
 		$this->followed_in = new ArrayCollection();
+		$this->follower_settlements = new ArrayCollection();
+		$this->follower_realms = new ArrayCollection();
 	}
 
 	public function findAllMemberCharacters($include_myself = true): ArrayCollection {
@@ -853,5 +857,67 @@ class Association extends Faction {
 	 */
 	public function getFollowedIn(): ArrayCollection|Collection {
 		return $this->followed_in;
+	}
+
+	/**
+	 * Add followers
+	 *
+	 * @param Settlement $followed_in
+	 *
+	 * @return Association
+	 */
+	public function addFollowerSettlement(Settlement $followed_in): static {
+		$this->follower_settlements[] = $followed_in;
+
+		return $this;
+	}
+
+	/**
+	 * Remove followers
+	 *
+	 * @param Settlement $followed_in
+	 */
+	public function removeFollowerSettlement(Settlement $followed_in) {
+		$this->follower_settlements->removeElement($followed_in);
+	}
+
+	/**
+	 * Get followers
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getFollowerSettlements(): ArrayCollection|Collection {
+		return $this->follower_settlements;
+	}
+
+	/**
+	 * Add followers
+	 *
+	 * @param Realm $followed_in
+	 *
+	 * @return Association
+	 */
+	public function addFollowerRealm(Realm $followed_in): static {
+		$this->follower_realms[] = $followed_in;
+
+		return $this;
+	}
+
+	/**
+	 * Remove followers
+	 *
+	 * @param Realm $followed_in
+	 */
+	public function removeFollowerRealm(Realm $followed_in) {
+		$this->follower_realms->removeElement($followed_in);
+	}
+
+	/**
+	 * Get followers
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getFollowerRealms(): ArrayCollection|Collection {
+		return $this->follower_realms;
 	}
 }

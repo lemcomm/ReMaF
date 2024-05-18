@@ -6,9 +6,9 @@
 namespace App\DQL;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
-use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\ORM\Query\TokenType;
 
 
 class Pow extends FunctionNode {
@@ -17,12 +17,12 @@ class Pow extends FunctionNode {
 	public $secondExpression = null;
 
 	public function parse(Parser $parser) {
-		$parser->match(Lexer::T_IDENTIFIER);
-		$parser->match(Lexer::T_OPEN_PARENTHESIS);
+		$parser->match(TokenType::T_IDENTIFIER);
+		$parser->match(TokenType::T_OPEN_PARENTHESIS);
 		$this->firstExpression = $parser->ArithmeticExpression();
-		$parser->match(Lexer::T_COMMA);
+		$parser->match(TokenType::T_COMMA);
 		$this->secondExpression = $parser->ArithmeticExpression();
-		$parser->match(Lexer::T_CLOSE_PARENTHESIS);
+		$parser->match(TokenType::T_CLOSE_PARENTHESIS);
 	}
 
 	public function getSql(SqlWalker $sqlWalker) {

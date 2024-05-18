@@ -419,6 +419,17 @@ account:
   link:     Heraldry
  artifacts:
   link:     Artifacts
+  title:    Buy Artifact Slots
+  intro: >
+    Artifacts are in-game items that you can give to your character but have their own tracked history, can be transferred to others, and can be dropped when your character (or whomever holds it) falls in battle. 
+    Once dropped, they'll exist on the map until someone stumbles upon them, slowly becoming easier to find over time.
+  current:  You currently have {slots} Artifact Slots, of which {used} are in use.
+  buymore:  You can buy more artifacts one at a time, for {cost} credits each.
+  noslots:  There are no available artifact slots left on your account.
+  buymore2: You can purchase additional slots if you like.
+  bought:   "You've added another artifact slot to your account."
+  select:   "Confirm Purchase"
+  purchase: "Buy an Artifact Slot"
  culture:
   link:     Name Pack
   title:    Name Pack
@@ -864,6 +875,8 @@ settlement:
  ultimate:    Sovereign Realm
  localrealm:  Local Realm
  norealm:     This settlement does not belong to any realm.
+ faith:       It belongs to the faith of {faith}.
+ nofaith:     It does not follow any formal faith.
  economy:     Economy
  build:       Currently building
  starvation:

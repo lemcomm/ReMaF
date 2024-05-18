@@ -39,9 +39,8 @@ class BattleRunner {
 	private int $defaultOffset = 135;
 	private int $battleSeparation = 270;
 	/*
-	Going to talk about these abit as they determine things. Offset is the absolute value from zero for each of the two primary sides.
+	Going to talk about these a bit as they determine things. Offset is the absolute value from zero for each of the two primary sides.
 	In the case of defenders this is also the positive value for where the "walls" are.
-
 	*/
 
 	# The following variables are used all over this class, in multiple functions, sometimes as far as 4 or 5 functions deep.
@@ -328,7 +327,6 @@ class BattleRunner {
 			$noble->getCharacter()->removeSoldiersOld($noble);
 		}
 
-		# TODO: Adapt this for when sieges have reached their conclusion, and pass which side was victorious to a different function to closeout the siege properly.
 		if (!$battle->getSiege()) {
 			$this->log(15, "Regular battle detected, Nulling primary battle groups...\n");
 			$battle->setPrimaryDefender(NULL);

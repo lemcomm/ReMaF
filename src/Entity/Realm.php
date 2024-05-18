@@ -42,6 +42,7 @@ class Realm extends Faction {
 	private ?Realm $superior;
 	private ?Place $capital_place;
 	private ?RealmDesignation $designation;
+	private ?Association $faith;
 
 	/**
 	 * Constructor
@@ -1236,6 +1237,28 @@ class Realm extends Faction {
 
 	public function setDesignation(RealmDesignation $designation = null): static {
 		$this->designation = $designation;
+		return $this;
+	}
+
+	/**
+	 * Get faith
+	 *
+	 * @return Association|null
+	 */
+	public function getFaith(): ?Association {
+		return $this->faith;
+	}
+
+	/**
+	 * Set faith
+	 *
+	 * @param Association|null $faith
+	 *
+	 * @return Character
+	 */
+	public function setFaith(Association $faith = null): static {
+		$this->faith = $faith;
+
 		return $this;
 	}
 }
