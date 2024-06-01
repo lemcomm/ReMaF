@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\AppKey;
 use App\Entity\User;
 use App\Form\ForgotUsernameFormType;
+use App\Form\ForgotUsernameType;
 use App\Form\RegistrationFormType;
 use App\Form\RequestResetFormType;
 use App\Form\ResetPasswordFormType;
@@ -16,8 +17,10 @@ use App\Service\MailManager;
 
 use App\Service\NotificationManager;
 use Doctrine\ORM\EntityManagerInterface;
+use ReCaptcha\ReCaptcha;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -64,52 +67,61 @@ class SecurityController extends AbstractController {
 		$form = $this->createForm(RegistrationFormType::class, $user);
 		$form->handleRequest($request);
 
-		if ($form->isSubmitted() && $form->isValid()) {
-			$check = $em->getRepository(User::class)->findOneBy(['username'=>$form->get('_username')->getData()]);
-			if ($check) {
-				$this->addFlash('error', $trans->trans('form.register.duplicate', [], 'core'));
-				return new RedirectResponse($this->generateUrl('maf_register'));
+		if ($form->isSubmitted()) {
+			$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+			$resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
+			if (!$resp->isSuccess()) {
+				$form->addError(new FormError("reCAPTCHA failed to validate. Are you a bot?"));
+			} elseif ($form->isValid()) {
+				$check = $em->getRepository(User::class)->findOneBy(['username' => $form->get('_username')->getData()]);
+				if ($check) {
+					$this->addFlash('error', $trans->trans('form.register.duplicate', [], 'core'));
+					return new RedirectResponse($this->generateUrl('maf_register'));
+				}
+				$user->setUsername($form->get('_username')->getData());
+				# Encode plain password in database
+				$user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
+				$user->setLastPassword(new \DateTime('now'));
+				#Generate activation token
+				$user->setToken($app->generateAndCheckToken(16, 'User', 'token'));
+
+				#Log user creation time and set user to inactive.
+				$user->setCreated(new \DateTime("now"));
+				$user->setEmail(strtolower($form->get('email')->getData()));
+				$method = $_ENV['ACTIVATION'];
+				if ($method == 'email' || $method == 'manual') {
+					$user->setEnabled(false);
+				} else {
+					$user->setEnabled(true);
+				}
+				$em->persist($user);
+				$em->flush();
+
+				if ($method == 'email') {
+					# Generate Activation Email
+					$link = $this->generateUrl('maf_account_activate', [
+						'id' => $user->getId(),
+						'token' => $user->getToken()
+					], UrlGeneratorInterface::ABSOLUTE_URL);
+					$text = $trans->trans('security.register.email.text1', [
+						'%username%' => $user->getUsername(),
+						'%sitename%' => $_ENV['SITE_NAME'],
+						'%link%' => $link,
+						'%adminemail%' => $_ENV['ADMIN_EMAIL']
+					], 'core');
+					$subject = $trans->trans('security.register.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
+
+					$mail->sendEmail($user->getEmail(), $subject, $text);
+				}
+
+				$this->addFlash('notice', $trans->trans('security.register.flash', [], 'core'));
+				return new RedirectResponse($this->generateUrl('maf_login'));
 			}
-			$user->setUsername($form->get('_username')->getData());
-			# Encode plain password in database
-			$user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
-			$user->setLastPassword(new \DateTime('now'));
-			#Generate activation token
-			$user->setToken($app->generateAndCheckToken(16, 'User', 'token'));
-
-			#Log user creation time and set user to inactive.
-			$user->setCreated(new \DateTime("now"));
-			$user->setEmail(strtolower($form->get('email')->getData()));
-			$method = $_ENV['ACTIVATION'];
-			if ($method == 'email' || $method == 'manual') {
-				$user->setEnabled(false);
-			} else {
-				$user->setEnabled(true);
-			}
-			$em->persist($user);
-			$em->flush();
-
-			if ($method == 'email') {
-				# Generate Activation Email
-				$link = $this->generateUrl('maf_account_activate', ['id' => $user->getId(), 'token' => $user->getToken()], UrlGeneratorInterface::ABSOLUTE_URL);
-				$text = $trans->trans(
-					'security.register.email.text1', [
-					'%username%' => $user->getUsername(),
-					'%sitename%' => $_ENV['SITE_NAME'],
-					'%link%' => $link,
-					'%adminemail%' => $_ENV['ADMIN_EMAIL']
-				], 'core');
-				$subject = $trans->trans('security.register.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
-
-				$mail->sendEmail($user->getEmail(), $subject, $text);
-			}
-
-			$this->addFlash('notice', $trans->trans('security.register.flash', [], 'core'));
-			return new RedirectResponse($this->generateUrl('maf_login'));
 		}
 
 		return $this->render('Account/register.html.twig', [
 			'registrationForm' => $form->createView(),
+			'recaptcha_site_key' => $_ENV['RECAPTCHA_SITE_KEY'],
 		]);
 	}
 
@@ -138,31 +150,41 @@ class SecurityController extends AbstractController {
                 if ($token == '0') {
                         $form = $this->createForm(RequestResetFormType::class);
                         $form->handleRequest($request);
-                        if ($form->isSubmitted() && $form->isValid()) {
-                                $data = $form->getData();
-                                $user = $em->getRepository(User::class)->findOneByEmail($data['text']);
-                                if (!$user) {
-                                        $user = $em->getRepository(User::class)->findOneByUsername($data['text']);
-                                }
-                                if ($user) {
-                                        $user->setResetToken($app->generateAndCheckToken(64, 'User', 'reset_token'));
-                                        $em->flush();
-                                        $link = $this->generateUrl('maf_account_reset', ['token' => $user->getResetToken(), 'email'=>$user->getEmail()], UrlGeneratorInterface::ABSOLUTE_URL);
-                                        $text = $trans->trans(
-                                                'security.reset.email.text', [
-                                                        '%sitename%' => $_ENV['SITE_NAME'],
-                                                        '%link%' => $link,
-                                                        '%adminemail%' => $_ENV['ADMIN_EMAIL']
-                                                ], 'core');
-                                        $subject = $trans->trans('security.reset.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
+                        if ($form->isSubmitted()) {
+				$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+				$resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
+				if (!$resp->isSuccess()) {
+					$form->addError(new FormError("reCAPTCHA failed to validate. Are you a bot?"));
+				} elseif ($form->isValid()) {
+					$data = $form->getData();
+					$user = $em->getRepository(User::class)->findOneByEmail($data['text']);
+					if (!$user) {
+						$user = $em->getRepository(User::class)->findOneByUsername($data['text']);
+					}
+					if ($user) {
+						$user->setResetToken($app->generateAndCheckToken(64, 'User', 'reset_token'));
+						$em->flush();
+						$link = $this->generateUrl('maf_account_reset', [
+							'token' => $user->getResetToken(),
+							'email' => $user->getEmail()
+						], UrlGeneratorInterface::ABSOLUTE_URL);
+						$text = $trans->trans('security.reset.email.text', [
+							'%sitename%' => $_ENV['SITE_NAME'],
+							'%link%' => $link,
+							'%adminemail%' => $_ENV['ADMIN_EMAIL']
+						], 'core');
+						$subject = $trans->trans('security.reset.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
 
-                                        $mail->sendEmail($user->getEmail(), $subject, $text);
-					$this->addFlash('notice', $trans->trans('security.reset.flash.requested', [], 'core'));
-                                }
-                                return new RedirectResponse($this->generateUrl('maf_index'));
+						$mail->sendEmail($user->getEmail(), $subject, $text);
+						$this->addFlash('notice', $trans->trans('security.reset.flash.requested', [], 'core'));
+					}
+					return new RedirectResponse($this->generateUrl('maf_index'));
+				}
                         }
                         return $this->render('Account/reset.html.twig', [
-                                'form' => $form->createView(),
+                                'request_form' => $form->createView(),
+				'reset_form' => false,
+				'recaptcha_site_key' => $_ENV['RECAPTCHA_SITE_KEY'],
                         ]);
                 } else {
                         $user = $em->getRepository(User::class)->findOneBy(['reset_token' => $token, 'email' => $email]);
@@ -180,7 +202,8 @@ class SecurityController extends AbstractController {
                                         return new RedirectResponse($this->generateUrl('maf_index'));
                                 }
                                 return $this->render('Account/reset.html.twig', [
-                                        'form' => $form->createView(),
+                                        'reset_form' => $form->createView(),
+					'request_form' => false,
                                 ]);
                         } else {
                                 $app->logSecurityViolation($request->getClientIP(), 'core_reset', $this->getUser(), 'bad reset');
@@ -191,34 +214,40 @@ class SecurityController extends AbstractController {
 
 	#[Route ('/security/remind', name:'maf_remind')]
         public function remind(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request): RedirectResponse|Response {
-                $form = $this->createForm(ForgotUsernameFormType::class);
+                $form = $this->createForm(ForgotUsernameType::class);
                 $form->handleRequest($request);
-                if ($form->isSubmitted() && $form->isValid()) {
-                        $data = $form->getData();
-                        $user = $em->getRepository(User::class)->findOneBy(['email'=>$data['email']]);
+                if ($form->isSubmitted()) {
+			$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+			$resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
+			if (!$resp->isSuccess()) {
+				$form->addError(new FormError("reCAPTCHA failed to validate. Are you a bot?"));
+			} elseif ($form->isValid()) {
+				$data = $form->getData();
+				$user = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]);
 
-                        if ($user) {
-                                $user->setResetToken($app->generateAndCheckToken(64, 'User', 'reset_token'));
-                                $em->flush();
-                                $resetLink = $this->generateUrl('maf_account_reset', [], UrlGeneratorInterface::ABSOLUTE_URL);
-                                $loginLink = $this->generateUrl('maf_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
-                                $text = $trans->trans(
-                                        'security.remind.email.text', [
-                                                '%sitename%' => $_ENV['SITE_NAME'],
-                                                '%username%' => $user->getUsername(),
-                                                '%login%' => $loginLink,
-                                                '%reset%' => $resetLink,
-                                                '%adminemail%' => $_ENV['ADMIN_EMAIL']
-                                        ], 'core');
-                                $subject = $trans->trans('security.remind.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
+				if ($user) {
+					$user->setResetToken($app->generateAndCheckToken(64, 'User', 'reset_token'));
+					$em->flush();
+					$resetLink = $this->generateUrl('maf_account_reset', [], UrlGeneratorInterface::ABSOLUTE_URL);
+					$loginLink = $this->generateUrl('maf_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
+					$text = $trans->trans('security.remind.email.text', [
+						'%sitename%' => $_ENV['SITE_NAME'],
+						'%username%' => $user->getUsername(),
+						'%login%' => $loginLink,
+						'%reset%' => $resetLink,
+						'%adminemail%' => $_ENV['ADMIN_EMAIL']
+					], 'core');
+					$subject = $trans->trans('security.remind.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
 
-                                $mail->sendEmail($user->getEmail(), $subject, $text);
-                        }
-                        $this->addFlash('notice', $trans->trans('security.remind.flash', [], 'core'));
-                        return new RedirectResponse($this->generateUrl('maf_index'));
+					$mail->sendEmail($user->getEmail(), $subject, $text);
+				}
+				$this->addFlash('notice', $trans->trans('security.remind.flash', [], 'core'));
+				return new RedirectResponse($this->generateUrl('maf_index'));
+			}
                 }
                 return $this->render('Account/remind.html.twig', [
                         'form' => $form->createView(),
+			'recaptcha_site_key' => $_ENV['RECAPTCHA_SITE_KEY'],
                 ]);
         }
 
@@ -228,31 +257,44 @@ class SecurityController extends AbstractController {
                 $form = $this->createForm(NewTokenFormType::class);
                 $form->handleRequest($request);
 
-                if ($form->isSubmitted() && $form->isValid()) {
-                        $data = $form->getData();
-                        $user = $em->getRepository(User::class)->findOneBy(['username' => $data['username'], 'email' => $data['email']]);
-                        if ($user) {
-                                $user->setToken($app->generateAndCheckToken(16, 'User', 'token'));
-                                $em->flush();
+                if ($form->isSubmitted()) {
+			$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+			$resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
+			if (!$resp->isSuccess()) {
+				$form->addError(new FormError("reCAPTCHA failed to validate. Are you a bot?"));
+			} elseif ($form->isValid()) {
+				$data = $form->getData();
+				$user = $em->getRepository(User::class)->findOneBy([
+					'username' => $data['username'],
+					'email' => $data['email']
+				]);
+				if ($user) {
+					$user->setToken($app->generateAndCheckToken(16, 'User', 'token'));
+					$em->flush();
 
-                                $link = $this->generateUrl('maf_account_activate', ['username' => $user->getUsername(), 'email' => $user->getEmail(), 'token' => $user->getToken()], UrlGeneratorInterface::ABSOLUTE_URL);
-                                $text = $trans->trans(
-                                        'security.register.email.text2', [
-                                                '%username%' => $user->getUsername(),
-                                                '%sitename%' => $_ENV['SITE_NAME'],
-                                                '%link%' => $link,
-                                                '%adminemail%' => $_ENV['ADMIN_EMAIL']
-                                        ], 'core');
-                                $subject = $trans->trans('security.register.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
+					$link = $this->generateUrl('maf_account_activate', [
+						'username' => $user->getUsername(),
+						'email' => $user->getEmail(),
+						'token' => $user->getToken()
+					], UrlGeneratorInterface::ABSOLUTE_URL);
+					$text = $trans->trans('security.register.email.text2', [
+						'%username%' => $user->getUsername(),
+						'%sitename%' => $_ENV['SITE_NAME'],
+						'%link%' => $link,
+						'%adminemail%' => $_ENV['ADMIN_EMAIL']
+					], 'core');
+					$subject = $trans->trans('security.register.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
 
-                                $mail->sendEmail($user->getEmail(), $subject, $text);
-                        }
-                        $this->addFlash('notice', $trans->trans('security.newtoken.flash', [], 'core'));
-                        return new RedirectResponse($this->generateUrl('maf_index'));
+					$mail->sendEmail($user->getEmail(), $subject, $text);
+				}
+				$this->addFlash('notice', $trans->trans('security.newtoken.flash', [], 'core'));
+				return new RedirectResponse($this->generateUrl('maf_index'));
+			}
                 }
 
                 return $this->render('Account/newtoken.html.twig', [
                         'form' => $form->createView(),
+			'recaptcha_site_key' => $_ENV['RECAPTCHA_SITE_KEY'],
                 ]);
         }
 

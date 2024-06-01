@@ -4,15 +4,18 @@
 
 {% block title %}{%trans with {'%name%': site_short} %}security.register.title{% endtrans %}{% endblock %}
 
+{% block recaptcha %}<script type="text/javascript" src="https://www.google.com/recaptcha/api.js" async defer></script>{% endblock %}
+
 {% block content %}
     <h1>{% trans %}security.register.header{% endtrans %}</h1>
 
-    {{ form_start(registrationForm) }}
+        {{ form_start(registrationForm) }}
         {{ form_row(registrationForm._username) }}
         {{ form_row(registrationForm.plainPassword) }}<br>
         {{ form_row(registrationForm.display_name) }}
         {{ form_row(registrationForm.email) }}<br>
         <a href="{{ url("maf_terms") }}">{% trans %}form.register.toslink{% endtrans %}</a>
         {{ form_row(registrationForm.agreeTerms) }}
-    {{ form_end(registrationForm) }}
+        <center><div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div></center>
+        {{ form_end(registrationForm) }}
 {% endblock %}

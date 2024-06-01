@@ -23,6 +23,7 @@ use App\Service\Interactions;
 use App\Service\PermissionManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /*
@@ -40,6 +41,7 @@ class Dispatcher {
 	protected PermissionManager $permission_manager;
 	protected Geography $geography;
 	protected Interactions $interactions;
+	protected EntityManagerInterface $em;
 
 	// test results to store because they are expensive to calculate
 	private null|bool|Settlement $actionableSettlement=false;
@@ -49,12 +51,13 @@ class Dispatcher {
 	private null|bool|Ship $actionableShip=false;
 	private null|bool|Collection $actionableHouses=false;
 
-	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions) {
+	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions, EntityManagerInterface $em) {
 		$this->appstate = $appstate;
 		$this->common = $common;
 		$this->permission_manager = $pm;
 		$this->geography = $geo;
 		$this->interactions = $interactions;
+		$this->em = $em;
 	}
 
 	public function getCharacter() {
@@ -2776,8 +2779,22 @@ class Dispatcher {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"journal.write.name", "description"=>"unavailable.$check");
 		}
-
-		if (!$report->checkForObserver($this->getCharacter())) {
+		$char = $this->getCharacter();
+		$check = false;
+		if ($report->checkForObserver($char)) {
+			$check = true;
+		}
+		if (!$check) {
+			$query = $this->em->createQuery('SELECT p FROM BM2SiteBundle:BattleParticipant p WHERE p.battle_report = :br AND p.character = :me');
+			$query->setParameters(array('br'=>$report, 'me'=>$char));
+			$check = $query->getOneOrNullResult();
+		}
+		if (!$check) {
+			$query = $this->em->createQuery('SELECT p FROM BM2SiteBundle:BattleReportCharacter p JOIN p.group_report g WHERE p.character = :me AND g.battle_report = :br');
+			$query->setParameters(array('br'=>$report, 'me'=>$char));
+			$check = $query->getOneOrNullResult();
+		}
+		if (!$check) {
 			return array("name"=>"journal.write.name", "description"=>"error.noaccess.battlereport");
 		}
 

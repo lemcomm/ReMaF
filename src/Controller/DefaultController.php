@@ -36,7 +36,8 @@ class DefaultController extends AbstractController {
 		return $this->render('Default/index.html.twig', [
 			"simple"=>true,
 			"journals"=>$journals,
-			'form'=>$form
+			'form'=>$form,
+			'recaptcha_site_key' => $_ENV['RECAPTCHA_SITE_KEY'],
 		]);
 	}
 

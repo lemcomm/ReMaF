@@ -4,8 +4,18 @@
 
 {% block title %}{%trans with {'%name%': site_short, '%local%': 'security.reset.title'} %}security.reset.title{% endtrans %}{% endblock %}
 
+{% block recaptcha %}<script type="text/javascript" src="https://www.google.com/recaptcha/api.js" async defer></script>{% endblock %}
+
 {% block content %}
     <h1>{% trans %}security.reset.header{% endtrans %}</h1>
 
-    {{ form(form) }}
+    {% if request_form %}
+        {{ form_start(form) }}
+        {{ form_row(form.text) }}
+        <center><div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div></center>
+        {{ form_row(form.submit) }}
+        {{ form_end(form) }}
+    {% else %}
+        {{ form(reset_form) }}
+    {% endif %}
 {% endblock %}

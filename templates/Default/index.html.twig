@@ -1,6 +1,7 @@
 {% set biglogo = true %}
 {% extends "layout.html.twig" %}
 
+{% block recaptcha %}<script type="text/javascript" src="https://www.google.com/recaptcha/api.js" async defer></script>{% endblock %}
 {% block content %}
 {# <img class="sketch" src="{{ asset('images/title1.jpg') }}" /> #}
 
@@ -45,6 +46,7 @@
 		{{ form_row(form.email) }}<br>
 		<a href="{{ url("maf_terms") }}">{% trans %}form.register.toslink{% endtrans %}</a>
 		{{ form_row(form.agreeTerms) }}
+		<center><div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div></center>
 		{{ form_end(form) }}
 	</div>
 	<div class="index_login">

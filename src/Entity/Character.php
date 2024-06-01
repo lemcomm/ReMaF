@@ -22,7 +22,7 @@ class Character {
 	private bool $male;
 	private bool $alive;
 	private ?bool $retired;
-	private ?bool $abandoned_by;
+	private ?int $abandoned_by;
 	private ?DateTime $retired_on;
 	private ?int $generation;
 	private string $genome;
