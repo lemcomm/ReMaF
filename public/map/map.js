@@ -44,13 +44,9 @@ if (location.protocol === 'https:') {
 var urlExplode = url.split("/");
 var host = urlExplode[0];
 
-if (env === 'prod')  {
-	var basepath = security+"//"+host+"/en/map/";
-} else {
-	var basepath = security+"//"+host+"/app_"+env+".php/en/map/";
-}
+var basepath = security+"//"+host+"/en/map/";
 
-var tilecache_url = security+"//maps."+host+"/tilecache";
+var tilecache_url = security+"//maps."+host+"/cgi-bin/qgis_mapserv.fcgi";
 var imgpath = security+"//"+host+"/images/";
 var loadimg = imgpath+'loader.png';
 var tooltip;
@@ -108,14 +104,18 @@ function mapinit(divname, showswitcher, mode, keepsquare){
 		maxExtent: mapBounds,
 		numZoomLevels: 10,
 //		scales: scales,
-		units: 'm'
+		units: 'm',
+		projection: new OpenLayers.Projection("EPSG:3857"),
+		displayProjection: new OpenLayers.Projection("EPSG:3857"),
 	};
 	map = new OpenLayers.Map(divname, options);
 
 	var base_layer = new OpenLayers.Layer.WMS(mapstrings.map,
-	   tilecache_url,  {
-	   layers: 'basic',
-	   format: 'image/png',
+		tilecache_url,  {
+
+			layers: 'biomes,cliff,rivers,landmass,water,hills,blocked',
+			format: 'image/png',
+			version: '1.3',
 	});
 	map.addLayer(base_layer);
 	map.setLayerIndex(base_layer, 0);
