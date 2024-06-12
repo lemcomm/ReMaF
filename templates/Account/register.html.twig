@@ -16,6 +16,6 @@
         {{ form_row(registrationForm.email) }}<br>
         <a href="{{ url("maf_terms") }}">{{ 'form.register.toslink'|trans({}, 'core') }}</a>
         {{ form_row(registrationForm.agreeTerms) }}
-        <center><div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div></center>
+       <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
         {{ form_end(registrationForm) }}
 {% endblock %}

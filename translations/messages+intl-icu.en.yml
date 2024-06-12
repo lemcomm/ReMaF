@@ -803,18 +803,12 @@ form:
  submit:      Submit
  gmname:     GM Alias
  publicadmin: Display Admin Status
- public:      Public User Profile
- profile:     Public User Comments
- patronage:   Display Patronage
  help:
   displayname:  The name shown in public lists such as the VIP players list
   username: This is used to log into Might & Fealty and won't display anywhere in game.
   email: This is your email and will be used to receive game notifications.
   gmname: This is an alias you can have other GMs recognize you by. Perhaps your Discord handle?
   publicadmin: Publicly display your admin status.
-  public: Opt to have your your public name, join date, user comments, and character list be public. Or not.
-  profile: These are your user comments. You can put anything here and you can link to other in-game things if you like.
-  patronage: "Enabling this, if you're a patron, will display your support of the game in various places, like the credits page. If this requires a name to display, it'll use your display name, if it is set."
 
 settlement:
  name:  Settlement

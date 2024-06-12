@@ -81,9 +81,9 @@ class UserDataType extends AbstractType {
 		}
 		if ($options['admin']) {
 			$builder->add('public_admin', TextType::class, [
-				'label' => 'form.publicadmin',
+				'label' => 'form.publicadmin.publicadmin',
 				'attr' => [
-					'title' => 'form.help.publicadmin',
+					'title' => 'form.publicadmin.help',
 					'class'=>'tt_bot'
 				],
 				'data' => $options['public_admin'],
@@ -125,30 +125,30 @@ class UserDataType extends AbstractType {
 			],
 		]);
 		$builder->add('public', CheckboxType::class, [
-			'label' => 'form.public',
+			'label' => 'form.public.public',
 			'attr' => [
-				'title'=>'form.help.public',
+				'title'=>'form.public.help',
 				'class'=>'tt_bot'
 			],
 			'data' => $options['public'],
 			'required'=>false,
 		]);
 		$builder->add('show_patronage', CheckboxType::class, array(
-			'label' => 'form.patronage',
+			'label' => 'form.patronage.patronage',
 			'required' => false,
 			'attr' => [
-				'title'=>'form.help.patronage',
+				'title'=>'form.patronage.help',
 				'class'=>'tt_bot'
 			],
 			'data' => $options['show_patronage'],
 		));
 		$builder->add('text', TextareaType::class, [
-			'label'=>'form.profile',
+			'label'=>'form.profile.profile',
 			'data'=>$options['text'],
 			'mapped'=>false,
 			'required'=>false,
 			'attr' => [
-				'title'=>'form.help.profile',
+				'title'=>'form.profile.help',
 				'class'=>'tt_bot'
 			]
 		]);

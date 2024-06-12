@@ -164,20 +164,22 @@ form:
  display:
   display: Public Display Name
   help: In areas of the game where you can interact as a player with other players (or game masters) this is the name that is displayed for you. Defaults to "(anonymous)".
- public:
-  public: Public Profile
-  help: Determines if your profile and character list should be displayed publicly.
  gmname:
   gmname: GM Display Name
   help: Publicly displayed GM name, if you want it different from your display name.
  publicadmin:
   publicadmin: Display Admin Status
   help: Determines if your admin status should be displayed publicly in game.
- profile: Profile Text (for public display)
- patronage:
-  patronage: Display your patronage?
-  help: Determines if your name shows up in the game credits or if you get identified in game as a patron.
+ profile:
+  profile: Public User Comments
+  help: These are your user comments. You can put anything here and you can link to other in-game things if you like.
  newsletter:
   newsletter: Receive game related emails?
   help: If this is enabled you can receive periodic event notifications and newsletters via email.
+ patronage:
+  patronage:   Display Patronage
+  help: "Enabling this, if you're a patron, will display your support of the game in various places, like the credits page. If this requires a name to display, it'll use your display name, if it is set."
+ public:
+  public: Public User Profile
+  help: Opt to have your your public name, join date, user comments, and character list be public. Or not.
 
