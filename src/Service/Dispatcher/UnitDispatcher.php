@@ -10,14 +10,15 @@ use App\Service\Geography;
 use App\Service\Interactions;
 use App\Service\MilitaryManager;
 use App\Service\PermissionManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 class UnitDispatcher extends Dispatcher {
 
 	protected MilitaryManager $milman;
 	protected PermissionManager $pm;
 
-	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions) {
-		parent::__construct($appstate, $common, $pm, $geo, $interactions);
+	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, EntityManagerInterface $em) {
+		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em);
 		$this->milman = $milman;
 		$this->pm = $pm;
 	}

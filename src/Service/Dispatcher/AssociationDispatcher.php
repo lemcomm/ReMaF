@@ -13,13 +13,14 @@ use App\Service\CommonService;
 use App\Service\Geography;
 use App\Service\Interactions;
 use App\Service\PermissionManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 class AssociationDispatcher extends Dispatcher {
 
 	private AssociationManager $assocman;
 
-	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions, AssociationManager $assocman) {
-		parent::__construct($appstate, $common, $pm, $geo, $interactions);
+	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions, AssociationManager $assocman, EntityManagerInterface $em) {
+		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em);
 		$this->assocman = $assocman;
 	}
 

@@ -25,7 +25,7 @@ class UpdateDatabaseCommand extends  Command {
 	protected function configure() {
 		$this
 			->setName('maf:update:001')
-			->setDescription('Update pre-ReMaF to ReMaF')
+			->setDescription('Update MaFCDR to ReMaF v3.0.0')
 		;
 	}
 

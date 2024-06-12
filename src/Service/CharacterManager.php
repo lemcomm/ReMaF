@@ -205,7 +205,10 @@ class CharacterManager {
 			} else {
 				$this->warman->removeCharacterFromBattlegroup($character, $bg);
 			}
-			$enemies = $bg->getEnemies()->first()->getCharacters();
+			$enemies = $bg->getEnemies();
+			if ($enemies) {
+				$enemies = $enemies->first()->getCharacters();
+			}
 		}
 
 		// remove all votes
@@ -533,7 +536,10 @@ class CharacterManager {
 			} else {
 				$this->warman->removeCharacterFromBattlegroup($character, $bg);
 			}
-			$enemies = $bg->getEnemies()->first()->getCharacters();
+			$enemies = $bg->getEnemies();
+			if ($enemies) {
+				$enemies = $enemies->first()->getCharacters();
+			}
 		}
 
 		// remove all votes

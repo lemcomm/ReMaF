@@ -16,6 +16,7 @@ use App\Service\DescriptionManager;
 use App\Service\MailManager;
 
 use App\Service\NotificationManager;
+use App\Service\UserManager;
 use Doctrine\ORM\EntityManagerInterface;
 use ReCaptcha\ReCaptcha;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -62,7 +63,7 @@ class SecurityController extends AbstractController {
 
 
 	#[Route ('/security/register', name:'maf_register')]
-	public function register(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request, UserPasswordHasherInterface $passwordHasher): Response {
+	public function register(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request, UserPasswordHasherInterface $passwordHasher, UserManager $userManager): Response {
 		$user = new User();
 		$form = $this->createForm(RegistrationFormType::class, $user);
 		$form->handleRequest($request);
@@ -78,21 +79,23 @@ class SecurityController extends AbstractController {
 					$this->addFlash('error', $trans->trans('form.register.duplicate', [], 'core'));
 					return new RedirectResponse($this->generateUrl('maf_register'));
 				}
-				$user->setUsername($form->get('_username')->getData());
-				# Encode plain password in database
-				$user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
-				$user->setLastPassword(new \DateTime('now'));
+				$data = $form->getdata();
+				$user = $userManager->createUser($user);
+				$user = $userManager->addUserDetails($user, $data['_username'], $data['plainPassword'], $data['display_name'], $data['email']);
+
 				#Generate activation token
-				$user->setToken($app->generateAndCheckToken(16, 'User', 'token'));
 
 				#Log user creation time and set user to inactive.
-				$user->setCreated(new \DateTime("now"));
-				$user->setEmail(strtolower($form->get('email')->getData()));
+				$until = new \DateTime('now');
+				$until->add(new \DateInterval('P30D'));
 				$method = $_ENV['ACTIVATION'];
-				if ($method == 'email' || $method == 'manual') {
-					$user->setEnabled(false);
-				} else {
+				if ($method == 'automatic') {
 					$user->setEnabled(true);
+				} else {
+					if ($method == 'email') {
+						$user->setToken($app->generateAndCheckToken(16, 'User', 'token'));
+					}
+					$user->setEnabled(false);
 				}
 				$em->persist($user);
 				$em->flush();

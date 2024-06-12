@@ -5,6 +5,8 @@ namespace App\Service;
 use App\Entity\User;
 use App\Entity\UserLimits;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
@@ -12,9 +14,11 @@ class UserManager {
 	private $genome_all = 'abcdefghijklmnopqrstuvwxyz';
 	private $genome_setsize = 15;
 	private $em;
+	private UserPasswordHasherInterface $passwordHasher;
 
-	public function __construct(EntityManagerInterface $em) {
+	public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher) {
 		$this->em = $em;
+		$this->passwordHasher = $passwordHasher;
 	}
 
 	public function refreshUser( UserInterface $user ) {
@@ -25,9 +29,10 @@ class UserManager {
 		return $class instanceof User;
 	}
 
-	public function createUser() {
-		$user = new User;
-		$user->setDisplayName("(anonymous)");
+	public function createUser(?User $user = null): User{
+		if (!$user) {
+			$user = new User;
+		}
 		$user->setCreated(new \DateTime("now"));
 		$user->setNewCharsLimit(3);
 		$user->setArtifactsLimit(0);
@@ -41,9 +46,17 @@ class UserManager {
 		$until->add(new \DateInterval('P30D'));
 		$user->setAccountLevel(10)->setPaidUntil($until);
 		$user->setAppKey(sha1(time()."-maf-".mt_rand(0,1000000)));
-
 		$user->setGenomeSet($this->createGenomeSet());
 
+		return $user;
+	}
+
+	public function addUserDetails(User $user, string $username, string $plainPassword, string $email, string $displayName = '(anonymous)'): User {
+		$user->setUsername($username);
+		$user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
+		$user->setLastPassword(new \DateTime('now'));
+		$user->setEmail($email);
+		$user->setDisplayName($displayName);
 		return $user;
 	}
 
