@@ -7,20 +7,28 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DiscordIntegrator {
 
-	protected EntityManagerInterface $em;
-	protected TranslatorInterface $trans;
 	protected mixed $generalHook;
 	protected mixed $olympusHook;
 	protected mixed $paymentsHook;
 	protected mixed $errorsHook;
 
-	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator) {
-		$this->em = $em;
-		$this->trans = $translator;
+	public function __construct() {
 		$this->generalHook = $_ENV['DISCORD_WEBHOOK_GENERAL'];
+		if (!str_starts_with(strtolower($this->generalHook), "http")) {
+			$this->generalHook = false;
+		}
 		$this->olympusHook = $_ENV['DISCORD_WEBHOOK_OLYMPUS'];
+		if (!str_starts_with(strtolower($this->olympusHook), "http")) {
+			$this->olympusHook = false;
+		}
 		$this->paymentsHook = $_ENV['DISCORD_WEBHOOK_PAYMENT'];
+		if (!str_starts_with(strtolower($this->paymentsHook), "http")) {
+			$this->paymentsHook = false;
+		}
 		$this->errorsHook = $_ENV['DISCORD_WEBHOOK_ERRORS'];
+		if (!str_starts_with(strtolower($this->errorsHook), "http")) {
+			$this->errorsHook = false;
+		}
 	}
 
 	private function curlToDiscord($json, $webhook): void {

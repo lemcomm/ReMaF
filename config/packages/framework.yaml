@@ -18,6 +18,8 @@ framework:
     php_errors:
         log: true
 
+    error_controller: App\Controller\ExceptionController::exceptionAction
+
 when@test:
     framework:
         test: true
