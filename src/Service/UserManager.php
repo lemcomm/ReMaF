@@ -5,20 +5,23 @@ namespace App\Service;
 use App\Entity\User;
 use App\Entity\UserLimits;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
 class UserManager {
-	private $genome_all = 'abcdefghijklmnopqrstuvwxyz';
-	private $genome_setsize = 15;
-	private $em;
+	private string $genome_all = 'abcdefghijklmnopqrstuvwxyz';
+	private int $genome_setsize = 15;
+	private EntityManagerInterface $em;
 	private UserPasswordHasherInterface $passwordHasher;
+	private AppState $app;
 
-	public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher) {
+	public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, AppState $app) {
 		$this->em = $em;
 		$this->passwordHasher = $passwordHasher;
+		$this->app = $app;
 	}
 
 	public function refreshUser( UserInterface $user ) {
@@ -47,6 +50,7 @@ class UserManager {
 		$user->setAccountLevel(10)->setPaidUntil($until);
 		$user->setAppKey(sha1(time()."-maf-".mt_rand(0,1000000)));
 		$user->setGenomeSet($this->createGenomeSet());
+		$user->addRole('ROLE_USER');
 
 		return $user;
 	}
@@ -137,7 +141,7 @@ class UserManager {
 	 * @throws Exception
 	 */
 	public function generateEmailOptOutToken(User $user): string {
-		$token = $this->generateToken();
+		$token = $this->app->generateToken();
 		$user->setEmailOptOutToken($token);
 		$this->em->flush();
 		return $token;

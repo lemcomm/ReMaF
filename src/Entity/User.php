@@ -231,10 +231,10 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 
 	public function isBanned(): bool {
 		$roles = $this->getRoles();
-		if (in_array(['ROLE_BANNED_TOS'], $roles)) {
+		if (in_array('ROLE_BANNED_TOS', $roles)) {
 			return 'error.banned.tos';
 		}
-		if (in_array(['ROLE_BANNED_MULTI'], $roles)) {
+		if (in_array('ROLE_BANNED_MULTI', $roles)) {
 			return 'error.banned.multi';
 		}
 		return false;
@@ -250,6 +250,19 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		$this->roles = $roles;
 
 		return $this;
+	}
+
+	public function addRole(string $role): self {
+		if (!in_array($role, $this->roles)) {
+			$this->roles[] = $role;
+		}
+		return $this;
+	}
+
+	public function removeRole(string $role): void {
+		if (in_array($role, $this->roles)) {
+			unset($this->roles[array_search($role, $this->roles)]);
+		}
 	}
 
 	public function getUserIdentifier(): string {
