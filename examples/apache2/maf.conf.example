@@ -12,7 +12,7 @@
     <Directory /var/www/maf/public>
         AllowOverride None
         Require all granted
-        FallbackResource index.php
+        FallbackResource /index.php
     </Directory>
 
     LogLevel warn
