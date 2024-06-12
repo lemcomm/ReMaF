@@ -44,7 +44,7 @@
 		{{ form_row(form.plainPassword) }}<br>
 		{{ form_row(form.display_name) }}
 		{{ form_row(form.email) }}<br>
-		<a href="{{ url("maf_terms") }}">{% trans %}form.register.toslink{% endtrans %}</a>
+		<a href="{{ url("maf_terms") }}">{{ 'form.register.toslink'|trans({}, 'core') }}</a>
 		{{ form_row(form.agreeTerms) }}
 		<center><div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div></center>
 		{{ form_end(form) }}

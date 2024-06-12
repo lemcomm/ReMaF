@@ -144,7 +144,7 @@ form:
   duplicate: The requested username is already in use.
   email: Email
   mailhelp: You must supply a valid email address.
-  toslink: Visit our Terms of Service
+  toslink: View Terms of Service
   terms: Consent to Terms of Service
   toshelp: Please review the Terms of Service at the link above and acknowledge if you consent.
   password: Password
@@ -161,6 +161,9 @@ form:
  username:
   username: Username
   help: Usernames may only contain a-z, A-Z, spaces, hyphens, and/or underscores.
+ display:
+  display: Public Display Name
+  help: In areas of the game where you can interact as a player with other players (or game masters) this is the name that is displayed for you. Defaults to "(anonymous)".
  public:
   public: Public Profile
   help: Determines if your profile and character list should be displayed publicly.
