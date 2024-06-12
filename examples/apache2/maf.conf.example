@@ -1,0 +1,22 @@
+# /etc/apache2/sites-available/maf.conf
+<VirtualHost *:80>
+
+    ServerName yourhostname.example
+    ServerAlias www.yourhostname.example
+
+    <FilesMatch \.php$>
+        SetHandler proxy:unix:/var/run/php/php8.3-fpm.sock|fcgi://dummy
+    </FilesMatch>
+
+    DocumentRoot /var/www/maf/public
+    <Directory /var/www/maf/public>
+        AllowOverride None
+        Require all granted
+        FallbackResource index.php
+    </Directory>
+
+    LogLevel warn
+    ErrorLog /var/log/apache2/maf_error.log
+    CustomLog /var/log/apache2/maf_access.log combined
+    ServerSignature On
+</VirtualHost>
