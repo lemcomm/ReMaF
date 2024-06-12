@@ -121,15 +121,19 @@ class Realm extends Faction {
 				$this->addRealmMember($knight);
 			}
 		}
-
-		if ($law = $this->findActiveLaw('realmPlaceMembership')) {
+		$law = $this->findActiveLaw('realmPlaceMembership');
+		if ($law) {
 			foreach ($this->getPlaces() as $place) {
 				# These deliberately cascade into each other.
 				switch ($law->getValue()) {
-					/** @noinspection PhpMissingBreakStatementInspection */ case 'all':
-					foreach ($place->getVassals() as $knight) {
-						$this->addRealmMember($knight);
-					}
+					case 'none':
+						break;
+					/** @noinspection PhpMissingBreakStatementInspection */
+					case 'all':
+						foreach ($place->getVassals() as $knight) {
+							$this->addRealmMember($knight);
+						}
+					/** @noinspection PhpMissingBreakStatementInspection */
 					case 'owner':
 						$owner = $place->getOwner();
 						if ($owner) {

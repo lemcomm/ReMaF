@@ -171,7 +171,7 @@ class Faction {
 		return $this;
 	}
 
-	public function findActiveLaw($search, $climb = true, $allowMultiple = false, $local = true) {
+	public function findActiveLaw($search, $climb = true, $allowMultiple = false, $local = true): ArrayCollection|Law|false {
 		# Search is what we want to find.
 		# Climb says do we check superiors.
 		# AllowMultiple determines if we want the first relative result or all possible results.
