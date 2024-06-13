@@ -402,10 +402,10 @@ class PaymentController extends AbstractController {
 			$target = $this->em->getRepository(User::class)->findOneByEmail($data['email']);
 			if (!$target) {
 				sleep(1); // to make brute-forcing e-mail addresses a bit slower
-				return array('error'=>'notarget');
+				return $this->render('Payment/gift.html.twig', array('error'=>'notarget'));
 			}
 			if ($target == $user) {
-				return array('error'=>'self');
+				return $this->render('Payment/gift.html.twig', array('error'=>'self'));
 			}
 
 			$code = $this->pay->createCode($value, 0, $data['email'], $user);
