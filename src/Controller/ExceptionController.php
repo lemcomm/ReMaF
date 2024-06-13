@@ -28,7 +28,7 @@ class ExceptionController extends AbstractController {
 	 * @return Response
 	 */
 	#[Route ('/error/')]
-	public function exceptionAction(FlattenException $exception, DebugLoggerInterface $logger, Request $request): Response {
+	public function exceptionAction(FlattenException $exception, DebugLoggerInterface $logger = null, Request $request): Response {
 		$code = $exception->getStatusCode();
 		$error = $exception->getMessage();
 		$trace = $exception->getTraceAsString();
