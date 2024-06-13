@@ -31,7 +31,7 @@ class RegistrationFormType extends AbstractType {
 			'constraints' => [
 				new Regex([
 					'pattern' => '/^[a-zA-Z0-9 \-_]*$/',
-					'message' => 'form.username.help',
+					'message' => 'username',
 				]),
 			],
 			'attr' => [
@@ -43,7 +43,7 @@ class RegistrationFormType extends AbstractType {
 			'constraints' => [
 				new Regex([
 					'pattern' => '/^[a-zA-Z0-9 \-_]*$/',
-					'message' => 'form.register.displayhelp',
+					'message' => 'displayname',
 				]),
 			],
 			'attr' => [
@@ -54,7 +54,7 @@ class RegistrationFormType extends AbstractType {
 			'label' => $options['labels']?'form.email.email':false,
 			'constraints' => [
 				new Email([
-					'message' => 'form.email.help',
+					'message' => 'email',
 				]),
 			],
 			'attr' => [
@@ -82,9 +82,10 @@ class RegistrationFormType extends AbstractType {
 			'constraints' => [
 				new Length([
 					'min' => 8,
-					'minMessage' => 'form.password.help',
+					'minMessage' => 'password.minlength',
 					# max length allowed by Symfony for security reasons
 					'max' => 4096,
+					'maxMessage' => 'password.maxlength'
 				]),
 			],
 		]);

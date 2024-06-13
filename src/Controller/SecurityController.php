@@ -123,7 +123,7 @@ class SecurityController extends AbstractController {
 		}
 
 		return $this->render('Account/register.html.twig', [
-			'registrationForm' => $form->createView(),
+			'form' => $form->createView(),
 			'recaptcha_site_key' => $_ENV['RECAPTCHA_SITE_KEY'],
 		]);
 	}

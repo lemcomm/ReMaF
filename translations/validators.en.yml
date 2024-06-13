@@ -4,8 +4,13 @@
 # Contact: mafteam@lemuriacommunity.org
 password:
  old:			Incorrect current password
- minlength:	'[0,Inf]Your password must be at least 6 characters long'
+ minlength:	'[0,Inf]Your password must be at least 8 characters long'
+ maxlength: Passwords are restricted to 4096 characters in length.
  match:		New password and confirm password fields do not match
+
+username:   Username can only contain a-z, A-Z, 0-9, spaces, underscores, or dashes.
+displayname: Display name can only contain a-z, A-Z, 0-9, spaces, underscores, or dashes.
+email:  You must supply a valid email address.
 
 realm:
  new:
