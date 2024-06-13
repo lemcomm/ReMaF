@@ -7,8 +7,8 @@ namespace App\Entity;
  */
 class ActivityBoutGroup {
 	private ?int $id = null;
-	private ActivityBout $bout;
-	private ActivityGroup $group;
+	private ?ActivityBout $bout = null;
+	private ?ActivityGroup $group = null;
 
 	/**
 	 * Get id

@@ -10,8 +10,8 @@ class ActivityReportStage {
 	private int $round;
 	private array $data;
 	private array $extra;
-	private ActivityReportGroup $group;
-	private ActivityReportCharacter $character;
+	private ?ActivityReportGroup $group = null;
+	private ?ActivityReportCharacter $character = null;
 
 	/**
 	 * Get round

@@ -11,7 +11,7 @@ class AppKey {
 	private ?int $id = null;
 	private DateTime $ts;
 	private string $token;
-	private User $user;
+	private ?User $user = null;
 
 	/**
 	 * Get ts

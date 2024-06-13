@@ -13,7 +13,7 @@ class ActivityGroup {
 	private string $name;
 	private Collection $participants;
 	private Collection $bout_participation;
-	private Activity $activity;
+	private ?Activity $activity = null;
 
 	/**
 	 * Constructor

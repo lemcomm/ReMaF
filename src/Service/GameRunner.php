@@ -682,7 +682,7 @@ class GameRunner {
 					}
 				}
 			} elseif ($here2 = $unit->getSettlement()) {
-				if ($here2->getSiege() && $here2->getSiege()->getEncirlced()) {
+				if ($here2->getSiege() && $here2->getSiege()->getEncircled()) {
 					$skippables[] = $unit->getId();
 					$soldier->setTravelDays(1); # Avoid negatives, just in case.
 					continue;
@@ -1056,11 +1056,56 @@ class GameRunner {
 		$this->output("Sieges cleanup..");
 		$all = $this->em->getRepository(Siege::class)->findAll();
 		foreach ($all as $siege) {
+			/** @var Siege $siege */
 			$settlement = $siege->getSettlement();
 			$place = $siege->getPlace();
 			$attacker = $siege->getAttacker();
-			if ($attacker->getLeader()) {
-				$leader = $attacker->getLeader();
+			if (!$attacker) {
+				# We have a siege but no attacker? What?
+				$this->debug("  Disbanding Siege ".$siege->getId()." as there is no attacking group!");
+				if ($settlement) {
+					foreach ($siege->getCharacters() as $char) {
+						$this->history->logEvent(
+							$char,
+							'siege.noattackerforce.settlement',
+							['%link-settlement%'=>$settlement->getId()]
+						);
+					}
+				} elseif ($place) {
+					foreach ($siege->getCharacters() as $char) {
+						$this->history->logEvent(
+							$char,
+							'siege.noattackerforce.place',
+							['%link-place%'=>$place->getId()]
+						);
+					}
+				}
+
+				$this->wm->disbandSiege($siege);
+			} elseif ($attacker->getCharacters()->count() < 1) {
+				# We have a siege but no characters attacking? What?
+				$this->debug("  Disbanding Siege ".$siege->getId()." as there are no attackers!");
+				if ($settlement) {
+					foreach ($siege->getCharacters() as $char) {
+						$this->history->logEvent(
+							$char,
+							'siege.noattackers.settlement',
+							['%link-settlement%'=>$settlement->getId()]
+						);
+					}
+				} elseif ($place) {
+					foreach ($siege->getCharacters() as $char) {
+						$this->history->logEvent(
+							$char,
+							'siege.noattackers.place',
+							['%link-place%'=>$place->getId()]
+						);
+					}
+				}
+				$this->wm->disbandSiege($siege);
+			}
+			$leader = $attacker->getLeader();
+			if ($leader) {
 				if ($settlement && ($leader->getInsideSettlement() === $settlement || ($leader->getInsidePlace() && $leader->getInsidePlace()->getSettlement() === $settlement))) {
 					# Attacking leader is somehow inside the settlement he is besieging, looks like siege should be over! :D
 					$this->debug("  Disbanding Siege ".$siege->getId()." for Settlement ".$settlement->getId());

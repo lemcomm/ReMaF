@@ -7,9 +7,9 @@ namespace App\Entity;
  */
 class ActivityRequirement {
 	private ?int $id = null;
-	private ActivityType $type;
-	private BuildingType $building;
-	private PlaceType $place;
+	private ?ActivityType $type = null;
+	private ?BuildingType $building = null;
+	private ?PlaceType $place = null;
 
 	/**
 	 * Get id

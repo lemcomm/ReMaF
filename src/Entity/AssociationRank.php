@@ -21,12 +21,12 @@ class AssociationRank {
 	private bool $build;
 	private bool $subcreate;
 	private bool $createAssocs;
-	private Description $description;
+	private ?Description $description = null;
 	private Collection $subordinates;
 	private Collection $members;
 	private Collection $descriptions;
-	private AssociationRank $superior;
-	private Association $association;
+	private ?AssociationRank $superior = null;
+	private ?Association $association = null;
 
 	/**
 	 * Constructor

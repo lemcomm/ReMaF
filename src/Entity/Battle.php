@@ -17,12 +17,12 @@ class Battle {
 	private string $type;
 	private ?int $id = null;
 	private Collection $groups;
-	private BattleGroup $primary_attacker;
-	private BattleGroup $primary_defender;
-	private Settlement $settlement;
-	private Place $place;
-	private War $war;
-	private Siege $siege;
+	private ?BattleGroup $primary_attacker = null;
+	private ?BattleGroup $primary_defender = null;
+	private ?Settlement $settlement = null;
+	private ?Place $place = null;
+	private ?War $war = null;
+	private ?Siege $siege = null;
 	private ?int $nobles = null;
 	private ?int $soldiers = null;
 	private ?int $attackers = null;

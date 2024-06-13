@@ -14,9 +14,9 @@ class BattleParticipant {
 	private array $combat;
 	private array $finish;
 	private ?int $id = null;
-	private BattleReport $battle_report;
-	private Character $character;
-	private Character $captured_by;
+	private ?BattleReport $battle_report = null;
+	private ?Character $character = null;
+	private ?Character $captured_by = null;
 
 	/**
 	 * Get group_id

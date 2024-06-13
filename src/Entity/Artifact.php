@@ -11,12 +11,12 @@ class Artifact {
 	private ?int $id = null;
 	private string $name;
 	private string $old_description;
-	private Description $description;
-	private EventLog $log;
+	private ?Description $description = null;
+	private ?EventLog $log = null;
 	private Collection $descriptions;
-	private Character $owner;
-	private User $creator;
-	private ?Point $location;
+	private ?Character $owner = null;
+	private ?User $creator = null;
+	private ?Point $location = null;
 	private DateTime $available_after;
 
 	/**

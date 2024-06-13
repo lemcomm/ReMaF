@@ -8,7 +8,7 @@ namespace App\Entity;
 class ActivitySubType {
 	private ?int $id = null;
 	private string $name;
-	private ActivityType $type;
+	private ?ActivityType $type = null;
 
 	/**
 	 * Get name

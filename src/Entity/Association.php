@@ -12,9 +12,9 @@ class Association extends Faction {
 	private string $motto;
 	private bool $active;
 	private string $short_description;
-	private Description $description;
-	private SpawnDescription $spawn_description;
-	private EventLog $log;
+	private ?Description $description = null;
+	private ?SpawnDescription $spawn_description = null;
+	private ?EventLog $log = null;
 	private Collection $inferiors;
 	private Collection $laws;
 	private Collection $elections;
@@ -29,9 +29,9 @@ class Association extends Faction {
 	private Collection $deities;
 	private Collection $recognized_deities;
 	private Collection $followers;
-	private AssociationType $type;
-	private Association $superior;
-	private Character $founder;
+	private ?AssociationType $type = null;
+	private ?Association $superior = null;
+	private ?Character $founder = null;
 	private Collection $followed_in;
 	private Collection $follower_settlements;
 	private Collection $follower_realms;

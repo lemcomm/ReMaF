@@ -12,8 +12,8 @@ class ActivityBout {
 	private ?int $id = null;
 	private Collection $participants;
 	private Collection $groups;
-	private ActivitySubType $type;
-	private Activity $activity;
+	private ?ActivitySubType $type = null;
+	private ?Activity $activity = null;
 
 	/**
 	 * Constructor

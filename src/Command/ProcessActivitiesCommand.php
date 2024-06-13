@@ -27,6 +27,7 @@ class ProcessActivitiesCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->am->runAll();
 		$output->writeln("...activities complete");
+		return Command::SUCCESS;
 	}
 
 

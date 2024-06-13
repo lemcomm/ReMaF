@@ -28,6 +28,6 @@ class ProcessDailyCommand extends Command {
 		$query = $this->em->createQuery('UPDATE App:User u SET u.new_chars_limit = u.new_chars_limit +1 WHERE u.new_chars_limit < 10');
 		$query->execute();
 		$this->em->flush();
+		return Command::SUCCESS;
 	}
-
 }

@@ -8,8 +8,8 @@ namespace App\Entity;
 class AssociationPlace {
 	private bool $headquarters;
 	private ?int $id = null;
-	private Association $association;
-	private Place $place;
+	private ?Association $association = null;
+	private ?Place $place = null;
 
 	/**
 	 * Get headquarters

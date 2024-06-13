@@ -20,17 +20,17 @@ class Activity {
 	private bool $weapon_only;
 	private bool $ready;
 	private Point $location;
-	private ActivityReport $report;
-	private ArrayCollection $events;
-	private ArrayCollection $participants;
-	private ArrayCollection $groups;
-	private ArrayCollection $bouts;
-	private ActivityType $type;
-	private ActivitySubType $subtype;
-	private Activity $main_event;
-	private GeoData $geo_data;
-	private Settlement $settlement;
-	private Place $place;
+	private ?ActivityReport $report = null;
+	private Collection $events;
+	private Collection $participants;
+	private Collection $groups;
+	private Collection $bouts;
+	private ?ActivityType $type = null;
+	private ?ActivitySubType $subtype = null;
+	private ?Activity $main_event = null;
+	private ?GeoData $geo_data = null;
+	private ?Settlement $settlement = null;
+	private ?Place $place = null;
 
 	public function __construct() {
 		$this->events = new ArrayCollection();

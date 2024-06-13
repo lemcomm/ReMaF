@@ -7,8 +7,8 @@ namespace App\Entity;
  */
 class ActivityReportObserver {
 	private ?int $id = null;
-	private ActivityReport $activity_report;
-	private Character $character;
+	private ?ActivityReport $activity_report = null;
+	private ?Character $character = null;
 
 	public function setReport($report = null): ActivityReportObserver|static {
 		return $this->setActivityReport($report);

@@ -27,6 +27,7 @@ class ProcessFamiliarityCommand extends AbstractProcessCommand {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
+		$this->output = $output;
 		$this->opt_time = $input->getOption('time');
 
 		$this->start('distance from home');

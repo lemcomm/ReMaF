@@ -11,12 +11,12 @@ use Doctrine\Common\Collections\Collection;
  */
 class ActivityReport extends ReportBase {
 	private DateTime $ts;
-	private Activity $activity;
+	private ?Activity $activity = null;
 	private Collection $characters;
 	private Collection $groups;
-	private ActivityType $type;
-	private ActivitySubType $subtype;
-	private GeoData $geo_data;
+	private ?ActivityType $type = null;
+	private ?ActivitySubType $subtype = null;
+	private ?GeoData $geo_data = null;
 
 	/**
 	 * Constructor

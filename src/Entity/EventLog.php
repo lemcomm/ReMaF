@@ -7,16 +7,16 @@ use Doctrine\Common\Collections\Collection;
 
 class EventLog {
 	private ?int $id = null;
-	private ?Settlement $settlement;
-	private ?Realm $realm;
-	private ?Character $character;
-	private ?Quest $quest;
-	private ?Artifact $artifact;
-	private ?War $war;
-	private ?Place $place;
-	private ?House $house;
-	private ?Unit $unit;
-	private ?Association $association;
+	private ?Settlement $settlement = null;
+	private ?Realm $realm = null;
+	private ?Character $character = null;
+	private ?Quest $quest = null;
+	private ?Artifact $artifact = null;
+	private ?War $war = null;
+	private ?Place $place = null;
+	private ?House $house = null;
+	private ?Unit $unit = null;
+	private ?Association $association = null;
 	private Collection $events;
 	private Collection $metadatas;
 

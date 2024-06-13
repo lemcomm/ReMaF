@@ -11,9 +11,9 @@ class AssociationDeity {
 	private string $words;
 	private DateTime $words_timestamp;
 	private ?int $id = null;
-	private Association $association;
-	private Deity $deity;
-	private Character $words_from;
+	private ?Association $association = null;
+	private ?Deity $deity = null;
+	private ?Character $words_from = null;
 
 	/**
 	 * Get words

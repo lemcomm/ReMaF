@@ -12,9 +12,9 @@ class ActivityReportGroup {
 	private ?int $id = null;
 	private array $start;
 	private array $finish;
-	private Collection|ArrayCollection $stages;
-	private Collection|ArrayCollection $characters;
-	private ActivityReport $activity_report;
+	private Collection $stages;
+	private Collection $characters;
+	private ?ActivityReport $activity_report = null;
 
 	/**
 	 * Constructor

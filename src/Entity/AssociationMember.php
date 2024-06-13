@@ -11,9 +11,9 @@ class AssociationMember {
 	private DateTime $join_date;
 	private DateTime $rank_date;
 	private ?int $id = null;
-	private Association $association;
-	private Character $character;
-	private AssociationRank $rank;
+	private ?Association $association = null;
+	private ?Character $character = null;
+	private ?AssociationRank $rank = null;
 
 	/**
 	 * Get join_date

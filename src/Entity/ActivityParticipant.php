@@ -14,11 +14,11 @@ class ActivityParticipant {
 	private bool $accepted;
 	private bool $organizer;
 	private Collection $bout_participation;
-	private Activity $activity;
-	private Character $character;
-	private Style $style;
-	private EquipmentType $weapon;
-	private ActivityGroup $group;
+	private ?Activity $activity = null;
+	private ?Character $character = null;
+	private ?Style $style = null;
+	private ?EquipmentType $weapon = null;
+	private ?ActivityGroup $group = null;
 
 	/**
 	 * Constructor

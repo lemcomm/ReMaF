@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Dungeon;
 use App\Service\DungeonCreator;
 use App\Service\DungeonMaster;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,7 +41,7 @@ class HourlyCommand extends Command {
 		$creator = $this->dc;
 		$master = $this->dm;
 
-		$query = $em->createQuery('SELECT count(d.id) FROM DungeonBundle:Dungeon d');
+		$query = $em->createQuery('SELECT count(d.id) FROM App:Dungeon d');
 		$dungeons = $query->getSingleScalarResult();
 
 		$query = $em->createQuery('SELECT s FROM App:StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1);
@@ -61,17 +62,17 @@ class HourlyCommand extends Command {
 		}
 
 		$this->debug("updating parties...");
-		$query = $em->createQuery('UPDATE DungeonBundle:DungeonParty p SET p.counter=p.counter + 1 WHERE p.counter IS NOT NULL');
+		$query = $em->createQuery('UPDATE App:DungeonParty p SET p.counter=p.counter + 1 WHERE p.counter IS NOT NULL');
 		$query->execute();
 
-		$query = $em->createQuery('SELECT p FROM DungeonBundle:DungeonParty p WHERE p.counter > 50');
+		$query = $em->createQuery('SELECT p FROM App:DungeonParty p WHERE p.counter > 50');
 		foreach ($query->getResult() as $party) {
 			$this->debug("party #".$party->getId()." timed out");
 			$master->dissolveParty($party);
 		}
 		$em->flush();
 
-		$dungeons = $em->getRepository('DungeonBundle:Dungeon')->findAll();
+		$dungeons = $em->getRepository(Dungeon::class)->findAll();
 		foreach ($dungeons as $dungeon) {
 			$this->debug("checking dungeon #".$dungeon->getId());
 			if (!$dungeon->getCurrentLevel()) {
@@ -81,6 +82,7 @@ class HourlyCommand extends Command {
 		}
 		$em->flush();
 		$this->info("completed");
+		return Command::SUCCESS;
 	}
 
 

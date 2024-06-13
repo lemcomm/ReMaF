@@ -8,8 +8,8 @@ namespace App\Entity;
  */
 class ActivityBoutParticipant {
 	private ?int $id = null;
-	private ActivityBout $bout;
-	private ActivityParticipant $participant;
+	private ?ActivityBout $bout = null;
+	private ?ActivityParticipant $participant = null;
 
 	/**
 	 * Get id

@@ -21,19 +21,19 @@ class Action {
 	private Collection $assigned_entourage;
 	private Collection $supporting_actions;
 	private Collection $opposing_actions;
-	private Character $character;
-	private Realm $target_realm;
-	private Settlement $target_settlement;
-	private Place $target_place;
-	private Character $target_character;
-	private Soldier $target_soldier;
-	private EntourageType $target_entourage_type;
-	private EquipmentType $target_equipment_type;
-	private BattleGroup $target_battlegroup;
-	private Listing $target_listing;
-	private SkillType $target_skill;
-	private Action $supported_action;
-	private Action $opposed_action;
+	private ?Character $character = null;
+	private ?Realm $target_realm = null;
+	private ?Settlement $target_settlement = null;
+	private ?Place $target_place = null;
+	private ?Character $target_character = null;
+	private ?Soldier $target_soldier = null;
+	private ?EntourageType $target_entourage_type = null;
+	private ?EquipmentType $target_equipment_type = null;
+	private ?BattleGroup $target_battlegroup = null;
+	private ?Listing $target_listing = null;
+	private ?SkillType $target_skill = null;
+	private ?Action $supported_action = null;
+	private ?Action $opposed_action = null;
 
 	public function __construct() {
 		$this->assigned_entourage = new ArrayCollection();

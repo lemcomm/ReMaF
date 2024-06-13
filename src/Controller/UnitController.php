@@ -136,11 +136,7 @@ class UnitController extends AbstractController {
                 ]);
         }
 
-        /**
-          * @Route("/units/new", name="maf_unit_new")
-          */
-
-	#[Route('/units/new}', name:'maf_unit_new')]
+	#[Route('/units/new', name:'maf_unit_new')]
         public function createAction(GameRequestManager $gm, Request $request): RedirectResponse|Response {
                 $character = $this->gateway('unitNewTest');
 		if (! $character instanceof Character) {
@@ -186,10 +182,12 @@ class UnitController extends AbstractController {
                 $settlement = $unit->getSettlement();
                 $inside = $character->getInsideSettlement();
                 if ($inside) {
-                        if (($character === $character->getInsideSettlement()->getOwner() || $character === $character->getInsideSettlement()->getSteward()) || ($inside === $settlement && $this->pm->checkSettlementPermission($inside, $character, 'units'))) {
+                        if ($unit->isMarshal($character) || ($inside === $settlement && $this->pm->checkSettlementPermission($inside, $character, 'units'))) {
                                 $lord = true;
                         }
-                }
+                } elseif ($unit->isMarshal($character)) {
+			$lord = true;
+		}
 
 
                 $settlements = $gm->getAvailableFoodSuppliers($character);

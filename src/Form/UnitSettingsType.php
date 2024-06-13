@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Settlement;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
@@ -88,15 +89,19 @@ class UnitSettingsType extends AbstractType {
 			$builder->add('name', TextType::class, array(
 				'label'=>'unit.name',
 				'data'=>$name,
-				'required'=>true
+				'required'=>true,
 			));
+		} else {
+			$builder->add('name', HiddenType::class, [
+				'data'=>$name,
+			]);
 		}
 		if ($supply) {
-			$data = null;
+			$source = null;
 			if($settings) {
-				$data = $supplier;
+				$source = $supplier;
 			} elseif($char) {
-				$data = $char->getInsideSettlement();
+				$source = $char->getInsideSettlement();
 			}
 
 			# Find all settlements where we have permission to take food from.
@@ -114,7 +119,7 @@ class UnitSettingsType extends AbstractType {
 					return $qb;
 				},
 				'placeholder' => 'unit.supplier.empty',
-				'data'=>$data,
+				'data'=>$source,
 			));
 		}
 		$builder->add('strategy', ChoiceType::class, array(
@@ -126,7 +131,7 @@ class UnitSettingsType extends AbstractType {
 				'distance' => 'unit.strategy.distance'
 			),
 			'placeholder'=>'unit.strategy.empty',
-			'data'=>$strategy
+			'data'=>$strategy,
 		));
 		$builder->add('tactic', ChoiceType::class, array(
 			'label'=>'unit.tactic.name',
@@ -137,12 +142,12 @@ class UnitSettingsType extends AbstractType {
 				'mixed' => 'unit.tactic.mixed'
 			),
 			'placeholder'=>'unit.tactic.empty',
-			'data'=>$tactic
+			'data'=>$tactic,
 		));
 		$builder->add('respect_fort', CheckboxType::class, array(
 			'label'=>'unit.usefort',
 			'data'=>$respect,
-			'required'=>false
+			'required'=>false,
 		));
 		$builder->add('line', ChoiceType::class, array(
 			'label'=>'unit.line.name',
@@ -157,7 +162,7 @@ class UnitSettingsType extends AbstractType {
 				'6' => 'unit.line.6',
 				'7' => 'unit.line.7',
 			),
-			'placeholder'=> 'unit.line.empty'
+			'placeholder'=> 'unit.line.empty',
 		));
 		$builder->add('siege_orders', ChoiceType::class, array(
 			'label'=>'unit.siege_orders.name',
@@ -168,7 +173,7 @@ class UnitSettingsType extends AbstractType {
 				'hold' => 'unit.siege_orders.hold',
 				'equipment' => 'unit.siege_orders.equipment'
 			),
-			'placeholder'=>'unit.siege_orders.empty'
+			'placeholder'=>'unit.siege_orders.empty',
 		));
 		if ($lord) {
 			$builder->add('renamable', CheckboxType::class, array(
@@ -180,12 +185,12 @@ class UnitSettingsType extends AbstractType {
 		$builder->add('retreat_threshold', NumberType::class, array(
 			'label'=>'unit.retreat.name',
 			'data'=>$retreat,
-			'required'=>false
+			'required'=>false,
 		));
 		$builder->add('reinforcements', CheckboxType::class, array(
 			'label'=>'unit.reinforcements',
 			'data'=>$reinforcements,
-			'required'=>false
+			'required'=>false,
 		));
 		$builder->add('submit', SubmitType::class, array('label'=>'button.submit'));
 	}

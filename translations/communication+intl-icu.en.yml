@@ -598,6 +598,12 @@ siege:
  leaderinside:
   settlement:   Since {character} is somehow inside {settlement}, the siege has been declared victorious and the siege forces have disbanded.
   place:   Since {character} is somehow inside {place}, the siege has been declared victorious and the siege forces have disbanded.
+ noattackerforce:
+  settlement:   As there is no attacking force in the siege of {settlement}, the siege has been disbanded.
+  place:        As there is no attacking force in the siege of {place}, the siege has been disbanded.
+ noattackers:
+  settlement:   As the attacking force has no members, the siege of {settlement} has been disbanded.
+  place:        As the attacking force has no members, the siege of {place} has been disbanded.
 
 mail:
  sender:        "Might & Fealty"

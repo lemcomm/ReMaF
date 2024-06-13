@@ -21,13 +21,13 @@ class ActivityReportCharacter {
 	private int $hits_made;
 	private int $wounds;
 	private Collection $stages;
-	private ActivityReport $activity_report;
-	private ActivityReportGroup $group_report;
-	private Character $character;
-	private EquipmentType $weapon;
-	private EquipmentType $armour;
-	private EquipmentType $equipment;
-	private EquipmentType $mount;
+	private ?ActivityReport $activity_report = null;
+	private ?ActivityReportGroup $group_report = null;
+	private ?Character $character = null;
+	private ?EquipmentType $weapon = null;
+	private ?EquipmentType $armour = null;
+	private ?EquipmentType $equipment = null;
+	private ?EquipmentType $mount = null;
 
 	/**
 	 * Constructor

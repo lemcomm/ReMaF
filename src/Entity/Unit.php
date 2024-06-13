@@ -135,6 +135,30 @@ class Unit {
 		});
 	}
 
+	public function isMarshal(Character $char) {
+		if ($this->marshal === $char) {
+			return true;
+		}
+		return $this->isOwner($char);
+	}
+
+	public function isOwner(Character $char) {
+		if ($this->settlement->getOccupant()) {
+			if ($this->settlement->getOccupant() === $char) {
+				return true;
+			}
+		} elseif ($this->settlement->getOwner()) {
+			if ($this->settlement->getOwner() === $char) {
+				return true;
+			}
+		} elseif ($this->settlement->getSteward()) {
+			if ($this->settlement->getSteward() === $char) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Get soldiers
 	 *
