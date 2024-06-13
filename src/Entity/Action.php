@@ -9,8 +9,8 @@ use Doctrine\Common\Collections\Collection;
 class Action {
 	private ?int $id = null;
 	private string $type;
-	private DateTime $started;
-	private DateTime $complete;
+	private ?DateTime $started = null;
+	private ?DateTime $complete = null;
 	private bool $hidden = false;
 	private bool $hourly = false;
 	private bool $can_cancel = true;
@@ -62,7 +62,7 @@ class Action {
 		return $this;
 	}
 
-	public function getStarted(): DateTime {
+	public function getStarted(): ?DateTime {
 		return $this->started;
 	}
 
@@ -72,7 +72,7 @@ class Action {
 		return $this;
 	}
 
-	public function getComplete(): DateTime {
+	public function getComplete(): ?DateTime {
 		return $this->complete;
 	}
 
