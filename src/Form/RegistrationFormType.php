@@ -20,7 +20,6 @@ class RegistrationFormType extends AbstractType {
 
         public function configureOptions(OptionsResolver $resolver) {
                 $resolver->setDefaults([
-                        'data_class' => User::class,
                         'translation_domain' => 'core',
 			'labels' => true
                 ]);
@@ -66,7 +65,6 @@ class RegistrationFormType extends AbstractType {
 			'type' => PasswordType::class,
 			# instead of being set onto the object directly,
 			# this is read and encoded in the controller
-			'mapped' => false,
 			'options' => ['attr' => ['password-field']],
 			'required' => true,
 			'invalid_message' => 'form.password.nomatch',
@@ -92,7 +90,6 @@ class RegistrationFormType extends AbstractType {
 		]);
 		$builder->add('agreeTerms', CheckboxType::class, [
 			'label' => 'form.register.terms',
-			'mapped' => false,
 			'constraints' => [
 				new IsTrue([
 					'message' => 'form.register.toshelp',
@@ -101,7 +98,6 @@ class RegistrationFormType extends AbstractType {
 		]);
 		$builder->add('newsletter', CheckboxType::class, [
 			'label' => 'form.newsletter.newsletter',
-			'mapped' => false,
 			'required' => false,
 		]);
                 $builder->add('submit', SubmitType::class, [

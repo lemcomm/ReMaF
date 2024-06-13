@@ -29,8 +29,7 @@ class DefaultController extends AbstractController {
 		if ($this->getUser()) {
 			$form = null;
 		} else {
-			$user = new User();
-			$form = $this->createForm(RegistrationFormType::class, $user, ['action'=>$this->generateUrl('maf_register'), 'labels'=>false]);
+			$form = $this->createForm(RegistrationFormType::class, null, ['action'=>$this->generateUrl('maf_register'), 'labels'=>false]);
 		}
 
 		return $this->render('Default/index.html.twig', [

@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Entity\UserLimits;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -129,6 +130,7 @@ class UserManager {
 		$limits->setPlaces(4);
 		$limits->setArtifacts(max(0, $user->getArtifactsLimit()));
 		$limits->setArtifactSubBonus(false);
+		$limits->setPlacesDate(new DateTime('now')); #TODO: Remove this property from usage.
 		$this->em->persist($limits);
 		return $limits;
 	}

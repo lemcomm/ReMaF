@@ -65,7 +65,7 @@ class SecurityController extends AbstractController {
 	#[Route ('/security/register', name:'maf_register')]
 	public function register(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request, UserPasswordHasherInterface $passwordHasher, UserManager $userManager): Response {
 		$user = new User();
-		$form = $this->createForm(RegistrationFormType::class, $user);
+		$form = $this->createForm(RegistrationFormType::class);
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted()) {
@@ -79,9 +79,9 @@ class SecurityController extends AbstractController {
 					$this->addFlash('error', $trans->trans('form.register.duplicate', [], 'core'));
 					return new RedirectResponse($this->generateUrl('maf_register'));
 				}
-				$data = $form->getdata();
+				$data = $form->getData();
 				$user = $userManager->createUser($user);
-				$user = $userManager->addUserDetails($user, $data['_username'], $data['plainPassword'], $data['display_name'], $data['email']);
+				$user = $userManager->addUserDetails($user, $data['_username'], $data['plainPassword'], $data['email'], $data['display_name']);
 
 				#Generate activation token
 
