@@ -19,11 +19,13 @@ class ExceptionController extends AbstractController {
 	public function __construct(DiscordIntegrator $discord) {
 		$this->discord = $discord;
 	}
+
 	/**
 	 * Converts an Exception to a Response.
 	 *
-	 * @param FlattenException $exception A FlattenException instance
-	 * @param DebugLoggerInterface $logger A DebugLoggerInterface instance
+	 * @param FlattenException          $exception A FlattenException instance
+	 * @param DebugLoggerInterface|null $logger    A DebugLoggerInterface instance
+	 * @param Request                   $request
 	 *
 	 * @return Response
 	 */
