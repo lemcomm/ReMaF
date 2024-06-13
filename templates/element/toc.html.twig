@@ -3,9 +3,9 @@
 	<h2>{{ 'manual.reference'|trans }}</h2>
 	<ul>
 		<li><a href="{{ path('maf_manual', {'page':'measurements'}) }}">{{ 'manual.measurements'|trans }}</a></li>
-		<li><a href="{{ path('maf_info_buildings') }}">{{ 'building'|trans }}</a></li>
-		<li><a href="{{ path('maf_info_features') }}">{{ 'feature'|trans }}</a></li>
-		<li><a href="{{ path('maf_info_entourages') }}">{{ 'npc.entourage'|trans }}</a></li>
+		<li><a href="{{ path('maf_info_buildings') }}">{{ 'building'|trans({'count':2}) }}</a></li>
+		<li><a href="{{ path('maf_info_features') }}">{{ 'feature'|trans({'count':2}) }}</a></li>
+		<li><a href="{{ path('maf_info_entourages') }}">{{ 'npc.entourage'|trans({'count':2}) }}</a></li>
 		<li><a href="{{ path('maf_info_equipments') }}">{{ 'equipment'|trans }}</a></li>
 	</ul>
 </div>

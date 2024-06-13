@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\BuildingType;
+use App\Entity\Entourage;
 use App\Entity\EntourageType;
 use App\Entity\FeatureType;
 use App\Entity\EquipmentType;
@@ -103,7 +104,20 @@ class InfoController extends AbstractController {
 
 	private function alltypes($type, $request): array {
 		$em = $this->em;
-		$all = $em->getRepository($type::class)->findBy([], ['name'=>'asc']);
+		switch ($type) {
+			case 'BuildingType':
+				$all = $em->getRepository(BuildingType::class)->findBy([], ['name'=>'asc']);
+				break;
+			case 'FeatureType':
+				$all = $em->getRepository(FeatureType::class)->findBy([], ['name'=>'asc']);
+				break;
+			case 'EntourageType':
+				$all = $em->getRepository(EntourageType::class)->findBy([], ['name'=>'asc']);
+				break;
+			case 'EquipmentType':
+			default:
+				$all = $em->getRepository(EquipmentType::class)->findBy([], ['name'=>'asc']);
+		}
 		$toc = $this->pager->getPage('manual', 'toc', $request->getLocale());
 
 		return [
