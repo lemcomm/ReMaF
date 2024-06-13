@@ -11,9 +11,9 @@ class Action {
 	private string $type;
 	private DateTime $started;
 	private DateTime $complete;
-	private bool $hidden;
-	private bool $hourly;
-	private bool $can_cancel;
+	private bool $hidden = false;
+	private bool $hourly = false;
+	private bool $can_cancel = true;
 	private bool $block_travel;
 	private int $priority;
 	private float $number_value;

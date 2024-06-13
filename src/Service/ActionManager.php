@@ -65,17 +65,6 @@ class ActionManager {
 			}
 		}
 		$action->setPriority($max+1);
-
-		// some defaults, otherwise I'd have to set it explicitly everywhere
-		if ($action->getHidden()===null) {
-			$action->setHidden(false);
-		}
-		if ($action->getHourly()===null) {
-			$action->setHourly(false);
-		}
-		if ($action->getCanCancel()===null) {
-			$action->setCanCancel(true);
-		}
 		$this->em->persist($action);
 
 		$this->em->flush();
