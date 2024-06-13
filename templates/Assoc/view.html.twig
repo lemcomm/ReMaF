@@ -12,6 +12,7 @@
 		<p>{{ assoc.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}</p>
 		{# Copy the realm and house pages, probably. #}
 	{% else %}
-		{{ 'view.hidden'|trans({}, "assoc") }}
+		<h2>{{ assoc.formalName }}</h2>
+		{{ 'assoc.route.view.hidden'|trans({}, "orgs")|raw }}
 	{% endif %}
 {% endblock %}

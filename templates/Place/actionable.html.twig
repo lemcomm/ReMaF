@@ -35,7 +35,7 @@
 					<hr>
 				{% endif %}
 				{% if not place.associations.isEmpty %}
-					{{ 'place.associations.list'|trans({}, "places")|raw }} {% for assoc in place.associations %}{{ link(assoc.association) }}{% if not loop.last %}, {% endif %}{% endfor %}
+					{{ 'place.associations.list'|trans({}, "places")|raw }} {% for assoc in place.associations %}{% if assoc.association.isPublic or assoc.association.findMember(character, true) %}{{ link(assoc.association) }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
 					<hr>
 				{% endif %}
 

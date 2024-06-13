@@ -101,6 +101,7 @@ assoc:
    header: Update an Existing Rank
    name:   Manage %name%
   view:
+   hidden: <i>You hear only whispers of this Association.</i>
    history:
     name: History
   graphRanks:

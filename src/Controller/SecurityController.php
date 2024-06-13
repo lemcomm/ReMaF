@@ -80,7 +80,11 @@ class SecurityController extends AbstractController {
 					return new RedirectResponse($this->generateUrl('maf_register'));
 				}
 				$data = $form->getData();
-				$user = $userManager->createUser($user);
+				$newsletter = $data['newsletter'];
+				if ($newsletter === null) {
+					$newsletter = false;
+				}
+				$user = $userManager->createUser($user, $newsletter);
 				$user = $userManager->addUserDetails($user, $data['_username'], $data['plainPassword'], $data['email'], $data['display_name']);
 
 				#Generate activation token

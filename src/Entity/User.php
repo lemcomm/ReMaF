@@ -481,11 +481,11 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	/**
 	 * Set email_delay
 	 *
-	 * @param string $emailDelay
+	 * @param string|null $emailDelay
 	 *
 	 * @return User
 	 */
-	public function setEmailDelay(string $emailDelay): static {
+	public function setEmailDelay(?string $emailDelay = null): static {
 		$this->email_delay = $emailDelay;
 
 		return $this;
@@ -503,11 +503,11 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	/**
 	 * Set language
 	 *
-	 * @param string $language
+	 * @param string|null $language
 	 *
 	 * @return User
 	 */
-	public function setLanguage(string $language): static {
+	public function setLanguage(?string $language = null): static {
 		$this->language = $language;
 
 		return $this;
@@ -525,11 +525,11 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	/**
 	 * Set notifications
 	 *
-	 * @param boolean $notifications
+	 * @param boolean|null $notifications
 	 *
 	 * @return User
 	 */
-	public function setNotifications(bool $notifications): static {
+	public function setNotifications(?bool $notifications = null): static {
 		$this->notifications = $notifications;
 
 		return $this;

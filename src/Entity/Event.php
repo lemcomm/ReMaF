@@ -59,11 +59,11 @@ class Event {
 	/**
 	 * Set data
 	 *
-	 * @param array $data
+	 * @param array|null $data
 	 *
 	 * @return Event
 	 */
-	public function setData(array $data): static {
+	public function setData(?array $data = null): static {
 		$this->data = $data;
 
 		return $this;
@@ -151,7 +151,7 @@ class Event {
 	 *
 	 * @return Event
 	 */
-	public function setLifetime(?int $lifetime): static {
+	public function setLifetime(?int $lifetime = null): static {
 		$this->lifetime = $lifetime;
 
 		return $this;

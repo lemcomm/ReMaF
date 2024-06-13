@@ -741,7 +741,7 @@ class ConversationManager {
         public function sendNewCharacterMsg(Realm $realm = null, House $house = null, Place $place, Character $char) {
                 $em = $this->em;
                 $ultimate = null;
-                $sameRealm = false;
+                $same = false;
                 if ($realm) {
                         if ($realm->isUltimate()) {
                                 $ultimate = $realm;

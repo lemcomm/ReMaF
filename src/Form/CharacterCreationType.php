@@ -34,7 +34,7 @@ class CharacterCreationType extends AbstractType {
 		$builder->add('gender', ChoiceType::class, array(
 			'label'=>'character.gender',
 			'required'=>true,
-			'choices'=>array('m'=>'male', 'f'=>'female'),
+			'choices'=>array('male' => 'm', 'female' => 'f'),
 			'attr' => array('title'=>'newcharacter.help.gender'),
 			'choice_translation_domain' => true,
 		));

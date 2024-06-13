@@ -365,85 +365,83 @@ class AccountController extends AbstractController {
 			$spawnlimit = false;
 		}
 
-		if ($request->isMethod('POST') && $request->request->has("charactercreation")) {
-			$form->handleRequest($request);
-			if ($form->isSubmitted() && $form->isValid()) {
-				$data = $form->getData();
-				if ($user->getNewCharsLimit() <= 0) { $data['dead']=true; } // validation doesn't catch this because the field is disabled
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$data = $form->getData();
+			if ($user->getNewCharsLimit() <= 0) { $data['dead']=true; } // validation doesn't catch this because the field is disabled
 
-				$works = true;
+			$works = true;
 
-				// avoid bursts / client bugs by only allowing a character creation every 60 seconds
-				$query = $em->createQuery('SELECT c FROM App:Character c WHERE c.user = :me AND c.created > :recent');
-				$now = new \DateTime("now");
-				$recent = $now->sub(new \DateInterval("PT60S"));
-				$query->setParameters(array(
-					'me' => $user,
-					'recent' => $recent
-				));
-				if ($query->getResult()) {
-					$form->addError(new FormError("character.burst"));
-					$works = false;
-				}
-				if (preg_match('/[0123456789!@#$%^&*()_+=\[\]{}:;<>.?\/\\\|~\"]/', $data['name'])) {
-					$form->addError(new FormError("character.illegaltext"));
-					$works = false;
-				}
+			// avoid bursts / client bugs by only allowing a character creation every 60 seconds
+			$query = $em->createQuery('SELECT c FROM App:Character c WHERE c.user = :me AND c.created > :recent');
+			$now = new \DateTime("now");
+			$recent = $now->sub(new \DateInterval("PT60S"));
+			$query->setParameters(array(
+				'me' => $user,
+				'recent' => $recent
+			));
+			if ($query->getResult()) {
+				$form->addError(new FormError("character.burst"));
+				$works = false;
+			}
+			if (preg_match('/[0123456789!@#$%^&*()_+=\[\]{}:;<>.?\/\\\|~\"]/', $data['name'])) {
+				$form->addError(new FormError($trans->trans("newcharacter.illegaltext")));
+				$works = false;
+			}
 
-				if ($spawnlimit) {
-					$form->addError(new FormError("character.spawnlimit"));
-					$works = false;
-				}
+			if ($spawnlimit) {
+				$form->addError(new FormError($trans->trans("newcharacter.spawnlimit")));
+				$works = false;
+			}
 
-				if ($data['partner']) {
-					if (($data['gender']=='f' && !$data['partner']->getMale())
-						|| ($data['gender']!='f' && $data['partner']->getMale())) {
-							$form->addError(new FormError("character.homosexual"));
-							$works = false;
-					}
-				}
-
-				// check that at least 1 parent is my own
-				if ($data['father'] && $data['mother']) {
-					if ($data['father']->getUser() != $user && $data['mother']->getUser() != $user) {
-						$form->addError(new FormError("character.foreignparent"));
+			if ($data['partner']) {
+				if (($data['gender']=='f' && !$data['partner']->getMale())
+					|| ($data['gender']!='f' && $data['partner']->getMale())) {
+						$form->addError(new FormError("character.homosexual"));
 						$works = false;
-					} else {
-						// check that parents have a relation that includes sex
-						$havesex = false;
-						foreach ($data['father']->getPartnerships() as $p) {
-							if ($p->getOtherPartner($data['father']) == $data['mother'] && $p->getWithSex()==true) {
-								$havesex = true;
-							}
-						}
-						if (!$havesex) {
-							$form->addError(new FormError("character.nosex"));
-							$works = false;
+				}
+			}
+
+			// check that at least 1 parent is my own
+			if ($data['father'] && $data['mother']) {
+				if ($data['father']->getUser() != $user && $data['mother']->getUser() != $user) {
+					$form->addError(new FormError("character.foreignparent"));
+					$works = false;
+				} else {
+					// check that parents have a relation that includes sex
+					$havesex = false;
+					foreach ($data['father']->getPartnerships() as $p) {
+						if ($p->getOtherPartner($data['father']) == $data['mother'] && $p->getWithSex()==true) {
+							$havesex = true;
 						}
 					}
-				} else if ($data['father']) {
-					if ($data['father']->getUser() != $user) {
-						$form->addError(new FormError("character.foreignparent"));
-						$works = false;
-					}
-				} else if ($data['mother']) {
-					if ($data['mother']->getUser() != $user) {
-						$form->addError(new FormError("character.foreignparent"));
+					if (!$havesex) {
+						$form->addError(new FormError("character.nosex"));
 						$works = false;
 					}
 				}
-
-				if ($works) {
-					$character = $charMan->create($user, $data['name'], $data['gender'], !$data['dead'], $data['father'], $data['mother'], $data['partner']);
-
-					if ($data['dead']!=true) {
-						$user->setNewCharsLimit($user->getNewCharsLimit()-1);
-					}
-					$user->setCurrentCharacter($character);
-					$em->flush();
-
-					return $this->redirectToRoute('maf_char_background', array('starting'=>true));
+			} else if ($data['father']) {
+				if ($data['father']->getUser() != $user) {
+					$form->addError(new FormError("character.foreignparent"));
+					$works = false;
 				}
+			} else if ($data['mother']) {
+				if ($data['mother']->getUser() != $user) {
+					$form->addError(new FormError("character.foreignparent"));
+					$works = false;
+				}
+			}
+
+			if ($works) {
+				$character = $charMan->create($user, $data['name'], $data['gender'], !$data['dead'], $data['father'], $data['mother'], $data['partner']);
+
+				if ($data['dead']!=true) {
+					$user->setNewCharsLimit($user->getNewCharsLimit()-1);
+				}
+				$user->setCurrentCharacter($character);
+				$em->flush();
+
+				return $this->redirectToRoute('maf_char_background', array('starting'=>true));
 			}
 		}
 

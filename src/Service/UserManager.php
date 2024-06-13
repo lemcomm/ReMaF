@@ -33,15 +33,15 @@ class UserManager {
 		return $class instanceof User;
 	}
 
-	public function createUser(?User $user = null): User{
+	public function createUser(?User $user = null, $notifications = false): User{
 		if (!$user) {
 			$user = new User;
 		}
 		$user->setCreated(new \DateTime("now"));
 		$user->setNewCharsLimit(3);
 		$user->setArtifactsLimit(0);
-		$user->setNotifications(true);
-		$user->setNewsletter(true);
+		$user->setNotifications($notifications);
+		$user->setNewsletter($notifications);
 		$user->setCredits(0);
 		$user->setVipStatus(0);
 		$user->setRestricted(false);
