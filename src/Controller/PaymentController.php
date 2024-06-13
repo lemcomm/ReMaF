@@ -178,7 +178,7 @@ class PaymentController extends AbstractController {
 			}
 		}
 
-		$form = $this->createForm(SubscriptionType::class, null, ['all_levels'=>$levels, 'old_level'=>$user->getAccountLevel()]);
+		$form = $this->createForm(SubscriptionType::class, null, ['all_levels'=>$levels]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
