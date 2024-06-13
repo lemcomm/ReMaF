@@ -10,8 +10,8 @@ class StatisticSettlement {
 	private float $starvation;
 	private int $war_fatigue;
 	private ?int $id = null;
-	private ?Settlement $settlement;
-	private ?Realm $realm;
+	private ?Settlement $settlement = null;
+	private ?Realm $realm = null;
 
 	/**
 	 * Get cycle

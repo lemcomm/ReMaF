@@ -8,7 +8,7 @@ class StatisticResources {
 	private int $demand;
 	private int $trade;
 	private ?int $id = null;
-	private ?ResourceType $resource;
+	private ?ResourceType $resource = null;
 
 	/**
 	 * Get cycle

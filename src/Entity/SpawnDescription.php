@@ -9,17 +9,17 @@ class SpawnDescription {
 	private int $cycle;
 	private string $text;
 	private ?int $id = null;
-	private ?Place $active_place;
-	private ?Realm $active_realm;
-	private ?House $active_house;
-	private ?Association $active_association;
-	private ?SpawnDescription $previous;
-	private ?SpawnDescription $next;
-	private ?Place $place;
-	private ?Realm $realm;
-	private ?House $house;
-	private ?Association $association;
-	private ?Character $updater;
+	private ?Place $active_place = null;
+	private ?Realm $active_realm = null;
+	private ?House $active_house = null;
+	private ?Association $active_association = null;
+	private ?SpawnDescription $previous = null;
+	private ?SpawnDescription $next = null;
+	private ?Place $place = null;
+	private ?Realm $realm = null;
+	private ?House $house = null;
+	private ?Association $association = null;
+	private ?Character $updater = null;
 
 	/**
 	 * Get ts

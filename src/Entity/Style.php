@@ -12,11 +12,11 @@ class Style {
 	private float $distance;
 	private float $initiative;
 	private ?int $id = null;
-	private Collection|ArrayCollection $users;
-	private Collection|ArrayCollection $counters;
-	private Character $creator;
-	private ItemType $item;
-	private SkillType $augments;
+	private Collection $users;
+	private Collection $counters;
+	private ?Character $creator = null;
+	private ?ItemType $item = null;
+	private ?SkillType $augments = null;
 
 	/**
 	 * Constructor

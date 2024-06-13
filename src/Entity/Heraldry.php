@@ -6,14 +6,14 @@ class Heraldry {
 	private string $name;
 	private string $shield;
 	private string $shield_colour;
-	private ?string $pattern;
-	private ?string $pattern_colour;
-	private ?string $charge;
-	private ?string $charge_colour;
+	private ?string $pattern = null;
+	private ?string $pattern_colour = null;
+	private ?string $charge = null;
+	private ?string $charge_colour = null;
 	private bool $shading;
 	private string $svg;
 	private ?int $id = null;
-	private ?User $user;
+	private ?User $user = null;
 
 	/**
 	 * Get name

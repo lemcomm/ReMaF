@@ -6,22 +6,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class Unit {
-	private ?int $line;
-	private ?int $travel_days;
-	private ?string $destination;
-	private ?bool $disbanded;
+	private ?int $line = null;
+	private ?int $travel_days = null;
+	private ?string $destination = null;
+	private ?bool $disbanded = null;
 	private ?int $id = null;
-	private ?EventLog $log;
-	private ?UnitSettings $settings;
+	private ?EventLog $log = null;
+	private ?UnitSettings $settings = null;
 	private Collection $soldiers;
 	private Collection $supplies;
 	private Collection $incoming_supplies;
-	private ?Character $character;
-	private ?Character $marshal;
-	private ?Settlement $settlement;
-	private ?Settlement $defending_settlement;
-	private ?Place $place;
-	private ?Settlement $supplier;
+	private ?Character $character = null;
+	private ?Character $marshal = null;
+	private ?Settlement $settlement = null;
+	private ?Settlement $defending_settlement = null;
+	private ?Place $place = null;
+	private ?Settlement $supplier = null;
 	private int $maxSize = 200;
 
 	/**

@@ -12,14 +12,14 @@ class Election {
 	private bool $closed;
 	private string $description;
 	private string $method;
-	private ?bool $routine;
+	private ?bool $routine = null;
 	private ?int $id = null;
 	private Collection $votes;
-	private ?Character $owner;
-	private ?Character $winner;
-	private ?Realm $realm;
-	private ?Association $association;
-	private ?RealmPosition $position;
+	private ?Character $owner = null;
+	private ?Character $winner = null;
+	private ?Realm $realm = null;
+	private ?Association $association = null;
+	private ?RealmPosition $position = null;
 
 	/**
 	 * Constructor

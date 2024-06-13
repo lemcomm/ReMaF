@@ -9,15 +9,15 @@ use DateTime;
  */
 class ConversationPermission {
 	private DateTime $start_time;
-	private ?DateTime $end_time;
-	private ?DateTime $last_access;
+	private ?DateTime $end_time = null;
+	private ?DateTime $last_access = null;
 	private bool $active;
-	private ?bool $owner;
-	private ?bool $manager;
+	private ?bool $owner = null;
+	private ?bool $manager = null;
 	private int $unread;
 	private $id = null;
-	private Conversation $conversation;
-	private Character $character;
+	private ?Conversation $conversation = null;
+	private ?Character $character = null;
 
 	/**
 	 * Get start_time

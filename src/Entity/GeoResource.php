@@ -10,9 +10,9 @@ class GeoResource {
 	private int $buildings_base;
 	private int $buildings_bonus;
 	private ?int $id = null;
-	private ?Settlement $settlement;
-	private ?GeoData $geo_data;
-	private ?ResourceType $type;
+	private ?Settlement $settlement = null;
+	private ?GeoData $geo_data = null;
+	private ?ResourceType $type = null;
 
 	/**
 	 * Get amount

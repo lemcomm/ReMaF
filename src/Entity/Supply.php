@@ -6,8 +6,8 @@ class Supply {
 	private string $type;
 	private int $quantity;
 	private ?int $id = null;
-	private ?Unit $unit;
-	private ?Settlement $origin;
+	private ?Unit $unit = null;
+	private ?Settlement $origin = null;
 
 	/**
 	 * Get type

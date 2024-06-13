@@ -14,8 +14,8 @@ class Code {
 	private bool $used;
 	private DateTime $used_on;
 	private ?int $id = null;
-	private ?User $sender;
-	private ?User $used_by;
+	private ?User $sender = null;
+	private ?User $used_by = null;
 
 	/**
 	 * Get code

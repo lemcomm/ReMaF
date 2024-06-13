@@ -4,8 +4,8 @@ namespace App\Entity;
 
 class MessageRecipient {
 	private $id = null;
-	private Message $message;
-	private Character $character;
+	private ?Message $message = null;
+	private ?Character $character = null;
 
 	/**
 	 * Get id

@@ -5,26 +5,26 @@ namespace App\Entity;
 use DateTime;
 
 class Law {
-	private ?string $title;
-	private ?string $description;
-	private ?bool $mandatory;
-	private ?bool $cascades;
-	private ?string $value;
-	private ?DateTime $enacted;
-	private ?int $cycle;
-	private ?DateTime $repealed_on;
-	private ?DateTime $invalidated_on;
-	private ?int $sol_cycles;
+	private ?string $title = null;
+	private ?string $description = null;
+	private ?bool $mandatory = null;
+	private ?bool $cascades = null;
+	private ?string $value = null;
+	private ?DateTime $enacted = null;
+	private ?int $cycle = null;
+	private ?DateTime $repealed_on = null;
+	private ?DateTime $invalidated_on = null;
+	private ?int $sol_cycles = null;
 	private ?int $id = null;
-	private ?Law $invalidated_by;
-	private ?Law $invalidates;
-	private ?Character $enacted_by;
-	private ?Character $repealed_by;
-	private ?Association $association;
-	private ?Settlement $settlement;
-	private ?Realm $realm;
-	private ?LawType $type;
-	private ?Association $faith;
+	private ?Law $invalidated_by = null;
+	private ?Law $invalidates = null;
+	private ?Character $enacted_by = null;
+	private ?Character $repealed_by = null;
+	private ?Association $association = null;
+	private ?Settlement $settlement = null;
+	private ?Realm $realm = null;
+	private ?LawType $type = null;
+	private ?Association $faith = null;
 
 	public function getOrg(): Realm|Association|null {
 		if ($this->realm) {

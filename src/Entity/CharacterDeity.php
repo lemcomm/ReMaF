@@ -7,8 +7,8 @@ use DateTime;
 class CharacterDeity {
 	private DateTime $start;
 	private ?int $id = null;
-	private ?Character $character;
-	private ?Deity $deity;
+	private ?Character $character = null;
+	private ?Deity $deity = null;
 
 	/**
 	 * Get start

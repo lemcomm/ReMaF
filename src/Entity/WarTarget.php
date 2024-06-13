@@ -7,8 +7,8 @@ class WarTarget {
 	private bool $taken_ever;
 	private bool $taken_currently;
 	private ?int $id = null;
-	private ?War $war;
-	private ?Settlement $settlement;
+	private ?War $war = null;
+	private ?Settlement $settlement = null;
 
 	/**
 	 * Get attacked

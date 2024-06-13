@@ -13,8 +13,8 @@ class UserReportNote {
 	private bool $pending;
 	private string $verdict;
 	private $id = null;
-	private ?User $from;
-	private ?UserReport $report;
+	private ?User $from = null;
+	private ?UserReport $report = null;
 
 	/**
 	 * Get text

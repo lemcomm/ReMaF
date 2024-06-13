@@ -13,7 +13,7 @@ class DungeonTreasure {
 	private int $hidden;
 	private ?int $id = null;
 	private Collection $targeted_by;
-	private ?DungeonLevel $level;
+	private ?DungeonLevel $level = null;
 
 	/**
 	 * Constructor

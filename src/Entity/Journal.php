@@ -14,16 +14,16 @@ class Journal {
 	private bool $public;
 	private bool $graphic;
 	private bool $ooc;
-	private ?bool $pending_review;
+	private ?bool $pending_review = null;
 	private bool $GM_reviewed;
-	private ?bool $GM_private;
-	private ?bool $GM_graphic;
+	private ?bool $GM_private = null;
+	private ?bool $GM_graphic = null;
 	private string $language;
 	private ?int $id = null;
 	private Collection $reports;
-	private ?Character $character;
-	private ?BattleReport $battle_report;
-	private ?ActivityReport $activity_report;
+	private ?Character $character = null;
+	private ?BattleReport $battle_report = null;
+	private ?ActivityReport $activity_report = null;
 
 	/**
 	 * Constructor

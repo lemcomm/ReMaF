@@ -10,7 +10,7 @@ class UserLog {
 	private string $agent;
 	private DateTime $ts;
 	private ?int $id = null;
-	private User $user;
+	private ?User $user = null;
 	private ?int $old_user_id = null;
 
 	public function getIp(): string {

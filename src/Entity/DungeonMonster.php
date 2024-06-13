@@ -14,8 +14,8 @@ class DungeonMonster {
 	private bool $stunned;
 	private ?int $id = null;
 	private Collection $targeted_by;
-	private ?DungeonLevel $level;
-	private ?DungeonMonsterType $type;
+	private ?DungeonLevel $level = null;
+	private ?DungeonMonsterType $type = null;
 
 	/**
 	 * Constructor

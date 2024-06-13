@@ -6,8 +6,8 @@ class DungeonCard {
 	private int $amount;
 	private int $played;
 	private ?int $id = null;
-	private ?DungeonCardType $type;
-	private ?Dungeoneer $owner;
+	private ?DungeonCardType $type = null;
+	private ?Dungeoneer $owner = null;
 
 	/**
 	 * Get amount

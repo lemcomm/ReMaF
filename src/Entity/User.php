@@ -13,19 +13,19 @@ use Symfony\Component\Security\Core\User\UserInterface;
 ######[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	private ?int $id = null;
-	private ?string $display_name;
-	private ?DateTime $created;
-	private ?int $new_chars_limit;
-	private ?string $app_key;
-	private ?string $language;
-	private ?bool $notifications;
-	private ?bool $newsletter;
-	private ?int $account_level;
-	private ?int $vip_status;
-	private ?DateTime $paid_until;
-	private ?int $credits;
-	private ?bool $restricted;
-	private ?Character $current_character;
+	private ?string $display_name = null;
+	private ?DateTime $created = null;
+	private ?int $new_chars_limit = null;
+	private ?string $app_key = null;
+	private ?string $language = null;
+	private ?bool $notifications = null;
+	private ?bool $newsletter = null;
+	private ?int $account_level = null;
+	private ?int $vip_status = null;
+	private ?DateTime $paid_until = null;
+	private ?int $credits = null;
+	private ?bool $restricted = null;
+	private ?Character $current_character = null;
 	private Collection $payments;
 	private Collection $credit_history;
 	private Collection $characters;
@@ -34,29 +34,29 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	private Collection $ratings_given;
 	private Collection $rating_votes;
 	private Collection $listings;
-	private ?string $genome_set;
+	private ?string $genome_set = null;
 	private Collection $artifacts;
-	private ?int $artifacts_limit;
-	private ?string $token;
-	private ?string $reset_token;
-	private ?DateTime $reset_time;
-	private ?string $email_token;
+	private ?int $artifacts_limit = null;
+	private ?string $token = null;
+	private ?string $reset_token = null;
+	private ?DateTime $reset_time = null;
+	private ?string $email_token = null;
 	private Collection $logs;
 	private Collection $security_logs;
-	private ?string $ip;
-	private ?string $agent;
-	private ?bool $watched;
-	private ?bool $bypass_exits;
-	private ?string $gm_name;
-	private ?bool $public_admin;
-	private ?string $email_opt_out_token;
-	private ?string $email_delay;
-	private ?bool $public;
-	private ?DateTime $next_spawn_time;
-	private ?bool $show_patronage;
-	private ?int $old_account_level;
-	private ?Description $description;
-	private ?UserLimits $limits;
+	private ?string $ip = null;
+	private ?string $agent = null;
+	private ?bool $watched = null;
+	private ?bool $bypass_exits = null;
+	private ?string $gm_name = null;
+	private ?bool $public_admin = null;
+	private ?string $email_opt_out_token = null;
+	private ?string $email_delay = null;
+	private ?bool $public = null;
+	private ?DateTime $next_spawn_time = null;
+	private ?bool $show_patronage = null;
+	private ?int $old_account_level = null;
+	private ?Description $description = null;
+	private ?UserLimits $limits = null;
 	private Collection $descriptions;
 	private Collection $patronizing;
 	private Collection $reports;
@@ -73,8 +73,8 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	private ?string $confirmationToken = null;
 	private ?DateTime $passwordRequestedAt = null;
 	private ?array $roles = [];
-	private ?DateTime $last_password;
-	private ?DateTime $last_play;
+	private ?DateTime $last_password = null;
+	private ?DateTime $last_play = null;
 
 	public function __construct() {
 		$this->payments = new ArrayCollection();
@@ -1418,11 +1418,11 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	public function getLastPlay(): ?DateTime {
-		return $this->last_password;
+		return $this->last_play;
 	}
 
 	public function setLastPlay(?DateTime $last_password): self {
-		$this->last_password = $last_password;
+		$this->last_play = $last_password;
 
 		return $this;
 	}

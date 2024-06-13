@@ -11,8 +11,8 @@ class SiegeEquipment {
 	private bool $ready;
 	private ?int $id = null;
 	private Collection $manned_by;
-	private ?SiegeEquipmentType $type;
-	private ?Character $owner;
+	private ?SiegeEquipmentType $type = null;
+	private ?Character $owner = null;
 
 	/**
 	 * Constructor

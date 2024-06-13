@@ -7,10 +7,10 @@ class Condition {
 	private float $number_value;
 	private string $string_value;
 	private ?int $id = null;
-	private ?Character $character;
-	private ?Realm $target_realm;
-	private ?Character $target_character;
-	private ?Trade $target_trade;
+	private ?Character $character = null;
+	private ?Realm $target_realm = null;
+	private ?Character $target_character = null;
+	private ?Trade $target_trade = null;
 
 	/**
 	 * Get type

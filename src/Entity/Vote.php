@@ -5,9 +5,9 @@ namespace App\Entity;
 class Vote {
 	private int $vote;
 	private ?int $id = null;
-	private ?Character $character;
-	private ?Election $election;
-	private ?Character $target_character;
+	private ?Character $character = null;
+	private ?Election $election = null;
+	private ?Character $target_character = null;
 
 	/**
 	 * Get vote

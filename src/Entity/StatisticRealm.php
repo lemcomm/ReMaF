@@ -12,8 +12,8 @@ class StatisticRealm {
 	private int $characters;
 	private int $players;
 	private ?int $id = null;
-	private ?Realm $realm;
-	private ?Realm $superior;
+	private ?Realm $realm = null;
+	private ?Realm $superior = null;
 
 	/**
 	 * Get cycle

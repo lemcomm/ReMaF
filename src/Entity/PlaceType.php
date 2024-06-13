@@ -7,13 +7,13 @@ use Doctrine\Common\Collections\Collection;
 
 class PlaceType {
 	private string $name;
-	private ?string $requires;
+	private ?string $requires = null;
 	private bool $visible;
-	private ?bool $defensible;
-	private ?bool $public;
-	private ?bool $spawnable;
-	private ?bool $vassals;
-	private ?bool $associations;
+	private ?bool $defensible = null;
+	private ?bool $public = null;
+	private ?bool $spawnable = null;
+	private ?bool $vassals = null;
+	private ?bool $associations = null;
 	private ?int $id = null;
 	private Collection $subtypes;
 

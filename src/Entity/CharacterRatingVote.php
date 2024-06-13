@@ -5,8 +5,8 @@ namespace App\Entity;
 class CharacterRatingVote {
 	private int $value;
 	private ?int $id = null;
-	private ?CharacterRating $rating;
-	private ?User $user;
+	private ?CharacterRating $rating = null;
+	private ?User $user = null;
 
 	/**
 	 * Get value

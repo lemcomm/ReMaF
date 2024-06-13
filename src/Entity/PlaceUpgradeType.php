@@ -4,9 +4,9 @@ namespace App\Entity;
 
 class PlaceUpgradeType {
 	private string $name;
-	private ?string $requires;
+	private ?string $requires = null;
 	private ?int $id = null;
-	private PlaceType $place_type;
+	private ?PlaceType $place_type = null;
 
 	/**
 	 * Get name

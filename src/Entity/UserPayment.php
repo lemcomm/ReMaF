@@ -5,15 +5,15 @@ namespace App\Entity;
 use DateTime;
 
 class UserPayment {
-	private ?string $transaction_code;
+	private ?string $transaction_code = null;
 	private float $amount;
 	private string $currency;
 	private int $credits;
-	private ?int $bonus;
+	private ?int $bonus = null;
 	private DateTime $ts;
 	private string $type;
 	private ?int $id = null;
-	private User $user;
+	private ?User $user = null;
 
 	/**
 	 * Get transaction_code

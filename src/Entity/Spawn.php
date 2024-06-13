@@ -4,10 +4,10 @@ namespace App\Entity;
 
 class Spawn {
 	private bool $active;
-	private ?Place $place;
-	private ?House $house;
-	private ?Realm $realm;
-	private ?Association $association;
+	private ?Place $place = null;
+	private ?House $house = null;
+	private ?Realm $realm = null;
+	private ?Association $association = null;
 
 	/**
 	 * Get active

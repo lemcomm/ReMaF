@@ -3,13 +3,13 @@
 namespace App\Entity;
 
 class Trade {
-	private ?string $name;
+	private ?string $name = null;
 	private int $amount;
 	private float $tradecost;
 	private ?int $id = null;
-	private ?ResourceType $resource_type;
-	private ?Settlement $source;
-	private ?Settlement $destination;
+	private ?ResourceType $resource_type = null;
+	private ?Settlement $source = null;
+	private ?Settlement $destination = null;
 
 	public function __toString() {
 		return "trade $this->id - from " . $this->source->getId() . " to " . $this->destination->getId();

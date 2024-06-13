@@ -8,15 +8,15 @@ use Doctrine\Common\Collections\Collection;
 
 class Event {
 	private string $content;
-	private ?array $data = [];
+	private ?array $data = null;
 	private bool $public;
 	private DateTime $ts;
 	private int $cycle;
 	private int $priority;
-	private ?int $lifetime;
+	private ?int $lifetime = null;
 	private ?int $id = null;
 	private Collection $mail_entries;
-	private ?EventLog $log;
+	private ?EventLog $log = null;
 
 	/**
 	 * Constructor

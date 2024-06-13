@@ -11,9 +11,9 @@ class Skill {
 	private int $practice_high;
 	private DateTime $updated;
 	private ?int $id = null;
-	private Character $character;
-	private SkillType $type;
-	private SkillCategory $category;
+	private ?Character $character = null;
+	private ?SkillType $type = null;
+	private ?SkillCategory $category = null;
 
 	public function getScore() {
 		$char = $this->character;

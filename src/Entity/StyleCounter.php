@@ -4,8 +4,8 @@ namespace App\Entity;
 
 class StyleCounter {
 	private ?int $id = null;
-	private Style $style;
-	private SkillType $counters;
+	private ?Style $style = null;
+	private ?SkillType $counters = null;
 
 	/**
 	 * Get id

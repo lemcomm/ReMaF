@@ -13,12 +13,12 @@ class Realm extends Faction {
 	private int $type;
 	private string $colour_hex;
 	private string $colour_rgb;
-	private ?string $language;
-	private ?string $old_description;
+	private ?string $language = null;
+	private ?string $old_description = null;
 	private ?int $id = null;
-	private ?Description $description;
-	private ?SpawnDescription $spawn_description;
-	private ?EventLog $log;
+	private ?Description $description = null;
+	private ?SpawnDescription $spawn_description = null;
+	private ?EventLog $log = null;
 	private Collection $descriptions;
 	private Collection $spawns;
 	private Collection $spawn_descriptions;
@@ -38,11 +38,11 @@ class Realm extends Faction {
 	private Collection $hosted_embassies;
 	private Collection $vassals;
 	private Collection $permissions;
-	private ?Settlement $capital;
-	private ?Realm $superior;
-	private ?Place $capital_place;
-	private ?RealmDesignation $designation;
-	private ?Association $faith;
+	private ?Settlement $capital = null;
+	private ?Realm $superior = null;
+	private ?Place $capital_place = null;
+	private ?RealmDesignation $designation = null;
+	private ?Association $faith = null;
 
 	/**
 	 * Constructor

@@ -11,8 +11,8 @@ class CharacterStyle {
 	private int $practice_high;
 	private DateTime $updated;
 	private ?int $id = null;
-	private ?Character $character;
-	private ?Style $style;
+	private ?Character $character = null;
+	private ?Style $style = null;
 
 	/**
 	 * Get theory

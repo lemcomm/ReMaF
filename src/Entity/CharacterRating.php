@@ -14,8 +14,8 @@ class CharacterRating {
 	private DateTime $last_change;
 	private ?int $id = null;
 	private Collection $votes;
-	private ?Character $character;
-	private ?User $given_by_user;
+	private ?Character $character = null;
+	private ?User $given_by_user = null;
 
 	/**
 	 * Constructor

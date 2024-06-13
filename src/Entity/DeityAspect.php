@@ -4,8 +4,8 @@ namespace App\Entity;
 
 class DeityAspect {
 	private ?int $id = null;
-	private ?Deity $deity;
-	private ?AspectType $aspect;
+	private ?Deity $deity = null;
+	private ?AspectType $aspect = null;
 
 	/**
 	 * Get id

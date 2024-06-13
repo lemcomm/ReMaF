@@ -6,11 +6,11 @@ use DateTime;
 
 class SoldierLog {
 	private string $content;
-	private ?array $data;
+	private ?array $data = null;
 	private DateTime $ts;
 	private int $cycle;
 	private ?int $id = null;
-	private ?Soldier $soldier;
+	private ?Soldier $soldier = null;
 
 	/**
 	 * Get content

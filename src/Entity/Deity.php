@@ -8,12 +8,12 @@ use Doctrine\Common\Collections\Collection;
 class Deity {
 	private string $name;
 	private ?int $id = null;
-	private ?Description $description;
+	private ?Description $description = null;
 	private Collection $associations;
 	private Collection $followers;
 	private Collection $descriptions;
 	private Collection $aspects;
-	private ?Association $main_recognizer;
+	private ?Association $main_recognizer = null;
 
 	/**
 	 * Constructor

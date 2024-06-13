@@ -7,8 +7,8 @@ namespace App\Entity;
  */
 class BattleReportObserver {
 	private ?int $id = null;
-	private BattleReport $battle_report;
-	private Character $character;
+	private ?BattleReport $battle_report = null;
+	private ?Character $character = null;
 
 	public function setReport($battleReport = null): BattleReportObserver|static {
 		return $this->setBattleReport($battleReport);

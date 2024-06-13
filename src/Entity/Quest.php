@@ -12,10 +12,10 @@ class Quest {
 	private string $notes;
 	private bool $completed;
 	private ?int $id = null;
-	private EventLog $log;
+	private ?EventLog $log = null;
 	private Collection $questers;
-	private Character $owner;
-	private Settlement $home;
+	private ?Character $owner = null;
+	private ?Settlement $home = null;
 
 	/**
 	 * Constructor

@@ -7,11 +7,11 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 class MapMarker {
 	private string $name;
 	private string $type;
-	private ?Point $location;
+	private ?Point $location = null;
 	private int $placed;
 	private ?int $id = null;
-	private ?Character $owner;
-	private ?Realm $realm;
+	private ?Character $owner = null;
+	private ?Realm $realm = null;
 
 	/**
 	 * Get name

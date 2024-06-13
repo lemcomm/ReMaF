@@ -10,12 +10,12 @@ class War {
 	private string $description;
 	private int $timer;
 	private ?int $id = null;
-	private ?EventLog $log;
+	private ?EventLog $log = null;
 	private Collection $targets;
 	private Collection $related_battles;
 	private Collection $related_battle_reports;
 	private Collection $sieges;
-	private ?Realm $realm;
+	private ?Realm $realm = null;
 	private array|bool $attackers = false;
 	private array|bool $defenders = false;
 

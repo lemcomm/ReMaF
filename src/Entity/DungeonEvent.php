@@ -7,9 +7,9 @@ use DateTime;
 class DungeonEvent {
 	private DateTime $ts;
 	private string $content;
-	private ?array $data;
+	private ?array $data = null;
 	private ?int $id = null;
-	private ?DungeonParty $party;
+	private ?DungeonParty $party = null;
 
 	/**
 	 * Get ts

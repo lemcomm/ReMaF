@@ -11,8 +11,8 @@ class PermissionBase {
 	protected ?int $value_remaining = null;
 	protected ?int $reserve = null;
 	protected ?int $id = null;
-	protected ?Permission $permission;
-	protected ?Listing $listing;
+	protected ?Permission $permission = null;
+	protected ?Listing $listing = null;
 
 	/**
 	 * Get value

@@ -10,9 +10,9 @@ class Building {
 	private int $resupply;
 	private float $current_speed;
 	private ?int $id = null;
-	private Settlement $settlement;
-	private Place $place;
-	private BuildingType $type;
+	private ?Settlement $settlement = null;
+	private ?Place $place = null;
+	private ?BuildingType $type = null;
 
 	public function startConstruction($workers): static {
 		$this->setActive(false);

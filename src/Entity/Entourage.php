@@ -5,11 +5,11 @@ namespace App\Entity;
 class Entourage extends NPC {
 	private int $supply;
 	private ?int $id = null;
-	private ?EntourageType $type;
-	private ?Action $action;
-	private ?Character $character;
-	private ?Character $liege;
-	private ?EquipmentType $equipment;
+	private ?EntourageType $type = null;
+	private ?Action $action = null;
+	private ?Character $character = null;
+	private ?Character $liege = null;
+	private ?EquipmentType $equipment = null;
 
 	public function isEntourage(): true {
 		return true;

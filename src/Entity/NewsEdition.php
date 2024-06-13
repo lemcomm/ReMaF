@@ -9,12 +9,12 @@ use Doctrine\Common\Collections\Collection;
 class NewsEdition {
 	private int $number;
 	private bool $collection;
-	private ?int $published_cycle;
+	private ?int $published_cycle = null;
 	private ?DateTime $published;
 	private ?int $id = null;
 	private Collection $articles;
 	private Collection $readers;
-	private ?NewsPaper $paper;
+	private ?NewsPaper $paper = null;
 
 	/**
 	 * Constructor

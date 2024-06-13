@@ -11,10 +11,10 @@ class GeoFeature {
 	private bool $active;
 	private int $condition;
 	private ?int $id = null;
-	private ?Settlement $settlement;
-	private ?Place $place;
-	private ?FeatureType $type;
-	private ?GeoData $geo_data;
+	private ?Settlement $settlement = null;
+	private ?Place $place = null;
+	private ?FeatureType $type = null;
+	private ?GeoData $geo_data = null;
 
 	public function ApplyDamage($damage): string {
 		$this->condition -= $damage;

@@ -5,14 +5,14 @@ namespace App\Entity;
 
 class Quester {
 	private int $started;
-	private ?int $claim_completed;
-	private ?int $confirmed_completed;
-	private ?int $reward_received;
+	private ?int $claim_completed = null;
+	private ?int $confirmed_completed = null;
+	private ?int $reward_received = null;
 	private string $owner_comment;
 	private string $quester_comment;
 	private ?int $id = null;
-	private Character $character;
-	private Quest $quest;
+	private ?Character $character = null;
+	private ?Quest $quest = null;
 
 	/**
 	 * Get started

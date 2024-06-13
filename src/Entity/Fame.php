@@ -9,7 +9,7 @@ class Fame {
 	private DateTime $obtained;
 	private int $cycle;
 	private ?int $id = null;
-	private ?Character $character;
+	private ?Character $character = null;
 
 	/**
 	 * Get name

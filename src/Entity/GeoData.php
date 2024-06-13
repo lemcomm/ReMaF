@@ -8,7 +8,7 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Polygon;
 
 class GeoData {
-	private ?point $center;
+	private ?point $center = null;
 	private Polygon $poly;
 	private int $altitude;
 	private bool $hills;
@@ -18,13 +18,13 @@ class GeoData {
 	private float $humidity;
 	private bool $passable;
 	private ?int $id = null;
-	private ?Settlement $settlement;
+	private ?Settlement $settlement = null;
 	private Collection $roads;
 	private Collection $features;
 	private Collection $places;
 	private Collection $activities;
 	private Collection $resources;
-	private ?Biome $biome;
+	private ?Biome $biome = null;
 
 	/**
 	 * Constructor

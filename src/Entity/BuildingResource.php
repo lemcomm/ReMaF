@@ -8,8 +8,8 @@ class BuildingResource {
 	private int $provides_operation;
 	private int $provides_operation_bonus;
 	private ?int $id = null;
-	private BuildingType $building_type;
-	private ResourceType $resource_type;
+	private ?BuildingType $building_type = null;
+	private ?ResourceType $resource_type = null;
 
 	/**
 	 * Get requires_construction

@@ -12,9 +12,9 @@ class Dungeon {
 	private int $tick;
 	private int $exploration_count;
 	private ?int $id = null;
-	private ?DungeonParty $party;
+	private ?DungeonParty $party = null;
 	private Collection $levels;
-	private ?GeoData $geo_data;
+	private ?GeoData $geo_data = null;
 
 	/**
 	 * Constructor

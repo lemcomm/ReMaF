@@ -11,15 +11,15 @@ use Doctrine\Common\Collections\Criteria;
  * Conversation
  */
 class Conversation {
-	private ?string $topic;
-	private ?string $system;
-	private ?string $type;
+	private ?string $topic = null;
+	private ?string $system = null;
+	private ?string $type = null;
 	private DateTime $created;
-	private ?int $cycle;
-	private ?DateTime $updated;
+	private ?int $cycle = null;
+	private ?DateTime $updated = null;
 	private bool $active;
 	private ?int $id = null;
-	private ?Character $local_for;
+	private ?Character $local_for = null;
 	private Collection $messages;
 	private Collection $permissions;
 	private ?Realm $realm = null;

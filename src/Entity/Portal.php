@@ -7,14 +7,14 @@ use Doctrine\Common\Collections\Collection;
 
 class Portal {
 	private ?int $id = null;
-	private ?Description $description;
+	private ?Description $description = null;
 	private Collection $descriptions;
 	private Collection $recently_used_by;
-	private ?Character $maintainer;
-	private ?Place $origin;
-	private ?Place $destination;
-	private ?Listing $origin_access;
-	private ?Listing $dest_access;
+	private ?Character $maintainer = null;
+	private ?Place $origin = null;
+	private ?Place $destination = null;
+	private ?Listing $origin_access = null;
+	private ?Listing $dest_access = null;
 
 	/**
 	 * Constructor

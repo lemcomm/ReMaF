@@ -5,7 +5,7 @@ namespace App\Entity;
 class PlaceSubType {
 	private string $name;
 	private ?int $id = null;
-	private ?PlaceType $place_type;
+	private ?PlaceType $place_type = null;
 
 	/**
 	 * Get name

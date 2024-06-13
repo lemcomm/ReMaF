@@ -11,9 +11,9 @@ class BattleReportCharacter {
 	private int $hits_taken;
 	private int $hits_made;
 	private ?int $id = null;
-	private BattleReportGroup $group_report;
-	private Character $character;
-	private Character $captured_by;
+	private ?BattleReportGroup $group_report = null;
+	private ?Character $character = null;
+	private ?Character $captured_by = null;
 
 	/**
 	 * Get standing

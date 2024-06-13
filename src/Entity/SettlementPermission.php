@@ -4,8 +4,8 @@ namespace App\Entity;
 
 class SettlementPermission extends PermissionBase {
 	#Local Properties
-	private ?Settlement $settlement;
-	private ?Settlement $occupied_settlement;
+	private ?Settlement $settlement = null;
+	private ?Settlement $occupied_settlement = null;
 
 	/**
 	 * Get settlement

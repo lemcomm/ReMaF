@@ -3,13 +3,13 @@
 namespace App\Entity;
 
 class CharacterBackground {
-	private ?string $appearance;
-	private ?string $personality;
-	private ?string $secrets;
-	private ?string $retirement;
-	private ?string $death;
+	private ?string $appearance = null;
+	private ?string $personality = null;
+	private ?string $secrets = null;
+	private ?string $retirement = null;
+	private ?string $death = null;
 	private ?int $id = null;
-	private Character $character;
+	private ?Character $character = null;
 
 	/**
 	 * Get appearance

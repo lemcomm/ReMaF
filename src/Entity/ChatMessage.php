@@ -8,10 +8,10 @@ class ChatMessage {
 	private DateTime $ts;
 	private string $content;
 	private ?int $id = null;
-	private ?DungeonParty $party;
-	private ?Character $sender;
-	private ?Place $place;
-	private ?Settlement $settlement;
+	private ?DungeonParty $party = null;
+	private ?Character $sender = null;
+	private ?Place $place = null;
+	private ?Settlement $settlement = null;
 
 	/**
 	 * Get ts

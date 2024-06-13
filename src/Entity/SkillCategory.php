@@ -10,7 +10,7 @@ class SkillCategory {
 	private ?int $id = null;
 	private Collection $sub_categories;
 	private Collection $skills;
-	private SkillCategory $category;
+	private ?SkillCategory $category = null;
 
 	/**
 	 * Constructor

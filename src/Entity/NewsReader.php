@@ -6,8 +6,8 @@ class NewsReader {
 	private bool $read;
 	private bool $updated;
 	private ?int $id = null;
-	private ?Character $character;
-	private ?NewsEdition $edition;
+	private ?Character $character = null;
+	private ?NewsEdition $edition = null;
 
 	/**
 	 * Get read

@@ -11,10 +11,10 @@ class RealmRelation {
 	private string $delivered;
 	private DateTime $last_change;
 	private ?int $id = null;
-	private ?Realm $source_realm;
-	private ?Realm $target_realm;
-	private ?Association $source_association;
-	private ?Association $target_association;
+	private ?Realm $source_realm = null;
+	private ?Realm $target_realm = null;
+	private ?Association $source_association = null;
+	private ?Association $target_association = null;
 
 	/**
 	 * Get status

@@ -4,9 +4,9 @@ namespace App\Entity;
 
 class NameList {
 	private string $name;
-	private ?bool $male;
+	private ?bool $male = null;
 	private ?int $id = null;
-	private ?Culture $culture;
+	private ?Culture $culture = null;
 
 	/**
 	 * Get name

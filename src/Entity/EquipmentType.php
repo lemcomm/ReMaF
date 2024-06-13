@@ -4,7 +4,7 @@ namespace App\Entity;
 
 class EquipmentType {
 	private string $name;
-	private ?string $icon;
+	private ?string $icon = null;
 	private string $type;
 	private int $ranged;
 	private int $melee;
@@ -12,9 +12,9 @@ class EquipmentType {
 	private int $training_required;
 	private int $resupply_cost;
 	private ?int $id = null;
-	private ?BuildingType $provider;
-	private ?BuildingType $trainer;
-	private ?SkillType $skill;
+	private ?BuildingType $provider = null;
+	private ?BuildingType $trainer = null;
+	private ?SkillType $skill = null;
 
 	public function getNametrans(): string {
 		return 'item.' . $this->getName();

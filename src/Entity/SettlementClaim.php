@@ -6,8 +6,8 @@ class SettlementClaim {
 	private bool $enforceable;
 	private bool $priority;
 	private ?int $id = null;
-	private ?Character $character;
-	private ?Settlement $settlement;
+	private ?Character $character = null;
+	private ?Settlement $settlement = null;
 
 	/**
 	 * Get enforceable

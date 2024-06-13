@@ -12,10 +12,10 @@ class Partnership {
 	private bool $public;
 	private bool $with_sex;
 	private bool $partner_may_use_crest;
-	private ?DateTime $start_date;
-	private ?DateTime $end_date;
+	private ?DateTime $start_date = null;
+	private ?DateTime $end_date = null;
 	private ?int $id = null;
-	private Character $initiator;
+	private ?Character $initiator = null;
 	private Collection $partners;
 
 	/**

@@ -15,12 +15,12 @@ class BattleReport extends ReportBase {
 	private array $hunt;
 	private array $finish;
 	private int $epicness;
-	private ?BattleReportGroup $primary_attacker;
-	private ?BattleReportGroup $primary_defender;
+	private ?BattleReportGroup $primary_attacker = null;
+	private ?BattleReportGroup $primary_defender = null;
 	private Collection $participants;
 	private Collection $groups;
-	private ?War $war;
-	private ?Siege $siege;
+	private ?War $war = null;
+	private ?Siege $siege = null;
 	private Collection $defense_buildings;
 
 	/**

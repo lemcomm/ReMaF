@@ -5,8 +5,8 @@ namespace App\Entity;
 class Permission {
 	private string $class;
 	private string $name;
-	private ?string $translation_string;
-	private ?string $description;
+	private ?string $translation_string = null;
+	private ?string $description = null;
 	private bool $use_value;
 	private bool $use_reserve;
 	private ?int $id = null;

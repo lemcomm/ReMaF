@@ -8,8 +8,8 @@ class NewsEditor {
 	private bool $editor;
 	private bool $owner;
 	private ?int $id = null;
-	private ?Character $character;
-	private ?NewsPaper $paper;
+	private ?Character $character = null;
+	private ?NewsPaper $paper = null;
 
 	/**
 	 * Get publisher

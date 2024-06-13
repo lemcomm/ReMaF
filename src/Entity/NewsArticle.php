@@ -6,7 +6,7 @@ use DateTime;
 
 class NewsArticle {
 	private DateTime $written;
-	private ?DateTime $updated;
+	private ?DateTime $updated = null;
 	private string $title;
 	private string $content;
 	private int $position;
@@ -15,8 +15,8 @@ class NewsArticle {
 	private int $size_x;
 	private int $size_y;
 	private ?int $id = null;
-	private ?Character $author;
-	private ?NewsEdition $edition;
+	private ?Character $author = null;
+	private ?NewsEdition $edition = null;
 
 	/**
 	 * Get written

@@ -7,10 +7,10 @@ class ListMember {
 	private bool $allowed;
 	private bool $include_subs;
 	private ?int $id = null;
-	private ?Listing $listing;
-	private ?Realm $target_realm;
-	private ?Character $target_character;
-	private ?RealmPosition $target_position;
+	private ?Listing $listing = null;
+	private ?Realm $target_realm = null;
+	private ?Character $target_character = null;
+	private ?RealmPosition $target_position = null;
 
 	/**
 	 * Get priority

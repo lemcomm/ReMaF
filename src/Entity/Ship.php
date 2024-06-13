@@ -5,10 +5,10 @@ namespace App\Entity;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class Ship {
-	private ?Point $location;
+	private ?Point $location = null;
 	private int $cycle;
 	private ?int $id = null;
-	private ?Character $owner;
+	private ?Character $owner = null;
 
 	/**
 	 * Get location

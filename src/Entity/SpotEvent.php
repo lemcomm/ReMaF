@@ -10,9 +10,9 @@ class SpotEvent {
 	private point $location;
 	private bool $current;
 	private ?int $id = null;
-	private ?Character $spotter;
-	private ?Character $target;
-	private ?GeoFeature $tower;
+	private ?Character $spotter = null;
+	private ?Character $target = null;
+	private ?GeoFeature $tower = null;
 
 	/**
 	 * Get ts

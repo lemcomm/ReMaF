@@ -14,8 +14,8 @@ class UserReport {
 	private $id = null;
 	private Collection $notes;
 	private Collection $against;
-	private ?User $user;
-	private ?Journal $journal;
+	private ?User $user = null;
+	private ?Journal $journal = null;
 	private ?int $old_user_id = null;
 	private ?int $old_against_id = null;
 

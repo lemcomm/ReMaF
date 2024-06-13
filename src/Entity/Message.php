@@ -7,22 +7,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class Message {
-	private ?string $topic;
-	private ?string $type;
+	private ?string $topic = null;
+	private ?string $type = null;
 	private DateTime $sent;
-	private ?int $cycle;
-	private ?string $system_content;
-	private ?string $content;
-	private ?int $recipient_count;
-	private ?string $target;
-	private ?bool $read;
+	private ?int $cycle = null;
+	private ?string $system_content = null;
+	private ?string $content = null;
+	private ?int $recipient_count = null;
+	private ?string $target = null;
+	private ?bool $read = null;
 	private $id = null;
 	private Collection $replies;
 	private Collection $tags;
 	private Collection $recipients;
-	private ?Conversation $conversation;
-	private ?Character $sender;
-	private ?Message $reply_to;
+	private ?Conversation $conversation = null;
+	private ?Character $sender = null;
+	private ?Message $reply_to = null;
 
 	/**
 	 * Constructor

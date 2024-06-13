@@ -7,27 +7,27 @@ use Doctrine\Common\Collections\Collection;
 
 
 class House extends Faction {
-	private ?string $motto;
-	private ?bool $active;
-	private ?string $private;
-	private ?string $secret;
+	private ?string $motto = null;
+	private ?bool $active = null;
+	private ?string $private = null;
+	private ?string $secret = null;
 	private int $gold;
 	private ?int $id = null;
-	private ?Character $head;
-	private ?Description $description;
-	private ?SpawnDescription $spawn_description;
-	private ?EventLog $log;
-	private ?Place $home;
-	private ?Spawn $spawn;
+	private ?Character $head = null;
+	private ?Description $description = null;
+	private ?SpawnDescription $spawn_description = null;
+	private ?EventLog $log = null;
+	private ?Place $home = null;
+	private ?Spawn $spawn = null;
 	private Collection $members;
 	private Collection $cadets;
 	private Collection $descriptions;
 	private Collection $spawn_descriptions;
-	private ?Heraldry $crest;
-	private ?Character $founder;
-	private ?Character $successor;
-	private ?House $superior;
-	private ?Settlement $inside_settlement;
+	private ?Heraldry $crest = null;
+	private ?Character $founder = null;
+	private ?Character $successor = null;
+	private ?House $superior = null;
+	private ?Settlement $inside_settlement = null;
 
 	/**
 	 * Constructor

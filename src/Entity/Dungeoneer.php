@@ -14,16 +14,16 @@ class Dungeoneer {
 	private int $mod_power;
 	private bool $in_dungeon;
 	private ?int $id = null;
-	private ?Character $character;
-	private ?DungeonCard $last_action;
-	private ?DungeonCard $current_action;
+	private ?Character $character = null;
+	private ?DungeonCard $last_action = null;
+	private ?DungeonCard $current_action = null;
 	private Collection $cards;
 	private Collection $messages;
 	private Collection $targeted_by;
-	private ?DungeonParty $party;
-	private ?Dungeoneer $target_dungeoneer;
-	private ?DungeonMonster $target_monster;
-	private ?DungeonTreasure $target_treasure;
+	private ?DungeonParty $party = null;
+	private ?Dungeoneer $target_dungeoneer = null;
+	private ?DungeonMonster $target_monster = null;
+	private ?DungeonTreasure $target_treasure = null;
 
 	/**
 	 * Constructor

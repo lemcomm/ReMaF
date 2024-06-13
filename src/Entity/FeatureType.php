@@ -5,8 +5,8 @@ namespace App\Entity;
 class FeatureType {
 	private string $name;
 	private bool $hidden;
-	private ?string $icon;
-	private ?string $icon_under_construction;
+	private ?string $icon = null;
+	private ?string $icon_under_construction = null;
 	private int $build_hours;
 	private ?int $id = null;
 

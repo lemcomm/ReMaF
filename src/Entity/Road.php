@@ -12,7 +12,7 @@ class Road {
 	private float $workers;
 	private int $condition;
 	private ?int $id = null;
-	private ?GeoData $geo_data;
+	private ?GeoData $geo_data = null;
 	private Collection $waypoints;
 
 	/**

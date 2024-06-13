@@ -7,8 +7,8 @@ class Resupply {
 	private int $quantity;
 	private string $type;
 	private ?int $id = null;
-	private Unit $unit;
-	private Settlement $origin;
+	private ?Unit $unit = null;
+	private ?Settlement $origin = null;
 
 	/**
 	 * Get travel_days

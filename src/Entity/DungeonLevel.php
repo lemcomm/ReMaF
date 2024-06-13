@@ -11,7 +11,7 @@ class DungeonLevel {
 	private ?int $id = null;
 	private Collection $monsters;
 	private Collection $treasures;
-	private Dungeon $dungeon;
+	private ?Dungeon $dungeon = null;
 
 	/**
 	 * Constructor

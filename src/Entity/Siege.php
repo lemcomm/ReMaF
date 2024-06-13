@@ -9,16 +9,16 @@ class Siege {
 	private int $stage;
 	private int $max_stage;
 	private bool $encircled;
-	private ?int $encirclement;
+	private ?int $encirclement = null;
 	private ?int $id = null;
-	private ?Settlement $settlement;
-	private ?Place $place;
-	private ?BattleGroup $attacker;
+	private ?Settlement $settlement = null;
+	private ?Place $place = null;
+	private ?BattleGroup $attacker = null;
 	private Collection $groups;
 	private Collection $battles;
 	private Collection $related_battle_reports;
-	private ?Realm $realm;
-	private ?War $war;
+	private ?Realm $realm = null;
+	private ?War $war = null;
 
 	/**
 	 * Constructor

@@ -10,7 +10,7 @@ class UserLimits {
 	private int $places;
 	private bool $artifactSubBonus = false;
 	private bool $realmPack = false;
-	private User $user;
+	private ?User $user = null;
 
 	/**
 	 * Get artifacts

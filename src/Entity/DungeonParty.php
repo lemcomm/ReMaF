@@ -9,8 +9,8 @@ use Doctrine\Common\Collections\Collection;
 class DungeonParty implements ChatLocationInterface {
 	private int $counter;
 	private ?int $id = null;
-	private ?Dungeon $dungeon;
-	private ?DungeonLevel $current_level;
+	private ?Dungeon $dungeon = null;
+	private ?DungeonLevel $current_level = null;
 	private Collection $members;
 	private Collection $chat_messages;
 	private Collection $events;

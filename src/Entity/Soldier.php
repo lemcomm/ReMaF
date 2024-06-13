@@ -26,25 +26,25 @@ class Soldier extends NPC {
 	private bool $has_weapon;
 	private bool $has_armour;
 	private bool $has_equipment;
-	private ?bool $has_mount;
+	private ?bool $has_mount = null;
 	private ?int $travel_days = null;
 	private ?string $destination = null;
 	private ?int $id = null;
 	private Collection $events;
-	private ?EquipmentType $weapon;
-	private ?EquipmentType $armour;
-	private ?EquipmentType $equipment;
-	private ?EquipmentType $mount;
-	private ?EquipmentType $old_weapon;
-	private ?EquipmentType $old_armour;
-	private ?EquipmentType $old_equipment;
-	private ?EquipmentType $old_mount;
-	private ?Character $character;
-	private ?Settlement $base;
-	private ?Character $liege;
-	private ?Unit $unit;
-	private ?SiegeEquipment $manning_equipment;
-	private ?Collection $part_of_requests;
+	private ?EquipmentType $weapon = null;
+	private ?EquipmentType $armour = null;
+	private ?EquipmentType $equipment = null;
+	private ?EquipmentType $mount = null;
+	private ?EquipmentType $old_weapon = null;
+	private ?EquipmentType $old_armour = null;
+	private ?EquipmentType $old_equipment = null;
+	private ?EquipmentType $old_mount = null;
+	private ?Character $character = null;
+	private ?Settlement $base = null;
+	private ?Character $liege = null;
+	private ?Unit $unit = null;
+	private ?SiegeEquipment $manning_equipment = null;
+	private Collection $part_of_requests;
 
 	/**
 	 * Constructor

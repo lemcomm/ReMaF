@@ -8,11 +8,11 @@ class StatisticGlobal {
 	private int $cycle;
 	private int $users;
 	private int $active_users;
-	private ?int $really_active_users;
-	private ?int $today_users;
+	private ?int $really_active_users = null;
+	private ?int $today_users = null;
 	private int $ever_paid_users;
 	private int $paying_users;
-	private ?int $active_patrons;
+	private ?int $active_patrons = null;
 	private int $characters;
 	private int $living_characters;
 	private int $active_characters;

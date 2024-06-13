@@ -8,7 +8,7 @@ class BattleReportStage {
 	private array $data;
 	private array $extra;
 	private ?int $id = null;
-	private BattleReportGroup $group_report;
+	private ?BattleReportGroup $group_report = null;
 
 	/**
 	 * Get round

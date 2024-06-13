@@ -5,9 +5,9 @@ namespace App\Entity;
 class EntourageType {
 	private string $name;
 	private int $training;
-	private ?string $icon;
+	private ?string $icon = null;
 	private ?int $id = null;
-	private ?BuildingType $provider;
+	private ?BuildingType $provider = null;
 
 	/**
 	 * Get name

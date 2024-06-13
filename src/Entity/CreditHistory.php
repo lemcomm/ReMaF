@@ -6,12 +6,12 @@ use DateTime;
 
 class CreditHistory {
 	private int $credits;
-	private ?int $bonus;
+	private ?int $bonus = null;
 	private DateTime $ts;
 	private string $type;
 	private ?int $id = null;
-	private ?UserPayment $payment;
-	private ?User $user;
+	private ?UserPayment $payment = null;
+	private ?User $user = null;
 
 	/**
 	 * Get credits

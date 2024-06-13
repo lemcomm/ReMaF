@@ -9,7 +9,7 @@ class SkillType {
 	private string $name;
 	private ?int $id = null;
 	private Collection $used_by;
-	private SkillCategory $category;
+	private ?SkillCategory $category = null;
 
 	/**
 	 * Constructor

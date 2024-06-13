@@ -4,8 +4,8 @@ namespace App\Entity;
 
 class MessageTag {
 	private string $type;
-	private Character $character;
-	private Message $message;
+	private ?Character $character = null;
+	private ?Message $message = null;
 
 	/**
 	 * Get type

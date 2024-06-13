@@ -15,8 +15,8 @@ class BattleReportGroup {
 	private Collection $combat_stages;
 	private Collection $characters;
 	private Collection $supported_by;
-	private BattleReport $battle_report;
-	private BattleReportGroup $supporting;
+	private ?BattleReport $battle_report = null;
+	private ?BattleReportGroup $supporting = null;
 
 	/**
 	 * Constructor

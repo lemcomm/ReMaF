@@ -7,8 +7,8 @@ namespace App\Entity;
  */
 class PlacePermission extends PermissionBase {
 	#Local Properties
-	private ?Place $place;
-	private ?Place $occupied_place;
+	private ?Place $place = null;
+	private ?Place $occupied_place = null;
 
 	/**
 	 * Get place

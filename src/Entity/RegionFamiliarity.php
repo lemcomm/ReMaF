@@ -5,8 +5,8 @@ namespace App\Entity;
 class RegionFamiliarity {
 	private int $amount;
 	private ?int $id = null;
-	private Character $character;
-	private GeoData $geo_data;
+	private ?Character $character = null;
+	private ?GeoData $geo_data = null;
 
 	/**
 	 * Get amount

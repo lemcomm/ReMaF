@@ -4,16 +4,16 @@ namespace App\Entity;
 
 class UnitSettings {
 	private string $name;
-	private ?string $strategy;
-	private ?string $tactic;
-	private ?bool $respect_fort;
-	private ?int $line;
-	private ?string $siege_orders;
-	private ?bool $renamable;
-	private ?float $retreat_threshold;
-	private ?bool $reinforcements;
+	private ?string $strategy = null;
+	private ?string $tactic = null;
+	private ?bool $respect_fort = null;
+	private ?int $line = null;
+	private ?string $siege_orders = null;
+	private ?bool $renamable = null;
+	private ?float $retreat_threshold = null;
+	private ?bool $reinforcements = null;
 	private ?int $id = null;
-	private ?Unit $unit;
+	private ?Unit $unit = null;
 
 	public function __toString() {
 		return 'UnitSettings: '.$this->name.' ('.$this->id.')';

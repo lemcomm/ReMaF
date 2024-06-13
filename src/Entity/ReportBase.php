@@ -19,8 +19,8 @@ class ReportBase {
 	protected string $debug;
 	protected Collection $observers;
 	protected Collection $journals;
-	protected ?Settlement $settlement;
-	protected ?Place $place;
+	protected ?Settlement $settlement = null;
+	protected ?Place $place = null;
 
 	/**
 	 * Constructor

@@ -11,9 +11,9 @@ class Listing {
 	private ?int $id = null;
 	private Collection $members;
 	private Collection $descendants;
-	private ?Character $creator;
-	private ?User $owner;
-	private ?Listing $inherit_from;
+	private ?Character $creator = null;
+	private ?User $owner = null;
+	private ?Listing $inherit_from = null;
 
 	/**
 	 * Constructor

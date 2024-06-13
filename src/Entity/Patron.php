@@ -5,17 +5,17 @@ namespace App\Entity;
 use DateTime;
 
 class Patron {
-	private ?int $patreon_id;
-	private ?string $access_token;
-	private ?string $refresh_token;
-	private ?DateTime $expires;
-	private ?int $current_amount;
-	private ?int $credited;
-	private ?string $status;
-	private ?bool $update_needed;
+	private ?int $patreon_id = null;
+	private ?string $access_token = null;
+	private ?string $refresh_token = null;
+	private ?DateTime $expires = null;
+	private ?int $current_amount = null;
+	private ?int $credited = null;
+	private ?string $status = null;
+	private ?bool $update_needed = null;
 	private ?int $id = null;
-	private ?Patreon $creator;
-	private ?User $user;
+	private ?Patreon $creator = null;
+	private ?User $user = null;
 
 	/**
 	 * Get patreon_id
