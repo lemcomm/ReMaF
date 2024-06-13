@@ -147,7 +147,7 @@ class AppState {
                         }
                 } elseif ($check == 'Code') {
 			while (!$valid) {
-				$token = $this->generateToken([$length, 'bin2hex']);
+				$token = $this->generateToken($length, 'bin2hex');
 				$result = $em->getRepository(Code::class)->findOneBy([$against => $token]);
 				if (!$result) {
 					$valid = true;
