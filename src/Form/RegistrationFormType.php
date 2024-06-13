@@ -102,7 +102,7 @@ class RegistrationFormType extends AbstractType {
 		$builder->add('newsletter', CheckboxType::class, [
 			'label' => 'form.newsletter.newsletter',
 			'mapped' => false,
-			'requires' => false,
+			'required' => false,
 		]);
                 $builder->add('submit', SubmitType::class, [
                         'label' => 'form.register.submit'
