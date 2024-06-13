@@ -142,6 +142,7 @@ form:
   display: Display Name
   displayhelp: This name is what is displayed to other users when they view your profile. Like your username, it is limited to a-z, A-Z, spaces, hyphens, and/or underscores.
   duplicate: The requested username is already in use.
+  emailinuse: The supplied username is already in use.
   email: Email
   mailhelp: You must supply a valid email address.
   toslink: View Terms of Service

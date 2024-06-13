@@ -585,6 +585,8 @@ newcharacter:
  limit:     You can create {limit} more living character{count, plural, =1 {} other {s}} today.
  limited:   You cannot create new living characters anymore today. You will get more available character slots every real-life day.
  spawnlimit:  You currently have several unspawned characters. Please start playing them first, before you create more characters.
+ burst:     Please wait at least one minute between creating characters.
+ homosexual:  "The chosen partner doesn't consent to homosexual relations (you can change this in that character's settings)."
  illegaltext:  Character names may only contain letters, spaces, and apostrophes.
  accountlimit:  You are currently playing {active} of {limit} possible characters.
  overlimit: You already have as many characters as your current subscription level allows. If you want to create additional characters, you will need to raise your subcription level first.

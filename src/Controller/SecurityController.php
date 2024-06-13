@@ -79,6 +79,11 @@ class SecurityController extends AbstractController {
 					$this->addFlash('error', $trans->trans('form.register.duplicate', [], 'core'));
 					return new RedirectResponse($this->generateUrl('maf_register'));
 				}
+				$check = $em->getRepository(User::class)->findOneBy(['email' => $form->get('email')->getData()]);
+				if ($check) {
+					$this->addFlash('error', $trans->trans('form.register.emailinuse', [], 'core'));
+					return new RedirectResponse($this->generateUrl('maf_register'));
+				}
 				$data = $form->getData();
 				$newsletter = $data['newsletter'];
 				if ($newsletter === null) {
