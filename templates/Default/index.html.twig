@@ -41,12 +41,12 @@
 		<h2>{{ 'security.register.header'|trans({}, 'core') }}</h2>
 		{{ form_start(form) }}
 		{{ form_row(form._username) }}
-		{{ form_row(form.plainPassword) }}<br>
+		{{ form_row(form.plainPassword) }}
 		{{ form_row(form.display_name) }}
 		{{ form_row(form.email) }}<br>
+		<center><div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div></center><br>
 		<a href="{{ url("maf_terms") }}">{{ 'form.register.toslink'|trans({}, 'core') }}</a>
 		{{ form_row(form.agreeTerms) }}
-		<center><div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div></center>
 		{{ form_end(form) }}
 	</div>
 	<div class="index_login">
