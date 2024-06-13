@@ -37,12 +37,17 @@ class ExceptionController extends AbstractController {
 			'exception' => $error,
 		];
 		$type = $request->headers->get('accept');
-		try {
-			$text = "Status Code: $code \nError: $error\nTrace:\n$trace";
-			$this->discord->pushToErrors($text);
-		} catch (Exception $e) {
-			// Do nothing.
+		if ($code !== 404) {
+			# Suppress 404 errors, so we don't get a message every time some random bot tries to hit /admin.php
+			# Or some other similar non-existent URL because this isn't WordPress.
+			try {
+				$text = "Status Code: $code \nError: $error\nTrace:\n$trace";
+				$this->discord->pushToErrors($text);
+			} catch (Exception $e) {
+				// Do nothing.
+			}
 		}
+
 		switch ($type) {
 			case 'application/json':
 				return new JsonResponse($data, 500, ['content-type'=>'application/json']);
