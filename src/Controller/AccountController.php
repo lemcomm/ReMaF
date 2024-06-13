@@ -381,7 +381,7 @@ class AccountController extends AbstractController {
 				'recent' => $recent
 			));
 			if ($query->getResult()) {
-				$form->addError(new FormError("newcharacter.burst"));
+				$form->addError(new FormError($trans->trans("newcharacter.burst")));
 				$works = false;
 			}
 			if (preg_match('/[0123456789!@#$%^&*()_+=\[\]{}:;<>.?\/\\\|~\"]/', $data['name'])) {
@@ -397,7 +397,7 @@ class AccountController extends AbstractController {
 			if ($data['partner'] && !$data['partner']->getNonHeteroOptions()) {
 				if (($data['gender']=='f' && !$data['partner']->getMale())
 					|| ($data['gender']!='f' && $data['partner']->getMale())) {
-						$form->addError(new FormError("newcharacter.homosexual"));
+						$form->addError(new FormError($trans->trans("newcharacter.homosexual")));
 						$works = false;
 				}
 			}
@@ -405,7 +405,7 @@ class AccountController extends AbstractController {
 			// check that at least 1 parent is my own
 			if ($data['father'] && $data['mother']) {
 				if ($data['father']->getUser() != $user && $data['mother']->getUser() != $user) {
-					$form->addError(new FormError("newcharacter.foreignparent"));
+					$form->addError(new FormError($trans->trans("newcharacter.foreignparent")));
 					$works = false;
 				} else {
 					// check that parents have a relation that includes sex
@@ -416,18 +416,18 @@ class AccountController extends AbstractController {
 						}
 					}
 					if (!$havesex) {
-						$form->addError(new FormError("character.nosex"));
+						$form->addError(new FormError($trans->trans("newcharacter.nosex")));
 						$works = false;
 					}
 				}
 			} else if ($data['father']) {
 				if ($data['father']->getUser() != $user) {
-					$form->addError(new FormError("character.foreignparent"));
+					$form->addError(new FormError($trans->trans("newcharacter.foreignparent")));
 					$works = false;
 				}
 			} else if ($data['mother']) {
 				if ($data['mother']->getUser() != $user) {
-					$form->addError(new FormError("character.foreignparent"));
+					$form->addError(new FormError($trans->trans("newcharacter.foreignparent")));
 					$works = false;
 				}
 			}
