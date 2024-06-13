@@ -342,7 +342,7 @@ class SecurityController extends AbstractController {
 				$public_admin = $user->getPublicAdmin();
 			}
 		}
-		$text = $user->getDescription()->getText();
+		$text = $user->getDescription()?->getText();
 		$opts = [
 			'username' => $user->getUsername(),
 			'email' => $user->getEmail(),
