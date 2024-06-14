@@ -408,24 +408,25 @@ class PaymentController extends AbstractController {
 				return $this->render('Payment/gift.html.twig', array('error'=>'self'));
 			}
 
-			$code = $this->pay->createCode($value, 0, $data['email'], $user);
-			$this->pay->spend($user, "gift", $value);
+			if ($this->pay->spend($user, "gift", $value)) {
+				$code = $this->pay->createCode($value, 0, $data['email'], $user);
 
-			$this->em->flush();
+				$this->em->flush();
 
-			$text = $this->trans->trans('account.gift.mail.body', array("%credits%"=>$value, "%code%"=>$code->getCode(), "%message%"=>strip_tags($data['message'])));
-			$this->mail->sendEmail(
-				$data['email'],
-				$this->trans->trans('account.gift.mail.subject', array()),
-				$text,
-				$user->getEmail()
-			);
-			$this->logger->info("sent gift from ".$user->getId()." to ".$data['email']." for $value credits");
+				$text = $this->trans->trans('account.gift.mail.body', array("%credits%"=>$value, "%code%"=>$code->getCode(), "%message%"=>strip_tags($data['message'])));
+				$this->mail->sendEmail(
+					$data['email'],
+					$this->trans->trans('account.gift.mail.subject', array()),
+					$text,
+					$user->getEmail()
+				);
+				$this->logger->info("sent gift from ".$user->getId()." to ".$data['email']." for $value credits");
 
-			return $this->render('Payment/gift.html.twig', [
-				'success'=>true, 'credits'=>$value
-			]);
-
+				return $this->render('Payment/gift.html.twig', [
+					'success'=>true, 'credits'=>$value
+				]);
+			}
+			return $this->render('Payment/gift.html.twig', ['error'=>'insufficient']);
 		}
 
 		return $this->render('Payment/gift.html.twig', [
