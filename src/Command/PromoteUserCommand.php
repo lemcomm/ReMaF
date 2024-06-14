@@ -46,7 +46,7 @@ class PromoteUserCommand extends  Command {
 	protected function interact(InputInterface $input, OutputInterface $output) {
 		$helper = $this->getHelper('question');
 		if (!$input->getArgument('username')) {
-			$need = new Question('Please supply a username for the new user: ');
+			$need = new Question('User(name) to promote: ');
 			$need->setValidator(function ($username) {
 				if (empty($username)) {
 					throw new \Exception('Username cannot be empty!');
@@ -63,7 +63,7 @@ class PromoteUserCommand extends  Command {
 				}
 				return $role;
 			});
-			$input->setArgument('email', $helper->ask($input, $output, $need));
+			$input->setArgument('role', $helper->ask($input, $output, $need));
 		}
 	}
 }

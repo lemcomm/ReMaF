@@ -31,7 +31,7 @@ var tooltips = $("[title]").tooltip({
 
 var chars = {{ characters|json_encode|raw }};
 
-$('#charactercreation_father option,#charactercreation_mother option').each(function(){
+$('#character_creation_father option,#character_creation_mother option').each(function(){
 	var id = $(this).val();
 	if (id > 0) {
 		var char = findChar(id);
@@ -41,13 +41,13 @@ $('#charactercreation_father option,#charactercreation_mother option').each(func
 
 updatePartners();
 
-$('#charactercreation_gender').change(function(){
+$('#character_creation_gender').change(function(){
 	updatePartners();
 	updateImage();
 });
-$('#charactercreation_father').change(function(){updateOptions('father','mother')});
-$('#charactercreation_mother').change(function(){updateOptions('mother','father')});
-$('#charactercreation_dead').change(function(){updateImage()});
+$('#character_creation_father').change(function(){updateOptions('father','mother')});
+$('#character_creation_mother').change(function(){updateOptions('mother','father')});
+$('#character_creation_dead').change(function(){updateImage()});
 
 
 function findChar(id) {
@@ -61,12 +61,12 @@ function findChar(id) {
 }
 
 function updateOptions(me, target) {
-	var id = $("#charactercreation_"+me+" option:selected").val();
+	var id = $("#character_creation_"+me+" option:selected").val();
 	if (id > 0) {
 		var char = findChar(id);
-		var selected = $("#charactercreation_"+target+" option:selected").val();
+		var selected = $("#character_creation_"+target+" option:selected").val();
 		var updateselection = false;
-		$("#charactercreation_"+target+" option").each(function(){
+		$("#character_creation_"+target+" option").each(function(){
 			var pid = $(this).val();
 			if (pid) {
 				var found=false;
@@ -98,17 +98,17 @@ function updateOptions(me, target) {
 			}
 		});
 		if (updateselection) {
-			$("#charactercreation_"+target+" option:not([disabled])").first().attr("selected", "selected");
+			$("#character_creation_"+target+" option:not([disabled])").first().attr("selected", "selected");
 		}
 	} else {
-		$("#charactercreation_"+target+" option").removeAttr('disabled');
+		$("#character_creation_"+target+" option").removeAttr('disabled');
 	}
 }
 
 function updatePartners() {
-	var gender = $("#charactercreation_gender option:selected").val();
-	var selected = $("#charactercreation_partner option:selected").val();
-	$("#charactercreation_partner option").each(function(){
+	var gender = $("#character_creation_gender option:selected").val();
+	var selected = $("#character_creation_partner option:selected").val();
+	$("#character_creation_partner option").each(function(){
 		var id = $(this).val();
 		if (id > 0) {
 			var char = findChar(id);
@@ -118,7 +118,7 @@ function updatePartners() {
 				$(this).attr('disabled','disabled');
 				if (id==selected) {
 					$(this).removeAttr('selected');
-					$("#charactercreation_partner option:not([disabled])").first().attr("selected", "selected");
+					$("#character_creation_partner option:not([disabled])").first().attr("selected", "selected");
 				}
 			}
 		}
@@ -126,8 +126,8 @@ function updatePartners() {
 }
 
 function updateImage() {
-	var gender = $("#charactercreation_gender option:selected").val();
-	var dead = $("#charactercreation_dead").prop('checked');
+	var gender = $("#character_creation_gender option:selected").val();
+	var dead = $("#character_creation_dead").prop('checked');
 
 	if (gender == "m") {
 		if (dead) {
