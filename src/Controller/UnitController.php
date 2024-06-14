@@ -8,8 +8,8 @@ use App\Entity\Unit;
 use App\Form\AreYouSureType;
 use App\Form\CharacterSelectType;
 use App\Form\SoldiersRecruitType;
+use App\Form\UnitConfigType;
 use App\Form\UnitRebaseType;
-use App\Form\UnitSettingsType;
 use App\Form\UnitSoldiersType;
 use App\Service\AppState;
 use App\Service\Economy;
@@ -148,18 +148,14 @@ class UnitController extends AbstractController {
                         $settlements[] = $here;
                 }
 
-		$form = $this->createForm(UnitSettingsType::class, null, ['char'=>false, 'supply'=>true, 'settlements'=>$settlements, 'settings'=>null, 'lord'=>true]);
+		$form = $this->createForm(UnitConfigType::class, null, ['settings'=>null, 'lord'=>true]);
 
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
-                        if (in_array($data['supplier']->getId(), $settlements)) {
-                               	$this->mm->newUnit($character, $character->getInsideSettlement(), $data);
-				$this->addFlash('notice', $this->trans->trans('unit.manage.created', array(), 'actions'));
-				return $this->redirectToRoute('maf_units');
-                        } else {
-                                $this->addFlash('error', $this->trans->trans('unit.manage.supplierinvalid', [], 'actions'));
-                        }
+			$this->mm->newUnit($character, $character->getInsideSettlement(), $data);
+			$this->addFlash('notice', $this->trans->trans('unit.manage.created', array(), 'actions'));
+			return $this->redirectToRoute('maf_units');
                 }
 
                 return $this->render('Unit/create.html.twig', [
@@ -189,19 +185,7 @@ class UnitController extends AbstractController {
 			$lord = true;
 		}
 
-
-                $settlements = $gm->getAvailableFoodSuppliers($character);
-                $supplier = $unit->getSupplier();
-                if ($supplier) {
-                        if (!in_array($supplier->getId(), $settlements)) {
-                                $settlements[] = $supplier->getId();
-                        }
-                }
-                if ($settlement && $lord) {
-                        $settlements[] = $settlement->getId();
-                }
-
-		$form = $this->createForm(UnitSettingsType::class, null, ['char'=>false, 'supply'=>true, 'settlements'=>$settlements, 'settings'=>$unit->getSettings(), 'lord'=>true]);
+		$form = $this->createForm(UnitConfigType::class, null, ['settings'=>$unit->getSettings(), 'lord'=>true]);
 
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
@@ -324,7 +308,7 @@ class UnitController extends AbstractController {
 
 	#[Route('/units/{unit}/cancel/{recruit}', name:'maf_unit_recruit_cancel', requirements:['unit'=>'\d+', 'recruit'=>'\d+'])]
         public function cancelTrainingAction(Unit $unit, Soldier $recruit): RedirectResponse {
-                list($character, $settlement) = $this->gateway('unitSoldiersTest', $unit, true);
+                [$character, $settlement] = $this->gateway('unitSoldiersTest', $unit, true);
                 if (! $character instanceof Character) {
                 	return $this->redirectToRoute($character);
                 }
@@ -561,7 +545,8 @@ class UnitController extends AbstractController {
                 }
 
                 return $this->render('Unit/disband.html.twig', [
-                        'form'=>$form->createView()
+                        'form'=>$form->createView(),
+			'unit'=>$unit
                 ]);
         }
 
@@ -627,7 +612,7 @@ class UnitController extends AbstractController {
 
 	#[Route('/units/recruit', name:'maf_recruit')]
      	public function unitRecruitAction(Economy $economy, Generator $generator, Request $request): RedirectResponse|Response {
-                list($character, $settlement) = $this->gateway('unitRecruitTest', null, true);
+                [$character, $settlement] = $this->gateway('unitRecruitTest', null, true);
      		if (! $character instanceof Character) {
      			return $this->redirectToRoute($character);
      		}

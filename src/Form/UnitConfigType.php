@@ -3,8 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Settlement;
+use App\Entity\UnitSettings;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -25,27 +26,23 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
  * * 'settings' - UnitSettings Entity (null) - UnitSettings entity to edit
  * * 'lord' - boolean - Determines if lord only options appear
  */
-class UnitSettingsType extends AbstractType {
+class UnitConfigType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'unitsettings_1337',
 			'translation_domain' 	=> 'settings',
 			'attr'			=> array('class'=>'wide'),
-			'settings'		=> null,
+			'settings'		=> null
 		));
-		$resolver->setRequired(['char', 'supply', 'settlements', 'lord']);
+		$resolver->setRequired(['lord']);
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$char = $options['char'];
-		$supply = $options['supply'];
-		$settlements = $options['settlements'];
 		$settings = $options['settings'];
 		$lord = $options['lord'];
 
 		$name = null;
-		$supplier = null;
 		$strategy = null;
 		$tactic = null;
 		$respect = null;
@@ -57,9 +54,6 @@ class UnitSettingsType extends AbstractType {
 
 		if ($settings) {
 			$name = $settings->getName();
-			if ($settings->getUnit()->getSupplier()) {
-				$supplier = $settings->getUnit()->getSupplier();
-			}
 			if ($settings->getStrategy()) {
 				$strategy = $settings->getStrategy();
 			}
@@ -95,32 +89,6 @@ class UnitSettingsType extends AbstractType {
 			$builder->add('name', HiddenType::class, [
 				'data'=>$name,
 			]);
-		}
-		if ($supply) {
-			$source = null;
-			if($settings) {
-				$source = $supplier;
-			} elseif($char) {
-				$source = $char->getInsideSettlement();
-			}
-
-			# Find all settlements where we have permission to take food from.
-			$builder->add('supplier', EntityType::class, array(
-				'label' => 'unit.supplier.name',
-				'multiple'=>false,
-				'expanded'=>false,
-				'class'=>Settlement::class,
-				'choice_label'=>'name',
-				'query_builder'=>function(EntityRepository $er) use ($settlements) {
-					$qb = $er->createQueryBuilder('s');
-					$qb->where('s IN (:settlements)')
-					->setParameters(array('settlements'=>$settlements));
-					$qb->orderBy('s.name');
-					return $qb;
-				},
-				'placeholder' => 'unit.supplier.empty',
-				'data'=>$source,
-			));
 		}
 		$builder->add('strategy', ChoiceType::class, array(
 			'label'=>'unit.strategy.name',

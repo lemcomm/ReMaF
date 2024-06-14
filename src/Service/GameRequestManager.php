@@ -548,7 +548,7 @@ class GameRequestManager {
 		$liege = $char->findLiege();
 		if ($liege instanceof Settlement) {
 			if ($liege->getFeedSoldiers() && !in_array($liege->getId(), $settlements)) {
-				$settlements[] = $$liege->getId();
+				$settlements[] = $liege->getId();
 			}
 		}
 		return $settlements;

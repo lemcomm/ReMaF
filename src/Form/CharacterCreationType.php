@@ -44,7 +44,8 @@ class CharacterCreationType extends AbstractType {
 			'required'=>false,
 			'placeholder'=>'character.none',
 			'attr' => array('title'=>'newcharacter.help.father'),
-			'class'=>Character::class, 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($user) {
+			'class'=>Character::class, 'choice_label'=>'name',
+			'query_builder'=>function(EntityRepository $er) use ($user) {
 				return $er->createQueryBuilder('c')
 					->leftJoin('c.partnerships', 'm', 'WITH', '(m.with_sex IS NULL OR (m.with_sex=true AND m.active=true))')->leftJoin('m.partners', 'p', 'WITH', 'p.id != c.id')
 					->where('(c.user = :user OR p.user = :user)')->andWhere('c.male = true')->andWhere('c.npc = false')->orderBy('c.name')

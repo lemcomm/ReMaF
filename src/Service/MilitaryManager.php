@@ -559,11 +559,7 @@ class MilitaryManager {
 		$unit = new Unit();
 		$this->em->persist($unit);
 		$unit->setSettlement($home);
-		if ($data) {
-			$unit->setSupplier($data['supplier']);
-		} else {
-			$unit->setSupplier($home);
-		}
+		$unit->setSupplier($home);
 		$this->newUnitSettings($unit, $character, $data, true); #true to tell newUnitSettings not to flush so we can do it here.
 		$this->em->flush();
 		if ($home) {
@@ -576,7 +572,7 @@ class MilitaryManager {
 				$this->history->openLog($unit, $steward);
 			}
 		}
-		if ($character && $data && $data['assignto']) {
+		if ($character && $data && isset($data['assignto'])) {
 			$this->history->logEvent(
 				$data['assignto'],
 				'event.military.newUnit',
@@ -745,9 +741,6 @@ class MilitaryManager {
 		}
 		if ($data['retreat_threshold']) {
 			$settings->setRetreatThreshold($data['retreat_threshold']);
-		}
-		if ($data['supplier']) {
-			$settings->getUnit()->setSupplier($data['supplier']);
 		}
 		if ($data['reinforcements']) {
 			$settings->setReinforcements($data['reinforcements']);
