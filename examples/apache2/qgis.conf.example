@@ -1,7 +1,6 @@
 <VirtualHost *:80>
     ServerName maps.yourhostname.example
-    ServerAlias mapserver.yourhostname.example
-    ServerAlias maps.yourhostname.example
+    ServerAlias www.maps.yourhostname.example
     
     DocumentRoot /var/www/qgis
 
