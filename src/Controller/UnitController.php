@@ -52,13 +52,13 @@ class UnitController extends AbstractController {
                 $pm = $this->pm;
                 $settlement = $character->getInsideSettlement();
                 if ($settlement && ($pm->checkSettlementPermission($settlement, $character, 'units'))) {
-                        $query = $em->createQuery('SELECT u FROM App:Unit u JOIN App:UnitSettings s WITH s.unit = u WHERE (u.character = :char OR u.settlement = :settlement OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY s.name ASC');
+                        $query = $em->createQuery('SELECT u FROM App:Unit u WHERE (u.character = :char OR u.settlement = :settlement OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY u.name ASC');
                         $query->setParameters(array('char'=>$character, 'settlement'=>$character->getInsideSettlement()));
                 } elseif ($character->getInsideSettlement()) {
-                        $query = $em->createQuery('SELECT u FROM App:Unit u JOIN App:UnitSettings s WITH s.unit = u WHERE (u.character = :char OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY s.name ASC');
+                        $query = $em->createQuery('SELECT u FROM App:Unit u WHERE (u.character = :char OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY u.name ASC');
                         $query->setParameters(array('char'=>$character, 'settlement'=>$character->getInsideSettlement()));
                 } else {
-                        $query = $em->createQuery('SELECT u FROM App:Unit u JOIN App:UnitSettings s WITH s.unit = u WHERE u.character = :char AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY s.name ASC');
+                        $query = $em->createQuery('SELECT u FROM App:Unit u WHERE u.character = :char AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY u.name ASC');
                         $query->setParameter('char', $character);
                 }
                 return $query->getResult();
@@ -143,17 +143,14 @@ class UnitController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
                 $settlements = $gm->getAvailableFoodSuppliers($character);
-                $here = $character->getInsideSettlement()->getId();
-                if (!in_array($here, $settlements)) {
-                        $settlements[] = $here;
-                }
-
-		$form = $this->createForm(UnitConfigType::class, null, ['settings'=>null, 'lord'=>true]);
+		$unit = new Unit();
+		$this->em->persist($unit);
+		$form = $this->createForm(UnitConfigType::class, $unit, ['lord'=>true, 'settlements'=>$settlements]);
 
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
-                        $data = $form->getData();
-			$this->mm->newUnit($character, $character->getInsideSettlement(), $data);
+			$this->mm->prepareUnit($character, $unit, $character->getInsideSettlement());
+			$this->em->flush();
 			$this->addFlash('notice', $this->trans->trans('unit.manage.created', array(), 'actions'));
 			return $this->redirectToRoute('maf_units');
                 }
@@ -170,10 +167,6 @@ class UnitController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-                /*
-                Character -> Lead units
-                Lord -> Local units and lead units
-                */
                 $lord = false;
                 $settlement = $unit->getSettlement();
                 $inside = $character->getInsideSettlement();
@@ -184,19 +177,15 @@ class UnitController extends AbstractController {
                 } elseif ($unit->isMarshal($character)) {
 			$lord = true;
 		}
+		$settlements = $gm->getAvailableFoodSuppliers($character);
 
-		$form = $this->createForm(UnitConfigType::class, null, ['settings'=>$unit->getSettings(), 'lord'=>true]);
+		$form = $this->createForm(UnitConfigType::class, $unit, ['lord'=>$lord, 'settlements'=>$settlements]);
 
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
-                        $data = $form->getData();
-                        $success = $this->mm->updateSettings($unit, $data, $character, $lord);
-                        if ($success) {
-                                $this->addFlash('notice', $this->trans->trans('unit.manage.success', array(), 'actions'));
-                                return $this->redirectToRoute('maf_units');
-                        } else {
-                                $this->addFlash('error', $this->trans->trans('unit.manage.failed', array(), 'actions'));
-                        }
+			$this->em->flush();
+			$this->addFlash('notice', $this->trans->trans('unit.manage.success', array(), 'actions'));
+			return $this->redirectToRoute('maf_units');
                 }
 
                 return $this->render('Unit/manage.html.twig', [

@@ -581,15 +581,21 @@ class MilitaryManager {
 			);
 		}
 		if ($home && $character) {
-			$this->history->logEvent(
-				$unit,
-				'event.military.newUnit2',
-				array('%link-settlement%'=>$home->getId(), '%link-character%'=>$character->getId()),
-				History::MEDIUM, false, 30
-			);
+			$this->prepareUnit($character, $unit, $home);
 		}
 		$this->em->flush();
 		return $unit;
+	}
+
+	public function prepareUnit(Character $char, Unit $unit, Settlement $here) {
+		$unit->setSettlement($here);
+		$unit->setSupplier($here);
+		$this->history->logEvent(
+			$unit,
+			'event.military.newUnit2',
+			array('%link-settlement%'=>$here->getId(), '%link-character%'=>$char->getId()),
+			History::MEDIUM, false, 30
+		);
 	}
 
 	public function convertToUnit(Character $character=null, Settlement $home = null, $data = null, $bulk = false): float {

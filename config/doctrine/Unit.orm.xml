@@ -4,7 +4,7 @@
 		<id name="id" type="integer">
 			<generator strategy="IDENTITY"/>
 		</id>
-                <field name="line" type="integer" nullable="true"/>
+		<field name="line" type="integer" nullable="true"/>
 		<field name="travel_days" type="smallint" nullable="true"/>
 		<field name="destination" type="string" nullable="true"/>
 		<field name="disbanded" type="boolean" nullable="true"/>
@@ -21,6 +21,14 @@
 		<one-to-many field="soldiers" target-entity="Soldier" mapped-by="unit" index-by="id" fetch="EXTRA_LAZY"/>
 		<one-to-many field="supplies" target-entity="Supply" mapped-by="unit"/>
 		<one-to-many field="incoming_supplies" target-entity="Resupply" mapped-by="unit" fetch="EXTRA_LAZY"/>
+		<field name="name" type="string" nullable="true"/>
+		<field name="strategy" type="string" nullable="true"/>
+		<field name="tactic" type="string" nullable="true"/>
+		<field name="respect_fort" type="boolean" nullable="true"/>
+		<field name="siege_orders" type="string" nullable="true"/>
+		<field name="renamable" type="boolean" nullable="true"/>
+		<field name="retreat_threshold" type="float" nullable="true"/>
+		<field name="reinforcements" type="boolean" nullable="true"/>
 
 	</entity>
 </doctrine-mapping>

@@ -12,6 +12,7 @@ use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\Soldier;
 use App\Entity\EquipmentType;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 
@@ -529,26 +530,30 @@ class GameRequestManager {
 		$this->em->flush();
 	}
 
-	public function getAvailableFoodSuppliers(Character $char) {
+	public function getAvailableFoodSuppliers(Character $char): ArrayCollection {
 		# Build the list of settlements we can get food from...
                 $query = $this->em->createQuery('SELECT r FROM App:GameRequest r WHERE r.type = :type AND r.from_character = :char AND r.accepted = TRUE')->setParameters(array('char'=>$char, 'type'=>'soldier.food'));
                 # Doctrine will lose it's mind if it tries to pass a null variable to a query, so we trick it by declaring this as '0'.
                 # Doctrine will process this as a integer, and then check to see if any request has an ID that is in 0.
                 # Which will never happen.
-                $settlements = [];
+                $settlements = new ArrayCollection();
                 foreach ($query->getResult() as $result) {
-                        $settlements[] = $result->getToSettlement()->getId();
+			$settlements->add($result->getToSettlement());
                 }
-		$query2 = $this->em->createQuery('SELECT s FROM App:Settlement s WHERE s.owner = :char OR s.steward = :char')->setParameters(['char'=>$char]);
+		$query2 = $this->em->createQuery(
+			'SELECT s FROM App:Settlement s
+			WHERE ((s.owner = :char OR s.steward = :char) AND s.occupant IS NULL)
+			OR s.occupant = :char')
+		->setParameters(['char'=>$char]);
 		foreach ($query2->getResult() as $result2) {
-			if (!in_array($result2->getId(), $settlements)) {
-				$settlements[] = $result2->getId();
+			if (!$settlements->contains($result2)) {
+				$settlements->add($result2);
 			}
 		}
 		$liege = $char->findLiege();
 		if ($liege instanceof Settlement) {
-			if ($liege->getFeedSoldiers() && !in_array($liege->getId(), $settlements)) {
-				$settlements[] = $liege->getId();
+			if ($liege->getFeedSoldiers() && !$settlements->contains($liege)) {
+				$settlements->add($liege);
 			}
 		}
 		return $settlements;

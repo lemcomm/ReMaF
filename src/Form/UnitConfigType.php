@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Settlement;
+use App\Entity\Unit;
 use App\Entity\UnitSettings;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -33,62 +35,37 @@ class UnitConfigType extends AbstractType {
 			'intention'       	=> 'unitsettings_1337',
 			'translation_domain' 	=> 'settings',
 			'attr'			=> array('class'=>'wide'),
-			'settings'		=> null
+			'settlements'		=> new ArrayCollection(),
+			'data_class'		=> Unit::class,
 		));
 		$resolver->setRequired(['lord']);
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$settings = $options['settings'];
 		$lord = $options['lord'];
+		$unit = $builder->getData();
+		$settlements = $options['settlements'];
 
-		$name = null;
-		$strategy = null;
-		$tactic = null;
-		$respect = null;
-		$line = null;
-		$siege = null;
-		$renamable = null;
-		$retreat = null;
-		$reinforcements = null;
+		$renamable = $unit->getRenamable();
 
-		if ($settings) {
-			$name = $settings->getName();
-			if ($settings->getStrategy()) {
-				$strategy = $settings->getStrategy();
-			}
-			if ($settings->getTactic()) {
-				$tactic = $settings->getTactic();
-			}
-			if ($settings->getRespectFort()) {
-				$respect = $settings->getRespectFort();
-			}
-			if ($settings->getline()) {
-				$line = $settings->getLine();
-			}
-			if ($settings->getSiegeOrders()) {
-				$siege = $settings->getSiegeOrders();
-			}
-			if ($settings->getRenamable()) {
-				$renamable = $settings->getRenamable();
-			}
-			if ($settings->getRetreatThreshold()) {
-				$retreat = $settings->getRetreatThreshold();
-			}
-			if ($settings->getReinforcements()) {
-				$reinforcements = $settings->getReinforcements();
-			}
-		}
-		if($renamable !== false) {
+		$builder->add('supplier', EntityType::class, array(
+			'label' => 'unit.supplier.name',
+			'multiple'=>false,
+			'expanded'=>false,
+			'class'=>Settlement::class,
+			'choice_label'=>'name',
+			'choices'=>$settlements,
+			'placeholder' => 'unit.supplier.empty',
+			'mapped'=>true,
+		));
+
+		if($lord || $renamable !== false) {
 			$builder->add('name', TextType::class, array(
 				'label'=>'unit.name',
-				'data'=>$name,
 				'required'=>true,
 			));
 		} else {
-			$builder->add('name', HiddenType::class, [
-				'data'=>$name,
-			]);
+			$builder->add('name', HiddenType::class);
 		}
 		$builder->add('strategy', ChoiceType::class, array(
 			'label'=>'unit.strategy.name',
@@ -99,7 +76,6 @@ class UnitConfigType extends AbstractType {
 				'distance' => 'unit.strategy.distance'
 			),
 			'placeholder'=>'unit.strategy.empty',
-			'data'=>$strategy,
 		));
 		$builder->add('tactic', ChoiceType::class, array(
 			'label'=>'unit.tactic.name',
@@ -110,17 +86,14 @@ class UnitConfigType extends AbstractType {
 				'mixed' => 'unit.tactic.mixed'
 			),
 			'placeholder'=>'unit.tactic.empty',
-			'data'=>$tactic,
 		));
 		$builder->add('respect_fort', CheckboxType::class, array(
 			'label'=>'unit.usefort',
-			'data'=>$respect,
 			'required'=>false,
 		));
 		$builder->add('line', ChoiceType::class, array(
 			'label'=>'unit.line.name',
 			'required'=>false,
-			'data'=>$line,
 			'choices'=>array(
 				'1' => 'unit.line.1',
 				'2' => 'unit.line.2',
@@ -135,7 +108,6 @@ class UnitConfigType extends AbstractType {
 		$builder->add('siege_orders', ChoiceType::class, array(
 			'label'=>'unit.siege_orders.name',
 			'required'=>false,
-			'data'=>$siege,
 			'choices'=>array(
 				'assault' => 'unit.siege_orders.assault',
 				'hold' => 'unit.siege_orders.hold',
@@ -147,17 +119,16 @@ class UnitConfigType extends AbstractType {
 			$builder->add('renamable', CheckboxType::class, array(
 				'label'=>'unit.renamable.name',
 				'required'=>false,
-				'data'=>$renamable,
 			));
+		} else {
+			$builder->add('renamable', HiddenType::class);
 		}
 		$builder->add('retreat_threshold', NumberType::class, array(
 			'label'=>'unit.retreat.name',
-			'data'=>$retreat,
 			'required'=>false,
 		));
 		$builder->add('reinforcements', CheckboxType::class, array(
 			'label'=>'unit.reinforcements',
-			'data'=>$reinforcements,
 			'required'=>false,
 		));
 		$builder->add('submit', SubmitType::class, array('label'=>'button.submit'));

@@ -12,7 +12,7 @@
 		{% if training > 0 and not unit.settlement %}
 			<i>{{ 'unit.list.untrainable'|trans({}, "actions")|raw }}</i>
 		{% endif %}
-		<h4>{{ unit.obj.settings.name|striptags('<strong><em><b><i>') }}</h4><br>
+		<h4>{{ unit.obj.name|striptags('<strong><em><b><i>') }}</h4><br>
 		{{ 'unit.list.soldiers'|trans({},"actions")|raw }}: {{ 'unit.list.count2'|trans({"%soldiers%":unit.obj.getActiveSoldiers.count, "%travelers%":unit.obj.getTravellingSoldiers.count, "%recruits%":training, "%wounded%":unit.obj.getWoundedSoldiers.count, "%dead%":unit.obj.getDeadSoldiers.count}, "actions") }}<br />
 		{% if unit.obj.character == character %}
 			{{ 'unit.list.youcommand'|trans({}, "actions")|raw }}
