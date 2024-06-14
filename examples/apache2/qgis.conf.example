@@ -1,3 +1,4 @@
+# /etc/apache2/sites-available/qgis.conf
 <VirtualHost *:80>
     ServerName maps.yourhostname.example
     ServerAlias www.maps.yourhostname.example
