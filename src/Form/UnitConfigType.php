@@ -7,6 +7,7 @@ use App\Entity\Unit;
 use App\Entity\UnitSettings;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
@@ -18,6 +19,8 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Validator\Constraints\LessThanOrEqual;
+use Symfony\Component\Validator\Constraints\Positive;
 
 /**
  * Form for configuring unit settings.
@@ -131,6 +134,26 @@ class UnitConfigType extends AbstractType {
 			'label'=>'unit.reinforcements',
 			'required'=>false,
 		));
+		$builder->add('consumption', PercentType::class, [
+			'label'=>'unit.consumption',
+			'constraints'=>[
+				new Positive(['message'=>'number.positive']),
+				new LessThanOrEqual([
+					'value'=>1.2,
+					'message'=>'perecent.lessthan120'
+				])
+			]
+		]);
+		$builder->add('provision', PercentType::class, [
+			'label'=>'unit.provisioning',
+			'constraints'=>[
+				new Positive(['message'=>'number.positive']),
+				new LessThanOrEqual([
+					'value'=>2,
+					'message'=>'percent.lessthan200'
+				])
+			]
+		]);
 		$builder->add('submit', SubmitType::class, array('label'=>'button.submit'));
 	}
 }

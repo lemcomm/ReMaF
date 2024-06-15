@@ -78,6 +78,8 @@ unit:
  retreat:
   name:     Withdraw/Retreat Percentage
  reinforcements: Accept reinfocements?
+ provisioning: "Food percentage to request:"
+ consumption: "How much to eat per meal?"
 
 
 update:

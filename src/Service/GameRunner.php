@@ -865,7 +865,8 @@ class GameRunner {
 				# Handle supplies for living units.
 				$living = $unit->getLivingSoldiers();
 				$count = $living->count();
-				if ($count < 1) {
+				$modifiedCount = $count*$unit->getConsumption();
+				if ($count < 1 || $modifiedCount < 1) {
 					continue;
 				}
 				$char = $unit->getCharacter();
@@ -879,15 +880,15 @@ class GameRunner {
 				}
 				$date = date("Y-m-d H:i:s");
 				if ($fsupply) {
-					$this->debug("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." from ".$fsupply->getId()." from unit ".$fsupply->getUnit()->getId()." and soldier count of ".$count);
+					$this->debug("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." from ".$fsupply->getId()." from unit ".$fsupply->getUnit()->getId()." and soldier count of ".$count." (needs ".$modifiedCount." per settings)");
 				} else {
-					$this->debug("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." and soldier count of ".$count);
+					$this->debug("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." and soldier count of ".$count." (modified count of ".$modifiedCount.")");
 				}
 
 				if ($count <= $food) {
 					$short = 0;
 				} else {
-					$need = $count - $food;
+					$need = $modifiedCount - $food;
 					$date = date("Y-m-d H:i:s");
 					$this->debug("$date --   Need ".$need." more food");
 					if ($char) {
@@ -917,25 +918,25 @@ class GameRunner {
 					$date = date("Y-m-d H:i:s");
 					$this->debug("$date --   Final short of ".$short);
 				}
-				$available = $count-$short;
+				$available = $modifiedCount-$short;
 				if ($available > 0) {
-					$var = $available/$count;
+					$var = $available/$modifiedCount;
 				} else {
 					$var = 0;
 				}
 				$date = date("Y-m-d H:i:s");
-				$this->debug("$date --   Available food of ".$available." from a count of ".$count." less a short of ".$short);
+				$this->debug("$date --   Available food of ".$available." from a (modded) count of ".$modifiedCount." less a short of ".$short);
 				$dead = 0;
 				$myfed = 0;
 				$mystarved = 0;
-				if ($var <= 0.9) {
+				if ($var <= 0.99) {
 					$starve = 1 - $var;
 					$char = $unit->getCharacter();
 					if ($char) {
-						$severity = round(min($starve*6, 6)); # Soldiers starve at a rate of 6 hunger per day max. No food? Starve in 15 days.
+						$severity = round(min($starve*60, 60)); # Soldiers starve at a rate of 60 hunger per day max. No food? Starve in 15 days.
 						$this->history->openLog($unit, $char);
 					} else {
-						$severity = round(min($starve*4, 4)); # Militia starve slower, 4 per day. Starve in 22.5 days.
+						$severity = round(min($starve*40, 40)); # Militia starve slower, 40 per day. Starve in 22.5 days.
 						$where = $unit->getSettlement();
 						if ($where) {
 							$owner = $where->getOwner();
@@ -952,14 +953,14 @@ class GameRunner {
 							}
 						}
 					}
-					if ($severity < 2) {
+					if ($severity < 20) {
 						$this->history->logEvent(
 							$unit,
 							'event.unit.starvation.light',
 							array(),
 							History::MEDIUM, false, 30
 						);
-					} elseif ($severity < 4) {
+					} elseif ($severity < 40) {
 						$this->history->logEvent(
 							$unit,
 							'event.unit.starvation.medium',
@@ -977,7 +978,7 @@ class GameRunner {
 					foreach ($living as $soldier) {
 						$soldier->makeHungry($severity);
 						// soldiers can take several days of starvation without danger of death, but slightly less than militia (because they move around, etc.)
-						if ($soldier->getHungry() > 90 && rand(90, 180) < $soldier->getHungry()) {
+						if ($soldier->getHungry() > 900 && rand(900, 1800) < $soldier->getHungry()) {
 							$soldier->kill();
 							$this->history->addToSoldierLog($soldier, 'starved');
 							$killed++;
@@ -1005,13 +1006,13 @@ class GameRunner {
 					}
 				} else {
 					foreach ($living as $soldier) {
-						$soldier->feed();
+						$soldier->feed($var);
 						$fed++;
 						$myfed++;
 					}
 				}
 				if ($fsupply) {
-					$left = $food-$count;
+					$left = $food-$modifiedCount;
 					if ($left < 0) {
 						$fsupply->setQuantity(0);
 						#$left = 0;

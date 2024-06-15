@@ -31,6 +31,8 @@ class Unit {
 	private ?bool $renamable = null;
 	private ?float $retreat_threshold = null;
 	private ?bool $reinforcements = null;
+	private float $consumption = 1;
+	private float $provision = 1;
 
 	/**
 	 * Constructor
@@ -47,6 +49,72 @@ class Unit {
 			$txt .= ' Settings: '.$this->getSettings()->getId();
 		}
 		return $txt;
+	}
+
+	public function findFoodAmount(): int {
+		foreach ($this->supplies as $supply) {
+			if ($supply->getType() === 'food') {
+				return $supply->getQuantity();
+			}
+		}
+		return 0;
+	}
+
+	public function findFoodDays(): float {
+		$amount = $this->findFoodAmount();
+		if ($amount) {
+			$dailyNeed = $this->getLivingSoldiers()->count();
+			if ($dailyNeed > 0) {
+				return floor($amount/($dailyNeed*$this->consumption) * 100)/100;
+			}
+		}
+		return 0;
+	}
+
+	public function findExpectedFood(): float {
+		return $this->findExpectedShipments();
+	}
+
+	public function findExpectedShipments($type = 'food'): float {
+		$count = 0;
+		$total = 0;
+		foreach ($this->incoming_supplies as $resupply) {
+			if ($resupply->getType() === $type) {
+				$count++;
+				$total += $resupply->getQuantity();
+			}
+		}
+		if ($count > 0 && $total > 0) {
+			return floor(($total/$count)*100)/100;
+		}
+		return 0;
+	}
+
+	public function findAverageShipmentTime($type = 'food') {
+		$count = 0;
+		$total = 0;
+		foreach ($this->incoming_supplies as $resupply) {
+			if ($resupply->getType() === $type) {
+				$count++;
+				$total += $resupply->getTravelDays();
+			}
+		}
+		if ($count > 0 && $total > 0) {
+			return floor(($total/$count)*100)/100;
+		}
+		return 0;
+	}
+
+	public function findNextShipmentArrival($type = 'food'): false|int {
+		$next = false;
+		foreach ($this->incoming_supplies as $resupply) {
+			if ($resupply->getType() === $type) {
+				if (!$next || $next->getTravelDays() > $resupply->getTravelDays()) {
+					$next = $resupply->getTravelDays();
+				}
+			}
+		}
+		return $next;
 	}
 
 	public function getVisualSize() {
@@ -711,6 +779,36 @@ class Unit {
 	public function setReinforcements(?bool $reinforcements = null): static {
 		$this->reinforcements = $reinforcements;
 
+		return $this;
+	}
+
+	/**
+	 * Get Consumption (How much food to eat)
+	 *
+	 * @return float
+	 */
+	public function getConsumption(): float {
+		return $this->consumption;
+	}
+
+	public function setConsumption(float $consumption): static {
+		$this->consumption = $consumption;
+		return $this;
+	}
+
+	/**
+	 * Get Provision (How much food to request)
+	 *
+	 * @param float $provision
+	 *
+	 * @return float
+	 */
+	public function getProvision(): float {
+		return $this->provision;
+	}
+
+	public function setProvision(float $provision): static {
+		$this->provision = $provision;
 		return $this;
 	}
 }

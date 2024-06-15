@@ -63,6 +63,7 @@ class Settlement {
 	private int $assignedFeatures = -1;
 	private int $employees = -1;
 	private ?Association $faith;
+	private float $food_provision_limit = 1;
 
 	/**
 	 * Constructor
@@ -1794,6 +1795,15 @@ class Settlement {
 	public function setFaith(Association $faith = null): static {
 		$this->faith = $faith;
 
+		return $this;
+	}
+
+	public function getFoodProvisionLimit(): float {
+		return $this->food_provision_limit;
+	}
+
+	public function setFoodProvisionLimit(float $limit): static {
+		$this->food_provision_limit = $limit;
 		return $this;
 	}
 }

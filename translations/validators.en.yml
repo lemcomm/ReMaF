@@ -76,3 +76,10 @@ loot:
 
 chat:
  long:		input size too long, max 200 characters.
+
+number:
+ positive:  Value must be a positive number.
+
+percent:
+ lessthan200: Value must be less than 200%.
+ lessthan120: Value must be less than 120%.

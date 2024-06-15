@@ -745,10 +745,16 @@ class Economy {
 
 		switch (strtolower($resource->getName())) {
 			case 'food':
+				$foodLimit = $settlement->getFoodProvisionLimit();
 				$suppliedNPCs = 0;
 				$units = $this->FindFeedableUnits($settlement);
 				foreach ($units as $unit) {
-					$suppliedNPCs += $unit->getLivingSoldiers()->count();
+					if ($unit->getProvision <= $foodLimit) {
+						$suppliedNPCs += ($unit->getLivingSoldiers()->count()*$unit->getProvision());
+					} else {
+						$suppliedNPCs += ($unit->getLivingSoldiers()->count()*$foodLimit);
+					}
+
 				}
 				#$suppliedNPCs += $unit->getLivingEntourage()->count(); // TODO: Determine if we want to feed entourage or just pay them.
 				$need = $settlement->getPopulation() + $settlement->getThralls()*0.75 + $suppliedNPCs;

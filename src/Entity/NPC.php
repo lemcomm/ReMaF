@@ -143,10 +143,10 @@ class NPC {
 		$lvl = $this->hungry;
 		if ($lvl == 0) {
 			return 1;
-		} elseif ($lvl > 140) {
+		} elseif ($lvl > 1400) {
 			return 0;
 		} else {
-			return 1 - ($lvl / 140);
+			return 1 - ($lvl / 1400);
 		}
 	}
 
@@ -163,9 +163,9 @@ class NPC {
 		return $this;
 	}
 
-	public function feed(): static {
+	public function feed($var = 1): static {
 		if ($this->hungry > 0) {
-			$this->hungry -= 5; // drops fairly rapidly
+			$this->hungry -= 50*$var; // drops fairly rapidly
 		}
 		if ($this->hungry < 0) {
 			$this->hungry = 0;

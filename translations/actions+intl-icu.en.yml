@@ -434,6 +434,7 @@ control:
   spawn:        Allow new characters to spawn here?
   thralls:      Allow slavery (thralls) ?
   feedsoldiers: Allow knights to pull food for their soldiers?
+  foodlimit:    How much food can supplied units request?
   submit:       Set new permissions
   success:      Your new permissions have been saved.
  quests:
@@ -1391,7 +1392,15 @@ unit:
   revoke:   Remove Marshal
   traveling: Unit is currently traveling back to base and will arrive in {days} days.
   untrainable: This unit has soldiers in training but is not able to carry out that training. Only units that are assigned a base can train soldiers due to how soldier training works in the game. This message is just here to explain why soldiers aren't being trained. You can fix this by assigning the unit to a base.
- assigned:
+ manage:
+  created:  The unit of {unit} has been created.
+  provisionlimited: The unit of {unit} can only request up to {limit}% provisions from {settlement} per the settlement permissions. This value has been automatically set to this for your convenience.
+ supplies:
+  food:     Has {amount} food stored, enough for {days} game days.
+ resupply:
+  food:     Is expecting {average} to arrive each day, if travel is clear.
+  freq:     More will average, on average every {frequency} game days.
+  next:     The next shipment will arrive in {days} game days.
  assign:
   name:     Assign a Leader to {name}
   intro:    From here you can select any of the nearby characters to take control of {name}, letting them lead them to other locations and/or lead them into battle.

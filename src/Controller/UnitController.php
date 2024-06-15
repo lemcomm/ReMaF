@@ -140,6 +140,11 @@ class UnitController extends AbstractController {
                 if ($form->isSubmitted() && $form->isValid()) {
 			$this->mm->prepareUnit($character, $unit, $character->getInsideSettlement());
 			$this->em->flush();
+			$limit = $unit->getSettlement()?->getFoodProvisionLimit();
+			if ($limit && $limit < $unit->getProvision()) {
+				$unit->setProvision($limit);
+				$this->addFlash('warning', $this->trans->trans('unit.manage.provisionlimited', ['%settlement%'=>$unit->getSettlement()->getName(), '%unit%'=>$unit->getName(), '%limit%'=>$limit], 'actions'));
+			}
 			$this->addFlash('notice', $this->trans->trans('unit.manage.created', array(), 'actions'));
 			return $this->redirectToRoute('maf_units');
                 }
@@ -173,6 +178,11 @@ class UnitController extends AbstractController {
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
 			$this->em->flush();
+			$limit = $unit->getSettlement()?->getFoodProvisionLimit();
+			if ($limit && $limit < $unit->getProvision()) {
+				$unit->setProvision($limit);
+				$this->addFlash('warning', $this->trans->trans('unit.manage.provisionlimited', ['%settlement%'=>$unit->getSettlement()->getName(), '%unit%'=>$unit->getName(), '%limit%'=>$limit], 'actions'));
+			}
 			$this->addFlash('notice', $this->trans->trans('unit.manage.success', array(), 'actions'));
 			return $this->redirectToRoute('maf_units');
                 }

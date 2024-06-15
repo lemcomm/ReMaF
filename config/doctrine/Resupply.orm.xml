@@ -4,11 +4,11 @@
 		<id name="id" type="integer">
 			<generator strategy="IDENTITY"/>
 		</id>
-                <many-to-one field="unit" target-entity="Unit" inversed-by="incoming_supplies"/>
-                <many-to-one field="origin" target-entity="Settlement" inversed-by="sent_supplies"/>
+		<many-to-one field="unit" target-entity="Unit" inversed-by="incoming_supplies"/>
+		<many-to-one field="origin" target-entity="Settlement" inversed-by="sent_supplies"/>
 		<field name="travel_days" type="smallint"/>
-                <field name="quantity" type="integer"/>
-                <field name="type" type="string"/>
+		<field name="quantity" type="integer"/>
+		<field name="type" type="string"/>
 
 	</entity>
 </doctrine-mapping>

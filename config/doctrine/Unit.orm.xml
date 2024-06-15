@@ -29,6 +29,16 @@
 		<field name="renamable" type="boolean" nullable="true"/>
 		<field name="retreat_threshold" type="float" nullable="true"/>
 		<field name="reinforcements" type="boolean" nullable="true"/>
+		<field name="provision" type="float" scale="2">
+				<options>
+					<option name="default">1</option>
+				</options>
+		</field>
+		<field name="consumption" type="float" scale="2">
+			<options>
+				<option name="default">1</option>
+			</options>
+		</field>
 
 	</entity>
 </doctrine-mapping>

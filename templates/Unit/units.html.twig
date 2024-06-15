@@ -14,6 +14,8 @@
 		{% endif %}
 		<h4>{{ unit.obj.name|striptags('<strong><em><b><i>') }}</h4><br>
 		{{ 'unit.list.soldiers'|trans({},"actions")|raw }}: {{ 'unit.list.count2'|trans({"%soldiers%":unit.obj.getActiveSoldiers.count, "%travelers%":unit.obj.getTravellingSoldiers.count, "%recruits%":training, "%wounded%":unit.obj.getWoundedSoldiers.count, "%dead%":unit.obj.getDeadSoldiers.count}, "actions") }}<br />
+		{{ 'unit.supplies.food'|trans({"%amount%":unit.obj.findFoodAmount, "%days%":unit.obj.findFoodDays}, "actions") }}<br>
+		{{ 'unit.resupply.food'|trans({"%average%":unit.obj.findExpectedFood}, "actions") }} {{ 'unit.resupply.freq'|trans({"%frequency%":unit.obj.findAverageShipmentTime}, "actions") }} {% set nextShpmt = unit.obj.findNextShipmentArrival %}{% if nextShpmt %}{{ 'unit.resupply.next'|trans({"%days%":unit.obj.findNextShipmentArrival}, "actions") }}{% endif %}<br><br>
 		{% if unit.obj.character == character %}
 			{{ 'unit.list.youcommand'|trans({}, "actions")|raw }}
 		{% elseif unit.obj.character %}
