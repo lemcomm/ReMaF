@@ -64,17 +64,6 @@ class UnitController extends AbstractController {
                 return $query->getResult();
         }
 
-        private function findMarshalledUnits(Character $character) {
-                $em = $this->em;
-                if ($character->getInsideSettlement()) {
-                        $query = $em->createQuery('SELECT u FROM App:Unit u JOIN App:UnitSettings s WITH s.unit = u WHERE u.marshal = :char AND u.settlement = :settlement ORDER BY s.name ASC');
-                        $query->setParameters(array('char'=>$character, 'settlement'=>$character->getInsideSettlement()));
-                        return $query->getResult();
-                } else {
-                        return null;
-                }
-        }
-
 	private function gateway($test, $secondary = null, $settlement = false) {
                 return $this->ud->gateway($test, $settlement, true, false, $secondary);
 
@@ -444,7 +433,7 @@ class UnitController extends AbstractController {
                         $this->hist->logEvent(
 				$data['target'],
 				'event.unit.appointed',
-				array('%unit%'=>$unit->getSettings()->getName(), '%link-character%'=>$character->getId()),
+				array('%unit%'=>$unit->getName(), '%link-character%'=>$character->getId()),
 				History::MEDIUM, false, 30
 			);
                         $em->flush();
@@ -583,7 +572,7 @@ class UnitController extends AbstractController {
                                 $this->hist->logEvent(
         				$leader,
         				'event.unit.recalled',
-        				array('%unit%'=>$unit->getSettings()->getName(), '%link-character%'=>$character->getId()),
+        				array('%unit%'=>$unit->getName(), '%link-character%'=>$character->getId()),
         				History::MEDIUM, false, 30
         			);
 				$this->em->flush();
@@ -613,7 +602,7 @@ class UnitController extends AbstractController {
                 $allUnits = $settlement->getUnits();
                 $units = [];
                 foreach ($allUnits as $unit) {
-                        if($unit->getSoldiers()->count() < 200 && ($unit->getSettings()->getReinforcements() || !$unit->getCharacter()) && !$unit->getDisbanded()) {
+                        if($unit->getSoldiers()->count() < 200 && ($unit->getReinforcements() || !$unit->getCharacter()) && !$unit->getDisbanded()) {
                                 $units[] = $unit;
                         }
                 }

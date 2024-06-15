@@ -58,7 +58,7 @@ class EventLog {
 		if ($this->settlement) return $this->settlement->getName();
 		if ($this->realm) return $this->realm->getName();
 		if ($this->character) return $this->character->getName();
-		if ($this->unit) return $this->unit->getSettings()->getName();
+		if ($this->unit) return $this->unit->getName();
 		if ($this->place) return $this->place->getName();
 		if ($this->house) return $this->house->getName();
 		if ($this->quest) return $this->quest->getSummary();

@@ -173,10 +173,8 @@ class LinksExtension extends AbstractExtension {
 				} else {
 					$url = $this->generator->generate($this->getLink($type), array('id' => $id));
 				}
-				if (!in_array($type, ['NewsEdition', 'Unit', 'Conversation', 'Journal'])) {
+				if (!in_array($type, ['NewsEdition', 'Conversation', 'Journal'])) {
 					$name = $entity->getName();
-				} elseif ($type == 'Unit') {
-					$name = $entity->getSettings()->getName();
 				} elseif ($type == 'Conversation') {
 					if ($entity->getLocalFor()) {
 						$name = 'Local Conversation';
@@ -328,7 +326,7 @@ class LinksExtension extends AbstractExtension {
 				break;
 			case 'Unit':
 				$id = $entity->getId();
-				$name = $entity->getSettings()->getName();
+				$name = $entity->getName();
 				$linktype = 'unit';
 				break;
 			default:

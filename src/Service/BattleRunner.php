@@ -767,8 +767,8 @@ class BattleRunner {
 			],
 		];
 		foreach ($group->getUnits() as $unit) {
-			$count = $setup[$unit->getSettings()->getLine()]['count'];
-			$line = $unit->getSettings()->getLine();
+			$count = $setup[$unit->getLine()]['count'];
+			$line = $unit->getLine();
 			if ($invert) {
 				$xPos = $startX - ($line*20);
 			} else {

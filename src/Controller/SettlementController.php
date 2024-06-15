@@ -337,9 +337,9 @@ class SettlementController extends AbstractController {
 				array('%link-settlement%'=>$id->getId()),
 				History::MEDIUM, false, 30
 			);
-			$this->addFlash('notice', $this->trans->trans('control.supply.success', ['%name%'=>$unit->getSettings()->getName()], 'actions'));
+			$this->addFlash('notice', $this->trans->trans('control.supply.success', ['%name%'=>$unit->getName()], 'actions'));
 		} elseif ($unit->isLocal()) {
-			$this->addFlash('notice', $this->trans->trans('control.supply.failure.local', ['%name%'=>$unit->getSettings()->getName()], 'actions'));
+			$this->addFlash('notice', $this->trans->trans('control.supply.failure.local', ['%name%'=>$unit->getName()], 'actions'));
 		} else {
 			$this->addFlash('notice', $this->trans->trans('control.supply.failure.notyours', [], 'actions'));
 		}

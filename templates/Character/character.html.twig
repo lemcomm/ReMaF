@@ -117,9 +117,9 @@
 		<ul>
 		{% for unit in units %}
 			{% if unit.settlement %}
-				<li>{{unit.settings.name}} - {{ 'unit.info'|trans({'%settlement%':link(unit.settlement),"%soldiers%":unit.getActiveSoldiers.count, "%travelers%":unit.getTravellingSoldiers.count, "%recruits%":unit.getRecruits.count, "%wounded%":unit.getWoundedSoldiers.count, "%dead%":unit.getDeadSoldiers.count}, "actions")|raw}} - <a href="{{path('maf_unit_soldiers', {"unit":unit.id}) }}">{{ 'unit.manage.link'|trans|title }}</a></li>
+				<li>{{unit.name}} - {{ 'unit.info'|trans({'%settlement%':link(unit.settlement),"%soldiers%":unit.getActiveSoldiers.count, "%travelers%":unit.getTravellingSoldiers.count, "%recruits%":unit.getRecruits.count, "%wounded%":unit.getWoundedSoldiers.count, "%dead%":unit.getDeadSoldiers.count}, "actions")|raw}} - <a href="{{path('maf_unit_soldiers', {"unit":unit.id}) }}">{{ 'unit.manage.link'|trans|title }}</a></li>
 			{% else %}
-				<li>{{unit.settings.name}} - {{ 'unit.info'|trans({'%settlement%':'-',"%soldiers%":unit.getActiveSoldiers.count, "%travelers%":unit.getTravellingSoldiers.count, "%recruits%":unit.getRecruits.count, "%wounded%":unit.getWoundedSoldiers.count, "%dead%":unit.getDeadSoldiers.count}, "actions")|raw}} - <a href="{{path('maf_unit_soldiers', {"unit":unit.id}) }}">{{ 'unit.manage.link'|trans|title }}</a> </li>
+				<li>{{unit.name}} - {{ 'unit.info'|trans({'%settlement%':'-',"%soldiers%":unit.getActiveSoldiers.count, "%travelers%":unit.getTravellingSoldiers.count, "%recruits%":unit.getRecruits.count, "%wounded%":unit.getWoundedSoldiers.count, "%dead%":unit.getDeadSoldiers.count}, "actions")|raw}} - <a href="{{path('maf_unit_soldiers', {"unit":unit.id}) }}">{{ 'unit.manage.link'|trans|title }}</a> </li>
 			{% endif %}
 		{% endfor %}
 		</ul>

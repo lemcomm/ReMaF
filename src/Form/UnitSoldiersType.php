@@ -131,7 +131,7 @@ class UnitSoldiersType extends AbstractType {
 				'placeholder' => 'form.choose',
 				'label' => 'recruit.manage.assignto',
 				'required' => false,
-				'choice_label'=>'settings.name',
+				'choice_label'=>'name',
 				'class'=>Unit::class,
 				'query_builder'=>function(EntityRepository $er) use ($others) {
 					$qb = $er->createQueryBuilder('u');

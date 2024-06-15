@@ -561,6 +561,7 @@ class MilitaryManager {
 		$unit->setSettlement($home);
 		$unit->setSupplier($home);
 		$this->newUnitSettings($unit, $character, $data, true); #true to tell newUnitSettings not to flush so we can do it here.
+
 		$this->em->flush();
 		if ($home) {
 			$owner = $home->getOwner();
@@ -651,117 +652,53 @@ class MilitaryManager {
 		return $total;
 	}
 
-	public function newUnitSettings(Unit $unit, Character $character=null, $data = null, $bulk = false): UnitSettings {
-		$settings = new UnitSettings();
-		$this->em->persist($settings);
-		$settings->setUnit($unit);
-		$unit->setSettings($settings);
+	public function newUnitSettings(Unit $unit, Character $character=null, $data = null, $bulk = false): void {
 		if ($data) {
-			$settings->setName($data['name']);
+			$unit->setName($data['name']);
 			if ($data['strategy']) {
-				$settings->setStrategy($data['strategy']);
+				$unit->setStrategy($data['strategy']);
 			}
 			if ($data['tactic']) {
-				$settings->setTactic($data['tactic']);
+				$unit->setTactic($data['tactic']);
 			}
 			if ($data['respect_fort']) {
-				$settings->setRespectFort($data['respect_fort']);
+				$unit->setRespectFort($data['respect_fort']);
 			}
 			if ($data['line']) {
-				$settings->setLine($data['line']);
+				$unit->setLine($data['line']);
 			}
 			if ($data['siege_orders']) {
-				$settings->setSiegeOrders($data['siege_orders']);
+				$unit->setSiegeOrders($data['siege_orders']);
 			}
 			if ($data['renamable']) {
-				$settings->setRenamable($data['renamable']);
+				$unit->setRenamable($data['renamable']);
 			}
 			if ($data['retreat_threshold']) {
-				$settings->setRetreatThreshold($data['retreat_threshold']);
+				$unit->setRetreatThreshold($data['retreat_threshold']);
 			}
 			if ($data['reinforcements']) {
-				$settings->setReinforcements($data['reinforcements']);
+				$unit->setReinforcements($data['reinforcements']);
 			}
 		} else {
 			if ($character) {
-				$settings->setName($character->getName()."'s Unit");
+				$unit->setName($character->getName()."'s Unit");
 			} elseif ($unit->getSettlement()) {
-				$settings->setName("Militia of ".$unit->getSettlement()->getName());
+				$unit->setName("Militia of ".$unit->getSettlement()->getName());
 			} else {
-				$settings->setName("A Unit of Unknown Origin");
+				$unit->setName("A Unit of Unknown Origin");
 			}
-			$settings->setStrategy('advance');
-			$settings->setTactic('mixed');
-			$settings->setRespectFort(true);
-			$settings->setLine(4);
-			$settings->setSiegeorders('hold');
-			$settings->setRetreatThreshold(50);
-			$settings->setRenamable(true);
-			$settings->setReinforcements(true);
+			$unit->setStrategy('advance');
+			$unit->setTactic('mixed');
+			$unit->setRespectFort(true);
+			$unit->setLine(4);
+			$unit->setSiegeorders('hold');
+			$unit->setRetreatThreshold(50);
+			$unit->setRenamable(true);
+			$unit->setReinforcements(true);
 		}
 		if (!$bulk) {
 			$this->em->flush();
 		}
-		return $settings;
-	}
-
-	public function updateSettings(Unit $unit, $data, Character $char, $lord = false): bool {
-		if (!$unit->getSettings()) {
-			$settings = new UnitSettings;
-		} else {
-			$settings = $unit->getSettings();
-		}
-		if (!$lord) {
-			if ($unit->getCharacter() == $char) {
-				$commander = true;
-			} else {
-				$commander = false;
-			}
-			if (!$lord && !$commander) {
-				return false;
-			}
-		}
-		$renamed = false;
-		if ($lord OR ($commander && $settings->getRenamable())) {
-			$oldName = $settings->getName();
-			$settings->setName($data['name']);
-			$renamed = true;
-		}
-		if ($data['strategy']) {
-			$settings->setStrategy($data['strategy']);
-		}
-		if ($data['tactic']) {
-			$settings->setTactic($data['tactic']);
-		}
-		if ($data['respect_fort']) {
-			$settings->setRespectFort($data['respect_fort']);
-		}
-		if ($data['line']) {
-			$settings->setLine($data['line']);
-		}
-		if ($data['siege_orders']) {
-			$settings->setSiegeOrders($data['siege_orders']);
-		}
-		if ($lord && $data['renamable']) {
-			$settings->setRenamable($data['renamable']);
-		}
-		if ($data['retreat_threshold']) {
-			$settings->setRetreatThreshold($data['retreat_threshold']);
-		}
-		if ($data['reinforcements']) {
-			$settings->setReinforcements($data['reinforcements']);
-		}
-		if ($renamed) {
-			$this->history->logEvent(
-				$unit,
-				'event.military.renamed',
-				array('%link-unit%'=>$unit->getId(), '%name%'=>$oldName),
-				History::MEDIUM, false, 30
-			);
-		}
-
-		$this->em->flush();
-		return true;
 	}
 
 	public function getSoldierTravelTime(Settlement $start, Character $end): float {
