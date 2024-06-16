@@ -192,9 +192,9 @@ class Conversation {
 	/**
 	 * Get topic
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getTopic(): string {
+	public function getTopic(): ?string {
 		return $this->topic;
 	}
 
@@ -214,9 +214,9 @@ class Conversation {
 	/**
 	 * Get system
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getSystem(): string {
+	public function getSystem(): ?string {
 		return $this->system;
 	}
 
@@ -236,9 +236,9 @@ class Conversation {
 	/**
 	 * Get type
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getType(): string {
+	public function getType(): ?string {
 		return $this->type;
 	}
 
@@ -280,9 +280,9 @@ class Conversation {
 	/**
 	 * Get cycle
 	 *
-	 * @return integer
+	 * @return int|null
 	 */
-	public function getCycle(): int {
+	public function getCycle(): ?int {
 		return $this->cycle;
 	}
 
@@ -302,9 +302,9 @@ class Conversation {
 	/**
 	 * Get updated
 	 *
-	 * @return DateTime
+	 * @return DateTime|null
 	 */
-	public function getUpdated(): DateTime {
+	public function getUpdated(): ?DateTime {
 		return $this->updated;
 	}
 

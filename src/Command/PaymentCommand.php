@@ -41,7 +41,7 @@ class PaymentCommand extends Command {
 		$output->writeln('maintenance and payment cycle:');
 
 		$inactives = 0;
-		$query = $this->em->createQuery('SELECT c, u FROM App:Character c JOIN App:user u WITH c.user = u WHERE c.slumbering = false AND c.alive = true AND (DATE_PART(\'day\', :now - u.last_play) > :inactivity OR (u.last_play IS NULL AND DATE_PART(\'day\', :now - c.last_access) > :inactivity))');
+		$query = $this->em->createQuery('SELECT c FROM App:Character c LEFT JOIN App:User u WITH c.user = u WHERE c.slumbering = false AND c.alive = true AND (DATE_PART(\'day\', :now - u.last_play) > :inactivity OR (u.last_play IS NULL AND DATE_PART(\'day\', :now - c.last_access) > :inactivity))');
 		# Grab all characters that either haven't been played in 21 days (old system) or all characters of all users that haven't played in 21 days if u.last_play is null (new system).
 		$query->setParameters(array('now'=>new DateTime("now"), 'inactivity'=>$this->inactivityDays));
 		foreach ($query->getResult() as $char) {
@@ -119,7 +119,7 @@ class PaymentCommand extends Command {
 		$output->writeln("$expired accounts with insufficient credits");
 		$output->writeln("$banned accounts banned and set to level 0");
 
-		return true;
+		return Command::SUCCESS;
 	}
 
 

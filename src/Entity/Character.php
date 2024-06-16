@@ -1851,7 +1851,7 @@ class Character {
 	 *
 	 * @return House
 	 */
-	public function getHeadOfHouse(): House {
+	public function getHeadOfHouse(): ?House {
 		return $this->head_of_house;
 	}
 
