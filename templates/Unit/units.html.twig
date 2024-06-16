@@ -4,6 +4,12 @@
 	<h2>{{ 'unit.list.name'|trans({},"actions") }}</h2>
 	<p>{{ 'unit.list.intro'|trans({},"actions")|raw }}</p>
 
+	<h3>{{ 'unit.list.meta'|trans({}, "actions") }}</h3>
+	<ul>
+		<li><a href="{{ path('maf_unit_new') }}">{{ 'unit.list.new'|trans({}, "actions") }}</a></li>
+		<li><a href="{{ path('maf_unit_bulk') }}">{{ 'unit.list.bulk'|trans({}, "actions") }}</a></li>
+	</ul>
+
 	<h3> {{ 'unit.list.list'|trans({},"actions")|title }}</h3>
 	{% for unit in units %}
 		{% set id = unit.obj.id %}

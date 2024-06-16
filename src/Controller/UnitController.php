@@ -8,6 +8,7 @@ use App\Entity\Unit;
 use App\Form\AreYouSureType;
 use App\Form\CharacterSelectType;
 use App\Form\SoldiersRecruitType;
+use App\Form\UnitBulkType;
 use App\Form\UnitConfigType;
 use App\Form\UnitRebaseType;
 use App\Form\UnitSoldiersType;
@@ -153,6 +154,63 @@ class UnitController extends AbstractController {
                         'form'=>$form->createView()
                 ]);
         }
+
+	#[Route('/units/bulk', name:'maf_unit_bulk')]
+	public function unitBulkManage(GameRequestManager $gm, Request $request) {
+		$char = $this->gateway('unitBulkTest');
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+		$units = $this->findUNits($char);
+		$settlements = $gm->getAvailableFoodSuppliers($char);
+		$form = $this->createForm(UnitBulkType::class, null, ['units'=>$units, 'settlements'=>$settlements]);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$data = $form->getData();
+			$units = $form->get('units')->getData();
+			$supplier = $form->get('supplier')->getData();
+			/** @var Unit $unit */
+			foreach ($units as $unit) {
+				if ($supplier) {
+					$unit->setSupplier($supplier);
+				}
+				if ($data['strategy'] !== null) {
+					$unit->setStrategy($data['strategy']);
+				}
+				if ($data['tactic'] !== null) {
+					$unit->setTactic($data['tactic']);
+				}
+				if ($data['respect_fort'] !== null) {
+					$unit->setRespectFort($data['respect_fort']);
+				}
+				if ($data['line'] !== null) {
+					$unit->setLine($data['line']);
+				}
+				if ($data['siege_orders'] !== null) {
+					$unit->setSiegeOrders($data['siege_orders']);
+				}
+				if ($data['retreat_threshold'] !== null) {
+					$unit->setRetreatThreshold($data['retreat_threshold']);
+				}
+				if ($data['reinforcements'] !== null) {
+					$unit->setReinforcements($data['reinforcements']);
+				}
+				if ($data['consumption'] !== null) {
+					$unit->setConsumption($data['consumption']);
+				}
+				if ($data['provision'] !== null) {
+					$unit->setProvision($data['provision']);
+				}
+			}
+			$this->em->flush();
+			$this->addFlash('notice', $this->trans->trans('unit.bulk.updated', [], 'settings'));
+			return $this->redirectToRoute('maf_units');
+		}
+
+		return $this->render('Unit/bulk.html.twig', [
+			'form' => $form
+		]);
+	}
 
 	#[Route('/units/{unit}/manage', name:'maf_unit_manage', requirements:['unit'=>'\d+'])]
         public function unitManageAction(GameRequestManager $gm, Request $request, Unit $unit): RedirectResponse|Response {

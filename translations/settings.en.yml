@@ -35,6 +35,7 @@ unit:
   All of this is presently not implemented, but will be fully tied into the rest of the game in short order, starting with supply sources, as things are completed. Full information can be found on the manual's "Units" page.
  yourown:   Settings for your personal force
  name:      Unit Name?
+ nochange: (No Change)
  supplier:
   name:     Where are they supplied from?
   empty:    (Select a Source)
@@ -80,6 +81,11 @@ unit:
  reinforcements: Accept reinfocements?
  provisioning: "Food percentage to request:"
  consumption: "How much to eat per meal?"
+ bulk:
+  title: Mass Unit Changes
+  desc:  Here you can change the settings of multiple units at once, allowing sweeping changes across your entire force.
+  select: Units to Modify
+  updated: Units have been updated.
 
 
 update:

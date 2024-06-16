@@ -124,6 +124,11 @@ class UnitDispatcher extends Dispatcher {
 		return $this->action("unit.assign.name", "maf_unit_manage");
 	}
 
+	public function unitBulkTest(): array {
+		# We could have this check for units, but that'd be duplicating code to find manageable units. Easier to just not.
+		return $this->action('unit.bulk', 'maf_unit_bulk');
+	}
+
 	public function unitManageTest($ignored, Unit $unit) {
 		$character = $this->getCharacter();
 		$settlement = $unit->getSettlement();

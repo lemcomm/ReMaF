@@ -1366,6 +1366,9 @@ unit:
   empty:    You currently have no units under your authority.
   intro:    From here you can manage those Units you command, marshall, or own, as appropriate.
   list:     Your Units
+  meta:     Meta Actions
+  new:      Create a new unit
+  bulk:     Update settings across multiple units
   rebase:   Rebase this Unit
   review:   Review Soldiers
   soldiers: Comprised of

@@ -1,0 +1,7 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+	<h2>{{ 'unit.bulk.title'|trans({},"settings")|title }}</h2>
+	<p>{{ 'unit.bulk.desc'|trans({},"settings")|raw }}</p>
+	{{ form(form) }}
+{% endblock %}

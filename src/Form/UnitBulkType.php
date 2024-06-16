@@ -4,21 +4,18 @@ namespace App\Form;
 
 use App\Entity\Settlement;
 use App\Entity\Unit;
-use App\Entity\UnitSettings;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\PercentType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ORM\EntityRepository;
-
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Positive;
 
@@ -31,45 +28,43 @@ use Symfony\Component\Validator\Constraints\Positive;
  * * 'settings' - UnitSettings Entity (null) - UnitSettings entity to edit
  * * 'lord' - boolean - Determines if lord only options appear
  */
-class UnitConfigType extends AbstractType {
+class UnitBulkType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
-			'intention'       	=> 'unitsettings_1337',
+			'intention'       	=> 'bulkunitupdate_432432',
 			'translation_domain' 	=> 'settings',
 			'attr'			=> array('class'=>'wide'),
-			'settlements'		=> new ArrayCollection(),
-			'data_class'		=> Unit::class,
+			'settlements'		=> new ArrayCollection()
 		));
-		$resolver->setRequired(['lord']);
+		$resolver->setRequired(['units']);
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options) {
-		$lord = $options['lord'];
-		$unit = $builder->getData();
+		$units = $options['units'];
 		$settlements = $options['settlements'];
-
-		$renamable = $unit->getRenamable();
-
-		$builder->add('supplier', EntityType::class, array(
-			'label' => 'unit.supplier.name',
-			'multiple'=>false,
-			'expanded'=>false,
-			'class'=>Settlement::class,
+		$builder->add('units', EntityType::class, [
+			'label'=>'unit.bulk.select',
+			'multiple'=>true,
+			'class'=>Unit::class,
 			'choice_label'=>'name',
+			'expanded'=>true,
+			'choices'=>$units,
+			'mapped'=>false,
+			'choice_value'=>'id'
+		]);
+		$builder->add('supplier', EntityType::class, [
+			'label'=>'unit.supplier.name',
 			'choices'=>$settlements,
-			'placeholder' => 'unit.supplier.empty',
-			'mapped'=>true,
-		));
-
-		if($lord || $renamable !== false) {
-			$builder->add('name', TextType::class, array(
-				'label'=>'unit.name',
-				'required'=>true,
-			));
-		} else {
-			$builder->add('name', HiddenType::class);
-		}
+			'placeholder'=>'unit.nochange',
+			'class'=>Settlement::class,
+			'choice_label'=>function (Settlement $s): string {
+				return $s->getName().' ('.$s->getId().')';
+			},
+			'required'=>false,
+			'mapped'=>false,
+			'choice_value'=>'id'
+		]);
 		$builder->add('strategy', ChoiceType::class, array(
 			'label'=>'unit.strategy.name',
 			'required'=>false,
@@ -78,7 +73,7 @@ class UnitConfigType extends AbstractType {
 				'unit.strategy.hold' => 'hold',
 				'unit.strategy.distance' => 'distance'
 			),
-			'placeholder'=>'unit.strategy.empty',
+			'placeholder'=>'unit.nochange',
 		));
 		$builder->add('tactic', ChoiceType::class, array(
 			'label'=>'unit.tactic.name',
@@ -88,7 +83,7 @@ class UnitConfigType extends AbstractType {
 				'unit.tactic.ranged' => 'ranged',
 				'unit.tactic.mixed' => 'mixed'
 			),
-			'placeholder'=>'unit.tactic.empty',
+			'placeholder'=>'unit.nochange',
 		));
 		$builder->add('respect_fort', CheckboxType::class, array(
 			'label'=>'unit.usefort',
@@ -106,7 +101,7 @@ class UnitConfigType extends AbstractType {
 				'unit.line.6' => '6',
 				'unit.line.7' => '7',
 			),
-			'placeholder'=> 'unit.line.empty',
+			'placeholder'=> 'unit.nochange',
 		));
 		$builder->add('siege_orders', ChoiceType::class, array(
 			'label'=>'unit.siege_orders.name',
@@ -116,16 +111,8 @@ class UnitConfigType extends AbstractType {
 				'unit.siege_orders.hold' => 'hold',
 				'unit.siege_orders.equipment' => 'equipment'
 			),
-			'placeholder'=>'unit.siege_orders.empty',
+			'placeholder'=>'unit.nochange',
 		));
-		if ($lord) {
-			$builder->add('renamable', CheckboxType::class, array(
-				'label'=>'unit.renamable.name',
-				'required'=>false,
-			));
-		} else {
-			$builder->add('renamable', HiddenType::class);
-		}
 		$builder->add('retreat_threshold', NumberType::class, array(
 			'label'=>'unit.retreat.name',
 			'required'=>false,
@@ -142,7 +129,8 @@ class UnitConfigType extends AbstractType {
 					'value'=>1.2,
 					'message'=>'perecent.lessthan120'
 				])
-			]
+			],
+			'required'=>false,
 		]);
 		$builder->add('provision', PercentType::class, [
 			'label'=>'unit.provisioning',
@@ -152,7 +140,8 @@ class UnitConfigType extends AbstractType {
 					'value'=>2,
 					'message'=>'percent.lessthan200'
 				])
-			]
+			],
+			'required'=>false,
 		]);
 		$builder->add('submit', SubmitType::class, array('label'=>'button.submit'));
 	}
