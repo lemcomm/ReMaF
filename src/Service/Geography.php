@@ -75,7 +75,7 @@ class Geography {
 
 	private function getScout() {
 		if ($this->scout == null) {
-			$this->scout = $this->em->getRepository(EntourageType::class)->findOneByName('scout');
+			$this->scout = $this->em->getRepository(EntourageType::class)->findOneBy(['name'=>'scout']);
 		}
 		return $this->scout;
 	}
@@ -649,7 +649,7 @@ class Geography {
 		$spotBase = $this->common->getGlobal('spot.basedistance');
 		$spotScout = $this->common->getGlobal('spot.scoutmod');
 
-		$scout = $this->em->getRepository('App\Entity\EntourageType')->findOneByName('scout');
+		$scout = $this->em->getRepository('App\Entity\EntourageType')->findOneBy(['name'=>'scout']);
 		// database magic below:
 		// spotting distance =
 		//					base distance (what the noble has by himself)
@@ -797,8 +797,8 @@ class Geography {
 		foreach ($result as $data) {
 			$river = $data['river'];
 			// look for a nearby bridge
-			$bridgedistance = $this->em->getRepository(Setting::class)->findOneByName('travel.bridgedistance');
-			$bridge = $this->em->getRepository(FeatureType::class)->findOneByName('bridge');
+			$bridgedistance = $this->em->getRepository(Setting::class)->findOneBy(['name'=>'travel.bridgedistance']);
+			$bridge = $this->em->getRepository(FeatureType::class)->findOneBy(['name'=>'bridge']);
 			$query = $this->em->createQuery('SELECT f FROM App:GeoFeature f WHERE ST_Distance(f.location, ST_GeomFromText(:intersection)) < :distance AND f.active=true AND f.type=:bridge');
 			$query->setParameters(['intersection'=>$data['intersection'], 'distance'=>$bridgedistance->getValue(), 'bridge'=>$bridge]);
 			$query->setMaxResults(1);

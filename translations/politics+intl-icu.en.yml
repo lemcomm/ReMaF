@@ -437,32 +437,38 @@ realm:
  size:        Size
  type:
   title: Tier
-  1: Barony
-  2: County
-  3: March
-  4: Duchy
-  5: Principality
-  6: Kingdom
-  7: Empire
+  1: Baronet
+  2: Barony
+  3: Viscounty
+  4: County
+  5: March
+  6: Duchy
+  7: Principality
+  8: Kingdom
+  9: Empire
  title:
   male:
    0: Knight
-   1: Baron
-   2: Count
-   3: Marquess
-   4: Duke
-   5: Prince
-   6: King
-   7: Emperor
+   1: Baronet
+   2: Baron
+   3: Viscount
+   4: Count
+   5: Marquess
+   6: Duke
+   7: Prince
+   8: King
+   9: Emperor
   female:
    0: Dame
-   1: Baroness
-   2: Countess
-   3: Marquise
-   4: Duchess
-   5: Princess
-   6: Queen
-   7: Empress
+   1: Baronet
+   2: Baroness
+   3: Viscountess
+   4: Countess
+   5: Marquise
+   6: Duchess
+   7: Princess
+   8: Queen
+   9: Empress
  newplayer:
   name: Review Arrival Description
   name2: Update the Arrival Description of {name}

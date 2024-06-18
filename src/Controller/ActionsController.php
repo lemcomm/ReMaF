@@ -316,7 +316,7 @@ class ActionsController extends AbstractController {
 			'me'=>$character
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$em = $this->em;
 
@@ -359,7 +359,7 @@ class ActionsController extends AbstractController {
 			'me'=>$character
 		]);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$em = $this->em;
 			[$his_ship, $distance] = $this->geo->findMyShip($data['target']);
@@ -446,7 +446,7 @@ class ActionsController extends AbstractController {
 		$time_to_take = $settlement->getTimeToTake($character);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if (isset($data['target'])) {
 				$targetrealm = $data['target'];
@@ -521,7 +521,7 @@ class ActionsController extends AbstractController {
 
 		$form = $this->createForm(RealmSelectType::class, null, ['realms'=>$character->findRealms(), 'type' =>'changerealm']);
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$targetrealm = $data['target'];
 
@@ -574,7 +574,7 @@ class ActionsController extends AbstractController {
 		]);
 
 		$form->handleRequest($request);
-		if ($form->isValid()) {
+		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			if ($settlement->getRealm() && !$data['withrealm']) {
 				$extra = 'clear_realm';

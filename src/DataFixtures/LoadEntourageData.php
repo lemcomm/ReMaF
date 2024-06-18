@@ -31,8 +31,12 @@ class LoadEntourageData extends Fixture implements DependentFixtureInterface {
 
 	public function load(ObjectManager $manager): void {
 		foreach ($this->entourage as $name=>$data) {
-			$type = new EntourageType();
-			$type->setName($name);
+			$type = $manager->getRepository(EntourageType::class)->findOneBy(['name'=>$name]);
+			if (!$type) {
+				$type = new EntourageType();
+				$manager->persist($type);
+				$type->setName($name);
+			}
 			$type->setTraining($data['train']);
 			if ($data['provider']) {
 				$provider = $this->getReference('buildingtype: '.strtolower($data['provider']));
@@ -42,7 +46,6 @@ class LoadEntourageData extends Fixture implements DependentFixtureInterface {
 					echo "can't find ".$data['provider']." needed by $name.\n";
 				}
 			}
-			$manager->persist($type);
 		}
 		$manager->flush();
 	}

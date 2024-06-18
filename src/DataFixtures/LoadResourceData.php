@@ -20,10 +20,13 @@ class LoadResourceData extends Fixture {
 
 	public function load(ObjectManager $manager): void {
 		foreach ($this->resources as $name=>$data) {
-			$type = new ResourceType();
-			$type->setName($name);
+			$type = $manager->getRepository(ResourceType::class)->findOneBy(['name'=>$name]);
+			if (!$type) {
+				$type = new ResourceType();
+				$type->setName($name);
+				$manager->persist($type);
+			}
 			$type->setGoldValue($data['gold']);
-			$manager->persist($type);
 			$this->addReference('resourcetype: '.strtolower($name), $type);
 		}
 		$manager->flush();

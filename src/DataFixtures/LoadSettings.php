@@ -2,14 +2,13 @@
 
 namespace App\DataFixtures;
 
+use App\Service\CommonService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class LoadSettings extends Fixture implements ContainerAwareInterface {
+class LoadSettings extends Fixture {
 
-	private ContainerInterface $container;
+	private CommonService $common;
 	private array $settings = array(
 		'travel.bridgedistance' => 250,
 		'spot.basedistance' => 1000,
@@ -21,18 +20,16 @@ class LoadSettings extends Fixture implements ContainerAwareInterface {
 		'battling' => 0
 	);
 
-
-	public function setContainer(ContainerInterface $container = null) {
-		$this->container = $container;
+	public function __construct(CommonService $common) {
+		$this->common = $common;
 	}
 
 	/**
 	* {@inheritDoc}
 	*/
 	public function load(ObjectManager $manager) {
-		$appstate = $this->container->get('appstate');
 		foreach ($this->settings as $key=>$val) {
-			$appstate->setGlobal($key, $val);
+			$this->common->setGlobal($key, $val);
 		}
 		$manager->flush();
 	}

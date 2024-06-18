@@ -26,13 +26,16 @@ class LoadBiomeData extends Fixture {
 
 	public function load(ObjectManager $manager): void {
 		foreach ($this->biomes as $name=>$data) {
-			$type = new Biome;
-			$type->setName($name);
+			$type = $manager->getRepository(Biome::class)->findOneBy(['name'=>$name]);
+			if (!$type) {
+				$type = new Biome;
+				$manager->persist($type);
+				$type->setName($name);
+			}
 			$type->setSpot($data['spot']);
 			$type->setTravel($data['travel']);
 			$type->setRoadConstruction($data['roads']);
 			$type->setFeatureConstruction($data['features']);
-			$manager->persist($type);
 		}
 		$manager->flush();
 	}
