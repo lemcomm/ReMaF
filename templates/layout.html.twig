@@ -136,7 +136,7 @@
 			{% if character.insideSettlement %}
 				{{ 'inside2'|trans({'%place%':link(character.insidePlace), '%settlement%':link(character.insideSettlement)})|raw }}.
 			{% else %}
-				{{ 'inside3'|trans({'%place%':link(character.insidePlace), '%settlement%':link(character.geoData.settlement)})|raw }}.
+				{{ 'inside3'|trans({'%place%':link(character.insidePlace), '%settlement%':link(common.findNearestSettlement(character))})|raw }}.
 			{% endif %}
 		{% elseif character.insideSettlement %}
 			{{ 'inside'|trans({'%settlement%':link(character.insidesettlement)})|raw }}.
