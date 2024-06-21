@@ -1,0 +1,25 @@
+# This is an example crontab file for your linux server that tells the server when to run what commands.
+# m h  dom mon dow   command
+
+# Run M&F Full turns
+0 0 * * * /var/www/maf/turn.sh
+0 6 * * * /var/www/maf/turn.sh
+0 12 * * * /var/www/maf/turn.sh
+0 18 * * * /var/www/maf/turn.sh
+
+# Run M&F Hourly and Dungeon turns
+25 * * * * /var/www/maf/hourly.sh
+
+# Run M&F Quarter Hourly turns
+0 * * * * /var/www/maf/quarterhourly.sh
+15 * * * * /var/www/maf/quarterhourly.sh
+30 * * * * /var/www/maf/quarterhourly.sh
+45 * * * * /var/www/maf/quarterhourly.sh
+
+# Run M&F Daily Command at 0220L, Payment Processor at 0115L, and Newsletter handler at 0045L.
+20 2 * * * php /var/www/maf/app/console --env=prod maf:process:daily 2>&1 >> /var/www/maf/var/log/daily.log
+15 1 * * * php /var/www/maf/app/console --env=prod maf:payment:cycle 2>&1 >> /var/www/maf/var/log/payment.log
+#45 0 * * * php /var/www/maf/app/console --env=prod maf:newsletter
+
+# Run the weekly security check
+0 7 * * 1 php /var/www/maf/app/console security:check 2>%1 >> /var/www/maf/var/log/security.log
