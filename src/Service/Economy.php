@@ -554,7 +554,6 @@ class Economy {
 	}
 
 	public function getSupplyTravelTime(Settlement $start, Unit $unit) {
-		echo 'S: '.$start->getId().' | U: '.$unit->getId();
 		if ($unit->getCharacter()) {
 			$distance = $this->geo->calculateDistanceToSettlement($unit->getCharacter(), $start);
 		} elseif ($unit->getDefendingSettlement()) {
@@ -748,8 +747,9 @@ class Economy {
 				$foodLimit = $settlement->getFoodProvisionLimit();
 				$suppliedNPCs = 0;
 				$units = $this->FindFeedableUnits($settlement);
+				/** @var Unit $unit */
 				foreach ($units as $unit) {
-					if ($unit->getProvision <= $foodLimit) {
+					if ($unit->getProvision() <= $foodLimit) {
 						$suppliedNPCs += ($unit->getLivingSoldiers()->count()*$unit->getProvision());
 					} else {
 						$suppliedNPCs += ($unit->getLivingSoldiers()->count()*$foodLimit);

@@ -43,7 +43,16 @@ class AbstractProcessCommand extends Command {
 		$this->stopwatch->start($topic);
 	}
 
-	protected function process($worker, $entity, $timeout=60): void {
+	protected function process($worker, $entity, $timeout=null): void {
+		/* Welcome to, arguably, one of the most complex functions in M&F. This 50 ish lines of code mutli-threads a process against an entity.
+		 * It accepts a $worker (a maf:worker:$worker command entry), an $entity to work against for input IDs, and a $timeout, which force kills it if it takes too long.
+		 * That is also why M&F requires multi-cores as trying to run the entire game on a single thread might actually take a whole hour.
+		 * If you have a smaller world (M&F has 1817 settlements, for reference) you could lower this all down as needed.
+		 */
+		/*
+		 * TODO: Rework this to grab an ID count of the entity, and then divide that by the number of threads.
+		 * And of course rework the individual work commands to also process them using $query->setMaxResults() starting from the $id of the next batch ordering by ID.
+		 */
 		$min = $this->em->createQuery('SELECT MIN(e.id) FROM App:'.$entity.' e')->getSingleScalarResult();
 		$max = $this->em->createQuery('SELECT MAX(e.id) FROM App:'.$entity.' e')->getSingleScalarResult();
 
@@ -51,29 +60,49 @@ class AbstractProcessCommand extends Command {
 		$pool = array();
 		$consoleDir = $_ENV['ROOT_DIR'].'/bin/console';
 		$php = $_ENV['PHP_CMD'];
+		$done = [];
+		$this->output->writeln("Starting ID of $min, ending ID of $max, batches of $batch_size...");
 		for ($i=$min; $i<=$max; $i+=$batch_size) {
-			$process = new Process([$php, $consoleDir, 'maf:worker:'.$worker, $i, $i+$batch_size-1]);
-			$process->setTimeout($timeout);
+			$process = new Process([$php, $consoleDir, 'maf:worker:'.$worker, $i, $i+$batch_size], null, null, null, $timeout);
 			$process->start();
 			$pool[] = $process;
+			$done[$process->getPid()] = false;
 			$i++;
 		}
 		$this->output->writeln($worker.": started ".count($pool)." jobs");
-		$running = 99;
+
+		/*
+		 * It is very important that you ensure that whatever calls this command continues to run until all processes are closed.
+		 * If you don't, you'll end up with fail conditions that don't have exit codes, which will get pointed out below.
+		 * Make sure that the below while loop clearly checks that all processes have actually completed.
+		 */
+		$running = $this->parallel;
 		while ($running > 0) {
-			$running = 0;
+			$pids = [];
+			/** @var Process $p */
 			foreach ($pool as $p) {
-				if ($p->isRunning()) {
-					$running++;
+				$out = $p->getIncrementalOutput();
+				if ($out) {
+					$this->output->write($out);
+				}
+				$pid = $p->getPid();
+				if ($pid) {
+					$pids[] = $pid;
 				}
 			}
-			usleep(250);
+			$running = count($pids);
+			usleep(1000000); #Once a second.
 		}
 
 		foreach ($pool as $p) {
 			if (!$p->isSuccessful()) {
 				$this->output->writeln('fail: '.$p->getExitCode().' / '.$p->getCommandLine());
+				if (!$p->getExitCode()) {
+					$this->output->writeln('No exit code, looks like it is still running even though you are in the error handler. Did you get here early?');
+				}
+				$this->output->writeln('FULL OUTPUT FOLLOWS!');
 				$this->output->writeln($p->getOutput());
+				$this->output->writeln('FULL OUT FOR ERROR CONDITION END!');
 			}
 		}
 

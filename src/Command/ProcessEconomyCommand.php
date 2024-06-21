@@ -39,7 +39,7 @@ class ProcessEconomyCommand extends AbstractProcessCommand {
 		$this->resetResupply();
 		$this->fixWorkers();
 		$this->em->flush();
-		$this->process('economy', 'Settlement');
+		$this->process('economy', 'Settlement', null);
 		$this->finish('economy');
 
 		$this->start('construction');

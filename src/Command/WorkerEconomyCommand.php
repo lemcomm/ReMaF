@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
-class WorkerEconomyCommand extends  Command {
+class WorkerEconomyCommand extends Command {
 
 	private EntityManagerInterface $em;
 	private Economy $economy;
@@ -34,16 +34,18 @@ class WorkerEconomyCommand extends  Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-	        $logger = $this->logger;
 		$start = $input->getArgument('start');
 		$end = $input->getArgument('end');
 
 		$memory_limit = $this->return_bytes(ini_get('memory_limit'));
+		$output->writeln("Working economy for settlements from $start to $end.");
 
 		$query = $this->em->createQuery('SELECT s FROM App:Settlement s WHERE s.id >= :start AND s.id <= :end');
 		$query->setParameters(array('start'=>$start, 'end'=>$end));
 		$iterableResult = $query->toIterable();
+		$count = 0;
 		foreach ($iterableResult as $settlement) {
+			$count++;
 			// workaround for our calculations below causing errors on 0 values
 			if ($settlement->getPopulation()<5) {
 				$settlement->setPopulation(5);
@@ -75,11 +77,11 @@ class WorkerEconomyCommand extends  Command {
 						} else {
 							$shortage = ($demand - $available) / $available;
 						}
-						$logger->info("food in ".$settlement->getName()." (".$settlement->getId()."): $production + $tradebalance (+storage) = $available of $demand = ".(round($shortage*100)/100));
+						$output->writeln("food in ".$settlement->getName()." (".$settlement->getId()."): $production + $tradebalance (+storage) = $available of $demand = ".(round($shortage*100)/100));
 						$this->economy->FoodSupply($settlement, $shortage);
 					}
 				} else {
-					$logger->info("skipping ".$settlement->getName()." (".$settlement->getId().") as it is encircled.");
+					$output->writeln("skipping ".$settlement->getName()." (".$settlement->getId().") as it is encircled.");
 				}
 			}
 
@@ -95,15 +97,21 @@ class WorkerEconomyCommand extends  Command {
 				// check workforce
 				$this->economy->checkWorkforce($settlement);
 			}
-
-			if (memory_get_usage() > $memory_limit * 0.75) {
-				echo "running out of memory... refreshing...\n";
+			if ($count > 24) {
+				$output->writeln("Keeping things light, clearing Doctrine.");
 				$this->em->flush();
 				$this->em->clear();
+				$count = 0;
+			} elseif (memory_get_usage() > (int)$memory_limit * 0.9) {
+				# Cap this single thread to most of 1GB.
+				$output->writeln("running out of memory... refreshing...");
+				$this->em->flush();
+				$this->em->clear();
+				$count = 0;
 			}
 		}
 
-		echo "...flushing...\n";
+		$output->writeln("...flushing...");
 		$this->em->flush();
 		return Command::SUCCESS;
 	}
@@ -115,6 +123,9 @@ class WorkerEconomyCommand extends  Command {
 	 * @noinspection PhpMissingBreakStatementInspection
 	 */
 	private function return_bytes($val) {
+		if ($val === '-1') {
+			return 1073741824; #1GB expressed in Bytes.
+		}
 		$val = trim($val);
 		$last = strtolower($val[strlen($val)-1]);
 		$val = substr($val, 0, -1);
