@@ -1,14 +1,12 @@
 {% extends "layout.html.twig" %}
 
 {% macro member_row(member) %}
-{% spaceless %}
 {% if member.listing is defined %}<td style="display:none">{{ form_widget(member.listing) }}</td>{% endif %}
 <td style="display:none">{{ form_widget(member.priority) }}</td>
 <td align="center">{{ form_widget(member.allowed) }}</td>
-<td>{{ form_widget(member.targetRealm) }}</td>
-<td>{{ form_widget(member.targetCharacter) }}</td>
+<td>{{ form_widget(member.target_realm) }}</td>
+<td>{{ form_widget(member.target_character) }}</td>
 <td align="center">{{ form_widget(member.includeSubs) }}</td>
-{% endspaceless %}
 {% endmacro %}
 
 {% macro inheritance(sublisting) %}
