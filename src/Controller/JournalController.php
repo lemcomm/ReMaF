@@ -10,6 +10,7 @@ use App\Entity\UserReport;
 use App\Form\JournalType;
 use App\Form\UserReportType;
 use App\Service\AppState;
+use App\Service\CommonService;
 use App\Service\DiscordIntegrator;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\NotificationManager;
@@ -28,12 +29,14 @@ class JournalController extends AbstractController {
 	private Dispatcher $disp;
 	private EntityManagerInterface $em;
 	private TranslatorInterface $trans;
+	private CommonService $common;
 
-	public function __construct(AppState $app, Dispatcher $disp, EntityManagerInterface $em, TranslatorInterface $trans) {
+	public function __construct(AppState $app, Dispatcher $disp, EntityManagerInterface $em, TranslatorInterface $trans, CommonService $common) {
 		$this->app = $app;
 		$this->disp = $disp;
 		$this->em = $em;
-		$this->trans = $trans;		
+		$this->trans = $trans;
+		$this->common = $common;
 	}
 	
 	#[Route ('/journal/{id}', name:'maf_journal', requirements:['id'=>'\d+'])]
@@ -103,7 +106,7 @@ class JournalController extends AbstractController {
 	      $journal = new Journal;
 	      $journal->setCharacter($char);
 	      $journal->setDate(new DateTime('now'));
-	      $journal->setCycle($this->app->getCycle());
+	      $journal->setCycle($this->common->getCycle());
 	      $journal->setLanguage('English');
 	      $journal->setTopic($data['topic']);
 	      $journal->setEntry($data['entry']);
