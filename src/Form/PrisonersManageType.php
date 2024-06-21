@@ -28,11 +28,11 @@ class PrisonersManageType extends AbstractType {
 
 		foreach ($options['prisoners'] as $prisoner) {
 			$actions = array(
-				'free' => 'diplomacy.prisoners.free',
-				'execute' => 'diplomacy.prisoners.execute'
+				'diplomacy.prisoners.free' => 'free',
+				'diplomacy.prisoners.execute' => 'execute'
 			);
 			if (!empty($others) && !$prisoner->hasAction('personal.prisonassign')) {
-				$actions['assign'] = 'diplomacy.prisoners.assign';
+				$actions['diplomacy.prisoners.assign'] = 'assign';
 			}
 
 			$idstring = (string)$prisoner->getId();
@@ -47,11 +47,11 @@ class PrisonersManageType extends AbstractType {
 			));
 			$field->add('method', ChoiceType::class, array(
 				'choices' => array(
-					'behead'	=> 'diplomacy.prisoners.kill.behead',
-					'hang' => 'diplomacy.prisoners.kill.hang',
-					'burn' => 'diplomacy.prisoners.kill.burn',
-					'quarter' => 'diplomacy.prisoners.kill.quarter',
-					'impale' => 'diplomacy.prisoners.kill.impale'
+					'diplomacy.prisoners.kill.behead' => 'behead',
+					'diplomacy.prisoners.kill.hang' => 'hang',
+					'diplomacy.prisoners.kill.burn' => 'burn',
+					'diplomacy.prisoners.kill.quarter' => 'quarter',
+					'diplomacy.prisoners.kill.impale' => 'impale'
 				),
 				'choice_translation_domain' => true,
 				'required' => false,

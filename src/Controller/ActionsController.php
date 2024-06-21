@@ -319,26 +319,26 @@ class ActionsController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$em = $this->em;
-
+			# TODO: Translate these error strings.
 			if ($data['amount'] > $character->getGold()) {
-				throw new \Exception("You cannot give more gold than you have.");
-			}
-			if ($data['amount'] < 0) {
-				throw new \Exception("You cannot give negative gold.");
-			}
-			$character->setGold($character->getGold() - $data['amount']);
-			$data['target']->setGold($data['target']->getGold() + $data['amount']);
+				$form->addError('You cannot give more gold than you have.');
+			} elseif ($data['amount'] < 0) {
+				$form->addError('You cannot give negative gold.');
+			} else {
+				$character->setGold($character->getGold() - $data['amount']);
+				$data['target']->setGold($data['target']->getGold() + $data['amount']);
 
-			$this->hist->logEvent(
-				$data['target'],
-				'event.character.gotgold',
-				array('%link-character%'=>$character->getId(), '%amount%'=>$data['amount']),
-				History::MEDIUM, true, 20
-			);
-			$em->flush();
-			return $this->render('Actions/giveGold.html.twig', [
-				'success'=>true, 'amount'=>$data['amount'], 'target'=>$data['target']
-			]);
+				$this->hist->logEvent(
+					$data['target'],
+					'event.character.gotgold',
+					array('%link-character%'=>$character->getId(), '%amount%'=>$data['amount']),
+					History::MEDIUM, true, 20
+				);
+				$em->flush();
+				return $this->render('Actions/giveGold.html.twig', [
+					'success'=>true, 'amount'=>$data['amount'], 'target'=>$data['target']
+				]);
+			}
 		}
 
 		return $this->render('Actions/giveGold.html.twig', [

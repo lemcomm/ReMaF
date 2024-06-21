@@ -63,7 +63,8 @@ class SoldierFoodType extends AbstractType {
 					return '--';
 				}
 			},
-			'attr' => array('title'=>'request.soldierfood.estatehelp')
+			'attr' => array('title'=>'request.soldierfood.estatehelp'),
+			'mapped'=>false,
 		));
 		$builder->add('limit', NumberType::class, array(
 			'label' => 'request.soldierfood.limit',

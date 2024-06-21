@@ -25,14 +25,16 @@ class ListSelectType extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 		$groups = array();
 		foreach ($this->character_groups as $id) {
-			$groups[$id] = 'character.list.'.$id;
+			#$groups[$id] = 'character.list.'.$id;
+			$groups['character.list.'.$id] = $id;
 		}
 		$builder->add('char', HiddenType::class);
 		$builder->add('list', ChoiceType::class, array(
 			'label'=>'character.list.select',
 			'expanded'=>true,
 			'required'=>true,
-			'choices'=>$groups
+			'choices'=>$groups,
+			'translation_domain'=>'messages'
 		));
 		$builder->add('submit', SubmitType::class, array('label'=>'character.list.submit'));
 	}

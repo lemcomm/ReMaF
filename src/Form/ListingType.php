@@ -46,7 +46,7 @@ class ListingType extends AbstractType {
 		}
 
 		$builder->add('members', CollectionType::class, [
-			'type'		=> ListMemberType::class,
+			'entry_type'		=> ListMemberType::class,
 			'entry_options' => ['em' => $options['em'], 'listing'=>$builder->getData()],
 			'allow_add'	=> true,
 			'allow_delete' => true,

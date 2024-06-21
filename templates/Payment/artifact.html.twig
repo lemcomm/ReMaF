@@ -5,9 +5,5 @@
 	<p>{{ 'account.artifacts.intro'|trans|raw }}</p>
 	<p>{{ 'account.artifacts.current'|trans({"slots":slots, "used":used})|raw }}</p>
 	<p>{{ 'account.artifacts.buymore'|trans({"cost":cost})|raw }}</p>
-	{{ form_start(form) }}
-	{{ form_errors(form) }}
-	{{ form_row(form.sure) }}<br>
-	{{ form_row(form.submit) }}
-	{{ form_end(form) }}
+	{{ form(form) }}
 {% endblock %}

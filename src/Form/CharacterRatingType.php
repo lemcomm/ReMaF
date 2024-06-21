@@ -30,19 +30,19 @@ class CharacterRatingType extends AbstractType {
 		$builder->add('respect', ChoiceType::class, array(
 			'label'=>'rating.respect.label',
 			'required'=>true,
-			'choices'=>array('0'=>'rating.none', '1'=>'rating.yes', '-1'=>'rating.no'),
+			'choices'=>array('rating.none' => '0', 'rating.yes' => '1', 'rating.no' => '-1'),
 			'attr' => array('title'=>'rating.respect.help'),
 		));
 		$builder->add('honor', ChoiceType::class, array(
 			'label'=>'rating.honor.label',
 			'required'=>true,
-			'choices'=>array('0'=>'rating.none', '1'=>'rating.yes', '-1'=>'rating.no'),
+			'choices'=>array('rating.none' => '0', 'rating.yes' => '1', 'rating.no' => '-1'),
 			'attr' => array('title'=>'rating.honor.help'),
 		));
 		$builder->add('trust', ChoiceType::class, array(
 			'label'=>'rating.trust.label',
 			'required'=>true,
-			'choices'=>array('0'=>'rating.none', '1'=>'rating.yes', '-1'=>'rating.no'),
+			'choices'=>array('rating.none' => '0', 'rating.yes' => '1', 'rating.no' => '-1'),
 			'attr' => array('title'=>'rating.trust.help'),
 		));
 

@@ -1241,7 +1241,7 @@ class Dispatcher {
 		if (($check = $this->veryGenericTests()) !== true) {
 			return ["name"=>"chat.place.name", "description"=>"unavailable.$check"];
 		}
-		if (!$this->getCharacter()->getInsideSettlement()) {
+		if (!$this->getCharacter()->getInsidePlace()) {
 			return ["name"=>"chat.place.name", "description"=>"unavailable.noplace"];
 		}
 		return $this->action("chat.place", "maf_chat_place");
@@ -2190,7 +2190,7 @@ class Dispatcher {
 		if (!$this->getCharacter()->findAllegiance()) {
 			return array("name"=>"rogue.name", "description"=>"unavailable.notvassal");
 		}
-		return $this->action("rogue", "maf_politics_breakoath", true);
+		return $this->action("rogue", "maf_politics_oath_break", true);
 	}
 
 	public function diplomacyRelationsTest(): array {

@@ -243,7 +243,6 @@ class PoliticsController extends AbstractController {
 			'empty_data'=>'oath.choose',
 			'translation_domain'=>'politics',
 			'choices'=>$options,
-			'choices_as_values'=>true,
 			'choice_label' => function ($choice, $key, $value) {
 				if ($choice instanceof Settlement) {
 					if ($choice->getRealm()) {
@@ -301,7 +300,7 @@ class PoliticsController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$grm->newOathOffer($character, $data['message'], $data['liege']);
-			$this->addFlash('success', $this->trans->trans('oath.offered', array(), 'politics'));
+			$this->addFlash('notice', $this->trans->trans('oath.offered', array(), 'politics'));
 			return $this->redirectToRoute('maf_politics_relations');
 		}
 
@@ -319,7 +318,7 @@ class PoliticsController extends AbstractController {
 		if ($request->isMethod('POST')) {
 			$this->pol->breakoath($character);
 			$this->em->flush();
-			$this->addFlash('success', $this->trans->trans('oath.broken', array(), 'politics'));
+			$this->addFlash('notice', $this->trans->trans('oath.broken', array(), 'politics'));
 			return $this->redirectToRoute('maf_politics_relations');
 		}
 
@@ -662,7 +661,7 @@ class PoliticsController extends AbstractController {
 				}
 			}
 			$em->flush();
-			$this->addFlash('success', $this->trans->trans('lists.updated', array(), 'politics'));
+			$this->addFlash('notice', $this->trans->trans('lists.updated', array(), 'politics'));
 			return $this->redirectToRoute('maf_politics_list', array('id'=>$listing->getId()));
 		}
 
@@ -858,7 +857,7 @@ class PoliticsController extends AbstractController {
 					History::MEDIUM, true, 90
 				);
 				$em->flush();
-				$this->addFlash('success', $this->trans->trans('claim.added', array(), 'politics'));
+				$this->addFlash('notice', $this->trans->trans('claim.added', array(), 'politics'));
 			} else {
 				$this->addFlash('error', $this->trans->trans('claim.noherald', array(), 'politics'));
 			}
@@ -880,7 +879,7 @@ class PoliticsController extends AbstractController {
 
 		if ($this->pol->removeClaim($character, $settlement)) {
 			$this->em->flush();
-			$this->addFlash('success', $this->trans->trans('claim.cancelled', array(), 'politics'));
+			$this->addFlash('notice', $this->trans->trans('claim.cancelled', array(), 'politics'));
 			$this->hist->logEvent(
 				$settlement,
 				'event.settlement.claim.cancelled',

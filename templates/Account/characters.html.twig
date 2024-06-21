@@ -256,19 +256,19 @@ $(".edit-list").click(function(){
 	$("#list_"+$(this).data("list")).prop("checked", true);
 	$("#list_selector").dialog("option", "position", { my: "left top", at: "right bottom", of: $(this) } );
 	$("#list_selector").dialog("option", "title", $(this).data("name"));
-	$("#listselect_char").val($(this).data("id"));
+	$("#list_select_char").val($(this).data("id"));
 	$("#list_selector").dialog("open");
 });
 
-$("#listselect_submit").click(function(event){
+$("#list_select_submit").click(function(event){
 	event.preventDefault();
-	var char = $("#listselect_char").val();
-	var list = $("#listselect input[type=radio]:checked").val();
-	var token = $("#listselect__token").val();
+	var char = $("#list_select_char").val();
+	var list = $("#list_select input[type=radio]:checked").val();
+	var token = $("#list_select__token").val();
 	console.log(char);
 	console.log(list);
 	console.log(token);
-	$.post("{{ path('maf_chars_set') }}", { "listselect[char]":char, "listselect[list]": list, "listselect[_token]": token }, function(data) {
+	$.post("{{ path('maf_chars_set') }}", { "list_select[char]":char, "list_select[list]": list, "list_select[_token]": token }, function(data) {
 		console.log(data);
 		/* TODO: visual feedback? */
 		var edit = $(".edit-list[data-id="+char+"]");

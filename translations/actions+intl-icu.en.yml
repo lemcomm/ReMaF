@@ -1108,13 +1108,12 @@ meta:
   retirement:
    name:        Retirement
    desc: >
-     Here you can explain why this character has decided to retire from the world, if you so desire.
-     <em>Visible to everyone.</em>
+     Here you can explain why this character has decided to retire from the world, if you so desire. This will be visible to everyone.
   death:
    name:        Death
    desc: >
-     A description of how the character died.<br />
-     <em>Visible to everyone.</em>
+     A description of how the character died.
+     This will be visible to everyone.
   submit:       Update background descriptions
   updated:      Your background descriptions have been updated.
  rename:
