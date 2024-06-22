@@ -727,16 +727,15 @@ class PoliticsController extends AbstractController {
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-
-		$results = array();
 		$others = $this->disp->getActionableCharacters();
 		$prisoners = $character->getPrisoners();
 		$form = $this->createForm(PrisonersManageType::class, null, ['prisoners' => $prisoners, 'others' => $others]);
 		$form->handleRequest($request);
+		$total = $prisoners->count();
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$change_others = false;
-
+			$i = 0;
 			foreach ($data['prisoners'] as $id=>$do) {
 				$prisoner = $prisoners[$id];
 				switch ($do['action']) {
@@ -750,7 +749,11 @@ class PoliticsController extends AbstractController {
 							History::HIGH, true, 30
 						);
 						$change_others = true;
-						$results[] = array('prisoner'=>$prisoner, 'action'=>'free');
+						$this->addFlash(
+							'notice',
+							$this->trans->trans('diplomacy.prisoners.done.free', ['%prisoner%'=>$prisoner->getName()], 'politics')
+						);
+						$i++;
 						break;
 					case 'execute':
 						if ($do['method']) {
@@ -763,7 +766,11 @@ class PoliticsController extends AbstractController {
 								History::MEDIUM, true
 							);
 							$charMan->kill($prisoner, $character, false, 'prison.kill.'.$do['method']);
-							$results[] = array('prisoner'=>$prisoner, 'action'=>'execute');
+							$this->addFlash(
+								'notice',
+								$this->trans->trans('diplomacy.prisoners.done.execute', ['%prisoner%'=>$prisoner->getName()], 'politics')
+							);
+							$i++;
 						}
 						break;
 					case 'assign':
@@ -794,12 +801,22 @@ class PoliticsController extends AbstractController {
 								array('%link-character-1%'=>$character->getId(), '%link-character-2%'=>$prisoner->getId()),
 								History::MEDIUM, true, 20
 							);
-							$results[] = array('prisoner'=>$prisoner, 'action'=>'assign', 'target'=>$data['assignto']);
+							$this->addFlash(
+								'notice',
+								$this->trans->trans('diplomacy.prisoners.done.execute', ['%prisoner%'=>$prisoner->getName()], 'politics')
+							);
+							$i++;
 						}
 						break;
 				}
 			}
 			$this->em->flush();
+			#No idea how we'd be over but... just in case.
+			if ($i >= $total) {
+				# No prisoners left, redirect to politics.
+				$this->redirectToRoute('maf_politics');
+			}
+
 			if ($change_others) {
 				$others = $this->disp->getActionableCharacters();
 			}
@@ -807,8 +824,7 @@ class PoliticsController extends AbstractController {
 		}
 
 		return $this->render('Politics/prisoners.html.twig', [
-			'form' => $form->createView(),
-			'results' => $results
+			'form' => $form->createView()
 		]);
 	}
 

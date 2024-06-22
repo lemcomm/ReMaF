@@ -4,18 +4,6 @@
 <h2>{{ "diplomacy.prisoners.name"|trans({},"politics")|title }}</h2>
 <p>{{ "diplomacy.prisoners.intro"|trans({},"politics")|raw }}</p>
 
-{% for result in results %}
-<div class="flash-message" data-role="header" data-theme="e">
-	{% if result.action == 'free' %}
-		{{ 'diplomacy.prisoners.done.free'|trans({"%prisoner%":link(result.prisoner)}, "politics")|raw }}
-	{% elseif result.action == 'execute' %}
-		{{ 'diplomacy.prisoners.done.execute'|trans({"%prisoner%":link(result.prisoner)}, "politics")|raw }}
-	{% elseif result.action == 'assign' %}
-		{{ 'diplomacy.prisoners.done.assign'|trans({"%prisoner%":link(result.prisoner), "%target%":link(result.target)}, "politics")|raw }}
-	{% endif %}
-</div>
-{% endfor %}
-
 {{ form_errors(form) }}
 <form action="" method="post" {{ form_start(form) }}
 {{ form_widget(form._token) }}
