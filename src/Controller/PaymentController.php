@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -103,8 +104,8 @@ class PaymentController extends AbstractController {
 			throw new AccessDeniedException($user->isBanned());
 		}
 
-		$success = $this->generateUrl('maf_stripe_success', [], true);
-		$cancel = $this->generateUrl('maf_payment', [], true);
+		$success = $this->generateUrl('maf_stripe_success', [], UrlGeneratorInterface::ABSOLUTE_URL);
+		$cancel = $this->generateUrl('maf_payment', [], UrlGeneratorInterface::ABSOLUTE_URL);
 		$checkout = $this->pay->buildStripeIntent($currency, $amount, $user, $success, $cancel);
 		if ($checkout === 'notfound') {
 			$this->addFlash('error', "Unable to locate the requested product.");
