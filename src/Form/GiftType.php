@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use PHPUnit\Framework\Constraint\GreaterThan;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -33,7 +34,13 @@ class GiftType extends AbstractType {
 			'required'=>true, 
 			'label'=>'account.gift.credits',
 			'placeholder'=>'form.choose',
-			'choices'=>$options['credits']
+			'choices'=>$options['credits'],
+			'constraints'=>[
+				new GreaterThan([
+					'value'=>0,
+					'message'=>'number.gtzero'
+				])
+			]
 		));
 
 		$builder->add('message', TextareaType::class, array(

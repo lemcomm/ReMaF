@@ -794,6 +794,7 @@ class PlaceController extends AbstractController {
 		$form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			$am->newLocation($data['target'], $place);
 			$hist->logEvent(
 				$place,

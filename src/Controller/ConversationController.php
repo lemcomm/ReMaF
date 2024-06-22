@@ -674,9 +674,9 @@ class ConversationController extends AbstractController {
 
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
+			$data = $form->get('contacts')->getData();
 			$em = $this->em;
-			foreach($data['contacts'] as $new) {
+			foreach($data as $new) {
 				# Double check we can actually add this person.
 				if (in_array($new, $contacts)) {
 					$this->convman->addParticipant($conv, $new);
@@ -686,7 +686,7 @@ class ConversationController extends AbstractController {
 
 			# These lines are just here to make this can handle single object collections.
 			$all = new ArrayCollection();
-			foreach ($data['contacts'] as $each) {
+			foreach ($data as $each) {
 				$all->add($each);
 			}
 			$message = $this->convman->newSystemMessage($conv, 'newperms', $all, $char, false);

@@ -136,6 +136,7 @@ class ArtifactsController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 
 			$artifact->setOwner($data['target']);
 			$this->history->logEvent(

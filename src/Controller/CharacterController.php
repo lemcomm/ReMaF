@@ -944,10 +944,10 @@ class CharacterController extends AbstractController {
 		}
 		$em = $this->em;
 		$opts = [];
-		$opt['wpns'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon']);
-		$opt['arms'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'armour']);
-		$opt['othr'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'equipment']);
-		$opt['mnts'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'mount']);
+		$opts['weapons'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon']);
+		$opts['armor'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'armour']);
+		$opts['equipment'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'equipment']);
+		$opts['mounts'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'mount']);
 
 		$form = $this->createForm(CharacterLoadoutType::class, $character, $opts);
 		$form->handleRequest($request);
@@ -985,6 +985,7 @@ class CharacterController extends AbstractController {
 
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			$character->setFaith($data['target']);
 			$this->em->flush();
 			if ($data['target']) {

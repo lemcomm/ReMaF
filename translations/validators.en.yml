@@ -79,6 +79,7 @@ chat:
 
 number:
  positive:  Value must be a positive number.
+ gtzero:   Value must be greater than zero.
 
 percent:
  lessthan200: Value must be less than 200%.

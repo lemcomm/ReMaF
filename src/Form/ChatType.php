@@ -22,6 +22,7 @@ class ChatType extends AbstractType {
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options) {
+		#TODO: Rework this to be a TextareaType that resizes on pages with enter to submit and shift+enter for new line.
 		$builder->add('content', TextType::class, array(
 			'label' => false,
 			'required' => true,

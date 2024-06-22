@@ -1268,10 +1268,8 @@ class WarController extends AbstractController {
 		$form = $this->createForm(DamageFeatureType::class, null ,['features'=>$features]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
 			$em = $this->em;
-
-			$target = $data['target'];
+			$target = $form->get('target')->getData();
 			if (in_array($target->getType()->getName(), array('signpost', 'borderpost'))) {
 				$hours = 1;
 			} else {
@@ -1443,12 +1441,12 @@ class WarController extends AbstractController {
 		$form = $this->createForm(BattleParticipateType::class, null, ['battles'=>$battles]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
+			$data = $form->get('group')->getData();
 			$character->setInsideSettlement();
-			if (isset($data['group'])) {
-				$this->wm->joinBattle($character, $data['group']);
+			if (isset($data)) {
+				$this->wm->joinBattle($character, $data);
 				$this->em->flush();
-				$success = $data['group']->getBattle();
+				$success = $data->getBattle();
 			}
 		}
 

@@ -130,7 +130,6 @@ class EventsController extends AbstractController {
 			$formView = $form->createView();
 			$form->handleRequest($request);
 			if ($form->isSubmitted() && $form->isValid()) {
-				$data = $form->getData();
 				if (!$research) {
 					$act = new Action;
 					$act->setType('task.research')->setCharacter($character);
@@ -146,7 +145,7 @@ class EventsController extends AbstractController {
 					$actMan->queue($act);
 					$research = $act;
 				}
-				foreach ($data['entourage'] as $npc) {
+				foreach ($form->get('entourage')->getData() as $npc) {
 					$npc->setAction($research);
 					$research->addAssignedEntourage($npc);
 					$myscholars->removeElement($npc);

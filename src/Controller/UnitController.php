@@ -426,6 +426,7 @@ class UnitController extends AbstractController {
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
                         $em = $this->em;
                         if ($unit->getCharacter()) {
                                 $this->hist->closeLog($unit, $unit->getCharacter());
@@ -492,6 +493,7 @@ class UnitController extends AbstractController {
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
                         $em = $this->em;
                         if ($unit->getMarshal() && $unit->getMarshal() !== $data['target']) {
                                 $this->hist->closeLog($unit, $unit->getMarshal());

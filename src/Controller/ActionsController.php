@@ -321,9 +321,9 @@ class ActionsController extends AbstractController {
 			$em = $this->em;
 			# TODO: Translate these error strings.
 			if ($data['amount'] > $character->getGold()) {
-				$form->addError('You cannot give more gold than you have.');
+				$form->addError(new FormError($this->trans->trans('You cannot give more gold than you have.')));
 			} elseif ($data['amount'] < 0) {
-				$form->addError('You cannot give negative gold.');
+				$form->addError(new FormError($this->trans->trans('You cannot give negative gold.')));
 			} else {
 				$character->setGold($character->getGold() - $data['amount']);
 				$data['target']->setGold($data['target']->getGold() + $data['amount']);
@@ -736,8 +736,7 @@ class ActionsController extends AbstractController {
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$culture=$data['culture'];
+			$culture = $form->get('culture')->getData();
 			// this is a meta action and thus executed immediately
 			$settlement->setCulture($culture);
 			$this->em->flush();

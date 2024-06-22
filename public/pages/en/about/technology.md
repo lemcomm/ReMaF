@@ -3,15 +3,14 @@ Not only in its concepts, but also in its implementation is Might & Fealty ambit
 Frontend
 --------
 
-The initial incarnation of the game will be as a browser-based online game. A mobile-friendly version of the website is going to be an early priority.
+Front and center, Might & Fealty is a text-focused, browser-based, online role playing game played through any modern internet browser.
 
-Further down the road, as finances allow, there will be native clients for PC and Mac as well as iOS and Android mobile devices, using the [Unity 3D](http://unity3d.com) game engine.
-
+Eventually, we may offer alternative ways for you to interact with the game on a similarly complex level (like a full fledged API) or through a modified format suitable for smaller devices, but when, or if, those will ever happen remains to be seen.
 
 Backend
 -------
 
-On the server-side, the game is built on the [Symfony 2](http://symfony.com) framework with a powerful [PostgreSQL](http://www.postgresql.org) database behind it.
+On the server-side, the game is built on the [Symfony 6](http://symfony.com) framework with a powerful [PostgreSQL](http://www.postgresql.org) database behind it.
 
 But that is just scratching the surface. The real power for many parts of the game comes from running the game world on a full-blown GIS dataset. In less technical terms, Might & Fealty does not use artifical gamey maps, but the same technology that Google Maps and other real-world mapping systems use. In fact, the screenshot on this page is from [Quantum GIS](http://www.qgis.org/), a software used by universities, land developers and public service departments to handle real-world geospatial data.
 

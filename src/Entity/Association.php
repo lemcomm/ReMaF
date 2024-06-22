@@ -7,10 +7,10 @@ use Doctrine\Common\Collections\Collection;
 
 class Association extends Faction {
 	private ?int $id = null;
-	private string $faith_name;
-	private string $follower_name;
-	private string $motto;
-	private bool $active;
+	private ?string $faith_name;
+	private ?string $follower_name;
+	private ?string $motto;
+	private ?bool $active;
 	private string $short_description;
 	private ?Description $description = null;
 	private ?SpawnDescription $spawn_description = null;

@@ -97,29 +97,6 @@ class AssociationDispatcher extends Dispatcher {
 		}
 	}
 
-	public function assocJoinTest($ignored, Association $assoc): array {
-		if (($check = $this->politicsActionsGenericTests()) !== true) {
-			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.$check"];
-		}
-		$character = $this->getCharacter();
-		if (!$character->getInsidePlace()) {
-			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.outsideplace"];
-		} else {
-			$place = $character->getInsidePlace();
-		}
-		if (!$place->containsAssociation($assoc)) {
-			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.assocnothere"];
-		}
-		if ($assoc->findMember($character)) {
-			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.alreadyinassoc"];
-		}
-		return $this->action('place.associations.join', 'maf_assoc_join', true,
-			['id'=>$assoc->getId()],
-			["%name%"=>$assoc->getName()],
-			['id'=>$assoc->getId()]
-		);
-	}
-
 	public function assocManageRankTest($ignored, AssociationRank $rank): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"assoc.manage.rank.name", "description"=>"unavailable.$check");

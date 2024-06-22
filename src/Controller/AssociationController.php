@@ -96,6 +96,9 @@ class AssociationController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['type'] = $form->get('type')->getdata();
+			$data['superior'] = $form->get('superior')->getdata();
+			$form->getExtraData();
 
 			$place = $char->getInsidePlace();
 			$this->am->create($data, $place, $char);
@@ -119,6 +122,9 @@ class AssociationController extends AbstractController {
 		$form = $this->createForm(AssocUpdateType::class, null, ['types'=>$this->em->getRepository(AssociationType::class)->findAll(), 'assocs'=>$char->findSubcreateableAssociations($assoc), 'me'=>$assoc]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
+			$data = $form->getData();
+			$data['type'] = $form->get('type')->getData();
+			$data['superior'] = $form->get('superior')->getData();
 			$this->am->update($assoc, $form->getData(), $char);
 			$this->em->flush();
 			$this->addFlash('notice', $this->trans->trans('assoc.route.updated.success', [], 'orgs'));
@@ -185,6 +191,7 @@ class AssociationController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['aspects'] = $form->get('aspects')->getData();
 
 			$this->am->newDeity($assoc, $char, $data);
 			# No flush needed, this->am flushes.
@@ -209,6 +216,7 @@ class AssociationController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['aspects'] = $form->get('aspects')->getData();
 
 			$this->am->updateDeity($deity, $char, $data);
 			foreach ($deity->getAssociations() as $bassoc) {
@@ -454,8 +462,9 @@ class AssociationController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$superior = $form->get('superior')->getData();
 
-			$rank = $this->am->newRank($assoc, $myRank, $data['name'], $data['viewAll'], $data['viewUp'], $data['viewDown'], $data['viewSelf'], $data['superior'], $data['build'], $data['createSubs'], $data['manager'], $data['createAssocs']);
+			$rank = $this->am->newRank($assoc, $myRank, $data['name'], $data['viewAll'], $data['viewUp'], $data['viewDown'], $data['viewSelf'], $superior, $data['build'], $data['createSubs'], $data['manager'], $data['createAssocs']);
 			if (!$rank->getDescription() || $rank->getDescription()->getText() !== $data['description']) {
 				$dm->newDescription($rank, $data['description'], $char);
 			}
@@ -494,8 +503,9 @@ class AssociationController extends AbstractController {
 			} else {
 				$owner = false;
 			}
+			$superior = $form->get('superior')->getData();
 
-			$this->am->updateRank($myRank, $rank, $data['name'], $data['viewAll'], $data['viewUp'], $data['viewDown'], $data['viewSelf'], $data['superior'], $data['build'], $data['createSubs'], $data['manager'], $data['createAssocs'], $owner);
+			$this->am->updateRank($myRank, $rank, $data['name'], $data['viewAll'], $data['viewUp'], $data['viewDown'], $data['viewSelf'], $superior, $data['build'], $data['createSubs'], $data['manager'], $data['createAssocs'], $owner);
 			if (!$rank->getDescription() || $rank->getDescription()->getText() !== $data['description']) {
 				$dm->newDescription($rank, $data['description'], $char);
 			}
@@ -523,8 +533,7 @@ class AssociationController extends AbstractController {
 		$form = $this->createForm(AssocManageMemberType::class, null, ['ranks'=>$subordinates, 'me'=>$mbr]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$newRank = $data['rank'];
+			$newRank = $form->get('rank')->getData();
 			if ($newRank !== $mbr->getRank() && $subordinates->contains($newRank)) {
 				$this->am->updateMember($assoc, $newRank, $mbr->getCharacter());
 			}

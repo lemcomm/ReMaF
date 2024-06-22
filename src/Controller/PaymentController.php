@@ -293,9 +293,7 @@ class PaymentController extends AbstractController {
 		$form = $this->createForm(CultureType::class, null, ['user'=>$user, 'available'=>false]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-
-			$buying = $data['culture'];
+			$buying = $form->get('culture')->getData();
 			$total = 0;
 			foreach ($buying as $buy) {
 				$total += $buy->getCost();

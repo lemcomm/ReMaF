@@ -56,7 +56,9 @@ class ActivityController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
-                        $duel = $this->actman->createDuel($char, $data['target'], $data['name'], $data['context'], $data['sameWeapon'], $data['weapon'], $data['weaponOnly']);
+			$target = $form->get('target')->getData();
+			$weapon = $form->get('weapon')->getData();
+                        $duel = $this->actman->createDuel($char, $target, $data['name'], $data['context'], $data['sameWeapon'], $weapon, $data['weaponOnly']);
                         if ($duel instanceof Activity) {
                                 $this->addFlash('notice', $this->trans->trans('duel.challenge.sent', ['%target%'=>$data['target']->getName()], 'activity'));
                 		return $this->redirectToRoute('maf_actions');
@@ -114,7 +116,7 @@ class ActivityController extends AbstractController {
 				$form = $this->createForm(EquipmentLoadoutType::class, null, ['opts'=>$opts, 'domain'=>'settings', 'label'=>'loadout.weapon']);
 				$form->handleRequest($request);
 				if ($form->isSubmitted() && $form->isValid()) {
-					$me->setWeapon($form->getData()['equipment']);
+					$me->setWeapon($form->get('equipment')->getData());
 					$me->setAccepted(true);
 					$this->em->flush();
 					$this->addFlash('notice', $this->trans->trans('duel.answer.accepted', ['%target%'=>$them->getCharacter()->getName()]));

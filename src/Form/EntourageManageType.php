@@ -34,15 +34,15 @@ class EntourageManageType extends AbstractType {
 
 			if (!$npc->isLocked()) {
 				if ($npc->getAlive()) {
-					$actions = array('disband2'=>'recruit.manage.disband');
+					$actions = array('recruit.manage.disband' => 'disband2');
 					if (!empty($this->others)) {
-						$actions['assign2'] = 'recruit.manage.assign';
+						$actions['recruit.manage.assign'] = 'assign2';
 					}
 					if ($npc->getCharacter() && $npc->getCharacter()->isNPC()) {
 						unset($actions['assign2']); // bandits cannot assign entourage
 					}
 				} else {
-					$actions = array('bury' => 'recruit.manage.bury');
+					$actions = array('recruit.manage.bury' => 'bury');
 				}
 				$field->add('action', ChoiceType::class, array(
 					'choices' => $actions,

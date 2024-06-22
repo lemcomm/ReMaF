@@ -36,15 +36,15 @@ class ElectionType extends AbstractType {
 			'placeholder'=>'elections.method.empty',
 			'choice_translation_domain' => true,
 			'choices' => [
-				'banner' => 'elections.method.banner',
-				'spears' => 'elections.method.spears',
-				'swords' => 'elections.method.swords',
-				'horses' => 'elections.method.horses',
-				'land'	=> 'elections.method.land',
-				'realmland' => 'elections.method.realmland',
-				'castles' => 'elections.method.castles',
-				'realmcastles' => 'elections.method.realmcastles',
-				'heads'	=> 'elections.method.heads',
+				'elections.method.banner' => 'banner',
+				'elections.method.spears' => 'spears',
+				'elections.method.swords' => 'swords',
+				'elections.method.horses' => 'horses',
+				'elections.method.land' => 'land',
+				'elections.method.realmland' => 'realmland',
+				'elections.method.castles' => 'castles',
+				'elections.method.realmcastles' => 'realmcastles',
+				'elections.method.heads' => 'heads',
 			]
 		]);
 		$builder->add('duration', ChoiceType::class, [
@@ -53,11 +53,11 @@ class ElectionType extends AbstractType {
 			'mapped'=>false,
 			'choice_translation_domain' => true,
 			'choices' => [
-				1 => 'elections.duration.1',
-				3 => 'elections.duration.3',
-				5 => 'elections.duration.5',
-				7 => 'elections.duration.7',
-				10 => 'elections.duration.10',
+				'elections.duration.1' => 1,
+				'elections.duration.3' => 3,
+				'elections.duration.5' => 5,
+				'elections.duration.7' => 7,
+				'elections.duration.10' => 10,
 			]
 		]);
 

@@ -17,7 +17,7 @@ class AddParticipantType extends AbstractType {
 		$resolver->setDefaults(array(
 			'intention'       => 'new_conversation_134',
 			'translation_domain' => 'conversations',
-			'recipients'	=> []
+			'contacts'	=> []
 		));
 	}
 
@@ -30,7 +30,7 @@ class AddParticipantType extends AbstractType {
 			'label' => false,
 			'placeholder' => 'add.empty',
 			'class' => Character::class,
-			'property' => 'name',
+			'choice_label' => 'name',
 			'query_builder'=>function(EntityRepository $er) use ($recipients) {
 				$qb = $er->createQueryBuilder('c');
 				$qb->where('c IN (:recipients)');

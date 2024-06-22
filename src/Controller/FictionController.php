@@ -16,6 +16,7 @@ class FictionController extends AbstractController {
 		'fall',
 		'lendan',
 		'geas',
+		'portals',
 	);
 
   	#[Route ('/fiction/{page}', name:'maf_fiction')]

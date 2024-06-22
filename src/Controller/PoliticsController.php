@@ -361,8 +361,7 @@ class PoliticsController extends AbstractController {
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$successor = $data['target'];
+			$successor = $form->get('target')->getData();
 
 			if ($character->getSuccessor()) {
 				$this->hist->logEvent(

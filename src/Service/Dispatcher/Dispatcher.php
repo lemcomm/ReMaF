@@ -1500,7 +1500,7 @@ class Dispatcher {
 			'place.evictAssoc.description',
 			'place.evictAssoc.longdesc',
 			array('id'=>$place->getId(), 'assoc'=>$assoc->getId()),
-			array("%name%"=>$place->getName(), "%formalname%"=>$place->getFormalName())
+			array("%name%"=>$assoc->getName(), "%formalname%"=>$assoc->getFormalName())
 		);
 	}
 
@@ -1665,7 +1665,7 @@ class Dispatcher {
 		if (
 			$place->getAmbassador() == $character ||
 			(!$place->getAmbassador() && $place->getOwningRealm() && $place->getOwningRealm()->findRulers()->contains($character)) ||
-			(!$place->getAmbassador() && !$place->getOwningRealm() && $place->getHostingRealm() && $place->getHostingRealm()->findRulers()->conntains($character)) ||
+			(!$place->getAmbassador() && !$place->getOwningRealm() && $place->getHostingRealm() && $place->getHostingRealm()->findRulers()->contains($character)) ||
 			(!$place->getAmbassador() && !$place->getOwningRealm() && !$place->getHostingRealm() && $place->getOwner() == $character)
 		) {
 			return $this->action("place.embassy", "maf_place_manage", true,
@@ -1904,6 +1904,29 @@ class Dispatcher {
 			return array("name"=>"assoc.new.name", "description"=>"unavailable.notowner");
 		}
 		return $this->action('assoc.new', 'maf_assoc_create', true);
+	}
+
+	public function assocJoinTest($ignored, Association $assoc): array {
+		if (($check = $this->politicsActionsGenericTests()) !== true) {
+			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.$check"];
+		}
+		$character = $this->getCharacter();
+		if (!$character->getInsidePlace()) {
+			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.outsideplace"];
+		} else {
+			$place = $character->getInsidePlace();
+		}
+		if (!$place->containsAssociation($assoc)) {
+			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.assocnothere"];
+		}
+		if ($assoc->findMember($character)) {
+			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.alreadyinassoc"];
+		}
+		return $this->action('place.associations.join', 'maf_assoc_join', true,
+			['id'=>$assoc->getId()],
+			["%name%"=>$assoc->getName()],
+			['id'=>$assoc->getId()]
+		);
 	}
 
 	# Rest moved to AssociationDispatcher.php

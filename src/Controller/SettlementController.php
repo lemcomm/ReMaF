@@ -364,6 +364,7 @@ class SettlementController extends AbstractController {
 
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			$character->setFaith($data['target']);
 			$this->em->flush();
 			if ($data['target']) {

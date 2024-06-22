@@ -248,8 +248,7 @@ class HouseController extends AbstractController {
 		$form = $this->createForm(HouseMembersType::class, null, ['members' => $members]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$exile = $data['member'];
+			$exile = $form->get('member')->getData();
 			if ($exile) {
 				$exile->setHouse(null);
 				if ($exile->isRuler()) {
@@ -293,8 +292,7 @@ class HouseController extends AbstractController {
 		$form = $this->createForm(HouseMembersType::class, null, ['members' => $members]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$member = $data['member'];
+			$member = $form->get('member')->getData();
 			if ($member) {
 				$house->setSuccessor($member);
 				$em->flush();
