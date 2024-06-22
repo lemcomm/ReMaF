@@ -92,11 +92,8 @@ class Geography {
 		}
 		return $this->biomes_invalid;
 	}
-
 	public function travelDetails(Character $character, $to=1.0) {
-		$query = $this->em->createQuery('
-			SELECT s as place,b.name as biome,ST_Length(ST_Intersection(g.poly,ST_Line_Substring(c.travel, c.progress, :to)) as length from App:Settlement s JOIN s.geo_data g JOIN g.biome b, App:Character c WHERE c = :me AND ST_Intersects(g.poly, ST_Line_Substring(c.travel, c.progress, :to)) = true
-		'); #For reasons unfathomable, this query is tripping up the highlighing on my new editor. Putting it on a new line fixes it.
+		$query = $this->em->createQuery('SELECT s as place,b.name as biome,ST_Length(ST_Intersection(g.poly, ST_Line_Substring(c.travel, c.progress, :to))) as length from App:Settlement s JOIN s.geo_data g JOIN g.biome b, App:Character c WHERE c = :me AND ST_Intersects(g.poly, ST_Line_Substring(c.travel, c.progress, :to)) = true');
 		$query->setParameters(['me'=>$character, 'to'=>$to]);
 		return $query->getResult();
 	}
@@ -157,9 +154,9 @@ class Geography {
 
 	public function findNearbyArtifacts(Character $char) {
 		$now = new DateTime('now');
-		if ($this->em->createQuery('SELECT count(id) FROM App:Artifact WHERE location IS NOT NULL and available_after <= :now')->setParameters(['now'=>$now])->getSingleScalarResult() > 0) {
+		if ($this->em->createQuery('SELECT count(a.id) FROM App:Artifact a WHERE a.location IS NOT NULL and a.available_after <= :now')->setParameters(['now'=>$now])->getSingleScalarResult() > 0) {
 			$distance = $this->calculateSpottingDistance($char);
-			$query = $this->em->createQuery('SELECT a FROM App:Artifact a WHERE location IS NOT NULL AND available_after <= :now AND ST_DWithin(a.location, :me, :maxdistance) = true');
+			$query = $this->em->createQuery('SELECT a FROM App:Artifact a WHERE a.location IS NOT NULL AND a.available_after <= :now AND ST_DWithin(a.location, :me, :maxdistance) = true');
 			$query->setParameters(['me'=>$char->getLocation(), 'maxdistance'=>$distance, 'now'=>$now]);
 			$result = $query->getResult();
 			if ($result->count() > 0) {
