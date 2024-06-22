@@ -140,8 +140,8 @@ newLink.on('click', function(e) {
 	addTagForm(collectionHolder);
 });
 
-charselect(collectionHolder.find("input[id$='_targetCharacter']"));
-realmselect(collectionHolder.find("input[id$='_targetRealm']"));
+charselect(collectionHolder.find("input[id$='_target_character']"));
+realmselect(collectionHolder.find("input[id$='_target_realm']"));
 
 // renumber priorities
 var prio=0;
@@ -183,8 +183,8 @@ function addTagForm(collectionHolder) {
 	// defaults
 	newRow.find("input[id$='_allowed']").prop('checked', true);
 	newRow.find("input[id$='_includeSubs']").prop('checked', false);
-	realmselect(newRow.find("input[id$='_targetRealm']"));
-	charselect(newRow.find("input[id$='_targetCharacter']"));
+	realmselect(newRow.find("input[id$='_target_realm']"));
+	charselect(newRow.find("input[id$='_target_character']"));
 
 	$("#changes").show();
 }
@@ -217,8 +217,8 @@ function addActionButtons(row) {
 	field.append(removeButton);
 	removeButton.on('click', function(e) {
 		row.hide();
-		row.find("input[id$='_targetRealm']").val("");
-		row.find("input[id$='_targetCharacter']").val("");
+		row.find("input[id$='_target_realm']").val("");
+		row.find("input[id$='_target_character']").val("");
 		$("#changes").show();
 	});
 

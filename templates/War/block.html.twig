@@ -16,9 +16,3 @@
 	{% endif %}
 
 {% endblock %}
-
-{% block jquery %}
-{% include "element/autocomplete.js.twig" %}
-charselect($("input[id$='_targetCharacter']"));
-realmselect($("input[id$='_targetRealm']"));
-{% endblock %}

@@ -1219,7 +1219,7 @@ class WarController extends AbstractController {
 		$form = $this->createFormBuilder(null, array('attr'=>array('class'=>'wide')))
 			->add('mode', ChoiceType::class, [
 				'required'=>true,
-				'empty_value'=>'form.choose',
+				'empty_data'=>'form.choose',
 				'label'=>'military.block.mode.label',
 				'translation_domain'=>'actions',
 				'choices'=> ['allow'=>'military.block.mode.allow', 'attack'=>'military.block.mode.attack']
