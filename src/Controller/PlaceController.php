@@ -367,6 +367,7 @@ class PlaceController extends AbstractController {
 				$fail = TRUE; #You shouldn't even have access but players will be players, best check anyways.
 				$this->addFlash('error', $this->trans->trans('unavailable.placestooclose', [], 'messages'));
 			}
+			$data['type'] = $form->get('type')->getData();
 			if (!$fail && $data['type']->getRequires()=='ruler') {
 				if (!$character->findRulerships()->contains($data['realm'])) {
 					$fail = TRUE;
@@ -387,7 +388,7 @@ class PlaceController extends AbstractController {
 				$place->setShortDescription($data['short_description']);
 				$place->setCreator($character);
 				$place->setType($data['type']);
-				$place->setRealm($data['realm']);
+				$place->setRealm($form->get('realm')->getData());
 				$place->setDestroyed(false);
 				if ($character->getInsideSettlement()) {
 					$place->setSettlement($character->getInsideSettlement());
@@ -463,6 +464,7 @@ class PlaceController extends AbstractController {
 
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			if ($data['target'] != $character) {
 				$place->setOwner($data['target']);
 
@@ -532,6 +534,10 @@ class PlaceController extends AbstractController {
 			$data = $form->getData();
 			$fail = $this->checkPlaceNames($form, $data['name'], $data['formal_name'], $place);
 			if (!$fail) {
+				$data['hosting_realm'] = $form->get('hosting_realm')->getData();
+				$data['owning_realm'] = $form->get('owning_realm')->getData();
+				$data['ambassador'] = $form->get('ambassador')->getData();
+				$data['realm'] = $form->get('realm')->getData();
 				if ($place->getName() != $data['name']) {
 					$place->setName($data['name']);
 				}
@@ -610,6 +616,7 @@ class PlaceController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			if ($data['target']) {
 				$act = new Action;
 				$act->setType('place.occupant')->setCharacter($character);
@@ -640,8 +647,7 @@ class PlaceController extends AbstractController {
 		$form = $this->createForm(RealmSelectType::class, null, ['realms' => $character->findRealms(), 'type' => 'changeoccupier']);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$targetrealm = $data['target'];
+			$targetrealm = $form->get('target')->getData();
 
 			if ($place->getOccupier() == $targetrealm) {
 				$result = 'same';

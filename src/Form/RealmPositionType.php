@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -46,18 +47,6 @@ class RealmPositionType extends AbstractType {
 			'required'=>true,
 		));
 		if (!$is_ruler) {
-			/*$builder->add('permissions', EntityType::class', array(
-				'label'=>'position.permissions',
-				'required' => false,
-				'multiple' => true,
-				'expanded' => true,
-				'choice_translation_domain' => true,
-				'class'=>Permission::class,
-				'choice_label'=>'translation_string',
-				'query_builder'=>function(EntityRepository $er) {
-					return $er->createQueryBuilder('p')->where('p.class = :class')->setParameter('class', 'realm');
-				}
-			));*/
 			$builder->add('type', EntityType::class, array(
 				'label' => 'position.type',
 				'required' => false,
@@ -92,7 +81,7 @@ class RealmPositionType extends AbstractType {
 				'attr' => array('title'=>'position.help.haveVassals'),
 			));
 		}
-		$builder->add('minholders', IntegerType::class, array(
+		$builder->add('minholders', NumberType::class, array(
 			'label'=>'position.minholders',
 			'scale'=>0,
 			'required' => false,
@@ -117,36 +106,36 @@ class RealmPositionType extends AbstractType {
 			'choice_translation_domain' => true,
 			'required' => false,
 			'choices' => array(
-				'banner' => 'elections.method.banner',
-				'spears' => 'elections.method.spears',
-				'swords' => 'elections.method.swords',
-				'horses' => 'elections.method.horses',
-				'land'	=> 'elections.method.land',
-				'realmland' => 'elections.method.realmland',
-				'castles' => 'elections.method.castles',
-				'realmcastles' => 'elections.method.realmcastles',
-				'heads'	=> 'elections.method.heads',
+				'elections.method.banner' => 'banner',
+				'elections.method.spears' => 'spears',
+				'elections.method.swords' => 'swords',
+				'elections.method.horses' => 'horses',
+				'elections.method.land' => 'land',
+				'elections.method.realmland' => 'realmland',
+				'elections.method.castles' => 'castles',
+				'elections.method.realmcastles' => 'realmcastles',
+				'elections.method.heads' => 'heads',
 			),
 			'attr' => array('title'=>'position.help.electiontype'),
 		));
 		$builder->add('term', ChoiceType::class, array(
 			'label'=>'position.term',
 			'choices' => array(
-				0 => 'position.terms.0',
-				365 => 'position.terms.365',
-				90 => 'position.terms.90',
-				30 => 'position.terms.30',
+				'position.terms.0' => 0,
+				'position.terms.365' => 365,
+				'position.terms.90' => 90,
+				'position.terms.30' => 30,
 			),
 			'attr' => array('title'=>'position.help.term'),
 		));
-		$builder->add('year', IntegerType::class, array(
+		$builder->add('year', NumberType::class, array(
 			'label'=>'position.year',
 			'scale'=>0,
 			'required' => false,
 			'empty_data' => '1',
 			'attr' => array('title'=>'position.help.year'),
 		));
-		$builder->add('week', IntegerType::class, array(
+		$builder->add('week', NumberType::class, array(
 			'label'=>'position.week',
 			'scale'=>0,
 			'required' => false,

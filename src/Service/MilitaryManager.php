@@ -803,14 +803,14 @@ class MilitaryManager {
 		return true;
 	}
 
-	public function rebaseUnit ($data, $options, Unit $unit): bool {
-		if (!($options->contains($data['settlement'])) || $unit->getTravelDays() > 0) {
+	public function rebaseUnit ($where, $options, Unit $unit): bool {
+		if (!($options->contains($where)) || $unit->getTravelDays() > 0) {
 			return false;
 		}
 		$origin = $unit->getSettlement();
 
-		$unit->setSettlement($data['settlement']);
-		$unit->setSupplier($data['settlement']);
+		$unit->setSettlement($where);
+		$unit->setSupplier($where);
 
 		if (!$unit->getCharacter() && $origin) {
 			$this->returnUnitHome($unit, 'rebase', $origin);
@@ -819,7 +819,7 @@ class MilitaryManager {
 			$this->history->logEvent(
 				$unit,
 				'event.military.rebased',
-				array('%link-settlement-1%'=>$origin->getId(), '%link-settlement-2%'=>$data['settlement']->getId()),
+				array('%link-settlement-1%'=>$origin->getId(), '%link-settlement-2%'=>$where->getId()),
 				History::MEDIUM, false, 30
 			);
 		}

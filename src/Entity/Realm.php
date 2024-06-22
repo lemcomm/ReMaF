@@ -37,7 +37,6 @@ class Realm extends Faction {
 	private Collection $embassies_abroad;
 	private Collection $hosted_embassies;
 	private Collection $vassals;
-	private Collection $permissions;
 	private ?Settlement $capital = null;
 	private ?Realm $superior = null;
 	private ?Place $capital_place = null;
@@ -67,7 +66,6 @@ class Realm extends Faction {
 		$this->embassies_abroad = new ArrayCollection();
 		$this->hosted_embassies = new ArrayCollection();
 		$this->vassals = new ArrayCollection();
-		$this->permissions = new ArrayCollection();
 	}
 
 	public function findRulers(): ArrayCollection|bool {
@@ -1136,37 +1134,6 @@ class Realm extends Faction {
 	 */
 	public function removeVassal(Character $vassals) {
 		$this->vassals->removeElement($vassals);
-	}
-
-	/**
-	 * Add permissions
-	 *
-	 * @param RealmPermission $permissions
-	 *
-	 * @return Realm
-	 */
-	public function addPermission(RealmPermission $permissions): static {
-		$this->permissions[] = $permissions;
-
-		return $this;
-	}
-
-	/**
-	 * Remove permissions
-	 *
-	 * @param RealmPermission $permissions
-	 */
-	public function removePermission(RealmPermission $permissions) {
-		$this->permissions->removeElement($permissions);
-	}
-
-	/**
-	 * Get permissions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getPermissions(): ArrayCollection|Collection {
-		return $this->permissions;
 	}
 
 	/**

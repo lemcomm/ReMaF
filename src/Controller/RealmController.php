@@ -371,6 +371,7 @@ class RealmController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 
 			if (isset($data['target']) && $data['target']->isNPC()) {
 				$this->addFlash('error', $this->trans->trans('unavailable.npc'));
@@ -538,7 +539,6 @@ class RealmController extends AbstractController {
 			}
 		}
 
-		$original_permissions = clone $position->getPermissions();
 		$form = $this->createForm(RealmPositionType::class, $position);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -553,16 +553,6 @@ class RealmController extends AbstractController {
 			}
 
 			if (!$fail) {
-				foreach ($position->getPermissions() as $permission) {
-					if (!$permission->getId()) {
-						$em->persist($permission);
-					}
-				}
-				foreach ($original_permissions as $orig) {
-					if (!$position->getPermissions()->contains($orig)) {
-						$em->remove($orig);
-					}
-				}
 				if ($is_new) {
 					$em->persist($position);
 				}
@@ -824,7 +814,7 @@ class RealmController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
-			$target = $data['target'];
+			$target = $form->get('target')->getData();
 			$msg = $data['message'];
 			if ($target->getType() > $realm->getType()) {
 				$timeout = new DateTime("now");
@@ -859,10 +849,12 @@ class RealmController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$fail = false;
+			$settlements = $form->get('settlement')->getData();
+			$ruler = $form->get('ruler')->getData();
 
 			$newsize = 0;
 			$chars = new ArrayCollection;
-			foreach ($data['settlement'] as $e) {
+			foreach ($settlements as $e) {
 				$newsize++;
 				if ($e->getOwner()) {
 					$chars->add($e->getOwner());
@@ -876,7 +868,7 @@ class RealmController extends AbstractController {
 				$fail=true;
 			}
 
-			if (!$chars->contains($data['ruler'])) {
+			if (!$chars->contains($ruler)) {
 				$form->addError(new FormError($this->trans->trans("diplomacy.subrealm.invalid.ruler", array(), 'politics')));
 				$fail=true;
 			}
@@ -890,8 +882,8 @@ class RealmController extends AbstractController {
 				}
 			}
 			if (!$fail) {
-				$subrealm = $this->rm->subcreate($data['name'], $data['formal_name'], $data['type'], $data['ruler'], $character, $realm);
-				foreach ($data['settlement'] as $e) {
+				$subrealm = $this->rm->subcreate($data['name'], $data['formal_name'], $data['type'], $ruler, $character, $realm);
+				foreach ($settlements as $e) {
 					$pol->changeSettlementRealm($e, $subrealm, 'subrealm');
 				}
 				$this->em->flush();
@@ -925,14 +917,14 @@ class RealmController extends AbstractController {
 		$form = $this->createForm(RealmCapitalType::class, null, ['realm'=>$realm]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
 			$fail = false;
+			$capital = $form->get('capital')->getData();
 
-			if ($data['capital'] == $realm->getCapital()) {
+			if ($capital == $realm->getCapital()) {
 				$fail = true;
 				$form->addError(new FormError($this->trans->trans("realm.capital.error.already", array(), 'politics')));
 			}
-			if (!$fail AND !$data['capital']) {
+			if (!$fail AND !$capital) {
 				$fail = true;
 				$form->addError(new FormError($this->trans->trans("realm.capital.error.none", array(), 'politics')));
 			}
@@ -940,12 +932,12 @@ class RealmController extends AbstractController {
 				if ($realm->getCapital()) {
 					$realm->getCapital()->removeCapitalOf($realm);
 				}
-				$realm->setCapital($data['capital']);
-				$data['capital']->addCapitalOf($realm);
+				$realm->setCapital($capital);
+				$capital->addCapitalOf($realm);
 				$this->hist->logEvent(
 					$realm,
 					'event.realm.capital',
-					array('%link-settlement%'=>$data['capital']->getId()),
+					array('%link-settlement%'=>$capital->getId()),
 					History::HIGH
 				);
 				$this->em->flush();

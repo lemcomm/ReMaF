@@ -20,7 +20,7 @@ class SetMarkerType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
-			'intention'				=> 'setmarker_19283',
+			'intention'	=> 'setmarker_19283',
 			'realms'	=> new ArrayCollection(),
 		));
 	}
@@ -63,4 +63,7 @@ class SetMarkerType extends AbstractType {
 		$builder->add('submit', SubmitType::class, array('label'=>'marker.submit'));
 	}
 
+	public function getBlockPrefix(): string {
+		return "setmarker";
+	}
 }

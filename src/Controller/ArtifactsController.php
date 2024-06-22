@@ -213,9 +213,8 @@ class ArtifactsController extends AbstractController {
 		$form = $this->createForm(InteractionType::class, null, ['action'=>'giveartifact', 'maxdistance'=>$this->geo->calculateInteractionDistance($character), 'me'=>$character]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$artifact = $data['artifact'];
-			$target = $data['target'];
+			$artifact = $form->get('artifact')->getData();
+			$target = $form->get('target')->getData();
 
 			$artifact->setOwner($target);
 

@@ -285,14 +285,16 @@ class WarController extends AbstractController {
 				# For new sieges, this is easy, if not long. Mostly, we just need to make the siege, battle groups, and the events.
 				$siege = new Siege;
 				$em->persist($siege);
-				if ($data['war']) {
-					$siege->setWar($data['war']);
-					$siege->setRealm($data['war']->getRealm());
-				} elseif ($data['realm']) {
-					$siege->setRealm($data['realm']);
+				$war = $form->get('war')->getData();
+				$realm = $form->get('realm')->getData();
+				if ($war) {
+					$siege->setWar($war);
+					$siege->setRealm($war->getRealm());
+				} elseif ($realm) {
+					$siege->setRealm($realm);
 				}
 				$siege->setStage(1);
-				if ($data['confirm'] && $settlement) {
+				if ($settlement) {
 					$place = FALSE;
 					$siege->setSettlement($settlement);
 					$settlement->setSiege($siege);
@@ -321,7 +323,7 @@ class WarController extends AbstractController {
 						$maxstages++; # At this point, our castle has a large, enclosed compound of its own, usually built at the same strength as the primary walls.
 					}
 					$siege->setMaxStage($maxstages); # Assuming we have everything, this will max out at 5.
-				} elseif ($data['confirm'] && $place) {
+				} elseif ($place) {
 					$settlement = FALSE;
 					$siege->setPlace($place);
 					$siege->setEncircled(TRUE); #For now, sieges always encircle places.
@@ -550,7 +552,8 @@ class WarController extends AbstractController {
 					# This only engages if we've already got action set to "selected", so we start looking at what subaction we're processing.
 					switch($data['subaction']) {
 						case 'leadership':
-							if (($siege->getAttacker()->getLeader() == $character || $siege->getDefender()->getLeader() == $character) && $data['newleader']) {
+							$newleader = $form->get('newleader')->getData();
+							if (($siege->getAttacker()->getLeader() == $character || $siege->getDefender()->getLeader() == $character) && $newleader) {
 								# We already know they're *a* leader, now to figure out what group they lead.
 								#TODO: Later when we add more sides to a battle, we'll need to expand this.
 								if ($siege->getAttacker()->getCharacters()->contains($character)) {
@@ -558,7 +561,7 @@ class WarController extends AbstractController {
 								} else {
 									$group = $siege->getDefender();
 								}
-								$group->setLeader($data['newleader']);
+								$group->setLeader($newleader);
 								$em->flush();
 								if ($place) {
 									return $this->redirectToRoute('maf_war_siege_place', array('place'=>$place->getId(), 'action'=>'select'));
@@ -1340,6 +1343,7 @@ class WarController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			$em = $this->em;
 
 			if (count($data['target']) == 0) {

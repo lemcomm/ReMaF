@@ -131,11 +131,11 @@ class LawController extends AbstractController {
 		$form = $this->createForm(LawTypeSelectType::class, null, ['types' => $this->em->getRepository(LawType::class)->findBy(['category'=>$type])]);
 		$form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
+			$target = $form->get('target')->getData();
 			if ($realm) {
-				return $this->redirectToRoute('maf_realm_laws_finalize', ['realm'=>$realm->getId(), 'type'=>$data['target']->getId()]);
+				return $this->redirectToRoute('maf_realm_laws_finalize', ['realm'=>$realm->getId(), 'type'=>$target->getId()]);
 			} else {
-				return $this->redirectToRoute('maf_assoc_laws_finalize', ['assoc'=>$assoc->getId(), 'type'=>$data['target']->getId()]);
+				return $this->redirectToRoute('maf_assoc_laws_finalize', ['assoc'=>$assoc->getId(), 'type'=>$target->getId()]);
 			}
 		}
 
@@ -240,6 +240,8 @@ class LawController extends AbstractController {
 		$form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['faith'] = $form->get('faith')->getData();
+			$data['settlement'] = $form->get('settlement')->getData();
 			#updateLaw($org, $type, $setting, $title, $description = null, Character $character, $allowed, $mandatory, $cascades, $sol, $flush=true)
 			$result = $this->lawMan->updateLaw($org, $type, $data['value'], $data['title'], $data['description'], $char, $data['mandatory'], $data['cascades'], $data['sol'], $data['settlement'], $law);
 			if ($result instanceof Law) {

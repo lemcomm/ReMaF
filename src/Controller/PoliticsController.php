@@ -767,7 +767,8 @@ class PoliticsController extends AbstractController {
 						}
 						break;
 					case 'assign':
-						if ($data['assignto'] && !$prisoner->hasAction('personal.prisonassign')) {
+						if (!empty($others) && !$prisoner->hasAction('personal.prisonassign')) {
+							$data['assignto'] = $form->get('assignto')->getData();
 							$prisoner->setPrisonerOf($data['assignto']);
 							$character->removePrisoner($prisoner);
 							$data['assignto']->addPrisoner($prisoner);

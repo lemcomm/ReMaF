@@ -22,7 +22,7 @@ class SubscriptionType extends AbstractType {
 		$choices = array();
 		foreach ($options['all_levels'] as $i=>$level) {
 			if ($level["selectable"]) {
-				$choices[$i] = 'account.level.'.$i;
+				$choices['account.level.'.$i] = $i;
 			}
 		}
 

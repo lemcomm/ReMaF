@@ -42,7 +42,8 @@ class UnitRebaseType extends AbstractType {
 				$qb->orderBy('s.name');
 				return $qb;
 			},
-                        'placeholder' => 'unit.rebase.none'
+                        'placeholder' => 'unit.rebase.none',
+			'mapped'=>false,
 		));
 
 		$builder->add('submit', SubmitType::class, array(

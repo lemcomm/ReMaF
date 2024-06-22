@@ -41,7 +41,7 @@ class RealmRelationType extends AbstractType {
 
 		$choices = array();
 		foreach ($statuses as $status) {
-			$choices[$status] = 'diplomacy.status.'.$status;
+			$choices['diplomacy.status.'.$status] = $status;
 		}
 
 		$builder->add('status', ChoiceType::class, array(

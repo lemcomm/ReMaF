@@ -327,6 +327,7 @@ class UnitController extends AbstractController {
 			'reassign'=>$canReassign,
 			'unit'=>$unit,
 			'hasUnitPerm'=>$hasUnitsPerm,
+			'me'=>$character,
 		]);
 
 		$form->handleRequest($request);
@@ -554,8 +555,8 @@ class UnitController extends AbstractController {
 		$form = $this->createForm(UnitRebaseType::class, null, ['settlements'=>$options]);
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
-                        $data = $form->getData();
-                        $success = $this->mm->rebaseUnit($data, $options, $unit);
+                        $where = $form->get('settlement')->getData();
+                        $success = $this->mm->rebaseUnit($where, $options, $unit);
                         if ($success) {
                                 $this->em->flush();
                                 $this->addFlash('notice', $this->trans->trans('unit.rebase.success', array(), 'actions'));
@@ -699,7 +700,7 @@ class UnitController extends AbstractController {
 
      		if ($form->isSubmitted() && $form->isValid()) {
      			$data = $form->getData();
-                        if ($data['unit']->getSettlement() != $settlement) {
+                        if ($data['unit']->getSettlement() !== $settlement) {
                                 $form->addError(new FormError("recruit.troops.unitnothere"));
                                 return $this->render('Unit/recruit.html.twig', $renderArray);
                         }
@@ -716,12 +717,6 @@ class UnitController extends AbstractController {
                                 $this->addFlash('notice', $this->trans->trans('recruit.troops.unitmax', array('%only%'=> $data['unit']->getAvailable() - $data['number'], '%planned%'=>$data['number']), 'actions'));
                         }
 
-     			for ($i=0; $i<$data['number']; $i++) {
-     				if (!$data['weapon']) {
-     					$form->addError(new FormError("recruit.troops.noweapon"));
-                                        return $this->render('Unit/recruit.html.twig', $renderArray);
-     				}
-     			}
      			$count = 0;
      			// $corruption = $economy->calculateCorruption($settlement); #Disabled mechanic.
 			$corruption = 0;

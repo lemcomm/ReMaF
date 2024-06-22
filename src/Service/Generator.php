@@ -51,7 +51,7 @@ class Generator {
 		return $name->getName();
 	}
 
-	public function randomSoldier(EquipmentType $weapon, EquipmentType $armour, EquipmentType $equipment, EquipmentType $mount, Settlement $home, $corruption, Unit $unit): ?Soldier {
+	public function randomSoldier(?EquipmentType $weapon, ?EquipmentType $armour, ?EquipmentType $equipment, ?EquipmentType $mount, ?Settlement $home, $corruption, Unit $unit): ?Soldier {
 		$soldier = new Soldier;
 		$soldier->setName($this->randomName($home));
 		$soldier->setLocked(false);

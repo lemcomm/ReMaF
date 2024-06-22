@@ -1118,6 +1118,7 @@ class CharacterController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			$em = $this->em;
 
 			$this->charman->imprison($character, $data['target']);

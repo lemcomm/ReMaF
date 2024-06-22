@@ -84,23 +84,23 @@ class SiegeType extends AbstractType {
 			if ($isLeader) {
 				# Leaders can always transfer leadership, if they're not alone.
 				if ($defCount > 1 || $attCount > 1) {
-					$actionslist = array_merge($actionslist, array('leadership'=>'military.siege.leadership.name'));
+					$actionslist = array_merge($actionslist, array('military.siege.leadership.name' => 'leadership'));
 				}
 				# Attacker leader can always disband.
 				if ($siege->getAttacker()->getLeader() == $character) {
-					$actionslist = array_merge($actionslist, array('disband'=>'military.siege.disband.name'));
+					$actionslist = array_merge($actionslist, array('military.siege.disband.name' => 'disband'));
 				}
 				if (!$character->isDoingAction('military.regroup')) {
 					# Not regrouping? Then you can call an assault if you'r the leader.
-					$actionslist = array_merge($actionslist, array('assault'=>'military.siege.assault.name'));
+					$actionslist = array_merge($actionslist, array('military.siege.assault.name' => 'assault'));
 				}
 			} else {
 				# Anyone that isn't a leader can opt to just leave.
-				$actionslist = array_merge($actionslist, array('leave' => 'military.siege.leave.name'));
+				$actionslist = array_merge($actionslist, array('military.siege.leave.name' => 'leave'));
 			}
 			if ($isLeader && $siege->getAttacker()->getLeader() != $character) {
 				# Defender leader can also just leave, because he might be alone.
-				$actionslist = array_merge($actionslist, array('leave' => 'military.siege.leave.name'));
+				$actionslist = array_merge($actionslist, array('military.siege.leave.name' => 'leave'));
 			}
 			if ($location instanceof Settlement) {
 				if (
@@ -109,7 +109,7 @@ class SiegeType extends AbstractType {
 					|| (!$attLeader && $isAttacker)
 				) {
 					# No leader of your group? Defending lord can assume if present, otherwise any defender can. Any attacker can take control of leaderless attackers.
-					$actionslist = array_merge($actionslist, array('assume'=>'military.siege.assume.name'));
+					$actionslist = array_merge($actionslist, array('military.siege.assume.name' => 'assume'));
 				}
 			} elseif ($location instanceof Place) {
 				if (
@@ -118,12 +118,12 @@ class SiegeType extends AbstractType {
 					|| (!$attLeader && $isAttacker)
 				) {
 					# No leader of your group? Defending lord can assume if present, otherwise any defender can. Any attacker can take control of leaderless attackers.
-					$actionslist = array_merge($actionslist, array('assume'=>'military.siege.assume.name'));
+					$actionslist = array_merge($actionslist, array('military.siege.assume.name' => 'assume'));
 				}
 			}
 			if (!$siege->getBattles()->isEmpty()) {
 				# If there's a battle ongoing, anyone can opt to join it. If the leader does, they'll be able to call their entire force into action.
-				$actionslist = array_merge($actionslist, array('join'=>'military.siege.join.name'));
+				$actionslist = array_merge($actionslist, array('military.siege.join.name' => 'join'));
 			}
 			ksort($actionslist, 2); #Sort array as strings.
 			$builder->add('action', ChoiceType::class, array(

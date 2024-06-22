@@ -195,6 +195,10 @@ class ConversationController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['owner'] = $form->get('owner')->getData();
+			$data['nearby'] = $form->get('nearby')->getData();
+			$data['captor'] = $form->get('captor')->getData();
+			$data['contacts'] = $form->get('contacts')->getData();
 			if (!$org) {
 				$recipients = new ArrayCollection;
 				if (isset($data['owner'])) foreach ($data['owner'] as $rec) {

@@ -51,7 +51,6 @@
 		<many-to-one field="capital_place" target-entity="Place" inversed-by="capital_of"/>
 
 		<one-to-many field="vassals" target-entity="Character" mapped-by="realm"/>
-		<one-to-many field="permissions" target-entity="RealmPermission" mapped-by="realm"/>
 		<many-to-one field="faith" target-entity="Association" inversed-by="follower_realms"/>
 
 	</entity>

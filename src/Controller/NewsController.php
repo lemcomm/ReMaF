@@ -264,6 +264,7 @@ class NewsController extends AbstractController {
 			$form->handleRequest($request);
 			if ($form->isSubmitted() && $form->isValid()) {
 				$data = $form->getData();
+				$data['target'] = $form->get('target')->getData();
 
 				foreach ($data['target'] as $target) {
 					$target_editor = $this->news->accessPaper($paper, $target);

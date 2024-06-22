@@ -62,7 +62,7 @@ class UnitSoldiersType extends AbstractType {
 		$hasUnitPerm = $options['hasUnitPerm'];
 
 		$local = false;
-		if ($unit->getCharacter() == $me || (!$unit->getCharacter() && ($options['hasUnitsPerm'] || $unit->getMarshal() == $me))) {
+		if ($unit->getCharacter() == $me || (!$unit->getCharacter() && ($hasUnitPerm || $unit->getMarshal() == $me))) {
 			$local = true;
 		}
 
@@ -84,19 +84,19 @@ class UnitSoldiersType extends AbstractType {
 			if ($soldier->isLocked() || $is_looting) {
 				// disallow almost all actions if soldier is locked or if character is in a battle or looting
 				if (!$soldier->isAlive() && $local) {
-					$actions = array('bury' => 'recruit.manage.bury2');
+					$actions = array('recruit.manage.bury2' => 'bury');
 				}
 			} else {
 				if ($soldier->isAlive()) {
 					if (!$in_battle) {
 						if ($local) {
 							if (!empty($avail_train) && $soldier->isActive()) {
-								$actions['retrain'] = 'recruit.manage.retrain';
-								$actions['disband'] = 'recruit.manage.disband';
+								$actions['retrain.manage.retrain'] = 'recruit';
+								$actions['recruit.manage.disband'] = 'disband';
 							}
-							if ($options['reassign']) {
-								$actions['assignto'] = 'recruit.manage.reassign';
-								$actions['disband'] = 'recruit.manage.disband';
+							if ($reassign) {
+								$actions['recruit.manage.reassign'] = 'assignto';
+								$actions['recruit.manage.disband'] = 'disband';
 								# This might be duplicate, or it might not. Array key, so doesn't matter.
 							}
 						}
@@ -112,10 +112,10 @@ class UnitSoldiersType extends AbstractType {
 						}
 					}
 					if ($resupply) {
-						$actions['resupply'] = 'recruit.manage.resupply';
+						$actions['recruit.manage.resupply'] = 'resupply';
 					}
 				} else {
-					$actions = array('bury' => 'recruit.manage.bury');
+					$actions = array('recruit.manage.bury' => 'bury');
 				}
 			} // endif locked
 			if (!empty($actions)) {
@@ -126,7 +126,7 @@ class UnitSoldiersType extends AbstractType {
 				));
 			}
 		}
-		if (!empty($others) && $options['reassign']) {
+		if (!empty($others) && $reassign) {
 			$builder->add('assignto', EntityType::class, array(
 				'placeholder' => 'form.choose',
 				'label' => 'recruit.manage.assignto',

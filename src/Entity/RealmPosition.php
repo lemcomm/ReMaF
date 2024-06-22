@@ -33,7 +33,6 @@ class RealmPosition {
 	private Collection $part_of_requests;
 	private ?PositionType $type = null;
 	private ?Realm $realm = null;
-	private Collection $permissions;
 	private Collection $holders;
 
 	/**
@@ -45,7 +44,6 @@ class RealmPosition {
 		$this->requests = new ArrayCollection();
 		$this->related_requests = new ArrayCollection();
 		$this->part_of_requests = new ArrayCollection();
-		$this->permissions = new ArrayCollection();
 		$this->holders = new ArrayCollection();
 	}
 
@@ -655,37 +653,6 @@ class RealmPosition {
 		$this->realm = $realm;
 
 		return $this;
-	}
-
-	/**
-	 * Add permissions
-	 *
-	 * @param Permission $permissions
-	 *
-	 * @return RealmPosition
-	 */
-	public function addPermission(Permission $permissions): static {
-		$this->permissions[] = $permissions;
-
-		return $this;
-	}
-
-	/**
-	 * Remove permissions
-	 *
-	 * @param Permission $permissions
-	 */
-	public function removePermission(Permission $permissions): void {
-		$this->permissions->removeElement($permissions);
-	}
-
-	/**
-	 * Get permissions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getPermissions(): ArrayCollection|Collection {
-		return $this->permissions;
 	}
 
 	/**

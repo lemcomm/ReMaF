@@ -109,7 +109,7 @@ class Unit {
 		$next = false;
 		foreach ($this->incoming_supplies as $resupply) {
 			if ($resupply->getType() === $type) {
-				if (!$next || $next->getTravelDays() > $resupply->getTravelDays()) {
+				if (!$next || $next > $resupply->getTravelDays()) {
 					$next = $resupply->getTravelDays();
 				}
 			}

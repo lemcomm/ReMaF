@@ -318,6 +318,7 @@ class ActionsController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			$em = $this->em;
 			# TODO: Translate these error strings.
 			if ($data['amount'] > $character->getGold()) {
@@ -361,6 +362,7 @@ class ActionsController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			$em = $this->em;
 			[$his_ship, $distance] = $this->geo->findMyShip($data['target']);
 			if ($his_ship) {
@@ -447,12 +449,7 @@ class ActionsController extends AbstractController {
 
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			if (isset($data['target'])) {
-				$targetrealm = $data['target'];
-			} else {
-				$targetrealm = null;
-			}
+			$targetrealm = $form->get('target')->getData();
 
 			$act = new Action;
 			$act->setType('settlement.take')->setCharacter($character);
@@ -522,8 +519,7 @@ class ActionsController extends AbstractController {
 		$form = $this->createForm(RealmSelectType::class, null, ['realms'=>$character->findRealms(), 'type' =>'changerealm']);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$targetrealm = $data['target'];
+			$targetrealm = $form->get('target')->getData();
 
 			if ($settlement->getRealm() == $targetrealm) {
 				$result = array(
@@ -576,6 +572,7 @@ class ActionsController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			if ($settlement->getRealm() && !$data['withrealm']) {
 				$extra = 'clear_realm';
 			} else {
@@ -638,6 +635,7 @@ class ActionsController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			if ($data['target'] != $character) {
 				$settlement->setSteward($data['target']);
 
@@ -1078,6 +1076,7 @@ class ActionsController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
+			$data['target'] = $form->get('target')->getData();
 			if ($data['target']) {
 				$act = new Action;
 				$act->setType('settlement.occupant')->setCharacter($character);
@@ -1112,8 +1111,7 @@ class ActionsController extends AbstractController {
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$targetrealm = $data['target'];
+			$targetrealm = $form->get('target')->getData();
 
 			if ($settlement->getOccupier() == $targetrealm) {
 				$result = 'same';
@@ -1142,8 +1140,7 @@ class ActionsController extends AbstractController {
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
-			$targetrealm = $data['target'];
+			$targetrealm = $form->get('target')->getData();
 
 			$this->pol->changeSettlementOccupier($character, $settlement, $targetrealm);
 			$this->em->flush();

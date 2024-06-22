@@ -23,8 +23,8 @@ class LootType extends AbstractType {
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'loot_1541',
-			'translation_domain' => 'actions',
-			'attr'					=> array('class'=>'wide')
+			'translation_domain' 	=> 'actions',
+			'attr'			=> array('class'=>'wide')
 		));
 		$resolver->setRequired(['settlement', 'em', 'inside']);
 	}
@@ -32,18 +32,18 @@ class LootType extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 		if ($options['inside']) {
 			$choices = array(
-				'thralls'	=> 'military.settlement.loot.option.thralls',
-				'supply'		=> 'military.settlement.loot.option.supply',
-				'resources'	=> 'military.settlement.loot.option.resources',
-				'wealth'		=> 'military.settlement.loot.option.wealth',
-				'burn'		=> 'military.settlement.loot.option.burn',
+				'military.settlement.loot.option.thralls' => 'thralls',
+				'military.settlement.loot.option.supply' => 'supply',
+				'military.settlement.loot.option.resources' => 'resources',
+				'military.settlement.loot.option.wealth' => 'wealth',
+				'military.settlement.loot.option.burn' => 'burn',
 			);
 		} else {
 			$choices = array(
-				'thralls'	=> 'military.settlement.loot.option.thralls',
-				'supply'		=> 'military.settlement.loot.option.food',
-				'resources'	=> 'military.settlement.loot.option.resources',
-				'wealth'		=> 'military.settlement.loot.option.wealth',
+				'military.settlement.loot.option.thralls' => 'thralls',
+				'military.settlement.loot.option.food' => 'supply',
+				'military.settlement.loot.option.resources' => 'resources',
+				'military.settlement.loot.option.wealth' => 'wealth',
 			);
 		}
 		$builder->add('method', ChoiceType::class, array(
