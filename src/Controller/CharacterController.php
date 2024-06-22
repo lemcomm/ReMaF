@@ -657,9 +657,8 @@ class CharacterController extends AbstractController {
 
 		if (! $my_rating = $em->getRepository(CharacterRating::class)->findOneBy(array('character'=>$char, 'given_by_user'=>$this->getUser()))) {
 			$my_rating = new CharacterRating;
-			$my_rating->setCharacter($char);
 		}
-		$form = $this->createForm(CharacterRatingType::class, $my_rating);
+		$form = $this->createForm(CharacterRatingType::class, $my_rating, ['characterId'=>$char->getId()]);
 		return $this->render('Character/reputation.html.twig', [
 			'char'		=> $char,
 			'ratings'	=> $data,
@@ -676,9 +675,9 @@ class CharacterController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
-			$id = $data->getCharacter()->getId();
+			$char = $this->em->getRepository(Character::class)->findOneBy(['id'=>$form->get('char')->getData()]);
 			$em = $this->em;
-			$my_rating = $em->getRepository(CharacterRating::class)->findOneBy(array('character'=>$data->getCharacter(), 'given_by_user'=>$this->getUser()));
+			$my_rating = $em->getRepository(CharacterRating::class)->findOneBy(array('character'=>$char, 'given_by_user'=>$this->getUser()));
 			if ($my_rating) {
 				// TODO: if we've changed it substantially, we should clear out the votes!
 				// FIXME: This is a bit ugly. Can we not use the existing $data object?
@@ -689,6 +688,7 @@ class CharacterController extends AbstractController {
 				$my_rating->setLastChange(new \DateTime("now"));
 			} else {
 				// new rating
+				$data->setCharacter($char);
 				$data->setGivenByUser($this->getUser());
 				$data->setContent(substr($data->getContent(),0,250));
 				$data->setLastChange(new \DateTime("now"));
@@ -697,8 +697,8 @@ class CharacterController extends AbstractController {
 			$em->flush();
 		}
 
-		if ($id) {
-			return $this->redirectToRoute('maf_char_view', array('id'=>$id));
+		if ($char) {
+			return $this->redirectToRoute('maf_char_view', array('id'=>$char->getId()));
 		} else {
 			return $this->redirectToRoute('maf_char_recent');
 		}
