@@ -195,57 +195,61 @@ class CharacterManager {
 		foreach ($character->getActions() as $act) {
 			$this->em->remove($act);
 		}
-		$enemies = false;
-		foreach ($character->getBattlegroups() as $bg) {
-			if ($bg->getCharacters()->count() === 1 && $bg->getBattle()->getGroups()->count() == 2) {
-				# Just us, we can short-circuit this battle.
-				foreach ($bg->getBattle()->getGroups() as $group) {
-					$this->warman->disbandGroup($group);
+
+		// Exception for currently battling characters.
+		// TODO: make this smarter about which battlegroups.
+		if (!$character->getBattling()) {
+			$enemies = false;
+			foreach ($character->getBattlegroups() as $bg) {
+				if ($bg->getCharacters()->count() === 1 && $bg->getBattle()->getGroups()->count() == 2) {
+					# Just us, we can short-circuit this battle.
+					foreach ($bg->getBattle()->getGroups() as $group) {
+						$this->warman->disbandGroup($group);
+					}
+				} else {
+					$this->warman->removeCharacterFromBattlegroup($character, $bg);
+				}
+				$enemies = $bg->getEnemies();
+				if ($enemies) {
+					$enemies = $enemies->first()->getCharacters();
+				} else {
+					$enemies = false;
+				}
+			}
+
+			// remove all votes
+			$query = $this->em->createQuery('DELETE FROM App:Vote v WHERE v.character = :me OR v.target_character = :me');
+			$query->setParameter('me', $character);
+			$query->execute();
+
+			// disband my troops
+			if ($enemies && $enemies->count() > 0) {
+				$enemy = $enemies->first();
+				foreach ($character->getUnits() as $unit) {
+					if ($enemy instanceof Character) {
+						$unit->setCharacter($enemy);
+						$unit->setSettlement(null);
+						$unit->setSupplier(null);
+						$this->history->logEvent($unit, 'event.military.cowardice', [
+								'%link-character-1%' => $character->getId(),
+								'%link-character-2%' => $enemy->getId()
+							]);
+						$this->history->logEvent($character, 'event.military.defection', [
+								'%link-unit%' => $unit->getId(),
+								'%link-character%' => $enemy->getId()
+							]);
+						$this->history->logEvent($enemy, 'event.military.defection2', [
+								'%link-unit%' => $unit->getId(),
+								'%link-character%' => $character->getId()
+							]);
+					} else {
+						$this->milman->returnUnitHome($unit, 'death', $character);
+					}
 				}
 			} else {
-				$this->warman->removeCharacterFromBattlegroup($character, $bg);
-			}
-			$enemies = $bg->getEnemies();
-			if ($enemies) {
-				$enemies = $enemies->first()->getCharacters();
-			}
-		}
-
-		// remove all votes
-		$query = $this->em->createQuery('DELETE FROM App:Vote v WHERE v.character = :me OR v.target_character = :me');
-		$query->setParameter('me', $character);
-		$query->execute();
-
-		// disband my troops
-		if ($enemies && $enemies->count() > 0) {
-			$enemy = $enemies->first();
-			foreach ($character->getUnits() as $unit) {
-				if ($enemy instanceof Character) {
-					$unit->setCharacter($enemy);
-					$unit->setSettlement(null);
-					$unit->setSupplier(null);
-					$this->history->logEvent(
-						$unit,
-						'event.military.cowardice',
-						['%link-character-1%'=>$character->getId(), '%link-character-2%'=>$enemy->getId()]
-					);
-					$this->history->logEvent(
-						$character,
-						'event.military.defection',
-						['%link-unit%'=>$unit->getId(), '%link-character%'=>$enemy->getId()]
-					);
-					$this->history->logEvent(
-						$enemy,
-						'event.military.defection2',
-						['%link-unit%'=>$unit->getId(), '%link-character%'=>$character->getId()]
-					);
-				} else {
+				foreach ($character->getUnits() as $unit) {
 					$this->milman->returnUnitHome($unit, 'death', $character);
 				}
-			}
-		} else {
-			foreach ($character->getUnits() as $unit) {
-				$this->milman->returnUnitHome($unit, 'death', $character);
 			}
 		}
 		foreach($character->getMarshallingUnits() as $unit) {
@@ -539,6 +543,8 @@ class CharacterManager {
 			$enemies = $bg->getEnemies();
 			if ($enemies) {
 				$enemies = $enemies->first()->getCharacters();
+			} else {
+				$enemies = false;
 			}
 		}
 
