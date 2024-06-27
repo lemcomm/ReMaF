@@ -117,7 +117,7 @@ class PaymentManager {
 	public function calculateRefund(User $user): float {
 		$today = new \DateTime("now");
 		$days = $today->diff($user->getPaidUntil())->format("%a");
-		$today->modify('+1 month -1 day');
+		$today->modify('+1 month');
 		$month = $today->diff(new \DateTime("now"))->format("%a");
 
 		$refund = ceil( ($days/$month) * $this->calculateUserFee($user) );
