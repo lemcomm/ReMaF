@@ -179,9 +179,6 @@ class UnitDispatcher extends Dispatcher {
 		$settlement = $this->getCharacter()->getInsideSettlement();
 		$character = $this->getCharacter();
 
-		if ($unit->getTravelDays() > 0) {
-			return array("name"=>"unit.soldiers.name", "description"=>"unavailable.rebasing");
-		}
 		if (
 			$unit->getCharacter() === $character
 			|| ($unit->getSettlement() && ($unit->getSettlement()->getOwner() === $character || $unit->getSettlement()->getSteward() === $character || $unit->getMarshal() === $character || $this->pm->checkSettlementPermission($unit->getSettlement(), $character, 'units')))
@@ -214,9 +211,6 @@ class UnitDispatcher extends Dispatcher {
 			if ($unit->getSettlement() != $character->getInsideSettlement()) {
 				return array("name"=>"unit.canceltraining.name", "description"=>"unavailable.notinside");
 			}
-		}
-		if ($unit->getTravelDays() > 0) {
-			return array("name"=>"unit.canceltraining.name", "description"=>"unavailable.rebasing");
 		}
 		return $this->action("unit.canceltraining.name", "maf_unit_cancel_training");
 	}

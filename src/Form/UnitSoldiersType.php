@@ -61,8 +61,14 @@ class UnitSoldiersType extends AbstractType {
 		$reassign = $options['reassign'];
 		$hasUnitPerm = $options['hasUnitPerm'];
 
+
 		$local = false;
-		if ($unit->getCharacter() == $me || (!$unit->getCharacter() && ($hasUnitPerm || $unit->getMarshal() == $me))) {
+		$locked = false;
+		/** @var Unit $unit */
+
+		if ($unit->getTravelDays() > 0) {
+			$locked = true;
+		} elseif ($unit->getCharacter() == $me || (!$unit->getCharacter() && ($hasUnitPerm || $unit->getMarshal() == $me))) {
 			$local = true;
 		}
 
@@ -91,7 +97,7 @@ class UnitSoldiersType extends AbstractType {
 					if (!$in_battle) {
 						if ($local) {
 							if (!empty($avail_train) && $soldier->isActive()) {
-								$actions['retrain.manage.retrain'] = 'recruit';
+								$actions['recruit.manage.retrain'] = 'recruit';
 								$actions['recruit.manage.disband'] = 'disband';
 							}
 							if ($reassign) {
@@ -122,7 +128,8 @@ class UnitSoldiersType extends AbstractType {
 				$field->add('action', ChoiceType::class, array(
 					'choices' => $actions,
 					'required' => false,
-					'attr' => array('class'=>'action')
+					'attr' => array('class'=>'action'),
+					'disabled' => $locked,
 				));
 			}
 		}
@@ -139,6 +146,7 @@ class UnitSoldiersType extends AbstractType {
 					$qb->setParameter('others', $others);
 					return $qb;
 				},
+				'disabled' => $locked,
 			));
 		}
 		if (!empty($avail_train)) {
@@ -155,7 +163,9 @@ class UnitSoldiersType extends AbstractType {
 					'query_builder'=>function(EntityRepository $er) use ($avail_train, $field) {
 						return $er->createQueryBuilder('e')->where('e in (:available)')->andWhere('e.type = :type')->orderBy('e.name')
 							->setParameters(array('available'=>$avail_train, 'type'=>$field));
-				}));
+					},
+					'disabled' => $locked,
+				));
 			}
 		}
 	}
