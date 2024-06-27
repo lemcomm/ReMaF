@@ -345,6 +345,7 @@ class UnitController extends AbstractController {
 			'training' => $training,
 			'form' => $form->createView(),
                         'unit' => $unit,
+			'locked' => $unit->getTravelDays()>0,
                 ]);
 	}
 

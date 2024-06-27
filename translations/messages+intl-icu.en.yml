@@ -1171,6 +1171,7 @@ armour:     armor
 equipment:  equipment
 home:       home
 group:      group
+mount:      mount
 
 npc:
  type:         type

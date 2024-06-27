@@ -4,7 +4,7 @@
 {{ form_widget(form._token) }}
 <table id="soldiers">
 	<thead><tr>
-		<th></th>
+		{% if not locked %}<th></th>{% endif %}
 		<th>{{ 'soldier.name'|trans }}</th>
 		<th data-sorter="false"></th>
 		<th>{{ 'experience'|trans }}</th>
@@ -22,7 +22,7 @@
 		{% set man = soldiers[id] %}
 		{% if man.trainingRequired <= 0 %}
 			<tr has_changed="false">
-				<td><input type="checkbox" class="check_soldier" data-id="{{ man.id }}"/></td>
+				{% if not locked %}<td><input type="checkbox" class="check_soldier" data-id="{{ man.id }}"/></td>{% endif %}
 				<td{% if not man.alive %} class="disabled"{% endif %}>{{ man.name }}</td>
 				<td>
 					{% if not man.alive %}
@@ -99,7 +99,7 @@
 </table>
 
 <hr />
-
+{% if not locked %}
 <div class="actionsbar">
 	<button type="button" id="toggle_all">{{ 'soldier.toggleall'|trans }}</button>
 	{{ 'soldier.allin4'|trans }}
@@ -120,6 +120,7 @@
 	<br /><br />
 
 </div>
+{% endif %}
 
 {% if form.assignto is defined %}
 <div id="assigntarget" class="hidden subselect">
@@ -141,8 +142,9 @@
 	{{ form_widget(form.mount) }}
 </div>
 {% endif %}
-
+{% if not locked %}
 <button id="do_submit">{{ 'recruit.manage.submit'|trans({},"actions") }}</button>
+{% endif %}
 </form>
 
 <div class="footnote">

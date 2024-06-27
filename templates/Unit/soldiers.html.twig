@@ -17,7 +17,8 @@
 	{% include "element/soldierslist.html.twig" with {
 		"settlement":settlement,
 		"submitpath":path('maf_unit_soldiers', {"unit":unit.id}),
-		"listpath":path('maf_unit_soldiers', {"unit":unit.id})
+		"listpath":path('maf_unit_soldiers', {"unit":unit.id}),
+		"locked":locked
 	} %}
 
 
