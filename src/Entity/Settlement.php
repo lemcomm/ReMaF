@@ -58,10 +58,10 @@ class Settlement {
 	private ?Character $occupant;
 	private ?Realm $occupier;
 	private Collection $chat_messages;
-	private int $assignedRoads = -1;
-	private int $assignedBuildings = -1;
-	private int $assignedFeatures = -1;
-	private int $employees = -1;
+	private float $assignedRoads = -1;
+	private float $assignedBuildings = -1;
+	private float $assignedFeatures = -1;
+	private float $employees = -1;
 	private ?Association $faith;
 	private float $food_provision_limit = 1;
 
