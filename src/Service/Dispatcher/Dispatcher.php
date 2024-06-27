@@ -1308,11 +1308,25 @@ class Dispatcher {
 	}
 
 	public function personalRequestSoldierFoodTest(): array {
-		if ($this->getCharacter()->isNPC()) {
+		$char = $this->getCharacter();
+		if ($char->isNPC()) {
 			return array("name"=>"personal.soldierfood.name", "description"=>"unavailable.npc");
 		}
+		$possible = false;
+		if ($char->findLiege()) {
+			$possible = true;
+		} elseif ($char->findrealms()->count() >= 0) {
+			$possible = true;
+		} elseif ($char->getInsideSettlement()) {
+			$possible = true;
+		}
+		if ($possible) {
+			return $this->action("personal.soldierfood", "maf_gamerequest_soldierfood");
+		} else {
+			return array("name"=>"personal.soldierfood.name", "description"=>"unavailable.nopossiblesources");
+		}
 
-		return $this->action("personal.soldierfood", "maf_gamerequest_soldierfood");
+
 
 	}
 	/* ========== Economy Actions ========== */

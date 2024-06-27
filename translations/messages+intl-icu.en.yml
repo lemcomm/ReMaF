@@ -1838,6 +1838,7 @@ unavailable:
  noanswerableduels: All pending duels are awaiting others.
  unfinishedbusiness: "You have some unfinished business to attend to first. Perhaps it's a duel that requires your participation?"
  unitdisbanded: This unit has been disbanded.
+ nopossiblesources: No places to request food from.
 
 marker:
  name:      Marker name
