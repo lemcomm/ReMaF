@@ -1,7 +1,7 @@
 nearby:		Nearby Dungeons
-far:			You are hearing rumours about a particular %area%, roughly to the %direction%.
-close:		There are persistent rumours about a %area% nearby, somewhere to the %direction%.
-spotted:		You have discovered a %area%, %distance% to the %direction%.
+far:			You are hearing rumours about a particular {area}, roughly to the {direction}.
+close:		There are persistent rumours about a {area} nearby, somewhere to the {direction}.
+spotted:		You have discovered a {area}, {distance} to the {direction}.
 enter:
  link:		enter a nearby dungeon
  commit:		descend into this dungeon
@@ -99,49 +99,49 @@ size:
  300:  collosal
 
 monster:
- dark:          creature|creatures
- arachnid:      arachnid|arachnids
- bandit:        bandit|bandits
- bandita:       bandit archer|bandit archers
- banditb:       bandit boss|bandit bosses
- banditg:       bandit guard|bandit guards
- barghest:      barghest|barghests
- bat:           dire bat|dire bats
- bear:          bear|bears
- beetle:        fire beetle swarm|fire beetle swarms
- cat:           wildcat|wildcats
- crazy:         crazy man|crazy men
- chimera:       chimera|chimeras
- dragon:        dragon|dragons
- eagle:         eagle|eagles
- falcon:        falcon|falcons
- fortguard:     infantryman|infantrymen
- fortguarda:    archer|archers
- fortguardc:    guard captain|guard captains
- fortguardh:    heavy infantryman|heavy infantrymen
- fortguardv:    veteran infantryman|veteran infantrymen
- fortguardhv:   veteran heavy infantryman|veteran heavy infantrymen
- fortcavalry:   cavalryman|cavalrymen
- fortcavalrya:  mounted archer|mounted archers
- fortcavalryc:  cavalry captain|cavalry captains
- fortcavalryh:  heavy cavalryman|heavy cavalrymen
- fortlord:      mortal lord|mortal lords
- fortlesslord:  lesser mortal lord|mortal lesser lords
- hawk:          hawk|hawks
- lost:          lost hero|lost heroes
- mongrel:       mongrel|mongrels
- monhunter:     monster hunter|monster hunters
- npcdungeoneer: mortal dungeoneer|mortal dungeoneers
- ogre:          ogre|ogres
- rat:           rat|rats
- shaman:        shaman|shamans
- slime:         green slime|green slimes
- snake:         snake|snakes
- troglodyte:    troglodyte|troglodytes
- villager:      villager|villagers
- wolf:		        wolf|wolves
- wolfb:         dire wolf|dire wolves
- wyvern:        wyvern|wyverns
+ dark:          creature{count, plural, =1 {} other {s}}
+ arachnid:      arachnid{count, plural, =1 {} other {s}}
+ bandit:        bandit{count, plural, =1 {} other {s}}
+ bandita:       bandit archer{count, plural, =1 {} other {s}}
+ banditb:       bandit boss{count, plural, =1 {} other {es}}
+ banditg:       bandit guard{count, plural, =1 {} other {s}}
+ barghest:      barghest{count, plural, =1 {} other {s}}
+ bat:           dire bat{count, plural, =1 {} other {s}}
+ bear:          bear{count, plural, =1 {} other {s}}
+ beetle:        fire beetle swarm{count, plural, =1 {} other {s}}
+ cat:           wildcat{count, plural, =1 {} other {s}}
+ crazy:         crazy m{count, plural, =1 {an} other {en}}
+ chimera:       chimera{count, plural, =1 {} other {s}}
+ dragon:        dragon{count, plural, =1 {} other {s}}
+ eagle:         eagle{count, plural, =1 {} other {s}}
+ falcon:        falcon{count, plural, =1 {} other {s}}
+ fortguard:     infantrym{count, plural, =1 {an} other {en}}
+ fortguarda:    archer{count, plural, =1 {} other {s}}
+ fortguardc:    guard captain{count, plural, =1 {} other {s}}
+ fortguardh:    heavy infantrym{count, plural, =1 {an} other {en}}
+ fortguardv:    veteran infantrym{count, plural, =1 {an} other {en}}
+ fortguardhv:   veteran heavy infantrym{count, plural, =1 {an} other {en}}
+ fortcavalry:   cavalrym{count, plural, =1 {an} other {en}}
+ fortcavalrya:  mounted archer{count, plural, =1 {} other {s}}
+ fortcavalryc:  cavalry captain{count, plural, =1 {} other {s}}
+ fortcavalryh:  heavy cavalrym{count, plural, =1 {an} other {en}}
+ fortlord:      mortal lord{count, plural, =1 {} other {s}}
+ fortlesslord:  lesser mortal lord{count, plural, =1 {} other {s}}
+ hawk:          hawk{count, plural, =1 {} other {s}}
+ lost:          lost hero{count, plural, =1 {} other {es}}
+ mongrel:       mongrel{count, plural, =1 {} other {s}}
+ monhunter:     monster hunter{count, plural, =1 {} other {s}}
+ npcdungeoneer: mortal dungeoneer{count, plural, =1 {} other {s}}
+ ogre:          ogre{count, plural, =1 {} other {s}}
+ rat:           rat{count, plural, =1 {} other {s}}
+ shaman:        shaman{count, plural, =1 {} other {s}}
+ slime:         green slime{count, plural, =1 {} other {s}}
+ snake:         snake{count, plural, =1 {} other {s}}
+ troglodyte:    troglodyte{count, plural, =1 {} other {s}}
+ villager:      villager{count, plural, =1 {} other {s}}
+ wolf:		        wol{count, plural, =1 {f} other {ves}}
+ wolfb:         dire wol{count, plural, =1 {f} other {ves}}
+ wyvern:        wyvern{count, plural, =1 {} other {s}}
 
 monsterdesc:
  arachnid: >
@@ -313,12 +313,12 @@ target:
  random:    (random)
  invalid:   (no valid targets)
  nr:
-  monster:  "monsters #%nr%"
-  treasure: "treasure #%nr%"
- monster:   "%amount% %size% %type%"
- monsterlink: "%amount% <a href=\"%url%\" class=\"link_monster\">%size% %type%</a>"
+  monster:  "monsters #{nr}"
+  treasure: "treasure #{nr}"
+ monster:   "{amount} {size} {type}"
+ monsterlink: "{amount} <a href=\"{url}\" class=\"link_monster\">{size} {type}</a>"
 
-treasure:   A treasure worth %value% gold.
+treasure:   A treasure worth {value} gold.
 notreasure: There are no treasures here.
 trap:       (trapped)
 
@@ -347,35 +347,35 @@ dungeon:
    You are currently inside a dungeon, slightly limiting your other activities, but potentially leaving you with
    great adventure and even some gold.
  withparty: >
-   You were exploring a dungeon, but have now left. You can <a href="%url%">review the exploration</a>, especially if other members of your party are still inside.
- forum:         Read all about dungeons and how they work <a href="%url%">on the forum</a>.
- prepare:       You and your party are currently preparing your exploration of this %area%.
- minparty:      At least %min% party members are required before you can enter a dungeon.
+   You were exploring a dungeon, but have now left. You can <a href="{url}">review the exploration</a>, especially if other members of your party are still inside.
+ forum:         Read all about dungeons and how they work <a href="{url}">on the forum</a>.
+ prepare:       You and your party are currently preparing your exploration of this {area}.
+ minparty:      At least {min} party members are required before you can enter a dungeon.
  waiting:       Exploration and action timers will not start until at least half of the party members have selected an action.
- level:         You are in area %level% of this %area%.
- progress:      "Your party has %party% members, %missing% of whom have not yet decided upon an action. If they don't, the current actions will be resolved in at most %timeleft% hours."
+ level:         You are in area {level} of this {area}.
+ progress:      "Your party has {party} members, {missing} of whom have not yet decided upon an action. If they don't, the current actions will be resolved in at most {timeleft} hours."
  actions:       party actions
  cards:         your available actions
  cardstext:     Choose one action from your available actions below.
  details:
   title:        current area scouting
-  rank:         "Best scouting result: %rank% scouts."
+  rank:         "Best scouting result: {rank} scouts."
   none:         This area is not yet scouted.
   notstarted:   Exploration has not yet started.
-  1:            There are %monsters% monster groups in this area.
-  2:            In addition to the following monster groups, there are %treasures% treasures in this area.
+  1:            There are {monsters} monster groups in this area.
+  2:            In addition to the following monster groups, there are {treasures} treasures in this area.
   3:            "The following monster groups and treasures were identified:"
   4:            "The following monster groups, treasures and traps were identified:"
  chat:
   title:        party communication
   submit:       add message
-  intro:        You are exploring this %area% with a party of %party%. Talking helps to work together and get the best results.
+  intro:        You are exploring this {area} with a party of {party}. Talking helps to work together and get the best results.
   hint:         write a message and press enter
-  link:         read all %count% messages
+  link:         read all {count} messages
  events:
   title:        dungeon events
   intro:        "Everything that has happened in this dungeon, in chronological order:"
-  link:         read all %count% events
+  link:         read all {count} events
  error:
   title:        cannot enter dungeon
   intro:        "You cannot enter this dungeon, because:"
@@ -465,24 +465,24 @@ card:
   heal1:
    title: Bandage
    text:  Patch up wounds on yourself or another dungeoneer, healing one wound.
-   log:   "%d% bandages %target%, healing one wound."
+   log:   "{d} bandages {target}, healing one wound."
   heal2:
    title: Minor Healing
    text:  Bandages, herbs, alcohol to clean, and the skill to use all that can heal two wounds on yourself or someone else.
-   log:   "%d% heals %target% for two wounds."
+   log:   "{d} heals {target} for two wounds."
   heal3:
    title: Major Healing
    text:  Some medical knowledge and maybe a touch of magic, and you can heal three wounds on yourself or someone else.
-   log:   "%d% heals %target% for three wounds."
+   log:   "{d} heals {target} for three wounds."
   distracta:
    title: Distract Animals
    text:  Distract a group of animals, preventing them from attacking.
-   log:   "%d% distracts %size% %monster%."
+   log:   "{d} distracts {size} {monster}."
   wait:
    title: Wait
    text:  Do nothing for a moment.
   rest:
-   log:   "%d% rests and regains one %card% action."
+   log:   "{d} rests and regains one {card} action."
   rest2:
    title: Good Rest
    text:  Rest for a while and regain two random actions.
@@ -501,36 +501,36 @@ card:
 
 
 play:
- join:      "%d% has joined the party."
+ join:      "{d} has joined the party."
  start:     The expedition has begun...
- level:     The party is now proceeding to area %level%.
- card:      "%d% performs the %card% action."
+ level:     The party is now proceeding to area {level}.
+ card:      "{d} performs the {card} action."
  attack:
-  miss:     "%d% attacks %size% %monster%, but misses."
-  wound:    "%d% attacks %size% %monster%, wounding it."
-  kill:     "%d% attacks %size% %monster%, killing it."
-  notarget: "%d% prepares to attack, but cannot spot any monsters to fight."
+  miss:     "{d} attacks {size} {monster}, but misses."
+  wound:    "{d} attacks {size} {monster}, wounding it."
+  kill:     "{d} attacks {size} {monster}, killing it."
+  notarget: "{d} prepares to attack, but cannot spot any monsters to fight."
  monster:
-  miss:     "%size% %monster% misses %d%."
-  wound:    "%size% %monster% wounds %d%."
-  kill:     "%size% %monster% strikes down %d%."
- plunder:   "%d% plunders %gold% gold of treasure."
- leave:     "%d% has left the dungeon."
+  miss:     "{size} {monster} misses {d}."
+  wound:    "{size} {monster} wounds {d}."
+  kill:     "{size} {monster} strikes down {d}."
+ plunder:   "{d} plunders {gold} gold of treasure."
+ leave:     "{d} has left the dungeon."
  trap:
-  wound:    As %d% approaches the treasure, a trap is triggered, causing %wounds% wounds.
-  kill:     As %d% approaches the treasure, a deadly trap is triggered.
+  wound:    As {d} approaches the treasure, a trap is triggered, causing {wounds} wounds.
+  kill:     As {d} approaches the treasure, a deadly trap is triggered.
  untrap:
-  wound:    "%d% tries to disarm a trap but fails, triggering the trap and suffering %wounds% wounds."
-  kill:     "%d% tries to disarm a trap but fails, triggering a deadly trap."
-  none:     "%d% tries to disarm a trap only to find out that this treasure was not trapped."
-  done:     "%d% successfully disarms a trap."
+  wound:    "{d} tries to disarm a trap but fails, triggering the trap and suffering {wounds} wounds."
+  kill:     "{d} tries to disarm a trap but fails, triggering a deadly trap."
+  none:     "{d} tries to disarm a trap only to find out that this treasure was not trapped."
+  done:     "{d} successfully disarms a trap."
 
 party:
  title:     party
  intro:
-  inside:   Your party of %party% is currently exploring a %area%.
-  inside2:  Your party of %party% is currently exploring a %area%, but you have already left the dungeon. %inside% members are still inside.
-  outside:  Your party of %party% is not inside a dungeon at this time.
+  inside:   Your party of {party} is currently exploring a {area}.
+  inside2:  Your party of {party} is currently exploring a {area}, but you have already left the dungeon. {inside} members are still inside.
+  outside:  Your party of {party} is not inside a dungeon at this time.
   alone:    You are not currently a member of an exploration party.
  leave:     leave this party
  left:      You have left your party and are now ready to explore another dungeon with a different group.

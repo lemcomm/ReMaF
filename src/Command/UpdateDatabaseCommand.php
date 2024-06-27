@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Permission;
 use App\Entity\RealmDesignation;
 use App\Service\GameRunner;
 use App\Service\NotificationManager;
@@ -97,6 +98,14 @@ class UpdateDatabaseCommand extends  Command {
 				FROM unitsettings
 				WHERE unit.id = unitsettings.unit_id');
 			$output->writeln('UnitSettings converted!');
+		}
+		if (in_array('3', $versions)) {
+			$output->writeln('Removing Settlement Manage Recruits permission...');
+			$type = $em->getRepository(Permission::class)->findOneBy(['class'=>'settlement', 'name'=>'recruit']);
+			$em->createQuery('DELETE FROM App:SettlementPermission s WHERE s.permission = :type')->setParameters(['type'=>$type])->execute();
+			$em->remove($type);
+			$em->flush();
+			$output->writeln('Permission removed!');
 		}
 
 		return Command::SUCCESS;

@@ -76,6 +76,7 @@ class CharacterCreationType extends AbstractType {
 			$builder->add('dead', CheckboxType::class, array(
 				'label' => 'dead',
 				'required' => false,
+				'empty_data' => false,
 				'attr' => array('title'=>'newcharacter.help.dead'),
 			));
 		} else {

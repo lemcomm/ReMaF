@@ -16,6 +16,9 @@
 	{% else %}
 		{{ form(form) }}
 	{% endif %}
+	{% if spawnlimit %}
+		<div class="error">{{ 'newcharacter.spawnlimit'|trans|raw }}</div>
+	{% endif %}
 {% endblock %}
 
 {% block jquery %}

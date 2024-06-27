@@ -1220,7 +1220,7 @@ personal:
    title:      Activities
   duels:
    none:       No duels to respond to.
-   some:       "{i} duel|{i} duels."
+   some:       "{i} duel{count, plural, =1 {} other {s}}"
    pending:    "Duels needing an answer:"
  requests:
   name:        Manage Requests
@@ -1236,7 +1236,7 @@ personal:
    title:      Pending Requests
    none:       You don't currently have any pending requests.
    pending:    "There are currently pending:"
-   some:       "{i} request|{i} requests"
+   some:       "{i} request{count, plural, =1 {} other {s}}"
  request:
   premable:    "You've received a request from {link-character}, on {date}, as follows:"
   created:     Request received at {date}.

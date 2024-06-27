@@ -57,7 +57,7 @@ class UnitDispatcher extends Dispatcher {
 		if (!$settlement) {
 			$actions[] = array("name"=>"recruit.all", "description"=>"unavailable.notinside");
 		} else {
-			if ($this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'recruit', false)) {
+			if ($this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'units', false)) {
 				$actions[] = $this->unitNewTest();
 				$actions[] = $this->personalEntourageTest();
 				$actions[] = $this->unitRecruitTest(); #This page handles recruiting.
@@ -184,7 +184,7 @@ class UnitDispatcher extends Dispatcher {
 		}
 		if (
 			$unit->getCharacter() === $character
-			|| ($unit->getSettlement() && ($unit->getSettlement()->getOwner() === $character || $unit->getSettlement()->getSteward() === $character || $unit->getMarshal() === $character || $this->pm->checkSettlementPermission($unit->getSettlement(), $character, 'recruit')))
+			|| ($unit->getSettlement() && ($unit->getSettlement()->getOwner() === $character || $unit->getSettlement()->getSteward() === $character || $unit->getMarshal() === $character || $this->pm->checkSettlementPermission($unit->getSettlement(), $character, 'units')))
 		) {
 			return $this->action("unit.soldiers", "maf_unit_soldiers");
 		} else {

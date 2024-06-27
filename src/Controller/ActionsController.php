@@ -449,7 +449,11 @@ class ActionsController extends AbstractController {
 
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$targetrealm = $form->get('target')->getData();
+			if ($realms->count() == 0) {
+				$targetrealm = null;
+			} else {
+				$targetrealm = $form->get('target')->getData();
+			}
 
 			$act = new Action;
 			$act->setType('settlement.take')->setCharacter($character);
@@ -515,11 +519,15 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 		$settlement = $id;
-
-		$form = $this->createForm(RealmSelectType::class, null, ['realms'=>$character->findRealms(), 'type' =>'changerealm']);
+		$realms = $character->findRealms();
+		$form = $this->createForm(RealmSelectType::class, null, ['realms'=>$realms, 'type' =>'changerealm']);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$targetrealm = $form->get('target')->getData();
+			if ($realms->count() == 0) {
+				$targetrealm = null;
+			} else {
+				$targetrealm = $form->get('target')->getData();
+			}
 
 			if ($settlement->getRealm() == $targetrealm) {
 				$result = array(
@@ -1104,14 +1112,19 @@ class ActionsController extends AbstractController {
 
 		$em = $this->em;
 		$this->dispatcher->setSettlement($settlement);
+		$realms = $character->findrealms();
 
 		$form = $this->createForm(RealmSelectType::class, null, [
-			'realms' => $character->findRealms(),
+			'realms' => $realms,
 			'type' => 'changeoccupier'
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$targetrealm = $form->get('target')->getData();
+			if ($realms->count() == 0) {
+				$targetrealm = null;
+			} else {
+				$targetrealm = $form->get('target')->getData();
+			}
 
 			if ($settlement->getOccupier() == $targetrealm) {
 				$result = 'same';
@@ -1134,13 +1147,18 @@ class ActionsController extends AbstractController {
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
+		$realms = $character->findrealms();
 		$form = $this->createForm(RealmSelectType::class, null, [
-			'realms' => $character->findRealms(),
+			'realms' => $realms,
 			'type' => 'occupy'
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$targetrealm = $form->get('target')->getData();
+			if ($realms->count() == 0) {
+				$targetrealm = null;
+			} else {
+				$targetrealm = $form->get('target')->getData();
+			}
 
 			$this->pol->changeSettlementOccupier($character, $settlement, $targetrealm);
 			$this->em->flush();

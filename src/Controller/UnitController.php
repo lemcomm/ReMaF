@@ -288,11 +288,6 @@ class UnitController extends AbstractController {
                                 $canResupply = true;
 				$resupply = $this->mm->findAvailableEquipment($settlement, false);
 			}
-			if (!$canRecruit && ($unit->getSettlement() === $settlement && $this->pm->checkSettlementPermission($settlement, $character, 'recruit'))) {
-                                $canRecruit = true;
-				$training = $this->mm->findAvailableEquipment($settlement, true);
-			}
-
 		} else {
 			foreach ($character->getEntourage() as $entourage) {
 				if ($entourage->getEquipment()) {

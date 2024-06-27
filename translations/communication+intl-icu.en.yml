@@ -617,10 +617,10 @@ mail:
 
 
 news:
- title:     publication|publications
- edition:   edition|editions
+ title:     publication{count, plural, =1 {} other {s}}
+ edition:   edition{count, plural, =1 {} other {s}
  number:    Edition {number}
- readers:   "{count} subscriber|{count} subscribers"
+ readers:   "{count} subscriber{count, plural, =1 {} other {s}}"
  collection:  articles collection
  create:
   title:    Create publication
