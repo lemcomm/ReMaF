@@ -106,7 +106,7 @@ class WarDispatcher extends Dispatcher {
 				$actions[] = $this->militarySiegeJoinSiegeTest();
 				$actions[] = $this->militarySiegeLeadershipTest(null, $siege);
 				$actions[] = $this->militarySiegeAssumeTest(null, $siege);
-				$actions[] = $this->militarySiegeBuildTest(null, $siege);
+				#$actions[] = $this->militarySiegeBuildTest(null, $siege);
 				$actions[] = $this->militarySiegeAssaultTest(null, $siege);
 				$actions[] = $this->militarySiegeDisbandTest(null, $siege);
 				$actions[] = $this->militarySiegeLeaveTest(null, $siege);

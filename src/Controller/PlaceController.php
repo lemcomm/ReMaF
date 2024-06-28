@@ -24,6 +24,7 @@ use App\Service\AppState;
 use App\Service\AssociationManager;
 use App\Service\DescriptionManager;
 use App\Service\Dispatcher\Dispatcher;
+use App\Service\Dispatcher\PlaceDispatcher;
 use App\Service\Economy;
 use App\Service\Geography;
 use App\Service\History;
@@ -45,13 +46,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PlaceController extends AbstractController {
 
-	private Dispatcher $dispatcher;
+	private PlaceDispatcher $dispatcher;
 	private AppState $app;
 	private EntityManagerInterface $em;
 	private Interactions $int;
 	private TranslatorInterface $trans;
 
-	public function __construct(AppState $app, Dispatcher $dispatcher, EntityManagerInterface $em, Interactions $int, TranslatorInterface $trans) {
+	public function __construct(AppState $app, PlaceDispatcher $dispatcher, EntityManagerInterface $em, Interactions $int, TranslatorInterface $trans) {
 		$this->app = $app;
 		$this->dispatcher = $dispatcher;
 		$this->em = $em;

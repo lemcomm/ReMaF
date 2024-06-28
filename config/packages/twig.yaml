@@ -8,6 +8,7 @@ twig:
             appstate: '@App\Service\AppState'
             common: '@App\Service\CommonService'
             dispatcher: '@App\Service\Dispatcher\Dispatcher'
+            placeDispatcher: '@App\Service\Dispatcher\PlaceDispatcher'
             unitDispatcher: '@App\Service\Dispatcher\UnitDispatcher'
             warDispatcher: '@App\Service\Dispatcher\WarDispatcher'
 

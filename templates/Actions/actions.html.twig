@@ -24,7 +24,7 @@
 	{% include "element/linklist.html.twig" with {"list":dispatcher.interActions, "domain":'actions'} only %}
 	{% include "element/linklist.html.twig" with {"list":activityDispatcher.activityActions, "domain":'activity'} only %}
 	{% if character.insidePlace %}
-		{% include "element/linklist.html.twig" with {"list":dispatcher.placeActions(character.insidePlace), "domain":'places'} only %}
+		{% include "element/linklist.html.twig" with {"list":placeDispatcher.placeActions(character.insidePlace), "domain":'places'} only %}
 	{% endif %}
 	{% if siege %}
 		{% include "element/linklist.html.twig" with {"list":warDispatcher.siegeActions, "domain":'actions'} only %}

@@ -39,7 +39,7 @@
 					<hr>
 				{% endif %}
 
-				{% set list = dispatcher.placeActions(place) %}
+				{% set list = placeDispatcher.placeActions(place) %}
 				{% if list.elements.placeNewPlayerInfoTest.url is defined %}
 					{% set spawnfail = false %}
 					<p>

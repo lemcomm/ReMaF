@@ -117,7 +117,7 @@
 				{% endif %}
 				{#{% if character.insidesettlement and character.insidesettlement.owner == character %}#}
 				{% if character.insidesettlement %}
-					{% set check = dispatcher.placeListTest() %}
+					{% set check = placeDispatcher.placeListTest() %}
 					{% if check.url is defined %}
 						<ul>
 							<a href="{{ path(check.url) }}">{{ check.name|trans({},"actions") }}</a>
