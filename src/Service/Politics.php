@@ -921,27 +921,52 @@ class Politics {
 		}
 	}
 
-	public function changePlaceOccupier(Character $char, Place $place, Realm $realm): void {
+
+	public function changePlaceOccupier(Character $char = null, Place $place, Realm $realm = null) {
 		$new = false;
+		$old = null;
 		if (!$place->getOccupier()) {
 			$new = true;
+		} else {
+			$old = $place->getOccupier();
 		}
 		$place->setOccupier($realm);
 		$place->setOccupant($char);
-		if ($new) {
-			$this->history->logEvent(
-				$place,
-				'event.place.occupied',
-				array("%link-realm%"=>$realm->getId(), "%link-character%"=>$char->getId()),
-				History::HIGH, true
-			);
-		} else {
-			$this->history->logEvent(
-				$place,
-				'event.place.occupied2',
-				array("%link-realm%"=>$realm->getId(), "%link-character%"=>$char->getId()),
-				History::MEDIUM, true
-			);
+		if ($char) {
+			if ($new) {
+				if ($realm) {
+					$this->history->logEvent(
+						$place,
+						'event.place.occupied',
+						array("%link-realm%"=>$realm->getId(), "%link-character%"=>$char->getId()),
+						History::HIGH, true
+					);
+				} else {
+					$this->history->logEvent(
+						$place,
+						'event.place.occupied3',
+						array("%link-character%"=>$char->getId()),
+						History::HIGH, true
+					);
+				}
+
+			} else {
+				if ($realm) {
+					$this->history->logEvent(
+						$place,
+						'event.place.occupied2',
+						array("%link-realm%"=>$realm->getId(), "%link-character%"=>$char->getId()),
+						History::MEDIUM, true
+					);
+				} else {
+					$this->history->logEvent(
+						$place,
+						'event.place.occupied4',
+						array( "%link-character%"=>$char->getId()),
+						History::MEDIUM, true
+					);
+				}
+			}
 		}
 	}
 

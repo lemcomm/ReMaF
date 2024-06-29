@@ -349,7 +349,11 @@ class WarDispatcher extends Dispatcher {
 			# Too new.
 			return array("name"=>"military.siege.leadership.name", "description"=>"unavailable.fresh");
 		}
-		return $this->action("military.siege.leadership", "maf_war_siege", false, array('action'=>'leadership'));
+		if ($siege->getPlace()) {
+			return $this->action("military.siege.assault", "maf_war_siege_place", false, array('action'=>'leadership', 'place'=>$siege->getPlace()->getId()));
+		} else {
+			return $this->action("military.siege.assault", "bm2_site_war_siege", false, array('action'=>'leadership'));
+		}
 	}
 
 	public function militarySiegeAssumeTest($check_duplicate, $siege): array {
@@ -414,7 +418,11 @@ class WarDispatcher extends Dispatcher {
 			# Too new.
 			return array("name"=>"military.siege.assume.name", "description"=>"unavailable.fresh");
 		}
-		return $this->action("military.siege.assume", "maf_war_siege", false, array('action'=>'assume'));
+		if ($siege->getPlace()) {
+			return $this->action("military.siege.assume", "maf_war_siege_place", false, array('action'=>'assume', 'place'=>$siege->getPlace()->getId()));
+		} else {
+			return $this->action("military.siege.assume", "bm2_site_war_siege", false, array('action'=>'assume'));
+		}
 	}
 
 	public function militarySiegeBuildTest($check_duplicate=false): array {
@@ -519,7 +527,11 @@ class WarDispatcher extends Dispatcher {
 			# Too new.
 			return array("name"=>"military.siege.assault.name", "description"=>"unavailable.fresh");
 		}
-		return $this->action("military.siege.assault", "maf_war_siege", false, array('action'=>'assault'));
+		if ($siege->getPlace()) {
+			return $this->action("military.siege.assault", "maf_war_siege_place", false, array('action'=>'assault', 'place'=>$siege->getPlace()->getId()));
+		} else {
+			return $this->action("military.siege.assault", "bm2_site_war_siege", false, array('action'=>'assault'));
+		}
 	}
 
 	public function militarySiegeDisbandTest($check_duplicate, $siege): array {
@@ -555,7 +567,11 @@ class WarDispatcher extends Dispatcher {
 			# Busy fighting for life.
 			return array("name"=>"military.siege.disband.name", "description"=>"unavailable.inbattle");
 		}
-		return $this->action("military.siege.disband", "maf_war_siege", false, array('action'=>'disband'));
+		if ($siege->getPlace()) {
+			return $this->action("military.siege.disband", "maf_war_siege_place", false, array('action'=>'disband', 'place'=>$siege->getPlace()->getId()));
+		} else {
+			return $this->action("military.siege.disband", "bm2_site_war_siege", false, array('action'=>'disband'));
+		}
 	}
 
 	public function militarySiegeLeaveTest($check_duplicate, $siege): array {
@@ -581,7 +597,11 @@ class WarDispatcher extends Dispatcher {
 		if (!$inSiege) {
 			return array("name"=>"military.siege.leave.name", "description"=>"unavailable.notinsiege");
 		}
-		return $this->action("military.siege.leave", "maf_war_siege", false, array('action'=>'leave'));
+		if ($siege->getPlace()) {
+			return $this->action("military.siege.leave", "maf_war_siege_place", false, array('action'=>'leave', 'place'=>$siege->getPlace()->getId()));
+		} else {
+			return $this->action("military.siege.leave", "bm2_site_war_siege", false, array('action'=>'leave'));
+		}
 	}
 
 	public function militarySiegeGeneralTest($check_duplicate, $siege): array {
@@ -756,7 +776,11 @@ class WarDispatcher extends Dispatcher {
 			# Busy fighting for life.
 			return array("name"=>"military.siege.join.name", "description"=>"unavailable.inbattle");
 		}
-		return $this->action("military.siege.join", "maf_war_siege", false, array('action'=>'joinsiege'));
+		if ($siege && $siege->getPlace()) {
+			return $this->action("military.siege.join", "maf_war_siege_place", false, array('action'=>'joinsiege', 'place'=>$siege->getPlace()->getId()));
+		} else {
+			return $this->action("military.siege.join", "bm2_site_war_siege", false, array('action'=>'joinsiege'));
+		}
 	}
 
 	public function militaryDamageFeatureTest($check_duplicate=false): array {
