@@ -260,12 +260,9 @@ class Interactions {
 			}
 		}
 
-		if (!$place->getPublic() && !$this->pm->checkPlacePermission($place, $character, 'visit')) {
-				return false;
-		}
-
 		if (!$force) {
-			// check if we are allowed inside - but only for fortified settlements
+			// check if we are allowed inside - but only for fortified places that aren't public.
+			// Public places are always allowed.
 			if (!$place->getPublic() && $place->isFortified() && !$this->pm->checkPlacePermission($place, $character, 'visit')) {
 				return false;
 			}
