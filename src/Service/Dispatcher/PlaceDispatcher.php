@@ -99,73 +99,7 @@ class PlaceDispatcher extends WarDispatcher {
 		return array("name"=>"placeactions", "elements"=>$actions);
 	}
 
-	private function placeActionsGenericTests(): true|string {
-		if ($this->getCharacter()->getUser()->getRestricted()) {
-			return 'restricted';
-		}
-		if ($this->getCharacter()->isNPC()) {
-			return 'npc';
-		}
-
-		return $this->veryGenericTests();
-	}
-
 	/* ========== Place Actions ============== */
-
-	public function placeListTest(): array {
-		if ($this->getCharacter() && $this->geography->findPlacesInActionRange($this->getCharacter())) {
-			return $this->action("place.list", "maf_place_actionable");
-		} else {
-			return array("name"=>"place.actionable.name", "description"=>"unavailable.noplace");
-		}
-	}
-
-	public function placeCreateTest(): array {
-		$character = $this->getCharacter();
-		if ($check = $this->placeActionsGenericTests() !== true) {
-			return array("name"=>"place.new.name", "description"=>'unavailable.'.$check);
-		}
-		if ($character->getUser()->getLimits() === null) {
-			return array("name"=>"place.new.name", "description"=>"unavailable.nolimitscreated");
-		}
-		if ($character->getUser()->getFreePlaces() < 1) {
-			return array("name"=>"place.new.name", "description"=>"unavailable.nofreeplaces");
-		}
-		# If not inside a settlement, check that we've enough separation (500m)
-		$settlement = $character->getInsideSettlement();
-		if (!$settlement) {
-			if (!$this->geography->findMyRegion($character)) {
-				return array("name"=>"place.new.name", "description"=>"unavailable.notinregion");
-			}
-			if (!$this->geography->checkPlacePlacement($character)) {
-				return array("name"=>"place.new.name", "description"=>"unavailable.toocrowded");
-			}
-			$occupied = null;
-		} elseif ($settlement->getOccupier() || $settlement->getOccupant()) {
-			$occupied = true;
-		} else {
-			$occupied = false;
-		}
-		if ($occupied) {
-			return array("name"=>"place.new.name", "description"=>"unavailable.occupied");
-		}
-		if ($character->getInsideSettlement()) {
-			$can = $this->permission_manager->checkSettlementPermission($character->getInsideSettlement(), $character, 'placeinside');
-		} else {
-			$region = $this->geography->findMyRegion($character);
-			if ($region) {
-				$can = $this->permission_manager->checkSettlementPermission($region->getSettlement(), $character, 'placeoutside');
-			} else {
-				return array("name"=>"place.new.name", "description"=>"unavailable.nosettlement");
-			}
-		}
-		if ($can) {
-			# It's a long line, but basically, but if we're in a settlement or in a region and have the respective permission, we're allowed. If not, denied.
-			return array("name"=>"place.new.name", "url"=>"maf_place_new", "description"=>"place.new.description", "long"=>"place.new.longdesc");
-		} else {
-			return array("name"=>"place.new.name", "description"=>"unavailable.nopermission");
-		}
-	}
 
 	public function placeAddAssocTest($ignored, Place $place): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
