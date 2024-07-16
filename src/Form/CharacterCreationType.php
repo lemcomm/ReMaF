@@ -71,12 +71,11 @@ class CharacterCreationType extends AbstractType {
 			'class'=>Character::class, 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($user) {
 				return $er->createQueryBuilder('c')->where('c.user = :user')->andWhere('c.npc = false')->orderBy('c.name')->setParameters(array('user'=>$user));
 		}));
-
-		if ($options['slotsavailable']) {
+		$available = $options['slotsavailable'];
+		if ($available) {
 			$builder->add('dead', CheckboxType::class, array(
 				'label' => 'dead',
 				'required' => false,
-				'empty_data' => false,
 				'attr' => array('title'=>'newcharacter.help.dead'),
 			));
 		} else {
