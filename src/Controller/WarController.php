@@ -1360,17 +1360,17 @@ class WarController extends AbstractController {
 						$force += $unit->getVisualSize();
 					}
 				}
-				if ($mine*100<=$force) {
+				if ($mine*200<=$force) {
 					# The enemy force overwhelms you and immediately captures you.
 					$cm->imprison($character, $target);
 					$this->hist->logEvent(
 						$character,
 						'event.character.overwhelmedby',
-						array('%link-character%'=>$data['target']->getId()),
+						array('%link-character%'=>$target->getId()),
 						History::HIGH, true
 					);
 					$this->hist->logEvent(
-						$data['target'],
+						$target,
 						'event.character.overwhelmed',
 						array('%link-character%'=>$character->getId()),
 						History::HIGH, true
