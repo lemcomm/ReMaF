@@ -208,7 +208,7 @@ class UnitController extends AbstractController {
 		}
 
 		return $this->render('Unit/bulk.html.twig', [
-			'form' => $form
+			'form' => $form->createView()
 		]);
 	}
 
