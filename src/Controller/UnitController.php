@@ -530,6 +530,7 @@ class UnitController extends AbstractController {
                 return $this->redirectToRoute('maf_units');
         }
 
+	#[Route('/units/{unit}/rebase', name:'maf_unit_rebase', requirements:['unit'=>'\d+'])]
         public function unitRebaseAction(Request $request, Unit $unit): RedirectResponse|Response {
                 $character = $this->gateway('unitRebaseTest', $unit);
 		if (! $character instanceof Character) {
@@ -562,7 +563,6 @@ class UnitController extends AbstractController {
         }
 
 	#[Route('/units/{unit}/disband', name:'maf_unit_disband', requirements:['unit'=>'\d+'])]
-
         public function unitDisbandAction(Request $request, Unit $unit): RedirectResponse|Response {
                 $character = $this->gateway('unitDisbandTest', $unit);
 		if (! $character instanceof Character) {
