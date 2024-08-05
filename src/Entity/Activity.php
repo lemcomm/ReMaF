@@ -29,6 +29,8 @@ class Activity {
 	private ?ActivitySubType $subtype = null;
 	private ?Activity $main_event = null;
 	private ?GeoData $geo_data = null;
+	private ?MapRegion $mapRegion = null;
+	private ?World $world = null;
 	private ?Settlement $settlement = null;
 	private ?Place $place = null;
 
@@ -504,6 +506,33 @@ class Activity {
 	public function setGeoData(GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
+		return $this;
+	}
+
+	/**
+	 * @return MapRegion|null
+	 */
+	public function getMapRegion(): ?MapRegion {
+		return $this->mapRegion;
+	}
+
+	/**
+	 * @param MapRegion|null $reg
+	 *
+	 * @return Activity
+	 */
+	public function setMapRegion(MapRegion $reg = null): static {
+		$this->mapRegion = $reg;
+
+		return $this;
+	}
+
+	public function getWorld(): ?World {
+		return $this->world;
+	}
+
+	public function setWorld(World $world = null): static {
+		$this->world = $world;
 		return $this;
 	}
 

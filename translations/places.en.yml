@@ -31,6 +31,10 @@ place:
  name:       Name
  insidenow:  You are currently within this Place of Interest.
  noowner:    No one
+ settlement: "Inside:"
+ nearby:     "Nearby:"
+ noloc:      "Location:"
+ nosettlement: "(unknown)"
  manage:
   name:      Manage Place Details
   description: Manage the details of %formalname%.
@@ -96,7 +100,7 @@ place:
  associations:
   create:       Formalize an Association
   none:         No associations are present here.
-  list:         Associations Located Here:
+  list:         "Associations Located Here:"
   join:
    name:         Join %name%
    name2:        Join Association

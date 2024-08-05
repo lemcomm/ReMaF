@@ -40,9 +40,11 @@
 
 		<one-to-one field="house" target-entity="House" mapped-by="home"/>
 
+		<many-to-one field="world" target-entity="World" inversed-by="places"/>
 		<field name="location" type="point" nullable="true"/>
 		<one-to-one field="geo_marker" target-entity="GeoFeature" inversed-by="place"/>
 		<many-to-one field="geo_data" target-entity="GeoData" inversed-by="places"/>
+		<many-to-one field="mapRegion" target-entity="MapRegion" inversed-by="places"/>
 
 		<field name="short_description" type="text" nullable="true"/>
 		<one-to-one field="description" target-entity="Description" mapped-by="active_place"/>

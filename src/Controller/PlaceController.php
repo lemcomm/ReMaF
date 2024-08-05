@@ -29,6 +29,7 @@ use App\Service\History;
 use App\Service\Interactions;
 use App\Service\PermissionManager;
 use App\Service\Politics;
+use App\Service\WarManager;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -58,7 +59,7 @@ class PlaceController extends AbstractController {
 	}
 	
 	#[Route ('/place/{id}', name:'maf_place', requirements:['id'=>'\d+'])]
-	public function indexAction(Place $id): Response {
+	public function indexAction(Geography $geo, Place $id): Response {
 		$character = $this->app->getCharacter(false, true, true);
 
 		$place = $id;
@@ -95,12 +96,23 @@ class PlaceController extends AbstractController {
 			$inside = false;
 		}
 
+		if ($place->getVisible() || $inside) {
+			if ($place->getSettlement()) {
+				$settlement = $place->getSettlement();
+			} else {
+				$settlement = $geo->findNearestSettlementToPoint($place->getLocation());
+			}
+		} else {
+			$settlement = null;
+		}
+
 		return $this->render('Place/view.html.twig', [
 			'place' => $place,
 			'details' => $details,
 			'inside' => $inside,
 			'militia' => $militia,
-			'heralds' => $heralds
+			'heralds' => $heralds,
+			'settlement' => $settlement,
 		]);
 	}
 
@@ -742,7 +754,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/destroy', name:'maf_place_destroy', requirements:['id'=>'\d+'])]
-	public function destroyAction(History $history, Place $id, Request $request): RedirectResponse|Response {
+	public function destroyAction(History $history, WarManager $war, Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 		if ($place->getType()->getName() == 'capital') {
 			$character = $this->dispatcher->gateway('placeManageRulersTest', false, true, false, $place);
@@ -761,6 +773,9 @@ class PlaceController extends AbstractController {
                         $place->setDestroyed(true);
 			if ($spawn = $place->getSpawn()) {
 				$em->remove($spawn);
+			}
+			if ($siege = $place->getSiege()) {
+				$war->disbandSiege($siege, null, true);
 			}
 			$history->logEvent(
 				$place,

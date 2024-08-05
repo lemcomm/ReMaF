@@ -27,6 +27,9 @@
 		<field name="slumbering" type="boolean"/>
 		<field name="special" type="boolean"/>
 		<field name="location" type="point" nullable="true"/>
+		<many-to-one field="insideRegion" target-entity="MapRegion" inversed-by="characters"/>
+		<many-to-one field="movingToRegion" target-entity="MapRegion"/>
+		<field name="travelTime" type="integer" nullable="true"/>
 		<field name="travel" type="linestring" nullable="true"/>
 		<field name="travel_locked" type="boolean"/>
 		<field name="travel_enter" type="boolean"/>
@@ -44,6 +47,7 @@
 		<field name="auto_read_assocs" type="boolean" nullable="true"/>
 		<field name="auto_read_house" type="boolean" nullable="true"/>
 		<field name="non_hetero_options" type="boolean" nullable="true"/>
+		<many-to-one field="world" target-entity="World" inversed-by="characters"/>
 		<many-to-one field="weapon" target-entity="EquipmentType"/>
 		<many-to-one field="armour" target-entity="EquipmentType"/>
 		<many-to-one field="equipment" target-entity="EquipmentType"/>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="App\Entity\World">
+		<id name="id" type="integer">
+			<generator strategy="IDENTITY"/>
+		</id>
+
+		<field name="travelType" type="string" nullable="true"/>
+
+		<one-to-many field="characters" target-entity="Character" mapped-by="world" fetch="EXTRA_LAZY"/>
+		<one-to-many field="geoData" target-entity="GeoData" mapped-by="world" fetch="EXTRA_LAZY"/>
+		<one-to-many field="mapRegions" target-entity="MapRegion" mapped-by="world" fetch="EXTRA_LAZY"/>
+		<one-to-many field="places" target-entity="Place" mapped-by="world" fetch="EXTRA_LAZY"/>
+		<one-to-many field="settlements" target-entity="Settlement" mapped-by="world" fetch="EXTRA_LAZY"/>
+		<one-to-many field="activities" target-entity="Activity" mapped-by="world" fetch="EXTRA_LAZY"/>
+
+	</entity>
+</doctrine-mapping>

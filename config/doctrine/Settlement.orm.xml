@@ -39,6 +39,8 @@
 		<many-to-one field="occupant" target-entity="Character" inversed-by="occupied_settlements"/>
 		<many-to-one field="occupier" target-entity="Realm" inversed-by="occupied_settlements"/>
 
+		<many-to-one field="world" target-entity="World" inversed-by="settlements"/>
+		<one-to-one field="mapRegion" target-entity="MapRegion" inversed-by="settlement"/>
 		<one-to-one field="geo_data" target-entity="GeoData" inversed-by="settlement"/>
 		<one-to-one field="geo_marker" target-entity="GeoFeature" inversed-by="settlement"/>
 		<one-to-many field="resources" target-entity="GeoResource" mapped-by="settlement"/>

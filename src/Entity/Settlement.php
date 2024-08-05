@@ -15,15 +15,17 @@ class Settlement {
 	private float $starvation;
 	private int $gold;
 	private int $war_fatigue;
-	private ?int $abduction_cooldown;
+	private ?int $abduction_cooldown = null;
 	private bool $allow_thralls;
-	private ?bool $feed_soldiers;
+	private ?bool $feed_soldiers = null;
 	private ?int $id = null;
 	private ?Description $description;
-	private ?GeoData $geo_data;
-	private ?GeoFeature $geo_marker;
-	private ?EventLog $log;
-	private ?Siege $siege;
+	private ?GeoData $geo_data = null;
+	private ?MapRegion $mapRegion = null;
+	private ?World $world = null;
+	private ?GeoFeature $geo_marker = null;
+	private ?EventLog $log = null;
+	private ?Siege $siege = null;
 	private Collection $descriptions;
 	private Collection $places;
 	private Collection $capital_of;
@@ -51,18 +53,18 @@ class Settlement {
 	private Collection $vassals;
 	private Collection $activities;
 	private Collection $laws;
-	private ?Culture $culture;
-	private ?Character $owner;
-	private ?Character $steward;
-	private ?Realm $realm;
-	private ?Character $occupant;
-	private ?Realm $occupier;
+	private ?Culture $culture = null;
+	private ?Character $owner = null;
+	private ?Character $steward = null;
+	private ?Realm $realm = null;
+	private ?Character $occupant = null;
+	private ?Realm $occupier = null;
 	private Collection $chat_messages;
 	private float $assignedRoads = -1;
 	private float $assignedBuildings = -1;
 	private float $assignedFeatures = -1;
 	private float $employees = -1;
-	private ?Association $faith;
+	private ?Association $faith = null;
 	private float $food_provision_limit = 1;
 
 	/**
@@ -571,6 +573,33 @@ class Settlement {
 	public function setGeoData(GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
+		return $this;
+	}
+
+	/**
+	 * @return MapRegion|null
+	 */
+	public function getMapRegion(): ?MapRegion {
+		return $this->mapRegion;
+	}
+
+	/**
+	 * @param MapRegion|null $reg
+	 *
+	 * @return Settlement
+	 */
+	public function setMapRegion(MapRegion $reg = null): static {
+		$this->mapRegion = $reg;
+
+		return $this;
+	}
+
+	public function getWorld(): ?World {
+		return $this->world;
+	}
+
+	public function setWorld(World $world = null): static {
+		$this->world = $world;
 		return $this;
 	}
 

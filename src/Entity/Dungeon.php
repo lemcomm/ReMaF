@@ -15,6 +15,7 @@ class Dungeon {
 	private ?DungeonParty $party = null;
 	private Collection $levels;
 	private ?GeoData $geo_data = null;
+	private ?MapRegion $mapRegion = null;
 
 	/**
 	 * Constructor
@@ -196,6 +197,24 @@ class Dungeon {
 	 */
 	public function setGeoData(GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
+
+		return $this;
+	}
+
+	/**
+	 * @return MapRegion|null
+	 */
+	public function getMapRegion(): ?MapRegion {
+		return $this->mapRegion;
+	}
+
+	/**
+	 * @param MapRegion|null $reg
+	 *
+	 * @return Dungeon
+	 */
+	public function setMapRegion(MapRegion $reg = null): static {
+		$this->mapRegion = $reg;
 
 		return $this;
 	}

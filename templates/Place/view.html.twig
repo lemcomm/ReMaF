@@ -17,8 +17,19 @@
 			{% endif %}
 			<dt>{{ 'place.name'|trans({},"places") }}</dt>
 			<dd>{{ place.name }}</dd>
+			{% if settlement %}
+				{% if place.settlement %}
+					<dt>{{ 'place.settlement'|trans({},"places") }}</dt>
+				{% else %}
+					<dt>{{ 'place.nearby'|trans({},"places") }}</dt>
+				{% endif %}
+				<dd>{{ link(settlement) }}</dd>
+			{% else %}
+				<dt>{{ 'place.noloc'|trans({},"places") }}</dt>
+				<dd><i>{{ 'place.nosettlement'|trans({},"places") }}</i></dd>
+			{% endif %}
 		</dl>
-		<h3>{{ 'description'|trans({},"places")|title }}</h3>
+		<h3>{{ 'description.generic'|trans({},"places")|title }}</h3>
 		{% if inside %}
 			{% if place.description.text is not null %}
 			{{ place.description.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
@@ -29,6 +40,6 @@
 			{% endif %}
 		{% endif %}
 	{% else %}
-		<h2>{{ 'unknown'|trans({},"places")|title }}</h2>
+		<h2>{{ 'unknown.place'|trans({},"places")|title }}</h2>
 	{% endif %}
 {% endblock %}

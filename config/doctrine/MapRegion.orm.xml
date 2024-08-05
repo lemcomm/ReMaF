@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="App\Entity\MapRegion" table="map_region">
+		<id name="id" type="integer">
+			<generator strategy="IDENTITY"/>
+		</id>
+		<field name="modifiers" type="array" nullable="true"/>
+
+		<one-to-many field="characters" target-entity="Character" mapped-by="insideRegion"/>
+		<many-to-one field="biome" target-entity="Biome" inversed-by="mapRegions"/>
+		<many-to-one field="world" target-entity="World" inversed-by="mapRegions"/>
+
+		<one-to-many field="places" target-entity="Place" mapped-by="mapRegion"/>
+		<one-to-many field="activities" target-entity="Activity" mapped-by="mapRegion"/>
+
+		<one-to-one field="settlement" target-entity="Settlement" mapped-by="mapRegion"/>
+		<one-to-many field="resources" target-entity="GeoResource" mapped-by="mapRegion"/>
+
+	</entity>
+</doctrine-mapping>

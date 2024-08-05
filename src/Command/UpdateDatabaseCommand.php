@@ -4,15 +4,12 @@ namespace App\Command;
 
 use App\Entity\Permission;
 use App\Entity\RealmDesignation;
-use App\Service\GameRunner;
-use App\Service\NotificationManager;
+use App\Entity\World;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateDatabaseCommand extends  Command {
@@ -106,6 +103,17 @@ class UpdateDatabaseCommand extends  Command {
 			$em->remove($type);
 			$em->flush();
 			$output->writeln('Permission removed!');
+		}
+		if (in_array('4', $versions)) {
+			$output->writeln('Creating Default World and Applying World IDs');
+			$world = new World;
+			$em->persist($world);
+			$em->flush();
+			$em->createQuery('UPDATE App:GeoData g SET g.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App:Place p SET p.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App:Settlement s SET s.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App:Activity a SET a.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App:Character c SET c.world = :world')->setParameters(['world'=>$world])->execute();
 		}
 
 		return Command::SUCCESS;

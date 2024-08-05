@@ -55,6 +55,8 @@ class Place implements ChatLocationInterface {
 	private ?Realm $hosting_realm = null;
 	private ?Realm $occupier = null;
 	private ?GeoData $geo_data = null;
+	private ?MapRegion $mapRegion = null;
+	private ?World $world = null;
 	private Collection $upgrades;
 	private Collection $chat_messages;
 
@@ -376,6 +378,33 @@ class Place implements ChatLocationInterface {
 	public function setGeoData(GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
+		return $this;
+	}
+
+	/**
+	 * @return MapRegion|null
+	 */
+	public function getMapRegion(): ?MapRegion {
+		return $this->mapRegion;
+	}
+
+	/**
+	 * @param MapRegion|null $reg
+	 *
+	 * @return Place
+	 */
+	public function setMapRegion(MapRegion $reg = null): static {
+		$this->mapRegion = $reg;
+
+		return $this;
+	}
+
+	public function getWorld(): ?World {
+		return $this->world;
+	}
+
+	public function setWorld(World $world = null): static {
+		$this->world = $world;
 		return $this;
 	}
 

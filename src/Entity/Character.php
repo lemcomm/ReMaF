@@ -33,6 +33,10 @@ class Character {
 	private DateTime $last_access;
 	private bool $slumbering;
 	private bool $special;
+	private ?World $world = null;
+	private ?MapRegion $insideRegion = null;
+	private ?MapRegion $movingToRegion = null;
+	private ?int $travelTime = null;
 	private ?Point $location = null;
 	private ?LineString $travel = null;
 	private bool $travel_locked;
@@ -1491,6 +1495,42 @@ class Character {
 	public function setSlumbering(bool $slumbering): static {
 		$this->slumbering = $slumbering;
 
+		return $this;
+	}
+
+	public function getInsideRegion(): ?MapRegion {
+		return $this->insideRegion;
+	}
+
+	public function setInsideRegion(MapRegion $reg = null): static {
+		$this->insideRegion = $reg;
+		return $this;
+	}
+
+	public function getMovingToRegion(): ?MapRegion {
+		return $this->movingToRegion;
+	}
+
+	public function setMovingToRegion(MapRegion $reg): static {
+		$this->movingToRegion = $reg;
+		return $this;
+	}
+
+	public function getTravelTime(): ?int {
+		return $this->travelTime;
+	}
+
+	public function setTravelTime(int $time = null): static {
+		$this->travelTime = $time;
+		return $this;
+	}
+
+	public function getWorld(): ?World {
+		return $this->world;
+	}
+
+	public function setWorld(World $world = null): static {
+		$this->world = $world;
 		return $this;
 	}
 

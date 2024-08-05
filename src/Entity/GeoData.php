@@ -25,6 +25,7 @@ class GeoData {
 	private Collection $activities;
 	private Collection $resources;
 	private ?Biome $biome = null;
+	private ?World $world = null;
 
 	/**
 	 * Constructor
@@ -440,6 +441,15 @@ class GeoData {
 	public function setBiome(Biome $biome = null): static {
 		$this->biome = $biome;
 
+		return $this;
+	}
+
+	public function getWorld(): ?World {
+		return $this->world;
+	}
+
+	public function setWorld(World $world = null): static {
+		$this->world = $world;
 		return $this;
 	}
 }

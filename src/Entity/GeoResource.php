@@ -12,6 +12,7 @@ class GeoResource {
 	private ?int $id = null;
 	private ?Settlement $settlement = null;
 	private ?GeoData $geo_data = null;
+	private ?MapRegion $mapRegion = null;
 	private ?ResourceType $type = null;
 
 	/**
@@ -195,6 +196,24 @@ class GeoResource {
 	 */
 	public function setGeoData(GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
+
+		return $this;
+	}
+
+	/**
+	 * @return MapRegion|null
+	 */
+	public function getMapRegion(): ?MapRegion {
+		return $this->mapRegion;
+	}
+
+	/**
+	 * @param MapRegion|null $reg
+	 *
+	 * @return GeoResource
+	 */
+	public function setMapRegion(MapRegion $reg = null): static {
+		$this->mapRegion = $reg;
 
 		return $this;
 	}
