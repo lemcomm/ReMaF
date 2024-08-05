@@ -438,10 +438,6 @@ class HouseController extends AbstractController {
 		]);
 	}
 
-	/**
-	  * @Route("/{house}/uncadet", name="maf_house_uncadet", requirements={"house"="\d+"})
-	  */
-
 	#[Route ('/house/{house}/uncadet', name:'maf_house_uncadet', requirements:['house'=>'\d+'])]
 	public function uncadetAction(House $house, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('houseManageUncadetTest');
