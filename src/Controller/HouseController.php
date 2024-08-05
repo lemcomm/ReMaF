@@ -410,10 +410,6 @@ class HouseController extends AbstractController {
 		return $this->redirectToRoute('maf_politics');
 	}
 
-	/**
-	  * @Route("/{house}/cadet", name="maf_house_cadetship", requirements={"house"="\d+"})
-	  */
-
 	#[Route ('/house/{house}/cadet', name:'maf_house_cadetship', requirements:['house'=>'\d+'])]
 	public function cadetAction(House $house, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('houseManageCadetTest', null, null, null, $house);

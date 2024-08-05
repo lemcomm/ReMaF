@@ -498,9 +498,6 @@ class ConversationController extends AbstractController {
 		}
 	}
 
-	/**
-	  * @Route("/local", name="maf_conv_local")
-	  */
 	#[Route ('/conv/local', name:'maf_conv_local')]
 	public function readLocalAction(): RedirectResponse|Response {
                 $char = $this->dispatcher->gateway('conversationLocalTest');

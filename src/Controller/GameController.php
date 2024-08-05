@@ -355,9 +355,6 @@ class GameController extends AbstractController {
 		]);
 	}
 
-	/**
-	  * @Route("/statistics/troops", name="maf_game_stats_troops")
-	  */
 	#[Route ('/game/stats/troops', name:'maf_game_stats_troops')]
 	public function troopsstatisticsAction(): Response {
 		$data = array(

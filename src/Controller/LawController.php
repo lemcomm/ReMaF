@@ -23,10 +23,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-
-/**
- * @Route("/laws")
- */
 class LawController extends AbstractController {
 
 	private Dispatcher $disp;
@@ -101,10 +97,6 @@ class LawController extends AbstractController {
 		]);
 	}
 
-	/**
-	  * @Route("/r{realm}/new", name="maf_realm_laws_new", requirements={"realm"="\d+"})
-	  * @Route("/a{assoc}/new", name="maf_assoc_laws_new", requirements={"assoc"="\d+"})
-	  */
 	#[Route ('/laws/r{realm}', name:'maf_realm_laws_new', requirements:['realm'=>'\d+'])]
 	#[Route ('/laws/a{assoc}', name:'maf_assoc_laws_new', requirements:['assoc'=>'\d+'])]
 	public function newLawAction(Request $request, Realm $realm=null, Association $assoc=null): RedirectResponse|Response {
@@ -145,9 +137,6 @@ class LawController extends AbstractController {
 		]);
 	}
 
-	/**
-	  * @Route("/repeal/{law}", name="maf_law_repeal", requirements={"law"="\d+"})
-	  */
 	#[Route ('/laws/repeal/{law}', name:'maf_law_repeal', requirements:['law'=>'\d+'])]
 	public function repealAction(Request $request, Law $law): RedirectResponse|Response {
 		$char = $this->gateway('lawRepealTest', $law);
@@ -176,14 +165,6 @@ class LawController extends AbstractController {
 		]);
 	}
 
-	/**
-	  * @Route("/a{assoc}/{type}", name="maf_assoc_laws_finalize", requirements={"type"="\d+", "assoc"="\d+"})
-	  * @Route("/a{assoc}/{type}/", requirements={"type"="\d+", "assoc"="\d+"})
-	  * @Route("/a{assoc}/{type}/{law}", name="maf_assoc_laws_update", requirements={"assoc"="\d+", "type"="\d+", "law"="\d+"})
-	  * @Route("/r{realm}/{type}", name="maf_realm_laws_finalize", requirements={"type"="\d+", "realm"="\d+"})
-	  * @Route("/r{realm}/{type}/", requirements={"type"="\d+", "realm"="\d+"})
-	  * @Route("/r{realm}/{type}/{law}", name="maf_realm_laws_update", requirements={"realm"="\d+", "type"="\d+", "law"="\d+"})
-	  */
 	#[Route ('/laws/r{realm}/{type}', name:'maf_realm_laws_finalize', requirements:['realm'=>'\d+'])]
 	#[Route ('/laws/r{realm}/{type}/', requirements:['realm'=>'\d+'])]
 	#[Route ('/laws/r{realm}/{type}/{law}', name:'maf_realm_laws_update', requirements:['realm'=>'\d+'])]

@@ -26,10 +26,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-
-/**
- * @Route("/gamerequest")
- */
 class GameRequestController extends AbstractController {
 
 	private Appstate $app;

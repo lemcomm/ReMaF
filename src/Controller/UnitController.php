@@ -514,9 +514,6 @@ class UnitController extends AbstractController {
                 ]);
         }
 
-        /**
-	  * @Route("/units/{unit}/revoke", name="maf_unit_revoke", requirements={"unit"="\d+"})
-	  */
 	#[Route('/units/{unit}/revoke', name:'maf_unit_revoke', requirements:['unit'=>'\d+'])]
 
         public function unitRevokeAction(Unit $unit): RedirectResponse {
@@ -532,10 +529,6 @@ class UnitController extends AbstractController {
                 $this->addFlash('notice', $this->trans->trans('unit.revoke.success', array(), 'actions'));
                 return $this->redirectToRoute('maf_units');
         }
-
-        /**
-	  * @Route("/units/{unit}/rebase", name="maf_unit_rebase", requirements={"unit"="\d+"})
-	  */
 
         public function unitRebaseAction(Request $request, Unit $unit): RedirectResponse|Response {
                 $character = $this->gateway('unitRebaseTest', $unit);
