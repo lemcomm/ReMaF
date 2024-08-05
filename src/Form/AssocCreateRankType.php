@@ -37,6 +37,16 @@ class AssocCreateRankType extends AbstractType {
 			),
 			'data' => $me ? $me->getName() : null
 		));
+		$builder->add('fName', TextType::class, array(
+			'label'=>'assoc.form.createRank.fName',
+			'required'=>false,
+			'attr' => array(
+				'size'=>20,
+				'maxlength'=>40,
+				'title'=>'assoc.help.rankname'
+			),
+			'data' => $me ? $me->getFName() : null
+		));
 		$builder->add('description', TextareaType::class, array(
 			'label'=>'assoc.form.description.full',
 			'attr' => array('title'=>'assoc.help.rankdesc'),

@@ -5,6 +5,8 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<field name="name" type="string"/>
+		<field name="fName" type="string" nullable="true"/>
+		<field name="trans" type="string" nullable="true"/>
 		<field name="rank" type="integer" nullable="true"/>
 		<field name="description" type="text"/>
 		<many-to-one field="type" target-entity="PositionType" nullable="true"/>

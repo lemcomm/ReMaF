@@ -79,7 +79,7 @@ is still required, but we'll leave it in the code just in case. --Andrew
 			{% endif %}
 			{{ ("status.self.position")|trans({"%position%":posname|trans({},"politics")|title, "%realm%":link(position.realm)},"politics")|raw }}
 		{% else %}
-			{{ ("status.self.position")|trans({"%position%":link(position), "%realm%":link(position.realm)},"politics")|raw }}
+			{{ ("status.self.position")|trans({"%position%":link(position, false, false, 1, character.getGender), "%realm%":link(position.realm)},"politics")|raw }}
 		{% endif %}
 	</li>
 {% endfor %}

@@ -491,7 +491,8 @@ realm:
    inactive: Forbid new arrivals from joining here
 
 position:
- name:          "Title:"
+ name:          "Masculine (Default) Title:"
+ fName:         "Feminine Title:"
  description:   Formal Description
  elected:       Position is elected?
  inherit:       Position is inherited?

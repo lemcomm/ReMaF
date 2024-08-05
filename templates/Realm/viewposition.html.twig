@@ -1,7 +1,7 @@
 {% extends app.request.isXmlHttpRequest ? "ajax.html.twig" : "layout.html.twig" %}
 
 {% block content %}
-<h2>{{ position.name }} ({{ link(position.realm) }})</h2>
+<h2>{{ position.name }}{% if position.fName %} / {{ position.fName }}{% endif %} ({{ link(position.realm) }})</h2>
 
 <dl class="wide">
 	<dt>{{ 'position.description'|trans({}, "politics") }}</dt>

@@ -42,6 +42,11 @@ class RealmPositionType extends AbstractType {
 			'required'=>true,
 			'attr' => array('size'=>20, 'maxlength'=>40)
 		));
+		$builder->add('fName', TextType::class, array(
+			'label'=>'position.fName',
+			'required'=>false,
+			'attr' => array('size'=>20, 'maxlength'=>40)
+		));
 		$builder->add('description', TextareaType::class, array(
 			'label'=>'position.description',
 			'required'=>true,

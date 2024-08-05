@@ -5,6 +5,8 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<field name="name" type="string"/>
+		<field name="fName" type="string" nullable="true"/>
+		<field name="trans" type="string" nullable="true"/>
 		<field name="level" type="smallint" nullable="true"/>
 		<field name="view_all" type="boolean" nullable="true"/>
 		<field name="view_up" type="integer" nullable="true"/>

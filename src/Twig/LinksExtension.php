@@ -246,7 +246,7 @@ class LinksExtension extends AbstractExtension {
 	}
 
 	// TODO: pluralization!
-	public function ObjectLink($entity, $raw=false, $absolute=false, $number=1): string {
+	public function ObjectLink($entity, $raw=false, $absolute=false, $number=1, $extra=null): string {
 		if (!is_object($entity)) {
 			$this->logger->error("link() called without object - $entity"); // fuck, it's impossible to get a backtrace! - out of memory
 			$this->logger->error("dump: ".\Doctrine\Common\Util\Debug::dump($entity, 1, true, false));
@@ -258,6 +258,10 @@ class LinksExtension extends AbstractExtension {
 		$classname = implode('', array_slice(explode('\\', get_class($entity)), -1));
 		$linktype = null;
 		switch ($classname) {
+			case 'RealmPosition':
+				$id = $entity->getId();
+				$name = $entity->findName($extra);
+				break;
 			case 'GeoFeature':
 				$entity = $entity->getType();
                 // break missing, intentional

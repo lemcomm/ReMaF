@@ -27,7 +27,8 @@ assoc:
    subject: Subject For Your Application
    text: Message For Your Application
   createRank:
-   name: Rank Name
+   name: "Masculine Rank Name:"
+   fName: "Feminine Rank Name:"
    viewAll: Rank can view all ranks
    viewUp: 'Upward rank visibility:'
    viewDown: 'Downward rank visibility:'
@@ -58,7 +59,8 @@ assoc:
   description:
    short: The short description is used anywhere the game needs to be brief. Depending on how you structure this association, it may not show anywhere.
    full: The full description is used primarily on the association details page, but depending on how you structure this association, it may not be visible even there.
-  rankname: The name of the rank. Ideally, these are unique in the association, but that's entirely up to you.
+  rankname: The masculine name of the rank. Ideally, these are unique in the association, but that's entirely up to you.
+  rankfname: The feminine name of the rank, if there is one.
   rankdesc: The description of the rank. Flavor text.
   viewAll: Granting this means that this rank can view all other ranks and view the members who hold those ranks. This overrides the view up, view down, and view self settings.
   viewUp: Determines how far up a rank can view the hierarchy. This is relative to the rank.

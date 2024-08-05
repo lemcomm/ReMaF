@@ -11,6 +11,8 @@ use Doctrine\Common\Collections\Collection;
 class AssociationRank {
 	private ?int $id = null;
 	private string $name;
+	private ?string $fName = null;
+	private ?string $trans = null;
 	private int $level;
 	private bool $view_all;
 	private int $view_up;
@@ -318,6 +320,31 @@ class AssociationRank {
 		$this->name = $name;
 
 		return $this;
+	}
+
+	public function getFName(): string {
+		return $this->fName;
+	}
+
+	public function setFName(string $fName = null): static {
+		$this->fName = $fName;
+		return $this;
+	}
+
+	public function getTrans(): string {
+		return $this->trans;
+	}
+
+	public function setTrans(string $trans = null): static {
+		$this->trans = $trans;
+		return $this;
+	}
+
+	public function findName(string $gender): string {
+		return match ($gender) {
+			'male' => $this->name,
+			'female' => $this->fName?:$this->name,
+		};
 	}
 
 	/**
