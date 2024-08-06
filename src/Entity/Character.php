@@ -135,6 +135,7 @@ class Character {
 	private Collection $positions;
 	private Collection $battlegroups;
 	private Collection $chat_messages;
+	private ?Race $race = null;
 
 	public function __construct() {
 		$this->achievements = new ArrayCollection();
@@ -736,6 +737,15 @@ class Character {
 		$this->my_realms = $realms;
 
 		return $realms;
+	}
+
+	public function getRace(): ?Race {
+		return $this->race;
+	}
+
+	public function setRace(Race $race = null): static {
+		$this->race = $race;
+		return $this;
 	}
 
 	/**

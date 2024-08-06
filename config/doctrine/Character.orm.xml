@@ -14,7 +14,7 @@
 		<field name="retired" type="boolean" nullable="true"/>
 		<field name="retired_on" type="datetime" nullable="true"/>
 		<field name="generation" type="smallint"/>
-		<field name="genome" type="string" length="2">
+		<field name="genome" type="string" length="2" nullable="true">
 			<options>
 				<option name="fixed">true</option>
 			</options>
@@ -23,7 +23,7 @@
 		<field name="list" type="smallint"/>
 		<field name="created" type="datetime"/>
 		<field name="house_join_date" type="datetime" nullable="true"/>
-		<field name="last_access" type="datetime"/>
+		<field name="last_access" type="datetime" nullable="true"/>
 		<field name="slumbering" type="boolean"/>
 		<field name="special" type="boolean"/>
 		<field name="location" type="point" nullable="true"/>
@@ -161,7 +161,7 @@
 
 		<one-to-many field="activity_participation" target-entity="ActivityParticipant" mapped-by="character"/>
 
-                <one-to-many field="skills" target-entity="Skill" mapped-by="character"/>
+		<one-to-many field="skills" target-entity="Skill" mapped-by="character"/>
 		<one-to-many field="styles" target-entity="CharacterStyle" mapped-by="character"/>
 		<one-to-many field="created_styles" target-entity="Style" mapped-by="creator"/>
 		<one-to-many field="founded_associations" target-entity="Association" mapped-by="founder"/>

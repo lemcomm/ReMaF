@@ -10,7 +10,8 @@ class NPC {
 	private int $hungry;
 	private int $wounded;
 	private int $distance_home;
-	private Settlement $home;
+	private ?Settlement $home = null;
+	private ?Race $race = null;
 
 	// Non-property methods.
 	public function isSoldier(): bool {
@@ -288,6 +289,15 @@ class NPC {
 	public function setWounded(int $wounded): static {
 		$this->wounded = $wounded;
 
+		return $this;
+	}
+
+	public function getRace(): ?Race {
+		return $this->race;
+	}
+
+	public function setRace(Race $race = null): static {
+		$this->race = $race;
 		return $this;
 	}
 }

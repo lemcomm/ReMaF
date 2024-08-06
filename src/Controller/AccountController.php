@@ -104,13 +104,7 @@ class AccountController extends AbstractController {
 			$this->addFlash('error', $trans->trans('newcharacter.overspawn2', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
 		}
 
-
 		$characters = array();
-		$npcs = array();
-
-		$now = new \DateTime("now");
-		$a_week_ago = $now->sub(new \DateInterval("P7D"));
-
 		foreach ($user->getCharacters() as $character) {
 			//building our list of character statuses --Andrew
 			$annexing = false;
@@ -121,7 +115,6 @@ class AccountController extends AbstractController {
 			$granting = false;
 			$renaming = false;
 			$reclaiming = false;
-			$unretirable = false;
 			$preBattle = false;
 			$siege = false;
 			$alive = $character->getAlive();
@@ -226,31 +219,16 @@ class AccountController extends AbstractController {
 				'events' => $events
 			);
 
-			if ($character->isNPC()) {
-				$npcs[] = $data;
-			} else {
+			if (!$character->isNPC()) {
 				$characters[] = $data;
 			}
 			unset($character);
 		}
 		uasort($characters, array($this,'character_sort'));
-		uasort($npcs, array($this,'character_sort'));
 
 		list($announcements, $notices) = $this->notifications($em, $pay);
 
 		$this->checkCharacterLimit($user, $pay, $em);
-
-		if (count($npcs)==0) {
-			$free_npcs = $npcm->getAvailableNPCs();
-			if (count($free_npcs) > 0) {
-				$npcs_form = $this->createForm(NpcSelectType::class, null, ['freeNPCs'=>$free_npcs])->createView();
-			} else {
-				$npcs_form = null;
-			}
-		} else {
-			$npcs_form = null;
-			$free_npcs = array();
-		}
 
 		// check when our next payment is due and if we have enough to pay it
 		$now = new \DateTime("now");
@@ -285,9 +263,6 @@ class AccountController extends AbstractController {
 			'locked' => ($user->getAccountLevel()==0),
 			'list_form' => $list_form->createView(),
 			'characters' => $characters,
-			'npcs' => $npcs,
-			'free_npcs' => count($free_npcs),
-			'npcsform' => $npcs_form,
 			'user' => $user,
 			'daysleft' => $daysleft,
 			'enough_credits' => $enough_credits,

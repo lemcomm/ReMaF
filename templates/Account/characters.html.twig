@@ -219,21 +219,6 @@ Table headers are handled as translation strings from the character.list databas
 		{{ macros.characterrow(character, locked, canSpawn) }}
 	{% endfor %}
 	</table>
-
-	{% if npcs is not empty %}
-		<table class="leftmain">
-		<tr>
-			<th colspan="7" class="topspace">
-				{{ 'bandits.title'|trans }}
-			</th>
-		</tr>
-		{% for character in npcs %}
-			{{ macros.characterrow(character, locked) }}
-		{% endfor %}
-		</table>
-	{% endif %}
-
-
 {% endif %}
 {% if announcements is defined %}
 </div>

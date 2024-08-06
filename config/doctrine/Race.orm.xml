@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="App\Entity\Race" table="types.race">
+		<id name="id" type="integer">
+			<generator strategy="IDENTITY"/>
+		</id>
+		<field name="name" type="string"/>
+		<field name="hp" type="integer"/>
+		<field name="avgPackSize" type="integer"/>
+		<field name="maxPackSize" type="integer"/>
+		<field name="size" type="float"/>
+		<field name="spotModifier" type="float"/>
+		<field name="speedModifier" type="float"/>
+		<field name="roadModifier" type="float"/>
+		<field name="featureModifier" type="float"/>
+		<field name="meleeModifier" type="float"/>
+		<field name="rangedModifier" type="float"/>
+		<field name="meleeDefModifier" type="float"/>
+		<field name="rangedDefModifier" type="float"/>
+		<field name="moraleModifier" type="float"/>
+		<field name="undeath" type="boolean"/>
+		<field name="aging" type="boolean"/>
+		<field name="eats" type="boolean"/>
+		<field name="hungerRate" type="integer" nullable="true"/>
+		<field name="maxHunger" type="integer" nullable="true"/>
+	</entity>
+</doctrine-mapping>

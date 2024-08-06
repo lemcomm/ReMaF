@@ -9,6 +9,7 @@
 		<field name="wounded" type="smallint"/>
 		<field name="distance_home" type="integer"/>
 
+		<many-to-one field="race" target-entity="Race" fetch="EAGER"/>
 		<many-to-one field="home" target-entity="Settlement" fetch="EXTRA_LAZY"/>
 
 	</mapped-superclass>
