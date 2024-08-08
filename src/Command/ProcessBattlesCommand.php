@@ -72,13 +72,13 @@ class ProcessBattlesCommand extends Command {
 			}
 			if ($opt_time) {
 				$event = $stopwatch->lap('battles');
-				$this->log->info("battles: computation timing ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
+				$this->log->info("battles: computation timing ".date("G:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
 			}
 			$this->log->info("battles: ...flushing...");
 			$this->em->flush();
 			if ($opt_time) {
 				$event = $stopwatch->stop('battles');
-				$this->log->info("battles: flush data timing ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
+				$this->log->info("battles: flush data timing ".date("G:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
 			}
 			$this->cs->setGlobal('battling', 0);
 			$this->log->info("battles: ...complete");

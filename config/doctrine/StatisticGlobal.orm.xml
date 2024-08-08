@@ -24,6 +24,21 @@
 		<field name="abandoned" type="integer"/>
 		<field name="features" type="integer"/>
 		<field name="roads" type="integer"/>
+		<field name="actions" type="integer">
+			<options>
+				<option name="default">0</option>
+			</options>
+		</field>
+		<field name="new_messages" type="integer">
+			<options>
+				<option name="default">0</option>
+			</options>
+		</field>
+		<field name="new_conversations" type="integer">
+			<options>
+				<option name="default">0</option>
+			</options>
+		</field>
 
 		<field name="trades" type="integer"/>
 		<field name="battles" type="integer"/>

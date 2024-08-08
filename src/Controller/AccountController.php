@@ -616,8 +616,6 @@ class AccountController extends AbstractController {
 				if ($character->getSystem() == 'procd_inactive') {
 					$character->setSystem(NULL);
 				}
-				// time-based action resolution
-				$ar->progress();
 				$em->flush();
 				if ($character->getSpecial()) {
 					// special menu active - check for reasons

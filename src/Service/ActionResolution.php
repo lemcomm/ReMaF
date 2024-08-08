@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Action;
 
+use App\Entity\EventMetadata;
 use App\Service\Dispatcher\Dispatcher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,9 +24,7 @@ class ActionResolution {
 	private WarManager $warman;
 	private ActionManager $actman;
 
-	private int $max_progress = 5; // maximum number of actions to resolve in each background progression call
 	private int $debug=100;
-
 
 	public function __construct(EntityManagerInterface $em, CommonService $common, History $history, Dispatcher $dispatcher, Geography $geography, Interactions $interactions, MilitaryManager $milman, Politics $politics, PermissionManager $permissions, WarManager $warman, ActionManager $actman) {
 		$this->em = $em;
@@ -45,7 +44,7 @@ class ActionResolution {
 	public function progress(): void {
 		$query = $this->em->createQuery("SELECT a FROM App:Action a WHERE a.complete IS NOT NULL AND a.complete < :now");
 		$query->setParameter('now', new \DateTime("now"));
-		$query->setMaxResults($this->max_progress);
+		$iterableResult = $query->toIterable();
 		foreach ($query->getResult() as $action) {
 			$this->resolve($action);
 		}
@@ -233,7 +232,7 @@ class ActionResolution {
 
 		$victims = array();
 		foreach ($possible_targets as $target) {
-			list($check, $list, $level) = $this->permissions->checkListing($action->getTargetListing(), $target['character']);
+			[$check, $list, $level] = $this->permissions->checkListing($action->getTargetListing(), $target['character']);
 			if ( ( ($check && $action->getStringValue()=='attack') || (!$check && $action->getStringValue()=='allow') ) && $target['character']->getSystem() != 'GM' ){
 				$victims[] = $target['character'];
 			}
@@ -693,7 +692,7 @@ class ActionResolution {
 			// TODO: clean it up, but during alpha we want it to hang around for debug purposes
 			return;
 		}
-		$meta = $this->em->getRepository('App\Entity\EventMetadata')->findOneBy(array('log'=>$log, 'reader'=>$action->getCharacter()));
+		$meta = $this->em->getRepository(EventMetadata::class)->findOneBy(array('log'=>$log, 'reader'=>$action->getCharacter()));
 
 		if (!$meta) {
 			# Somehow we're looking at a log we don't have our own version of?
@@ -706,7 +705,7 @@ class ActionResolution {
 		$next = $query->getSingleScalarResult();
 		$meta->setAccessFrom($next);
 
-		$allMeta = $this->em->getRepository('App\Entity\EventMetadata')->findBy(array('log'=>$log, 'reader'=>$action->getCharacter()));
+		$allMeta = $this->em->getRepository(EventMetadata::class)->findBy(array('log'=>$log, 'reader'=>$action->getCharacter()));
 		if (count($allMeta) > 1) {
 			# We have multiple, check for possible merges.
 			foreach ($allMeta as $each) {

@@ -29,6 +29,7 @@ class AbstractProcessCommand extends Command {
 		$this
 			->setName('maf:process:abstract')
 			->setDescription('abstract process command - do not call directly')
+			->setHidden()
 		;
 	}
 

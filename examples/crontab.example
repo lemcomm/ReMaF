@@ -2,13 +2,20 @@
 # m h  dom mon dow   command
 
 # Run M&F Full turns
-0 0 * * * /var/www/maf/turn.sh
-0 6 * * * /var/www/maf/turn.sh
-0 12 * * * /var/www/maf/turn.sh
-0 18 * * * /var/www/maf/turn.sh
+0 */2 * * * /var/www/maf/turn.sh
 
 # Run M&F Hourly and Dungeon turns
 25 * * * * /var/www/maf/hourly.sh
+55 * * * * /var/www/maf/hourly.sh
+
+# Cleanup old daily logs
+0 0 * * 1 rm /var/www/maf/var/log/hourly-Sun.log
+0 0 * * 2 rm /var/www/maf/var/log/hourly-Mon.log
+0 0 * * 3 rm /var/www/maf/var/log/hourly-Tue.log
+0 0 * * 4 rm /var/www/maf/var/log/hourly-Wed.log
+0 0 * * 5 rm /var/www/maf/var/log/hourly-Thu.log
+0 0 * * 6 rm /var/www/maf/var/log/hourly-Fri.log
+0 0 * * 7 rm /var/www/maf/var/log/hourly-Sat.log
 
 # Run M&F Quarter Hourly turns
 0 * * * * /var/www/maf/quarterhourly.sh
@@ -16,10 +23,19 @@
 30 * * * * /var/www/maf/quarterhourly.sh
 45 * * * * /var/www/maf/quarterhourly.sh
 
+# Run super frequent commands
+*/5 * * * * /var/www/maf/pentamin.sh
+
+# Cleanup old minutely logs
+0 0 * * 0 rm /var/www/maf/var/log/minutely-Sun.log
+0 0 * * 1 rm /var/www/maf/var/log/minutely-Mon.log
+0 0 * * 2 rm /var/www/maf/var/log/minutely-Tue.log
+0 0 * * 3 rm /var/www/maf/var/log/minutely-Wed.log
+0 0 * * 4 rm /var/www/maf/var/log/minutely-Thu.log
+0 0 * * 5 rm /var/www/maf/var/log/minutely-Fri.log
+0 0 * * 6 rm /var/www/maf/var/log/minutely-Sat.log
+
 # Run M&F Daily Command at 0220L, Payment Processor at 0115L, and Newsletter handler at 0045L.
 20 2 * * * php /var/www/maf/app/console --env=prod maf:process:daily 2>&1 >> /var/www/maf/var/log/daily.log
 15 1 * * * php /var/www/maf/app/console --env=prod maf:payment:cycle 2>&1 >> /var/www/maf/var/log/payment.log
-#45 0 * * * php /var/www/maf/app/console --env=prod maf:newsletter
-
-# Run the weekly security check
-0 7 * * 1 php /var/www/maf/app/console security:check 2>%1 >> /var/www/maf/var/log/security.log
+45 0 * * * php /var/www/maf/app/console --env=prod maf:newsletter

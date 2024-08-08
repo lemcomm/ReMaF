@@ -14,6 +14,7 @@ use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
+use App\Entity\StatisticGlobal;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -349,6 +350,11 @@ class ConversationManager {
                         $new->setRecipientCount($count);
                         $new->setConversation($conv);
                         $conv->setUpdated($now);
+			$stats = $this->em->createQuery('SELECT s FROM App:StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
+			if ($stats) {
+				/** @var StatisticGlobal $stats */
+				$stats->setNewMessages($stats->getNewMessages()+1);
+			}
                         if ($flush) {
                                 $this->em->flush();
                         }
@@ -373,7 +379,6 @@ class ConversationManager {
         }
 
         public function writeLocalMessage(Character $char, $target, $topic, $type, $text, $replyTo, $group) {
-                #TODO: Finish reworking this.
                 if ($target == 'place') {
                         $recipients = $char->getInsidePlace()->getCharactersPresent();
                 } elseif ($target == 'settlement') {
@@ -389,7 +394,7 @@ class ConversationManager {
                 $now = new \DateTime("now");
                 $cycle = $this->common->getCycle();
                 if ($replyTo) {
-                        $origTarget = $this->em->getRepository('App\Entity\Message')->findOneById($replyTo);
+                        $origTarget = $this->em->getRepository('App\Entity\Message')->find($replyTo);
                         if (!$topic && $origTarget) {
                                 $topic = $origTarget->getTopic();
                         }
@@ -414,7 +419,7 @@ class ConversationManager {
                         $msg->setSent($now);
                         $msg->setContent($text);
                         if ($origTarget) {
-                                $targetMsg = $this->em->getRepository('App\Entity\Message')->findOneBy(['conversation'=>$conv, 'sender'=>$origTarget->getSender(), 'content'=>$origTarget->getContent()]);
+                                $targetMsg = $this->em->getRepository(Message::class)->findOneBy(['conversation'=>$conv, 'sender'=>$origTarget->getSender(), 'content'=>$origTarget->getContent()]);
                                 if ($targetMsg) {
                                         $msg->setReplyTo($targetMsg);
                                 }
@@ -427,10 +432,15 @@ class ConversationManager {
                                 $msgRec->setMessage($msg);
                                 $msgRec->setCharacter($recip);
                         }
-                        if ($conv->getLocalFor() == $char) {
+                        if ($conv->getLocalFor() === $char) {
                                 $mine = $msg;
                         }
                 }
+		$stats = $this->em->createQuery('SELECT s FROM App:StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
+		if ($stats) {
+			/** @var StatisticGlobal $stats */
+			$stats->setNewMessages($stats->getNewMessages()+1);
+		}
                 $this->em->flush();
                 return $mine;
         }
@@ -518,6 +528,11 @@ class ConversationManager {
                                 $added[] = $recipient;
                         }
                 }
+		$stats = $this->em->createQuery('SELECT s FROM App:StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
+		if ($stats) {
+			/** @var StatisticGlobal $stats */
+			$stats->setNewConversations($stats->getNewConversations()+1);
+		}
                 $this->em->flush();
 
                 # public function writeMessage(Conversation $conv, $replyTo = null, Character $char = null, $text, $type, $total = null, $flush = true, $antiTickUp = false, $internal = false)

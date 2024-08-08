@@ -505,7 +505,7 @@ class CharacterManager {
 		// clean out dungeon stuff
 		$this->dm->cleanupDungeoneer($character);
 
-		$this->convman->removeAllConversations($character);
+		$this->convman->leaveAllConversations($character);
 		$this->em->flush();
 
 		return true;

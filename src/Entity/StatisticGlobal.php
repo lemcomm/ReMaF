@@ -24,6 +24,9 @@ class StatisticGlobal {
 	private int $abandoned;
 	private int $features;
 	private int $roads;
+	private int $actions;
+	private int $new_messages;
+	private int $new_conversations;
 	private int $trades;
 	private int $battles;
 	private int $soldiers;
@@ -452,6 +455,33 @@ class StatisticGlobal {
 		$this->roads = $roads;
 
 		return $this;
+	}
+
+	public function setActions(int $acts): static {
+		$this->actions = $acts;
+		return $this;
+	}
+
+	public function getActions(): int {
+		return $this->actions;
+	}
+
+	public function setNewMessages(int $new): static {
+		$this->new_messages = $new;
+		return $this;
+	}
+
+	public function getNewMessages(): int {
+		return $this->new_messages;
+	}
+
+	public function setNewConversations(int $new): static {
+		$this->new_conversations = $new;
+		return $this;
+	}
+
+	public function getNewConversations(): int {
+		return $this->new_conversations;
 	}
 
 	/**
