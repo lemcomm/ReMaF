@@ -4,16 +4,13 @@ namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use App\Entity\Culture;
 use App\Entity\NameList;
 
 
-class LoadNames extends Fixture implements ContainerAwareInterface {
+class LoadNames extends Fixture {
 
-	private ContainerInterface $container;
 	private array $cultures = array(
 		array('name'=>'european.central', 'colour'=>'#ffffff', 'free'=>true, 'cost'=>0, 'contains'=>array('names')),
 		array('name'=>'european.northern', 'colour'=>'#ddddff', 'free'=>false, 'cost'=>250, 'contains'=>array('names')),
@@ -24,10 +21,6 @@ class LoadNames extends Fixture implements ContainerAwareInterface {
 		array('name'=>'asian', 'colour'=>'#803060', 'free'=>false, 'cost'=>500, 'contains'=>array('names')),
 		array('name'=>'african', 'colour'=>'#302000', 'free'=>false, 'cost'=>500, 'contains'=>array('names')),
 	);
-
-	public function setContainer(ContainerInterface $container = null) {
-		$this->container = $container;
-	}
 
 	public function load(ObjectManager $manager) {
 		foreach ($this->cultures as $data) {
@@ -41,15 +34,6 @@ class LoadNames extends Fixture implements ContainerAwareInterface {
 			$this->addReference('culture: '.strtolower($data['name']), $type);            
 		}
 		$manager->flush();
-
-		$env = $this->container->get('kernel')->getEnvironment();
-		if ($env == "test") {
-			$batchsize = 50;
-			$max=100;
-		} else {
-			$batchsize = 1000;
-			$max=-1;
-		}
 
 		$handle = @fopen("names_african.txt", "r");
 		if (!$handle) {
@@ -72,12 +56,9 @@ class LoadNames extends Fixture implements ContainerAwareInterface {
 			$data->setCulture($culture);
 			$manager->persist($data);
 
-			if (($count++ % $batchsize) == 0) {
+			if (($count++ % 1000) == 0) {
 				echo ".";
 				$manager->flush();
-			}
-			if ($max>0 && $count>=$max) {
-				break;
 			}
 		}
 		fclose($handle);
@@ -159,13 +140,10 @@ class LoadNames extends Fixture implements ContainerAwareInterface {
 					$manager->persist($data);
 				}
 			}
-			if (($count++ % $batchsize) == 0) {
+			if (($count++ % 1000) == 0) {
 				echo ".";
 				$manager->flush();
 				$manager->clear();
-			}
-			if ($max>0 && $count>=$max) {
-				break;
 			}
 		}
 		echo ".";
