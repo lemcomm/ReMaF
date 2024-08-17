@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="App\Entity\TransitType" table="types.transittype">
+		<id name="id" type="integer">
+			<generator strategy="AUTO"/>
+		</id>
+		<field name="name" type="string"/>
+		<field name="modifiers" type="array"/>
+
+	</entity>
+</doctrine-mapping>

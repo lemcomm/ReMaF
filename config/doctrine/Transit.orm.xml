@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="App\Entity\Transit">
+		<id name="id" type="integer">
+			<generator strategy="IDENTITY"/>
+		</id>
+		<many-to-one field="world" target-entity="World"/>
+		<many-to-one field="type" target-entity="TransitType"/>
+		<many-to-one field="fromRegion" target-entity="MapRegion" inversed-by="exits"/>
+		<many-to-one field="toRegion" target-entity="MapRegion" inversed-by="entrances"/>
+		<one-to-many field="characters" target-entity="Character" mapped-by="usingTransit"/>
+
+		<field name="travelTime" type="float"/>
+		<field name="direction" type="string" length="16"/>
+
+	</entity>
+</doctrine-mapping>

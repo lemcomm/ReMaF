@@ -6,7 +6,7 @@ namespace App\Entity;
  * ActivityReportObserver
  */
 class ActivityReportObserver {
-	private ?int $id = null;
+	private string|int|null $id = null;
 	private ?ActivityReport $activity_report = null;
 	private ?Character $character = null;
 

@@ -16,12 +16,14 @@ class Biome {
 	private float $feature_construction;
 	private ?int $id = null;
 	private Collection $geo_data;
+	private Collection $mapRegions;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		$this->geo_data = new ArrayCollection();
+		$this->mapRegions = new ArrayCollection();
 	}
 
 	/**
@@ -188,6 +190,35 @@ class Biome {
 			// set the owning side to null (unless already changed)
 			if ($geoData->getBiome() === $this) {
 				$geoData->setBiome();
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Get geo_data
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getMapRegions(): ArrayCollection|Collection {
+		return $this->mapRegions;
+	}
+
+	public function addMapRegion(MapRegion $reg): self {
+		if (!$this->mapRegions->contains($reg)) {
+			$this->mapRegions->add($reg);
+			$reg->setBiome($this);
+		}
+
+		return $this;
+	}
+
+	public function removeMapRegion(MapRegion $reg): self {
+		if ($this->mapRegions->removeElement($reg)) {
+			// set the owning side to null (unless already changed)
+			if ($reg->getBiome() === $this) {
+				$reg->setBiome();
 			}
 		}
 

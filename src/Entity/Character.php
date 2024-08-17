@@ -36,6 +36,7 @@ class Character {
 	private ?World $world = null;
 	private ?MapRegion $insideRegion = null;
 	private ?MapRegion $movingToRegion = null;
+	private ?Transit $usingTransit = null;
 	private ?int $travelTime = null;
 	private ?Point $location = null;
 	private ?LineString $travel = null;
@@ -1532,6 +1533,23 @@ class Character {
 
 	public function setTravelTime(int $time = null): static {
 		$this->travelTime = $time;
+		return $this;
+	}
+
+	/**
+	 * @return Transit|null
+	 */
+	public function getUsingTransit(): ?Transit {
+		return $this->usingTransit;
+	}
+
+	/**
+	 * @param Transit|null $usingTransit
+	 *
+	 * @return Character
+	 */
+	public function setUsingTransit(?Transit $usingTransit): Character {
+		$this->usingTransit = $usingTransit;
 		return $this;
 	}
 

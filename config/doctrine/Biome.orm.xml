@@ -11,6 +11,7 @@
 		<field name="feature_construction" type="float"/>	
 
 		<one-to-many field="geo_data" target-entity="GeoData" mapped-by="biome"/>
+		<one-to-many field="mapRegions" target-entity="MapRegion" mapped-by="biome"/>
 
 	</entity>
 </doctrine-mapping>

@@ -17,6 +17,8 @@ class MapRegion {
 	private ?Biome $biome = null;
 	private ?World $world = null;
 	private ?array $modifiers = [];
+	private Collection $exits;
+	private Collection $entrances;
 
 	/**
 	 * Constructor
@@ -26,6 +28,8 @@ class MapRegion {
 		$this->activities = new ArrayCollection();
 		$this->resources = new ArrayCollection();
 		$this->characters = new ArrayCollection();
+		$this->exits = new ArrayCollection();
+		$this->entrances = new ArrayCollection();
 	}
 
 	/**
@@ -51,7 +55,7 @@ class MapRegion {
 	 *
 	 * @param Settlement|null $settlement
 	 *
-	 * @return GeoData
+	 * @return MapRegion
 	 */
 	public function setSettlement(Settlement $settlement = null): static {
 		$this->settlement = $settlement;
@@ -64,7 +68,7 @@ class MapRegion {
 	 *
 	 * @param Place $places
 	 *
-	 * @return GeoData
+	 * @return MapRegion
 	 */
 	public function addPlace(Place $places): static {
 		$this->places[] = $places;
@@ -95,7 +99,7 @@ class MapRegion {
 	 *
 	 * @param Activity $activities
 	 *
-	 * @return GeoData
+	 * @return MapRegion
 	 */
 	public function addActivity(Activity $activities): static {
 		$this->activities[] = $activities;
@@ -126,7 +130,7 @@ class MapRegion {
 	 *
 	 * @param GeoResource $resources
 	 *
-	 * @return GeoData
+	 * @return MapRegion
 	 */
 	public function addResource(GeoResource $resources): static {
 		$this->resources[] = $resources;
@@ -166,7 +170,7 @@ class MapRegion {
 	 *
 	 * @param Biome|null $biome
 	 *
-	 * @return GeoData
+	 * @return MapRegion
 	 */
 	public function setBiome(Biome $biome = null): static {
 		$this->biome = $biome;
@@ -218,5 +222,31 @@ class MapRegion {
 
 	public function getCharacters (): ArrayCollection|Collection {
 		return $this->characters;
+	}
+
+	public function addExit (Transit $transit): static {
+		$this->exits[] = $transit;
+		return $this;
+	}
+
+	public function removeExit (Transit $transit): void {
+		$this->exits->removeElement($transit);
+	}
+
+	public function getExits(): Collection {
+		return $this->exits;
+	}
+
+	public function addEntrance (Transit $transit): static {
+		$this->entrances[] = $transit;
+		return $this;
+	}
+
+	public function removeEntrance (Transit $transit): void {
+		$this->entrances->removeElement($transit);
+	}
+
+	public function getEntrances(): Collection {
+		return $this->entrances;
 	}
 }

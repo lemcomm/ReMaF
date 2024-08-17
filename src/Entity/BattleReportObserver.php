@@ -6,7 +6,7 @@ namespace App\Entity;
  * BattleReportObserver
  */
 class BattleReportObserver {
-	private ?int $id = null;
+	private string|int|null $id = null;
 	private ?BattleReport $battle_report = null;
 	private ?Character $character = null;
 
