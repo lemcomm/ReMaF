@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\ActivityParticipant;
+use App\Entity\Character;
+use App\Entity\CharacterBase;
 use App\Entity\EquipmentType;
 use App\Entity\Settlement;
 use App\Entity\Soldier;
@@ -54,18 +56,17 @@ class CombatManager {
 
 		$logs[] = $target->getName()." (".$target->getType().") - ";
 		$logs[] = (round($attack*10)/10)." vs. ".(round($defense*10)/10)." - ";
-		if (rand(0,$attack) > rand(0,$defense)) {
-			// defense penetrated
-			$result = $this->resolveDamage($me, $target, $attack, $type, 'charge', $counterType, $xpMod, $defBonus);
-			if ($me->isNoble() && $me->getWeapon()) {
-				$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
-			} else {
-				$me->gainExperience(($result=='kill'?2:1)*$xpMod);
-			}
+
+		$attRoll = rand(0, (int) floor($attack * $this->woundPenalty($me)));
+		$defRoll = rand(0, (int) floor($defense * $this->woundPenalty($target)));
+		[$result, $sublogs] = $this->checkDamage($me, $attRoll, $target, $defRoll, $type, 'charge', $counterType, $xpMod, $defBonus);
+		foreach ($sublogs as $each) {
+			$logs[] = $each;
+		}
+		if ($me->isNoble() && $me->getWeapon()) {
+			$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
 		} else {
-			// armour saved our target
-			$logs[] = "no damage\n";
-			$result='fail';
+			$me->gainExperience(($result=='kill'?2:1)*$xpMod);
 		}
 		$target->addAttack(5);
 		$sublogs = $this->equipmentDamage($me, $target);
@@ -98,7 +99,7 @@ class CombatManager {
 		}
 		$power += $me->ExperienceBonus($power);
 
-		return $power*$mod;
+		return $power*$mod*$me->getRace()->getMeleeModifier();
 	}
 
 	public function DefensePower($me, $sol = false, $melee = true) {
@@ -138,8 +139,10 @@ class CombatManager {
 				$power += 63;
 			}
 			if ($melee) {
+				$power = $power*$me->getRace()->getMeleeDefModifier();
 				$me->updateDefensePower($power);
 			} else {
+				$power = $power*$me->getRace()->getRangedDefModifier();
 				$me->updateRDefensePower($power);
 			}
 			return $power;
@@ -167,12 +170,16 @@ class CombatManager {
 		if ($sol) {
 			$power += $me->ExperienceBonus($power);
 			if ($melee) {
-				$me->updateDefensePower($power); // defense does NOT scale down with number of men in the unit
+				$me->updateDefensePower($power*$me->getRace()->getMeleeDefModifier()); // defense does NOT scale down with number of men in the unit
 			} else {
-				$me->updateRDefensePower($power);
+				$me->updateRDefensePower($power*$me->getRace()->getRangedDefModifier());
 			}
 		}
-		return $power*$mod;
+		if ($melee) {
+			return $power*$mod*$me->getRace()->getMeleeDefModifier();
+		} else {
+			return $power*$mod*$me->getRace()->getRangedDefModifier();
+		}
 	}
 
 	public function equipmentDamage($attacker, $target): array {
@@ -264,31 +271,22 @@ class CombatManager {
 		}
 
 		$logs[] = $target->getName()." (".$target->getType().") - ";
-		$logs[] = (round($attack*10)/10)." vs. ".(round($defense*10)/10)." - ";
-		if (rand(0,$attack) > rand(0,$defense)) {
-			// defense penetrated
-			[$result, $sublogs] = $this->resolveDamage($me, $target, $attack, $type, 'melee', $counterType);
+		$attRoll = rand(0, (int) floor($attack * $this->woundPenalty($me)));
+		$defRoll = rand(0, (int) floor($defense * $this->woundPenalty($target)));
+		$logs[] = round($attack)."/".$attRoll." vs. ".round($defense)."/".$defRoll." - ";
+		[$result, $sublogs] = $this->checkDamage($me, $attRoll, $target, $defRoll, $type, 'melee', $counterType);
+		foreach ($sublogs as $each) {
+			$logs[] = $each;
+		}
+
+		// out attack failed, do they get a counter?
+		if ($result === 'fail' && $enableCounter && $counterType) {
+			$tPower = $this->MeleePower($target, true);
+			[$innerResult, $sublogs] = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus, false);
 			foreach ($sublogs as $each) {
 				$logs[] = $each;
 			}
-			if ((($type === 'battle' && $me->isNoble()) || $type === 'act') && $me->getWeapon()) {
-				$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
-			} else {
-				$me->gainExperience(($result=='kill'?2:1)*$xpMod);
-			}
-		} else {
-			// armour saved our target
-			$logs[] = "no damage\n";
-			$result='fail';
-			// out attack failed, do they get a counter?
-			if ($enableCounter && $counterType) {
-				$tPower = $this->MeleePower($target, true);
-				[$innerResult, $sublogs] = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus, false);
-				foreach ($sublogs as $each) {
-					$logs[] = $each;
-				}
-				$result = $result . " " . $counterType . $innerResult;
-			}
+			$result = $result . " " . $counterType . $innerResult;
 		}
 		if ($battle) {
 			$target->addAttack(5);
@@ -363,7 +361,7 @@ class CombatManager {
 			if ($hasE) {
 				$power += 12;
 			}
-			return $power;
+			return $power * $me->getRace()->getMeleeModifier();
 		}
 		# If either above the above ifs compare as true we don't get here, so this is technically an else/if regardless.
 		if ($power>0) {
@@ -373,20 +371,30 @@ class CombatManager {
 		// TODO: heavy armour should reduce this a little
 		if ($sol) {
 			if ($groupSize>1) {
-				$me->updateMeleePower($power * pow($groupSize, 0.96)/$groupSize);
+				$me->updateMeleePower($power * $me->getRace()->getMeleeModifier() * pow($groupSize, 0.96)/$groupSize);
 			} else {
-				$me->updateMeleePower($power);
+				$me->updateMeleePower($power * $me->getRace()->getMeleeModifier());
 			}
 		}
-		return $power*$mod;
+		return $power * $mod * $me->getRace()->getMeleeModifier();
 	}
 
-	public function MeleeRoll($defBonus = 0, $rangedPenalty = 1, $rangedBonus = 0, $base = 95): bool {
-		if (rand(0,100+$defBonus)<max($base*$rangedPenalty,$rangedBonus*$rangedPenalty)) {
+	public function MeleeRoll($defBonus = 0, $meleeHitModifier = 1, $base = 95): bool {
+		if (rand(0,100+$defBonus)<$base*$meleeHitModifier) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	public function toHitSizeModifier(Character|Soldier $attacker, Character|Soldier $defender): float|int {
+		return $defender->getRace()->getSize()/$attacker->getRace()->getSize();
+	}
+
+	public function woundPenalty($target): float {
+		$maxHp = $target->getRace()->getHp();
+		$current = $maxHp - $target->getWounded(true);
+		return 1 - ($current / $maxHp / 2);
 	}
 
 	public function RangedHit($me, $target, $rPower, $act=false, $battle=false, $xpMod = 1, $defBonus = 0): array {
@@ -425,25 +433,18 @@ class CombatManager {
 			}
 		}
 
-		$logs[] = "hits ".$target->getName()." (".$target->getType().") - (".round($attack)." vs. ".round($defense).") = ";
 
-		$attRoll = rand(0, $attack);
-		$defRoll = rand(0, $defense);
-		if ($attRoll > $defRoll) {
-			// defense penetrated
-			[$result, $sublogs] = $this->resolveDamage($me, $target, $attack, $type, 'ranged');
-			foreach ($sublogs as $each) {
-				$logs[] = $each;
-			}
-		} else {
-			// armour saved our target
-			$logs[] = "no damage\n";
-			$result='fail';
+		$attRoll = rand(0, (int) floor($attack * $this->woundPenalty($me)));
+		$defRoll = rand(0, (int) floor($defense * $this->woundPenalty($target)));
+		$logs[] = "hits ".$target->getName()." (".$target->getType().") - (".round($attack)."/".$attRoll." vs. ".round($defense)."/".$defRoll.") = ";
+		[$result, $sublogs] = $this->checkDamage($me, $attRoll, $target, $defRoll, $type, 'ranged', false);
+		foreach ($sublogs as $each) {
+			$logs[] = $each;
 		}
-
 		if ($battle) {
 			$target->addAttack(2);
 			$this->equipmentDamage($me, $target);
+
 		}
 		return [$result, $logs];
 	}
@@ -524,17 +525,25 @@ class CombatManager {
 
 		if ($sol) {
 			if ($groupSize>1) {
-				$me->updateRangedPower($power * pow($groupSize, 0.96)/$groupSize);
+				$me->updateRangedPower($power * $me->getRace()->getRangedModifier() * pow($groupSize, 0.96)/$groupSize);
 			} else {
-				$me->updateRangedPower($power);
+				$me->updateRangedPower($power * $me->getRace()->getRangedModifier());
 			}
 		}
 
-		return $power*$mod;
+		return $power * $mod * $me->getRace()->getRangedModifier();
 	}
 
-	public function RangedRoll($defBonus = 0, $rangedPenalty = 1, $rangedBonus = 0, $base = 75): bool {
-		if (rand(0,100+$defBonus)<max($base*$rangedPenalty,$rangedBonus*$rangedPenalty)) {
+	/**
+	 * @param $defBonus 		* Flat Bonus provided by structures in the region.
+	 * @param $rangedHitMod		* Penalty modifier for shooting into regions that provide cover
+	 * @param $rangedBonus		* SqRt of number of targets
+	 * @param $base			* Base chance to hit
+	 *
+	 * @return bool
+	 */
+	public function RangedRoll($defBonus = 0, $rangedHitMod = 1, $rangedBonus = 0, $base = 75): bool {
+		if (rand(0,100+$defBonus)<max($base*$rangedHitMod,$rangedBonus*$rangedHitMod)) {
 			return true;
 		} else {
 			return false;
@@ -568,14 +577,82 @@ class CombatManager {
 		return $myNoble;
 	}
 
-	public function checkDamage($me, $meAtt, $target, $targetDef, $type, $phase, $counterType, $xpMod, $defBonus): array {
+	public function checkDamage(Character|Soldier $me, int $meAtt, Character|Soldier $target, int $targetDef, string $type, string $phase, string $counterType, float $xpMod = 1, ?float $defBonus = null): array {
 		$logs = [];
 		if ($type === 'battle') {
 			$battle = true;
 		} else {
 			$battle = false;
 		}
-		$result = 'wound';
+		$delta = abs($meAtt - $targetDef);
+		$random = rand(1,100);
+		$resolved = false;
+		$wound = $this->calculateWound($delta);
+		if ($meAtt > $targetDef) {
+			$surrender = match ($phase) {
+				'charge' => 85,
+				'ranged' => 60,
+				'hunt' => 95,
+				default => 90,
+			};
+			if ($target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
+				$logs[] = "killed mount & wounded\n";
+				$target->wound(intval($wound/2));
+				$target->dropMount();
+				$this->history->addToSoldierLog($target, 'wounded.' . $phase);
+				$result = 'wound';
+				$resolved = true;
+			}
+			if (!$resolved) {
+				$myNoble = $this->findNobleFromSoldier($me);
+				$target->wound($wound);
+				if ($target->isNoble() && $myNoble && $target->healthValue() < 0.5 && $random < $surrender) {
+					$logs[] = "captured\n";
+					$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
+					$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
+					$result = 'capture';
+					$this->common->addAchievement($myNoble, 'captures');
+				} elseif ($target->getHp() <= 0) {
+					if ($me->isNoble()) {
+						if ($target->isNoble()) {
+							$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
+						} else {
+							$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
+						}
+					}
+					$logs[] = "killed\n";
+					$target->kill();
+					$this->history->addToSoldierLog($target, 'killed');
+					$result = 'kill';
+				} else {
+					$logs[] = "wounded\n";
+					$result = 'wound';
+				}
+			}
+		} else {
+			$logs[] = "no damage\n";
+			$result = 'fail';
+		}
+		if ($battle) {
+			# Attacks of opportunity, to make some gear more interesting to use. :D
+			if ($counterType === 'antiCav') {
+				$tPower = $this->MeleePower($target, true);
+				[$innerResult, $sublogs] = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus);
+				foreach ($sublogs as $each) {
+					$logs[] = $each;
+				}
+				$result = $result . " " . $innerResult;
+			}
+			$me->addCasualty();
+
+			// FIXME: these need to take unit sizes into account!
+			// FIXME: maybe we can optimize this by counting morale damage per unit and looping over all soldiers only once?!?!
+			// every casualty reduces the morale of other soldiers in the same unit
+			foreach ($target->getAllInUnit() as $s) { $s->reduceMorale(1); }
+			// enemy casualties make us happy - +5 for the killer, +1 for everyone in his unit
+			foreach ($me->getAllInUnit() as $s) { $s->gainMorale(1); }
+			$me->gainMorale(4); // this is +5 because the above includes myself
+		}
 		return [$result, $logs];
 	}
 
@@ -668,6 +745,6 @@ class CombatManager {
 	}
 
 	public function calculateWound($power): int {
-		return intval(round(rand(max(1, round($power/10)), $power)/3));
+		return intval(round(rand(max(1, round($power/10)), $power)));
 	}
 }

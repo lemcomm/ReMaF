@@ -705,9 +705,7 @@ class ActivityManager {
 
 	private function applyWounds(Character $me, $wounds): void {
 		$me->setWounded($me->getWounded() + $wounds); # Character health is out of 100.
-		if ($me->healthValue() > 1) {
-			# TODO: Event for near death! :(
-		}
+		# TODO: Event for near death! :(
 	}
 
 	private function skillEval(Character $me, EquipmentType $meW, Character $them, EquipmentType $themW): array {

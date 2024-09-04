@@ -514,7 +514,7 @@ class Economy {
 				);
 
 				// now we have hit starvation, it's time to cancel trades
-				$food_resource = $this->em->getRepository('App\Entity\ResourceType')->findOneByName('food');
+				$food_resource = $this->em->getRepository(ResourceType::class)->findOneBy(['name'=>'food']);
 				$trade_shortage = ceil($shortage * $settlement->getFullPopulation() * 0.25);
 				$this->reduceTrade($settlement, $food_resource, $trade_shortage);
 

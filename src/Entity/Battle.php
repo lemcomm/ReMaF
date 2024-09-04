@@ -135,6 +135,28 @@ class Battle {
 		return $def;
 	}
 
+	public function findInsideGroups(): ArrayCollection {
+		$all = new ArrayCollection();
+		/** @var BattleGroup $group */
+		foreach ($this->groups as $group) {
+			if ($group->isDefender() && !$group->getReinforcing()) {
+				$all->add($group);
+			}
+		}
+		return $all;
+	}
+
+	public function findOutsideGroups(): ArrayCollection {
+		$all = new ArrayCollection();
+		/** @var BattleGroup $group */
+		foreach ($this->groups as $group) {
+			if ($group->isAttacker() || $group->getReinforcing()) {
+				$all->add($group);
+			}
+		}
+		return $all;
+	}
+
 	/**
 	 * Get type
 	 *

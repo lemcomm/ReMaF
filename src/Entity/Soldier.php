@@ -216,8 +216,14 @@ class Soldier extends NPC {
 		return $this;
 	}
 
+	/**
+	 * Deliberate override to ensure that characters take wounds in battle correctly.
+	 * @param $character_real
+	 *
+	 * @return int
+	 */
 	public function getWounded($character_real = false): int {
-		if (!$character_real || $this->getType() != 'noble') return parent::getWounded();
+		if (!$character_real || $this->getType() !== 'noble') return parent::getWounded();
 		return $this->getCharacter()->getWounded();
 	}
 
@@ -248,9 +254,10 @@ class Soldier extends NPC {
 	}
 
 	public function wound($value = 1): static {
-		parent::wound($value);
 		if ($this->getType() == 'noble') {
-			$this->getCharacter()->setWounded($this->getCharacter()->getWounded() + $value);
+			$this->getCharacter()->wound($value);
+		} else {
+			parent::wound($value);
 		}
 		return $this;
 	}

@@ -8,6 +8,7 @@ use App\Entity\BattleReport;
 use App\Entity\BattleReportGroup;
 use App\Entity\BattleReportStage;
 use App\Entity\BattleReportCharacter;
+use App\Entity\EquipmentType;
 use App\Entity\Settlement;
 use App\Entity\Soldier;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -536,7 +537,7 @@ class BattleRunner {
 					} else {
 						$distance_mod = 0;
 					}
-					$soldier->setMorale(($morale + $power) * $mod - $distance_mod);
+					$soldier->setMorale(($morale + $power) * $mod * $soldier->getRace()->getMoraleModifier() - $distance_mod);
 
 					$soldier->resetCasualties();
 				}
@@ -560,23 +561,24 @@ class BattleRunner {
 			// TODO: might make this actual buy options, instead of hardcoded
 			$weapon = $char->getWeapon();
 			if (!$weapon) {
-				$weapon = $this->em->getRepository('App\Entity\EquipmentType')->findOneBy(['name'=>'sword']);
+				$weapon = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'sword']);
 			}
 			$armour = $char->getArmour();
 			if (!$armour) {
-				$armour = $this->em->getRepository('App\Entity\EquipmentType')->findOneBy(['name'=>'plate armour']);
+				$armour = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'plate armour']);
 			}
 			$equipment = $char->getEquipment();
 			if (!$equipment) {
-				$equipment = $this->em->getRepository('App\Entity\EquipmentType')->findOneBy(['name'=>'war horse']);
+				$equipment = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'war horse']);
 			}
 
 			$noble = new Soldier();
 			$noble->setWeapon($weapon)->setArmour($armour)->setEquipment($equipment);
 			$noble->setNoble(true);
 			$noble->setName($char->getName());
+			$noble->setWounded($char->getWounded());
 			$noble->setLocked(false)->setRouted(false)->setAlive(true);
-			$noble->setHungry(0)->setWounded(0); // FIXME: this is not actually correct, but if we start them with the wound level of the noble, they will dodge combat by being considered inactive right away!
+			$noble->setHungry(0);
 			$noble->setExperience(1000)->setTraining(0);
 
 			$noble->setCharacter($char);
@@ -692,7 +694,7 @@ class BattleRunner {
 			$highY = 0;
 			$count = 1;
 			foreach ($inside as $group) {
-				list($highY, $count) = $this->deployGroup($group, $posX, $highY, false, $count, $iCount);
+				[$highY, $count] = $this->deployGroup($group, $posX, $highY, false, $count, $iCount);
 
 				/* Fancy logic follows for more than 2 sided battles.
 
@@ -717,13 +719,13 @@ class BattleRunner {
 			}
 			$count = 1; #Each side retains a separate count.
 			foreach ($outside as $group) {
-				list($highY, $count) = $this->deployGroup($group, $negX, $highY, true, $count, $oCount);
+				[$highY, $count] = $this->deployGroup($group, $negX, $highY, true, $count, $oCount);
 			}
 		} else {
 			$groups = $battle->getGroups();
 			$tCount = $groups->count(); # Total count.
 			foreach ($groups as $group) {
-				list($highY, $count) = $this->deployGroup($group, $posX, $highY, false, $count, $tCount);
+				[$highY, $count] = $this->deployGroup($group, $posX, $highY, false, $count, $tCount);
 			}
 		}
 	}
@@ -895,10 +897,10 @@ class BattleRunner {
 						if ($target) {
 							$shots++;
 							$rPower = $this->combat->RangedPower($soldier, true, null, $attackers);
-							if ($this->combat->RangedRoll($defBonus, $rangedPenalty, $bonus, 95)) {
+							if ($this->combat->RangedRoll($defBonus, $rangedPenalty*$target->getRace()->getSize(), $bonus, 95)) {
 								// target hit
 								$rangedHits++;
-								list($result, $logs) = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
+								[$result, $logs] = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
 								foreach ($logs as $each) {
 									$this->log(10, $each);
 								}
@@ -1012,7 +1014,7 @@ class BattleRunner {
 						if ($target) {
 							$strikes++;
 							$noTargets = 0;
-							list($result, $logs) = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
+							[$result, $logs] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
 							foreach ($logs as $each) {
 								$this->log(10, $each);
 							}
@@ -1031,9 +1033,9 @@ class BattleRunner {
 							$shots++;
 							$noTargets = 0;
 							$rPower = $this->combat->RangedPower($soldier, true, null, $attackers);
-							if ($this->combat->RangedRoll($defBonus, $rangedPenalty, $bonus)) {
+							if ($this->combat->RangedRoll($defBonus, $rangedPenalty*$target->getRace()->getSize(), $bonus)) {
 								$rangedHits++;
-								list($result, $logs) = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
+								[$result, $logs] = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
 								foreach ($logs as $each) {
 									$this->log(10, $each);
 								}
@@ -1055,9 +1057,13 @@ class BattleRunner {
 							$strikes++;
 							$noTargets = 0;
 							$mPower = $this->combat->MeleePower($soldier, true, null, $attackers);
-							list($result, $logs) = $this->combat->MeleeAttack($soldier, $target, $mPower, false, true, $this->xpMod, $this->defenseBonus); // Basically, an attack of opportunity.
-							foreach ($logs as $each) {
-								$this->log(10, $each);
+							if ($this->combat->MeleeRoll($defBonus, $this->combat->toHitSizeModifier($soldier, $target))) {
+								[$result, $logs] = $this->combat->MeleeAttack($soldier, $target, $mPower, false, true, $this->xpMod, $this->defenseBonus); // Basically, an attack of opportunity.
+								foreach ($logs as $each) {
+									$this->log(10, $each);
+								}
+							} else {
+								$mMissed++;
 							}
 							/*
 							if ($battle->getType() == 'siegeassault') {
@@ -1154,6 +1160,7 @@ class BattleRunner {
 					'rangedHits'=>$rangedHits,
 					'strikes'=>$strikes,
 					'misses'=>$missed,
+					'meleeMisses'=>$mMissed,
 					'notarget'=>$noTargets,
 					'crowded'=>$crowded,
 					'fail'=>$fail,
@@ -1291,9 +1298,8 @@ class BattleRunner {
 			$fleeing_entourage = array();
 			$countEntourage = 0; #All fleeing entourage.
 			$countSoldiers = 0; #All fleeing soldiers.
-			$shield = $this->em->getRepository('App\Entity\EquipmentType')->findOneByName('shield');
+			$shield = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'shield']);
 			foreach ($groups as $group) {
-				$huntResult = array();
 				$groupReport = $group->getActiveReport(); # After it's built, the $huntResult array is saved via $groupReport->setHunt($huntResult);
 				if ($group->getFightingSoldiers()->count()==0) {
 					$this->log(10, "group is retreating:\n");
@@ -1305,7 +1311,6 @@ class BattleRunner {
 							$fleeing_entourage[] = $e;
 							$count++;
 							$countGroup++;
-							$countEntourage++;
 						}
 						$this->log(10, " $count entourage\n");
 					}
@@ -1329,7 +1334,6 @@ class BattleRunner {
 				foreach ($group->getEnemies() as $enemygroup) {
 					foreach ($enemygroup->getRoutedSoldiers() as $soldier) {
 						$enemyCollection->add($soldier);
-						$countSoldiers++;
 					}
 				}
 
@@ -1361,22 +1365,21 @@ class BattleRunner {
 						# Ranged penalty is used here to simulate the terrain advantages that retreating soldiers get to evasion. :)
 						if (rand(0,100) < $hitchance * $hitmod && rand(0,100) > $evade/$rangedPenalty) {
 							// hit someone!
+							$attRoll = rand(0, (int) floor($power * $this->combat->woundPenalty($soldier)));
+							$defRoll = rand(0, (int) floor($this->combat->DefensePower($target, true) * $this->combat->woundPenalty($target)));
 							$this->log(10, $soldier->getName()." (".$soldier->getType().") caught up with ".$target->getName()." (".$target->getType().") - ");
-							if (rand(0,$power) > rand(0,$this->combat->DefensePower($target, true))) {
-								$result = $this->combat->resolveDamage($soldier, $target, $power, 'battle', 'escape');
-								if ($result) {
-									$huntReport['killed']++;
-									if ($result == 'killed') {
-										// FIXME: This apparently doesn't work? At least once I saw a killed noble being attacked again
-										$enemyCollection->removeElement($target);
-									}
+							[$result, $logs] = $this->combat->checkDamage($soldier, $attRoll, $target, $defRoll, 'battle', 'escpae', false);
+							foreach ($logs as $each) {
+								$this->log(10, $each);
+							}
+							if ($result !== 'fail') {
+								if ($result === 'killed') {
+									$enemyCollection->removeElement($target); # Only one go at this.
 								} else {
 									$target->addAttack(4);
 								}
 							} else {
-								// no damage, check for dropping gear
-								$this->log(10, "no damage\n");
-								if ($target->isNoble()) continue; // noble characters don't throw away anything
+								if ($target->isNoble()) continue;
 								// throw away your shield - very likely
 								if ($target->getEquipment() && $target->getEquipment() == $shield) {
 									if (rand(0,100)<80) {
@@ -1385,15 +1388,14 @@ class BattleRunner {
 										$this->log(10, $target->getName()." (".$target->getType()."): drops shield\n");
 										$huntReport['dropped']++;
 									}
-								}
-								// throw away your weapon - depends on weapon
-								if ($target->getWeapon()) {
-									switch ($target->getWeapon()->getName()) {
-										case 'spear':		$chance = 40; break;
-										case 'pike':		$chance = 50; break;
-										case 'longbow':	$chance = 30; break;
-										default:				$chance = 20;
-									}
+								} elseif ($target->getWeapon()) {
+									// throw away your weapon - depends on weapon
+									$chance = match ($target->getWeapon()->getName()) {
+										'spear' => 40,
+										'pike' => 50,
+										'longbow' => 30,
+										default => 20,
+									};
 									if (rand(0,100)<$chance) {
 										$target->dropWeapon();
 										$this->history->addToSoldierLog($target, 'dropped.weapon');

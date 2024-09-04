@@ -8,19 +8,17 @@ use Doctrine\Common\Collections\Collection;
 use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
-class Character {
+class Character extends CharacterBase {
 	public int $full_health = 100;
 	protected bool|Character $ultimate = false;
 	protected ?ArrayCollection $my_realms = null;
 	protected ?ArrayCollection $my_houses = null;
 	protected ?ArrayCollection $my_assocs = null;
 	protected ?ArrayCollection $my_rulerships = null;
-	private string $name;
 	private ?bool $battling = null;
 	private ?string $known_as = null;
 	private ?string $system = null;
 	private bool $male;
-	private bool $alive;
 	private ?bool $retired = null;
 	private ?int $abandoned_by = null;
 	private ?DateTime $retired_on = null;
@@ -46,7 +44,6 @@ class Character {
 	private bool $travel_disembark;
 	private ?float $progress = null;
 	private ?float $speed = null;
-	private int $wounded;
 	private int $gold;
 	private bool $npc;
 	private int $spotting_distance;
@@ -136,7 +133,6 @@ class Character {
 	private Collection $positions;
 	private Collection $battlegroups;
 	private Collection $chat_messages;
-	private ?Race $race = null;
 
 	public function __construct() {
 		$this->achievements = new ArrayCollection();
@@ -207,6 +203,10 @@ class Character {
 		return $this->getName() . ' (ID: ' . $this->id . ')';
 	}
 
+	/**
+	 * Deliberate override to ensure known_as properly functions.
+	 * @return string
+	 */
 	public function getName(): string {
 		// override to incorporate the known-as part
 		if ($this->getKnownAs() == null) {
@@ -214,19 +214,6 @@ class Character {
 		} else {
 			return '<i>' . $this->known_as . '</i>';
 		}
-	}
-
-	/**
-	 * Set name
-	 *
-	 * @param string $name
-	 *
-	 * @return Character
-	 */
-	public function setName(string $name): static {
-		$this->name = $name;
-
-		return $this;
 	}
 
 	/**
@@ -433,40 +420,6 @@ class Character {
 		return $this->children;
 	}
 
-	public function healthStatus(): string {
-		$h = $this->healthValue();
-		if ($h > 0.9) return 'perfect';
-		if ($h > 0.75) return 'lightly';
-		if ($h > 0.5) return 'moderately';
-		if ($h > 0.25) return 'seriously';
-		return 'mortally';
-	}
-
-	public function healthValue(): float|int {
-		return max(0.0, ($this->full_health - $this->getWounded())) / $this->full_health;
-	}
-
-	/**
-	 * Get wounded
-	 *
-	 * @return integer
-	 */
-	public function getWounded(): int {
-		return $this->wounded;
-	}
-
-	/**
-	 * Set wounded
-	 *
-	 * @param integer|null $wounded
-	 *
-	 * @return Character
-	 */
-	public function setWounded(?int $wounded): static {
-		$this->wounded = $wounded;
-
-		return $this;
-	}
 
 	public function isActive($include_wounded = false, $include_slumbering = false): bool {
 		if (!$this->location) return false;
@@ -738,15 +691,6 @@ class Character {
 		$this->my_realms = $realms;
 
 		return $realms;
-	}
-
-	public function getRace(): ?Race {
-		return $this->race;
-	}
-
-	public function setRace(Race $race = null): static {
-		$this->race = $race;
-		return $this;
 	}
 
 	/**
@@ -1245,32 +1189,6 @@ class Character {
 	 */
 	public function setSystem(string $system = null): static {
 		$this->system = $system;
-
-		return $this;
-	}
-
-	/**
-	 * Get alive
-	 *
-	 * @return boolean
-	 */
-	public function getAlive(): bool {
-		return $this->alive;
-	}
-
-	public function isAlive(): bool {
-		return $this->getAlive();
-	}
-
-	/**
-	 * Set alive
-	 *
-	 * @param boolean $alive
-	 *
-	 * @return Character
-	 */
-	public function setAlive(bool $alive): static {
-		$this->alive = $alive;
 
 		return $this;
 	}

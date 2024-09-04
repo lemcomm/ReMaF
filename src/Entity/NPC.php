@@ -2,16 +2,12 @@
 
 namespace App\Entity;
 
-class NPC {
-	private string $name;
+class NPC extends CharacterBase {
 	private int $experience;
-	private bool $alive;
 	private bool $locked;
 	private int $hungry;
-	private int $wounded;
 	private int $distance_home;
 	private ?Settlement $home = null;
-	private ?Race $race = null;
 
 	// Non-property methods.
 	public function isSoldier(): bool {
@@ -29,39 +25,8 @@ class NPC {
 		return true;
 	}
 
-	public function isAlive(): bool {
-		return $this->getAlive();
-	}
-
-	/**
-	 * Get alive
-	 *
-	 * @return boolean
-	 */
-	public function getAlive(): bool {
-		return $this->alive;
-	}
-
-	/**
-	 * Set alive
-	 *
-	 * @param boolean $alive
-	 *
-	 * @return NPC
-	 */
-	public function setAlive(bool $alive): static {
-		$this->alive = $alive;
-
-		return $this;
-	}
-
 	public function isWounded(): bool {
 		return ($this->wounded > 0);
-	}
-
-	public function wound($value = 1): static {
-		$this->wounded += $value;
-		return $this;
 	}
 
 	public function HealOrDie(): bool {
@@ -179,28 +144,6 @@ class NPC {
 	}
 
 	/**
-	 * Get name
-	 *
-	 * @return string
-	 */
-	public function getName(): string {
-		return $this->name;
-	}
-
-	/**
-	 * Set name
-	 *
-	 * @param string $name
-	 *
-	 * @return NPC
-	 */
-	public function setName(string $name): static {
-		$this->name = $name;
-
-		return $this;
-	}
-
-	/**
 	 * Get experience
 	 *
 	 * @return integer
@@ -267,37 +210,6 @@ class NPC {
 	public function setHungry(int $hungry): static {
 		$this->hungry = $hungry;
 
-		return $this;
-	}
-
-	/**
-	 * Get wounded
-	 *
-	 * @return integer
-	 */
-	public function getWounded(): int {
-		return $this->wounded;
-	}
-
-	/**
-	 * Set wounded
-	 *
-	 * @param integer $wounded
-	 *
-	 * @return NPC
-	 */
-	public function setWounded(int $wounded): static {
-		$this->wounded = $wounded;
-
-		return $this;
-	}
-
-	public function getRace(): ?Race {
-		return $this->race;
-	}
-
-	public function setRace(Race $race = null): static {
-		$this->race = $race;
 		return $this;
 	}
 }
