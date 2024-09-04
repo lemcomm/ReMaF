@@ -478,6 +478,46 @@ class Dispatcher {
 		}
 	}
 
+	public function placeLeaveTest($check_duplicate=false): array {
+		if (($check = $this->interActionsGenericTests()) !== true) {
+			return array("name"=>"place.exit.name",
+				"description"=>"unavailable.$check"
+			);
+		}
+		if (!$this->getCharacter()->getInsidePlace()) {
+			return array("name"=>"place.exit.name",
+				"description"=>"unavailable.outsideplace"
+			);
+		}
+		if ($this->getCharacter()->getInsidePlace()->getSiege()) {
+			return array("name"=>"location.exit.name", "description"=>"unavailable.besieged");
+		}
+		if (!$place = $this->getActionablePlace()) {
+			return array("name"=>"place.exit.name",
+				"description"=>"unavailable.noplace"
+			);
+		}
+		if ($check_duplicate && $this->getCharacter()->isDoingAction('place.exit')) {
+			return array("name"=>"place.exit.name",
+				"description"=>"unavailable.already"
+			);
+		}
+		if ($this->getCharacter()->isInBattle()) {
+			return array("name"=>"place.exit.name",
+				"description"=>"unavailable.inbattle"
+			);
+		}
+		if ($this->getCharacter()->isPrisoner()) {
+			return array("name"=>"place.exit.name",
+				"description"=>"unavailable.prisoner"
+			);
+		} else {
+			return $this->action("place.exit",
+				"maf_place_exit"
+			);
+		}
+	}
+
 	/* ========== Politics Dispatchers ========== */
 
 	public function RelationsActions(): array {
