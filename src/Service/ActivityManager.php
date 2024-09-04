@@ -326,6 +326,7 @@ class ActivityManager {
 			$themFreeAttack = false;
 		}
 		$wpnOnly = $act->getWeaponOnly();
+		$limit = 0.1;
 		switch ($act->getSubtype()->getName()) {
 			case 'first blood':
 				$limit = 0.1;
