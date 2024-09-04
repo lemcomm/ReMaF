@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Character;
+use App\Entity\Race;
 use App\Entity\Soldier;
 use App\Entity\Unit;
 use App\Form\AreYouSureType;
@@ -709,8 +710,9 @@ class UnitController extends AbstractController {
      			$count = 0;
      			// $corruption = $economy->calculateCorruption($settlement); #Disabled mechanic.
 			$corruption = 0;
+			$secondOneRace = $this->em->getRepository(Race::class)->findOneBy(['name'=>'second one']);
      			for ($i=0; $i<$data['number']; $i++) {
-     				if ($soldier = $generator->randomSoldier($data['weapon'], $data['armour'], $data['equipment'], $data['mount'], $settlement, $corruption, $data['unit'])) {
+     				if ($soldier = $generator->randomSoldier($data['weapon'], $data['armour'], $data['equipment'], $data['mount'], $settlement, $corruption, $data['unit'], $secondOneRace)) {
      					$this->hist->addToSoldierLog(
      						$soldier, 'recruited',
      						array('%link-character%'=>$character->getId(), '%link-settlement%'=>$settlement->getId(),

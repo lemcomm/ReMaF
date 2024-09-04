@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Character;
+use App\Entity\Race;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -79,7 +80,7 @@ class NpcManager {
 	public function spawnNPC(Character $npc): bool {
 		// find a place to spawn him
 		// You may notice we duplicate this again below in case we spawn him trapped in a region. --Andrew
-		list($x, $y, $geodata) = $this->geo->findRandomPoint();
+		[$x, $y, $geodata] = $this->geo->findRandomPoint();
 		if ($x===false) {
 			// can't find a valid random point
 			$this->logger->error("cannot find valid point for new NPC");
@@ -90,7 +91,7 @@ class NpcManager {
 		// We have to flush here because if we don't, we can't actually check where this bandit is, because it hasn't been committed to the database yet. --Andrew
 		if ($this->geo->findMyRegion($npc)->getBiome()->getName()=='snow') {
 			$this->logger->error("by some fluke, bandit '$npc' has been placed in snow. Trying again.");
-			list($x, $y, $geodata) = $this->geo->findRandomPoint();
+			[$x, $y, $geodata] = $this->geo->findRandomPoint();
 			if ($x===false) {
 				$this->logger->error("cannot find valid point for new NPC");
 				return false;
@@ -155,13 +156,14 @@ class NpcManager {
 			}
 			$group++;
 		}
+		$secondOneRace = $this->em->getRepository(Race::class)->findOneBy(['name'=>'second one']);
 
 		// add a random number of scouts and camp followers
 		$scouts = rand(0, 10);
 		if ($scouts>0) {
-			$scout_type = $this->em->getRepository('App\Entity\EntourageType')->findOneByName('scout');
+			$scout_type = $this->em->getRepository('App\Entity\EntourageType')->findOneBy(['name'=>'scout']);
 			for ($i=0; $i < $scouts; $i++) {
-				$scout = $this->generator->randomEntourageMember($scout_type);
+				$scout = $this->generator->randomEntourageMember($scout_type, null, $secondOneRace);
 				$scout->setCharacter($npc);
 				$npc->addEntourage($scout);
 			}
@@ -170,9 +172,9 @@ class NpcManager {
 
 		$followers = min(rand(0, 6), rand(0,6));
 		if ($followers>0) {
-			$follower_type = $this->em->getRepository('App\Entity\EntourageType')->findOneByName('follower');
+			$follower_type = $this->em->getRepository('App\Entity\EntourageType')->findOneBy(['name'=>'follower']);
 			for ($i=0; $i < $followers; $i++) {
-				$follower = $this->generator->randomEntourageMember($follower_type);
+				$follower = $this->generator->randomEntourageMember($follower_type, null, $secondOneRace);
 				$follower->setCharacter($npc);
 				$npc->addEntourage($follower);
 			}

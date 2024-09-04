@@ -8,6 +8,7 @@ use App\Entity\Character;
 use App\Entity\CharacterBackground;
 use App\Entity\Partnership;
 use App\Entity\Place;
+use App\Entity\Race;
 use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Entity\RealmPosition;
@@ -123,6 +124,8 @@ class CharacterManager {
 			$relation->setPartnerMayUseCrest(false);
 			$this->em->persist($relation);
 		}
+		$firstOneRace = $this->em->getRepository(Race::class)->findOneBy(['name'=>'first one']);
+		$character->setRace($firstOneRace);
 
 		$this->em->persist($character);
 		$this->em->flush($character); // because the below needs this flushed

@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Entourage;
 use App\Entity\EntourageType;
 use App\Entity\EquipmentType;
+use App\Entity\Race;
 use App\Entity\Settlement;
 use App\Entity\Soldier;
 use App\Entity\Unit;
@@ -51,7 +52,7 @@ class Generator {
 		return $name->getName();
 	}
 
-	public function randomSoldier(?EquipmentType $weapon, ?EquipmentType $armour, ?EquipmentType $equipment, ?EquipmentType $mount, ?Settlement $home, $corruption, Unit $unit): ?Soldier {
+	public function randomSoldier(?EquipmentType $weapon, ?EquipmentType $armour, ?EquipmentType $equipment, ?EquipmentType $mount, ?Settlement $home, $corruption, Unit $unit, Race $race): ?Soldier {
 		$soldier = new Soldier;
 		$soldier->setName($this->randomName($home));
 		$soldier->setLocked(false);
@@ -59,6 +60,7 @@ class Generator {
 		$soldier->setHasWeapon(true)->setHasArmour(true)->setHasEquipment(true)->setHasMount(true);
 
 		$soldier->setExperience(0)->setTraining(0);
+		$soldier->setRace($race);
 		if ($home) {
 			if ($this->actman->acquireItem($home, $weapon, true, false)
 				&& $this->actman->acquireItem($home, $armour, true, false)
@@ -103,7 +105,7 @@ class Generator {
 		return $soldier;
 	}
 
-	public function randomEntourageMember(EntourageType $type, Settlement $home=null): Entourage {
+	public function randomEntourageMember(EntourageType $type, ?Settlement $home, Race $race): Entourage {
 		$servant = new Entourage();
 		$servant->setType($type);
 		$servant->setName($this->randomName($home));

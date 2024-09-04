@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Action;
 use App\Entity\Character;
 use App\Entity\EntourageType;
+use App\Entity\Race;
 use App\Entity\ResourceType;
 use App\Entity\Settlement;
 use App\Entity\Ship;
@@ -1010,6 +1011,7 @@ class ActionsController extends AbstractController {
 					'form'=>$form->createView()
 				]);
 			}
+			$secondOneRace = $this->em->getRepository(Race::class)->findOneBy(['name'=>'second one']);
 
 			foreach ($data['recruits'] as $id=>$amount) {
 				if ($amount>0) {
@@ -1026,7 +1028,7 @@ class ActionsController extends AbstractController {
 						if ($trainer->getResupply() < $type->getTraining()) {
 							$fail++;
 						} else {
-							$servant = $generator->randomEntourageMember($type, $settlement);
+							$servant = $generator->randomEntourageMember($type, $settlement, $secondOneRace);
 							$servant->setCharacter($character);
 							$character->addEntourage($servant);
 							$servant->setAlive(true);
