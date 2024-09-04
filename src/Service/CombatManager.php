@@ -4,9 +4,7 @@ namespace App\Service;
 
 use App\Entity\ActivityParticipant;
 use App\Entity\Character;
-use App\Entity\CharacterBase;
 use App\Entity\EquipmentType;
-use App\Entity\Settlement;
 use App\Entity\Soldier;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -589,48 +587,54 @@ class CombatManager {
 		$resolved = false;
 		$wound = $this->calculateWound($delta);
 		if ($meAtt > $targetDef) {
-			$surrender = match ($phase) {
-				'charge' => 85,
-				'ranged' => 60,
-				'hunt' => 95,
-				default => 90,
-			};
-			if ($target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
-				$logs[] = "killed mount & wounded\n";
-				$target->wound(intval($wound/2));
-				$target->dropMount();
-				$this->history->addToSoldierLog($target, 'wounded.' . $phase);
-				$result = 'wound';
-				$resolved = true;
-			}
-			if (!$resolved) {
-				$myNoble = $this->findNobleFromSoldier($me);
-				$target->wound($wound);
-				if ($target->isNoble() && $myNoble && $target->healthValue() < 0.5 && $random < $surrender) {
-					$logs[] = "captured\n";
-					$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
-					$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
-					$result = 'capture';
-					$this->common->addAchievement($myNoble, 'captures');
-				} elseif ($target->getHp() <= 0) {
-					if ($me->isNoble()) {
-						if ($target->isNoble()) {
-							$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
-						} else {
-							$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
-						}
-					}
-					$logs[] = "killed\n";
-					$target->kill();
-					$this->history->addToSoldierLog($target, 'killed');
-					$result = 'kill';
-				} else {
-					$logs[] = "wounded\n";
+			if ($battle) {
+				$surrender = match ($phase) {
+					'charge' => 85,
+					'ranged' => 60,
+					'hunt' => 95,
+					default => 90,
+				};
+				if ($target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
+					$logs[] = "killed mount & wounded\n";
+					$target->wound(intval($wound / 2));
+					$target->dropMount();
+					$this->history->addToSoldierLog($target, 'wounded.' . $phase);
 					$result = 'wound';
+					$resolved = true;
 				}
+				if (!$resolved) {
+					$myNoble = $this->findNobleFromSoldier($me);
+					$target->wound($wound);
+					if ($target->isNoble() && $myNoble && $target->healthValue() < 0.5 && $random < $surrender) {
+						$logs[] = "captured\n";
+						$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
+						$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
+						$result = 'capture';
+						$this->common->addAchievement($myNoble, 'captures');
+					} elseif ($target->getHp() <= 0) {
+						if ($me->isNoble()) {
+							if ($target->isNoble()) {
+								$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
+							} else {
+								$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
+							}
+						}
+						$logs[] = "killed\n";
+						$target->kill();
+						$this->history->addToSoldierLog($target, 'killed');
+						$result = 'kill';
+					} else {
+						$logs[] = "wounded\n";
+						$result = 'wound';
+					}
+				}
+			} else {
+				$result = $wound;
 			}
 		} else {
-			$logs[] = "no damage\n";
+			if ($battle) {
+				$logs[] = "no damage\n";
+			}
 			$result = 'fail';
 		}
 		if ($battle) {
@@ -653,94 +657,6 @@ class CombatManager {
 			foreach ($me->getAllInUnit() as $s) { $s->gainMorale(1); }
 			$me->gainMorale(4); // this is +5 because the above includes myself
 		}
-		return [$result, $logs];
-	}
-
-	public function resolveDamage($me, $target, $power, $type, $phase = null, $counterType = false, $xpMod = 1, $defBonus = null): array {
-		// this checks for penetration again AND low-damage weapons have lower lethality AND wounded targets die more easily
-		// TODO: attacks on mounted soldiers could kill the horse instead
-		$logs = [];
-		if ($type === 'battle') {
-			$battle = true;
-		} else {
-			$battle = false;
-		}
-		$attScore = rand(0,$power);
-		if ($attScore > rand(0,max(1,$this->DefensePower($target, $battle) - $target->getWounded(true)))) {
-			// penetrated again = kill
-			$surrender = match ($phase) {
-				'charge' => 85,
-				'ranged' => 60,
-				'hunt' => 95,
-				default => 90,
-			};
-			// nobles can surrender and be captured instead of dying - if their attacker belongs to a noble
-			$random = rand(1,100);
-			$resolved = false;
-			if ($target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
-				$logs[] = "killed mount & wounded\n";
-				#$target->wound($this->calculateWound($power));
-				$target->dropMount();
-				$this->history->addToSoldierLog($target, 'wounded.' . $phase);
-				$result = 'wound';
-				$resolved = true;
-			}
-			if (!$resolved) {
-				$myNoble = $this->findNobleFromSoldier($me);
-				if ($target->isNoble() && $random < $surrender && $myNoble) {
-					$logs[] = "captured\n";
-					$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
-					$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
-					$result = 'capture';
-					$this->common->addAchievement($myNoble, 'captures');
-				} else {
-					if ($me->isNoble()) {
-						if ($target->isNoble()) {
-							$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
-						} else {
-							$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
-						}
-					}
-					$logs[] = "killed\n";
-					$target->kill();
-					$this->history->addToSoldierLog($target, 'killed');
-					$result = 'kill';
-				}
-			}
-		} else {
-			if ($battle) {
-				$logs[] = "wounded\n";
-				$target->wound($this->calculateWound($power));
-				$this->history->addToSoldierLog($target, 'wounded.'.$phase);
-				$target->gainExperience(1*$xpMod); // it hurts, but it is a teaching experience...
-			}
-			$result='wound';
-		}
-		if ($battle && $counterType) {
-			# Attacks of opportunity, to make some gear more interesting to use. :D
-			if ($counterType === 'antiCav') {
-				$tPower = $this->MeleePower($target, true);
-				[$innerResult, $sublogs] = $this->MeleeAttack($target, $me, $tPower, false, true, $xpMod, $defBonus);
-				foreach ($sublogs as $each) {
-					$logs[] = $each;
-				}
-				$result = $result . " " . $innerResult;
-			}
-		}
-		if ($battle) {
-			$me->addCasualty();
-
-			// FIXME: these need to take unit sizes into account!
-			// FIXME: maybe we can optimize this by counting morale damage per unit and looping over all soldiers only once?!?!
-			// every casualty reduces the morale of other soldiers in the same unit
-			foreach ($target->getAllInUnit() as $s) { $s->reduceMorale(1); }
-			// enemy casualties make us happy - +5 for the killer, +1 for everyone in his unit
-			foreach ($me->getAllInUnit() as $s) { $s->gainMorale(1); }
-			$me->gainMorale(4); // this is +5 because the above includes myself
-
-			// FIXME: since nobles can be wounded more than once, this can/will count them multiple times
-		}
-
 		return [$result, $logs];
 	}
 

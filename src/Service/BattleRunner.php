@@ -968,7 +968,9 @@ class BattleRunner {
 							$total += $soldier->getMorale();
 							$count++;
 							$this->log(50, $soldier->getName()." (".$soldier->getType()."): morale ".round($soldier->getMorale()));
-							if ($soldier->getMorale()*2 < rand(0,100)) {
+							$rand = rand(0,100);
+							if ($soldier->getMorale()*2 < $rand || $soldier->getHealthValue()*100 < $rand) {
+								#TODO: Add PlayerCharacter retreat at HP flag.
 								if ($soldier->isNoble()) {
 									$this->log(50, " - has no fear\n");
 									$staredDeath++;
