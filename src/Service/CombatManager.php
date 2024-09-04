@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\ActivityParticipant;
 use App\Entity\EquipmentType;
 use App\Entity\Settlement;
+use App\Entity\Soldier;
 use Doctrine\ORM\EntityManagerInterface;
 
 
@@ -426,7 +427,9 @@ class CombatManager {
 
 		$logs[] = "hits ".$target->getName()." (".$target->getType().") - (".round($attack)." vs. ".round($defense).") = ";
 
-		if (rand(0,$attack) > rand(0,$defense)) {
+		$attRoll = rand(0, $attack);
+		$defRoll = rand(0, $defense);
+		if ($attRoll > $defRoll) {
 			// defense penetrated
 			[$result, $sublogs] = $this->resolveDamage($me, $target, $attack, $type, 'ranged');
 			foreach ($sublogs as $each) {
@@ -563,6 +566,17 @@ class CombatManager {
 			}
 		}
 		return $myNoble;
+	}
+
+	public function checkDamage($me, $meAtt, $target, $targetDef, $type, $phase, $counterType, $xpMod, $defBonus): array {
+		$logs = [];
+		if ($type === 'battle') {
+			$battle = true;
+		} else {
+			$battle = false;
+		}
+		$result = 'wound';
+		return [$result, $logs];
 	}
 
 	public function resolveDamage($me, $target, $power, $type, $phase = null, $counterType = false, $xpMod = 1, $defBonus = null): array {

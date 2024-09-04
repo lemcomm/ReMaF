@@ -6,6 +6,7 @@ use App\Entity\Action;
 use App\Entity\Association;
 use App\Entity\Character;
 use App\Entity\FeatureType;
+use App\Entity\GeoData;
 use App\Entity\Permission;
 use App\Entity\Place;
 use App\Entity\GeoFeature;
@@ -400,25 +401,31 @@ class PlaceController extends AbstractController {
 				$place->setType($data['type']);
 				$place->setRealm($form->get('realm')->getData());
 				$place->setDestroyed(false);
-				if ($character->getInsideSettlement()) {
+				if ($where = $character->getInsideSettlement()) {
 					$place->setSettlement($character->getInsideSettlement());
-					$place->setGeoData($character->getInsideSettlement()->getGeoData());
+					if ($where->getGeoData()) {
+						$place->setGeoData($where->getGeoData());
+					} else {
+						$place->setMapRegion($where->getMapRegion());
+					}
 				} else {
-					$geoData = $geo->findMyRegion($character);
-					$loc = $character->getLocation();
-					$feat = new GeoFeature;
-					$feat->setLocation($loc);
-					$feat->setGeoData($geoData);
-					$feat->setName($data['name']);
-					$feat->setActive(true);
-					$feat->setWorkers(0);
-					$feat->setCondition(0);
-					$feat->setType($em->getRepository(FeatureType::class)->findOneBy(['name'=>'place']));
-					$em->flush(); #We need the above to set the below and do relations.
-					$place->setGeoMarker($feat);
-					$place->setLocation($loc);
-					#Arguably, we could just get location from the geofeature, but this leaves more possibilities open.
-					$place->setGeoData($geoData);
+					$region = $geo->findMyRegion($character);
+					if ($region instanceof GeoData) {
+						$loc = $character->getLocation();
+						$feat = new GeoFeature;
+						$feat->setLocation($loc);
+						$feat->setGeoData($region);
+						$feat->setName($data['name']);
+						$feat->setActive(true);
+						$feat->setWorkers(0);
+						$feat->setCondition(0);
+						$feat->setType($em->getRepository(FeatureType::class)->findOneBy(['name'=>'place']));
+						$em->flush(); #We need the above to set the below and do relations.
+						$place->setGeoMarker($feat);
+						$place->setLocation($loc);
+					} else {
+						$place->setMapRegion($region);
+					}
 				}
 				$place->setVisible($data['type']->getVisible());
 				if ($data['type'] != 'embassy' && $data['type'] != 'capital') {

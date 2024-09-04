@@ -79,8 +79,14 @@ class HelperService {
 				}
 			}
 		}
-		$dist = $this->geo->calculateInteractionDistance($someone);
-		$nearby = $this->geo->findCharactersNearMe($someone, $dist, false, false, false, true);
+		/** @var Character $someone */
+		if ($someone->getWorld()?->getTravelType() === 'realtime') {
+			$dist = $this->geo->calculateInteractionDistance($someone);
+			$nearby = $this->geo->findCharactersNearMe($someone, $dist, false, false, false, true);
+		} else {
+			$nearby = $someone->getInsideRegion()->getCharacters();
+		}
+
 		foreach ($nearby as $each) {
 			$char = $each['character'];
 			if (!$added->contains($char)) {

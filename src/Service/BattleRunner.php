@@ -237,8 +237,12 @@ class BattleRunner {
 				break;
 			case 'field':
 			default:
-				$loc = $this->geo->locationName($battle->getLocation());
-				$location = array('key'=>'battle.location.'.$loc['key'], 'id'=>$loc['entity']->getId(), 'name'=>$loc['entity']->getName());
+				if ($battle->getLocation()) {
+					$loc = $this->geo->locationName($battle->getLocation());
+					$location = array('key'=>'battle.location.'.$loc['key'], 'id'=>$loc['entity']->getId(), 'name'=>$loc['entity']->getName());
+				} else {
+					$location = ['key'=>'battle.location.somewhere'];
+				}
 				$this->siegeFinale = FALSE;
 				break;
 		}
@@ -1427,7 +1431,6 @@ class BattleRunner {
 		$battle = $this->battle;
 		$this->log(3, "survivors:\n");
 		$this->prepareRound(); // to update the isFighting setting correctly
-		$survivors=array();
 		foreach ($battle->getGroups() as $group) {
 			$this->log(5, "Evaluating ".$group->getActiveReport()->getId()." (".($group->getAttacker()?"attacker":"defender").") for survivors...\n");
 			foreach ($group->getSoldiers() as $soldier) {

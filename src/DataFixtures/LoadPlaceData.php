@@ -35,7 +35,7 @@ class LoadPlaceData extends Fixture {
 		'monument'	=> array('requires' => 'lord',		'visible' => true,	'defensible'=>false,	'public'=>true,	 'assocs'=>false,	'spawnable'=>false,	'vassals'=>false,	'pop' => 0),
 		'plaza'		=> array('requires' => 'lord',		'visible' => true,	'defensible'=>false,	'public'=>true,	 'assocs'=>false,	'spawnable'=>true,	'vassals'=>false,	'pop' => 0),
 		'port'		=> array('requires' => 'docks',		'visible' => true,	'defensible'=>false,	'public'=>true,	 'assocs'=>true,	'spawnable'=>true,	'vassals'=>true,	'pop' => 0),
-		'portal' 	=> array('requires' => 'magic',		'visible' => false,	'defensible'=>false,	'public'=>false, 'assocs'=>false,	'spawnable'=>false,	'vassals'=>false,	'pop' => 0),
+		'portal' 	=> array('requires' => 'admin',		'visible' => false,	'defensible'=>false,	'public'=>false, 'assocs'=>false,	'spawnable'=>false,	'vassals'=>false,	'pop' => 0),
 		'passage'	=> array('requires' => 'warren',	'visible' => false,	'defensible'=>false,	'public'=>false, 'assocs'=>false,	'spawnable'=>false,	'vassals'=>false,	'pop' => 0),
 		'quarry'	=> array('requires' => 'stone',		'visible' => true,	'defensible'=>false,	'public'=>true,	 'assocs'=>true,	'spawnable'=>false,	'vassals'=>true,	'pop' => 0),
 		'signpost'	=> array('requires' => '',		'visible' => false,	'defensible'=>false,	'public'=>true,	 'assocs'=>true,	'spawnable'=>false,	'vassals'=>false,	'pop' => 0),
@@ -44,7 +44,7 @@ class LoadPlaceData extends Fixture {
 		'tavern'	=> array('requires' => 'tavern',	'visible' => true,	'defensible'=>false,	'public'=>true,	 'assocs'=>true,	'spawnable'=>false,	'vassals'=>true,	'pop' => 0),
 		'tournament'	=> array('requires' => 'tournament',	'visible' => true,	'defensible'=>false,	'public'=>false, 'assocs'=>true,	'spawnable'=>false,	'vassals'=>true,	'pop' => 10),
 		'warehouse'	=> array('requires' => 'warehouse',	'visible' => true,	'defensible'=>false,	'public'=>false, 'assocs'=>true,	'spawnable'=>false,	'vassals'=>true,	'pop' => 0),
-		'watchtower'	=> array('requires' => 'outside',	'visible' => false,	'defensible'=>true,	'public'=>false,	 'assocs'=>true,	'spawnable'=>false,	'vassals'=>true,	'pop' => 0),
+		'watchtower'	=> array('requires' => 'outside',	'visible' => false,	'defensible'=>true,	'public'=>false, 'assocs'=>true,	'spawnable'=>false,	'vassals'=>true,	'pop' => 0),
 	);
 
 	private array $placesubtypes = array(

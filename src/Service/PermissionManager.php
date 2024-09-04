@@ -50,7 +50,8 @@ class PermissionManager {
 	}
 
 
-	public function checkPlacePermission(Place $place, Character $character, $permission, $return_details=false): bool|array {
+	public function checkPlacePermission(?Place $place, Character $character, $permission, $return_details=false): bool|array {
+		if (!$place) {return false;}
 		// settlement owner always has all permissions without limits
 		if ($place->getOccupier() || $place->getOccupant()) {
 			$occupied = true;
@@ -111,8 +112,9 @@ class PermissionManager {
 		}
 	}
 
-	public function checkSettlementPermission(Settlement $settlement, Character $character, $permission, $return_details=false): bool|array {
+	public function checkSettlementPermission(?Settlement $settlement, Character $character, $permission, $return_details=false): bool|array {
 		// settlement owner always has all permissions without limits
+		if (!$settlement) { return false; }
 		if ($settlement->getOccupier() || $settlement->getOccupant()) {
 			$occupied = true;
 		} else {
@@ -204,23 +206,6 @@ class PermissionManager {
 			return false;
 		}
 	}
-
-	public function findMySettlementPermissions(Settlement $settlement, Character $me): array {
-		$permissions = array();
-
-		// TODO: owner ? - he has all permissions, so we need a hardcoded list or what?
-
-		foreach ($settlement->getPermissions() as $perm) {
-			list($check, $list, $level) = $this->checkListing($perm->getListing(), $me);
-
-			if ($check === false || $check === true) {
-				// TODO: yes, I'm on the list - now what?
-			}
-		}
-
-		return $permissions;
-	}
-
 
 	public function checkListing(Listing $list, Character $who, $depth=1): array {
 		foreach ($list->getMembers() as $member) {

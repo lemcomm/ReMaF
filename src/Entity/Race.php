@@ -23,6 +23,7 @@ class Race {
 	private ?bool $eats = null;
 	private ?int $hungerRate = null;
 	private ?int $maxHunger = null;
+	private ?bool $useEquipment = null;
 
 	public function getId(): ?int {
 		return $this->id;
@@ -207,6 +208,15 @@ class Race {
 
 	public function setMaxHunger(int $int = null): static {
 		$this->maxHunger = $int;
+		return $this;
+	}
+
+	public function getUseEquipment(): ?bool {
+		return $this->useEquipment;
+	}
+
+	public function setUseEquipment(bool $equip = null): static {
+		$this->useEquipment = $equip;
 		return $this;
 	}
 }

@@ -63,7 +63,7 @@ class ReportBase {
 	 *
 	 * @param integer $cycle
 	 *
-	 * @return ActivityReport
+	 * @return ReportBase
 	 */
 	public function setCycle(int $cycle): static {
 		$this->cycle = $cycle;
@@ -85,7 +85,7 @@ class ReportBase {
 	 *
 	 * @param point $location
 	 *
-	 * @return ActivityReport
+	 * @return ReportBase
 	 */
 	public function setLocation(Point $location): static {
 		$this->location = $location;
@@ -107,7 +107,7 @@ class ReportBase {
 	 *
 	 * @param array|null $locationName
 	 *
-	 * @return ActivityReport
+	 * @return ReportBase
 	 */
 	public function setLocationName(array $locationName = null): static {
 		$this->location_name = $locationName;
@@ -133,7 +133,7 @@ class ReportBase {
 	 *
 	 * @param boolean $completed
 	 *
-	 * @return ActivityReport
+	 * @return ReportBase
 	 */
 	public function setCompleted(bool $completed): static {
 		$this->completed = $completed;
@@ -155,7 +155,7 @@ class ReportBase {
 	 *
 	 * @param int|null $count
 	 *
-	 * @return ActivityReport
+	 * @return ReportBase
 	 */
 	public function setCount(int $count = null): static {
 		$this->count = $count;
@@ -177,7 +177,7 @@ class ReportBase {
 	 *
 	 * @param string|null $debug
 	 *
-	 * @return ActivityReport
+	 * @return ReportBase
 	 */
 	public function setDebug(string $debug = null): static {
 		$this->debug = $debug;
@@ -226,7 +226,7 @@ class ReportBase {
 	 *
 	 * @param Settlement|null $settlement
 	 *
-	 * @return ActivityReport
+	 * @return ReportBase
 	 */
 	public function setSettlement(Settlement $settlement = null): static {
 		$this->settlement = $settlement;
@@ -241,5 +241,10 @@ class ReportBase {
 	 */
 	public function getPlace(): ?Place {
 		return $this->place;
+	}
+
+	public function setPlace(Place $place = null): static {
+		$this->place = $place;
+		return $this;
 	}
 }

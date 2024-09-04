@@ -15,6 +15,7 @@ use App\Entity\ActivityReportCharacter;
 use App\Entity\ActivityReportStage;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
+use App\Entity\GeoData;
 use App\Entity\Style;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -99,14 +100,29 @@ class ActivityManager {
 			if ($place = $char->getInsidePlace()) {
 				$act->setLocation($char->getLocation());
 				$act->setPlace($place);
-				$act->setGeoData($place->getGeoData());
+				if ($place->getGeoData()) {
+					$act->setGeoData($place->getGeoData());
+				} else {
+					$act->setMapRegion($place->getMapRegion());
+				}
 			} elseif ($settlement = $char->getInsideSettlement()) {
 				$act->setLocation($char->getLocation());
 				$act->setSettlement($settlement);
-				$act->setGeoData($settlement->getGeoData());
+				if ($settlement->getGeoData()) {
+					$act->setGeoData($settlement->getGeoData());
+				} else {
+					$act->setMapRegion($settlement->getMapregion());
+				}
+
 			} else {
 				$act->setLocation($char->getLocation());
-				$act->setGeoData($this->geo->findMyRegion($char));
+				$reg = $this->geo->findMyRegion($char);
+				if ($reg instanceof GeoData) {
+					$act->setGeoData($reg);
+				} else {
+					$act->setMapRegion($reg);
+				}
+
 			}
 			$act->setMainEvent($mainAct);
 			$act->setCreated($now);
@@ -520,7 +536,7 @@ class ActivityManager {
 			$this->common->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." fires - ");
 			if ($this->combat->RangedRoll(0, 1, 0, $meScore)) {
-				list($result, $sublogs) = $this->combat->RangedHit($me, $themChar, $meRanged, $act, false, 1, $themScore);
+				[$result, $sublogs] = $this->combat->RangedHit($me, $themChar, $meRanged, $act, false, 1, $themScore);
 				foreach ($sublogs as $each) {
 					$this->log(10, $each);
 				}
@@ -536,7 +552,7 @@ class ActivityManager {
 			$this->common->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." attacks - ");
 			if ($this->combat->MeleeRoll(0, 1, 0, $meScore)) {
-				list($result, $sublogs) = $this->combat->MeleeAttack($me, $themChar, $meMelee, $act, false, 1, $themScore);
+				[$result, $sublogs] = $this->combat->MeleeAttack($me, $themChar, $meMelee, $act, false, 1, $themScore);
 				foreach ($sublogs as $each) {
 					$this->log(10, $each);
 				}
@@ -615,22 +631,22 @@ class ActivityManager {
 			# My victory.
 			$meData['result'] = 'victory';
 			$themData['result'] = 'loss';
-			list($meData['skillCheck'], $meData['skillAcc'], $themData['skillCheck'], $themData['skillAcc']) = $this->skillEval($meC, $meReport->getWeapon(), $themC, $themReport->getWeapon());
+			[$meData['skillCheck'], $meData['skillAcc'], $themData['skillCheck'], $themData['skillAcc']] = $this->skillEval($meC, $meReport->getWeapon(), $themC, $themReport->getWeapon());
 		} elseif ($themWounds >= $limit && $meWounds >= $limit) {
 			# Draw.
 			$meData['result'] = 'draw';
 			$themData['result'] = 'draw';
-			list($meData['skillCheck'], $meData['skillAcc'], $themData['skillCheck'], $themData['skillAcc']) = $this->skillEval($meC, $meReport->getWeapon(), $themC, $themReport->getWeapon());
+			[$meData['skillCheck'], $meData['skillAcc'], $themData['skillCheck'], $themData['skillAcc']] = $this->skillEval($meC, $meReport->getWeapon(), $themC, $themReport->getWeapon());
 		} elseif ($meWounds >= $limit && $themWounds < $limit) {
 			# Their victory.
 			$meData['result'] = 'loss';
 			$themData['result'] = 'victory';
-			list($meData['skillCheck'], $meData['skillAcc'], $themData['skillCheck'], $themData['skillAcc']) = $this->skillEval($meC, $meReport->getWeapon(), $themC, $themReport->getWeapon());
+			[$meData['skillCheck'], $meData['skillAcc'], $themData['skillCheck'], $themData['skillAcc']] = $this->skillEval($meC, $meReport->getWeapon(), $themC, $themReport->getWeapon());
 		} else {
 			# Inconclusive. Shouldn't end up here. Process as draw, flag as error.
 			$meData['result'] = 'loss';
 			$themData['result'] = 'loss';
-			list($meData['skillCheck'], $meData['skillAcc'], $themData['skillCheck'], $themData['skillAcc']) = $this->skillEval($meC, $meReport->getWeapon(), $themC, $themReport->getWeapon());
+			[$meData['skillCheck'], $meData['skillAcc'], $themData['skillCheck'], $themData['skillAcc']] = $this->skillEval($meC, $meReport->getWeapon(), $themC, $themReport->getWeapon());
 			$this->log(10, "Duel ended inconclusively!\n");
 		}
 		# 32767 is the smallint max value, if you're curious.

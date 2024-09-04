@@ -23,5 +23,6 @@
 		<field name="eats" type="boolean"/>
 		<field name="hungerRate" type="integer" nullable="true"/>
 		<field name="maxHunger" type="integer" nullable="true"/>
+		<field name="useEquipment" type="boolean" nullable="true"/>
 	</entity>
 </doctrine-mapping>

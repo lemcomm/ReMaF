@@ -32,12 +32,12 @@ class NewLocalMessageType extends AbstractType {
 			$reply = 'new';
 		}
 
-		$target = ['local'=>'conversation.target.local'];
+		$target = ['conversation.target.local'=>'local'];
 		if ($place) {
-			$target['place'] = 'conversation.target.place';
+			$target['conversation.target.place'] = 'place';
 		}
 		if ($settlement) {
-			$target['settlement'] = 'conversation.target.settlement';
+			$target['conversation.target.settlement'] = 'settlement';
 		}
 		$builder->add('topic', TextType::class, array(
 			'required' => false,

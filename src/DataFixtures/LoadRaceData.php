@@ -10,10 +10,10 @@ use Doctrine\Persistence\ObjectManager;
 class LoadRaceData extends Fixture {
 
 	private array $races = [
-		'first one'		=> ['hp'=>1000, 'avgPackSize'=>1, 'maxPackSize'=>1, 'melee'=>5.00, 'ranged'=>5.00, 'mDef'=>5.00, 'rDef'=>5.00, 'morale'=>5.00, 'eats'=>false, 'maxHunger'=>null, 'undeath'=>false, 'aging'=>false],
-		'second one'		=> ['roads' => 0.8, 'undeath'=>false],
-		'terran'		=> [],
-		'orc'			=> ['roads'=>0.75, 'size'=>1.5, 'melee'=>2.5, 'mDef'=>1.5, 'rDef'=>1.5],
+		'first one'		=> ['hp'=>1000, 'avgPackSize'=>1, 'maxPackSize'=>1, 'melee'=>5.00, 'ranged'=>5.00, 'mDef'=>5.00, 'rDef'=>5.00, 'morale'=>5.00, 'eats'=>false, 'maxHunger'=>null, 'undeath'=>false, 'aging'=>false, 'equipment'=>true],
+		'second one'		=> ['roads' => 0.8, 'undeath'=>false, 'equipment'=>true],
+		'human'			=> ['equipment'=>true],
+		'orc'			=> ['hp'=>150, 'avgPackSize'=>10, 'maxPackSize'=>100, 'travel'=>0.75, 'roads'=>0.75, 'size'=>1.25, 'melee'=>1.5, 'mDef'=>1.5, 'equipment'=>true],
 		'ogre'			=> ['hp'=>200, 'avgPackSize'=>5, 'maxPackSize'=>25, 'travel'=>0.5, 'roads'=>0.25, 'size'=>3, 'melee'=>5, 'mDef'=>2.5, 'ranged'=>0.25, 'rDef'=>2.5],
 		'dragon'		=> ['hp'=>10000, 'avgPackSize'=>1, 'maxPackSize'=>3, 'travel'=>5, 'roads'=>0, 'size'=>5, 'melee'=>10, 'ranged'=>5, 'mDef'=>5, 'rDef'=>5, 'morale'=>5, 'hungerRate'=>600, 'maxHunger'=>1800000, 'aging'=>false],
 		'wyvern'		=> ['hp'=>500, 'avgPackSize'=>5, 'maxPackSize'=>10, 'travel'=>3, 'roads'=>0, 'size'=>3, 'melee'=>5, 'ranged'=>2.5, 'mDef'=>2.5, 'rDef'=>2.5, 'hungerRate'=>4800, 'maxHunger'=>600000],
@@ -38,7 +38,9 @@ class LoadRaceData extends Fixture {
 		'hungerRate'=>60,
 		'maxHunger'=>1800,
 		'undeath'=>true,
-		'aging'=>true];
+		'aging'=>true,
+		'equipment'=>false,
+	];
 	/*
 	 * In a nutshell, these basically equate to:
 	 * Spot -> How far you can see
@@ -79,6 +81,10 @@ class LoadRaceData extends Fixture {
 
 			# Set values for race.
 			$type->setSpotModifier($data['spot']);
+			$type->setSize($data['size']);
+			$type->setAvgPackSize($data['avgPackSize']);
+			$type->setMaxPackSize($data['maxPackSize']);
+			$type->setHp($data['hp']);
 			$type->setSpeedModifier($data['travel']);
 			$type->setRoadModifier($data['roads']);
 			$type->setFeatureModifier($data['features']);
@@ -87,6 +93,12 @@ class LoadRaceData extends Fixture {
 			$type->setMeleeDefModifier($data['mDef']);
 			$type->setRangedDefModifier($data['rDef']);
 			$type->setMoraleModifier($data['morale']);
+			$type->setEats($data['eats']);
+			$type->setHungerRate($data['hungerRate']);
+			$type->setMaxHunger($data['maxHunger']);
+			$type->setUndeath($data['undeath']);
+			$type->setAging($data['aging']);
+			$type->setUseEquipment($data['equipment']);
 		}
 		$manager->flush();
 	}

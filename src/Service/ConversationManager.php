@@ -214,8 +214,7 @@ class ConversationManager {
                                 $perm->setUnread(0);
                         }
                         $perm->setLastAccess(new \DateTime("now"));
-                        if ($total = $perm->getUnread() > 0) {
-                                $counter = 0;
+                        if ($perm->getUnread() > 0) {
                                 foreach ($perm->getConversation()->getMessages() as $message) {
                                         if ($message->sent() > $perm->getLastAccess()) {
                                                 $unread->add($message);
@@ -227,7 +226,6 @@ class ConversationManager {
 			foreach ($local->getMessages() as $msg) {
 				if (!$msg->getRead()) {
 					$unread->add($msg);
-					$msg->setRead(true);
 				}
 			}
 		}
@@ -250,7 +248,7 @@ class ConversationManager {
         }
 
         public function removeOrphanConversations() {
-                $all = $this->em->getRepository('App\Entity\Conversation');
+                $all = $this->em->getRepository(Conversation::class);
                 $count = 0;
                 foreach ($all as $conv) {
                         if ($conv->getPermissions()->count() == 0) {
@@ -321,7 +319,7 @@ class ConversationManager {
                                 $new->setSender($char);
                         }
                         if ($replyTo) {
-                                $target = $this->em->getRepository('App\Entity\Message')->findOneById($replyTo);
+                                $target = $this->em->getRepository('App\Entity\Message')->findOneBy(['id'=>$replyTo]);
                                 if ($target) {
                                         $new->setReplyTo($target);
                                 }
@@ -394,7 +392,7 @@ class ConversationManager {
                 $now = new \DateTime("now");
                 $cycle = $this->common->getCycle();
                 if ($replyTo) {
-                        $origTarget = $this->em->getRepository('App\Entity\Message')->find($replyTo);
+                        $origTarget = $this->em->getRepository(Message::class)->find($replyTo);
                         if (!$topic && $origTarget) {
                                 $topic = $origTarget->getTopic();
                         }

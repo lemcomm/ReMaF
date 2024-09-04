@@ -12,6 +12,7 @@ use App\Entity\GeoFeature;
 use App\Entity\MapPOI;
 use App\Entity\Place;
 use App\Entity\Realm;
+use App\Entity\RegionBase;
 use App\Entity\RegionFamiliarity;
 use App\Entity\Setting;
 use App\Entity\Ship;
@@ -113,7 +114,10 @@ class Geography {
 		return $data['poly'];
 	}
 
-	public function findMyRegion(Character $character) {
+	public function findMyRegion(Character $character): ?RegionBase {
+		if ($character->getInsideRegion()) {
+			return $character->getInsideRegion();
+		}
 		$query = $this->em->createQuery('SELECT g FROM App:GeoData g, App:Character c where c = :me AND ST_Contains(g.poly, c.location) = true AND g.passable = true');
 		$query->setParameters(['me'=>$character]);
 		$query->setMaxResults(1); // FIXME: due to small overlaps in the geometry, we can get multiple rows here. This hack is not the best solution, we should probably order by biome or something
