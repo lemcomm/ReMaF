@@ -160,14 +160,21 @@ class Soldier extends NPC {
 			return $this->getCharacter()->isActive($include_routed, true);
 		}
 		// we can take a few wounds before we go inactive
-		$can_take = 1;
-		if ($this->getExperience() > 10) $can_take++;
-		if ($this->getExperience() > 30) $can_take++;
-		if ($this->getExperience() > 100) $can_take++;
-		if ($militia) {
-			$can_take = $can_take * 10; # Militia are usually willing to fight, even wounded.
+		$limit = 50;
+
+		$xp = $this->getExperience();
+		if ($xp > 100) {
+			$limit -= 15;
+		} elseif ($xp > 30) {
+			$limit -= 10;
+		} elseif ($xp > 10) {
+			$limit -= 5;
 		}
-		if (parent::getWounded() > $can_take) return false;
+		if ($militia) {
+			$limit -= 5; # Militia are willing to fight, even wounded.
+		}
+
+		if (parent::healthValue()*100 < $limit) return false;
 		if (!$include_routed && $this->isRouted()) return false;
 		return true;
 	}
@@ -937,9 +944,5 @@ class Soldier extends NPC {
 		$this->has_equipment = $hasEquipment;
 
 		return $this;
-	}
-
-	public function isHasMount(): ?bool {
-		return $this->has_mount;
 	}
 }

@@ -427,7 +427,7 @@ class Character extends CharacterBase {
 		if ($this->retired) return false;
 		if ($this->slumbering && !$include_slumbering) return false;
 		// we can take a few wounds before we go inactive
-		if ($this->healthValue() < 0.9 && !$include_wounded) return false;
+		if ($this->healthValue() < 0.5 && !$include_wounded) return false;
 		if ($this->isPrisoner()) return false;
 		return true;
 	}

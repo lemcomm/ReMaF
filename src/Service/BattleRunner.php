@@ -968,8 +968,8 @@ class BattleRunner {
 							$total += $soldier->getMorale();
 							$count++;
 							$this->log(50, $soldier->getName()." (".$soldier->getType()."): morale ".round($soldier->getMorale()));
-							$rand = rand(0,100);
-							if ($soldier->getMorale()*2 < $rand || $soldier->getHealthValue()*100 < $rand) {
+							$health = $soldier->getHealthValue();
+							if ($soldier->getMorale()*2 < rand(0,100) || ($health < 0.30 && $health*100 < rand(0,100))) {
 								#TODO: Add PlayerCharacter retreat at HP flag.
 								if ($soldier->isNoble()) {
 									$this->log(50, " - has no fear\n");
@@ -1249,7 +1249,7 @@ class BattleRunner {
 						$mod = min(0.99, $mod+0.1);
 					}
 					$soldier->setMorale($soldier->getMorale() * $mod);
-					if ($soldier->getMorale() < rand(0,100)) {
+					if ($soldier->getMorale() < rand(0,100) || ($health < 0.5 && $health*100 < rand(0,100))) {
 						if ($soldier->isNoble()) {
 							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." - has no fear\n");
 							$staredDeath++;
@@ -1333,6 +1333,7 @@ class BattleRunner {
 				$this->prepareRound(); // called again each group to update the fighting status of all enemies
 
 				$enemyCollection = new ArrayCollection;
+				/** @var BattleGroup $enemygroup */
 				foreach ($group->getEnemies() as $enemygroup) {
 					foreach ($enemygroup->getRoutedSoldiers() as $soldier) {
 						$enemyCollection->add($soldier);
