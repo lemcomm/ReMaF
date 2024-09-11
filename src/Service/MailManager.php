@@ -17,7 +17,12 @@ class MailManager {
 	protected mixed $mail_reply_to;
 	protected mixed $optOut;
 
-	public function __construct(private EntityManagerInterface $em, private MailerInterface $mailer, private UserManager $um, private TranslatorInterface $trans) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private MailerInterface $mailer,
+		private UserManager $um,
+		private TranslatorInterface $trans
+	) {
 		$this->mail_from = new Address($_ENV['FROM_EMAIL'], $_ENV['FROM_NAME']);
 		$this->mail_reply_to = $_ENV['REPLY_EMAIL'];
 		$this->optOut = $_ENV['MAIL_OPT_OUT_URL'];

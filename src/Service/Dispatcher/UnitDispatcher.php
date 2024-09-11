@@ -14,13 +14,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class UnitDispatcher extends Dispatcher {
 
-	protected MilitaryManager $milman;
-	protected PermissionManager $pm;
-
-	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, EntityManagerInterface $em) {
+	public function __construct(
+		protected AppState $appstate,
+		protected CommonService $common,
+		protected PermissionManager $pm,
+		protected Geography $geo,
+		protected MilitaryManager $milman,
+		protected Interactions $interactions,
+		protected EntityManagerInterface $em
+	) {
 		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em);
-		$this->milman = $milman;
-		$this->pm = $pm;
 	}
 
 	/* =========== Tests ========== */
@@ -223,10 +226,10 @@ class UnitDispatcher extends Dispatcher {
 			if ($unit->getCharacter()) {
 				return array("name"=>"unit.disband.name", "description"=>"unavailable.recallfirst");
 			}
-			if ($settlement && !$character->getUnits()->contains($unit)) {
-				if(!$character->getInsideSettlement() || $settlement != $character->getInsideSettlement()) {
+			if (!$character->getUnits()->contains($unit)) {
+				if(!$character->getInsideSettlement() || $settlement !== $character->getInsideSettlement()) {
 					return array("name"=>"unit.disband.name", "description"=>"unavailable.notinside");
-				} elseif($settlement && !$permission) {
+				} elseif(!$permission) {
 					return array("name"=>"unit.disband.name", "description"=>"unavailable.notlord");
 				}
 			}

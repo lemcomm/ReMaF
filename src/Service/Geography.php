@@ -46,7 +46,10 @@ class Geography {
 		'y_max' => 512000,
 	);
 
-	public function __construct(private CommonService $common, private EntityManagerInterface $em, private PermissionManager $pm) {
+	public function __construct(
+		private CommonService $common,
+		private EntityManagerInterface $em,
+		private PermissionManager $pm) {
 	}
 
 	private function getSpotBase() {

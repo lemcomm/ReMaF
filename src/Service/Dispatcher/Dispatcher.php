@@ -35,13 +35,6 @@ class Dispatcher {
 	protected mixed $realm = null;
 	protected mixed $house = null;
 	protected mixed $settlement = null;
-	protected AppState $appstate;
-	protected CommonService $common;
-	protected PermissionManager $permission_manager;
-	protected Geography $geography;
-	protected Interactions $interactions;
-	protected EntityManagerInterface $em;
-
 	// test results to store because they are expensive to calculate
 	private null|bool|Settlement $actionableSettlement=false;
 	private null|bool|Place $actionablePlace=false;
@@ -50,13 +43,13 @@ class Dispatcher {
 	private null|bool|Ship $actionableShip=false;
 	private null|bool|Collection $actionableHouses=false;
 
-	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions, EntityManagerInterface $em) {
-		$this->appstate = $appstate;
-		$this->common = $common;
-		$this->permission_manager = $pm;
-		$this->geography = $geo;
-		$this->interactions = $interactions;
-		$this->em = $em;
+	public function __construct(
+		protected AppState $appstate, 
+		protected CommonService $common, 
+		protected PermissionManager $pm, 
+		protected Geography $geo, 
+		protected Interactions $interactions, 
+		protected EntityManagerInterface $em) {
 	}
 
 	public function getCharacter() {
@@ -111,9 +104,9 @@ class Dispatcher {
 	 * @param $getPlace		* Return nearest actionable place as $return[2] (with getSettlemnent as true) or $return[1].
 	 * @param $option		* Secondary pass through variable to enable some tests to not have to reverse lookup parameters.
 	 *
-	 * @return Character|array|mixed|null
+	 * @return mixed
 	 */
-	public function gateway($test=false, $getSettlement=false, $check_duplicate=true, $getPlace=false, $option=null) {
+	public function gateway($test=false, $getSettlement=false, $check_duplicate=true, $getPlace=false, $option=null): mixed {
 		$character = $this->getCharacter();
 		if (! $character instanceof Character) {
 			/* Yes, if it's not a character, we return it. We check this on the other side again, and redirect if it's not a character.
@@ -141,7 +134,7 @@ class Dispatcher {
 		if ($getSettlement) {
 			$settlement = $this->getActionableSettlement();
 			if ($getPlace) {
-				$place = $this->geography->findNearestActionablePlace($character);
+				$place = $this->geo->findNearestActionablePlace($character);
 				return array($character, $settlement, $place);
 			} else {
 				return array($character, $settlement);
@@ -373,7 +366,7 @@ class Dispatcher {
 		$actions=array();
 		$actions[] = $this->economyTradeTest();
 
-		if ($this->permission_manager->checkSettlementPermission($settlement, $this->getCharacter(), 'construct')) {
+		if ($this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'construct')) {
 			$actions[] = $this->economyRoadsTest();
 			$actions[] = $this->economyFeaturesTest();
 			$actions[] = $this->economyBuildingsTest();
@@ -424,7 +417,7 @@ class Dispatcher {
 	}
 
 	public function placeListTest(): array {
-		if ($this->getCharacter() && $this->geography->findPlacesInActionRange($this->getCharacter())) {
+		if ($this->getCharacter() && $this->geo->findPlacesInActionRange($this->getCharacter())) {
 			return $this->action("place.list", "maf_place_actionable");
 		} else {
 			return array("name"=>"place.actionable.name", "description"=>"unavailable.noplace");
@@ -445,10 +438,10 @@ class Dispatcher {
 		# If not inside a settlement, check that we've enough separation (500m)
 		$settlement = $character->getInsideSettlement();
 		if (!$settlement) {
-			if (!$this->geography->findMyRegion($character)) {
+			if (!$this->geo->findMyRegion($character)) {
 				return array("name"=>"place.new.name", "description"=>"unavailable.notinregion");
 			}
-			if (!$this->geography->checkPlacePlacement($character)) {
+			if (!$this->geo->checkPlacePlacement($character)) {
 				return array("name"=>"place.new.name", "description"=>"unavailable.toocrowded");
 			}
 			$occupied = null;
@@ -461,11 +454,11 @@ class Dispatcher {
 			return array("name"=>"place.new.name", "description"=>"unavailable.occupied");
 		}
 		if ($character->getInsideSettlement()) {
-			$can = $this->permission_manager->checkSettlementPermission($character->getInsideSettlement(), $character, 'placeinside');
+			$can = $this->pm->checkSettlementPermission($character->getInsideSettlement(), $character, 'placeinside');
 		} else {
-			$region = $this->geography->findMyRegion($character);
+			$region = $this->geo->findMyRegion($character);
 			if ($region) {
-				$can = $this->permission_manager->checkSettlementPermission($region->getSettlement(), $character, 'placeoutside');
+				$can = $this->pm->checkSettlementPermission($region->getSettlement(), $character, 'placeoutside');
 			} else {
 				return array("name"=>"place.new.name", "description"=>"unavailable.nosettlement");
 			}
@@ -698,7 +691,7 @@ class Dispatcher {
 		if ($this->getCharacter()->isInBattle()) {
 			return array("name"=>"location.enter.name", "description"=>"unavailable.inbattle");
 		}
-		if ($settlement->isFortified() && !$this->permission_manager->checkSettlementPermission($settlement, $this->getCharacter(), 'visit', false)) {
+		if ($settlement->isFortified() && !$this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'visit', false)) {
 			return array("name"=>"location.enter.name", "description"=>"unavailable.nopermission");
 		}
 
@@ -766,7 +759,7 @@ class Dispatcher {
 		}
 		$dock = $this->getActionableDock();
 		if ($dock) {
-			if ( $this->permission_manager->checkSettlementPermission($dock->getGeoData()->getSettlement(), $this->getCharacter(), 'docks')) {
+			if ( $this->pm->checkSettlementPermission($dock->getGeoData()->getSettlement(), $this->getCharacter(), 'docks')) {
 				return array("name"=>"location.embark.name", "url"=>"maf_actions_embark", "description"=>"location.embark.description", "long"=>"location.embark.longdesc");
 			}
 		}
@@ -846,7 +839,7 @@ class Dispatcher {
 		if ($this->getCharacter()->isDoingAction('dungeon.explore')) {
 			return array("name"=>"location.dungeons.name", "description"=>"unavailable.already");
 		}
-		$dungeons = $this->geography->findDungeonsInActionRange($this->getCharacter());
+		$dungeons = $this->geo->findDungeonsInActionRange($this->getCharacter());
 		if (!$dungeons) {
 			return array("name"=>"location.dungeons.name", "description"=>"unavailable.nodungeons");
 		}
@@ -1348,7 +1341,7 @@ class Dispatcher {
 		}
 
 		// TODO: need a merchant in your entourage for trade options? or just foreign trade?
-		if ($this->permission_manager->checkSettlementPermission($settlement, $this->getCharacter(), 'trade', false)) {
+		if ($this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'trade', false)) {
 			return array("name"=>"economy.trade.name", "url"=>"maf_actions_trade", "description"=>"economy.trade.owner");
 		} else {
 			if ($this->getCharacter()->getOwnedSettlements()->isEmpty()) {
@@ -1363,7 +1356,7 @@ class Dispatcher {
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.roads.name", "description"=>"unavailable.$check");
 		}
-		if ( ! $this->permission_manager->checkSettlementPermission($settlement, $this->getCharacter(), 'construct', false)) {
+		if ( ! $this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'construct', false)) {
 			return array("name"=>"economy.roads.name", "description"=>"unavailable.notyours");
 		}
 
@@ -1375,7 +1368,7 @@ class Dispatcher {
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.features.name", "description"=>"unavailable.$check");
 		}
-		if ( ! $this->permission_manager->checkSettlementPermission($settlement, $this->getCharacter(), 'construct', false)) {
+		if ( ! $this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'construct', false)) {
 			return array("name"=>"economy.features.name", "description"=>"unavailable.notyours");
 		}
 
@@ -1387,7 +1380,7 @@ class Dispatcher {
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.build.name", "description"=>"unavailable.$check");
 		}
-		if ( ! $this->permission_manager->checkSettlementPermission($settlement, $this->getCharacter(), 'construct', false)) {
+		if ( ! $this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'construct', false)) {
 			return array("name"=>"economy.build.name", "description"=>"unavailable.notyours");
 		}
 
@@ -1663,7 +1656,7 @@ class Dispatcher {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"war.name", "description"=>"unavailable.$check");
 		}
-		if ( ! $this->permission_manager->checkRealmPermission($this->realm, $this->getCharacter(), 'diplomacy')) {
+		if ( ! $this->pm->checkRealmPermission($this->realm, $this->getCharacter(), 'diplomacy')) {
 			return array("name"=>"war.name", "description"=>"unavailable.notdiplomat");
 		} else {
 			return $this->action("war", "maf_war_declare", true,
@@ -1677,7 +1670,7 @@ class Dispatcher {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.name", "description"=>"unavailable.$check");
 		}
-		if ( ! $this->permission_manager->checkRealmPermission($this->realm, $this->getCharacter(), 'diplomacy')) {
+		if ( ! $this->pm->checkRealmPermission($this->realm, $this->getCharacter(), 'diplomacy')) {
 			return array("name"=>"diplomacy.name", "description"=>"unavailable.notdiplomat");
 		} else {
 			return $this->action("diplomacy", "maf_realm_diplomacy", true,
@@ -1730,7 +1723,7 @@ class Dispatcher {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.relations", "description"=>"unavailable.$check");
 		}
-		if ( ! $this->permission_manager->checkRealmPermission($this->realm, $this->getCharacter(), 'diplomacy')) {
+		if ( ! $this->pm->checkRealmPermission($this->realm, $this->getCharacter(), 'diplomacy')) {
 			return array("name"=>"diplomacy.relations", "description"=>"unavailable.notdiplomat");
 		}
 		return $this->action("diplomacy.relations", "maf_realm_relations", false, array('realm'=>$this->realm->getId()));
@@ -1747,7 +1740,7 @@ class Dispatcher {
 			$name = "diplomacy.join.name";
 			$desc = "diplomacy.join.description";
 		}
-		if ( ! $this->permission_manager->checkRealmPermission($this->realm, $this->getCharacter(), 'diplomacy')) {
+		if ( ! $this->pm->checkRealmPermission($this->realm, $this->getCharacter(), 'diplomacy')) {
 			return array("name"=>$name, "description"=>"unavailable.notdiplomat");
 		}
 		return array("name"=>$name, "url"=>"maf_realm_join", "parameters"=>array('id'=>$this->realm->getId()), "description"=>$desc);
@@ -1833,10 +1826,10 @@ class Dispatcher {
 		if (!$character->getInsidePlace()) {
 			return array("name"=>"house.new.name", "description"=>"unavailable.outsideplace");
 		}
-		if ($character->getInsidePlace() && $character->getInsidePlace()->getType()->getName() != "home") {
+		if ($character->getInsidePlace()->getType()->getName() != "home") {
 			return array("name"=>"house.new.name", "description"=>"unavailable.wrongplacetype");
 		}
-		if ($character->getInsidePlace() && $character->getInsidePlace()->getOwner() !== $character) {
+		if ($character->getInsidePlace()->getOwner() !== $character) {
 			#TODO: Rework this for permissions when we add House permissions (if we do).
 			return array("name"=>"house.manage.relocate.name", "description"=>"unavailable.notyours2");
 		}
@@ -1920,10 +1913,10 @@ class Dispatcher {
 		if (!$character->getInsidePlace()) {
 			return array("name"=>"house.manage.relocate.name", "description"=>"unavailable.outsideplace");
 		}
-		if ($character->getInsidePlace() && $character->getInsidePlace()->getType()->getName() != "home") {
+		if ($character->getInsidePlace()->getType()->getName() != "home") {
 			return array("name"=>"house.manage.relocate.name", "description"=>"unavailable.wrongplacetype");
 		}
-		if ($character->getInsidePlace() && $character->getInsidePlace()->getOwner() != $this->getCharacter()) {
+		if ($character->getInsidePlace()->getOwner() != $this->getCharacter()) {
 			#TODO: Rework this for permissions when we add House permissions (if we do).
 			return array("name"=>"house.manage.relocate.name", "description"=>"unavailable.notyours2");
 		}
@@ -2008,12 +2001,12 @@ class Dispatcher {
 			array("%name%"=>$target->getName())
 		);
 		if (
-			($target->getHome() && $char->getInsidePlace() == $target->getHome()) ||
-			($char->getInsideSettlement() == $target->getInsideSettlement())
+			($target->getHome() && $char->getInsidePlace() === $target->getHome()) ||
+			($char->getInsideSettlement() === $target->getInsideSettlement())
 		) {
 			return $success;
 		} else {
-			$nearby = $this->geography->findCharactersInActionRange($char);
+			$nearby = $this->geo->findCharactersInActionRange($char);
 			foreach ($nearby as $other) {
 				if ($other[0] == $char) {
 					return $success;
@@ -2053,7 +2046,7 @@ class Dispatcher {
 		if (!$this->house->getHome()) {
 			return array("name"=>"house.newplayer.name", "description"=>"unavailable.nohome");
 		}
-		if ($this->house && $this->house->getHead() != $this->getCharacter()) {
+		if ($this->house->getHead() != $this->getCharacter()) {
 			return array("name"=>"house.newplayer.name", "description"=>"unavailable.nothead");
 		} else {
 			return $this->action("house.newplayer", "maf_house_newplayer", true,
@@ -2073,7 +2066,7 @@ class Dispatcher {
 		if (!$this->house->getHome()) {
 			return array("name"=>"house.spawntoggle.name", "description"=>"unavailable.nohome");
 		}
-		if ($this->house && $this->house->getHead() != $this->getCharacter()) {
+		if ($this->house->getHead() != $this->getCharacter()) {
 			return array("name"=>"house.spawntoggle.name", "description"=>"unavailable.nothead");
 		} else {
 			return $this->action("house.spawntoggle", "maf_house_spawn_toggle", true,
@@ -2358,7 +2351,7 @@ class Dispatcher {
 			} else if ($location=$this->getCharacter()->getLocation()) {
 				$nearest = $this->common->findNearestSettlement($this->getCharacter());
 				$settlement=array_shift($nearest);
-				if ($nearest['distance'] < $this->geography->calculateActionDistance($settlement)) {
+				if ($nearest['distance'] < $this->geo->calculateActionDistance($settlement)) {
 					$this->actionableSettlement=$settlement;
 				}
 			}
@@ -2381,10 +2374,10 @@ class Dispatcher {
 			if ($this->getCharacter()->getInsidePlace()) {
 				$this->actionablePlace = $this->getCharacter()->getInsidePlace();
 			} else if ($location=$this->getCharacter()->getLocation()) {
-				$nearest = $this->geography->findNearestPlace($this->getCharacter());
+				$nearest = $this->geo->findNearestPlace($this->getCharacter());
 				if ($nearest) {
 					$place=array_shift($nearest);
-					if ($nearest['distance'] < $this->geography->calculatePlaceActionDistance($place)) {
+					if ($nearest['distance'] < $this->geo->calculatePlaceActionDistance($place)) {
 						$this->actionablePlace=$place;
 					}
 				}
@@ -2404,7 +2397,7 @@ class Dispatcher {
 	public function getActionableRegion() {
 		if (is_object($this->actionableRegion) || $this->actionableRegion===null) return $this->actionableRegion;
 
-		$this->actionableRegion = $this->geography->findMyRegion($this->getCharacter());
+		$this->actionableRegion = $this->geo->findMyRegion($this->getCharacter());
 		return $this->actionableRegion;
 	}
 
@@ -2417,10 +2410,10 @@ class Dispatcher {
 			// and since we don't have a "leave settlement" action...
 			// FIXME: it should contain both - inside settlement and in action range
 			// FIXME: anyway this doesn't work and those outside are excluded
-//			return $this->geography->findCharactersInSettlement($settlement, $this->getCharacter());
-			return $this->geography->findCharactersInActionRange($this->getCharacter(), false, $match_battle);
+//			return $this->geo->findCharactersInSettlement($settlement, $this->getCharacter());
+			return $this->geo->findCharactersInActionRange($this->getCharacter(), false, $match_battle);
 		} else {
-			return $this->geography->findCharactersInActionRange($this->getCharacter(), true, $match_battle);
+			return $this->geo->findCharactersInActionRange($this->getCharacter(), true, $match_battle);
 		}
 	}
 
@@ -2429,12 +2422,12 @@ class Dispatcher {
 
 		$this->actionableDock=null;
 		if ($this->getCharacter() && $location=$this->getCharacter()->getLocation()) {
-			$nearest = $this->geography->findNearestDock($this->getCharacter());
+			$nearest = $this->geo->findNearestDock($this->getCharacter());
 			if (!$nearest) {
 				return null;
 			}
 			$dock=array_shift($nearest);
-			if ($nearest['distance'] < $this->geography->calculateInteractionDistance($this->getCharacter())) {
+			if ($nearest['distance'] < $this->geo->calculateInteractionDistance($this->getCharacter())) {
 				$this->actionableDock=$dock;
 			}
 		}
@@ -2445,9 +2438,9 @@ class Dispatcher {
 		if (is_object($this->actionableShip) || $this->actionableShip===null) return $this->actionableShip;
 		$this->actionableShip=null;
 		if ($this->getCharacter() && $location=$this->getCharacter()->getLocation()) {
-			$nearest = $this->geography->findMyShip($this->getCharacter());
+			$nearest = $this->geo->findMyShip($this->getCharacter());
 			$ship=array_shift($nearest);
-			if ($ship && $nearest['distance'] < $this->geography->calculateInteractionDistance($this->getCharacter())) {
+			if ($ship && $nearest['distance'] < $this->geo->calculateInteractionDistance($this->getCharacter())) {
 				$this->actionableShip=$ship;
 			}
 		}
@@ -2496,7 +2489,7 @@ class Dispatcher {
 		}
 		# If url is defined, test validated successfully. Overwrite other data. If not, only overwrite name and return.
 		if (array_key_exists('url', $data)) {
-			if ($url && array_key_exists('url', $data)) {
+			if ($url) {
 				$data['url'] = $url;
 			}
 			if ($desc) {

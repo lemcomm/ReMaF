@@ -17,11 +17,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class AssociationDispatcher extends Dispatcher {
 
-	private AssociationManager $assocman;
-
-	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions, AssociationManager $assocman, EntityManagerInterface $em) {
+	public function __construct(
+		protected AppState $appstate,
+		protected CommonService $common,
+		protected PermissionManager $pm,
+		protected Geography $geo,
+		protected Interactions $interactions,
+		protected AssociationManager $assocman,
+		protected EntityManagerInterface $em
+	) {
 		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em);
-		$this->assocman = $assocman;
 	}
 
 	public function politicsAssocsActions(): array {

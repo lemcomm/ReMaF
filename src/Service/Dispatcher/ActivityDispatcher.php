@@ -11,7 +11,14 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ActivityDispatcher extends Dispatcher {
 
-	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, Interactions $interactions, EntityManagerInterface $em) {
+	public function __construct(
+		protected AppState $appstate,
+		protected CommonService $common,
+		protected PermissionManager $pm,
+		protected Geography $geo,
+		protected Interactions $interactions,
+		protected EntityManagerInterface $em
+	) {
 		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em);
 	}
 

@@ -13,7 +13,10 @@ use Doctrine\ORM\EntityManagerInterface;
 
 
 class NewsManager {
-	public function __construct(private EntityManagerInterface $em, private Geography $geography, private CommonService $common) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private Geography $geography,
+		private CommonService $common) {
 	}
 
 

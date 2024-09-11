@@ -6,7 +6,6 @@ use App\Entity\ActivityParticipant;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Entity\Soldier;
-use Doctrine\ORM\EntityManagerInterface;
 
 
 class CombatManager {
@@ -16,7 +15,10 @@ class CombatManager {
 	Things that should exist in multiple services but can't due to circlic loading should be here.
 	*/
 
-	public function __construct(protected EntityManagerInterface $em, protected CommonService $common, protected CharacterManager $charMan, protected History $history) {
+	public function __construct(
+		private CommonService $common,
+		private CharacterManager $charMan,
+		private History $history) {
 	}
 
 	public function ChargeAttack($me, $target, $act=false, $battle=false, $xpMod = 1, $defBonus = null): array {

@@ -18,7 +18,10 @@ class DungeonCreator {
 	private int $base_treasuremod = 25;
 
 
-	public function __construct(private EntityManagerInterface $em, private Geography $geo, private LoggerInterface $logger) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private Geography $geo,
+		private LoggerInterface $logger) {
 	}
 
 

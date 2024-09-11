@@ -15,13 +15,16 @@ use App\Entity\Settlement;
 use App\Twig\MessageTranslateExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NotificationManager {
 	private false|string $type;
 	private false|string $name;
 
-	public function __construct(protected EntityManagerInterface $em, protected MailManager $mailman, protected MessageTranslateExtension $msgtrans, protected TranslatorInterface $trans, protected DiscordIntegrator $discord) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private MailManager $mailman,
+		private MessageTranslateExtension $msgtrans,
+		private DiscordIntegrator $discord) {
 	}
 
 	private function findUser(Event $event): false|array {

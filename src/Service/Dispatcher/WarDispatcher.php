@@ -12,11 +12,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class WarDispatcher extends Dispatcher {
 
-	protected MilitaryManager $milman;
-
-	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, EntityManagerInterface $em) {
+	public function __construct(
+		protected AppState $appstate,
+		protected CommonService $common,
+		protected PermissionManager $pm,
+		protected Geography $geo,
+		protected MilitaryManager $milman,
+		protected Interactions $interactions,
+		protected EntityManagerInterface $em
+	) {
 		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em);
-		$this->milman = $milman;
 	}
 
 	/* =========== Tests ========== */
@@ -799,7 +804,7 @@ class WarDispatcher extends Dispatcher {
 		if ($this->getCharacter()->hasNoSoldiers()) {
 			return array("name"=>"military.damage.name", "description"=>"unavailable.nosoldiers");
 		}
-		if (!$this->geography->findFeaturesNearMe($this->getCharacter())) {
+		if (!$this->geo->findFeaturesNearMe($this->getCharacter())) {
 			return array("name"=>"military.damage.name", "description"=>"unavailable.nofeatures");
 		}
 		if ($this->getCharacter()->isInBattle()) {
@@ -881,7 +886,7 @@ class WarDispatcher extends Dispatcher {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"military.battles.join.name", "description"=>"unavailable.prisoner");
 		}
-		if (!$this->geography->findBattlesInActionRange($this->getCharacter())) {
+		if (!$this->geo->findBattlesInActionRange($this->getCharacter())) {
 			return array("name"=>"military.battles.join.name", "description"=>"unavailable.nobattles");
 		}
 		if ($this->getCharacter()->isInBattle()) {

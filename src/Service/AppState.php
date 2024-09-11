@@ -18,7 +18,11 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AppState {
 
-	public function __construct(private CommonService $common ,private EntityManagerInterface $em, private RequestStack $requestStack, private Security $security) {
+	public function __construct(
+		private CommonService $common,
+		private EntityManagerInterface $em,
+		private RequestStack $requestStack,
+		private Security $security) {
 	}
 
 	public function getCharacter($required=true, $ok_if_dead=false, $ok_if_notstarted=false): mixed {

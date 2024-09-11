@@ -13,7 +13,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 
 class Generator {
-	public function __construct(protected EntityManagerInterface $em, private ActionManager $actman) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private ActionManager $actman) {
 	}
 
 	public function randomName(Settlement $home=null, $gender=false): string {

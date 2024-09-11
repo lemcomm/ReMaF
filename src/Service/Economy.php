@@ -38,7 +38,11 @@ class Economy {
 		return $this->timer;
 	}
 
-	public function __construct(private EntityManagerInterface $em, private Geography $geo, private History $history, private LoggerInterface $logger) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private Geography $geo,
+		private History $history,
+		private LoggerInterface $logger) {
 	}
 
 	public function getResources(): array {

@@ -52,7 +52,19 @@ class BattleRunner {
 	private int $defenseBonus=0;
 
 
-	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private History $history, private Geography $geo, private CharacterManager $character_manager, private CommonService $common, private Interactions $interactions, WarManager $war_manager, private Politics $politics, private MilitaryManager $milman, private HelperService $helper, private CombatManager $combat, private WarManager $warman) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private LoggerInterface $logger,
+		private History $history,
+		private Geography $geo,
+		private CharacterManager $character_manager,
+		private CommonService $common,
+		private Interactions $interactions,
+		private Politics $politics,
+		private MilitaryManager $milman,
+		private HelperService $helper,
+		private CombatManager $combat,
+		private WarManager $warman) {
 	}
 
 	public function enableLog($level=9999): void {

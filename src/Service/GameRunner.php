@@ -31,7 +31,20 @@ class GameRunner {
 	private ?OutputInterface $outInt = null;
 	private bool $debugging = false;
 
-	public function __construct(private EntityManagerInterface $em, private CommonService $common, private LoggerInterface $logger, private ActionResolution $resolver, private History $history, private MilitaryManager $milman, private Geography $geography, private RealmManager $rm, private ConversationManager $convman, private PermissionManager $pm, private CharacterManager $cm, private WarManager $wm) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private CommonService $common,
+		private LoggerInterface $logger,
+		private ActionResolution $resolver,
+		private History $history,
+		private MilitaryManager $milman,
+		private Geography $geography,
+		private RealmManager $rm,
+		private ConversationManager $convman,
+		private PermissionManager $pm,
+		private CharacterManager $cm,
+		private WarManager $wm
+	) {
 		$this->cycle = $this->common->getCycle();
 	}
 

@@ -28,7 +28,8 @@ class CommonService {
 		'it' => 'italiano'
 	);
 
-	public function __construct(protected EntityManagerInterface $em) {
+	public function __construct(
+		private EntityManagerInterface $em) {
 	}
 
 	public function availableTranslations(): array {

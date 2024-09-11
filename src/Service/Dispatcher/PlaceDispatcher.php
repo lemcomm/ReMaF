@@ -15,7 +15,15 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PlaceDispatcher extends WarDispatcher {
 
-	public function __construct(AppState $appstate, CommonService $common, PermissionManager $pm, Geography $geo, MilitaryManager $milman, Interactions $interactions, EntityManagerInterface $em) {
+	public function __construct(
+		protected AppState $appstate,
+		protected CommonService $common,
+		protected PermissionManager $pm,
+		protected Geography $geo,
+		protected MilitaryManager $milman,
+		protected Interactions $interactions,
+		protected EntityManagerInterface $em
+	) {
 		parent::__construct($appstate, $common, $pm, $geo, $milman, $interactions, $em);
 	}
 
@@ -185,7 +193,7 @@ class PlaceDispatcher extends WarDispatcher {
 		$char = $this->getCharacter();
 		$valid = false;
 		if ($perm) {
-			$valid = $this->permission_manager->checkPlacePermission($place, $char, 'manage', false);
+			$valid = $this->pm->checkPlacePermission($place, $char, 'manage');
 		} else {
 			if ($place->getOccupant()) {
 				if ($place->getOccupant() === $char) {
@@ -275,7 +283,7 @@ class PlaceDispatcher extends WarDispatcher {
 			'place.togglenewplayer.longdesc',
 			array('id'=>$place->getId()),
 			array("%name%"=>$place->getName(), "%formalname%"=>$place->getFormalName()),
-			array('spawn'=>$place->getSpawn()?true:false)
+			array('spawn'=> (bool)$place->getSpawn())
 		);
 	}
 
@@ -355,13 +363,13 @@ class PlaceDispatcher extends WarDispatcher {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"place.enter.name", "description"=>"unavailable.$check");
 		}
-		if (!$place->getPublic() && !$this->permission_manager->checkPlacePermission($place, $this->getCharacter(), 'visit', false)) {
+		if (!$place->getPublic() && !$this->pm->checkPlacePermission($place, $this->getCharacter(), 'visit')) {
 			return array("name"=>"place.enter.name", "desciprtion"=>"unavailable.noaccess");
 		}
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"place.enter.name", "description"=>"unavailable.npc");
 		}
-		$nearby = $this->geography->findPlacesInActionRange($this->getCharacter());
+		$nearby = $this->geo->findPlacesInActionRange($this->getCharacter());
 		if ($nearby && !in_array($place, $nearby)) {
 			return array("name"=>"place.enter.name", "description"=>"unavailable.noplace");
 		}

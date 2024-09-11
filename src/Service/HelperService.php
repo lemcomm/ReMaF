@@ -19,7 +19,10 @@ class HelperService {
 	If it is something that has absolutely no dependencies on other game services (vendor services are fine), put it in CommonService instead.
 	*/
 
-	public function __construct(private CommonService $common, private EntityManagerInterface $em, private Geography $geo) {
+	public function __construct(
+		private CommonService $common,
+		private EntityManagerInterface $em,
+		private Geography $geo) {
 	}
 
 	private function newObserver($type): true|BattleReportObserver|ActivityReportObserver {

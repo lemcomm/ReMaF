@@ -15,7 +15,10 @@ class UserManager {
 	private string $genome_all = 'abcdefghijklmnopqrstuvwxyz';
 	private int $genome_setsize = 15;
 
-	public function __construct(private EntityManagerInterface $em, private UserPasswordHasherInterface $passwordHasher, private AppState $app) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private UserPasswordHasherInterface $passwordHasher,
+		private AppState $app) {
 	}
 
 	public function refreshUser( UserInterface $user ) {

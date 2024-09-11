@@ -15,7 +15,9 @@ This mostly exists to get the queue function out of ActionResolution, in order t
 */
 
 class ActionManager {
-	public function __construct(private EntityManagerInterface $em, private PermissionManager $pm) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private PermissionManager $pm) {
 	}
 
 	public function acquireItem(Settlement $settlement, EquipmentType $item=null, $test_trainer=false, $reduce_supply=true, Character $character=null): bool {

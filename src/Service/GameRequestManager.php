@@ -77,7 +77,8 @@ class GameRequestManager {
 
 	If you need more detailed information on these, contact a M&F developer--we recommend Andrew. */
 
-	public function __construct(protected EntityManagerInterface $em) {
+	public function __construct(
+		private EntityManagerInterface $em) {
 	}
 
 	public function findHouseApplicationRequests(Character $char) {

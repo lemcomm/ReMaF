@@ -23,7 +23,18 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 class CharacterManager {
 	public ?ArrayCollection $seen; # Used by findHeir, which is called both locally and by GameRunner, which need this to be controlled.
 
-	public function __construct(protected EntityManagerInterface $em, protected CommonService $common, protected History $history, protected MilitaryManager $milman, protected Politics $politics, protected RealmManager $realmmanager, protected ConversationManager $convman, protected DungeonMaster $dm, protected WarManager $warman, protected AssociationManager $assocman, protected HelperService $helper) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private CommonService $common,
+		private History $history,
+		private MilitaryManager $milman,
+		private Politics $politics,
+		private RealmManager $realmmanager,
+		private ConversationManager $convman,
+		private DungeonMaster $dm,
+		private WarManager $warman,
+		private AssociationManager $assocman,
+		private HelperService $helper) {
 	}
 
 	public function create(User $user, $name, $gender='m', $alive=true, Character $father=null, Character $mother=null, Character $partner=null): Character {

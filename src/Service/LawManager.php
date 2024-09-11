@@ -76,7 +76,9 @@ class LawManager {
 	public array $taxLaws = ['taxesFood', 'taxesWood', 'taxesMetal', 'taxesWealth'];
 	public $stringLaws = ['realmVotingAge'];
 
-	public function __construct(private EntityManagerInterface $em, private CommonService $common, private History $history) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private CommonService $common, private History $history) {
 	}
 
 	public function updateLaw($org, LawType $type, $setting, $title, $desc, Character $character, $mandatory, $cascades, $sol, Settlement $settlement = null, Law $oldLaw=null, $flush=true, Association $faith = null): array|Law {

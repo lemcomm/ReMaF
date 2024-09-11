@@ -10,7 +10,13 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 
 class Interactions {
-	public function __construct(private CommonService $common, private EntityManagerInterface $em, private Geography $geo, private History $history, private PermissionManager $pm, private Politics $pol) {
+	public function __construct(
+		private CommonService $common,
+		private EntityManagerInterface $em,
+		private Geography $geo,
+		private History $history,
+		private PermissionManager $pm,
+		private Politics $pol) {
 	}
 
 

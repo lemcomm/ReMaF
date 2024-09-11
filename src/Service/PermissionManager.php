@@ -12,7 +12,8 @@ use Doctrine\ORM\EntityManagerInterface;
 class PermissionManager {
 	private int $recursion_limit = 20; // prevent infinite recursion
 
-	public function __construct(protected EntityManagerInterface $em, protected Politics $politics) {
+	public function __construct(
+		private Politics $politics) {
 	}
 
 	public function checkRealmPermission(Realm $realm, Character $character, $permission, $return_details=false): false|array {

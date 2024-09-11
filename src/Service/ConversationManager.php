@@ -20,7 +20,9 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ConversationManager {
-	public function __construct(private EntityManagerInterface $em, private CommonService $common) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private CommonService $common) {
 	}
 
         public function getConversations(Character $char) {

@@ -24,7 +24,14 @@ class PaymentManager {
 	private array $stripePrices;
 	private array $patreonAlikes = ['patreon'];
 
-	public function __construct(private EntityManagerInterface $em, private TranslatorInterface $translator, private LoggerInterface $logger, private MailManager $mailer, private UserManager $usermanager, private AppState $app) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private TranslatorInterface $translator,
+		private LoggerInterface $logger,
+		private MailManager $mailer,
+		private UserManager $usermanager,
+		private AppState $app
+	) {
 		$this->ruleset = $_ENV['RULESET'];
 		$this->stripeSecret = $_ENV['STRIPE_SECRET'];
 		$this->stripeVersion = $_ENV['STRIPE_VERSION'];

@@ -30,7 +30,15 @@ class ActivityManager {
 	private int $debug=0;
 	private ?ActivityReport $report;
 
-	public function __construct(private CommonService $common, private EntityManagerInterface $em, private Geography $geo, private HelperService $helper, private LoggerInterface $logger, private CombatManager $combat, private CharacterManager $charMan, private History $history) {
+	public function __construct(
+		private CommonService $common,
+		private EntityManagerInterface $em,
+		private Geography $geo,
+		private HelperService $helper,
+		private LoggerInterface $logger,
+		private CombatManager $combat,
+		private CharacterManager $charMan,
+		private History $history) {
 	}
 
 	/*

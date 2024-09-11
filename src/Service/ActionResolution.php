@@ -15,7 +15,19 @@ class ActionResolution {
 	private ArrayCollection $characters;
 	private int $debug=100;
 
-	public function __construct(private EntityManagerInterface $em, private CommonService $common, private History $history, private Dispatcher $dispatcher, private Geography $geography, private Interactions $interactions, private MilitaryManager $milman, private Politics $politics, private PermissionManager $permissions, private WarManager $warman, private ActionManager $actman) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private CommonService $common,
+		private History $history,
+		private Dispatcher $dispatcher,
+		private Geography $geography,
+		private Interactions $interactions,
+		private MilitaryManager $milman,
+		private Politics $politics,
+		private PermissionManager $permissions,
+		private WarManager $warman,
+		private ActionManager $actman
+	) {
 		$this->characters = new ArrayCollection();
 	}
 

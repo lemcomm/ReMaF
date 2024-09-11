@@ -35,7 +35,14 @@ class DungeonMaster {
 		'basic.fight'		=> 5
 	);
 
-	public function __construct(private EntityManagerInterface $em, private CommonService $common, private DungeonCreator $creator, private History $history, private LoggerInterface $logger, private NotificationManager $noteman, private RouterInterface $router) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private CommonService $common,
+		private DungeonCreator $creator,
+		private History $history,
+		private LoggerInterface $logger,
+		private NotificationManager $noteman,
+		private RouterInterface $router) {
 	}
 
 	public function getcreateDungeoneer(Character $character): Dungeoneer {

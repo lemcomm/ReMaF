@@ -23,7 +23,12 @@ War Manager exists to handle all service duties involved in battles and sieges. 
 class WarManager {
 	private int $debug=0;
 
-	public function __construct(protected EntityManagerInterface $em, protected History $history, protected ActionManager $actman, protected GameTimeExtension $gametime, protected LoggerInterface $logger) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private History $history,
+		private ActionManager $actman,
+		private GameTimeExtension $gametime,
+		private LoggerInterface $logger) {
 	}
 
 	public function createBattle(Character $character, Settlement $settlement=null, Place $place=null, $targets=array(), Siege $siege=null, BattleGroup $attackers=null, BattleGroup $defenders=null): array {

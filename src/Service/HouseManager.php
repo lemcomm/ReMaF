@@ -9,7 +9,10 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class HouseManager {
 
-	public function __construct(private EntityManagerInterface $em, private History $history, private DescriptionManager $descman) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private History $history,
+		private DescriptionManager $descman) {
 	}
 
 	public function create($name, $motto, $description, $private_description, $secret_description, $place, $settlement, $crest, Character $founder): House {

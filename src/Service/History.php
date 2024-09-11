@@ -22,7 +22,10 @@ class History {
 
 	const NOTIFY = 20;
 
-	public function __construct(protected EntityManagerInterface $em, protected CommonService $common, protected NotificationManager $noteman) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private CommonService $common,
+		private NotificationManager $noteman) {
 	}
 
 

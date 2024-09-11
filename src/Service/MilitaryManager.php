@@ -24,7 +24,13 @@ class MilitaryManager {
 	private int $group_soldier=0;
 	private int $max_group=25; // a=0 ... z=25
 
-	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private ActionManager $actman, private CommonService $common, private History $history, private Geography $geo) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private LoggerInterface $logger,
+		private ActionManager $actman,
+		private CommonService $common,
+		private History $history,
+		private Geography $geo) {
 	}
 
 	public function TrainingCycle(Settlement $settlement): void {

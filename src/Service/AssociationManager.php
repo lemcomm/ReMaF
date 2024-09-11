@@ -17,7 +17,12 @@ use Doctrine\ORM\EntityManagerInterface;
 
 
 class AssociationManager {
-	public function __construct(protected EntityManagerInterface $em, protected History $history, protected DescriptionManager $descman, protected ConversationManager $convman, protected LawManager $lawman) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private History $history,
+		private DescriptionManager $descman,
+		private ConversationManager $convman,
+		private LawManager $lawman) {
 	}
 
 	public function create($data, Place $place, Character $founder): Association {
