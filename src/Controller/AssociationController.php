@@ -39,17 +39,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AssociationController extends AbstractController {
-
-	private AssociationManager $am;
-	private Dispatcher $disp;
-	private EntityManagerInterface $em;
-	private TranslatorInterface $trans;
-	
-	public function __construct(AssociationManager $am, Dispatcher $disp, EntityManagerInterface $em, TranslatorInterface $trans) {
-		$this->am = $am;
-		$this->disp = $disp;
-		$this->em = $em;
-		$this->trans = $trans;
+	public function __construct(
+		private AssociationManager $am,
+		private Dispatcher $disp,
+		private EntityManagerInterface $em,
+		private TranslatorInterface $trans) {
 	}
 	
 	private function gateway($test, $secondary = null): RedirectResponse|Character {

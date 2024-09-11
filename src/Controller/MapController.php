@@ -25,19 +25,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MapController extends AbstractController {
-
-	private Appstate $app;
-	private EntityManagerInterface $em;
-	private Geography $geo;
-	private TranslatorInterface $trans;
-	private CommonService $common;
-
-	public function __construct(AppState $app, CommonService $common, EntityManagerInterface $em, Geography $geo, TranslatorInterface $trans) {
-		$this->app = $app;
-		$this->common = $common;
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->trans = $trans;
+	public function __construct(
+		private AppState $app,
+		private CommonService $common,
+		private EntityManagerInterface $em,
+		private Geography $geo,
+		private TranslatorInterface $trans) {
 	}
 	
 	#[Route ('/map', name:'maf_map')]

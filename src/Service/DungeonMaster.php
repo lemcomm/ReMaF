@@ -182,7 +182,7 @@ class DungeonMaster {
 					$this->history->logEvent(
 						$dungeoneer->getCharacter(),
 						'event.character.dungeon.progress',
-						array('%url%'=>$this->router->generate('maf_dungeon_index')),
+						array('%url%'=>$this->router->generate('maf_dungeon')),
 						History::HIGH, false, 10
 					);
 				}

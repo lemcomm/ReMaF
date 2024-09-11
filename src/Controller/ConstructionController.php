@@ -31,16 +31,11 @@ class ConstructionController extends AbstractController {
 
 	// FIXME: dispatcher uses permission system, but we need to check again to get the reserve values
 
-	private Dispatcher $dispatcher;
-	private Economy $econ;
-	private EntityManagerInterface $em;
-	private Geography $geo;
-	
-	public function __construct(Dispatcher $dispatcher, Economy $econ, EntityManagerInterface $em, Geography $geo) {
-		$this->dispatcher = $dispatcher;
-		$this->econ = $econ;
-		$this->em = $em;
-		$this->geo = $geo;
+	public function __construct(
+		private Dispatcher $dispatcher,
+		private Economy $econ,
+		private EntityManagerInterface $em,
+		private Geography $geo) {
 	}
 	
 	#[Route ('/build/roads', name:'maf_construction_roads')]

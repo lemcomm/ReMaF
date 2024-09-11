@@ -21,22 +21,18 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 
 class DataController extends AbstractController {
-
-	private CommonService $common;
-	private EntityManagerInterface $em;
-	private TranslatorInterface $trans;
-	private LinksExtension $linkExt;
 	private array $acceptedTypes = ['application/json', 'application/text'];
 	private array $securedRoutes = ['playerStatus'];
 	private array $highSecurityRoutes = ['user'];
 	private float $start;
 	private array $starters = ['/api', '/data', '/gsgp'];
 
-	function __construct(CommonService $common, EntityManagerInterface $em, TranslatorInterface $trans, LinksExtension $linkExt) {
-		$this->common = $common;
-		$this->em = $em;
-		$this->trans = $trans;
-		$this->linkExt = $linkExt;
+	function __construct(
+		private CommonService $common,
+		private EntityManagerInterface $em,
+		private TranslatorInterface $trans,
+		private LinksExtension $linkExt
+	) {
 		$this->securedRoutes += $this->highSecurityRoutes; #High security routes are always secured routes.
 		$this->start = microtime(true);
 	}

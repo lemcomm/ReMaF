@@ -13,18 +13,14 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class BuildingController extends AbstractController {
-
-	private Dispatcher $dispatcher;
-	private EntityManagerInterface $em;
-	
-	public function __construct(Dispatcher $dispatcher, EntityManagerInterface $em) {
-		$this->dispatcher = $dispatcher;
-		$this->em = $em;
+	public function __construct(
+		private Dispatcher $dispatcher,
+		private EntityManagerInterface $em) {
 	}
 	
 	#[Route ('/building/tavern', name:'maf_building_tavern')]
 	public function tavernAction(): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('locationTavernTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('locationTavernTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -47,7 +43,7 @@ class BuildingController extends AbstractController {
 
 	#[Route ('/building/library', name:'maf_building_library')]
 	public function libraryAction(CommonService $common): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('locationLibraryTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('locationLibraryTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -96,7 +92,7 @@ class BuildingController extends AbstractController {
 
 	#[Route ('/building/temple', name:'maf_building_temple')]
 	public function templeAction(CommonService $common): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('locationTempleTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('locationTempleTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -123,7 +119,7 @@ class BuildingController extends AbstractController {
 
 	#[Route ('/building/barracks', name:'maf_building_barracks')]
 	public function barracksAction(CommonService $common): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('locationBarracksTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('locationBarracksTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -148,7 +144,7 @@ class BuildingController extends AbstractController {
 
 	#[Route ('/building/archeryrange', name:'maf_building_archeryrange')]
 	public function archeryRangeAction(): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('locationArcheryRangeTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('locationArcheryRangeTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -160,7 +156,7 @@ class BuildingController extends AbstractController {
 	
 	#[Route ('/building/garrison', name:'maf_building_garrison')]
 	public function garrisonAction(): RedirectResponse|Response {
-		list($character, $settlement) = $this->dispatcher->gateway('locationGarrisonTest', true);
+		[$character, $settlement] = $this->dispatcher->gateway('locationGarrisonTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}

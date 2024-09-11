@@ -13,11 +13,8 @@ use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ExceptionController extends AbstractController {
-
-	private DiscordIntegrator $discord;
-
-	public function __construct(DiscordIntegrator $discord) {
-		$this->discord = $discord;
+	public function __construct(
+		private DiscordIntegrator $discord) {
 	}
 
 	/**

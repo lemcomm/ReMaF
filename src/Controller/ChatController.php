@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -107,7 +108,7 @@ class ChatController extends AbstractController {
 	}
 
 	#[Route ('/chat/settlement', name:'maf_chat_settlement')]
-	public function chatSettlementAction(Request $request) {
+	public function chatSettlementAction(Request $request): RedirectResponse|Response {
 		/** @var Character $char */
 		$char = $this->disp->gateway('chatSettlementTest');
 		if (! $char instanceof Character) {

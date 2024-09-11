@@ -25,13 +25,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 
 class EventsController extends AbstractController {
-
-	private AppState $app;
-	private EntityManagerInterface $em;
-
-	public function __construct(AppState $app, EntityManagerInterface $em) {
-		$this->app = $app;
-		$this->em = $em;
+	public function __construct(
+		private AppState $app,
+		private EntityManagerInterface $em) {
 	}
 
 	#[Route ('/events/', name:'maf_events')]

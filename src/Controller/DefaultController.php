@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -150,7 +149,7 @@ class DefaultController extends AbstractController {
 	public function localeRedirectAction(CommonService $common, $url, Request $request): RedirectResponse {
 		if ($url=="-") $url="";
 		if (preg_match('/^[a-z]{2}\//', $url)===1) {
-			if (substr($url, 0, 2)=='en') {
+			if (str_starts_with($url, 'en')) {
 				throw $this->createNotFoundException('error.notfound.page');
 			}
 			// unsupported locale - default to english - en

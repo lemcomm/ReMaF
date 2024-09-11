@@ -45,45 +45,20 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ActionsController extends AbstractController {
-
-	private ActionManager $actman;
-	private ActionResolution $ar;
-	private AppState $app;
-	private Dispatcher $dispatcher;
-	private Economy $econ;
-	private EntityManagerInterface $em;
-	private Geography $geo;
-	private History $hist;
-	private Interactions $interactions;
-	private LinksExtension $links;
-	private Politics $pol;
-	private TranslatorInterface $trans;
 	public function __construct(
-		ActionManager $actman,
-		ActionResolution $ar,
-		AppState $app,
-		Dispatcher $dispatcher,
-		Economy $econ,
-		EntityManagerInterface $em,
-		Geography $geo,
-		History $hist,
-		Interactions $interactions,
-		LinksExtension $links,
-		Politics $pol,
-		TranslatorInterface $trans,
+		private ActionManager          $actman,
+		private ActionResolution       $ar,
+		private AppState               $app,
+		private Dispatcher             $dispatcher,
+		private Economy                $econ,
+		private EntityManagerInterface $em,
+		private Geography              $geo,
+		private History                $hist,
+		private Interactions           $interactions,
+		private LinksExtension         $links,
+		private Politics               $pol,
+		private TranslatorInterface    $trans,
 	) {
-		$this->actman = $actman;
-		$this->ar = $ar;
-		$this->app = $app;
-		$this->dispatcher = $dispatcher;
-		$this->econ = $econ;
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->hist = $hist;
-		$this->interactions = $interactions;
-		$this->links = $links;
-		$this->pol = $pol;
-		$this->trans = $trans;
 	}
 
 	#[Route ('/actions/', name:'maf_actions')]

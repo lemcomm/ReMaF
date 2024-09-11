@@ -17,18 +17,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 
 class GameController extends AbstractController {
-
-	private CommonService $common;
-	private EntityManagerInterface $em;
-	private GameRunner $gr;
 	private int $start_cycle = 2200;
 	private int $low_moving_average_cycles = 6; // game week
 	private int $high_moving_average_cycles = 24; // 4 game weeks
 
-	public function __construct(CommonService $common, EntityManagerInterface $em, GameRunner $gr) {
-		$this->common = $common;
-		$this->em = $em;
-		$this->gr = $gr;
+	public function __construct(
+		private CommonService $common,
+		private EntityManagerInterface $em,
+		private GameRunner $gr) {
 	}
 	#[Route ('/game/', name:'maf_game_status')]
 	public function indexAction($time_spent=0): Response {
@@ -45,7 +41,7 @@ class GameController extends AbstractController {
 		);
 
 		foreach ($parts as $part=>$name) {
-			list($total, $done) = $this->gr->Progress($part);
+			[$total, $done] = $this->gr->Progress($part);
 			if ($total>0) {
 				$percent = ($done*100)/$total;
 			} else {
@@ -62,7 +58,7 @@ class GameController extends AbstractController {
 	}
 
 	#[Route ('/game/bestiary', name:'maf_game_bestiary')]
-	public function bestiaryAction() {
+	public function bestiaryAction(): Response {
 		$query = $this->em->createQuery('SELECT t FROM DungeonBundle:DungeonMonsterType t ORDER BY t.name ASC');
 		$types = $query->getResult();
 
@@ -336,7 +332,7 @@ class GameController extends AbstractController {
 			foreach ($data as $key=>$d) {
 				$soldiers[$key] = 0;
 			}
-			$reports = $this->em->getRepository('App\Entity\BattleReport')->findByCycle($i);
+			$reports = $this->em->getRepository('App\Entity\BattleReport')->findBy(['cycle'=>$i]);
 			$battles["data"][] = array($i, count($reports));
 			foreach ($reports as $report) {
 				foreach ($report->getStart() as $group) {
@@ -542,7 +538,7 @@ class GameController extends AbstractController {
 	}
 
 	#[Route ('/game/buildings', name:'maf_game_buildings')]
-	public function buildingsAction() {
+	public function buildingsAction(): Response {
 		return $this->render('Game/buildings.html.twig', [
 			'buildings'	=> $this->em->getRepository('App\Entity\BuildingType')->findAll(),
 			'resources'	=> $this->em->getRepository('App\Entity\ResourceType')->findAll()

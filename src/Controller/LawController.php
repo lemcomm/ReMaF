@@ -24,17 +24,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LawController extends AbstractController {
-
-	private Dispatcher $disp;
-	private EntityManagerInterface $em;
-	private LawManager $lawMan;
-	private TranslatorInterface $trans;
-
-	public function __construct(Dispatcher $disp, EntityManagerInterface $em, LawManager $lawMan, TranslatorInterface $trans) {
-		$this->disp = $disp;
-		$this->em = $em;
-		$this->lawMan = $lawMan;
-		$this->trans = $trans;
+	public function __construct(
+		private Dispatcher $disp,
+		private EntityManagerInterface $em,
+		private LawManager $lawMan,
+		private TranslatorInterface $trans) {
 	}
 
 	private function gateway($test, $secondary = null) {

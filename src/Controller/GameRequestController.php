@@ -15,6 +15,8 @@ use App\Service\GameRequestManager;
 use App\Service\History;
 use App\Service\Politics;
 
+use DateInterval;
+use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,21 +29,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class GameRequestController extends AbstractController {
-
-	private Appstate $app;
-	private Dispatcher $dispatcher;
-	private EntityManagerInterface $em;
-	private GameRequestManager $gm;
-	private TranslatorInterface $trans;
-	private History $hist;
-
-	public function __construct(AppState $app, Dispatcher $dispatcher, EntityManagerInterface $em, GameRequestManager $gm, History $hist, TranslatorInterface $trans) {
-		$this->app = $app;
-		$this->dispatcher = $dispatcher;
-		$this->em = $em;
-		$this->gm = $gm;
-		$this->hist = $hist;
-		$this->trans = $trans;
+	public function __construct(
+		private AppState $app,
+		private Dispatcher $dispatcher,
+		private EntityManagerInterface $em,
+		private GameRequestManager $gm,
+		private History $hist,
+		private TranslatorInterface $trans) {
 	}
 
 	private function security(Character $char, GameRequest $id): bool {
@@ -176,7 +170,7 @@ class GameRequestController extends AbstractController {
 					$house = $id->getToHouse();
 					$character = $id->getFromCharacter();
 					$character->setHouse($house);
-					$character->setHouseJoinDate(new \DateTime("now"));
+					$character->setHouseJoinDate(new DateTime("now"));
 					$this->hist->openLog($house, $character);
 					$this->hist->logEvent(
 						$house,
@@ -250,7 +244,7 @@ class GameRequestController extends AbstractController {
 						$em->remove($id);
 						$em->flush();
 
-						list($conv, $supConv) = $conv->sendExistingCharacterMsg(null, $settlement, null, null, $character);
+						[$conv, $supConv] = $conv->sendExistingCharacterMsg(null, $settlement, null, null, $character);
 						return $this->redirectToRoute($route);
 					}
 					if ($id->getToPlace()) {
@@ -274,7 +268,7 @@ class GameRequestController extends AbstractController {
 						$em->remove($id);
 						$em->flush();
 
-						list($conv, $supConv) = $conv->sendExistingCharacterMsg(null, null, $place, null, $character);
+						[$conv, $supConv] = $conv->sendExistingCharacterMsg(null, null, $place, null, $character);
 						return $this->redirectToRoute($route);
 					}
 					if ($id->getToPosition()) {
@@ -299,7 +293,7 @@ class GameRequestController extends AbstractController {
 						$em->remove($id);
 						$em->flush();
 
-						list($conv, $supConv) = $conv->sendExistingCharacterMsg(null, null, null, $pos, $character);
+						[$conv, $supConv] = $conv->sendExistingCharacterMsg(null, null, null, $pos, $character);
 						return $this->redirectToRoute($route);
 					}
 				} else {
@@ -452,8 +446,8 @@ class GameRequestController extends AbstractController {
 					);
 					# Set accepted to false so we can hang on to this to prevent spamming. These get removed after a week, hence the new expiration date.
 					$id->setAccepted(FALSE);
-					$timeout = new \DateTime("now");
-					$id->setExpires($timeout->add(new \DateInterval("P7D")));
+					$timeout = new DateTime("now");
+					$id->setExpires($timeout->add(new DateInterval("P7D")));
 					$em->flush();
 					$this->addFlash('notice', $this->trans->trans('military.settlement.food.rejected', array('%character%'=>$id->getFromCharacter()->getName(), '%settlement%'=>$id->getToSettlement()->getName()), 'actions'));
 					return $this->redirectToRoute($route);
@@ -671,7 +665,6 @@ class GameRequestController extends AbstractController {
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$em = $this->em;
 		$requests = $this->gm->findAllManageableRequests($character, false); # Not accepted/rejected
 		$approved = $this->gm->findAllManageableRequests($character, true); # Only accepted
 

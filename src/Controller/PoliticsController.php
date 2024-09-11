@@ -39,25 +39,18 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PoliticsController extends AbstractController {
-
-	private Dispatcher $disp;
-	private EntityManagerInterface $em;
-	private History $hist;
-	private Politics $pol;
-	private TranslatorInterface $trans;
-	
 	private $hierarchy=array();
 	
-	public function __construct(Dispatcher $disp, EntityManagerInterface $em, History $hist, Politics $pol, TranslatorInterface $trans) {
-		$this->disp = $disp;
-		$this->em = $em;
-		$this->hist = $hist;
-		$this->pol = $pol;
-		$this->trans = $trans;
+	public function __construct(
+		private Dispatcher $disp,
+		private EntityManagerInterface $em,
+		private History $hist,
+		private Politics $pol,
+		private TranslatorInterface $trans) {
 	}
 	
 	#[Route ('/politics', name:'maf_politics')]
-	public function indexAction() {
+	public function indexAction(): RedirectResponse|Response {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -67,7 +60,7 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/realms', name:'maf_politics_realms')]
-	public function realmsAction() {
+	public function realmsAction(): RedirectResponse|Response {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -77,7 +70,7 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/relations', name:'maf_politics_relations')]
-	public function relationsAction() {
+	public function relationsAction(): RedirectResponse|Response {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -87,7 +80,7 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/assocs', name:'maf_politics_assocs')]
-	public function associationsAction() {
+	public function associationsAction(): RedirectResponse|Response {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -97,7 +90,7 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/hierarchy', name:'maf_politics_hierarchy')]
-	public function hierarchyAction() {
+	public function hierarchyAction(): RedirectResponse|Response {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -149,7 +142,7 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/vassals', name:'maf_politics_vassals')]
-	public function vassalsAction() {
+	public function vassalsAction(): RedirectResponse|Response {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -161,7 +154,7 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/disown/{vassal}', name:'maf_politics_disown', requirements:['vassal'=>'\d+'])]
-	public function disownAction(Request $request, Character $vassal) {
+	public function disownAction(Request $request, Character $vassal): RedirectResponse|Response {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -192,12 +185,11 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/oath/offer', name:'maf_politics_oath_offer')]
-	public function offerOathAction(GameRequestManager $grm, Request $request) {
+	public function offerOathAction(GameRequestManager $grm, Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('hierarchyOfferOathTest');
 		if (!$character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$em = $this->em;
 		$others = $this->disp->getActionableCharacters();
 		$options = [];
 		if ($character->getInsideSettlement()) {
@@ -310,7 +302,7 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/oath/break', name:'maf_politics_oath_break')]
-	public function breakoathAction(Request $request) {
+	public function breakoathAction(Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('hierarchyIndependenceTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -326,7 +318,7 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/successor', name:'maf_politics_successor')]
-	public function successorAction(Request $request) {
+	public function successorAction(Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('InheritanceSuccessorTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -558,7 +550,7 @@ class PoliticsController extends AbstractController {
 	}
 	
 	#[Route ('/politics/lists', name:'maf_politics_lists')]
-	public function listsAction() {
+	public function listsAction(): RedirectResponse|Response {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -570,7 +562,7 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/list/{id}', name:'maf_politics_list', requirements:['id'=>'\d+'])]
-	public function listAction($id, Request $request) {
+	public function listAction($id, Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -589,22 +581,20 @@ class PoliticsController extends AbstractController {
 				throw $this->createNotFoundException('error.notfound.listing');
 			}
 			$can_delete = true;
-			if ($id > 0) {
-				$locked_reasons = array();
-				if (!$listing->getDescendants()->isEmpty()) {
-					$can_delete = false;
-					$locked_reasons[] = "descendants";
-				}
-				$using = $em->getRepository(SettlementPermission::class)->findBy(['listing'=>$listing]);
-				if ($using && !empty($using)) {
-					$can_delete = false;
-					$locked_reasons[] = "used";
-				}
-				$usingPlaces = $em->getRepository(PlacePermission::class)->findBy(['listing'=>$listing]);
-				if ($usingPlaces && !empty($usingPlaces)) {
-					$can_delete = false;
-					$locked_reasons[] = "used";
-				}
+			$locked_reasons = array();
+			if (!$listing->getDescendants()->isEmpty()) {
+				$can_delete = false;
+				$locked_reasons[] = "descendants";
+			}
+			$using = $em->getRepository(SettlementPermission::class)->findBy(['listing'=>$listing]);
+			if (!empty($using)) {
+				$can_delete = false;
+				$locked_reasons[] = "used";
+			}
+			$usingPlaces = $em->getRepository(PlacePermission::class)->findBy(['listing'=>$listing]);
+			if (!empty($usingPlaces)) {
+				$can_delete = false;
+				$locked_reasons[] = "used";
 			}
 			$is_new = false;
 		} else {
@@ -722,7 +712,7 @@ class PoliticsController extends AbstractController {
 	}
 	
 	#[Route ('/politics/prisoners', name:'maf_politics_prisoners')]
-	public function prisonersAction(ActionManager $actMan, CharacterManager $charMan, Request $request) {
+	public function prisonersAction(ActionManager $actMan, CharacterManager $charMan, Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('personalPrisonersTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -829,7 +819,7 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/claims', name:'maf_politics_claims')]
-	public function claimsAction(Request $request) {
+	public function claimsAction(Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('personalClaimsTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -841,14 +831,10 @@ class PoliticsController extends AbstractController {
 	}
 	
 	#[Route ('/politics/claim/settlement/{settlement}', name:'maf_politics_claim_settlement', requirements:['settlement'=>'\d+'])]
-	public function claimaddAction(Settlement $settlement) {
+	public function claimaddAction(Settlement $settlement): RedirectResponse {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
-		}
-
-		if (!$settlement) {
-			throw $this->createNotFoundException('error.notfound.settlement');
 		}
 		$already = false;
 		foreach ($character->getSettlementClaims() as $claim) {
@@ -883,14 +869,10 @@ class PoliticsController extends AbstractController {
 	}
 
 	#[Route ('/politics/claim/settlement/cancel/{settlement}', name:'maf_politics_claim_settlement_cancel', requirements:['settlement'=>'\d+'])]
-	public function claimcancelAction(Settlement $settlement) {
+	public function claimcancelAction(Settlement $settlement): RedirectResponse {
 		$character = $this->disp->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
-		}
-
-		if (!$settlement) {
-			throw $this->createNotFoundException('error.notfound.settlement');
 		}
 
 		if ($this->pol->removeClaim($character, $settlement)) {

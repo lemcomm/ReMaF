@@ -6,6 +6,9 @@ use App\Entity\Heraldry;
 use App\Form\HeraldryType;
 use App\Service\PaymentManager;
 use Doctrine\ORM\EntityManagerInterface;
+use DOMDocument;
+use DOMElement;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,7 +50,7 @@ class HeraldryController extends AbstractController {
 				$em->persist($banner);
 				$em->flush();
 				if (!$pay->spend($user, "heraldry", $crestfee, false)) {
-					throw new \Exception("payment failed even after checking");
+					throw new Exception("payment failed even after checking");
 				}
 				$this->addFlash('notice', $trans->trans('design.saved', array(), 'heraldry'));
 				return $this->redirectToRoute('maf_heraldry');
@@ -95,42 +98,42 @@ class HeraldryController extends AbstractController {
 	private function createSVG($banner): bool|string {
 		$basedir = __DIR__."/../../public/heraldry-svg/";
 
-		$xml = new \DOMDocument('1.0', 'UTF-8');
-		$svg = $xml->appendChild(new \DOMElement("svg"));
+		$xml = new DOMDocument('1.0', 'UTF-8');
+		$svg = $xml->appendChild(new DOMElement("svg"));
 		$svg->setAttribute("viewBox", "0 0 300 350");
 		$svg->setAttribute("xmlns", "http://www.w3.org/2000/svg");
 		$svg->setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
 
-		$defs = $svg->appendChild(new \DOMElement("defs"));
+		$defs = $svg->appendChild(new DOMElement("defs"));
 
 
 		$file=$basedir."shields/".$banner->getShield().".svg";
 		if (!file_exists($file)) {
-			throw new \Exception("svg file shields/".$banner->getShield()." does not exit");
+			throw new Exception("svg file shields/".$banner->getShield()." does not exit");
 		}
-		$doc = new \DOMDocument();
+		$doc = new DOMDocument();
 		$doc->load($file);
 
 		$path = $doc->getElementsByTagName("path")->item(0);
 		$node = $xml->importNode($path, true);
 		$shield_def = $defs->appendChild($node);
-		$shield = $svg->appendChild(new \DOMElement("use"));
+		$shield = $svg->appendChild(new DOMElement("use"));
 		$shield->setAttribute("xlink:href", "#".$banner->getShield());
 		$shield->setAttribute("fill", $banner->getShieldColour());
 		$shield->setAttribute("stroke", "black");
 		$shield->setAttribute("stroke-width", "2");
 
-		$clip = $defs->appendChild(new \DOMElement("clipPath"));
+		$clip = $defs->appendChild(new DOMElement("clipPath"));
 		$clip->setAttribute("id", "boundary");
-		$clippath = $clip->appendChild(new \DOMElement("use"));
+		$clippath = $clip->appendChild(new DOMElement("use"));
 		$clippath->setAttribute("xlink:href", "#".$banner->getShield());
 
 		if ($banner->getPattern() && $banner->getPatternColour()) {
 			$file=$basedir."patterns/".$banner->getPattern().".svg";
 			if (!file_exists($file)) {
-				throw new \Exception("svg file patterns/".$banner->getPattern()." does not exit");
+				throw new Exception("svg file patterns/".$banner->getPattern()." does not exit");
 			}
-			$doc = new \DOMDocument();
+			$doc = new DOMDocument();
 			$doc->load($file);
 
 			$path = $doc->getElementsByTagName("path")->item(0);
@@ -143,9 +146,9 @@ class HeraldryController extends AbstractController {
 		if ($banner->getCharge() && $banner->getChargeColour()) {
 			$file=$basedir."charges/".$banner->getCharge().".svg";
 			if (!file_exists($file)) {
-				throw new \Exception("svg file charges/".$banner->getCharge()." does not exit");
+				throw new Exception("svg file charges/".$banner->getCharge()." does not exit");
 			}
-			$doc = new \DOMDocument();
+			$doc = new DOMDocument();
 			#$doc->validateOnParse = true; #SVG fails to validate. TODO: Research the heck out of this.
 			$doc->load($file);
 
@@ -168,9 +171,9 @@ class HeraldryController extends AbstractController {
 		if ($banner->getShading()) {
 			$file=$basedir."shading/".$banner->getShield().".svg";
 			if (!file_exists($file)) {
-				throw new \Exception("svg file shading/".$banner->getShield()." does not exit");
+				throw new Exception("svg file shading/".$banner->getShield()." does not exit");
 			}
-			$doc = new \DOMDocument();
+			$doc = new DOMDocument();
 			$doc->load($file);
 
 			$path = $doc->getElementsByTagName("g")->item(0);

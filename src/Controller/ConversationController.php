@@ -32,26 +32,17 @@ use App\Form\MessageReplyType;
 use App\Form\NewConversationType;
 use App\Form\NewLocalMessageType;
 use App\Form\RecentMessageReplyType;
-use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ConversationController extends AbstractController {
-	
-	private ConversationManager $convman;
-	private Dispatcher $dispatcher;
-	private EntityManagerInterface $em;
-	private Geography $geo;
-	private NewsManager $news;
-	private TranslatorInterface $trans;
-
-	public function __construct(ConversationManager $convman, Dispatcher $dispatcher, EntityManagerInterface $em, Geography $geo, NewsManager $news, TranslatorInterface $trans) {
-		$this->convman = $convman;
-		$this->dispatcher = $dispatcher;
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->news = $news;
-		$this->trans = $trans;
+	public function __construct(
+		private ConversationManager $convman,
+		private Dispatcher $dispatcher,
+		private EntityManagerInterface $em,
+		private Geography $geo,
+		private NewsManager $news,
+		private TranslatorInterface $trans) {
 	}
 
 	#[Route ('/conv', name:'maf_convs')]

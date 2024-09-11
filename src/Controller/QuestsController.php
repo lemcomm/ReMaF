@@ -9,6 +9,7 @@ use App\Entity\Quester;
 use App\Entity\Settlement;
 use App\Form\QuestType;
 use App\Service\AppState;
+use App\Service\CommonService;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\Geography;
 use App\Service\History;
@@ -23,15 +24,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 class QuestsController extends AbstractController {
-
-	private AppState $app;
-	private EntityManagerInterface $em;
-	private History $history;
-	
-	public function __construct(AppState $app, EntityManagerInterface $em, History $history) {
-		$this->app = $app;
-		$this->em = $em;
-		$this->history = $history;
+	public function __construct(
+		private AppState $app,
+		private EntityManagerInterface $em,
+		private History $history,
+		private CommonService $common) {
 	}
 	
 	#[Route('/quests/local', name:'maf_quests_local')]
@@ -137,7 +134,7 @@ class QuestsController extends AbstractController {
 		$quester = new Quester;
 		$quester->setCharacter($character);
 		$quester->setQuest($quest);
-		$quester->setStarted($this->app->getCycle());
+		$quester->setStarted($this->common->getCycle());
 		$quester->setOwnerComment('')->setQuesterComment('');
 		$em->persist($quester);
 
@@ -196,7 +193,7 @@ class QuestsController extends AbstractController {
 
 		foreach ($quest->getQuesters() as $q) {
 			if ($q->getCharacter() == $character) {
-				$q->setClaimCompleted($this->app->getCycle());
+				$q->setClaimCompleted($this->common->getCycle());
 			}
 		}
 
@@ -226,7 +223,7 @@ class QuestsController extends AbstractController {
 			throw new Exception("You are not the owner of this quest.");
 		}
 
-		$quester->setConfirmedCompleted($this->app->getCycle());
+		$quester->setConfirmedCompleted($this->common->getCycle());
 		$quester->getQuest()->setCompleted(true);
 
 		$this->history->logEvent(

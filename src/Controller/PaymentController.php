@@ -3,13 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Patron;
-use App\Entity\RealmDesignation;
 use App\Entity\User;
 use App\Form\AreYouSureType;
 use App\Form\CultureType;
 use App\Form\GiftType;
 use App\Form\SubscriptionType;
-use App\Service\AppState;
 use App\Service\MailManager;
 use App\Service\NotificationManager;
 use App\Service\PaymentManager;
@@ -20,7 +18,6 @@ use Exception;
 use Patreon\OAuth as POA;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
@@ -35,18 +32,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class PaymentController extends AbstractController {
 
 	private array $giftchoices = array(100=>100, 200=>200, 300=>300, 400=>400, 500=>500, 600=>600, 800=>800, 1000=>1000, 1200=>1200, 1500=>1500, 2000=>2000, 2500=>2500);
-	private EntityManagerInterface $em;
-	private MailManager $mail;
-	private PaymentManager $pay;
-	private TranslatorInterface $trans;
-	private LoggerInterface $logger;
 
-	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, MailManager $mail, PaymentManager $pay, TranslatorInterface $trans) {
-		$this->em = $em;
-		$this->logger = $logger;
-		$this->mail = $mail;
-		$this->pay = $pay;
-		$this->trans = $trans;
+	public function __construct(
+		private EntityManagerInterface $em,
+		private LoggerInterface $logger,
+		private MailManager $mail,
+		private PaymentManager $pay,
+		private TranslatorInterface $trans) {
 	}
 
 	private function fetchPatreon($creator = null) {

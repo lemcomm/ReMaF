@@ -7,7 +7,6 @@ use App\Service\ActionManager;
 use App\Service\AppState;
 use App\Service\DungeonMaster;
 use App\Service\Geography;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -16,7 +15,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 use App\Entity\Action;
@@ -34,17 +32,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DungeonController extends AbstractController {
-
-	private AppState $app;
-	private DungeonMaster $dm;
-	private EntityManagerInterface $em;
-	private TranslatorInterface $trans;
-
-	public function __construct(AppState $app, DungeonMaster $dm, EntityManagerInterface $em, TranslatorInterface $trans) {
-		$this->app = $app;
-		$this->dm = $dm;
-		$this->em = $em;
-		$this->trans = $trans;
+	public function __construct(
+		private AppState $app,
+		private DungeonMaster $dm,
+		private EntityManagerInterface $em,
+		private TranslatorInterface $trans) {
 	}
 
 	/**
@@ -70,7 +62,7 @@ class DungeonController extends AbstractController {
 		$dungeoneer = $this->gateway();
 
 		$dungeon = $dungeoneer->getCurrentDungeon();
-		list($party, $missing, $wait) = $this->dm->calculateTurnTime($dungeon);
+		[$party, $missing, $wait] = $this->dm->calculateTurnTime($dungeon);
 		$timeleft = max(0, $wait-$dungeon->getTick());
 
 		$chat = $this->createForm(ChatType::class);
@@ -200,9 +192,7 @@ class DungeonController extends AbstractController {
 						$this->em->flush();
 						return $this->redirectToRoute('maf_char_recent');
 					} else {
-						if ($dungeoneer->getCurrentAction()) {
-							$dungeoneer->getCurrentAction()->setPlayed($dungeoneer->getCurrentAction()->getPlayed()-1);
-						}
+						$dungeoneer->getCurrentAction()?->setPlayed($dungeoneer->getCurrentAction()->getPlayed() - 1);
 						$card->setPlayed($card->getPlayed()+1);
 						$dungeoneer->setCurrentAction($card);
 						$dungeoneer->setTargetMonster();

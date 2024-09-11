@@ -15,11 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class GMController extends AbstractController {
-
-	private EntityManagerInterface $em;
-
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 	}
 	#[Route ('/olympus', name:'maf_gm_pending')]
 	public function pendingAction(): Response {
@@ -39,7 +35,7 @@ class GMController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/olympus/archive', name:'maf_gm_pending')]
+	#[Route ('/olympus/archive', name:'maf_gm_archive')]
 	public function actionedAction(): Response {
 		$query = $this->em->createQuery('SELECT r from App\Entity\UserReport r WHERE r.actioned = true');
 		$reports = $query->getResult();

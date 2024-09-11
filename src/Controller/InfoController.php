@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\BuildingType;
-use App\Entity\Entourage;
 use App\Entity\EntourageType;
 use App\Entity\FeatureType;
 use App\Entity\EquipmentType;
@@ -16,13 +15,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
 class InfoController extends AbstractController {
-	
-	private EntityManagerInterface $em;
-	private PageReader $pager;
-	
-	public function __construct(EntityManagerInterface $em, PageReader $pager) {
-		$this->em = $em;
-		$this->pager = $pager;
+	public function __construct(
+		private EntityManagerInterface $em,
+		private PageReader $pager) {
 	}
 
 	#[Route ('/info/buildings', name:'maf_info_buildings')]

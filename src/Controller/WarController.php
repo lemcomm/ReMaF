@@ -48,21 +48,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class WarController extends AbstractController {
-
-	private ActionManager $am;
-	private EntityManagerInterface $em;
-	private Geography $geo;
-	private History $hist;
-	private WarDispatcher $warDisp;
-	private WarManager $wm;
-
-	public function __construct(ActionManager $am, EntityManagerInterface $em, Geography $geo, History $hist, WarDispatcher $warDisp, WarManager $wm) {
-		$this->am = $am;
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->hist = $hist;
-		$this->warDisp = $warDisp;
-		$this->wm = $wm;
+	public function __construct(
+		private ActionManager $am,
+		private EntityManagerInterface $em,
+		private Geography $geo,
+		private History $hist,
+		private WarDispatcher $warDisp,
+		private WarManager $wm) {
 	}
 	
 	#[Route('/war/view/{id}', name:'maf_war_view', requirements:['id'=>'\d+'])]
@@ -146,7 +138,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/settlement/defend', name:'maf_war_settlement_defend')]
 	public function defendSettlementAction(Request $request): Response {
-		list($character, $settlement) = $this->warDisp->gateway('militaryDefendSettlementTest', true);
+		[$character, $settlement] = $this->warDisp->gateway('militaryDefendSettlementTest', true);
 		$form = $this->createFormBuilder(null, array('translation_domain'=>'actions'))
 			->add('submit', SubmitType::class, [
 				'label'=>'military.settlement.defend.submit',
@@ -173,7 +165,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/place/defend', name:'maf_war_place_defend')]
 	public function defendPlaceAction(Request $request): Response {
-		list($character, $settlement, $place) = $this->warDisp->gateway('militaryDefendPlaceTest', true, null, true);
+		[$character, $settlement, $place] = $this->warDisp->gateway('militaryDefendPlaceTest', true, null, true);
 		$form = $this->createFormBuilder(null, array('translation_domain'=>'actions'))
 			->add('submit', SubmitType::class, [
 				'label'=>'military.place.defend.submit',
@@ -204,7 +196,7 @@ class WarController extends AbstractController {
 	#[Route('/war/siege/place/{place}', name:'maf_war_siege_place', requirements:['place'=>'\d+'])]
 	public function siegeAction(TranslatorInterface $trans, Request $request, Place $place = null): RedirectResponse|Response {
 		# Security check.
-		list($character, $settlement) = $this->warDisp->gateway(false, true, false);
+		[$character, $settlement] = $this->warDisp->gateway(false, true, false);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
@@ -852,7 +844,7 @@ class WarController extends AbstractController {
 							}
 						}
 						$max = floor($settlement->getPopulation() * $ratio * 1.5 * $mod);
-						list($taken) = $this->lootvalue($max);
+						[$taken] = $this->lootvalue($max);
 						if ($taken > 0) {
 							// no loss / inefficiency here
 							$destination->setThralls($destination->getThralls() + $taken);
@@ -924,7 +916,7 @@ class WarController extends AbstractController {
 									$provider = $follower->getEquipment()->getProvider();
 									if ($building = $settlement->getBuildingByType($provider)) {
 										$available = round($building->getResupply() * $ratio);
-										list($taken, $lost) = $this->lootvalue($available);
+										[$taken, $lost] = $this->lootvalue($available);
 										if ($lost > 0) {
 											$building->setResupply($building->getResupply() - $lost);
 										}
@@ -950,7 +942,7 @@ class WarController extends AbstractController {
 								} else {
 									$loot_max = round(min($can_take*5, $local_food_storage->getStorage()*0.5 + $local_food_storage->getAmount()*0.5));
 								}
-								list($taken, $lost) = $this->lootvalue($loot_max);
+								[$taken, $lost] = $this->lootvalue($loot_max);
 								if ($lost > 0) {
 									$local_food_storage->setStorage(max(0,$local_food_storage->getStorage() - $lost));
 								}
@@ -976,7 +968,7 @@ class WarController extends AbstractController {
 							} else {
 								$can_carry = $my_soldiers * 2;
 							}
-							list($taken, $lost) = $this->lootvalue(min($available, $can_carry));
+							[$taken, $lost] = $this->lootvalue(min($available, $can_carry));
 							if ($lost > 0) {
 								$resource->setStorage($resource->getStorage() - $lost);
 								if (rand(0,100) < $lost && rand(0,100) < 50) {
@@ -1040,7 +1032,7 @@ class WarController extends AbstractController {
 							$pick = array_rand($buildings);
 							$target = $buildings[$pick];
 							$type = $target->getType()->getName();
-							list($ignore, $damage) = $this->lootvalue(round($my_soldiers * 32 / $targets));
+							list(, $damage) = $this->lootvalue(round($my_soldiers * 32 / $targets)); #Drop first return -- yes, it looks weird.
 							if (!isset($result['burn'][$type])) {
 								$result['burn'][$type] = 0;
 							}
@@ -1434,7 +1426,7 @@ class WarController extends AbstractController {
 
 	#[Route('/war/battles/join', name:'maf_war_battles_join')]
 	public function battleJoinAction(Request $request): RedirectResponse|Response {
-		list($character) = $this->warDisp->gateway('militaryJoinBattleTest', true);
+		[$character] = $this->warDisp->gateway('militaryJoinBattleTest', true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}

@@ -32,21 +32,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UnitController extends AbstractController {
-
-	private EntityManagerInterface $em;
-	private History $hist;
-	private MilitaryManager $mm;
-	private PermissionManager $pm;
-	private TranslatorInterface $trans;
-	private UnitDispatcher $ud;
-
-	public function __construct(EntityManagerInterface $em, History $hist, MilitaryManager $mm, PermissionManager $pm, TranslatorInterface $trans, UnitDispatcher $ud) {
-		$this->em = $em;
-		$this->hist = $hist;
-		$this->mm = $mm;
-		$this->pm = $pm;
-		$this->trans = $trans;
-		$this->ud = $ud;
+	public function __construct(
+		private EntityManagerInterface $em,
+		private History $hist,
+		private MilitaryManager $mm,
+		private PermissionManager $pm,
+		private TranslatorInterface $trans,
+		private UnitDispatcher $ud) {
 	}
 	
         private function findUnits(Character $character) {
@@ -157,7 +149,7 @@ class UnitController extends AbstractController {
         }
 
 	#[Route('/units/bulk', name:'maf_unit_bulk')]
-	public function unitBulkManage(GameRequestManager $gm, Request $request) {
+	public function unitBulkManage(GameRequestManager $gm, Request $request): RedirectResponse|Response {
 		$char = $this->gateway('unitBulkTest');
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
@@ -650,7 +642,7 @@ class UnitController extends AbstractController {
         }
 
 	#[Route('/units/recruit', name:'maf_recruit')]
-     	public function unitRecruitAction(Economy $economy, Generator $generator, Request $request): RedirectResponse|Response {
+     	public function unitRecruitAction(Generator $generator, Request $request): RedirectResponse|Response {
                 [$character, $settlement] = $this->gateway('unitRecruitTest', null, true);
      		if (! $character instanceof Character) {
      			return $this->redirectToRoute($character);

@@ -24,19 +24,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class JournalController extends AbstractController {
-	
-	private AppState $app;
-	private Dispatcher $disp;
-	private EntityManagerInterface $em;
-	private TranslatorInterface $trans;
-	private CommonService $common;
-
-	public function __construct(AppState $app, Dispatcher $disp, EntityManagerInterface $em, TranslatorInterface $trans, CommonService $common) {
-		$this->app = $app;
-		$this->disp = $disp;
-		$this->em = $em;
-		$this->trans = $trans;
-		$this->common = $common;
+	public function __construct(
+		private AppState $app,
+		private Dispatcher $disp,
+		private EntityManagerInterface $em,
+		private TranslatorInterface $trans,
+		private CommonService $common) {
 	}
 	
 	#[Route ('/journal/{id}', name:'maf_journal', requirements:['id'=>'\d+'])]

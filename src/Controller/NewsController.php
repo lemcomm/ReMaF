@@ -25,15 +25,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NewsController extends AbstractController {
-	
-	private AppState $app;
-	private NewsManager $news;
-	private TranslatorInterface $trans;
-	
-	public function __construct(AppState $app, NewsManager $news, TranslatorInterface $trans) {
-		$this->app = $app;
-		$this->news = $news;
-		$this->trans = $trans;
+	public function __construct(
+		private AppState $app,
+		private NewsManager $news,
+		private TranslatorInterface $trans) {
 	}
 
 	#[Route ('/news/', name:'maf_news')]

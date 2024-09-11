@@ -18,13 +18,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class QueueController extends AbstractController {
-
-	private Dispatcher $dispatcher;
-	private EntityManagerInterface $em;
-
-	public function __construct(Dispatcher $dispatcher, EntityManagerInterface $em) {
-		$this->dispatcher = $dispatcher;
-		$this->em = $em;
+	public function __construct(
+		private Dispatcher $dispatcher,
+		private EntityManagerInterface $em) {
 	}
 	
 	#[Route('/queue/', name:'maf_queue')]

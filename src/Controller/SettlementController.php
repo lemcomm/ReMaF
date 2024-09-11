@@ -30,19 +30,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SettlementController extends AbstractController {
-
-	private Dispatcher $disp;
-	private Economy $econ;
-	private EntityManagerInterface $em;
-	private Interactions $interactions;
-	private TranslatorInterface $trans;
-
-	public function __construct(Dispatcher $disp, Economy $econ, EntityManagerInterface $em, Interactions $interactions, TranslatorInterface $trans) {
-		$this->disp = $disp;
-		$this->econ = $econ;
-		$this->em = $em;
-		$this->interactions = $interactions;
-		$this->trans = $trans;
+	public function __construct(
+		private Dispatcher $disp,
+		private Economy $econ,
+		private EntityManagerInterface $em,
+		private Interactions $interactions,
+		private TranslatorInterface $trans) {
 	}
 	
 	#[Route('/settlement/{id}', name:'maf_settlement', requirements:['id'=>'\d+'])]

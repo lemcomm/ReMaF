@@ -15,17 +15,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AppController extends AbstractController {
-
-	private CharacterManager $cm;
-	private EntityManagerInterface $em;
-	private MessageTranslateExtension $msgTrans;
-	private TranslatorInterface $trans;
-
-	public function __construct(CharacterManager $cm, EntityManagerInterface $em, MessageTranslateExtension $msgTrans, TranslatorInterface $trans) {
-		$this->cm = $cm;
-		$this->em = $em;
-		$this->msgTrans = $msgTrans;
-		$this->trans = $trans;
+	public function __construct(
+		private CharacterManager $cm,
+		private EntityManagerInterface $em,
+		private MessageTranslateExtension $msgTrans,
+		private TranslatorInterface $trans) {
 	}
 
 	private function validateAppKey($appkey, $user_id, $char_id=false): false|array {
@@ -50,10 +44,10 @@ class AppController extends AbstractController {
 
 	#[Route ('//app/rss/{appkey}/{user}/{char}', name:'maf_rss', defaults:['_format'=>'rss'])]
 	public function rssAction($appkey, $user, $char): Response {
-		list($user, $character) = $this->validateAppKey($appkey, $user, $char);
+		[$user, $character] = $this->validateAppKey($appkey, $user, $char);
 
 		if ($user && $character) {
-			list($xml,$cha) = $this->buildRssHeaders($user, $character);
+			[$xml,$cha] = $this->buildRssHeaders($user, $character);
 
 			$events = $this->cm->findEvents($character);
 			foreach ($events as $event) {

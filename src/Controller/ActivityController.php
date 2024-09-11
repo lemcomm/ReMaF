@@ -27,17 +27,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ActivityController extends AbstractController {
-
-	private ActivityDispatcher $activityDispatcher;
-	private ActivityManager $actman;
-	private EntityManagerInterface $em;
-	private TranslatorInterface $trans;
-
-	public function __construct(ActivityDispatcher $activityDispatcher, ActivityManager $actman, EntityManagerInterface $em, TranslatorInterface $trans) {
-		$this->activityDispatcher = $activityDispatcher;
-		$this->actman = $actman;
-		$this->em = $em;
-		$this->trans = $trans;
+	public function __construct(
+		private ActivityDispatcher $activityDispatcher,
+		private ActivityManager $actman,
+		private EntityManagerInterface $em,
+		private TranslatorInterface $trans) {
 	}
 	
 	private function gateway($test, $secondary = null) {

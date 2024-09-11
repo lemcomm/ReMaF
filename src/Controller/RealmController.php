@@ -8,7 +8,6 @@ use App\Entity\RealmPosition;
 use App\Entity\Character;
 use App\Entity\Election;
 use App\Entity\RealmRelation;
-use App\Entity\Settlement;
 use App\Entity\Spawn;
 use App\Entity\Vote;
 use App\Form\AssocSelectType;
@@ -929,9 +928,7 @@ class RealmController extends AbstractController {
 				$form->addError(new FormError($this->trans->trans("realm.capital.error.none", array(), 'politics')));
 			}
 			if (!$fail) {
-				if ($realm->getCapital()) {
-					$realm->getCapital()->removeCapitalOf($realm);
-				}
+				$realm->getCapital()?->removeCapitalOf($realm);
 				$realm->setCapital($capital);
 				$capital->addCapitalOf($realm);
 				$this->hist->logEvent(
@@ -1005,8 +1002,7 @@ class RealmController extends AbstractController {
 			$this->hist->logEvent(
 				$parent,
 				'event.realm.wasleft',
-				array('%link-realm%'=>$realm->getId()),
-				History::MEDIUM
+				array('%link-realm%'=>$realm->getId())
 			);
 
 			// TODO: messaging everyone who needs to know

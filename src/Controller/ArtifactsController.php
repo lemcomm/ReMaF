@@ -21,17 +21,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ArtifactsController extends AbstractController {
-
-	private EntityManagerInterface $em;
-	private Geography $geo;
-	private History $history;
-	private Dispatcher $disp;
-
-	public function __construct(Dispatcher $disp, EntityManagerInterface $em, Geography $geo, History $history) {
-		$this->disp = $disp;
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->history = $history;
+	public function __construct(
+		private Dispatcher $disp,
+		private EntityManagerInterface $em,
+		private Geography $geo,
+		private History $history) {
 	}
 
 	#[Route ('/artifact/owned', name:'maf_artifact_owned')]
@@ -185,7 +179,7 @@ class ArtifactsController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
-			list($x, $y, $geodata) = $this->geo->findRandomPointInsidePOI($data['poi']);
+			[$x, $y, $geodata] = $this->geo->findRandomPointInsidePOI($data['poi']);
 			if ($geodata) {
 				echo "found spot near ".$geodata->getSettlement()->getName();
 			} else {

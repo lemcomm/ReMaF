@@ -58,27 +58,16 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CharacterController extends AbstractController {
-
-	private AppState $appstate;
-	private CharacterManager $charman;
-	private ConversationManager $conv;
-	private Dispatcher $dispatcher;
-	private EntityManagerInterface $em;
-	private Geography $geo;
-	private History $history;
-	private TranslatorInterface $trans;
-	private UserManager $userman;
-
-	public function __construct(AppState $appstate, CharacterManager $charman, ConversationManager $conv, Dispatcher $dispatcher, EntityManagerInterface $em, Geography $geo, History $history, TranslatorInterface $trans, UserManager $userman) {
-		$this->appstate = $appstate;
-		$this->charman = $charman;
-		$this->conv = $conv;
-		$this->dispatcher = $dispatcher;
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->history = $history;
-		$this->trans = $trans;
-		$this->userman = $userman;
+	public function __construct(
+		private AppState $appstate,
+		private CharacterManager $charman,
+		private ConversationManager $conv,
+		private Dispatcher $dispatcher,
+		private EntityManagerInterface $em,
+		private Geography $geo,
+		private History $history,
+		private TranslatorInterface $trans,
+		private UserManager $userman) {
 	}
 
 	private function getSpottings(Character $character): array {

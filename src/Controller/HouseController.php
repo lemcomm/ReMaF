@@ -34,27 +34,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class HouseController extends AbstractController {
-
-	private AppState $app;
-	private ConversationManager $conv;
-	private DescriptionManager $desc;
-	private Dispatcher $dispatcher;
-	private EntityManagerInterface $em;
-	private GameRequestManager $gr;
-	private History $hist;
-	private HouseManager $hm;
-	private TranslatorInterface $trans;
-
-	public function __construct(AppState $app, ConversationManager $conv, DescriptionManager $desc, Dispatcher $dispatcher, EntityManagerInterface $em, GameRequestManager $gr, History $hist, HouseManager $hm, TranslatorInterface $trans) {
-		$this->app = $app;
-		$this->conv = $conv;
-		$this->desc = $desc;
-		$this->dispatcher = $dispatcher;
-		$this->em = $em;
-		$this->gr = $gr;
-		$this->hist = $hist;
-		$this->hm = $hm;
-		$this->trans = $trans;
+	public function __construct(
+		private AppState $app,
+		private ConversationManager $conv,
+		private DescriptionManager $desc,
+		private Dispatcher $dispatcher,
+		private EntityManagerInterface $em,
+		private GameRequestManager $gr,
+		private History $hist,
+		private HouseManager $hm,
+		private TranslatorInterface $trans) {
 	}
 
 	#[Route ('/house/{id}', name:'maf_house', requirements:['id'=>'\d+'])]

@@ -44,19 +44,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PlaceController extends AbstractController {
-
-	private PlaceDispatcher $dispatcher;
-	private AppState $app;
-	private EntityManagerInterface $em;
-	private Interactions $int;
-	private TranslatorInterface $trans;
-
-	public function __construct(AppState $app, PlaceDispatcher $dispatcher, EntityManagerInterface $em, Interactions $int, TranslatorInterface $trans) {
-		$this->app = $app;
-		$this->dispatcher = $dispatcher;
-		$this->em = $em;
-		$this->int = $int;
-		$this->trans = $trans;
+	public function __construct(
+		private AppState $app,
+		private PlaceDispatcher $dispatcher,
+		private EntityManagerInterface $em,
+		private Interactions $int,
+		private TranslatorInterface $trans) {
 	}
 	
 	#[Route ('/place/{id}', name:'maf_place', requirements:['id'=>'\d+'])]
@@ -539,11 +532,7 @@ class PlaceController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		if ($place->getDescription()) {
-			$oldDescription = $place->getDescription()->getText();
-		} else {
-			$oldDescription = null;
-		}
+		$oldDescription = $place->getDescription()?->getText();
 
 		$form = $this->createForm(PlaceManageType::class, null, ['description'=> $oldDescription, 'me'=>$place, 'char'=>$character]);
 		$form->handleRequest($request);
