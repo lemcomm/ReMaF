@@ -7,8 +7,6 @@ use App\Entity\ActivityReportObserver;
 use App\Entity\Battle;
 use App\Entity\BattleReportObserver;
 use App\Entity\Character;
-use App\Entity\EquipmentType;
-use App\Entity\Settlement;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -21,14 +19,7 @@ class HelperService {
 	If it is something that has absolutely no dependencies on other game services (vendor services are fine), put it in CommonService instead.
 	*/
 
-	private CommonService $common;
-	private EntityManagerInterface $em;
-	private Geography $geo;
-
-	public function __construct(CommonService $common, EntityManagerInterface $em, Geography $geo) {
-		$this->common = $common;
-		$this->em = $em;
-		$this->geo = $geo;
+	public function __construct(private CommonService $common, private EntityManagerInterface $em, private Geography $geo) {
 	}
 
 	private function newObserver($type): true|BattleReportObserver|ActivityReportObserver {

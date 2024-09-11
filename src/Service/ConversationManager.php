@@ -20,14 +20,8 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ConversationManager {
-
-        private EntityManagerInterface $em;
-        private CommonService $common;
-
-        public function __construct(EntityManagerInterface $em, CommonService $common) {
-                $this->em = $em;
-		$this->common = $common;
-        }
+	public function __construct(private EntityManagerInterface $em, private CommonService $common) {
+	}
 
         public function getConversations(Character $char) {
                 $query = $this->em->createQuery('SELECT c FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me ORDER BY c.realm ASC, c.updated DESC');

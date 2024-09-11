@@ -29,12 +29,6 @@ use Psr\Log\LoggerInterface;
 */
 
 class Economy {
-
-	private EntityManagerInterface $em;
-	private Geography $geo;
-	private History $history;
-	private LoggerInterface $logger;
-
 	private int $hours_per_day = 10;
 	private array $timer=array("updateproduction"=>0, "demand"=>0, "foodsupply"=>0, "resourceproduction2"=>0, "tradebalance2"=>0);
 
@@ -44,11 +38,7 @@ class Economy {
 		return $this->timer;
 	}
 
-	public function __construct(EntityManagerInterface $em, Geography $geo, History $history, LoggerInterface $logger) {
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->history = $history;
-		$this->logger = $logger;
+	public function __construct(private EntityManagerInterface $em, private Geography $geo, private History $history, private LoggerInterface $logger) {
 	}
 
 	public function getResources(): array {
@@ -639,7 +629,7 @@ class Economy {
 			$building_resource=0; $building_bonus=1.0;
 		} else {
 			if ($force_recalc) {
-				list($building_resource, $building_bonus) = $this->ResourceFromBuildings($settlement, $resource, $baseresource);
+				[$building_resource, $building_bonus] = $this->ResourceFromBuildings($settlement, $resource);
 				$georesource->setBuildingsBase($building_resource);
 				$georesource->setBuildingsBonus(round($building_bonus*100));
 			} else {

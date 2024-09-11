@@ -9,6 +9,7 @@ use App\Entity\Siege;
 use App\Entity\Soldier;
 use App\Entity\Supply;
 use App\Entity\Unit;
+use DateInterval;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
@@ -23,21 +24,6 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 
 class GameRunner {
-
-	private EntityManagerInterface $em;
-	private CommonService $common;
-	private LoggerInterface $logger;
-	private ActionResolution $resolver;
-	private History $history;
-	private MilitaryManager $milman;
-	private Geography $geography;
-	private RealmManager $rm;
-	private ConversationManager $convman;
-	private PermissionManager $pm;
-	private NpcManager $npc;
-	private CharacterManager $cm;
-	private WarManager $wm;
-
 	private int $cycle;
 	private int $bandits_ok_distance = 50000;
 	private int $batchsize=200;
@@ -45,20 +31,7 @@ class GameRunner {
 	private ?OutputInterface $outInt = null;
 	private bool $debugging = false;
 
-	public function __construct(EntityManagerInterface $em, CommonService $common, LoggerInterface $logger, ActionResolution $resolver, History $history, MilitaryManager $milman, Geography $geography, RealmManager $rm, ConversationManager $convman, PermissionManager $pm, NpcManager $npc, CharacterManager $cm, WarManager $wm) {
-		$this->em = $em;
-		$this->common = $common;
-		$this->logger = $logger;
-		$this->resolver = $resolver;
-		$this->history = $history;
-		$this->milman = $milman;
-		$this->geography = $geography;
-		$this->rm = $rm;
-		$this->convman = $convman;
-		$this->pm = $pm;
-		$this->npc = $npc;
-		$this->cm = $cm;
-		$this->wm = $wm;
+	public function __construct(private EntityManagerInterface $em, private CommonService $common, private LoggerInterface $logger, private ActionResolution $resolver, private History $history, private MilitaryManager $milman, private Geography $geography, private RealmManager $rm, private ConversationManager $convman, private PermissionManager $pm, private CharacterManager $cm, private WarManager $wm) {
 		$this->cycle = $this->common->getCycle();
 	}
 
@@ -71,7 +44,7 @@ class GameRunner {
 			$stopwatch = new Stopwatch();
 		}
 
-		$old = new \DateTime("-90 days");
+		$old = new DateTime("-90 days");
 		$query = $this->em->createQuery('DELETE FROM App:UserLog u WHERE u.ts < :old');
 		$query->setParameter('old', $old);
 		$query->execute();
@@ -145,7 +118,7 @@ class GameRunner {
 		if ($last==='complete') return 1;
 		$this->output("Game Request Cycle...");
 
-		$now = new \DateTime("now");
+		$now = new DateTime("now");
 		$query = $this->em->createQuery('SELECT r FROM App:GameRequest r WHERE r.expires <= :now and r.id > :last ORDER BY r.id ASC')->setParameters(['now'=> $now, 'last'=>$last]);
 		$result = $query->toIterable();
 		$i = 1;
@@ -387,120 +360,6 @@ class GameRunner {
 		$this->common->setGlobal('cycle.characters', 'complete');
 		$this->em->flush();
 		$this->em->clear();
-		return 1;
-	}
-
-	/**
-	 * @return int
-	 * @throws NoResultException
-	 * @throws NonUniqueResultException
-	 * @noinspection PhpUnused
-	 */
-	public function runNPCCycle(): int {
-		$last = $this->common->getGlobal('cycle.npcs', 0);
-		if ($last==='complete') return 1;
-		$this->output("NPC Cycle...");
-
-		$query = $this->em->createQuery('SELECT count(u.id) FROM App:User u WHERE u.account_level > 0');
-		$players = $query->getSingleScalarResult();
-		# $want = ceil($players/8);
-		$want = 0;
-
-		$active_npcs = $this->em->createQuery('SELECT count(c) FROM App:Character c WHERE c.npc = true AND c.alive = true')->getSingleScalarResult();
-		$cullability = $this->em->createQuery('SELECT count(c) FROM App:Character c WHERE c.npc = true AND c.alive = true and c.user IS NULL')->getSingleScalarResult();
-
-		$this->output("  We want $want NPCs for $players players, we have $active_npcs");
-		if (0 < $active_npcs AND $active_npcs < $want) {
-			$npc = $this->npc->createNPC();
-			$this->output("  Created NPC ".$npc->getName());
-		} else if ($active_npcs > $want AND $cullability > 0) {
-			# The greater than 2 is there to keep this from happening every single turn. We don't care about a couple extra.
-			$cullcount = $active_npcs - $want;
-			$culled = 0;
-			$this->output("  Too many NPCs, attempting to cull $cullcount NPCs");
-			$this->output("  If players have NPC's already, it's not possible to cull them, so don't freak out if you see this every turn.");
-
-			while ($culled < $cullcount) {
-				$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.npc = true AND c.alive = true AND c.user IS NULL');
-				foreach ($query->getResult() as $potentialculling) {
-					if ($cullcount > $culled) {
-						$potentialculling->setAlive('FALSE');
-						$culled++;
-						$this->debug("NPC ".$potentialculling->getName()." has been culled");
-					}
-					if ($cullcount == $culled) {
-						$this->debug("Bandit population is within acceptable levels. ".$potentialculling->getName()." lives to see another day.");
-					}
-				}
-			}
-			if ($culled > 0) {
-				$this->output("  It was not possible to conduct the needed cullings this turn.");
-			}
-		}
-
-		if ($active_npcs > 0) {
-			$this->output("  Proceeding to check for recyclable NPCs...");
-			$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.npc = true');
-			foreach ($query->getResult() as $npc) {
-				if ($npc->isAlive()) {
-					$this->npc->checkTroops($npc);
-				}
-				# This used to run all the time, but we don't care about resetting them if we already have too many.
-				if ($active_npcs <= $want) {
-					$this->npc->checkTimeouts($npc);
-				}
-			}
-
-			$this->output("  Proceeding to check for complaining bandit solders...");
-			$query = $this->em->createQuery('SELECT s as soldier, c as character FROM App:Soldier s JOIN s.character c JOIN s.home h JOIN h.geo_data g WHERE c.npc = true AND s.alive = true AND s.distance_home > :okdistance');
-			$query->setParameter('okdistance', $this->bandits_ok_distance);
-			$this->output("  ".count($query->getResult())." bandit soldiers complaining");
-			$deserters = array();
-			foreach ($query->getResult() as $row) {
-				$index = $row['soldier']->getCharacter()->getId();
-				if (!isset($deserters[$index])) {
-					$deserters[$index] = array('character'=>$row['soldier']->getCharacter(), 'soldiers'=>$row['soldier']->getCharacter()->getLivingSoldiers()->count(), 'gone'=>0, 'complaining'=>0);
-				}
-
-				$deserters[$index]['complaining']++;
-				$chance = ($row['soldier']->getDistanceHome() - $this->bandits_ok_distance)/5000;
-				if ($row['soldier']->getDistanceHome() > $this->bandits_ok_distance*2) {
-					$chance += ($row['soldier']->getDistanceHome() - $this->bandits_ok_distance*2)/2000;
-				}
-				// TODO: set even lower for now until we fix the problem where soldiers seem to come from far away regions
-				//$chance = sqrt($chance); // because this runs every turn, leaving it high would lead to immediate loss
-				$chance = sqrt($chance/10); // because this runs every turn, leaving it high would lead to immediate loss
-				if (rand(0,100)<$chance) {
-					$this->milman->disband($row['soldier']);
-					$deserters[$index]['gone']++;
-				}
-			}
-
-			foreach ($deserters as $des) {
-				if ($des['complaining'] > 0) {
-					if ($des['gone'] >= 10 || $des['gone'] > $des['soldiers']*0.1) {
-						$importance = HISTORY::HIGH;
-					} elseif ($des['gone'] > 0) {
-						$importance = HISTORY::MEDIUM;
-					} else {
-						$importance = HISTORY::LOW;
-					}
-					$this->history->logEvent(
-						$des['character'],
-						'event.character.desertions',
-						array('%complaining%'=>$des['complaining'], '%gone%'=>$des['gone']),
-						$importance, false, 15
-					);
-				}
-			}
-		} else {
-			$this->output("  No active NPCs.");
-		}
-
-		$this->common->setGlobal('cycle.npcs', 'complete');
-		$this->em->flush();
-		$this->em->clear();
-
 		return 1;
 	}
 
@@ -1276,8 +1135,8 @@ class GameRunner {
 		if ($last==='complete') return 1;
 		$this->output("Realms Cycle...");
 
-		$timeout = new \DateTime("now");
-		$timeout->sub(new \DateInterval("P7D"));
+		$timeout = new DateTime("now");
+		$timeout->sub(new DateInterval("P7D"));
 
 		$query = $this->em->createQuery('SELECT p FROM App:RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND p.ruler = true AND h.id IS NULL AND p NOT IN (SELECT y FROM App:Election x JOIN x.position y WHERE x.closed=false) GROUP BY p');
 		$result = $query->getResult();
@@ -1628,7 +1487,7 @@ class GameRunner {
 
 		$this->output("  Processing Finished Elections...");
 		$query = $this->em->createQuery('SELECT e FROM App:Election e WHERE e.closed = false AND e.complete < :now');
-		$query->setParameter('now', new \DateTime("now"));
+		$query->setParameter('now', new DateTime("now"));
 		$seenpositions = [];
 
 		/* The following 2 foreach cycles drop all incumbents from a position before an election is counted and then count all elections,
@@ -1667,8 +1526,8 @@ class GameRunner {
 		These things will only happen if there is not already an election running for a given position though. */
 
 		$this->output("  Checking realm rulers, vacant electeds, and minholders...");
-		$timeout = new \DateTime("now");
-		$timeout->sub(new \DateInterval("P7D")); // hardcoded to 7 day intervals between election attempts
+		$timeout = new DateTime("now");
+		$timeout->sub(new DateInterval("P7D")); // hardcoded to 7 day intervals between election attempts
 		$query = $this->em->createQuery('SELECT p FROM App:RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND h.id IS NULL AND p NOT IN (SELECT y FROM App:Election x JOIN x.position y WHERE x.closed=false OR x.complete > :timeout) GROUP BY p');
 		$query->setParameter('timeout', $timeout);
 		$result = $query->getResult();
@@ -1915,8 +1774,8 @@ class GameRunner {
 		} else {
 			$election->setMethod('banner');
 		}
-		$complete = new \DateTime("now");
-		$complete->add(new \DateInterval("P7D"));
+		$complete = new DateTime("now");
+		$complete->add(new DateInterval("P7D"));
 		$election->setComplete($complete);
 		$election->setName("Election number ".$counter." for ".$position->getName());
 		switch ($electiontype) {

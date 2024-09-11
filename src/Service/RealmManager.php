@@ -13,19 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 
 class RealmManager {
-
-	protected EntityManagerInterface $em;
-	protected History $history;
-	protected Politics $politics;
-	protected ConversationManager $convman;
-	protected LawManager $lawman;
-
-	public function __construct(EntityManagerInterface $em, History $history, Politics $politics, ConversationManager $convman, LawManager $lawman) {
-		$this->em = $em;
-		$this->history = $history;
-		$this->politics = $politics;
-		$this->convman = $convman;
-		$this->lawman = $lawman;
+	public function __construct(protected EntityManagerInterface $em, protected History $history, protected Politics $politics, protected ConversationManager $convman, protected LawManager $lawman) {
 	}
 
 	public function create($name, $formalname, $type, Character $founder): Realm {

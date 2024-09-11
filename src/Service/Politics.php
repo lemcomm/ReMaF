@@ -13,15 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 
 class Politics {
-
-	protected CommonService $common;
-	protected EntityManagerInterface $em;
-	protected History $history;
-
-	public function __construct(CommonService $common, EntityManagerInterface $em, History $history) {
-		$this->common = $common;
-		$this->em = $em;
-		$this->history = $history;
+	public function __construct(protected CommonService $common, protected EntityManagerInterface $em, protected History $history) {
 	}
 
 

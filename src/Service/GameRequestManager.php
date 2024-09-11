@@ -77,15 +77,11 @@ class GameRequestManager {
 
 	If you need more detailed information on these, contact a M&F developer--we recommend Andrew. */
 
-	protected EntityManagerInterface $em;
-
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(protected EntityManagerInterface $em) {
 	}
 
 	public function findHouseApplicationRequests(Character $char) {
 		if ($char->getHouse() && $char->getHouse()->getHead() === $char) {
-			$params = [];
 			$queryString = 'SELECT r FROM App:GameRequest r WHERE r.to_house = :house';
 			$query = $this->em->createQuery($queryString);
 			$query->setParameters(['house'=>$char->getHouse()->getId()]);

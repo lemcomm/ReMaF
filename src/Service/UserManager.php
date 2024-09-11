@@ -8,25 +8,18 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 
 class UserManager {
 	private string $genome_all = 'abcdefghijklmnopqrstuvwxyz';
 	private int $genome_setsize = 15;
-	private EntityManagerInterface $em;
-	private UserPasswordHasherInterface $passwordHasher;
-	private AppState $app;
 
-	public function __construct(EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, AppState $app) {
-		$this->em = $em;
-		$this->passwordHasher = $passwordHasher;
-		$this->app = $app;
+	public function __construct(private EntityManagerInterface $em, private UserPasswordHasherInterface $passwordHasher, private AppState $app) {
 	}
 
 	public function refreshUser( UserInterface $user ) {
-		return $this->em->getRepository(User::class)->findOneBy( array( 'id' => $user->getId() ) );
+		return $this->em->getRepository(User::class)->findOneBy(['id' => $user->getId()]);
 	}
 
 	public function supportsClass( $class ) {
@@ -87,9 +80,9 @@ class UserManager {
 		}
 		if ($count < 5) {
 			$change = 0;
-		} elseif (11 > $count && $count > 3) {
+		} elseif (11 > $count) {
 			$change = 3;
-		} elseif (26 > $count && $count > 10) {
+		} elseif (26 > $count) {
 			$change = 7;
 		} else {
 			$change = 15;

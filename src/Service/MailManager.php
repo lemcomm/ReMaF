@@ -13,20 +13,11 @@ use Symfony\Component\Mime\Email;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MailManager {
-
-	protected EntityManagerInterface $em;
-	protected UserManager $um;
-	protected TranslatorInterface $trans;
 	protected Address $mail_from;
 	protected mixed $mail_reply_to;
 	protected mixed $optOut;
-	private MailerInterface $mailer;
 
-	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, MailerInterface $mailer, UserManager $um) {
-		$this->em = $em;
-		$this->um = $um;
-		$this->trans = $translator;
-		$this->mailer = $mailer;
+	public function __construct(private EntityManagerInterface $em, private MailerInterface $mailer, private UserManager $um, private TranslatorInterface $trans) {
 		$this->mail_from = new Address($_ENV['FROM_EMAIL'], $_ENV['FROM_NAME']);
 		$this->mail_reply_to = $_ENV['REPLY_EMAIL'];
 		$this->optOut = $_ENV['MAIL_OPT_OUT_URL'];

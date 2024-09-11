@@ -14,19 +14,11 @@ use App\Entity\DungeonTreasure;
 use App\Entity\DungeonParty;
 
 class DungeonCreator {
-
-	private EntityManagerInterface $em;
-	private Geography $geo;
-	private LoggerInterface $logger;
-
 	private int $base_monstermod = 65;
 	private int $base_treasuremod = 25;
 
 
-	public function __construct(EntityManagerInterface $em, Geography $geo, LoggerInterface $logger) {
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->logger = $logger;
+	public function __construct(private EntityManagerInterface $em, private Geography $geo, private LoggerInterface $logger) {
 	}
 
 
@@ -34,7 +26,7 @@ class DungeonCreator {
 		$this->logger->info("creating new dungeon");
 		$dungeon = new Dungeon;
 
-		list($x, $y, $geodata) = $this->geo->findRandomPoint();
+		[$x, $y, $geodata] = $this->geo->findRandomPoint();
 		if ($x===false) {
 			// can't find a valid random point
 			$this->logger->error("cannot find valid point for new dungeon");
@@ -111,7 +103,7 @@ class DungeonCreator {
 
 		$index = 0;
 		while ($monster_points > 0) {
-			list($monster,$size) = $this->RandomMonsterType($dungeon->getArea(), $depth);
+			[$monster,$size] = $this->RandomMonsterType($dungeon->getArea(), $depth);
 			$max = min(ceil($monster_points / ($monster->getPoints()*$size/100)), ceil($depth*2.5));
 			if (in_array('swarm', $monster->getClass())) {	
 				$amount = 1;

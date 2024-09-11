@@ -27,28 +27,10 @@ As you might expect, ActivityManager handles Activities.
 */
 
 class ActivityManager {
-
-	private CommonService $common;
-	private EntityManagerInterface $em;
-	private Geography $geo;
-	private HelperService $helper;
-	private LoggerInterface $logger;
-	private CombatManager $combat;
-	private CharacterManager $charMan;
-	private History $history;
-
 	private int $debug=0;
 	private ?ActivityReport $report;
 
-	public function __construct(CommonService $common, EntityManagerInterface $em, Geography $geo, HelperService $helper, LoggerInterface $logger, CombatManager $combat, CharacterManager $charMan, History $history) {
-		$this->common = $common;
-		$this->em = $em;
-		$this->geo = $geo;
-		$this->helper = $helper;
-		$this->logger = $logger;
-		$this->combat = $combat;
-		$this->charMan = $charMan;
-		$this->history = $history;
+	public function __construct(private CommonService $common, private EntityManagerInterface $em, private Geography $geo, private HelperService $helper, private LoggerInterface $logger, private CombatManager $combat, private CharacterManager $charMan, private History $history) {
 	}
 
 	/*
@@ -88,7 +70,7 @@ class ActivityManager {
 		return $valid;
 	}
 
-        public function create(ActivityType $type, ActivitySubType $subType=null, Character $char, Activity $mainAct = null): Activity|false {
+        public function create(ActivityType $type, ?ActivitySubType $subType, Character $char, Activity $mainAct = null): Activity|false {
 		if (!$type->getEnabled()) {
 			return False;
 		}

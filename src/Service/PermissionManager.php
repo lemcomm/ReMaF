@@ -10,15 +10,9 @@ use App\Entity\Settlement;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PermissionManager {
-
-	protected EntityManagerInterface $em;
-	protected Politics $politics;
-
 	private int $recursion_limit = 20; // prevent infinite recursion
 
-	public function __construct(EntityManagerInterface $em, Politics $politics) {
-		$this->em = $em;
-		$this->politics = $politics;
+	public function __construct(protected EntityManagerInterface $em, protected Politics $politics) {
 	}
 
 	public function checkRealmPermission(Realm $realm, Character $character, $permission, $return_details=false): false|array {
@@ -91,7 +85,7 @@ class PermissionManager {
 
 		// for all of them, now check if our character is in this listing
 		foreach ($allowed as $perm) {
-			list($check, $list, $level) = $this->checkListing($perm->getListing(), $character);
+			[$check, $list, $level] = $this->checkListing($perm->getListing(), $character);
 
 			if ($check === false || $check === true) {
 				// permission denied or granted
@@ -186,7 +180,7 @@ class PermissionManager {
 
 		// for all of them, now check if our character is in this listing
 		foreach ($allowed as $perm) {
-			list($check, $list, $level) = $this->checkListing($perm->getListing(), $character);
+			[$check, $list, $level] = $this->checkListing($perm->getListing(), $character);
 
 			if ($check === false || $check === true) {
 				// permission denied or granted

@@ -9,6 +9,7 @@ use App\Entity\EventLog;
 use App\Entity\EventMetadata;
 use App\Entity\Soldier;
 use App\Entity\SoldierLog;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 
@@ -21,15 +22,7 @@ class History {
 
 	const NOTIFY = 20;
 
-	protected EntityManagerInterface $em;
-	protected CommonService $common;
-	protected NotificationManager $noteman;
-
-
-	public function __construct(EntityManagerInterface $em, CommonService $common, NotificationManager $noteman) {
-		$this->em = $em;
-		$this->common = $common;
-		$this->noteman = $noteman;
+	public function __construct(protected EntityManagerInterface $em, protected CommonService $common, protected NotificationManager $noteman) {
 	}
 
 
@@ -46,7 +39,7 @@ class History {
 		$event->setPublic($public);
 		$event->setPriority($priority);
 		$event->setLifetime($limited);
-		$event->setTs(new \DateTime("now"));
+		$event->setTs(new DateTime("now"));
 		$event->setCycle($this->common->getCycle());
 		$this->em->persist($event);
 
@@ -66,7 +59,7 @@ class History {
 			$event->setSoldier($soldier);
 			$event->setContent('soldier.'.$translationKey);
 			$event->setData($data);
-			$event->setTs(new \DateTime("now"));
+			$event->setTs(new DateTime("now"));
 			$event->setCycle($this->common->getCycle());
 			$this->em->persist($event);
 			$soldier->addEvent($event);
@@ -104,7 +97,7 @@ class History {
 			$meta = new EventMetadata();
 			// we get all events from the past 5 days automatically. Older events we will have to research
 			$meta->setAccessFrom(max(1, $this->common->getCycle() - 5));
-			$meta->setLastAccess(new \DateTime("now"));
+			$meta->setLastAccess(new DateTime("now"));
 			$meta->setLog($log);
 			$meta->setReader($reader);
 			$this->em->persist($meta);
@@ -122,7 +115,7 @@ class History {
 		$log = $this->findLog($entity);
 		$metadata = new EventMetadata();
 		$metadata->setAccessFrom($this->common->getCycle());
-		$metadata->setLastAccess(new \DateTime("now"));
+		$metadata->setLastAccess(new DateTime("now"));
 		$metadata->setLog($log);
 		$metadata->setReader($reader);
 		$this->em->persist($metadata);

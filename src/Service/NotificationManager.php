@@ -18,21 +18,10 @@ use Exception;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NotificationManager {
-
-	protected EntityManagerInterface $em;
-	protected MailManager $mailman;
-	protected MessageTranslateExtension $msgtrans;
-	protected TranslatorInterface $trans;
-	protected DiscordIntegrator $discord;
 	private false|string $type;
 	private false|string $name;
 
-	public function __construct(EntityManagerInterface $em, MailManager $mailman, MessageTranslateExtension $msgtrans, TranslatorInterface $trans, DiscordIntegrator $discord) {
-		$this->em = $em;
-		$this->mailman = $mailman;
-		$this->msgtrans = $msgtrans;
-		$this->trans = $trans;
-		$this->discord = $discord;
+	public function __construct(protected EntityManagerInterface $em, protected MailManager $mailman, protected MessageTranslateExtension $msgtrans, protected TranslatorInterface $trans, protected DiscordIntegrator $discord) {
 	}
 
 	private function findUser(Event $event): false|array {
@@ -161,7 +150,7 @@ class NotificationManager {
 		}
 		try {
 			$this->discord->pushToGeneral($txt);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			# Nothing.
 		}
 	}
@@ -170,7 +159,7 @@ class NotificationManager {
 		$text = '['.$journal->getCharacter()->getName().'](https://mightandfealty.com/character/view/'.$journal->getCharacter()->getId().') has written ['.$journal->getTopic().'](https://mightandfealty.com/journal/'.$journal->getId().').';
 		try {
 			$this->discord->pushToGeneral($text);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			# Nothing
 		}
 	}
@@ -178,7 +167,7 @@ class NotificationManager {
 	public function spoolPayment($text): void {
 		try {
 			$this->discord->pushToPayments($text);
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			# Nothing.
 		}
 	}

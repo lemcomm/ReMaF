@@ -9,14 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class HouseManager {
 
-	protected $em;
-	protected $history;
-	protected $descman;
-
-	public function __construct(EntityManagerInterface $em, History $history, DescriptionManager $descman) {
-		$this->em = $em;
-		$this->history = $history;
-		$this->descman = $descman;
+	public function __construct(private EntityManagerInterface $em, private History $history, private DescriptionManager $descman) {
 	}
 
 	public function create($name, $motto, $description, $private_description, $secret_description, $place, $settlement, $crest, Character $founder): House {

@@ -22,20 +22,6 @@ class BattleRunner {
 	NOTE: There's a bunch of code in here that is "live" but not actually called relating to 2D battles.
 	*/
 
-	# Symfony Service variables.
-	private EntityManagerInterface $em;
-	private LoggerInterface $logger;
-	private History $history;
-	private Geography $geo;
-	private CharacterManager $character_manager;
-	private CommonService $common;
-	private MilitaryManager $milman;
-	private Interactions $interactions;
-	private WarManager $warman;
-	private Politics $politics;
-	private HelperService $helper;
-	private CombatManager $combat;
-
 	# Preset values.
 	private int $defaultOffset = 135;
 	private int $battleSeparation = 270;
@@ -66,19 +52,7 @@ class BattleRunner {
 	private int $defenseBonus=0;
 
 
-	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, History $history, Geography $geo, CharacterManager $character_manager, CommonService $common, Interactions $interactions, WarManager $war_manager, Politics $politics, MilitaryManager $milman, HelperService $helper, CombatManager $combat) {
-		$this->em = $em;
-		$this->logger = $logger;
-		$this->history = $history;
-		$this->geo = $geo;
-		$this->character_manager = $character_manager;
-		$this->common = $common;
-		$this->interactions = $interactions;
-		$this->warman = $war_manager;
-		$this->politics = $politics;
-		$this->milman = $milman;
-		$this->helper = $helper;
-		$this->combat = $combat;
+	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private History $history, private Geography $geo, private CharacterManager $character_manager, private CommonService $common, private Interactions $interactions, WarManager $war_manager, private Politics $politics, private MilitaryManager $milman, private HelperService $helper, private CombatManager $combat, private WarManager $warman) {
 	}
 
 	public function enableLog($level=9999): void {
@@ -372,7 +346,6 @@ class BattleRunner {
 	private function prepare(): array {
 		$battle = $this->battle;
 		$combatworthygroups = 0;
-		$enemy=null;
 		$this->nobility = new ArrayCollection;
 
 		if ($battle->getSiege()) {

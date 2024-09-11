@@ -2,9 +2,6 @@
 
 namespace App\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
-
 class DiscordIntegrator {
 
 	protected mixed $generalHook;

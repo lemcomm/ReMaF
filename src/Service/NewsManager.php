@@ -7,27 +7,20 @@ use App\Entity\NewsArticle;
 use App\Entity\NewsEdition;
 use App\Entity\NewsEditor;
 use App\Entity\NewsPaper;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
 
 class NewsManager {
-
-	protected EntityManagerInterface $em;
-	protected AppState $appstate;
-	protected Geography $geography;
-
-	public function __construct(EntityManagerInterface $em, AppState $appstate, Geography $geography) {
-		$this->em = $em;
-		$this->appstate = $appstate;
-		$this->geography = $geography;
+	public function __construct(private EntityManagerInterface $em, private Geography $geography, private CommonService $common) {
 	}
 
 
 	public function newPaper($name, Character $creator): NewsPaper {
 		$paper = new NewsPaper;
 		$paper->setName($name);
-		$paper->setCreatedAt(new \DateTime("now"));
+		$paper->setCreatedAt(new DateTime("now"));
 		$paper->setSubscription(false);
 		$this->em->persist($paper);
 
@@ -52,8 +45,8 @@ class NewsManager {
 	}
 
 	public function publishEdition(NewsEdition $edition): void {
-		$edition->setPublished(new \DateTime("now"));
-		$edition->setPublishedCycle($this->appstate->getCycle());
+		$edition->setPublished(new DateTime("now"));
+		$edition->setPublishedCycle($this->common->getCycle());
 
 		// TODO: notifications or whatever?
 
@@ -135,7 +128,7 @@ class NewsManager {
 
 	public function canCreatePaper(Character $character): bool {
 		// we need to be lord of at least one estate with a library
-		$library = $this->em->getRepository('App\Entity\BuildingType')->findOneByName('Library');
+		$library = $this->em->getRepository('App\Entity\BuildingType')->findOneBy(['name'=>'Library']);
 		foreach ($character->getOwnedSettlements() as $settlement) {
 			if ($settlement->hasBuilding($library)) {
 				return true;

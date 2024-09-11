@@ -18,21 +18,8 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AppState {
 
-	private CommonService $common;
-	private EntityManagerInterface $em;
-	private RequestStack $requestStack;
-	private Security $security;
-
-
-
-	public function __construct(CommonService $common, EntityManagerInterface $em, RequestStack $requestStack, Security $security) {
-		$this->common = $common;
-		$this->em = $em;
-		$this->requestStack = $requestStack;
-		$this->security = $security;
+	public function __construct(private CommonService $common ,private EntityManagerInterface $em, private RequestStack $requestStack, private Security $security) {
 	}
-
-
 
 	public function getCharacter($required=true, $ok_if_dead=false, $ok_if_notstarted=false): mixed {
 		/* This used to throw exceptions rather than adding flashes and returning strings.

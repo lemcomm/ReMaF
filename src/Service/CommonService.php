@@ -20,8 +20,6 @@ class CommonService {
 	Security is handled by AppState.
 	*/
 
-	protected EntityManagerInterface $em;
-
 	private array $languages = array(
 		'en' => 'english',
 		'de' => 'deutsch',
@@ -30,8 +28,7 @@ class CommonService {
 		'it' => 'italiano'
 	);
 
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(protected EntityManagerInterface $em) {
 	}
 
 	public function availableTranslations(): array {

@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\ChatMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Psr\Log\LoggerInterface;
@@ -12,7 +11,6 @@ use App\Entity\Dungeon;
 use App\Entity\Dungeoneer;
 use App\Entity\DungeonCard;
 use App\Entity\DungeonLevel;
-use App\Entity\DungeonMessage;
 use App\Entity\DungeonMonster;
 use App\Entity\DungeonTreasure;
 use App\Entity\DungeonEvent;
@@ -20,15 +18,6 @@ use App\Entity\DungeonParty;
 
 
 class DungeonMaster {
-
-	private EntityManagerInterface $em;
-	private CommonService $common;
-	private DungeonCreator $creator;
-	private History $history;
-	private LoggerInterface $logger;
-	private RouterInterface $router;
-	private NotificationManager $noteman;
-
 	private int $initial_random_cards = 3;
 	private int $min_party_size = 2;
 	private int $max_party_size = 30;
@@ -46,14 +35,7 @@ class DungeonMaster {
 		'basic.fight'		=> 5
 	);
 
-	public function __construct(EntityManagerInterface $em, CommonService $common, DungeonCreator $creator, History $history, LoggerInterface $logger, NotificationManager $noteman, RouterInterface $router) {
-		$this->em = $em;
-		$this->creator = $creator;
-		$this->common = $common;
-		$this->history = $history;
-		$this->logger = $logger;
-		$this->noteman = $noteman;
-		$this->router = $router;
+	public function __construct(private EntityManagerInterface $em, private CommonService $common, private DungeonCreator $creator, private History $history, private LoggerInterface $logger, private NotificationManager $noteman, private RouterInterface $router) {
 	}
 
 	public function getcreateDungeoneer(Character $character): Dungeoneer {
@@ -70,7 +52,7 @@ class DungeonMaster {
 
 		// basic cards set
 		foreach ($this->basicset as $name=>$amount) {
-			$card = $this->em->getRepository('DungeonBundle:DungeonCardType')->findOneByName($name);
+			$card = $this->em->getRepository('DungeonBundle:DungeonCardType')->findOneBy(['name'=>$name]);
 			if (!$card) throw new \Exception("required card $name not found!");
 			$cardset = new DungeonCard;
 			$cardset->setAmount($amount);

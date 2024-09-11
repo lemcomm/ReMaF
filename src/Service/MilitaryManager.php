@@ -8,7 +8,6 @@ use App\Entity\EquipmentType;
 use App\Entity\Settlement;
 use App\Entity\Soldier;
 use App\Entity\Unit;
-use App\Entity\UnitSettings;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
@@ -20,26 +19,12 @@ Military exists for management of soldiers, units, and entourage, and for their 
 */
 
 class MilitaryManager {
-
-	private EntityManagerInterface $em;
-	private ActionManager $actman;
-	private History $history;
-	private CommonService $common;
-	private Geography $geo;
-	private LoggerInterface $logger;
-
 	private int $group_assign=0;
 	private int $group_militia=0;
 	private int $group_soldier=0;
 	private int $max_group=25; // a=0 ... z=25
 
-	public function __construct(EntityManagerInterface $em, LoggerInterface $logger, ActionManager $actman, CommonService $common, History $history, Geography $geo) {
-		$this->em = $em;
-		$this->logger = $logger;
-		$this->actman = $actman;
-		$this->history = $history;
-		$this->common = $common;
-		$this->geo = $geo;
+	public function __construct(private EntityManagerInterface $em, private LoggerInterface $logger, private ActionManager $actman, private CommonService $common, private History $history, private Geography $geo) {
 	}
 
 	public function TrainingCycle(Settlement $settlement): void {

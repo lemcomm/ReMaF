@@ -13,13 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 
 class Generator {
-
-	protected EntityManagerInterface $em;
-	private ActionManager $actman;
-
-	public function __construct(EntityManagerInterface $em, ActionManager $actman) {
-		$this->em = $em;
-		$this->actman = $actman;
+	public function __construct(protected EntityManagerInterface $em, private ActionManager $actman) {
 	}
 
 	public function randomName(Settlement $home=null, $gender=false): string {
@@ -114,6 +108,7 @@ class Generator {
 		$servant->setAlive(true);
 		$servant->setLocked(false);
 		$servant->setHungry(0)->setWounded(0)->setSupply(5); // we start with a little supply
+		$servant->setRace($race);
 
 		$this->em->persist($servant);
 		return $servant;

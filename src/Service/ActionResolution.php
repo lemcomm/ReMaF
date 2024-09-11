@@ -6,45 +6,23 @@ use App\Entity\Action;
 
 use App\Entity\EventMetadata;
 use App\Service\Dispatcher\Dispatcher;
+use DateInterval;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ActionResolution {
-
-	private CommonService $common;
-	private EntityManagerInterface $em;
-	private History $history;
-	private Dispatcher $dispatcher;
-	private Geography $geography;
-	private Interactions $interactions;
-	private Politics $politics;
 	private ArrayCollection $characters;
-	private PermissionManager $permissions;
-	private MilitaryManager $milman;
-	private WarManager $warman;
-	private ActionManager $actman;
-
 	private int $debug=100;
 
-	public function __construct(EntityManagerInterface $em, CommonService $common, History $history, Dispatcher $dispatcher, Geography $geography, Interactions $interactions, MilitaryManager $milman, Politics $politics, PermissionManager $permissions, WarManager $warman, ActionManager $actman) {
-		$this->em = $em;
-		$this->common = $common;
-		$this->history = $history;
-		$this->dispatcher = $dispatcher;
-		$this->geography = $geography;
-		$this->interactions = $interactions;
-		$this->politics = $politics;
-		$this->permissions = $permissions;
-		$this->milman = $milman;
-		$this->warman = $warman;
-		$this->actman = $actman;
+	public function __construct(private EntityManagerInterface $em, private CommonService $common, private History $history, private Dispatcher $dispatcher, private Geography $geography, private Interactions $interactions, private MilitaryManager $milman, private Politics $politics, private PermissionManager $permissions, private WarManager $warman, private ActionManager $actman) {
 		$this->characters = new ArrayCollection();
 	}
 
 	public function progress(): void {
 		$query = $this->em->createQuery("SELECT a FROM App:Action a WHERE a.complete IS NOT NULL AND a.complete < :now");
-		$query->setParameter('now', new \DateTime("now"));
-		$iterableResult = $query->toIterable();
+		$query->setParameter('now', new DateTime("now"));
+		#$iterableResult = $query->toIterable();
 		foreach ($query->getResult() as $action) {
 			$this->resolve($action);
 		}
@@ -141,7 +119,7 @@ class ActionResolution {
 	private function update_settlement_take(Action $action): void {
 		// recalculate time
 		if ($this->check_settlement_take($action)) {
-			$now = new \DateTime("now");
+			$now = new DateTime("now");
 			$old_time = $action->getComplete()->getTimestamp() - $action->getStarted()->getTimestamp();
 			$elapsed = $now->getTimestamp() - $action->getStarted()->getTimestamp();
 			$done = min(1.0, $elapsed / $old_time);
@@ -171,7 +149,7 @@ class ActionResolution {
 
 			if ($time/$old_time < 0.99 || $time/$old_time > 1.01) {
 				$time_left = round($time * (1-$done));
-				$action->setComplete($now->add(new \DateInterval("PT".$time_left."S")));
+				$action->setComplete($now->add(new DateInterval("PT".$time_left."S")));
 			}
 		} else {
 			$this->em->remove($action);
@@ -211,7 +189,7 @@ class ActionResolution {
 	}
 
 	private function update_settlement_loot(Action $action): void {
-		$now = new \DateTime("now");
+		$now = new DateTime("now");
 		if ($action->getComplete() <= $now) {
 			$this->em->remove($action);
 		}
@@ -228,7 +206,7 @@ class ActionResolution {
 		}
 		// check if there are targets nearby we want to engage
 		$maxdistance = 2 * $this->geography->calculateInteractionDistance($action->getCharacter());
-		$possible_targets = $this->geography->findCharactersNearMe($action->getCharacter(), $maxdistance, $action->getCharacter()->getInsideSettlement()?false:true, true, false, true);
+		$possible_targets = $this->geography->findCharactersNearMe($action->getCharacter(), $maxdistance, !$action->getCharacter()->getInsideSettlement(), true, false, true);
 
 		$victims = array();
 		foreach ($possible_targets as $target) {
@@ -300,12 +278,12 @@ class ActionResolution {
 	private function settlement_rename(Action $action): void {
 		$settlement = $action->getTargetSettlement();
 		$newname = $action->getStringValue();
-		$oldname = $settlement->getName();
 		if (!$settlement || !$newname || $newname=="") {
 			$this->log(0, 'invalid action '.$action->getId());
 			// TODO: clean it up, but during alpha we want it to hang around for debug purposes
 			return;
 		}
+		$oldname = $settlement->getName();
 
 		$test = $this->dispatcher->controlRenameTest();
 		if (!isset($test['url'])) {
@@ -558,10 +536,10 @@ class ActionResolution {
 					$act->setType('military.regroup')->setCharacter($enemy);
 					$act->setBlockTravel(false);
 					$act->setCanCancel(false);
-					$complete = new \DateTime('now');
-					$complete->add(new \DateInterval('PT60M'));
+					$complete = new DateTime('now');
+					$complete->add(new DateInterval('PT60M'));
 					$act->setComplete($complete);
-					$this->actman->queue($act, true);
+					$this->actman->queue($act);
 				}
 				$this->warman->removeCharacterFromBattlegroup($char, $action->getTargetBattlegroup());
 				$this->em->remove($action);

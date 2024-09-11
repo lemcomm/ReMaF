@@ -16,16 +16,7 @@ class CombatManager {
 	Things that should exist in multiple services but can't due to circlic loading should be here.
 	*/
 
-	protected EntityManagerInterface $em;
-	protected CommonService $common;
-	protected CharacterManager $charMan;
-	protected History $history;
-
-	public function __construct(EntityManagerInterface $em, CommonService $common, CharacterManager $charMan, History $history) {
-		$this->em = $em;
-		$this->common = $common;
-		$this->charMan = $charMan;
-		$this->history = $history;
+	public function __construct(protected EntityManagerInterface $em, protected CommonService $common, protected CharacterManager $charMan, protected History $history) {
 	}
 
 	public function ChargeAttack($me, $target, $act=false, $battle=false, $xpMod = 1, $defBonus = null): array {

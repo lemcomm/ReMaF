@@ -18,26 +18,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 
 class PaymentManager {
-
-	private EntityManagerInterface $em;
-	private UserManager $usermanager;
-	private TranslatorInterface $translator;
-	private LoggerInterface $logger;
-	private MailManager $mailer;
-	private AppState $app;
 	private mixed $ruleset;
 	private string $stripeSecret;
 	private string $stripeVersion;
 	private array $stripePrices;
 	private array $patreonAlikes = ['patreon'];
 
-	public function __construct(EntityManagerInterface $em, TranslatorInterface $translator, LoggerInterface $logger, MailManager $mailer, UserManager $usermanager, AppState $app) {
-		$this->em = $em;
-		$this->usermanager = $usermanager;
-		$this->mailer = $mailer;
-		$this->translator = $translator;
-		$this->logger = $logger;
-		$this->app = $app;
+	public function __construct(private EntityManagerInterface $em, private TranslatorInterface $translator, private LoggerInterface $logger, private MailManager $mailer, private UserManager $usermanager, private AppState $app) {
 		$this->ruleset = $_ENV['RULESET'];
 		$this->stripeSecret = $_ENV['STRIPE_SECRET'];
 		$this->stripeVersion = $_ENV['STRIPE_VERSION'];
@@ -627,7 +614,7 @@ class PaymentManager {
 	}
 
 	public function redeemHash(User $user, $hash): array {
-		$code = $this->em->getRepository(Code::class)->findOneByCode($hash);
+		$code = $this->em->getRepository(Code::class)->findOneBy(['code'=>$hash]);
 		if ($code) {
 			return array($code, $this->redeemCode($user, $code));
 		} else {

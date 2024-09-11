@@ -9,15 +9,7 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DescriptionManager {
-
-	protected EntityManagerInterface $em;
-	protected CommonService $common;
-	protected History $history;
-
-	public function __construct(EntityManagerInterface $em, CommonService $common, History $history) {
-		$this->em = $em;
-		$this->common = $common;
-		$this->history = $history;
+	public function __construct(protected EntityManagerInterface $em, protected CommonService $common, protected History $history) {
 	}
 
 	public function newDescription($entity, $text, Character $character=null, $new=false): Description {

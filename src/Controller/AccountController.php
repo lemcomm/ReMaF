@@ -8,7 +8,6 @@ use App\Entity\User;
 
 use App\Form\CharacterCreationType;
 use App\Form\ListSelectType;
-use App\Form\NpcSelectType;
 use App\Form\UserSettingsType;
 
 use App\Service\ActionResolution;
@@ -17,7 +16,6 @@ use App\Service\CharacterManager;
 use App\Service\CommonService;
 use App\Service\GameRequestManager;
 use App\Service\Geography;
-use App\Service\NpcManager;
 use App\Service\PaymentManager;
 use App\Service\UserManager;
 
@@ -82,7 +80,7 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/characters', name:'maf_chars')]
-	public function charactersAction(AppState $app, CommonService $common, GameRequestManager $grm, Geography $geo, NpcManager $npcm, UserManager $userMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay): Response {
+	public function charactersAction(AppState $app, CommonService $common, GameRequestManager $grm, Geography $geo, UserManager $userMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());

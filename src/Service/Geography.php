@@ -2,13 +2,11 @@
 
 namespace App\Service;
 
-use App\Entity\Artifact;
 use App\Entity\Biome;
 use App\Entity\Character;
 use App\Entity\EntourageType;
 use App\Entity\FeatureType;
 use App\Entity\GeoData;
-use App\Entity\GeoFeature;
 use App\Entity\MapPOI;
 use App\Entity\Place;
 use App\Entity\Realm;
@@ -19,19 +17,14 @@ use App\Entity\Ship;
 use App\Entity\Settlement;
 
 use DateTime;
-use Doctrine\Common\Collections\Criteria;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 
 
 class Geography {
-
-	private CommonService $common;
-	private EntityManagerInterface $em;
-	private PermissionManager $pm;
-	private bool $biomes_water=false;
-	private bool $biomes_invalid=false;
+	private array|Biome|bool $biomes_water=false;
+	private array|Biome|bool $biomes_invalid=false;
 
 	private int $embark_distance = 200;
 	private int $road_buffer = 200;
@@ -45,7 +38,6 @@ class Geography {
 	const DISTANCE_BATTLE = 20000;
 	const DISTANCE_FEATURE = 20000;
 	const DISTANCE_DUNGEON = 50000;
-	const DISTANCE_MERCENARIES = 120000;
 
 	public array $world = array(
 		'x_min' => 0,
@@ -54,10 +46,7 @@ class Geography {
 		'y_max' => 512000,
 	);
 
-	public function __construct(CommonService $common, EntityManagerInterface $em, PermissionManager $pm) {
-		$this->common = $common;
-		$this->em = $em;
-		$this->pm = $pm;
+	public function __construct(private CommonService $common, private EntityManagerInterface $em, private PermissionManager $pm) {
 	}
 
 	private function getSpotBase() {
@@ -83,13 +72,13 @@ class Geography {
 
 	private function water() {
 		if (!$this->biomes_water) {
-			$this->biomes_water = $this->em->getRepository(Biome::class)->findByName(['water','ocean']);
+			$this->biomes_water = $this->em->getRepository(Biome::class)->findBy(['name'=>['water','ocean']]);
 		}
 		return $this->biomes_water;
 	}
 	private function cantwalk() {
 		if (!$this->biomes_invalid) {
-			$this->biomes_invalid = $this->em->getRepository(Biome::class)->findByName(['water','ocean','snow']);
+			$this->biomes_invalid = $this->em->getRepository(Biome::class)->findBy(['name'=>['water','ocean','snow']]);
 		}
 		return $this->biomes_invalid;
 	}
@@ -132,7 +121,7 @@ class Geography {
 			return 0;
 		}
 	}
-	public function findRegionFamiliarityLevel(Character $character, GeoData $geo) {
+	public function findRegionFamiliarityLevel(Character $character, GeoData $geo): int {
 		$familiarity = $this->findRegionFamiliarity($character, $geo);
 		if ($familiarity < 10) return 0;
 		if ($familiarity < 100) return 1;
@@ -208,7 +197,7 @@ class Geography {
 	}
 
 
-	public function calculateRealmArea(Realm $realm) {
+	public function calculateRealmArea(Realm $realm): mixed {
 		$settlement_ids=array();
 		foreach ($realm->findTerritory() as $settlement) {
 			$settlement_ids[] = $settlement->getId();
@@ -246,7 +235,7 @@ class Geography {
 		return $results[0];
 	}
 
-	public function findEmbarkPoint(Character $character) {
+	public function findEmbarkPoint(Character $character): Point {
 		// find nearest water:
 		$query = $this->em->createQuery('SELECT g, ST_Distance(g.poly, c.location) as distance, ST_AsGeoJSON(ST_ClosestPoint(g.poly, c.location)) as coast FROM App:GeoData g, App:Character c WHERE g.biome in (:water) AND c = :me ORDER BY distance ASC');
 		$query->setParameters(['water'=>$this->water(), 'me'=>$character]);
@@ -272,7 +261,7 @@ class Geography {
 		return $embark;
 	}
 
-	public function findLandPoint(Point $point) {
+	public function findLandPoint(Point $point): array {
 		$query = $this->em->createQuery('SELECT g, ST_Distance(g.poly, ST_Point(:x, :y)) as distance, ST_AsGeoJSON(ST_ClosestPoint(g.poly, ST_Point(:x, :y))) as coast FROM App:GeoData g WHERE g.biome not in (:cantwalk) ORDER BY distance ASC');
 		$query->setParameters(['cantwalk'=>$this->cantwalk(), 'x'=>$point->getX(), 'y'=>$point->getY()]);
 		$query->setMaxResults(1);
@@ -339,12 +328,12 @@ class Geography {
 		return $query->getSingleResult();
 	}
 
-	public function calculateActionDistance(Settlement $settlement) {
+	public function calculateActionDistance(Settlement $settlement): float|int {
 		// FIXME: ugly hardcoded crap
 		return 15*(10+sqrt($settlement->getFullPopulation()/5));
 	}
 
-	public function calculatePlaceActionDistance(Place $place) {
+	public function calculatePlaceActionDistance(Place $place): float|int {
 		if ($place->getSettlement()) {
 			return $this->calculateActionDistance($place->getSettlement());
 		} else {

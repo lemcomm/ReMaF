@@ -17,19 +17,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 
 class AssociationManager {
-
-	protected EntityManagerInterface $em;
-	protected History $history;
-	protected DescriptionManager $descman;
-	protected ConversationManager $convman;
-	protected LawManager $lawman;
-
-	public function __construct(EntityManagerInterface $em, History $history, DescriptionManager $descman, ConversationManager $convman, LawManager $lawman) {
-		$this->em = $em;
-		$this->history = $history;
-		$this->descman = $descman;
-		$this->convman = $convman;
-		$this->lawman = $lawman;
+	public function __construct(protected EntityManagerInterface $em, protected History $history, protected DescriptionManager $descman, protected ConversationManager $convman, protected LawManager $lawman) {
 	}
 
 	public function create($data, Place $place, Character $founder): Association {
@@ -389,7 +377,7 @@ class AssociationManager {
 		$aDeity = $this->em->getRepository('App\Entity\AssociationDeity')->findOneBy(['association'=>$assoc, 'deity'=>$deity]);
 		$this->em->remove($aDeity);
 		if ($aDeity->getDeity()->getMainRecognizer() === $assoc) {
-			$aDeity->getDeity()->setMainRecognizer(null);
+			$aDeity->getDeity()->setMainRecognizer();
 		}
 		$this->history->logEvent(
 			$assoc,

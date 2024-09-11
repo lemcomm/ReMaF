@@ -21,22 +21,9 @@ War Manager exists to handle all service duties involved in battles and sieges. 
 */
 
 class WarManager {
-
-	protected EntityManagerInterface $em;
-	protected History $history;
-	protected MilitaryManager $milman;
-	protected ActionManager $actman;
-	protected GameTimeExtension $gametime;
-	protected LoggerInterface $logger;
-
 	private int $debug=0;
 
-	public function __construct(EntityManagerInterface $em, History $history, ActionManager $actman, GameTimeExtension $gametime, LoggerInterface $logger) {
-		$this->em = $em;
-		$this->history = $history;
-		$this->actman = $actman;
-		$this->gametime = $gametime;
-		$this->logger = $logger;
+	public function __construct(protected EntityManagerInterface $em, protected History $history, protected ActionManager $actman, protected GameTimeExtension $gametime, protected LoggerInterface $logger) {
 	}
 
 	public function createBattle(Character $character, Settlement $settlement=null, Place $place=null, $targets=array(), Siege $siege=null, BattleGroup $attackers=null, BattleGroup $defenders=null): array {
@@ -581,7 +568,7 @@ class WarManager {
 		$complete = new \DateTime('now');
 		$complete->add(new \DateInterval('PT'.ceil($regroup_time).'M'));
 		$act->setComplete($complete);
-		$this->actman->queue($act, true);
+		$this->actman->queue($act);
 	}
 
 	public function disbandSiege(Siege $siege, Character $leader = null, $completed = FALSE): bool {

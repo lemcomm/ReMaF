@@ -6,17 +6,11 @@ use App\Entity\Association;
 use App\Entity\Character;
 use App\Entity\Law;
 use App\Entity\LawType;
-use App\Entity\Realm;
 use App\Entity\Settlement;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 class LawManager {
-
-	private CommonService $common;
-	private EntityManagerInterface $em;
-	private History $history;
-
 	public array $choices = [
 		'assocVisibility' => [
 			'assocVisibility.yes'=>'yes',
@@ -82,10 +76,7 @@ class LawManager {
 	public array $taxLaws = ['taxesFood', 'taxesWood', 'taxesMetal', 'taxesWealth'];
 	public $stringLaws = ['realmVotingAge'];
 
-	public function __construct(EntityManagerInterface $em, CommonService $common, History $history) {
-		$this->em = $em;
-		$this->common = $common;
-		$this->history = $history;
+	public function __construct(private EntityManagerInterface $em, private CommonService $common, private History $history) {
 	}
 
 	public function updateLaw($org, LawType $type, $setting, $title, $desc, Character $character, $mandatory, $cascades, $sol, Settlement $settlement = null, Law $oldLaw=null, $flush=true, Association $faith = null): array|Law {

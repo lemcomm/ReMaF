@@ -21,33 +21,9 @@ use Exception;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class CharacterManager {
-
-	protected EntityManagerInterface $em;
-	protected CommonService $common;
-	protected MilitaryManager $milman;
-	protected History $history;
-	protected Politics $politics;
-	protected RealmManager $realmmanager;
-	protected ConversationManager $convman;
-	protected DungeonMaster $dm;
-	protected WarManager $warman;
-	protected AssociationManager $assocman;
-	protected HelperService $helper;
-
 	public ?ArrayCollection $seen; # Used by findHeir, which is called both locally and by GameRunner, which need this to be controlled.
 
-	public function __construct(EntityManagerInterface $em, CommonService $common, History $history, MilitaryManager $milman, Politics $politics, RealmManager $realmmanager, ConversationManager $convman, DungeonMaster $dm, WarManager $warman, AssociationManager $assocman, HelperService $helper) {
-		$this->em = $em;
-		$this->common = $common;
-		$this->history = $history;
-		$this->milman = $milman;
-		$this->politics = $politics;
-		$this->realmmanager = $realmmanager;
-		$this->convman = $convman;
-		$this->dm = $dm;
-		$this->warman = $warman;
-		$this->assocman = $assocman;
-		$this->helper = $helper;
+	public function __construct(protected EntityManagerInterface $em, protected CommonService $common, protected History $history, protected MilitaryManager $milman, protected Politics $politics, protected RealmManager $realmmanager, protected ConversationManager $convman, protected DungeonMaster $dm, protected WarManager $warman, protected AssociationManager $assocman, protected HelperService $helper) {
 	}
 
 	public function create(User $user, $name, $gender='m', $alive=true, Character $father=null, Character $mother=null, Character $partner=null): Character {
@@ -866,7 +842,7 @@ class CharacterManager {
 				case 'ruler':
 					$rulers = $realm->findRulers();
 					$count = $rulers->count();
-					if ($rulers && $count > 0) {
+					if ($count > 0) {
 						foreach ($rulers as $ruler) {
 							if ($ruler !== $char && $ruler->isActive()) {
 								$this->$bequeath($thing, $rulers->first(), $char, null);
@@ -1413,7 +1389,7 @@ class CharacterManager {
 
 	public function Reputation(Character $char, User $me=null): array {
 		// There are probably nice ways to do all this in SQL
-		$ratings = $this->em->getRepository('App\Entity\CharacterRating')->findByCharacter($char);
+		$ratings = $this->em->getRepository('App\Entity\CharacterRating')->findBy(['character'=>$char]);
 		$data = array();
 		$respect=array('yes'=>0,'no'=>0);
 		$honor=array('yes'=>0,'no'=>0);
