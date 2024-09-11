@@ -45,6 +45,7 @@
 		<br /><br />
 		<a href="{{ path('maf_unit_manage', {"unit":id}) }}"><button id="manage">{{ 'unit.list.manage'|trans({},"actions") }}</button></a>
 		| <a href="{{ path('maf_unit_soldiers', {"unit":id}) }}"><button id="soldiers">{{ 'unit.list.review'|trans({},"actions") }}</button></a>
+		| <a href="{{ path('maf_unit_stocks', {"unit":id}) }}"><button id="manage">{{ 'unit.list.stocks'|trans({},"actions") }}</button></a>
 		{% if unit.owner %}
 			{% if not unit.obj.character and unit.obj.travelDays < 1 %}
 				| <a href="{{ path('maf_unit_assign', {"unit":id}) }}"><button id="assign">{{ 'unit.list.assign'|trans({},"actions") }}</button></a>

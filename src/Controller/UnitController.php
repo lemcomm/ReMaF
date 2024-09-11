@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Character;
 use App\Entity\Race;
+use App\Entity\Resupply;
 use App\Entity\Soldier;
+use App\Entity\Supply;
 use App\Entity\Unit;
 use App\Form\AreYouSureType;
 use App\Form\CharacterSelectType;
@@ -729,4 +731,66 @@ class UnitController extends AbstractController {
 
                 return $this->render('Unit/recruit.html.twig', $renderArray);
      	}
+
+
+	#[Route('/units/{unit}/stocks', name:'maf_unit_stocks', requirements:['unit'=>'\d+'])]
+	public function unitStocksAction(Request $request, Unit $unit): RedirectResponse|Response {
+		$char = $this->gateway('unitStocksTest', $unit);
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+		$data = [];
+		/** @var Supply $local */
+		foreach ($unit->getSupplies() as $local) {
+			$type = $local->getType();
+			$data = [
+				$type => [
+					'qty' => $local->getQuantity(),
+					'coming' => 0,
+					'shipments' => 0,
+					'nextShip' => null,
+					'lastShip' => null,
+				]
+			];
+		}
+		/** @var Resupply $coming */
+		foreach ($unit->getIncomingSupplies() as $coming) {
+			$type = $coming->getType();
+			if (!isset($data[$type])) {
+				$data = [
+					$type => [
+						'qty' => 0,
+					]
+				];
+			}
+			if (!isset($data[$type]['coming'])) {
+				$data[$type]['coming'] = $coming->getQuantity();
+				$data[$type]['shipments'] = 1;
+				$data[$type]['nextShip'] = $coming->getTravelDays();
+				$data[$type]['lastShip'] = $coming->getTravelDays();
+			} else {
+				$data[$type]['coming'] = $data[$type]['coming']+$coming->getQuantity();
+				$data[$type]['shipments'] = $data[$type]['shipments']+1;
+				$next = $coming->getTravelDays();
+				if (isset($data[$type]['nextShip'])) {
+					if ($data[$type]['nextShip'] > $next) {
+						$data[$type]['nextShip'] = $next;
+					}
+				} else {
+					$data[$type]['nextShip'] = $next;
+				}
+				if (isset($data[$type]['lastShip'])) {
+					if ($data[$type]['lastShip'] < $next) {
+						$data[$type]['lastShip'] = $next;
+					}
+				} else {
+					$data[$type]['lastShip'] = $next;
+				}
+			}
+		}
+		return $this->render('Unit/stocks.html.twig', [
+			'unit'=>$unit,
+			'stocks'=>$data
+		]);
+	}
 }

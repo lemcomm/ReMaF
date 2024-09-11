@@ -1373,6 +1373,7 @@ unit:
   new:      Create a new unit
   bulk:     Update settings across multiple units
   rebase:   Rebase this Unit
+  stocks:   Review Supplies
   review:   Review Soldiers
   soldiers: Comprised of
   count:    "{soldiers} Soldiers"
@@ -1445,3 +1446,13 @@ unit:
   intro:    From here you can choose to completely disband a unit, sending all the soldiers on home and reliquishing {name} to the annals of history.
   success:  Unit has been disbanded.
   fail:     Unit disbandment has failed.
+ stocks:
+   title:      "{unit} Supply Stock"
+   info:       "This page provides you the current supply status for your unit, both the exact current on-hand and the average quantity of incoming supplies, along with when those supplies are next expected. If you're travelling, this is an estimate, but if you're staying in one place this should be quite accurate unless you find yourself under siege."
+   name:       Item
+   onhand:     Available On Hand
+   next:       Next Shipment Has...
+   frequency:  And Will Arrive In...
+   days:       "{days} day(s)"
+   last:       Last Shipment In...
+   total:      Total Shipments Coming

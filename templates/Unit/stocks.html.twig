@@ -1,0 +1,37 @@
+{% extends "layout.html.twig" %}
+
+{% block includes %}
+	{{ parent() }}
+	<script src="{{ asset('tablesorter/jquery.tablesorter.min.js') }}"></script>
+	<script src="{{ asset('tablesorter/parsers/parser-input-select.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+		<h2>{{ 'unit.stocks.title'|trans({"%unit%":unit.name}, "actions")|title }}</h2>
+		<p>{{ "unit.stocks.info"|trans({}, "actions") }}</p>
+		<table>
+			<thead><tr>
+				<th>{{ "unit.stocks.name"|trans({}, "actions")|title }}</th>
+				<th>{{ 'unit.stocks.onhand'|trans({}, "actions") }}</th>
+				<th>{{ 'unit.stocks.next'|trans({}, "actions") }}</th>
+				<th>{{ 'unit.stocks.frequency'|trans({}, "actions") }}</th>
+				<th>{{ 'unit.stocks.last'|trans({}, "actions") }}</th>
+				<th>{{ 'unit.stocks.total'|trans({}, "actions") }}</th>
+			</tr></thead>
+			<tbody>
+			{% for key,each in stocks %}
+				<tr>
+					<td>{{ key|trans|title }}</td>
+					<td>{{ each.qty }}</td>
+					<td>{% if each.coming > 0 %}{{ each.coming/each.shipments }}{% else %}0{% endif %}</td>
+					<td>{{ 'unit.stocks.days'|trans({"%days%":each.nextShip}, "actions") }}</td>
+					<td>{{ 'unit.stocks.days'|trans({"%days%":each.lastShip}, "actions") }}</td>
+					<td>{{ each.shipments }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+{% endblock %}
+
+{% block jquery %}
+{% endblock %}

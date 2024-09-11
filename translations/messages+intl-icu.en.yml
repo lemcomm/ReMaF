@@ -1919,7 +1919,6 @@ unit:
   success:     Unit Settings have been updated!
   failed:      Unit Settings not updated.
   link:        View Soldiers
-
 journal:
  report:
   header: Report this journal for GM review

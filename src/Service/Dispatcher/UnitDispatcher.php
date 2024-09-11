@@ -179,7 +179,6 @@ class UnitDispatcher extends Dispatcher {
 	}
 
 	public function unitSoldiersTest($ignored, Unit $unit): array {
-		$settlement = $this->getCharacter()->getInsideSettlement();
 		$character = $this->getCharacter();
 
 		if (
@@ -255,6 +254,18 @@ class UnitDispatcher extends Dispatcher {
 			return array("name"=>"unit.return.all", "description"=>"unavailable.inbattle2");
 		}
 		return $this->action("unit.return.name", "maf_unit_return");
+	}
+
+	public function unitStocksTest($ignored, Unit $unit): array {
+		$character = $this->getCharacter();
+		if (
+			$unit->getCharacter() === $character
+			|| ($unit->getSettlement() && ($unit->getSettlement()->getOwner() === $character || $unit->getSettlement()->getSteward() === $character || $unit->getMarshal() === $character || $this->pm->checkSettlementPermission($unit->getSettlement(), $character, 'units')))
+		) {
+			return $this->action("unit.stocks", "maf_unit_stocks");
+		} else {
+			return array("name"=>"unit.stocks.name", "description"=>"unavailable.notyourunit");
+		}
 	}
 
 	public function unitRecallTest($ignored, Unit $unit): array {
