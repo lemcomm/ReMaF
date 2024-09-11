@@ -186,33 +186,40 @@ class ConversationController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
-			$data['owner'] = $form->get('owner')->getData();
-			$data['nearby'] = $form->get('nearby')->getData();
-			$data['captor'] = $form->get('captor')->getData();
-			$data['contacts'] = $form->get('contacts')->getData();
 			if (!$org) {
 				$recipients = new ArrayCollection;
-				if (isset($data['owner'])) foreach ($data['owner'] as $rec) {
-					if (!$recipients->contains($rec)) {
-						$recipients->add($rec);
+				if ($settlement && $settlement->getOwner() && $settlement->getOwner() !== $char) {
+					$data['owner'] = $form->get('owner')->getData();
+					foreach ($data['owner'] as $rec) {
+						if (!$recipients->contains($rec)) {
+							$recipients->add($rec);
+						}
 					}
 				}
+				$data['nearby'] = $form->get('nearby')->getData();
 				if (isset($data['nearby'])) foreach ($data['nearby'] as $rec) {
 					if (!$recipients->contains($rec)) {
 						$recipients->add($rec);
 					}
 				}
-				if (isset($data['captor'])) foreach ($data['captor'] as $rec) {
-					if (!$recipients->contains($rec)) {
-						$recipients->add($rec);
+				if($char->getPrisonerOf()) {
+					$data['captor'] = $form->get('captor')->getData();
+					foreach ($data['captor'] as $rec) {
+						if (!$recipients->contains($rec)) {
+							$recipients->add($rec);
+						}
 					}
 				}
-				if (isset($data['contacts'])) foreach ($data['contacts'] as $rec) {
-					if (!$recipients->contains($rec)) {
-						$recipients->add($rec);
+				if ($contacts) {
+					$data['contacts'] = $form->get('contacts')->getData();
+					if (isset($data['contacts'])) foreach ($data['contacts'] as $rec) {
+						if (!$recipients->contains($rec)) {
+							$recipients->add($rec);
+						}
 					}
 				}
 				if ($recipients->contains($char)) {
+					# Owner is always a recipient on new conversations.
 					$recipients->remove($char);
 				}
 			} else {
@@ -803,8 +810,8 @@ class ConversationController extends AbstractController {
 	}
 
 	#[Route ('/conv/{conv}/remove', name:'maf_conv_remove', requirements:['conv'=>'\d+'])]
-	#[Route ('/conv/{conv}/remove/', name:'maf_conv_remove', requirements:['conv'=>'\d+'])]
-	#[Route ('/conv/{conv}/remove/{var}', name:'maf_conv_remove', requirements:['conv'=>'\d+', 'var'=>'\d+'])]
+	#[Route ('/conv/{conv}/remove/', requirements:['conv'=>'\d+'])]
+	#[Route ('/conv/{conv}/remove/{var}', name:'maf_conv_remove_var', requirements:['conv'=>'\d+', 'var'=>'\d+'])]
 	public function removeAction(Request $request, Conversation $conv, $var = null): RedirectResponse|Response {
                 $char = $this->dispatcher->gateway('conversationRemoveTest', false, true, false, $conv);
                 if (! $char instanceof Character) {
