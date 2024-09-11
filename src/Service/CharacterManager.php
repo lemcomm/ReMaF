@@ -25,7 +25,6 @@ class CharacterManager {
 
 	public function __construct(
 		private EntityManagerInterface $em,
-		private CommonService $common,
 		private History $history,
 		private MilitaryManager $milman,
 		private Politics $politics,
@@ -33,8 +32,7 @@ class CharacterManager {
 		private ConversationManager $convman,
 		private DungeonMaster $dm,
 		private WarManager $warman,
-		private AssociationManager $assocman,
-		private HelperService $helper) {
+		private AssociationManager $assocman) {
 	}
 
 	public function create(User $user, $name, $gender='m', $alive=true, Character $father=null, Character $mother=null, Character $partner=null): Character {
@@ -909,7 +907,7 @@ class CharacterManager {
 			if ($heir->getHouse() === $character->getHouse()) {
 				# Successor is heir in this house.
 				$successor = $heir;
-			} elseif ($heir->getHouse() && $heir->getHouse() !== $character->getHouse()) {
+			} elseif ($heir->getHouse() && $character->getHouse()) {
 				# Successor is heir but in a different house.
 				$difhouse = true;
 				if ($heir->getHouse()->getHead() === $heir) {
@@ -1170,12 +1168,8 @@ class CharacterManager {
 
 	public function bequeathPlace(Place $place, Character $heir, Character $from, Character $via=null): void {
 		$oldowner = $place->getOwner();
-		if ($oldowner) {
-			$oldowner->removeOwnedPlace($place);
-		}
-		if ($heir) {
-			$heir->addOwnedPlace($place);
-		}
+		$oldowner?->removeOwnedPlace($place);
+		$heir->addOwnedPlace($place);
 		$place->setOwner($heir);
 		foreach ($place->getPermissions() as $perm) {
 			$place->removePermission($perm);
@@ -1196,7 +1190,7 @@ class CharacterManager {
 		$this->history->openLog($place, $heir);
 
 		// Note that this CAN leave a character the lord of estates in seperate realms.
-		if ($from == $via || $via == null) {
+		if ($from === $via || $via == null) {
 			$this->history->logEvent(
 				$heir,
 				'event.character.inherit.place',
@@ -1221,12 +1215,8 @@ class CharacterManager {
 
 	private function failInheritPlace(Character $character, Place $place, $string = 'inherifail'): void {
 		$oldowner = $place->getOwner();
-		if ($oldowner) {
-			$oldowner->removeOwnedPlace($place);
-		}
-		if ($character) {
-			$character->addOwnedPlace($place);
-		}
+		$oldowner?->removeOwnedPlace($place);
+		$character->addOwnedPlace($place);
 		$place->setOwner(null);
 		foreach ($place->getPermissions() as $perm) {
 			$place->removePermission($perm);
@@ -1486,7 +1476,7 @@ class CharacterManager {
 		}
 	}
 
-	public function updateAllegiance(Character $character, Realm $realm = null, Place $place, Settlement $settlement = null, RealmPosition $position = null): void {
+	public function updateAllegiance(Character $character, ?Realm $realm, ?Place $place, ?Settlement $settlement, ?RealmPosition $position): void {
 		if ($realm) {
 			$character->setRealm($realm);
 			$character->setLiegeLand(null);
