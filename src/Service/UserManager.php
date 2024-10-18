@@ -126,7 +126,7 @@ class UserManager {
 		$limits->setPlaces(4);
 		$limits->setArtifacts(max(0, $user->getArtifactsLimit()));
 		$limits->setArtifactSubBonus(false);
-		$limits->setPlacesDate(new DateTime('now')); #TODO: Remove this property from usage.
+		$limits->setPlacesDate(new DateTime('now'));
 		$this->em->persist($limits);
 		return $limits;
 	}

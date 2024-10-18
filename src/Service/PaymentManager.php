@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Code;
 use App\Entity\CreditHistory;
 use App\Entity\User;
+use App\Entity\UserLimits;
 use App\Entity\UserPayment;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -278,22 +279,19 @@ class PaymentManager {
 		$this->logger->info("  Updating Limits...");
 		$query = $this->em->createQuery('SELECT u FROM App:User u');
 		$now = new \DateTime("now");
-		$oneWeek = new \DateTime("+1 week");
-		$twoWeeks = new \DateTime("+2 weeks");
 		foreach ($query->getResult() as $user) {
+			/** @var UserLimits $limits */
 			$limits = $user->getLimits();
 			if (!$limits) {
 				$this->usermanager->createLimits($user);
 			} else {
-				if (!$user->isNewPlayer()) {
-					$limits->setPlaces(4);
-				} else {
-					$limits->setPlaces(0);
-				}
-				if($user->getAccountLevel() >= 20) {
-					$limits->setPlacesDate($oneWeek);
-				} else {
-					$limits->setPlacesDate($twoWeeks);
+				if ($limits->getPlacesDate() <= $now) {
+					if (!$user->isNewPlayer()) {
+						$limits->setPlaces(4);
+					} else {
+						$limits->setPlaces(0);
+					}
+					$limits->setPlacesDate(new \DateTime("+1 day"));
 				}
 			}
 		}
