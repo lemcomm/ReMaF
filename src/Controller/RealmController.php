@@ -518,7 +518,7 @@ class RealmController extends AbstractController {
 	}
 
 	#[Route('/realm/{realm}/position/{position}', name:'maf_realm_position', requirements:['realm'=>'\d+', 'position'=>'\d+'])]
-	public function positionAction(Realm $realm, Request $request, RealmPosition $position=null): RedirectResponse|Response {
+	public function positionAction(Realm $realm, Request $request, ?RealmPosition $position=null): RedirectResponse|Response {
 		$character = $this->gateway($realm, 'hierarchyRealmPositionsTest');
 		if (!($character instanceof Character)) {
 			return $this->redirectToRoute($character);
@@ -1045,7 +1045,7 @@ class RealmController extends AbstractController {
 	}
 	
 	#[Route('/realm/{realm}/editrelation/{relation}/{target}', name:'maf_realm_editrelation', requirements:['realm'=>'\d+', 'relation'=>'\d+', 'target'=>'\d+'], defaults:['target'=>0])]
-	public function editrelationAction(Realm $realm, Request $request, RealmRelation $relation=null, Realm $target=null): RedirectResponse|Response {
+	public function editrelationAction(Realm $realm, Request $request, ?RealmRelation $relation=null, ?Realm $target=null): RedirectResponse|Response {
 		$character = $this->gateway($realm, 'diplomacyRelationsTest');
 		if (!($character instanceof Character)) {
 			return $this->redirectToRoute($character);
@@ -1097,7 +1097,7 @@ class RealmController extends AbstractController {
 	}
 	
 	#[Route('/realm/{realm}/delreation/{relation}', name:'maf_realm_delrelation', requirements:['realm'=>'\d+', 'relation'=>'\d+'], defaults:['target'=>0])]
-	public function deleterelationAction(Realm $realm, RealmRelation $relation=null): RedirectResponse {
+	public function deleterelationAction(Realm $realm, ?RealmRelation $relation=null): RedirectResponse {
 		$character = $this->gateway($realm, 'diplomacyRelationsTest');
 		if (!($character instanceof Character)) {
 			return $this->redirectToRoute($character);
@@ -1206,7 +1206,7 @@ class RealmController extends AbstractController {
 	}
 	
 	#[Route('/realm/{realm}/election/{election}', name:'maf_realm_election', requirements:['realm'=>'\d+', 'election'=>'\d+'])]
-	public function electionAction(Realm $realm, Request $request, Election $election=null): RedirectResponse|array|Response {
+	public function electionAction(Realm $realm, Request $request, ?Election $election=null): RedirectResponse|array|Response {
 		$character = $this->gateway($realm, 'hierarchyElectionsTest');
 		if (!($character instanceof Character)) {
 			return $this->redirectToRoute($character);

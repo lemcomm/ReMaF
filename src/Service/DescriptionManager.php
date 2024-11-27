@@ -15,7 +15,7 @@ class DescriptionManager {
 		private History $history) {
 	}
 
-	public function newDescription($entity, $text, Character $character=null, $new=false): Description {
+	public function newDescription($entity, $text, ?Character $character=null, $new=false): Description {
 		/* First, check to see if there's already one. */
 		$olddesc = NULL;
 		if ($entity->getDescription()) {
@@ -189,7 +189,7 @@ class DescriptionManager {
 		return $desc;
 	}
 
-	public function newSpawnDescription($entity, $text, Character $character=null): SpawnDescription {
+	public function newSpawnDescription($entity, $text, ?Character $character=null): SpawnDescription {
 		/* First, check to see if there's already one. */
 		$olddesc = NULL;
 		if ($entity->getSpawnDescription()) {

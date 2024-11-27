@@ -323,12 +323,13 @@ class DungeonController extends AbstractController {
 	}
 
 	/**
-	 * @param DungeonLevel|null $level
+	 * @param DungeonLevel|null   $level
 	 * @param DungeonMonster|null $current
 	 * @param $class
+	 *
 	 * @return FormInterface
 	 */
-	private function MonsterTargetSelector(DungeonLevel $level=null, DungeonMonster $current=null, $class=null): FormInterface {
+	private function MonsterTargetSelector(?DungeonLevel $level=null, ?DungeonMonster $current=null, $class=null): FormInterface {
 		$choices = array(0=>$this->trans->trans('target.random', array(), "dungeons"));
 		if ($level) {
 			if ($level->getScoutLevel() > 1) {
@@ -356,11 +357,12 @@ class DungeonController extends AbstractController {
 	}
 
 	/**
-	 * @param DungeonLevel|null $level
+	 * @param DungeonLevel|null    $level
 	 * @param DungeonTreasure|null $current
+	 *
 	 * @return FormInterface
 	 */
-	private function TreasureTargetSelector(DungeonLevel $level=null, DungeonTreasure $current=null): FormInterface {
+	private function TreasureTargetSelector(?DungeonLevel $level=null, ?DungeonTreasure $current=null): FormInterface {
 		$choices = array(0=>$this->trans->trans('target.random', array(), "dungeons"));
 		if ($level) {
 			if ($level->getScoutLevel() > 2) {
@@ -377,11 +379,12 @@ class DungeonController extends AbstractController {
 	}
 
 	/**
-	 * @param Dungeon $dungeon
+	 * @param Dungeon         $dungeon
 	 * @param Dungeoneer|null $current
+	 *
 	 * @return FormInterface
 	 */
-	private function DungeoneerTargetSelector(Dungeon $dungeon, Dungeoneer $current=null): FormInterface {
+	private function DungeoneerTargetSelector(Dungeon $dungeon, ?Dungeoneer $current=null): FormInterface {
 		$choices = array(0=>$this->trans->trans('target.random', array(), "dungeons"));
 		foreach ($dungeon->getParty()->getMembers() as $dungeoneer) {
 			$choices[$dungeoneer->getId()] = $dungeoneer->getCharacter()->getName();

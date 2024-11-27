@@ -175,7 +175,7 @@ class Interactions {
 	}
 
 	// no type-hinting because target can be either a settlement, character, or place
-	public function characterViewDetails(Character $character=null, $target=null): array {
+	public function characterViewDetails(?Character $character=null, $target=null): array {
 		$details=array('spot'=>false, 'spotmore'=>false, 'merchant'=>false, 'prospector'=>false, 'spy'=>false);
 		if (!$character) return $details;
 

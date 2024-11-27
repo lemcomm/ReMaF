@@ -48,7 +48,7 @@ class GMController extends AbstractController {
 	#[Route ('/olympus/update/{id}', name:'maf_admin_update')]
 	#[Route ('/olympus/update/')]
 	#[Route ('/olympus/update')]
-	public function updateNoteAction(CommonService $common, Request $request, UpdateNote $id=null): RedirectResponse|Response {
+	public function updateNoteAction(CommonService $common, Request $request, ?UpdateNote $id=null): RedirectResponse|Response {
 		if ($request->query->get('last')) {
 			$id = $this->em->createQuery('SELECT n FROM App:UpdateNote n ORDER BY n.id DESC')->setMaxResults(1)->getSingleResult();
 		}

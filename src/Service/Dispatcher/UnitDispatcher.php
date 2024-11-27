@@ -28,7 +28,7 @@ class UnitDispatcher extends Dispatcher {
 
 	/* =========== Tests ========== */
 
-	private function recruitActionsGenericTests(Settlement $settlement=null, $test='recruit'): true|string {
+	private function recruitActionsGenericTests(?Settlement $settlement=null, $test='recruit'): true|string {
 		if ($this->getCharacter()->isNPC()) {
 			return 'npc';
 		}
@@ -116,7 +116,7 @@ class UnitDispatcher extends Dispatcher {
 		}
 		if (!$character->getUnits()->contains($unit)) {
 			if($settlement && (!$this->pm->checkSettlementPermission($settlement, $character, 'units') && $unit->getMarshal() != $character)) {
-				if($unit->getSettlement() != $character->getInsideSettlement()) {
+				if($unit->getSettlement() !== $character->getInsideSettlement()) {
 					return array("name"=>"unit.assign.name", "description"=>"unavailable.notinside");
 				}
 				return array("name"=>"unit.assign.name", "description"=>"unavailable.notmarshal");
@@ -137,7 +137,7 @@ class UnitDispatcher extends Dispatcher {
 		$settlement = $unit->getSettlement();
 		if (!$character->getUnits()->contains($unit)) {
 			if($settlement && (!$this->pm->checkSettlementPermission($settlement, $character, 'units') && $unit->getMarshal() != $character)) {
-				if($unit->getSettlement() != $character->getInsideSettlement()) {
+				if($unit->getSettlement() !== $character->getInsideSettlement()) {
 					return array("name"=>"unit.manage.name", "description"=>"unavailable.notinside");
 				}
 				return array("name"=>"unit.manage.name", "description"=>"unavailable.notmarshal");
@@ -170,7 +170,7 @@ class UnitDispatcher extends Dispatcher {
 		$character = $this->getCharacter();
 		$settlement = $unit->getSettlement();
 
-		if($settlement && !$this->pm->checkSettlementPermission($settlement, $character, 'units') && $unit->getSettlement() != $character->getInsideSettlement()) {
+		if($settlement && !$this->pm->checkSettlementPermission($settlement, $character, 'units') && $unit->getSettlement() !== $character->getInsideSettlement()) {
 			return array("name"=>"unit.appoint.name", "description"=>"unavailable.notlord");
 		} elseif(!$settlement) {
 			return array("name"=>"unit.appoint.name", "description"=>"unavailable.notinside");
@@ -210,7 +210,7 @@ class UnitDispatcher extends Dispatcher {
 			return array("name"=>"unit.canceltraining.name", "description"=>"unavailable.$check");
 		}
 		if (!$character->getUnits()->contains($unit)) {
-			if ($unit->getSettlement() != $character->getInsideSettlement()) {
+			if ($unit->getSettlement() !== $character->getInsideSettlement()) {
 				return array("name"=>"unit.canceltraining.name", "description"=>"unavailable.notinside");
 			}
 		}

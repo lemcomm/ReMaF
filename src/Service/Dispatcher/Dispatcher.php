@@ -378,7 +378,7 @@ class Dispatcher {
 		return array("name"=>"economy.name", "elements"=>$actions);
 	}
 
-	private function economyActionsGenericTests(Settlement $settlement=null): true|string {
+	private function economyActionsGenericTests(?Settlement $settlement=null): true|string {
 		if (!$settlement) {
 			return 'notinside';
 		}
@@ -972,7 +972,7 @@ class Dispatcher {
 		if (!$settlement = $this->getCharacter()->getInsideSettlement()) {
 			return array("name"=>"control.occupationend.name", "description"=>"unavailable.notinside");
 		}
-		if ($settlement->isFortified() && $this->getCharacter()->getInsideSettlement()!=$settlement) {
+		if ($settlement->isFortified() && $this->getCharacter()->getInsideSettlement() !== $settlement) {
 			return array("name"=>"control.occupationend.name", "description"=>"unavailable.location.fortified");
 		}
 		if ($check_regroup && $this->getCharacter()->isDoingAction('military.regroup')) {
@@ -2170,7 +2170,7 @@ class Dispatcher {
 		return ["name"=>"conv.new.name", "url"=>"maf_conv_new", "description"=>"conv.new.description"];
 	}
 
-	public function conversationLocalTest($ignored, Conversation $conv=null): array {
+	public function conversationLocalTest($ignored, ?Conversation $conv=null): array {
 		if ($conv && $conv->getLocalFor() != $this->getCharacter()) {
 			return ["name"=>"conv.local.name", "description"=>"unavailable.conv.nopermission"];
 		}
@@ -2273,7 +2273,7 @@ class Dispatcher {
 		return ["name"=>"conv.localreply.name", "url"=>"maf_conv_local_reply", "description"=>"conv.localreply.description"];
 	}
 
-	public function conversationMessageFlagTest($ignored, Conversation $conv=null): array {
+	public function conversationMessageFlagTest($ignored, ?Conversation $conv=null): array {
 		if ($conv && $conv->findCharPermissions($this->getCharacter())) {
 			return ["name"=>"conv.flag.name", "url"=>"maf_conv_flag", "description"=>"conv.flag.description"];
 		}

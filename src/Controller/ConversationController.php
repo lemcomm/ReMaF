@@ -142,7 +142,7 @@ class ConversationController extends AbstractController {
 	#[Route ('/conv/new/r{realm}', name:'maf_conv_realm_new')]
 	#[Route ('/conv/new/h{house}', name:'maf_conv_house_new')]
 	#[Route ('/conv/new/a{assoc}', name:'maf_conv_assoc_new')]
-	public function newConversationAction(Request $request, Realm $realm=null, House $house=null, Association $assoc=null): RedirectResponse|Response {
+	public function newConversationAction(Request $request, ?Realm $realm=null, ?House $house=null, ?Association $assoc=null): RedirectResponse|Response {
                 $char = $this->dispatcher->gateway('conversationNewTest');
                 if (! $char instanceof Character) {
                         return $this->redirectToRoute($char);
@@ -291,7 +291,7 @@ class ConversationController extends AbstractController {
 	}
 
 	#[Route ('/conv/recent/reply/{msg}/{window}', name:'maf_conv_recent_reply', requirements:['msg'=>'\d+', 'window'=>'\d+'])]
-	public function replyRecentAction(Request $request, Message $msg=null, string $window='0'): RedirectResponse|Response {
+	public function replyRecentAction(Request $request, ?Message $msg=null, string $window='0'): RedirectResponse|Response {
                 $char = $this->dispatcher->gateway('conversationRecentTest');
                 if (! $char instanceof Character) {
                         return $this->redirectToRoute($char);

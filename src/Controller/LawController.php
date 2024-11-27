@@ -39,7 +39,7 @@ class LawController extends AbstractController {
 	#[Route ('/laws/r{realm}/', requirements:['realm'=>'\d+'])]
 	#[Route ('/laws/a{assoc}', name:'maf_assoc_laws', requirements:['assoc'=>'\d+'])]
 	#[Route ('/laws/a{assoc}/', requirements:['assoc'=>'\d+'])]
-	public function lawsAction(Request $request, Realm $realm=null, Association $assoc=null): RedirectResponse|Response {
+	public function lawsAction(Request $request, ?Realm $realm=null, ?Association $assoc=null): RedirectResponse|Response {
 		if (!$realm && !$assoc) {
 			$this->addFlash('error', $this->trans->trans('law.route.list.noorg', [], 'orgs'));
 			return $this->redirectToRoute('maf_actions');
@@ -93,7 +93,7 @@ class LawController extends AbstractController {
 
 	#[Route ('/laws/r{realm}', name:'maf_realm_laws_new', requirements:['realm'=>'\d+'])]
 	#[Route ('/laws/a{assoc}', name:'maf_assoc_laws_new', requirements:['assoc'=>'\d+'])]
-	public function newLawAction(Request $request, Realm $realm=null, Association $assoc=null): RedirectResponse|Response {
+	public function newLawAction(Request $request, ?Realm $realm=null, ?Association $assoc=null): RedirectResponse|Response {
 		if ($request->get('_route') === 'maf_realm_laws_new') {
 			$char = $this->gateway('hierarchyRealmLawNewTest', $realm);
 			$rCheck = true;
@@ -165,7 +165,7 @@ class LawController extends AbstractController {
 	#[Route ('/laws/a{assoc}/{type}', name:'maf_assoc_laws_finalize', requirements:['assoc'=>'\d+'])]
 	#[Route ('/laws/a{assoc}/{type}/', requirements:['assoc'=>'\d+'])]
 	#[Route ('/laws/a{assoc}/{type}/{law}', name:'maf_assoc_laws_update', requirements:['assoc'=>'\d+'])]
-	public function finalizeLawAction(Request $request, Realm $realm=null, Association $assoc=null, Law $law=null, LawType $type=null): RedirectResponse|Response {
+	public function finalizeLawAction(Request $request, ?Realm $realm=null, ?Association $assoc=null, ?Law $law=null, ?LawType $type=null): RedirectResponse|Response {
 		if (in_array($request->get('_route'), ['maf_realm_laws_finalize', 'maf_realm_laws_update'])) {
 			$char = $this->gateway('hierarchyRealmLawNewTest', $realm);
 			$rCheck = true;

@@ -15,12 +15,12 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class History {
 
-	const LOW = 0;
-	const MEDIUM = 10;
-	const HIGH = 20;
-	const ULTRA = 30;
+	const int LOW = 0;
+	const int MEDIUM = 10;
+	const int HIGH = 20;
+	const int ULTRA = 30;
 
-	const NOTIFY = 20;
+	const int NOTIFY = 20;
 
 	public function __construct(
 		private EntityManagerInterface $em,

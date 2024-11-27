@@ -183,7 +183,7 @@ class MilitaryManager {
 		return array($success, $fail);
 	}
 
-	public function manageEntourage($npcs, $data, Settlement $settlement=null, Character $character=null): array {
+	public function manageEntourage($npcs, $data, ?Settlement $settlement=null, ?Character $character=null): array {
 		$assigned_soldiers = 0; $targetgroup='(no)';
 		$assigned_entourage = 0;
 		$success=0; $fail=0;
@@ -256,7 +256,7 @@ class MilitaryManager {
 		return array($success, $fail);
 	}
 
-	public function resupply(Soldier $soldier, Settlement $settlement=null): bool {
+	public function resupply(Soldier $soldier, ?Settlement $settlement=null): bool {
 		if ($settlement==null) {
 			$equipment_followers = $soldier->getCharacter()->getEntourage()->filter(function($entry) {
 				return ($entry->getType()->getName()=='follower' && $entry->isAlive() && $entry->getEquipment() && $entry->getSupply()>0);
@@ -297,7 +297,7 @@ class MilitaryManager {
 		return $success;
 	}
 
-	public function returnItem(Settlement $settlement=null, EquipmentType $item=null): bool {
+	public function returnItem(?Settlement $settlement=null, ?EquipmentType $item=null): bool {
 		if ($settlement==null) return true;
 		if ($item==null) return true;
 
@@ -426,7 +426,7 @@ class MilitaryManager {
 		$this->em->remove($npc);
 	}
 
-	private function salvageItem(Character $character, EquipmentType $equipment=null, $amount=-1): bool {
+	private function salvageItem(Character $character, ?EquipmentType $equipment=null, $amount=-1): bool {
 		if ($equipment) {
 			$max_supply = min($this->common->getGlobal('supply.max_value', 800), $equipment->getResupplyCost() * $this->common->getGlobal('supply.max_items', 15));
 		} else {
@@ -546,7 +546,7 @@ class MilitaryManager {
 		return true;
 	}
 
-	public function newUnit(Character $character=null, Settlement $home = null, $data): Unit {
+	public function newUnit(?Character $character=null, ?Settlement $home = null, $data): Unit {
 		$unit = new Unit();
 		$this->em->persist($unit);
 		$unit->setSettlement($home);
@@ -590,7 +590,7 @@ class MilitaryManager {
 		);
 	}
 
-	public function convertToUnit(Character $character=null, Settlement $home = null, $data = null, $bulk = false): float {
+	public function convertToUnit(?Character $character=null, ?Settlement $home = null, $data = null, $bulk = false): float {
 		if ($character) {
 			$source = $character;
 		} else {
@@ -643,7 +643,7 @@ class MilitaryManager {
 		return $total;
 	}
 
-	public function newUnitSettings(Unit $unit, Character $character=null, $data = null, $bulk = false): void {
+	public function newUnitSettings(Unit $unit, ?Character $character=null, $data = null, $bulk = false): void {
 		if ($data) {
 			$unit->setName($data['name']);
 			if ($data['strategy']) {

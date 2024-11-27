@@ -31,7 +31,7 @@ class WarManager {
 		private LoggerInterface $logger) {
 	}
 
-	public function createBattle(Character $character, Settlement $settlement=null, Place $place=null, $targets=array(), Siege $siege=null, BattleGroup $attackers=null, BattleGroup $defenders=null): array {
+	public function createBattle(Character $character, ?Settlement $settlement=null, ?Place $place=null, $targets=array(), ?Siege $siege=null, ?BattleGroup $attackers=null, ?BattleGroup $defenders=null): array {
 		/* for future reference, $outside is used to determine whether or not attackers need to leave the settlement in order to attack someone.
 		It's used by attackOthersAction of WarCon. --Andrew */
 		$type = 'field';
@@ -511,6 +511,7 @@ class WarManager {
 		return $time;
 	}
 
+	/** @noinspection PhpMissingBreakStatementInspection */
 	public function calculateDisengageTime(Character $character): float|int {
 		$base = 15;
 		$base += sqrt($character->getEntourage()->count()*10);
@@ -576,7 +577,7 @@ class WarManager {
 		$this->actman->queue($act);
 	}
 
-	public function disbandSiege(Siege $siege, Character $leader = null, $completed = FALSE): bool {
+	public function disbandSiege(Siege $siege, ?Character $leader = null, $completed = FALSE): bool {
 		if ($siege->getBattles()->count() > 0) {
 			return false;
 		}

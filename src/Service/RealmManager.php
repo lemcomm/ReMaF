@@ -146,7 +146,7 @@ class RealmManager {
 	}
 
 
-	public function abdicate(Realm $realm, Character $oldruler, Character $successor=null): void {
+	public function abdicate(Realm $realm, Character $oldruler, ?Character $successor=null): void {
 		// ruler abdication and announcement of successor (or not)
 
 		foreach ($realm->getPositions() as $pos) {

@@ -539,7 +539,7 @@ class ConversationManager {
                 return $conv;
         }
 
-        public function newSystemMessage(Conversation $conv, $type, ArrayCollection $data=null, Character $originator=null, $flush=true, $extra=null) {
+        public function newSystemMessage(Conversation $conv, $type, ?ArrayCollection $data=null, ?Character $originator=null, $flush=true, $extra=null) {
                 $antiTickUp = false;
                 if ($originator) {
                         $origin = '[c:'.$originator->getId().']';
@@ -685,7 +685,7 @@ class ConversationManager {
                 }
         }
 
-        public function updateMembers(Conversation $conv, ArrayCollection $members=null) {
+        public function updateMembers(Conversation $conv, ?ArrayCollection $members=null) {
                 $realm = $conv->getRealm();
                 $house = $conv->getHouse();
                 $assoc = $conv->getAssociation();
@@ -747,7 +747,7 @@ class ConversationManager {
                 return array('added'=>$added, 'removed'=>$removed);
         }
 
-        public function sendNewCharacterMsg(Realm $realm = null, House $house = null, Place $place, Character $char) {
+        public function sendNewCharacterMsg(?Realm $realm = null, ?House $house = null, Place $place, Character $char) {
                 $em = $this->em;
                 $ultimate = null;
                 $same = false;
@@ -794,7 +794,7 @@ class ConversationManager {
                 return [$conv, $supConv];
         }
 
-        public function sendExistingCharacterMsg(Realm $realm = null, Settlement $settlement = null, Place $place = null, RealmPosition $pos = null, Character $char, $publicJoin = FALSE) {
+        public function sendExistingCharacterMsg(?Realm $realm = null, ?Settlement $settlement = null, ?Place $place = null, ?RealmPosition $pos = null, Character $char, $publicJoin = FALSE) {
                 $em = $this->em;
                 if ($realm === NULL && $settlement && $settlement->getRealm()) {
                         $realm = $settlement->getRealm();

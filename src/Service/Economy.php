@@ -274,7 +274,7 @@ class Economy {
 					# If we are, do we have multiple capitals here?
 					if (!is_array($settlement->getCapitalOf()->toArray())) {
 						# If we don't, is that capital for this realm?
-						if ($settlement->getCapitalOf() == $settlement->getRealm()) {
+						if ($settlement->getCapitalOf()->contains($settlement->getRealm())) {
 							$matchedrealms = true;
 						}
 					# If we have multiple capitals here, does our realm have one here?

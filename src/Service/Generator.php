@@ -18,7 +18,7 @@ class Generator {
 		private ActionManager $actman) {
 	}
 
-	public function randomName(Settlement $home=null, $gender=false): string {
+	public function randomName(?Settlement $home=null, $gender=false): string {
 		$culture = $home?->getCulture();
 		$qb = $this->em->createQueryBuilder();
 		$qb->select('count(n.id)')->from('App:NameList', 'n');

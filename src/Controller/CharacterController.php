@@ -397,7 +397,7 @@ class CharacterController extends AbstractController {
       	#[Route ('/char/spawn/r{realm}', name:'maf_char_spawn_realm', requirements: ['realm'=>'\d+'])]
     	#[Route ('/char/spawn/h{house}', name:'maf_char_spawn_house', requirements: ['house'=>'\d+'])]
     	#[Route ('/char/spawn/myhouse', name:'maf_char_spawn_myhouse')]
-	  public function spawnAction(Realm $realm = null, House $house = null): RedirectResponse|Response {
+	  public function spawnAction(?Realm $realm = null, ?House $house = null): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter(true, false, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -446,7 +446,7 @@ class CharacterController extends AbstractController {
 
       	#[Route ('/char/spawnin/home', name:'maf_spawn_home')]
     	#[Route ('/char/spawnin/s{spawn}', name:'maf_spawn_in', requirements: ['spawn'=>'\d+'])]
-	public function firstAction(Spawn $spawn = null): RedirectResponse|Response {
+	public function firstAction(?Spawn $spawn = null): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);

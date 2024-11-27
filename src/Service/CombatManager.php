@@ -287,7 +287,7 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-	public function MeleePower($me, $sol = false, EquipmentType $weapon = null, $groupSize = 1) {
+	public function MeleePower($me, $sol = false, ?EquipmentType $weapon = null, $groupSize = 1) {
 		$noble = false;
 		$act = false;
 		# $sol is just a bypass for "Is this a soldier instance" or not.
@@ -440,7 +440,7 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-	public function RangedPower($me, $sol = false, EquipmentType $weapon = null, $groupSize = 1) {
+	public function RangedPower($me, $sol = false, ?EquipmentType $weapon = null, $groupSize = 1) {
 		$noble = false;
 		# $sol is just a bypass for "Is this a soldier instance" or not.
 		if ($sol) {

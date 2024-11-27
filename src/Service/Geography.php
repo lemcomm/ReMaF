@@ -36,9 +36,9 @@ class Geography {
 	private int $spotScout = -1;
 	private ?EntourageType $scout = null;
 
-	const DISTANCE_BATTLE = 20000;
-	const DISTANCE_FEATURE = 20000;
-	const DISTANCE_DUNGEON = 50000;
+	const int DISTANCE_BATTLE = 20000;
+	const int DISTANCE_FEATURE = 20000;
+	const int DISTANCE_DUNGEON = 50000;
 
 	public array $world = array(
 		'x_min' => 0,
@@ -647,7 +647,7 @@ class Geography {
 		return $result['spotdistance'];
 	}
 
-	public function databaseSpottingDistance(Character $character=null, $with_biome=true) {
+	public function databaseSpottingDistance(?Character $character=null, $with_biome=true) {
 		// the distance at which we see things
 		$spotBase = $this->common->getGlobal('spot.basedistance');
 		$spotScout = $this->common->getGlobal('spot.scoutmod');

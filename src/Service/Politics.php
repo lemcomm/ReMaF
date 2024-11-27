@@ -240,7 +240,7 @@ class Politics {
 	}
 
 
-	public function changeSettlementOwner(Settlement $settlement, Character $character=null, $reason=false): array {
+	public function changeSettlementOwner(Settlement $settlement, ?Character $character=null, $reason=false): array {
 		$oldowner = $settlement->getOwner();
 		$oldowner?->removeOwnedSettlement($settlement);
 		$character?->addOwnedSettlement($settlement);
@@ -559,7 +559,7 @@ class Politics {
 		return $result;
 	}
 
-	public function changeSettlementRealm(Settlement $settlement, Realm $newrealm=null, $reason=false): void {
+	public function changeSettlementRealm(Settlement $settlement, ?Realm $newrealm=null, $reason=false): void {
 		$oldrealm = $settlement->getRealm();
 
 		$newrealm?->addSettlement($settlement);
@@ -724,7 +724,7 @@ class Politics {
 		$this->updateWarTargets($settlement, $oldrealm, $newrealm);
 	}
 
-	public function changePlaceRealm(Place $place, Realm $newrealm=null, $reason=false): void {
+	public function changePlaceRealm(Place $place, ?Realm $newrealm=null, $reason=false): void {
 		$oldrealm = $place->getRealm();
 
 		$newrealm?->addPlace($place);
@@ -797,7 +797,7 @@ class Politics {
 		} /* end switch */
 	}
 
-	public function changeSettlementOccupier(Character $char = null, Settlement $settlement, Realm $realm = null): void {
+	public function changeSettlementOccupier(?Character $char = null, Settlement $settlement, ?Realm $realm = null): void {
 		$new = false;
 		$old = null;
 		if (!$settlement->getOccupier()) {
@@ -917,7 +917,7 @@ class Politics {
 	}
 
 
-	public function changePlaceOccupier(Character $char = null, Place $place, Realm $realm = null) {
+	public function changePlaceOccupier(?Character $char = null, Place $place, ?Realm $realm = null) {
 		$new = false;
 		$old = null;
 		if (!$place->getOccupier()) {
@@ -965,7 +965,7 @@ class Politics {
 		}
 	}
 
-	public function endOccupation($target, $why = null, $occupantTakeOver = false, Character $char = null): void {
+	public function endOccupation($target, $why = null, $occupantTakeOver = false, ?Character $char = null): void {
 		$occupier = $target->getOccupier();
 		$occupant = $target->getOccupant();
 		$target->setOccupant(null);
@@ -1115,7 +1115,7 @@ class Politics {
 
 	}
 
-	public function updateWarTargets(Settlement $settlement, Realm $oldRealm = null, Realm $newRealm = null): array {
+	public function updateWarTargets(Settlement $settlement, ?Realm $oldRealm = null, ?Realm $newRealm = null): array {
 		$wars = [];
 		foreach ($settlement->getWarTargets() as $target) {
 			$old = false; $new = false;

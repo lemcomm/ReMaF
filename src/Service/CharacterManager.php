@@ -35,7 +35,7 @@ class CharacterManager {
 		private AssociationManager $assocman) {
 	}
 
-	public function create(User $user, $name, $gender='m', $alive=true, Character $father=null, Character $mother=null, Character $partner=null): Character {
+	public function create(User $user, $name, $gender='m', $alive=true, ?Character $father=null, ?Character $mother=null, ?Character $partner=null): Character {
 		$character = new Character();
 		$character->setGeneration(1);
 		$character->setAlive($alive)->setSlumbering(!$alive)->setNpc(false);
@@ -127,7 +127,7 @@ class CharacterManager {
 	}
 
 	// FIXME: should be private after initial update
-	public function createGenome(User $user, Character $father=null, Character $mother=null): string {
+	public function createGenome(User $user, ?Character $father=null, ?Character $mother=null): string {
 		$genome = '__';
 		$genome_set = $user->getGenomeSet();
 
@@ -824,6 +824,7 @@ class CharacterManager {
 			}
 			# Break locations are intentional and provide law condition cascading, as intended.
 			switch ($value) {
+				/** @noinspection PhpMissingBreakStatementInspection */
 				case 'steward':
 					$steward = $thing->getSteward();
 					if ($steward && $steward !== $char && $steward->isActive()) {
@@ -837,6 +838,7 @@ class CharacterManager {
 						);
 						break;
 					}
+				/** @noinspection PhpMissingBreakStatementInspection */
 				case 'liege':
 					$liege = $char->findLiege();
 					if ($liege && $liege !== $char) {
@@ -848,6 +850,7 @@ class CharacterManager {
 							break;
 						}
 					}
+				/** @noinspection PhpMissingBreakStatementInspection */
 				case 'ruler':
 					$rulers = $realm->findRulers();
 					$count = $rulers->count();
@@ -1102,8 +1105,8 @@ class CharacterManager {
 		$this->assocman->removeMember($mbr->getAssociation(), $mbr->getCharacter());
 	}
 
-	public function bequeathAssoc(Association $assoc, Character $heir, Character $from, Character $via=null): void {
-		if ($from == $via || $via == null) {
+	public function bequeathAssoc(Association $assoc, Character $heir, Character $from, ?Character $via=null): void {
+		if ($from === $via || $via == null) {
 			$this->history->logEvent(
 				$heir,
 				'event.character.inherit.assoc',
@@ -1126,7 +1129,7 @@ class CharacterManager {
 		);
 	}
 
-	public function bequeathEstate(Settlement $settlement, Character $heir, Character $from, Character $via=null): void {
+	public function bequeathEstate(Settlement $settlement, Character $heir, Character $from, ?Character $via=null): void {
 		$this->politics->changeSettlementOwner($settlement, $heir); # Bequeathing never changes units over. No need to handle that.
 
 
@@ -1134,7 +1137,7 @@ class CharacterManager {
 		$this->history->openLog($settlement, $heir);
 
 		// Note that this CAN leave a character the lord of estates in seperate realms.
-		if ($from == $via || $via == null) {
+		if ($from === $via || $via == null) {
 			$this->history->logEvent(
 				$heir,
 				'event.character.inherit.estate',
@@ -1166,7 +1169,7 @@ class CharacterManager {
 
 	}
 
-	public function bequeathPlace(Place $place, Character $heir, Character $from, Character $via=null): void {
+	public function bequeathPlace(Place $place, Character $heir, Character $from, ?Character $via=null): void {
 		$oldowner = $place->getOwner();
 		$oldowner?->removeOwnedPlace($place);
 		$heir->addOwnedPlace($place);
@@ -1242,7 +1245,7 @@ class CharacterManager {
 	}
 
 
-	public function updateVassal(Character $vassal, Character $heir, Character $from, Character $via=null): void {
+	public function updateVassal(Character $vassal, Character $heir, Character $from, ?Character $via=null): void {
 		// TODO - quite a bit here, the new lord could be a different realm and all
 	}
 
@@ -1252,7 +1255,7 @@ class CharacterManager {
 	 *
 	 * @return array
 	 */
-	public function findHeir(Character $character, Character $from=null): array {
+	public function findHeir(Character $character, ?Character $from=null): array {
 		// NOTE: This should match the implemenation on GameRunner.php
 		if (!$from) {
 			$from = $character;
@@ -1275,10 +1278,10 @@ class CharacterManager {
 		return array(false, false);
 	}
 
-	public function inheritRealm(Realm $realm, Character $heir, Character $from, Character $via=null, $why='death'): void {
+	public function inheritRealm(Realm $realm, Character $heir, Character $from, ?Character $via=null, $why='death'): void {
 		$this->realmmanager->makeRuler($realm, $heir);
 		// NOTE: This can leave someone ruling a realm they weren't originally part of!
-		if ($from == $via || $via == null) {
+		if ($from === $via || $via == null) {
 			$this->history->logEvent(
 				$heir,
 				'event.character.inherit.realm',
@@ -1330,14 +1333,14 @@ class CharacterManager {
 		}
 	}
 
-	public function inheritPosition(RealmPosition $position, Realm $realm, Character $heir, Character $from, Character $via=null, $why='death'): void {
+	public function inheritPosition(RealmPosition $position, Realm $realm, Character $heir, Character $from, ?Character $via=null, $why='death'): void {
 		if ($position->getHolders()->contains($heir)) {
 			return;
 		}
 		$position->addHolder($heir);
 		$heir->addPosition($position);
 		// NOTE: This can add characters to realms they weren't already in!
-		if ($from == $via || $via == null) {
+		if ($from === $via || $via == null) {
 			$this->history->logEvent(
 				$heir,
 				'event.character.inherit.position',
@@ -1391,7 +1394,7 @@ class CharacterManager {
 		return $query->getResult();
 	}
 
-	public function Reputation(Character $char, User $me=null): array {
+	public function Reputation(Character $char, ?User $me=null): array {
 		// There are probably nice ways to do all this in SQL
 		$ratings = $this->em->getRepository('App\Entity\CharacterRating')->findBy(['character'=>$char]);
 		$data = array();
@@ -1439,7 +1442,7 @@ class CharacterManager {
 		return array($respect, $honor, $trust, $data);
 	}
 
-	public function SimpleReputation(Character $char, User $me=null): array {
+	public function SimpleReputation(Character $char, ?User $me=null): array {
 		[$respect, $honor, $trust, $data] = $this->Reputation($char, $me);
 
 		$max=0;

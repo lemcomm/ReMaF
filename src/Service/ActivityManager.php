@@ -78,7 +78,7 @@ class ActivityManager {
 		return $valid;
 	}
 
-        public function create(ActivityType $type, ?ActivitySubType $subType, Character $char, Activity $mainAct = null): Activity|false {
+        public function create(ActivityType $type, ?ActivitySubType $subType, Character $char, ?Activity $mainAct = null): Activity|false {
 		if (!$type->getEnabled()) {
 			return False;
 		}
@@ -132,7 +132,7 @@ class ActivityManager {
 		return $bout;
 	}
 
-	public function createParticipant(Activity $act, Character $char, Style	$style=null, $weapon=null, $same=false, $organizer=false): ActivityParticipant {
+	public function createParticipant(Activity $act, Character $char, ?Style $style=null, $weapon=null, $same=false, $organizer=false): ActivityParticipant {
 		$part = new ActivityParticipant();
 		$this->em->persist($part);
 		$part->setActivity($act);
@@ -186,7 +186,7 @@ class ActivityManager {
 	ACTIVITY CREATE FUNCTIONS
 	*/
 
-	public function createDuel(Character $me, Character $them, $name, $level, $same, EquipmentType $weapon, $weaponOnly, Style $meStyle = null, Style $themStyle = null): Activity|string {
+	public function createDuel(Character $me, Character $them, $name, $level, $same, EquipmentType $weapon, $weaponOnly, ?Style $meStyle = null, ?Style $themStyle = null): Activity|string {
 		$type = $this->em->getRepository('App\Entity\ActivityType')->findOneBy(['name'=>'duel']);
 		# TODO: Verify there isn't alreayd a duel between these individuals!
 		if ($act = $this->create($type, null, $me)) {

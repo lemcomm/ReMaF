@@ -200,7 +200,7 @@ class GameRequestManager {
 	/* THE FOLLOWING IS PROVIDED FOR TEMPLATING PURPOSES ONLY. For performance reasons do not use this function to actually generate a request.
 	Use a situational method, like "newRequestFromCharacterToHouse", or make a new situational method if one doesn't exist.*/
 
-	public function makeRequest($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, Character $fromChar = null, Settlement $fromSettlement = null, Realm $fromRealm = null, House $fromHouse = null, Place $fromPlace=null, RealmPosition $fromPos = null, Character $toChar = null, Settlement $toSettlement = null, Realm $toRealm = null, House $toHouse = null, Place $toPlace = null, RealmPosition $toPos = null, Character $includeChar = null, Settlement $includeSettlement = null, Realm $includeRealm = null, House $includeHouse = null, Place $includePlace=null, RealmPosition $includePos = null, Soldier $includeSoldiers = null, EquipmentType $includeEquipment = null) {
+	public function makeRequest($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, ?Character $fromChar = null, ?Settlement $fromSettlement = null, ?Realm $fromRealm = null, ?House $fromHouse = null, ?Place $fromPlace=null, ?RealmPosition $fromPos = null, ?Character $toChar = null, ?Settlement $toSettlement = null, ?Realm $toRealm = null, ?House $toHouse = null, ?Place $toPlace = null, ?RealmPosition $toPos = null, ?Character $includeChar = null, ?Settlement $includeSettlement = null, ?Realm $includeRealm = null, ?House $includeHouse = null, ?Place $includePlace=null, ?RealmPosition $includePos = null, ?Soldier $includeSoldiers = null, ?EquipmentType $includeEquipment = null) {
 		$GR = new GameRequest();
 		$this->em->persist($GR);
 		$GR->setType($type);
@@ -290,7 +290,7 @@ class GameRequestManager {
 		$this->em->flush();
 	}
 
-	public function newRequestFromCharacterToHouse ($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, Character $fromChar = null, House $toHouse = null, Character $includeChar = null, Settlement $includeSettlement = null, Realm $includeRealm = null, House $includeHouse = null, Soldier $includeSoldiers = null, EquipmentType $includeEquipment = null) {
+	public function newRequestFromCharacterToHouse ($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, ?Character $fromChar = null, ?House $toHouse = null, ?Character $includeChar = null, ?Settlement $includeSettlement = null, ?Realm $includeRealm = null, ?House $includeHouse = null, ?Soldier $includeSoldiers = null, ?EquipmentType $includeEquipment = null) {
 		$GR = new GameRequest();
 		$this->em->persist($GR);
 		$GR->setType($type);
@@ -340,7 +340,7 @@ class GameRequestManager {
 		$this->em->flush();
 	}
 
-	public function newRequestFromCharactertoSettlement ($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, Character $fromChar = null, Settlement $toSettlement = null) {
+	public function newRequestFromCharactertoSettlement ($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, ?Character $fromChar = null, ?Settlement $toSettlement = null) {
 		$GR = new GameRequest();
 		$this->em->persist($GR);
 		$GR->setType($type);
@@ -371,7 +371,7 @@ class GameRequestManager {
 		$this->em->flush();
 	}
 
-	public function newRequestFromCharacterToAssociation($type, $expires, $numberValue = null, $stringValue = null, $subject = null, $text = null, Character $fromChar = null, Association $toAssoc = null, Character $includeChar = null, Place $includePlace = null) {
+	public function newRequestFromCharacterToAssociation($type, $expires, $numberValue = null, $stringValue = null, $subject = null, $text = null, ?Character $fromChar = null, ?Association $toAssoc = null, ?Character $includeChar = null, ?Place $includePlace = null) {
 		$GR = new GameRequest();
 		$this->em->persist($GR);
 		$GR->setType($type);
@@ -408,7 +408,7 @@ class GameRequestManager {
 		$this->em->flush();
 	}
 
-	public function newRequestFromHouseToHouse($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, Character $fromChar = null, House $fromHouse = null, House $toHouse = null, Character $includeChar = null, Settlement $includeSettlement = null, Realm $includeRealm = null, Place $includePlace = null, RealmPosition $includePos = null) {
+	public function newRequestFromHouseToHouse($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, ?Character $fromChar = null, ?House $fromHouse = null, ?House $toHouse = null, ?Character $includeChar = null, ?Settlement $includeSettlement = null, ?Realm $includeRealm = null, ?Place $includePlace = null, ?RealmPosition $includePos = null) {
 		$GR = new GameRequest();
 		$this->em->persist($GR);
 		$GR->setType($type);
@@ -457,7 +457,7 @@ class GameRequestManager {
 		$this->em->flush();
 	}
 
-	public function newRequestFromRealmToRealm($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, Character $fromChar = null, Realm $fromRealm = null, Realm $toRealm = null, Character $includeChar = null, Settlement $includeSettlement = null, Realm $includeRealm = null, Place $includePlace = null, RealmPosition $includePos = null) {
+	public function newRequestFromRealmToRealm($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, ?Character $fromChar = null, ?Realm $fromRealm = null, ?Realm $toRealm = null, ?Character $includeChar = null, ?Settlement $includeSettlement = null, ?Realm $includeRealm = null, ?Place $includePlace = null, ?RealmPosition $includePos = null) {
 		$GR = new GameRequest();
 		$this->em->persist($GR);
 		$GR->setType($type);

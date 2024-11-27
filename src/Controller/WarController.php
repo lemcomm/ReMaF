@@ -194,7 +194,7 @@ class WarController extends AbstractController {
 	#[Route('/war/siege/', name:'maf_war_siege2')]
 	#[Route('/war/siege/place', name:'maf_war_siege3')]
 	#[Route('/war/siege/place/{place}', name:'maf_war_siege_place', requirements:['place'=>'\d+'])]
-	public function siegeAction(TranslatorInterface $trans, Request $request, Place $place = null): RedirectResponse|Response {
+	public function siegeAction(TranslatorInterface $trans, Request $request, ?Place $place = null): RedirectResponse|Response {
 		# Security check.
 		[$character, $settlement] = $this->warDisp->gateway(false, true, false);
 		if (! $character instanceof Character) {

@@ -88,7 +88,7 @@ class CommonService {
 		$this->em->flush($setting);
 	}
 
-	public function trainSkill(Character $char, SkillType $type=null, $pract = 0, $theory = 0): bool {
+	public function trainSkill(Character $char, ?SkillType $type=null, $pract = 0, $theory = 0): bool {
 		if (!$type) {
 			# Not all weapons have skills, this just catches those.
 			return false;

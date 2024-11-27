@@ -20,7 +20,7 @@ class ActionManager {
 		private PermissionManager $pm) {
 	}
 
-	public function acquireItem(Settlement $settlement, EquipmentType $item=null, $test_trainer=false, $reduce_supply=true, Character $character=null): bool {
+	public function acquireItem(Settlement $settlement, ?EquipmentType $item=null, $test_trainer=false, $reduce_supply=true, ?Character $character=null): bool {
 		if ($item==null) return true;
 
 		$provider = $settlement->getBuildingByType($item->getProvider());

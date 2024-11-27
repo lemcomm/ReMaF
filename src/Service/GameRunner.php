@@ -48,7 +48,7 @@ class GameRunner {
 		$this->cycle = $this->common->getCycle();
 	}
 
-	public function runCycle($type, $maxtime=1200, $timing=false, $debugging = false, OutputInterface $outInt = null): int {
+	public function runCycle($type, $maxtime=1200, $timing=false, $debugging = false, ?OutputInterface $outInt = null): int {
 		$this->maxtime = $maxtime;
 		$this->debugging = $debugging;
 		$this->outInt = $outInt;
@@ -1142,6 +1142,8 @@ class GameRunner {
 	/**
 	 * @return int
 	 * @noinspection PhpUnused
+	 * @throws \DateInvalidOperationException
+	 * @throws \DateInvalidOperationException
 	 */
 	public function runRealmsCycle(): int {
 		$last = $this->common->getGlobal('cycle.realm', 0);
@@ -1491,6 +1493,8 @@ class GameRunner {
 	/**
 	 * @return int
 	 * @noinspection PhpUnused
+	 * @throws \DateInvalidOperationException
+	 * @throws \DateInvalidOperationException
 	 */
 	public function runPositionsCycle(): int {
 		$last = $this->common->getGlobal('cycle.positions', 0);

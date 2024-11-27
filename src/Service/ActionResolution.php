@@ -193,7 +193,7 @@ class ActionResolution {
 			$this->politics->changeSettlementRealm($settlement, $action->getTargetRealm(), 'take');
 
 			// if we are not already inside, enter
-			if ($action->getCharacter()->getInsideSettlement() != $settlement) {
+			if ($action->getCharacter()->getInsideSettlement() !== $settlement) {
 				$this->interactions->characterEnterSettlement($action->getCharacter(), $settlement);
 			}
 		}
@@ -445,7 +445,7 @@ class ActionResolution {
 		if ($action->getTargetCharacter()->isInBattle()) {
 			$distance = $this->geography->calculateDistanceToCharacter($character, $action->getTargetCharacter());
 			$actiondistance = $this->geography->calculateInteractionDistance($character);
-			if ($distance < $actiondistance && $character->getInsideSettlement() == $action->getTargetCharacter()->getInsideSettlement()) {
+			if ($distance < $actiondistance && $character->getInsideSettlement() === $action->getTargetCharacter()->getInsideSettlement()) {
 				// join all battles on his side
 				foreach ($action->getTargetCharacter()->getBattlegroups() as $group) {
 					$this->warman->joinBattle($character, $group);

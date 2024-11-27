@@ -64,7 +64,7 @@ class PaymentManager {
 		];
 	}
 
-	public function getPaymentLevels(User $user = null, $system = false): array {
+	public function getPaymentLevels(?User $user = null, $system = false): array {
 		if ($this->ruleset === 'maf') {
 			return [
 				 0 =>	array('name' => 'storage',	'characters' =>    0, 'fee' =>   0, 'selectable' => false, 'patreon'=>false, 'creator'=>false),
@@ -665,7 +665,7 @@ class PaymentManager {
 		return true;
 	}
 
-	public function createCode($credits, $vip_status=0, $sent_to=null, User $sent_from=null, $limit=false): Code {
+	public function createCode($credits, $vip_status=0, $sent_to=null, ?User $sent_from=null, $limit=false): Code {
 		$code = new Code;
 		$code->setCode($this->app->generateAndCheckToken(40, 'Code', 'code'));
 		#$code->setCode(sha1(time()."mafcode".mt_rand(0,1000000)));
@@ -694,6 +694,8 @@ class PaymentManager {
 	 * @param bool   $renew_subscription Flag to indicate a subscription renewal.
 	 *
 	 * @return bool
+	 * @throws \DateMalformedStringException
+	 * @throws \DateMalformedStringException
 	 */
 	public function spend(User $user, string $type, int $credits, bool $renew_subscription=false): bool {
 		if ($credits>0 && $user->getCredits()<$credits) {
