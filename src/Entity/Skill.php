@@ -57,7 +57,7 @@ class Skill {
 	 *
 	 * @return Skill
 	 */
-	public function setCategory(SkillCategory $category = null): static {
+	public function setCategory(?SkillCategory $category = null): static {
 		$this->category = $category;
 
 		return $this;
@@ -198,7 +198,7 @@ class Skill {
 	 *
 	 * @return Skill
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -220,7 +220,7 @@ class Skill {
 	 *
 	 * @return Skill
 	 */
-	public function setType(SkillType $type = null): static {
+	public function setType(?SkillType $type = null): static {
 		$this->type = $type;
 
 		return $this;

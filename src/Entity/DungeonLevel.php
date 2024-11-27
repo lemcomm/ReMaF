@@ -152,7 +152,7 @@ class DungeonLevel {
 	 *
 	 * @return DungeonLevel
 	 */
-	public function setDungeon(Dungeon $dungeon = null): static {
+	public function setDungeon(?Dungeon $dungeon = null): static {
 		$this->dungeon = $dungeon;
 
 		return $this;

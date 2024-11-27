@@ -59,7 +59,7 @@ class UserReportAgainst {
 	 *
 	 * @return UserReportAgainst
 	 */
-	public function setAddedBy(User $addedBy = null): static {
+	public function setAddedBy(?User $addedBy = null): static {
 		$this->added_by = $addedBy;
 
 		return $this;
@@ -81,7 +81,7 @@ class UserReportAgainst {
 	 *
 	 * @return UserReportAgainst
 	 */
-	public function setUser(User $user = null): static {
+	public function setUser(?User $user = null): static {
 		$this->user = $user;
 
 		return $this;
@@ -103,7 +103,7 @@ class UserReportAgainst {
 	 *
 	 * @return UserReportAgainst
 	 */
-	public function setReport(UserReport $report = null): static {
+	public function setReport(?UserReport $report = null): static {
 		$this->report = $report;
 
 		return $this;

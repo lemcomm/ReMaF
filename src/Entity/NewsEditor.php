@@ -88,7 +88,7 @@ class NewsEditor {
 	 *
 	 * @return NewsEditor
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -110,7 +110,7 @@ class NewsEditor {
 	 *
 	 * @return NewsEditor
 	 */
-	public function setPaper(NewsPaper $paper = null): static {
+	public function setPaper(?NewsPaper $paper = null): static {
 		$this->paper = $paper;
 
 		return $this;

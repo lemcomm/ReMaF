@@ -80,7 +80,7 @@ class Ship {
 	 *
 	 * @return Ship
 	 */
-	public function setOwner(Character $owner = null): static {
+	public function setOwner(?Character $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;

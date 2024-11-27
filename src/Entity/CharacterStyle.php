@@ -149,7 +149,7 @@ class CharacterStyle {
 	 *
 	 * @return CharacterStyle
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -171,7 +171,7 @@ class CharacterStyle {
 	 *
 	 * @return CharacterStyle
 	 */
-	public function setStyle(Style $style = null): static {
+	public function setStyle(?Style $style = null): static {
 		$this->style = $style;
 
 		return $this;

@@ -103,7 +103,7 @@ class Condition {
 	 *
 	 * @return Condition
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -125,7 +125,7 @@ class Condition {
 	 *
 	 * @return Condition
 	 */
-	public function setTargetRealm(Realm $targetRealm = null): static {
+	public function setTargetRealm(?Realm $targetRealm = null): static {
 		$this->target_realm = $targetRealm;
 
 		return $this;
@@ -147,7 +147,7 @@ class Condition {
 	 *
 	 * @return Condition
 	 */
-	public function setTargetCharacter(Character $targetCharacter = null): static {
+	public function setTargetCharacter(?Character $targetCharacter = null): static {
 		$this->target_character = $targetCharacter;
 
 		return $this;
@@ -169,7 +169,7 @@ class Condition {
 	 *
 	 * @return Condition
 	 */
-	public function setTargetTrade(Trade $targetTrade = null): static {
+	public function setTargetTrade(?Trade $targetTrade = null): static {
 		$this->target_trade = $targetTrade;
 
 		return $this;

@@ -197,7 +197,7 @@ class BattleParticipant {
 	 *
 	 * @return BattleParticipant
 	 */
-	public function setBattleReport(BattleReport $battleReport = null): static {
+	public function setBattleReport(?BattleReport $battleReport = null): static {
 		$this->battle_report = $battleReport;
 
 		return $this;
@@ -219,7 +219,7 @@ class BattleParticipant {
 	 *
 	 * @return BattleParticipant
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -241,7 +241,7 @@ class BattleParticipant {
 	 *
 	 * @return BattleParticipant
 	 */
-	public function setCapturedBy(Character $capturedBy = null): static {
+	public function setCapturedBy(?Character $capturedBy = null): static {
 		$this->captured_by = $capturedBy;
 
 		return $this;

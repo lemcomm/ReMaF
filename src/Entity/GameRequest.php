@@ -276,7 +276,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setFromCharacter(Character $fromCharacter = null): static {
+	public function setFromCharacter(?Character $fromCharacter = null): static {
 		$this->from_character = $fromCharacter;
 
 		return $this;
@@ -298,7 +298,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setFromSettlement(Settlement $fromSettlement = null): static {
+	public function setFromSettlement(?Settlement $fromSettlement = null): static {
 		$this->from_settlement = $fromSettlement;
 
 		return $this;
@@ -320,7 +320,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setFromRealm(Realm $fromRealm = null): static {
+	public function setFromRealm(?Realm $fromRealm = null): static {
 		$this->from_realm = $fromRealm;
 
 		return $this;
@@ -342,7 +342,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setFromHouse(House $fromHouse = null): static {
+	public function setFromHouse(?House $fromHouse = null): static {
 		$this->from_house = $fromHouse;
 
 		return $this;
@@ -364,7 +364,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setFromPlace(Place $fromPlace = null): static {
+	public function setFromPlace(?Place $fromPlace = null): static {
 		$this->from_place = $fromPlace;
 
 		return $this;
@@ -386,7 +386,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setFromPosition(RealmPosition $fromPosition = null): static {
+	public function setFromPosition(?RealmPosition $fromPosition = null): static {
 		$this->from_position = $fromPosition;
 
 		return $this;
@@ -408,7 +408,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setFromAssociation(Association $fromAssociation = null): static {
+	public function setFromAssociation(?Association $fromAssociation = null): static {
 		$this->from_association = $fromAssociation;
 
 		return $this;
@@ -430,7 +430,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setToCharacter(Character $toCharacter = null): static {
+	public function setToCharacter(?Character $toCharacter = null): static {
 		$this->to_character = $toCharacter;
 
 		return $this;
@@ -452,7 +452,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setToSettlement(Settlement $toSettlement = null): static {
+	public function setToSettlement(?Settlement $toSettlement = null): static {
 		$this->to_settlement = $toSettlement;
 
 		return $this;
@@ -474,7 +474,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setToRealm(Realm $toRealm = null): static {
+	public function setToRealm(?Realm $toRealm = null): static {
 		$this->to_realm = $toRealm;
 
 		return $this;
@@ -496,7 +496,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setToHouse(House $toHouse = null): static {
+	public function setToHouse(?House $toHouse = null): static {
 		$this->to_house = $toHouse;
 
 		return $this;
@@ -518,7 +518,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setToPlace(Place $toPlace = null): static {
+	public function setToPlace(?Place $toPlace = null): static {
 		$this->to_place = $toPlace;
 
 		return $this;
@@ -540,7 +540,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setToPosition(RealmPosition $toPosition = null): static {
+	public function setToPosition(?RealmPosition $toPosition = null): static {
 		$this->to_position = $toPosition;
 
 		return $this;
@@ -562,7 +562,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setToAssociation(Association $toAssociation = null): static {
+	public function setToAssociation(?Association $toAssociation = null): static {
 		$this->to_association = $toAssociation;
 
 		return $this;
@@ -584,7 +584,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setIncludeCharacter(Character $includeCharacter = null): static {
+	public function setIncludeCharacter(?Character $includeCharacter = null): static {
 		$this->include_character = $includeCharacter;
 
 		return $this;
@@ -606,7 +606,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setIncludeSettlement(Settlement $includeSettlement = null): static {
+	public function setIncludeSettlement(?Settlement $includeSettlement = null): static {
 		$this->include_settlement = $includeSettlement;
 
 		return $this;
@@ -628,7 +628,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setIncludeRealm(Realm $includeRealm = null): static {
+	public function setIncludeRealm(?Realm $includeRealm = null): static {
 		$this->include_realm = $includeRealm;
 
 		return $this;
@@ -650,7 +650,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setIncludeHouse(House $includeHouse = null): static {
+	public function setIncludeHouse(?House $includeHouse = null): static {
 		$this->include_house = $includeHouse;
 
 		return $this;
@@ -672,7 +672,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setIncludePlace(Place $includePlace = null): static {
+	public function setIncludePlace(?Place $includePlace = null): static {
 		$this->include_place = $includePlace;
 
 		return $this;
@@ -694,7 +694,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setIncludePosition(RealmPosition $includePosition = null): static {
+	public function setIncludePosition(?RealmPosition $includePosition = null): static {
 		$this->include_position = $includePosition;
 
 		return $this;
@@ -716,7 +716,7 @@ class GameRequest {
 	 *
 	 * @return GameRequest
 	 */
-	public function setIncludeAssociation(Association $includeAssociation = null): static {
+	public function setIncludeAssociation(?Association $includeAssociation = null): static {
 		$this->include_association = $includeAssociation;
 
 		return $this;

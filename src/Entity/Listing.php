@@ -132,7 +132,7 @@ class Listing {
 	 *
 	 * @return Listing
 	 */
-	public function setCreator(Character $creator = null): static {
+	public function setCreator(?Character $creator = null): static {
 		$this->creator = $creator;
 
 		return $this;
@@ -154,7 +154,7 @@ class Listing {
 	 *
 	 * @return Listing
 	 */
-	public function setOwner(User $owner = null): static {
+	public function setOwner(?User $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;
@@ -176,7 +176,7 @@ class Listing {
 	 *
 	 * @return Listing
 	 */
-	public function setInheritFrom(Listing $inheritFrom = null): static {
+	public function setInheritFrom(?Listing $inheritFrom = null): static {
 		$this->inherit_from = $inheritFrom;
 
 		return $this;

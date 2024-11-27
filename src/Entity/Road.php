@@ -135,7 +135,7 @@ class Road {
 	 *
 	 * @return Road
 	 */
-	public function setGeoData(GeoData $geoData = null): static {
+	public function setGeoData(?GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
 		return $this;

@@ -44,7 +44,7 @@ class World {
 		return $this->travelType ? $this->travelType : 'realtime';
 	}
 
-	public function setTravelType(string $type = null): static {
+	public function setTravelType(?string $type = null): static {
 		$this->travelType = $type;
 		return $this;
 	}

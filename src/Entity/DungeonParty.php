@@ -90,7 +90,7 @@ class DungeonParty implements ChatLocationInterface {
 	 *
 	 * @return DungeonParty
 	 */
-	public function setDungeon(Dungeon $dungeon = null): static {
+	public function setDungeon(?Dungeon $dungeon = null): static {
 		$this->dungeon = $dungeon;
 
 		return $this;
@@ -112,7 +112,7 @@ class DungeonParty implements ChatLocationInterface {
 	 *
 	 * @return DungeonParty
 	 */
-	public function setCurrentLevel(DungeonLevel $currentLevel = null): static {
+	public function setCurrentLevel(?DungeonLevel $currentLevel = null): static {
 		$this->current_level = $currentLevel;
 
 		return $this;

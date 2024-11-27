@@ -31,7 +31,7 @@ class AssociationDeity {
 	 *
 	 * @return AssociationDeity
 	 */
-	public function setWords(string $words = null): static {
+	public function setWords(?string $words = null): static {
 		$this->words = $words;
 
 		return $this;
@@ -53,7 +53,7 @@ class AssociationDeity {
 	 *
 	 * @return AssociationDeity
 	 */
-	public function setWordsTimestamp(DateTime $wordsTimestamp = null): static {
+	public function setWordsTimestamp(?DateTime $wordsTimestamp = null): static {
 		$this->words_timestamp = $wordsTimestamp;
 
 		return $this;
@@ -84,7 +84,7 @@ class AssociationDeity {
 	 *
 	 * @return AssociationDeity
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;
@@ -106,7 +106,7 @@ class AssociationDeity {
 	 *
 	 * @return AssociationDeity
 	 */
-	public function setDeity(Deity $deity = null): static {
+	public function setDeity(?Deity $deity = null): static {
 		$this->deity = $deity;
 
 		return $this;
@@ -128,7 +128,7 @@ class AssociationDeity {
 	 *
 	 * @return AssociationDeity
 	 */
-	public function setWordsFrom(Character $wordsFrom = null): static {
+	public function setWordsFrom(?Character $wordsFrom = null): static {
 		$this->words_from = $wordsFrom;
 
 		return $this;

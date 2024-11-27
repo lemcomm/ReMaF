@@ -213,7 +213,7 @@ class Event {
 	 *
 	 * @return Event
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;

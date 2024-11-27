@@ -32,7 +32,7 @@ class StyleCounter {
 	 *
 	 * @return StyleCounter
 	 */
-	public function setStyle(Style $style = null): static {
+	public function setStyle(?Style $style = null): static {
 		$this->style = $style;
 
 		return $this;
@@ -54,7 +54,7 @@ class StyleCounter {
 	 *
 	 * @return StyleCounter
 	 */
-	public function setCounters(SkillType $counters = null): static {
+	public function setCounters(?SkillType $counters = null): static {
 		$this->counters = $counters;
 
 		return $this;

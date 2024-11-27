@@ -126,7 +126,7 @@ class MapMarker {
 	 *
 	 * @return MapMarker
 	 */
-	public function setOwner(Character $owner = null): static {
+	public function setOwner(?Character $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;
@@ -148,7 +148,7 @@ class MapMarker {
 	 *
 	 * @return MapMarker
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;

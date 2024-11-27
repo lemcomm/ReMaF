@@ -101,7 +101,7 @@ class Resupply {
 	 *
 	 * @return Resupply
 	 */
-	public function setUnit(Unit $unit = null): static {
+	public function setUnit(?Unit $unit = null): static {
 		$this->unit = $unit;
 
 		return $this;
@@ -123,7 +123,7 @@ class Resupply {
 	 *
 	 * @return Resupply
 	 */
-	public function setOrigin(Settlement $origin = null): static {
+	public function setOrigin(?Settlement $origin = null): static {
 		$this->origin = $origin;
 
 		return $this;

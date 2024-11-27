@@ -113,7 +113,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setActive(bool $active = null): static {
+	public function setActive(?bool $active = null): static {
 		$this->active = $active;
 
 		return $this;
@@ -190,7 +190,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setFaithName(string $faithName = null): static {
+	public function setFaithName(?string $faithName = null): static {
 		$this->faith_name = $faithName;
 
 		return $this;
@@ -212,7 +212,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setFollowerName(string $followerName = null): static {
+	public function setFollowerName(?string $followerName = null): static {
 		$this->follower_name = $followerName;
 
 		return $this;
@@ -234,7 +234,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setMotto(string $motto = null): static {
+	public function setMotto(?string $motto = null): static {
 		$this->motto = $motto;
 
 		return $this;
@@ -256,7 +256,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setShortDescription(string $shortDescription = null): static {
+	public function setShortDescription(?string $shortDescription = null): static {
 		$this->short_description = $shortDescription;
 
 		return $this;
@@ -287,7 +287,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setDescription(Description $description = null): static {
+	public function setDescription(?Description $description = null): static {
 		$this->description = $description;
 
 		return $this;
@@ -309,7 +309,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setSpawnDescription(SpawnDescription $spawnDescription = null): static {
+	public function setSpawnDescription(?SpawnDescription $spawnDescription = null): static {
 		$this->spawn_description = $spawnDescription;
 
 		return $this;
@@ -331,7 +331,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;
@@ -778,7 +778,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setType(AssociationType $type = null): static {
+	public function setType(?AssociationType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -800,7 +800,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setSuperior(Association $superior = null): static {
+	public function setSuperior(?Association $superior = null): static {
 		$this->superior = $superior;
 
 		return $this;
@@ -822,7 +822,7 @@ class Association extends Faction {
 	 *
 	 * @return Association
 	 */
-	public function setFounder(Character $founder = null): static {
+	public function setFounder(?Character $founder = null): static {
 		$this->founder = $founder;
 
 		return $this;

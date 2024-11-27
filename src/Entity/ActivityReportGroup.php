@@ -155,7 +155,7 @@ class ActivityReportGroup {
 	 *
 	 * @return ActivityReportGroup
 	 */
-	public function setActivityReport(ActivityReport $activityReport = null): static {
+	public function setActivityReport(?ActivityReport $activityReport = null): static {
 		$this->activity_report = $activityReport;
 
 		return $this;

@@ -180,7 +180,7 @@ class UserReport {
 	 *
 	 * @return UserReport
 	 */
-	public function setUser(User $user = null): static {
+	public function setUser(?User $user = null): static {
 		$this->user = $user;
 
 		return $this;
@@ -202,7 +202,7 @@ class UserReport {
 	 *
 	 * @return UserReport
 	 */
-	public function setJournal(Journal $journal = null): static {
+	public function setJournal(?Journal $journal = null): static {
 		$this->journal = $journal;
 
 		return $this;

@@ -57,7 +57,7 @@ class CharacterDeity {
 	 *
 	 * @return CharacterDeity
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -79,7 +79,7 @@ class CharacterDeity {
 	 *
 	 * @return CharacterDeity
 	 */
-	public function setDeity(Deity $deity = null): static {
+	public function setDeity(?Deity $deity = null): static {
 		$this->deity = $deity;
 
 		return $this;

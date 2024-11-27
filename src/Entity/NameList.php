@@ -77,7 +77,7 @@ class NameList {
 	 *
 	 * @return NameList
 	 */
-	public function setCulture(Culture $culture = null): static {
+	public function setCulture(?Culture $culture = null): static {
 		$this->culture = $culture;
 
 		return $this;

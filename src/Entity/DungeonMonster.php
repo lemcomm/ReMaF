@@ -216,7 +216,7 @@ class DungeonMonster {
 	 *
 	 * @return DungeonMonster
 	 */
-	public function setLevel(DungeonLevel $level = null): static {
+	public function setLevel(?DungeonLevel $level = null): static {
 		$this->level = $level;
 
 		return $this;
@@ -238,7 +238,7 @@ class DungeonMonster {
 	 *
 	 * @return DungeonMonster
 	 */
-	public function setType(DungeonMonsterType $type = null): static {
+	public function setType(?DungeonMonsterType $type = null): static {
 		$this->type = $type;
 
 		return $this;

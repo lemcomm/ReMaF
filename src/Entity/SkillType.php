@@ -96,7 +96,7 @@ class SkillType {
 	 *
 	 * @return SkillType
 	 */
-	public function setCategory(SkillCategory $category = null): static {
+	public function setCategory(?SkillCategory $category = null): static {
 		$this->category = $category;
 
 		return $this;

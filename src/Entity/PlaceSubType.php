@@ -54,7 +54,7 @@ class PlaceSubType {
 	 *
 	 * @return PlaceSubType
 	 */
-	public function setPlaceType(PlaceType $placeType = null): static {
+	public function setPlaceType(?PlaceType $placeType = null): static {
 		$this->place_type = $placeType;
 
 		return $this;

@@ -78,7 +78,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setSuperior(House $superior = null): static {
+	public function setSuperior(?House $superior = null): static {
 		$this->superior = $superior;
 
 		return $this;
@@ -328,7 +328,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setHead(Character $head = null): static {
+	public function setHead(?Character $head = null): static {
 		$this->head = $head;
 
 		return $this;
@@ -350,7 +350,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setDescription(Description $description = null): static {
+	public function setDescription(?Description $description = null): static {
 		$this->description = $description;
 
 		return $this;
@@ -372,7 +372,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setSpawnDescription(SpawnDescription $spawnDescription = null): static {
+	public function setSpawnDescription(?SpawnDescription $spawnDescription = null): static {
 		$this->spawn_description = $spawnDescription;
 
 		return $this;
@@ -394,7 +394,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;
@@ -416,7 +416,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setHome(Place $home = null): static {
+	public function setHome(?Place $home = null): static {
 		$this->home = $home;
 
 		return $this;
@@ -438,7 +438,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setSpawn(Spawn $spawn = null): static {
+	public function setSpawn(?Spawn $spawn = null): static {
 		$this->spawn = $spawn;
 
 		return $this;
@@ -659,7 +659,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setCrest(Heraldry $crest = null): static {
+	public function setCrest(?Heraldry $crest = null): static {
 		$this->crest = $crest;
 
 		return $this;
@@ -681,7 +681,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setFounder(Character $founder = null): static {
+	public function setFounder(?Character $founder = null): static {
 		$this->founder = $founder;
 
 		return $this;
@@ -703,7 +703,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setSuccessor(Character $successor = null): static {
+	public function setSuccessor(?Character $successor = null): static {
 		$this->successor = $successor;
 
 		return $this;
@@ -725,7 +725,7 @@ class House extends Faction {
 	 *
 	 * @return House
 	 */
-	public function setInsideSettlement(Settlement $insideSettlement = null): static {
+	public function setInsideSettlement(?Settlement $insideSettlement = null): static {
 		$this->inside_settlement = $insideSettlement;
 
 		return $this;

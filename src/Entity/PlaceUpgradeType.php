@@ -77,7 +77,7 @@ class PlaceUpgradeType {
 	 *
 	 * @return PlaceUpgradeType
 	 */
-	public function setPlaceType(PlaceType $placeType = null): static {
+	public function setPlaceType(?PlaceType $placeType = null): static {
 		$this->place_type = $placeType;
 
 		return $this;

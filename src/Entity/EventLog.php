@@ -92,7 +92,7 @@ class EventLog {
 	 *
 	 * @return EventLog
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -114,7 +114,7 @@ class EventLog {
 	 *
 	 * @return EventLog
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -136,7 +136,7 @@ class EventLog {
 	 *
 	 * @return EventLog
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -158,7 +158,7 @@ class EventLog {
 	 *
 	 * @return EventLog
 	 */
-	public function setQuest(Quest $quest = null): static {
+	public function setQuest(?Quest $quest = null): static {
 		$this->quest = $quest;
 
 		return $this;
@@ -180,7 +180,7 @@ class EventLog {
 	 *
 	 * @return EventLog
 	 */
-	public function setArtifact(Artifact $artifact = null): static {
+	public function setArtifact(?Artifact $artifact = null): static {
 		$this->artifact = $artifact;
 
 		return $this;
@@ -202,7 +202,7 @@ class EventLog {
 	 *
 	 * @return EventLog
 	 */
-	public function setWar(War $war = null): static {
+	public function setWar(?War $war = null): static {
 		$this->war = $war;
 
 		return $this;
@@ -224,7 +224,7 @@ class EventLog {
 	 *
 	 * @return EventLog
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;
@@ -246,7 +246,7 @@ class EventLog {
 	 *
 	 * @return EventLog
 	 */
-	public function setHouse(House $house = null): static {
+	public function setHouse(?House $house = null): static {
 		$this->house = $house;
 
 		return $this;
@@ -268,7 +268,7 @@ class EventLog {
 	 *
 	 * @return EventLog
 	 */
-	public function setUnit(Unit $unit = null): static {
+	public function setUnit(?Unit $unit = null): static {
 		$this->unit = $unit;
 
 		return $this;
@@ -290,7 +290,7 @@ class EventLog {
 	 *
 	 * @return EventLog
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;

@@ -36,7 +36,7 @@ class ActivityRequirement {
 	 *
 	 * @return ActivityRequirement
 	 */
-	public function setType(ActivityType $type = null): static {
+	public function setType(?ActivityType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -58,7 +58,7 @@ class ActivityRequirement {
 	 *
 	 * @return ActivityRequirement
 	 */
-	public function setBuilding(BuildingType $building = null): static {
+	public function setBuilding(?BuildingType $building = null): static {
 		$this->building = $building;
 
 		return $this;
@@ -80,7 +80,7 @@ class ActivityRequirement {
 	 *
 	 * @return ActivityRequirement
 	 */
-	public function setPlace(PlaceType $place = null): static {
+	public function setPlace(?PlaceType $place = null): static {
 		$this->place = $place;
 
 		return $this;

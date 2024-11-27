@@ -173,7 +173,7 @@ class War {
 	 *
 	 * @return War
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -258,7 +258,7 @@ class War {
 	 *
 	 * @return War
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;

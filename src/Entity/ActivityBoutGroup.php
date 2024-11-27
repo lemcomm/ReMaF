@@ -35,7 +35,7 @@ class ActivityBoutGroup {
 	 *
 	 * @return ActivityBoutGroup
 	 */
-	public function setBout(ActivityBout $bout = null): static {
+	public function setBout(?ActivityBout $bout = null): static {
 		$this->bout = $bout;
 
 		return $this;
@@ -57,7 +57,7 @@ class ActivityBoutGroup {
 	 *
 	 * @return ActivityBoutGroup
 	 */
-	public function setGroup(ActivityGroup $group = null): static {
+	public function setGroup(?ActivityGroup $group = null): static {
 		$this->group = $group;
 
 		return $this;

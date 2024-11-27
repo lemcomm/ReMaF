@@ -78,7 +78,7 @@ class DungeonCard {
 	 *
 	 * @return DungeonCard
 	 */
-	public function setType(DungeonCardType $type = null): static {
+	public function setType(?DungeonCardType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -100,7 +100,7 @@ class DungeonCard {
 	 *
 	 * @return DungeonCard
 	 */
-	public function setOwner(Dungeoneer $owner = null): static {
+	public function setOwner(?Dungeoneer $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;

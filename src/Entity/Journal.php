@@ -330,7 +330,7 @@ class Journal {
 	 *
 	 * @return Journal
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -352,7 +352,7 @@ class Journal {
 	 *
 	 * @return Journal
 	 */
-	public function setBattleReport(BattleReport $battleReport = null): static {
+	public function setBattleReport(?BattleReport $battleReport = null): static {
 		$this->battle_report = $battleReport;
 
 		return $this;
@@ -374,7 +374,7 @@ class Journal {
 	 *
 	 * @return Journal
 	 */
-	public function setActivityReport(ActivityReport $activityReport = null): static {
+	public function setActivityReport(?ActivityReport $activityReport = null): static {
 		$this->activity_report = $activityReport;
 
 		return $this;

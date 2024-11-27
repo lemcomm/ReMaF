@@ -110,7 +110,7 @@ class ActivityBout {
 	 *
 	 * @return ActivityBout
 	 */
-	public function setType(ActivitySubType $type = null): static {
+	public function setType(?ActivitySubType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -132,7 +132,7 @@ class ActivityBout {
 	 *
 	 * @return ActivityBout
 	 */
-	public function setActivity(Activity $activity = null): static {
+	public function setActivity(?Activity $activity = null): static {
 		$this->activity = $activity;
 
 		return $this;

@@ -57,7 +57,7 @@ class ActivitySubType {
 	 *
 	 * @return ActivitySubType
 	 */
-	public function setType(ActivityType $type = null): static {
+	public function setType(?ActivityType $type = null): static {
 		$this->type = $type;
 
 		return $this;

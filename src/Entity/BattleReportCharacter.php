@@ -194,7 +194,7 @@ class BattleReportCharacter {
 	 *
 	 * @return BattleReportCharacter
 	 */
-	public function setGroupReport(BattleReportGroup $groupReport = null): static {
+	public function setGroupReport(?BattleReportGroup $groupReport = null): static {
 		$this->group_report = $groupReport;
 
 		return $this;
@@ -216,7 +216,7 @@ class BattleReportCharacter {
 	 *
 	 * @return BattleReportCharacter
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -238,7 +238,7 @@ class BattleReportCharacter {
 	 *
 	 * @return BattleReportCharacter
 	 */
-	public function setCapturedBy(Character $capturedBy = null): static {
+	public function setCapturedBy(?Character $capturedBy = null): static {
 		$this->captured_by = $capturedBy;
 
 		return $this;

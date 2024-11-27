@@ -129,7 +129,7 @@ class SkillCategory {
 	 *
 	 * @return SkillCategory
 	 */
-	public function setCategory(SkillCategory $category = null): static {
+	public function setCategory(?SkillCategory $category = null): static {
 		$this->category = $category;
 
 		return $this;

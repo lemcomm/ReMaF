@@ -100,7 +100,7 @@ class EntourageType {
 	 *
 	 * @return EntourageType
 	 */
-	public function setProvider(BuildingType $provider = null): static {
+	public function setProvider(?BuildingType $provider = null): static {
 		$this->provider = $provider;
 
 		return $this;

@@ -109,7 +109,7 @@ class BattleReportGroup {
 	 *
 	 * @return BattleReportGroup
 	 */
-	public function setFates(array $fates = null): static {
+	public function setFates(?array $fates = null): static {
 		$this->fates = $fates;
 
 		return $this;
@@ -131,7 +131,7 @@ class BattleReportGroup {
 	 *
 	 * @return BattleReportGroup
 	 */
-	public function setCount(int $count = null): static {
+	public function setCount(?int $count = null): static {
 		$this->count = $count;
 
 		return $this;
@@ -255,7 +255,7 @@ class BattleReportGroup {
 	 *
 	 * @return BattleReportGroup
 	 */
-	public function setBattleReport(BattleReport $battleReport = null): static {
+	public function setBattleReport(?BattleReport $battleReport = null): static {
 		$this->battle_report = $battleReport;
 
 		return $this;
@@ -277,7 +277,7 @@ class BattleReportGroup {
 	 *
 	 * @return BattleReportGroup
 	 */
-	public function setSupporting(BattleReportGroup $supporting = null): static {
+	public function setSupporting(?BattleReportGroup $supporting = null): static {
 		$this->supporting = $supporting;
 
 		return $this;

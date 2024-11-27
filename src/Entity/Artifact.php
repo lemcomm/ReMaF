@@ -97,7 +97,7 @@ class Artifact {
 	 *
 	 * @return Artifact
 	 */
-	public function setDescription(Description $description = null): static {
+	public function setDescription(?Description $description = null): static {
 		$this->description = $description;
 
 		return $this;
@@ -119,7 +119,7 @@ class Artifact {
 	 *
 	 * @return Artifact
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;
@@ -172,7 +172,7 @@ class Artifact {
 	 *
 	 * @return Artifact
 	 */
-	public function setOwner(Character $owner = null): static {
+	public function setOwner(?Character $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;
@@ -194,7 +194,7 @@ class Artifact {
 	 *
 	 * @return Artifact
 	 */
-	public function setCreator(User $creator = null): static {
+	public function setCreator(?User $creator = null): static {
 		$this->creator = $creator;
 
 		return $this;
@@ -216,7 +216,7 @@ class Artifact {
 	 *
 	 * @return Artifact
 	 */
-	public function setLocation(Point $location = null): static {
+	public function setLocation(?Point $location = null): static {
 		$this->location = $location;
 
 		return $this;
@@ -238,7 +238,7 @@ class Artifact {
 	 *
 	 * @return Artifact
 	 */
-	public function setAvailableAfter(DateTime $available_after = null): static {
+	public function setAvailableAfter(?DateTime $available_after = null): static {
 		$this->available_after = $available_after;
 
 		return $this;

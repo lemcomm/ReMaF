@@ -188,7 +188,7 @@ class DungeonTreasure {
 	 *
 	 * @return DungeonTreasure
 	 */
-	public function setLevel(DungeonLevel $level = null): static {
+	public function setLevel(?DungeonLevel $level = null): static {
 		$this->level = $level;
 
 		return $this;

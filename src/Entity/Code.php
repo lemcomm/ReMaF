@@ -174,7 +174,7 @@ class Code {
 	 *
 	 * @return Code
 	 */
-	public function setSender(User $sender = null): static {
+	public function setSender(?User $sender = null): static {
 		$this->sender = $sender;
 
 		return $this;
@@ -196,7 +196,7 @@ class Code {
 	 *
 	 * @return Code
 	 */
-	public function setUsedBy(User $usedBy = null): static {
+	public function setUsedBy(?User $usedBy = null): static {
 		$this->used_by = $usedBy;
 
 		return $this;

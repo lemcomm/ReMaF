@@ -27,7 +27,7 @@ class CharacterBackground {
 	 *
 	 * @return CharacterBackground
 	 */
-	public function setAppearance(string $appearance = null): static {
+	public function setAppearance(?string $appearance = null): static {
 		$this->appearance = $appearance;
 
 		return $this;
@@ -49,7 +49,7 @@ class CharacterBackground {
 	 *
 	 * @return CharacterBackground
 	 */
-	public function setPersonality(string $personality = null): static {
+	public function setPersonality(?string $personality = null): static {
 		$this->personality = $personality;
 
 		return $this;
@@ -71,7 +71,7 @@ class CharacterBackground {
 	 *
 	 * @return CharacterBackground
 	 */
-	public function setSecrets(string $secrets = null): static {
+	public function setSecrets(?string $secrets = null): static {
 		$this->secrets = $secrets;
 
 		return $this;
@@ -93,7 +93,7 @@ class CharacterBackground {
 	 *
 	 * @return CharacterBackground
 	 */
-	public function setRetirement(string $retirement = null): static {
+	public function setRetirement(?string $retirement = null): static {
 		$this->retirement = $retirement;
 
 		return $this;
@@ -115,7 +115,7 @@ class CharacterBackground {
 	 *
 	 * @return CharacterBackground
 	 */
-	public function setDeath(string $death = null): static {
+	public function setDeath(?string $death = null): static {
 		$this->death = $death;
 
 		return $this;
@@ -146,7 +146,7 @@ class CharacterBackground {
 	 *
 	 * @return CharacterBackground
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;

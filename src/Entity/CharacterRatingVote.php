@@ -55,7 +55,7 @@ class CharacterRatingVote {
 	 *
 	 * @return CharacterRatingVote
 	 */
-	public function setRating(CharacterRating $rating = null): static {
+	public function setRating(?CharacterRating $rating = null): static {
 		$this->rating = $rating;
 
 		return $this;
@@ -77,7 +77,7 @@ class CharacterRatingVote {
 	 *
 	 * @return CharacterRatingVote
 	 */
-	public function setUser(User $user = null): static {
+	public function setUser(?User $user = null): static {
 		$this->user = $user;
 
 		return $this;

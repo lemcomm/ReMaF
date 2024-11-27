@@ -148,7 +148,7 @@ class GeoFeature {
 	 *
 	 * @return GeoFeature
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -170,7 +170,7 @@ class GeoFeature {
 	 *
 	 * @return GeoFeature
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;
@@ -192,7 +192,7 @@ class GeoFeature {
 	 *
 	 * @return GeoFeature
 	 */
-	public function setType(FeatureType $type = null): static {
+	public function setType(?FeatureType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -214,7 +214,7 @@ class GeoFeature {
 	 *
 	 * @return GeoFeature
 	 */
-	public function setGeoData(GeoData $geoData = null): static {
+	public function setGeoData(?GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
 		return $this;

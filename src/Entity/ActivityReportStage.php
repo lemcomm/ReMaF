@@ -73,7 +73,7 @@ class ActivityReportStage {
 	 *
 	 * @return ActivityReportStage
 	 */
-	public function setExtra(array $extra = null): static {
+	public function setExtra(?array $extra = null): static {
 		$this->extra = $extra;
 
 		return $this;
@@ -104,7 +104,7 @@ class ActivityReportStage {
 	 *
 	 * @return ActivityReportStage
 	 */
-	public function setGroup(ActivityReportGroup $group = null): static {
+	public function setGroup(?ActivityReportGroup $group = null): static {
 		$this->group = $group;
 
 		return $this;
@@ -126,7 +126,7 @@ class ActivityReportStage {
 	 *
 	 * @return ActivityReportStage
 	 */
-	public function setCharacter(ActivityReportCharacter $character = null): static {
+	public function setCharacter(?ActivityReportCharacter $character = null): static {
 		$this->character = $character;
 
 		return $this;

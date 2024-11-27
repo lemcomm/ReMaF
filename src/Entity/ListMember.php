@@ -85,7 +85,7 @@ class ListMember {
 	 *
 	 * @return ListMember
 	 */
-	public function setListing(Listing $listing = null): static {
+	public function setListing(?Listing $listing = null): static {
 		$this->listing = $listing;
 
 		return $this;
@@ -107,7 +107,7 @@ class ListMember {
 	 *
 	 * @return ListMember
 	 */
-	public function setTargetRealm(Realm $targetRealm = null): static {
+	public function setTargetRealm(?Realm $targetRealm = null): static {
 		$this->target_realm = $targetRealm;
 
 		return $this;
@@ -129,7 +129,7 @@ class ListMember {
 	 *
 	 * @return ListMember
 	 */
-	public function setTargetCharacter(Character $targetCharacter = null): static {
+	public function setTargetCharacter(?Character $targetCharacter = null): static {
 		$this->target_character = $targetCharacter;
 
 		return $this;
@@ -151,7 +151,7 @@ class ListMember {
 	 *
 	 * @return ListMember
 	 */
-	public function setTargetPosition(RealmPosition $targetPosition = null): static {
+	public function setTargetPosition(?RealmPosition $targetPosition = null): static {
 		$this->target_position = $targetPosition;
 
 		return $this;

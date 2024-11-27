@@ -51,7 +51,7 @@ class CreditHistory {
 	 *
 	 * @return CreditHistory
 	 */
-	public function setBonus(int $bonus = null): static {
+	public function setBonus(?int $bonus = null): static {
 		$this->bonus = $bonus;
 
 		return $this;
@@ -126,7 +126,7 @@ class CreditHistory {
 	 *
 	 * @return CreditHistory
 	 */
-	public function setPayment(UserPayment $payment = null): static {
+	public function setPayment(?UserPayment $payment = null): static {
 		$this->payment = $payment;
 
 		return $this;
@@ -148,7 +148,7 @@ class CreditHistory {
 	 *
 	 * @return CreditHistory
 	 */
-	public function setUser(User $user = null): static {
+	public function setUser(?User $user = null): static {
 		$this->user = $user;
 
 		return $this;

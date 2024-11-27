@@ -207,7 +207,7 @@ class NewsEdition {
 	 *
 	 * @return NewsEdition
 	 */
-	public function setPaper(NewsPaper $paper = null): static {
+	public function setPaper(?NewsPaper $paper = null): static {
 		$this->paper = $paper;
 
 		return $this;

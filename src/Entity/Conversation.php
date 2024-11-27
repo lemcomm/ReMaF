@@ -205,7 +205,7 @@ class Conversation {
 	 *
 	 * @return Conversation
 	 */
-	public function setTopic(string $topic = null): static {
+	public function setTopic(?string $topic = null): static {
 		$this->topic = $topic;
 
 		return $this;
@@ -227,7 +227,7 @@ class Conversation {
 	 *
 	 * @return Conversation
 	 */
-	public function setSystem(string $system = null): static {
+	public function setSystem(?string $system = null): static {
 		$this->system = $system;
 
 		return $this;
@@ -249,7 +249,7 @@ class Conversation {
 	 *
 	 * @return Conversation
 	 */
-	public function setType(string $type = null): static {
+	public function setType(?string $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -293,7 +293,7 @@ class Conversation {
 	 *
 	 * @return Conversation
 	 */
-	public function setCycle(int $cycle = null): static {
+	public function setCycle(?int $cycle = null): static {
 		$this->cycle = $cycle;
 
 		return $this;
@@ -315,7 +315,7 @@ class Conversation {
 	 *
 	 * @return Conversation
 	 */
-	public function setUpdated(DateTime $updated = null): static {
+	public function setUpdated(?DateTime $updated = null): static {
 		$this->updated = $updated;
 
 		return $this;
@@ -346,7 +346,7 @@ class Conversation {
 	 *
 	 * @return Conversation
 	 */
-	public function setLocalFor(Character $localFor = null): static {
+	public function setLocalFor(?Character $localFor = null): static {
 		$this->local_for = $localFor;
 
 		return $this;
@@ -412,7 +412,7 @@ class Conversation {
 	 *
 	 * @return Conversation
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -434,7 +434,7 @@ class Conversation {
 	 *
 	 * @return Conversation
 	 */
-	public function setHouse(House $house = null): static {
+	public function setHouse(?House $house = null): static {
 		$this->house = $house;
 
 		return $this;
@@ -456,7 +456,7 @@ class Conversation {
 	 *
 	 * @return Conversation
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;

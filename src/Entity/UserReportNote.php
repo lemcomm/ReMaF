@@ -107,7 +107,7 @@ class UserReportNote {
 	 *
 	 * @return UserReportNote
 	 */
-	public function setFrom(User $from = null): static {
+	public function setFrom(?User $from = null): static {
 		$this->from = $from;
 
 		return $this;
@@ -129,7 +129,7 @@ class UserReportNote {
 	 *
 	 * @return UserReportNote
 	 */
-	public function setReport(UserReport $report = null): static {
+	public function setReport(?UserReport $report = null): static {
 		$this->report = $report;
 
 		return $this;

@@ -26,7 +26,7 @@ class PlacePermission extends PermissionBase {
 	 *
 	 * @return PlacePermission
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;
@@ -48,7 +48,7 @@ class PlacePermission extends PermissionBase {
 	 *
 	 * @return PlacePermission
 	 */
-	public function setOccupiedPlace(Place $occupiedPlace = null): static {
+	public function setOccupiedPlace(?Place $occupiedPlace = null): static {
 		$this->occupied_place = $occupiedPlace;
 
 		return $this;

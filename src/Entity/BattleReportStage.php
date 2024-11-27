@@ -70,7 +70,7 @@ class BattleReportStage {
 	 *
 	 * @return BattleReportStage
 	 */
-	public function setExtra(array $extra = null): static {
+	public function setExtra(?array $extra = null): static {
 		$this->extra = $extra;
 
 		return $this;
@@ -101,7 +101,7 @@ class BattleReportStage {
 	 *
 	 * @return BattleReportStage
 	 */
-	public function setGroupReport(BattleReportGroup $groupReport = null): static {
+	public function setGroupReport(?BattleReportGroup $groupReport = null): static {
 		$this->group_report = $groupReport;
 
 		return $this;

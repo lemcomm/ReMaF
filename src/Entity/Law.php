@@ -286,7 +286,7 @@ class Law {
 	 *
 	 * @return Law
 	 */
-	public function setInvalidatedBy(Law $invalidatedBy = null): static {
+	public function setInvalidatedBy(?Law $invalidatedBy = null): static {
 		$this->invalidated_by = $invalidatedBy;
 
 		return $this;
@@ -308,7 +308,7 @@ class Law {
 	 *
 	 * @return Law
 	 */
-	public function setInvalidates(Law $invalidates = null): static {
+	public function setInvalidates(?Law $invalidates = null): static {
 		$this->invalidates = $invalidates;
 
 		return $this;
@@ -330,7 +330,7 @@ class Law {
 	 *
 	 * @return Law
 	 */
-	public function setEnactedBy(Character $enactedBy = null): static {
+	public function setEnactedBy(?Character $enactedBy = null): static {
 		$this->enacted_by = $enactedBy;
 
 		return $this;
@@ -352,7 +352,7 @@ class Law {
 	 *
 	 * @return Law
 	 */
-	public function setRepealedBy(Character $repealedBy = null): static {
+	public function setRepealedBy(?Character $repealedBy = null): static {
 		$this->repealed_by = $repealedBy;
 
 		return $this;
@@ -374,7 +374,7 @@ class Law {
 	 *
 	 * @return Law
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;
@@ -396,7 +396,7 @@ class Law {
 	 *
 	 * @return Law
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -418,7 +418,7 @@ class Law {
 	 *
 	 * @return Law
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -440,7 +440,7 @@ class Law {
 	 *
 	 * @return Law
 	 */
-	public function setType(LawType $type = null): static {
+	public function setType(?LawType $type = null): static {
 		$this->type = $type;
 
 		return $this;

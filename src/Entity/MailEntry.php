@@ -126,7 +126,7 @@ class MailEntry {
 	 *
 	 * @return MailEntry
 	 */
-	public function setUser(User $user = null): static {
+	public function setUser(?User $user = null): static {
 		$this->user = $user;
 
 		return $this;
@@ -148,7 +148,7 @@ class MailEntry {
 	 *
 	 * @return MailEntry
 	 */
-	public function setEvent(Event $event = null): static {
+	public function setEvent(?Event $event = null): static {
 		$this->event = $event;
 
 		return $this;

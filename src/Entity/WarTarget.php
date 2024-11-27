@@ -101,7 +101,7 @@ class WarTarget {
 	 *
 	 * @return WarTarget
 	 */
-	public function setWar(War $war = null): static {
+	public function setWar(?War $war = null): static {
 		$this->war = $war;
 
 		return $this;
@@ -123,7 +123,7 @@ class WarTarget {
 	 *
 	 * @return WarTarget
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;

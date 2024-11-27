@@ -124,7 +124,7 @@ class BuildingResource {
 	 *
 	 * @return BuildingResource
 	 */
-	public function setBuildingType(BuildingType $buildingType = null): static {
+	public function setBuildingType(?BuildingType $buildingType = null): static {
 		$this->building_type = $buildingType;
 
 		return $this;
@@ -146,7 +146,7 @@ class BuildingResource {
 	 *
 	 * @return BuildingResource
 	 */
-	public function setResourceType(ResourceType $resourceType = null): static {
+	public function setResourceType(?ResourceType $resourceType = null): static {
 		$this->resource_type = $resourceType;
 
 		return $this;

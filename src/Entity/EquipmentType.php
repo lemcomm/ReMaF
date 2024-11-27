@@ -221,7 +221,7 @@ class EquipmentType {
 	 *
 	 * @return EquipmentType
 	 */
-	public function setProvider(BuildingType $provider = null): static {
+	public function setProvider(?BuildingType $provider = null): static {
 		$this->provider = $provider;
 
 		return $this;
@@ -243,7 +243,7 @@ class EquipmentType {
 	 *
 	 * @return EquipmentType
 	 */
-	public function setTrainer(BuildingType $trainer = null): static {
+	public function setTrainer(?BuildingType $trainer = null): static {
 		$this->trainer = $trainer;
 
 		return $this;
@@ -265,7 +265,7 @@ class EquipmentType {
 	 *
 	 * @return EquipmentType
 	 */
-	public function setSkill(SkillType $skill = null): static {
+	public function setSkill(?SkillType $skill = null): static {
 		$this->skill = $skill;
 
 		return $this;

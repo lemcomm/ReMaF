@@ -241,7 +241,7 @@ class NewsArticle {
 	 *
 	 * @return NewsArticle
 	 */
-	public function setAuthor(Character $author = null): static {
+	public function setAuthor(?Character $author = null): static {
 		$this->author = $author;
 
 		return $this;
@@ -263,7 +263,7 @@ class NewsArticle {
 	 *
 	 * @return NewsArticle
 	 */
-	public function setEdition(NewsEdition $edition = null): static {
+	public function setEdition(?NewsEdition $edition = null): static {
 		$this->edition = $edition;
 
 		return $this;

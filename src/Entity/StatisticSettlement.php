@@ -170,7 +170,7 @@ class StatisticSettlement {
 	 *
 	 * @return StatisticSettlement
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -192,7 +192,7 @@ class StatisticSettlement {
 	 *
 	 * @return StatisticSettlement
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;

@@ -151,7 +151,7 @@ class RealmRelation {
 	 *
 	 * @return RealmRelation
 	 */
-	public function setSourceRealm(Realm $sourceRealm = null): static {
+	public function setSourceRealm(?Realm $sourceRealm = null): static {
 		$this->source_realm = $sourceRealm;
 
 		return $this;
@@ -173,7 +173,7 @@ class RealmRelation {
 	 *
 	 * @return RealmRelation
 	 */
-	public function setTargetRealm(Realm $targetRealm = null): static {
+	public function setTargetRealm(?Realm $targetRealm = null): static {
 		$this->target_realm = $targetRealm;
 
 		return $this;
@@ -195,7 +195,7 @@ class RealmRelation {
 	 *
 	 * @return RealmRelation
 	 */
-	public function setSourceAssociation(Association $sourceAssociation = null): static {
+	public function setSourceAssociation(?Association $sourceAssociation = null): static {
 		$this->source_association = $sourceAssociation;
 
 		return $this;
@@ -217,7 +217,7 @@ class RealmRelation {
 	 *
 	 * @return RealmRelation
 	 */
-	public function setTargetAssociation(Association $targetAssociation = null): static {
+	public function setTargetAssociation(?Association $targetAssociation = null): static {
 		$this->target_association = $targetAssociation;
 
 		return $this;

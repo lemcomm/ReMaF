@@ -105,7 +105,7 @@ class PermissionBase {
 	 *
 	 * @return PermissionBase
 	 */
-	public function setPermission(Permission $permission = null): static {
+	public function setPermission(?Permission $permission = null): static {
 		$this->permission = $permission;
 
 		return $this;
@@ -127,7 +127,7 @@ class PermissionBase {
 	 *
 	 * @return PermissionBase
 	 */
-	public function setListing(Listing $listing = null): static {
+	public function setListing(?Listing $listing = null): static {
 		$this->listing = $listing;
 
 		return $this;

@@ -218,7 +218,7 @@ class Patron {
 	 *
 	 * @return Patron
 	 */
-	public function setCreator(Patreon $creator = null): static {
+	public function setCreator(?Patreon $creator = null): static {
 		$this->creator = $creator;
 
 		return $this;
@@ -240,7 +240,7 @@ class Patron {
 	 *
 	 * @return Patron
 	 */
-	public function setUser(User $user = null): static {
+	public function setUser(?User $user = null): static {
 		$this->user = $user;
 
 		return $this;

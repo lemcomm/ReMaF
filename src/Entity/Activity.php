@@ -150,7 +150,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setStart(DateTime $start = null): static {
+	public function setStart(?DateTime $start = null): static {
 		$this->start = $start;
 
 		return $this;
@@ -172,7 +172,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setFinish(DateTime $finish = null): static {
+	public function setFinish(?DateTime $finish = null): static {
 		$this->finish = $finish;
 
 		return $this;
@@ -194,7 +194,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setSame(bool $same = null): static {
+	public function setSame(?bool $same = null): static {
 		$this->same = $same;
 
 		return $this;
@@ -216,7 +216,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setWeaponOnly(bool $weaponOnly = null): static {
+	public function setWeaponOnly(?bool $weaponOnly = null): static {
 		$this->weapon_only = $weaponOnly;
 
 		return $this;
@@ -238,7 +238,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setReady(bool $ready = null): static {
+	public function setReady(?bool $ready = null): static {
 		$this->ready = $ready;
 
 		return $this;
@@ -260,7 +260,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setLocation(Point $location = null): static {
+	public function setLocation(?Point $location = null): static {
 		$this->location = $location;
 
 		return $this;
@@ -291,7 +291,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setReport(ActivityReport $report = null): static {
+	public function setReport(?ActivityReport $report = null): static {
 		$this->report = $report;
 
 		return $this;
@@ -437,7 +437,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setType(ActivityType $type = null): static {
+	public function setType(?ActivityType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -459,7 +459,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setSubtype(ActivitySubType $subtype = null): static {
+	public function setSubtype(?ActivitySubType $subtype = null): static {
 		$this->subtype = $subtype;
 
 		return $this;
@@ -481,7 +481,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setMainEvent(Activity $mainEvent = null): static {
+	public function setMainEvent(?Activity $mainEvent = null): static {
 		$this->main_event = $mainEvent;
 
 		return $this;
@@ -503,7 +503,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setGeoData(GeoData $geoData = null): static {
+	public function setGeoData(?GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
 		return $this;
@@ -521,7 +521,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setMapRegion(MapRegion $reg = null): static {
+	public function setMapRegion(?MapRegion $reg = null): static {
 		$this->mapRegion = $reg;
 
 		return $this;
@@ -531,7 +531,7 @@ class Activity {
 		return $this->world;
 	}
 
-	public function setWorld(World $world = null): static {
+	public function setWorld(?World $world = null): static {
 		$this->world = $world;
 		return $this;
 	}
@@ -552,7 +552,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -574,7 +574,7 @@ class Activity {
 	 *
 	 * @return Activity
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;

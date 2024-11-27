@@ -223,7 +223,7 @@ class Style {
 	 *
 	 * @return Style
 	 */
-	public function setCreator(Character $creator = null): static {
+	public function setCreator(?Character $creator = null): static {
 		$this->creator = $creator;
 
 		return $this;
@@ -245,7 +245,7 @@ class Style {
 	 *
 	 * @return Style
 	 */
-	public function setItem(ItemType $item = null): static {
+	public function setItem(?ItemType $item = null): static {
 		$this->item = $item;
 
 		return $this;
@@ -267,7 +267,7 @@ class Style {
 	 *
 	 * @return Style
 	 */
-	public function setAugments(SkillType $augments = null): static {
+	public function setAugments(?SkillType $augments = null): static {
 		$this->augments = $augments;
 
 		return $this;

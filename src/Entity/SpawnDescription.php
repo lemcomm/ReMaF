@@ -112,7 +112,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setActivePlace(Place $activePlace = null): static {
+	public function setActivePlace(?Place $activePlace = null): static {
 		$this->active_place = $activePlace;
 
 		return $this;
@@ -134,7 +134,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setActiveRealm(Realm $activeRealm = null): static {
+	public function setActiveRealm(?Realm $activeRealm = null): static {
 		$this->active_realm = $activeRealm;
 
 		return $this;
@@ -156,7 +156,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setActiveHouse(House $activeHouse = null): static {
+	public function setActiveHouse(?House $activeHouse = null): static {
 		$this->active_house = $activeHouse;
 
 		return $this;
@@ -178,7 +178,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setActiveAssociation(Association $activeAssociation = null): static {
+	public function setActiveAssociation(?Association $activeAssociation = null): static {
 		$this->active_association = $activeAssociation;
 
 		return $this;
@@ -200,7 +200,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setPrevious(SpawnDescription $previous = null): static {
+	public function setPrevious(?SpawnDescription $previous = null): static {
 		$this->previous = $previous;
 
 		return $this;
@@ -222,7 +222,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setNext(SpawnDescription $next = null): static {
+	public function setNext(?SpawnDescription $next = null): static {
 		$this->next = $next;
 
 		return $this;
@@ -244,7 +244,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;
@@ -266,7 +266,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -288,7 +288,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setHouse(House $house = null): static {
+	public function setHouse(?House $house = null): static {
 		$this->house = $house;
 
 		return $this;
@@ -310,7 +310,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;
@@ -332,7 +332,7 @@ class SpawnDescription {
 	 *
 	 * @return SpawnDescription
 	 */
-	public function setUpdater(Character $updater = null): static {
+	public function setUpdater(?Character $updater = null): static {
 		$this->updater = $updater;
 
 		return $this;

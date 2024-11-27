@@ -197,7 +197,7 @@ class Race {
 		return $this->hungerRate;
 	}
 
-	public function setHungerRate(int $int = null): static {
+	public function setHungerRate(?int $int = null): static {
 		$this->hungerRate = $int;
 		return $this;
 	}
@@ -206,7 +206,7 @@ class Race {
 		return $this->maxHunger;
 	}
 
-	public function setMaxHunger(int $int = null): static {
+	public function setMaxHunger(?int $int = null): static {
 		$this->maxHunger = $int;
 		return $this;
 	}
@@ -215,7 +215,7 @@ class Race {
 		return $this->useEquipment;
 	}
 
-	public function setUseEquipment(bool $equip = null): static {
+	public function setUseEquipment(?bool $equip = null): static {
 		$this->useEquipment = $equip;
 		return $this;
 	}

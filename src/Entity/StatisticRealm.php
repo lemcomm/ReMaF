@@ -216,7 +216,7 @@ class StatisticRealm {
 	 *
 	 * @return StatisticRealm
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -238,7 +238,7 @@ class StatisticRealm {
 	 *
 	 * @return StatisticRealm
 	 */
-	public function setSuperior(Realm $superior = null): static {
+	public function setSuperior(?Realm $superior = null): static {
 		$this->superior = $superior;
 
 		return $this;

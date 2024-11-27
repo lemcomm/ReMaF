@@ -67,7 +67,7 @@ class NPC extends CharacterBase {
 	 *
 	 * @return NPC
 	 */
-	public function setHome(Settlement $home = null): static {
+	public function setHome(?Settlement $home = null): static {
 		$this->home = $home;
 
 		return $this;

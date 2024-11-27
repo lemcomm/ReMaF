@@ -171,7 +171,7 @@ class Quester {
 	 *
 	 * @return Quester
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -193,7 +193,7 @@ class Quester {
 	 *
 	 * @return Quester
 	 */
-	public function setQuest(Quest $quest = null): static {
+	public function setQuest(?Quest $quest = null): static {
 		$this->quest = $quest;
 
 		return $this;

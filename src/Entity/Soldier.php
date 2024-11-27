@@ -76,7 +76,7 @@ class Soldier extends NPC {
 	 *
 	 * @return Soldier
 	 */
-	public function setBase(Settlement $base = null): static {
+	public function setBase(?Settlement $base = null): static {
 		$this->base = $base;
 
 		return $this;
@@ -107,7 +107,7 @@ class Soldier extends NPC {
 	 *
 	 * @return Soldier
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -348,7 +348,7 @@ class Soldier extends NPC {
 	 *
 	 * @return Soldier
 	 */
-	public function setUnit(Unit $unit = null): static {
+	public function setUnit(?Unit $unit = null): static {
 		$this->unit = $unit;
 
 		return $this;
@@ -389,7 +389,7 @@ class Soldier extends NPC {
 		return null;
 	}
 
-	public function setArmour(EquipmentType $item = null): static {
+	public function setArmour(?EquipmentType $item = null): static {
 		$this->armour = $item;
 		if ($item) {
 			$this->has_armour = true;
@@ -464,7 +464,7 @@ class Soldier extends NPC {
 		return null;
 	}
 
-	public function setWeapon(EquipmentType $item = null): static {
+	public function setWeapon(?EquipmentType $item = null): static {
 		$this->weapon = $item;
 		if ($item) {
 			$this->has_weapon = true;
@@ -487,7 +487,7 @@ class Soldier extends NPC {
 		return null;
 	}
 
-	public function setMount(EquipmentType $item = null): static {
+	public function setMount(?EquipmentType $item = null): static {
 		$this->mount = $item;
 		if ($item) {
 			$this->has_mount = true;
@@ -502,7 +502,7 @@ class Soldier extends NPC {
 		return null;
 	}
 
-	public function setEquipment(EquipmentType $item = null): static {
+	public function setEquipment(?EquipmentType $item = null): static {
 		$this->equipment = $item;
 		if ($item) {
 			$this->has_equipment = true;
@@ -584,7 +584,7 @@ class Soldier extends NPC {
 	 *
 	 * @return Soldier
 	 */
-	public function setLiege(Character $liege = null): static {
+	public function setLiege(?Character $liege = null): static {
 		$this->liege = $liege;
 
 		return $this;
@@ -799,7 +799,7 @@ class Soldier extends NPC {
 	 *
 	 * @return Soldier
 	 */
-	public function setOldWeapon(EquipmentType $oldWeapon = null): static {
+	public function setOldWeapon(?EquipmentType $oldWeapon = null): static {
 		$this->old_weapon = $oldWeapon;
 
 		return $this;
@@ -821,7 +821,7 @@ class Soldier extends NPC {
 	 *
 	 * @return Soldier
 	 */
-	public function setOldArmour(EquipmentType $oldArmour = null): static {
+	public function setOldArmour(?EquipmentType $oldArmour = null): static {
 		$this->old_armour = $oldArmour;
 
 		return $this;
@@ -843,7 +843,7 @@ class Soldier extends NPC {
 	 *
 	 * @return Soldier
 	 */
-	public function setOldEquipment(EquipmentType $oldEquipment = null): static {
+	public function setOldEquipment(?EquipmentType $oldEquipment = null): static {
 		$this->old_equipment = $oldEquipment;
 
 		return $this;
@@ -865,7 +865,7 @@ class Soldier extends NPC {
 	 *
 	 * @return Soldier
 	 */
-	public function setOldMount(EquipmentType $oldMount = null): static {
+	public function setOldMount(?EquipmentType $oldMount = null): static {
 		$this->old_mount = $oldMount;
 
 		return $this;
@@ -887,7 +887,7 @@ class Soldier extends NPC {
 	 *
 	 * @return Soldier
 	 */
-	public function setManningEquipment(SiegeEquipment $manningEquipment = null): static {
+	public function setManningEquipment(?SiegeEquipment $manningEquipment = null): static {
 		$this->manning_equipment = $manningEquipment;
 
 		return $this;

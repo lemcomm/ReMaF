@@ -55,7 +55,7 @@ class Dungeoneer {
 	 *
 	 * @return Dungeoneer
 	 */
-	public function setParty(DungeonParty $party = null): static {
+	public function setParty(?DungeonParty $party = null): static {
 		$this->party = $party;
 
 		return $this;
@@ -241,7 +241,7 @@ class Dungeoneer {
 	 *
 	 * @return Dungeoneer
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -263,7 +263,7 @@ class Dungeoneer {
 	 *
 	 * @return Dungeoneer
 	 */
-	public function setLastAction(DungeonCard $lastAction = null): static {
+	public function setLastAction(?DungeonCard $lastAction = null): static {
 		$this->last_action = $lastAction;
 
 		return $this;
@@ -285,7 +285,7 @@ class Dungeoneer {
 	 *
 	 * @return Dungeoneer
 	 */
-	public function setCurrentAction(DungeonCard $currentAction = null): static {
+	public function setCurrentAction(?DungeonCard $currentAction = null): static {
 		$this->current_action = $currentAction;
 
 		return $this;
@@ -369,7 +369,7 @@ class Dungeoneer {
 	 *
 	 * @return Dungeoneer
 	 */
-	public function setTargetDungeoneer(Dungeoneer $targetDungeoneer = null): static {
+	public function setTargetDungeoneer(?Dungeoneer $targetDungeoneer = null): static {
 		$this->target_dungeoneer = $targetDungeoneer;
 
 		return $this;
@@ -391,7 +391,7 @@ class Dungeoneer {
 	 *
 	 * @return Dungeoneer
 	 */
-	public function setTargetMonster(DungeonMonster $targetMonster = null): static {
+	public function setTargetMonster(?DungeonMonster $targetMonster = null): static {
 		$this->target_monster = $targetMonster;
 
 		return $this;
@@ -413,7 +413,7 @@ class Dungeoneer {
 	 *
 	 * @return Dungeoneer
 	 */
-	public function setTargetTreasure(DungeonTreasure $targetTreasure = null): static {
+	public function setTargetTreasure(?DungeonTreasure $targetTreasure = null): static {
 		$this->target_treasure = $targetTreasure;
 
 		return $this;

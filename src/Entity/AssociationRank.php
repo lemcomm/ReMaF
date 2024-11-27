@@ -195,7 +195,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setSuperior(AssociationRank $superior = null): static {
+	public function setSuperior(?AssociationRank $superior = null): static {
 		$this->superior = $superior;
 
 		return $this;
@@ -272,7 +272,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;
@@ -294,7 +294,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setLevel(int $level = null): static {
+	public function setLevel(?int $level = null): static {
 		$this->level = $level;
 
 		return $this;
@@ -326,7 +326,7 @@ class AssociationRank {
 		return $this->fName;
 	}
 
-	public function setFName(string $fName = null): static {
+	public function setFName(?string $fName = null): static {
 		$this->fName = $fName;
 		return $this;
 	}
@@ -335,7 +335,7 @@ class AssociationRank {
 		return $this->trans;
 	}
 
-	public function setTrans(string $trans = null): static {
+	public function setTrans(?string $trans = null): static {
 		$this->trans = $trans;
 		return $this;
 	}
@@ -363,7 +363,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setViewAll(bool $viewAll = null): static {
+	public function setViewAll(?bool $viewAll = null): static {
 		$this->view_all = $viewAll;
 
 		return $this;
@@ -385,7 +385,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setViewUp(int $viewUp = null): static {
+	public function setViewUp(?int $viewUp = null): static {
 		$this->view_up = $viewUp;
 
 		return $this;
@@ -407,7 +407,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setViewDown(int $viewDown = null): static {
+	public function setViewDown(?int $viewDown = null): static {
 		$this->view_down = $viewDown;
 
 		return $this;
@@ -429,7 +429,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setViewSelf(bool $viewSelf = null): static {
+	public function setViewSelf(?bool $viewSelf = null): static {
 		$this->view_self = $viewSelf;
 
 		return $this;
@@ -455,7 +455,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setOwner(bool $owner = null): static {
+	public function setOwner(?bool $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;
@@ -477,7 +477,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setManager(bool $manager = null): static {
+	public function setManager(?bool $manager = null): static {
 		$this->manager = $manager;
 
 		return $this;
@@ -499,7 +499,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setBuild(bool $build = null): static {
+	public function setBuild(?bool $build = null): static {
 		$this->build = $build;
 
 		return $this;
@@ -521,7 +521,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setSubcreate(bool $subcreate = null): static {
+	public function setSubcreate(?bool $subcreate = null): static {
 		$this->subcreate = $subcreate;
 
 		return $this;
@@ -543,7 +543,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setCreateAssocs(bool $createAssocs = null): static {
+	public function setCreateAssocs(?bool $createAssocs = null): static {
 		$this->createAssocs = $createAssocs;
 
 		return $this;
@@ -574,7 +574,7 @@ class AssociationRank {
 	 *
 	 * @return AssociationRank
 	 */
-	public function setDescription(Description $description = null): static {
+	public function setDescription(?Description $description = null): static {
 		$this->description = $description;
 
 		return $this;

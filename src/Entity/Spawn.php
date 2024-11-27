@@ -69,7 +69,7 @@ class Spawn {
 	 *
 	 * @return Spawn
 	 */
-	public function setHouse(House $house = null): static {
+	public function setHouse(?House $house = null): static {
 		$this->house = $house;
 
 		return $this;
@@ -91,7 +91,7 @@ class Spawn {
 	 *
 	 * @return Spawn
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -113,7 +113,7 @@ class Spawn {
 	 *
 	 * @return Spawn
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;

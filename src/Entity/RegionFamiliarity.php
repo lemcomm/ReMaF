@@ -55,7 +55,7 @@ class RegionFamiliarity {
 	 *
 	 * @return RegionFamiliarity
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -77,7 +77,7 @@ class RegionFamiliarity {
 	 *
 	 * @return RegionFamiliarity
 	 */
-	public function setGeoData(GeoData $geoData = null): static {
+	public function setGeoData(?GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
 		return $this;

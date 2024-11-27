@@ -202,7 +202,7 @@ class Action {
 		return $this->character;
 	}
 
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -212,7 +212,7 @@ class Action {
 		return $this->target_realm;
 	}
 
-	public function setTargetRealm(Realm $targetRealm = null): static {
+	public function setTargetRealm(?Realm $targetRealm = null): static {
 		$this->target_realm = $targetRealm;
 
 		return $this;
@@ -222,7 +222,7 @@ class Action {
 		return $this->target_settlement;
 	}
 
-	public function setTargetSettlement(Settlement $targetSettlement = null): static {
+	public function setTargetSettlement(?Settlement $targetSettlement = null): static {
 		$this->target_settlement = $targetSettlement;
 
 		return $this;
@@ -232,7 +232,7 @@ class Action {
 		return $this->target_place;
 	}
 
-	public function setTargetPlace(Place $targetPlace = null): static {
+	public function setTargetPlace(?Place $targetPlace = null): static {
 		$this->target_place = $targetPlace;
 
 		return $this;
@@ -242,7 +242,7 @@ class Action {
 		return $this->target_character;
 	}
 
-	public function setTargetCharacter(Character $targetCharacter = null): static {
+	public function setTargetCharacter(?Character $targetCharacter = null): static {
 		$this->target_character = $targetCharacter;
 
 		return $this;
@@ -252,7 +252,7 @@ class Action {
 		return $this->target_soldier;
 	}
 
-	public function setTargetSoldier(Soldier $targetSoldier = null): static {
+	public function setTargetSoldier(?Soldier $targetSoldier = null): static {
 		$this->target_soldier = $targetSoldier;
 
 		return $this;
@@ -262,7 +262,7 @@ class Action {
 		return $this->target_entourage_type;
 	}
 
-	public function setTargetEntourageType(EntourageType $targetEntourageType = null): static {
+	public function setTargetEntourageType(?EntourageType $targetEntourageType = null): static {
 		$this->target_entourage_type = $targetEntourageType;
 
 		return $this;
@@ -272,7 +272,7 @@ class Action {
 		return $this->target_equipment_type;
 	}
 
-	public function setTargetEquipmentType(EquipmentType $targetEquipmentType = null): static {
+	public function setTargetEquipmentType(?EquipmentType $targetEquipmentType = null): static {
 		$this->target_equipment_type = $targetEquipmentType;
 
 		return $this;
@@ -282,7 +282,7 @@ class Action {
 		return $this->target_battlegroup;
 	}
 
-	public function setTargetBattlegroup(BattleGroup $targetBattlegroup = null): static {
+	public function setTargetBattlegroup(?BattleGroup $targetBattlegroup = null): static {
 		$this->target_battlegroup = $targetBattlegroup;
 
 		return $this;
@@ -292,7 +292,7 @@ class Action {
 		return $this->target_listing;
 	}
 
-	public function setTargetListing(Listing $targetListing = null): static {
+	public function setTargetListing(?Listing $targetListing = null): static {
 		$this->target_listing = $targetListing;
 
 		return $this;
@@ -302,7 +302,7 @@ class Action {
 		return $this->target_skill;
 	}
 
-	public function setTargetSkill(SkillType $targetSkill = null): static {
+	public function setTargetSkill(?SkillType $targetSkill = null): static {
 		$this->target_skill = $targetSkill;
 
 		return $this;
@@ -312,7 +312,7 @@ class Action {
 		return $this->supported_action;
 	}
 
-	public function setSupportedAction(Action $supportedAction = null): static {
+	public function setSupportedAction(?Action $supportedAction = null): static {
 		$this->supported_action = $supportedAction;
 
 		return $this;
@@ -322,7 +322,7 @@ class Action {
 		return $this->opposed_action;
 	}
 
-	public function setOpposedAction(Action $opposedAction = null): static {
+	public function setOpposedAction(?Action $opposedAction = null): static {
 		$this->opposed_action = $opposedAction;
 
 		return $this;

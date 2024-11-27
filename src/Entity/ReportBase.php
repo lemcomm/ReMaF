@@ -109,7 +109,7 @@ class ReportBase {
 	 *
 	 * @return ReportBase
 	 */
-	public function setLocationName(array $locationName = null): static {
+	public function setLocationName(?array $locationName = null): static {
 		$this->location_name = $locationName;
 
 		return $this;
@@ -157,7 +157,7 @@ class ReportBase {
 	 *
 	 * @return ReportBase
 	 */
-	public function setCount(int $count = null): static {
+	public function setCount(?int $count = null): static {
 		$this->count = $count;
 
 		return $this;
@@ -179,7 +179,7 @@ class ReportBase {
 	 *
 	 * @return ReportBase
 	 */
-	public function setDebug(string $debug = null): static {
+	public function setDebug(?string $debug = null): static {
 		$this->debug = $debug;
 
 		return $this;
@@ -228,7 +228,7 @@ class ReportBase {
 	 *
 	 * @return ReportBase
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -243,7 +243,7 @@ class ReportBase {
 		return $this->place;
 	}
 
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 		return $this;
 	}

@@ -123,7 +123,7 @@ class StatisticResources {
 	 *
 	 * @return StatisticResources
 	 */
-	public function setResource(ResourceType $resource = null): static {
+	public function setResource(?ResourceType $resource = null): static {
 		$this->resource = $resource;
 
 		return $this;

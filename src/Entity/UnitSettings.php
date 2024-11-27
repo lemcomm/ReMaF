@@ -242,7 +242,7 @@ class UnitSettings {
 	 *
 	 * @return UnitSettings
 	 */
-	public function setUnit(Unit $unit = null): static {
+	public function setUnit(?Unit $unit = null): static {
 		$this->unit = $unit;
 
 		return $this;

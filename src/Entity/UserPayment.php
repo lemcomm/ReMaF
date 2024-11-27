@@ -194,7 +194,7 @@ class UserPayment {
 	 *
 	 * @return UserPayment
 	 */
-	public function setUser(User $user = null): static {
+	public function setUser(?User $user = null): static {
 		$this->user = $user;
 
 		return $this;

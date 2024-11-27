@@ -39,7 +39,7 @@ class ActivityReportObserver {
 	 *
 	 * @return ActivityReportObserver
 	 */
-	public function setActivityReport(ActivityReport $activityReport = null): static {
+	public function setActivityReport(?ActivityReport $activityReport = null): static {
 		$this->activity_report = $activityReport;
 
 		return $this;
@@ -61,7 +61,7 @@ class ActivityReportObserver {
 	 *
 	 * @return ActivityReportObserver
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;

@@ -106,7 +106,7 @@ class Trade {
 	 *
 	 * @return Trade
 	 */
-	public function setResourceType(ResourceType $resourceType = null): static {
+	public function setResourceType(?ResourceType $resourceType = null): static {
 		$this->resource_type = $resourceType;
 
 		return $this;
@@ -128,7 +128,7 @@ class Trade {
 	 *
 	 * @return Trade
 	 */
-	public function setSource(Settlement $source = null): static {
+	public function setSource(?Settlement $source = null): static {
 		$this->source = $source;
 
 		return $this;
@@ -150,7 +150,7 @@ class Trade {
 	 *
 	 * @return Trade
 	 */
-	public function setDestination(Settlement $destination = null): static {
+	public function setDestination(?Settlement $destination = null): static {
 		$this->destination = $destination;
 
 		return $this;

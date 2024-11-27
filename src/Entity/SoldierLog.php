@@ -129,7 +129,7 @@ class SoldierLog {
 	 *
 	 * @return SoldierLog
 	 */
-	public function setSoldier(Soldier $soldier = null): static {
+	public function setSoldier(?Soldier $soldier = null): static {
 		$this->soldier = $soldier;
 
 		return $this;

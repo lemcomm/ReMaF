@@ -72,7 +72,7 @@ class Deity {
 	 *
 	 * @return Deity
 	 */
-	public function setDescription(Description $description = null): static {
+	public function setDescription(?Description $description = null): static {
 		$this->description = $description;
 
 		return $this;
@@ -218,7 +218,7 @@ class Deity {
 	 *
 	 * @return Deity
 	 */
-	public function setMainRecognizer(Association $mainRecognizer = null): static {
+	public function setMainRecognizer(?Association $mainRecognizer = null): static {
 		$this->main_recognizer = $mainRecognizer;
 
 		return $this;

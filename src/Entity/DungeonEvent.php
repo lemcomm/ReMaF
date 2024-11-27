@@ -102,7 +102,7 @@ class DungeonEvent {
 	 *
 	 * @return DungeonEvent
 	 */
-	public function setParty(DungeonParty $party = null): static {
+	public function setParty(?DungeonParty $party = null): static {
 		$this->party = $party;
 
 		return $this;

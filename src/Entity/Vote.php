@@ -56,7 +56,7 @@ class Vote {
 	 *
 	 * @return Vote
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -78,7 +78,7 @@ class Vote {
 	 *
 	 * @return Vote
 	 */
-	public function setElection(Election $election = null): static {
+	public function setElection(?Election $election = null): static {
 		$this->election = $election;
 
 		return $this;
@@ -100,7 +100,7 @@ class Vote {
 	 *
 	 * @return Vote
 	 */
-	public function setTargetCharacter(Character $targetCharacter = null): static {
+	public function setTargetCharacter(?Character $targetCharacter = null): static {
 		$this->target_character = $targetCharacter;
 
 		return $this;

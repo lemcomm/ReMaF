@@ -78,7 +78,7 @@ class SettlementClaim {
 	 *
 	 * @return SettlementClaim
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -100,7 +100,7 @@ class SettlementClaim {
 	 *
 	 * @return SettlementClaim
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;

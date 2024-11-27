@@ -82,7 +82,7 @@ class ChatMessage {
 	 *
 	 * @return ChatMessage
 	 */
-	public function setParty(DungeonParty $party = null): static {
+	public function setParty(?DungeonParty $party = null): static {
 		$this->party = $party;
 
 		return $this;
@@ -118,11 +118,11 @@ class ChatMessage {
 	/**
 	 * Set sender
 	 *
-	 * @param Dungeoneer|null $sender
+	 * @param Character|null $sender
 	 *
 	 * @return ChatMessage
 	 */
-	public function setSender(Character $sender = null): static {
+	public function setSender(?Character $sender = null): static {
 		$this->sender = $sender;
 
 		return $this;

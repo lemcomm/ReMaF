@@ -147,7 +147,7 @@ class SiegeEquipment {
 	 *
 	 * @return SiegeEquipment
 	 */
-	public function setType(SiegeEquipmentType $type = null): static {
+	public function setType(?SiegeEquipmentType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -169,7 +169,7 @@ class SiegeEquipment {
 	 *
 	 * @return SiegeEquipment
 	 */
-	public function setOwner(Character $owner = null): static {
+	public function setOwner(?Character $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;

@@ -57,7 +57,7 @@ class ConversationPermission {
 	 *
 	 * @return ConversationPermission
 	 */
-	public function setEndTime(DateTime $endTime = null): static {
+	public function setEndTime(?DateTime $endTime = null): static {
 		$this->end_time = $endTime;
 
 		return $this;
@@ -79,7 +79,7 @@ class ConversationPermission {
 	 *
 	 * @return ConversationPermission
 	 */
-	public function setLastAccess(DateTime $lastAccess = null): static {
+	public function setLastAccess(?DateTime $lastAccess = null): static {
 		$this->last_access = $lastAccess;
 
 		return $this;
@@ -101,7 +101,7 @@ class ConversationPermission {
 	 *
 	 * @return ConversationPermission
 	 */
-	public function setOwner(bool $owner = null): static {
+	public function setOwner(?bool $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;
@@ -123,7 +123,7 @@ class ConversationPermission {
 	 *
 	 * @return ConversationPermission
 	 */
-	public function setManager(bool $manager = null): static {
+	public function setManager(?bool $manager = null): static {
 		$this->manager = $manager;
 
 		return $this;
@@ -176,7 +176,7 @@ class ConversationPermission {
 	 *
 	 * @return ConversationPermission
 	 */
-	public function setConversation(Conversation $conversation = null): static {
+	public function setConversation(?Conversation $conversation = null): static {
 		$this->conversation = $conversation;
 
 		return $this;
@@ -198,7 +198,7 @@ class ConversationPermission {
 	 *
 	 * @return ConversationPermission
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;

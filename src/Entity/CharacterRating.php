@@ -190,7 +190,7 @@ class CharacterRating {
 	 *
 	 * @return CharacterRating
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -212,7 +212,7 @@ class CharacterRating {
 	 *
 	 * @return CharacterRating
 	 */
-	public function setGivenByUser(User $givenByUser = null): static {
+	public function setGivenByUser(?User $givenByUser = null): static {
 		$this->given_by_user = $givenByUser;
 
 		return $this;

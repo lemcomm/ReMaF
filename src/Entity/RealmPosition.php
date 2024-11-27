@@ -79,7 +79,7 @@ class RealmPosition {
 		return $this->fName;
 	}
 
-	public function setFName(string $fName = null): static {
+	public function setFName(?string $fName = null): static {
 		$this->fName = $fName;
 		return $this;
 	}
@@ -88,12 +88,12 @@ class RealmPosition {
 		return $this->trans;
 	}
 
-	public function setTrans(string $trans = null): static {
+	public function setTrans(?string $trans = null): static {
 		$this->trans = $trans;
 		return $this;
 	}
 
-	public function findName(string $gender = null): string {
+	public function findName(?string $gender = null): string {
 		return match ($gender) {
 			null, 'male' => $this->name,
 			'female' => $this->fName?:$this->name,
@@ -654,7 +654,7 @@ class RealmPosition {
 	 *
 	 * @return RealmPosition
 	 */
-	public function setType(PositionType $type = null): static {
+	public function setType(?PositionType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -676,7 +676,7 @@ class RealmPosition {
 	 *
 	 * @return RealmPosition
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;

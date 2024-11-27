@@ -45,7 +45,7 @@ class Dungeon {
 	 *
 	 * @return Dungeon
 	 */
-	public function setParty(DungeonParty $party = null): static {
+	public function setParty(?DungeonParty $party = null): static {
 		$this->party = $party;
 
 		return $this;
@@ -195,7 +195,7 @@ class Dungeon {
 	 *
 	 * @return Dungeon
 	 */
-	public function setGeoData(GeoData $geoData = null): static {
+	public function setGeoData(?GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
 		return $this;
@@ -213,7 +213,7 @@ class Dungeon {
 	 *
 	 * @return Dungeon
 	 */
-	public function setMapRegion(MapRegion $reg = null): static {
+	public function setMapRegion(?MapRegion $reg = null): static {
 		$this->mapRegion = $reg;
 
 		return $this;

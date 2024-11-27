@@ -33,7 +33,7 @@ class Item {
 	 *
 	 * @return Item
 	 */
-	public function setType(ItemType $type = null): static {
+	public function setType(?ItemType $type = null): static {
 		$this->type = $type;
 
 		return $this;

@@ -292,7 +292,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setOwner(Character $owner = null): static {
+	public function setOwner(?Character $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;
@@ -314,7 +314,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -336,7 +336,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setOccupant(Character $occupant = null): static {
+	public function setOccupant(?Character $occupant = null): static {
 		$this->occupant = $occupant;
 
 		return $this;
@@ -570,7 +570,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setGeoData(GeoData $geoData = null): static {
+	public function setGeoData(?GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
 		return $this;
@@ -588,7 +588,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setMapRegion(MapRegion $reg = null): static {
+	public function setMapRegion(?MapRegion $reg = null): static {
 		$this->mapRegion = $reg;
 
 		return $this;
@@ -598,7 +598,7 @@ class Settlement {
 		return $this->world;
 	}
 
-	public function setWorld(World $world = null): static {
+	public function setWorld(?World $world = null): static {
 		$this->world = $world;
 		return $this;
 	}
@@ -814,7 +814,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setDescription(Description $description = null): static {
+	public function setDescription(?Description $description = null): static {
 		$this->description = $description;
 
 		return $this;
@@ -836,7 +836,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setGeoMarker(GeoFeature $geoMarker = null): static {
+	public function setGeoMarker(?GeoFeature $geoMarker = null): static {
 		$this->geo_marker = $geoMarker;
 
 		return $this;
@@ -858,7 +858,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;
@@ -880,7 +880,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setSiege(Siege $siege = null): static {
+	public function setSiege(?Siege $siege = null): static {
 		$this->siege = $siege;
 
 		return $this;
@@ -1694,7 +1694,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setCulture(Culture $culture = null): static {
+	public function setCulture(?Culture $culture = null): static {
 		$this->culture = $culture;
 
 		return $this;
@@ -1716,7 +1716,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setSteward(Character $steward = null): static {
+	public function setSteward(?Character $steward = null): static {
 		$this->steward = $steward;
 
 		return $this;
@@ -1738,7 +1738,7 @@ class Settlement {
 	 *
 	 * @return Settlement
 	 */
-	public function setOccupier(Realm $occupier = null): static {
+	public function setOccupier(?Realm $occupier = null): static {
 		$this->occupier = $occupier;
 
 		return $this;
@@ -1821,7 +1821,7 @@ class Settlement {
 	 *
 	 * @return Character
 	 */
-	public function setFaith(Association $faith = null): static {
+	public function setFaith(?Association $faith = null): static {
 		$this->faith = $faith;
 
 		return $this;

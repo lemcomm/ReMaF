@@ -254,7 +254,7 @@ class BuildingType {
 	 *
 	 * @return BuildingType
 	 */
-	public function setBuiltIn(array $builtIn = null): static {
+	public function setBuiltIn(?array $builtIn = null): static {
 		$this->built_in = $builtIn;
 
 		return $this;

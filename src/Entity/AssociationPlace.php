@@ -31,7 +31,7 @@ class AssociationPlace {
 	 *
 	 * @return AssociationPlace
 	 */
-	public function setHeadquarters(bool $headquarters = null): static {
+	public function setHeadquarters(?bool $headquarters = null): static {
 		$this->headquarters = $headquarters;
 
 		return $this;
@@ -62,7 +62,7 @@ class AssociationPlace {
 	 *
 	 * @return AssociationPlace
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;
@@ -84,7 +84,7 @@ class AssociationPlace {
 	 *
 	 * @return AssociationPlace
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;

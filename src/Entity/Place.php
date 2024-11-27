@@ -152,7 +152,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setType(PlaceType $type = null): static {
+	public function setType(?PlaceType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -242,7 +242,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -264,7 +264,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setOwner(Character $owner = null): static {
+	public function setOwner(?Character $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;
@@ -286,7 +286,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setAmbassador(Character $ambassador = null): static {
+	public function setAmbassador(?Character $ambassador = null): static {
 		$this->ambassador = $ambassador;
 
 		return $this;
@@ -308,7 +308,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setOwningRealm(Realm $owningRealm = null): static {
+	public function setOwningRealm(?Realm $owningRealm = null): static {
 		$this->owning_realm = $owningRealm;
 
 		return $this;
@@ -330,7 +330,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setHostingRealm(Realm $hostingRealm = null): static {
+	public function setHostingRealm(?Realm $hostingRealm = null): static {
 		$this->hosting_realm = $hostingRealm;
 
 		return $this;
@@ -352,7 +352,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -374,7 +374,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setGeoData(GeoData $geoData = null): static {
+	public function setGeoData(?GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
 		return $this;
@@ -392,7 +392,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setMapRegion(MapRegion $reg = null): static {
+	public function setMapRegion(?MapRegion $reg = null): static {
 		$this->mapRegion = $reg;
 
 		return $this;
@@ -402,7 +402,7 @@ class Place implements ChatLocationInterface {
 		return $this->world;
 	}
 
-	public function setWorld(World $world = null): static {
+	public function setWorld(?World $world = null): static {
 		$this->world = $world;
 		return $this;
 	}
@@ -608,7 +608,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setHouse(House $house = null): static {
+	public function setHouse(?House $house = null): static {
 		$this->house = $house;
 
 		return $this;
@@ -630,7 +630,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setGeoMarker(GeoFeature $geoMarker = null): static {
+	public function setGeoMarker(?GeoFeature $geoMarker = null): static {
 		$this->geo_marker = $geoMarker;
 
 		return $this;
@@ -652,7 +652,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setDescription(Description $description = null): static {
+	public function setDescription(?Description $description = null): static {
 		$this->description = $description;
 
 		return $this;
@@ -674,7 +674,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setSpawnDescription(SpawnDescription $spawnDescription = null): static {
+	public function setSpawnDescription(?SpawnDescription $spawnDescription = null): static {
 		$this->spawn_description = $spawnDescription;
 
 		return $this;
@@ -696,7 +696,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setSpawn(Spawn $spawn = null): static {
+	public function setSpawn(?Spawn $spawn = null): static {
 		$this->spawn = $spawn;
 
 		return $this;
@@ -718,7 +718,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;
@@ -740,7 +740,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setSiege(Siege $siege = null): static {
+	public function setSiege(?Siege $siege = null): static {
 		$this->siege = $siege;
 
 		return $this;
@@ -1231,7 +1231,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setSubType(PlaceSubType $subType = null): static {
+	public function setSubType(?PlaceSubType $subType = null): static {
 		$this->sub_type = $subType;
 
 		return $this;
@@ -1253,7 +1253,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setCreator(Character $creator = null): static {
+	public function setCreator(?Character $creator = null): static {
 		$this->creator = $creator;
 
 		return $this;
@@ -1275,7 +1275,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setOccupant(Character $occupant = null): static {
+	public function setOccupant(?Character $occupant = null): static {
 		$this->occupant = $occupant;
 
 		return $this;
@@ -1297,7 +1297,7 @@ class Place implements ChatLocationInterface {
 	 *
 	 * @return Place
 	 */
-	public function setOccupier(Realm $occupier = null): static {
+	public function setOccupier(?Realm $occupier = null): static {
 		$this->occupier = $occupier;
 
 		return $this;

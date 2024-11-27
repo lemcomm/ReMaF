@@ -498,7 +498,7 @@ class Realm extends Faction {
 	 *
 	 * @return Realm
 	 */
-	public function setDescription(Description $description = null): static {
+	public function setDescription(?Description $description = null): static {
 		$this->description = $description;
 
 		return $this;
@@ -520,7 +520,7 @@ class Realm extends Faction {
 	 *
 	 * @return Realm
 	 */
-	public function setSpawnDescription(SpawnDescription $spawnDescription = null): static {
+	public function setSpawnDescription(?SpawnDescription $spawnDescription = null): static {
 		$this->spawn_description = $spawnDescription;
 
 		return $this;
@@ -542,7 +542,7 @@ class Realm extends Faction {
 	 *
 	 * @return Realm
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;
@@ -1152,7 +1152,7 @@ class Realm extends Faction {
 	 *
 	 * @return Realm
 	 */
-	public function setCapital(Settlement $capital = null): static {
+	public function setCapital(?Settlement $capital = null): static {
 		$this->capital = $capital;
 
 		return $this;
@@ -1174,7 +1174,7 @@ class Realm extends Faction {
 	 *
 	 * @return Realm
 	 */
-	public function setSuperior(Realm $superior = null): static {
+	public function setSuperior(?Realm $superior = null): static {
 		$this->superior = $superior;
 
 		return $this;
@@ -1196,7 +1196,7 @@ class Realm extends Faction {
 	 *
 	 * @return Realm
 	 */
-	public function setCapitalPlace(Place $capitalPlace = null): static {
+	public function setCapitalPlace(?Place $capitalPlace = null): static {
 		$this->capital_place = $capitalPlace;
 
 		return $this;
@@ -1206,7 +1206,7 @@ class Realm extends Faction {
 		return $this->designation;
 	}
 
-	public function setDesignation(RealmDesignation $designation = null): static {
+	public function setDesignation(?RealmDesignation $designation = null): static {
 		$this->designation = $designation;
 		return $this;
 	}
@@ -1227,7 +1227,7 @@ class Realm extends Faction {
 	 *
 	 * @return Character
 	 */
-	public function setFaith(Association $faith = null): static {
+	public function setFaith(?Association $faith = null): static {
 		$this->faith = $faith;
 
 		return $this;

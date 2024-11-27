@@ -102,7 +102,7 @@ class Fame {
 	 *
 	 * @return Fame
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;

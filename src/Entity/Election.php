@@ -216,7 +216,7 @@ class Election {
 	 *
 	 * @return Election
 	 */
-	public function setWinner(Character $winner = null): static {
+	public function setWinner(?Character $winner = null): static {
 		$this->winner = $winner;
 
 		return $this;
@@ -238,7 +238,7 @@ class Election {
 	 *
 	 * @return Election
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -260,7 +260,7 @@ class Election {
 	 *
 	 * @return Election
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;
@@ -282,7 +282,7 @@ class Election {
 	 *
 	 * @return Election
 	 */
-	public function setPosition(RealmPosition $position = null): static {
+	public function setPosition(?RealmPosition $position = null): static {
 		$this->position = $position;
 
 		return $this;

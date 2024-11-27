@@ -17,7 +17,7 @@ class CharacterBase {
 		return $this->race;
 	}
 
-	public function setRace(Race $race = null): static {
+	public function setRace(?Race $race = null): static {
 		$this->race = $race;
 		return $this;
 	}

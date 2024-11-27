@@ -39,7 +39,7 @@ class BattleReportObserver {
 	 *
 	 * @return BattleReportObserver
 	 */
-	public function setBattleReport(BattleReport $battleReport = null): static {
+	public function setBattleReport(?BattleReport $battleReport = null): static {
 		$this->battle_report = $battleReport;
 
 		return $this;
@@ -61,7 +61,7 @@ class BattleReportObserver {
 	 *
 	 * @return BattleReportObserver
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;

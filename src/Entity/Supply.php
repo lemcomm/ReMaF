@@ -78,7 +78,7 @@ class Supply {
 	 *
 	 * @return Supply
 	 */
-	public function setUnit(Unit $unit = null): static {
+	public function setUnit(?Unit $unit = null): static {
 		$this->unit = $unit;
 
 		return $this;
@@ -100,7 +100,7 @@ class Supply {
 	 *
 	 * @return Supply
 	 */
-	public function setOrigin(Settlement $origin = null): static {
+	public function setOrigin(?Settlement $origin = null): static {
 		$this->origin = $origin;
 
 		return $this;

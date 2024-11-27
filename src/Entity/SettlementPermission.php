@@ -23,7 +23,7 @@ class SettlementPermission extends PermissionBase {
 	 *
 	 * @return SettlementPermission
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -45,7 +45,7 @@ class SettlementPermission extends PermissionBase {
 	 *
 	 * @return SettlementPermission
 	 */
-	public function setOccupiedSettlement(Settlement $occupiedSettlement = null): static {
+	public function setOccupiedSettlement(?Settlement $occupiedSettlement = null): static {
 		$this->occupied_settlement = $occupiedSettlement;
 
 		return $this;

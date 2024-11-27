@@ -91,7 +91,7 @@ class Battle {
 	 *
 	 * @return Battle
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -173,7 +173,7 @@ class Battle {
 	 *
 	 * @return Battle
 	 */
-	public function setType(string $type = null): static {
+	public function setType(?string $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -353,7 +353,7 @@ class Battle {
 	 *
 	 * @return Battle
 	 */
-	public function setPrimaryAttacker(BattleGroup $primaryAttacker = null): static {
+	public function setPrimaryAttacker(?BattleGroup $primaryAttacker = null): static {
 		$this->primary_attacker = $primaryAttacker;
 
 		return $this;
@@ -375,7 +375,7 @@ class Battle {
 	 *
 	 * @return Battle
 	 */
-	public function setPrimaryDefender(BattleGroup $primaryDefender = null): static {
+	public function setPrimaryDefender(?BattleGroup $primaryDefender = null): static {
 		$this->primary_defender = $primaryDefender;
 
 		return $this;
@@ -397,7 +397,7 @@ class Battle {
 	 *
 	 * @return Battle
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;
@@ -419,7 +419,7 @@ class Battle {
 	 *
 	 * @return Battle
 	 */
-	public function setWar(War $war = null): static {
+	public function setWar(?War $war = null): static {
 		$this->war = $war;
 
 		return $this;
@@ -441,7 +441,7 @@ class Battle {
 	 *
 	 * @return Battle
 	 */
-	public function setSiege(Siege $siege = null): static {
+	public function setSiege(?Siege $siege = null): static {
 		$this->siege = $siege;
 
 		return $this;

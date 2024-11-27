@@ -53,7 +53,7 @@ class AssociationMember {
 	 *
 	 * @return AssociationMember
 	 */
-	public function setRankDate(DateTime $rankDate = null): static {
+	public function setRankDate(?DateTime $rankDate = null): static {
 		$this->rank_date = $rankDate;
 
 		return $this;
@@ -84,7 +84,7 @@ class AssociationMember {
 	 *
 	 * @return AssociationMember
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;
@@ -106,7 +106,7 @@ class AssociationMember {
 	 *
 	 * @return AssociationMember
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -128,7 +128,7 @@ class AssociationMember {
 	 *
 	 * @return AssociationMember
 	 */
-	public function setRank(AssociationRank $rank = null): static {
+	public function setRank(?AssociationRank $rank = null): static {
 		$this->rank = $rank;
 
 		return $this;

@@ -37,7 +37,7 @@ class Building {
 	 *
 	 * @return Building
 	 */
-	public function setType(BuildingType $type = null): static {
+	public function setType(?BuildingType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -101,7 +101,7 @@ class Building {
 	 *
 	 * @return Building
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -265,7 +265,7 @@ class Building {
 	 *
 	 * @return Building
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;

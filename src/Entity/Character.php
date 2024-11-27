@@ -231,7 +231,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setKnownAs(string $knownAs = null): static {
+	public function setKnownAs(?string $knownAs = null): static {
 		$this->known_as = $knownAs;
 
 		return $this;
@@ -273,7 +273,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -451,7 +451,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setPrisonerOf(Character $prisonerOf = null): static {
+	public function setPrisonerOf(?Character $prisonerOf = null): static {
 		$this->prisoner_of = $prisonerOf;
 
 		return $this;
@@ -622,7 +622,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setLiege(Character $liege = null): static {
+	public function setLiege(?Character $liege = null): static {
 		$this->liege = $liege;
 
 		return $this;
@@ -754,7 +754,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setLiegeLand(Settlement $liegeLand = null): static {
+	public function setLiegeLand(?Settlement $liegeLand = null): static {
 		$this->liege_land = $liegeLand;
 
 		return $this;
@@ -776,7 +776,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setLiegePlace(Place $liegePlace = null): static {
+	public function setLiegePlace(?Place $liegePlace = null): static {
 		$this->liege_place = $liegePlace;
 
 		return $this;
@@ -798,7 +798,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setLiegePosition(RealmPosition $liegePosition = null): static {
+	public function setLiegePosition(?RealmPosition $liegePosition = null): static {
 		$this->liege_position = $liegePosition;
 
 		return $this;
@@ -837,7 +837,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setHouse(House $house = null): static {
+	public function setHouse(?House $house = null): static {
 		$this->house = $house;
 
 		return $this;
@@ -1164,7 +1164,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setBattling(bool $battling = null): static {
+	public function setBattling(?bool $battling = null): static {
 		$this->battling = $battling;
 
 		return $this;
@@ -1186,7 +1186,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setSystem(string $system = null): static {
+	public function setSystem(?string $system = null): static {
 		$this->system = $system;
 
 		return $this;
@@ -1208,7 +1208,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setRetired(bool $retired = null): static {
+	public function setRetired(?bool $retired = null): static {
 		$this->retired = $retired;
 
 		return $this;
@@ -1218,7 +1218,7 @@ class Character extends CharacterBase {
 		return $this->abandoned_by;
 	}
 
-	public function setAbandonedBy(int $abandoned = null): static {
+	public function setAbandonedBy(?int $abandoned = null): static {
 		$this->abandoned_by = $abandoned;
 
 		return $this;
@@ -1240,7 +1240,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setRetiredOn(DateTime $retiredOn = null): static {
+	public function setRetiredOn(?DateTime $retiredOn = null): static {
 		$this->retired_on = $retiredOn;
 
 		return $this;
@@ -1306,7 +1306,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setMagic(int $magic = null): static {
+	public function setMagic(?int $magic = null): static {
 		$this->magic = $magic;
 
 		return $this;
@@ -1372,7 +1372,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setHouseJoinDate(DateTime $houseJoinDate = null): static {
+	public function setHouseJoinDate(?DateTime $houseJoinDate = null): static {
 		$this->house_join_date = $houseJoinDate;
 
 		return $this;
@@ -1430,7 +1430,7 @@ class Character extends CharacterBase {
 		return $this->insideRegion;
 	}
 
-	public function setInsideRegion(MapRegion $reg = null): static {
+	public function setInsideRegion(?MapRegion $reg = null): static {
 		$this->insideRegion = $reg;
 		return $this;
 	}
@@ -1448,7 +1448,7 @@ class Character extends CharacterBase {
 		return $this->travelTime;
 	}
 
-	public function setTravelTime(int $time = null): static {
+	public function setTravelTime(?int $time = null): static {
 		$this->travelTime = $time;
 		return $this;
 	}
@@ -1474,7 +1474,7 @@ class Character extends CharacterBase {
 		return $this->world;
 	}
 
-	public function setWorld(World $world = null): static {
+	public function setWorld(?World $world = null): static {
 		$this->world = $world;
 		return $this;
 	}
@@ -1495,7 +1495,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setLocation(Point $location = null): static {
+	public function setLocation(?Point $location = null): static {
 		$this->location = $location;
 
 		return $this;
@@ -1517,7 +1517,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setTravel(linestring $travel = null): static {
+	public function setTravel(?linestring $travel = null): static {
 		$this->travel = $travel;
 
 		return $this;
@@ -1539,7 +1539,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setProgress(float $progress = null): static {
+	public function setProgress(?float $progress = null): static {
 		$this->progress = $progress;
 
 		return $this;
@@ -1561,7 +1561,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setSpeed(float $speed = null): static {
+	public function setSpeed(?float $speed = null): static {
 		$this->speed = $speed;
 
 		return $this;
@@ -1737,7 +1737,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setOathCurrent(bool $oathCurrent = null): static {
+	public function setOathCurrent(?bool $oathCurrent = null): static {
 		$this->oath_current = $oathCurrent;
 
 		return $this;
@@ -1759,7 +1759,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setOathTime(DateTime $oathTime = null): static {
+	public function setOathTime(?DateTime $oathTime = null): static {
 		$this->oath_time = $oathTime;
 
 		return $this;
@@ -1781,7 +1781,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setBackground(CharacterBackground $background = null): static {
+	public function setBackground(?CharacterBackground $background = null): static {
 		$this->background = $background;
 
 		return $this;
@@ -1803,7 +1803,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;
@@ -1825,7 +1825,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setDungeoneer(Dungeoneer $dungeoneer = null): static {
+	public function setDungeoneer(?Dungeoneer $dungeoneer = null): static {
 		$this->dungeoneer = $dungeoneer;
 
 		return $this;
@@ -1847,7 +1847,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setHeadOfHouse(House $headOfHouse = null): static {
+	public function setHeadOfHouse(?House $headOfHouse = null): static {
 		$this->head_of_house = $headOfHouse;
 
 		return $this;
@@ -1869,7 +1869,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setActiveReport(BattleReportCharacter $activeReport = null): static {
+	public function setActiveReport(?BattleReportCharacter $activeReport = null): static {
 		$this->active_report = $activeReport;
 
 		return $this;
@@ -1891,7 +1891,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setLocalConversation(Conversation $localConversation = null): static {
+	public function setLocalConversation(?Conversation $localConversation = null): static {
 		$this->local_conversation = $localConversation;
 
 		return $this;
@@ -3284,7 +3284,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setWeapon(EquipmentType $weapon = null): static {
+	public function setWeapon(?EquipmentType $weapon = null): static {
 		$this->weapon = $weapon;
 
 		return $this;
@@ -3306,7 +3306,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setArmour(EquipmentType $armour = null): static {
+	public function setArmour(?EquipmentType $armour = null): static {
 		$this->armour = $armour;
 
 		return $this;
@@ -3328,7 +3328,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setEquipment(EquipmentType $equipment = null): static {
+	public function setEquipment(?EquipmentType $equipment = null): static {
 		$this->equipment = $equipment;
 
 		return $this;
@@ -3350,7 +3350,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setMount(EquipmentType $mount = null): static {
+	public function setMount(?EquipmentType $mount = null): static {
 		$this->mount = $mount;
 
 		return $this;
@@ -3372,7 +3372,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setUser(User $user = null): static {
+	public function setUser(?User $user = null): static {
 		$this->user = $user;
 
 		return $this;
@@ -3394,7 +3394,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setCrest(Heraldry $crest = null): static {
+	public function setCrest(?Heraldry $crest = null): static {
 		$this->crest = $crest;
 
 		return $this;
@@ -3416,7 +3416,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setSuccessor(Character $successor = null): static {
+	public function setSuccessor(?Character $successor = null): static {
 		$this->successor = $successor;
 
 		return $this;
@@ -3438,7 +3438,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setInsideSettlement(Settlement $insideSettlement = null): static {
+	public function setInsideSettlement(?Settlement $insideSettlement = null): static {
 		$this->inside_settlement = $insideSettlement;
 
 		return $this;
@@ -3460,7 +3460,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setInsidePlace(Place $insidePlace = null): static {
+	public function setInsidePlace(?Place $insidePlace = null): static {
 		$this->inside_place = $insidePlace;
 
 		return $this;
@@ -3482,7 +3482,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setUsedPortal(Portal $usedPortal = null): static {
+	public function setUsedPortal(?Portal $usedPortal = null): static {
 		$this->used_portal = $usedPortal;
 
 		return $this;
@@ -3504,7 +3504,7 @@ class Character extends CharacterBase {
 	 *
 	 * @return Character
 	 */
-	public function setFaith(Association $faith = null): static {
+	public function setFaith(?Association $faith = null): static {
 		$this->faith = $faith;
 
 		return $this;

@@ -210,7 +210,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @return User
 	 */
-	public function setLimits(UserLimits $limits = null): static {
+	public function setLimits(?UserLimits $limits = null): static {
 		$this->limits = $limits;
 
 		return $this;
@@ -793,7 +793,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @return User
 	 */
-	public function setDescription(Description $description = null): static {
+	public function setDescription(?Description $description = null): static {
 		$this->description = $description;
 
 		return $this;
@@ -815,7 +815,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @return User
 	 */
-	public function setCurrentCharacter(Character $currentCharacter = null): static {
+	public function setCurrentCharacter(?Character $currentCharacter = null): static {
 		$this->current_character = $currentCharacter;
 
 		return $this;

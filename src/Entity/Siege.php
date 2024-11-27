@@ -178,7 +178,7 @@ class Siege {
 	 *
 	 * @return Siege
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -200,7 +200,7 @@ class Siege {
 	 *
 	 * @return Siege
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;
@@ -222,7 +222,7 @@ class Siege {
 	 *
 	 * @return Siege
 	 */
-	public function setAttacker(BattleGroup $attacker = null): static {
+	public function setAttacker(?BattleGroup $attacker = null): static {
 		$this->attacker = $attacker;
 
 		return $this;
@@ -337,7 +337,7 @@ class Siege {
 	 *
 	 * @return Siege
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -359,7 +359,7 @@ class Siege {
 	 *
 	 * @return Siege
 	 */
-	public function setWar(War $war = null): static {
+	public function setWar(?War $war = null): static {
 		$this->war = $war;
 
 		return $this;

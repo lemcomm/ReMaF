@@ -32,7 +32,7 @@ class DeityAspect {
 	 *
 	 * @return DeityAspect
 	 */
-	public function setDeity(Deity $deity = null): static {
+	public function setDeity(?Deity $deity = null): static {
 		$this->deity = $deity;
 
 		return $this;
@@ -54,7 +54,7 @@ class DeityAspect {
 	 *
 	 * @return DeityAspect
 	 */
-	public function setAspect(AspectType $aspect = null): static {
+	public function setAspect(?AspectType $aspect = null): static {
 		$this->aspect = $aspect;
 
 		return $this;

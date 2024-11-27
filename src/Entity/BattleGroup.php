@@ -101,7 +101,7 @@ class BattleGroup {
 	 *
 	 * @return BattleGroup
 	 */
-	public function setSiege(Siege $siege = null): static {
+	public function setSiege(?Siege $siege = null): static {
 		$this->siege = $siege;
 
 		return $this;
@@ -204,7 +204,7 @@ class BattleGroup {
 	 *
 	 * @return BattleGroup
 	 */
-	public function setReinforcing(BattleGroup $reinforcing = null): static {
+	public function setReinforcing(?BattleGroup $reinforcing = null): static {
 		$this->reinforcing = $reinforcing;
 
 		return $this;
@@ -256,7 +256,7 @@ class BattleGroup {
 	 *
 	 * @return BattleGroup
 	 */
-	public function setEngaged(bool $engaged = null): static {
+	public function setEngaged(?bool $engaged = null): static {
 		$this->engaged = $engaged;
 
 		return $this;
@@ -287,7 +287,7 @@ class BattleGroup {
 	 *
 	 * @return BattleGroup
 	 */
-	public function setAttackingInSiege(Siege $attackingInSiege = null): static {
+	public function setAttackingInSiege(?Siege $attackingInSiege = null): static {
 		$this->attacking_in_siege = $attackingInSiege;
 
 		return $this;
@@ -309,7 +309,7 @@ class BattleGroup {
 	 *
 	 * @return BattleGroup
 	 */
-	public function setActiveReport(BattleReportGroup $activeReport = null): static {
+	public function setActiveReport(?BattleReportGroup $activeReport = null): static {
 		$this->active_report = $activeReport;
 
 		return $this;
@@ -455,7 +455,7 @@ class BattleGroup {
 	 *
 	 * @return BattleGroup
 	 */
-	public function setBattle(Battle $battle = null): static {
+	public function setBattle(?Battle $battle = null): static {
 		$this->battle = $battle;
 
 		return $this;
@@ -477,7 +477,7 @@ class BattleGroup {
 	 *
 	 * @return BattleGroup
 	 */
-	public function setLeader(Character $leader = null): static {
+	public function setLeader(?Character $leader = null): static {
 		$this->leader = $leader;
 
 		return $this;

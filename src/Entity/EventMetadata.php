@@ -61,7 +61,7 @@ class EventMetadata {
 	 *
 	 * @return EventMetadata
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;
@@ -146,7 +146,7 @@ class EventMetadata {
 	 *
 	 * @return EventMetadata
 	 */
-	public function setReader(Character $reader = null): static {
+	public function setReader(?Character $reader = null): static {
 		$this->reader = $reader;
 
 		return $this;

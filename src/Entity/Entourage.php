@@ -62,7 +62,7 @@ class Entourage extends NPC {
 	 *
 	 * @return Entourage
 	 */
-	public function setType(EntourageType $type = null): static {
+	public function setType(?EntourageType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -84,7 +84,7 @@ class Entourage extends NPC {
 	 *
 	 * @return Entourage
 	 */
-	public function setAction(Action $action = null): static {
+	public function setAction(?Action $action = null): static {
 		$this->action = $action;
 
 		return $this;
@@ -106,7 +106,7 @@ class Entourage extends NPC {
 	 *
 	 * @return Entourage
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -128,7 +128,7 @@ class Entourage extends NPC {
 	 *
 	 * @return Entourage
 	 */
-	public function setLiege(Character $liege = null): static {
+	public function setLiege(?Character $liege = null): static {
 		$this->liege = $liege;
 
 		return $this;
@@ -150,7 +150,7 @@ class Entourage extends NPC {
 	 *
 	 * @return Entourage
 	 */
-	public function setEquipment(EquipmentType $equipment = null): static {
+	public function setEquipment(?EquipmentType $equipment = null): static {
 		$this->equipment = $equipment;
 
 		return $this;

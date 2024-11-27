@@ -119,7 +119,7 @@ class BattleReport extends ReportBase {
 	 *
 	 * @return BattleReport
 	 */
-	public function setDefenderGroupId(int $defenderGroupId = null): static {
+	public function setDefenderGroupId(?int $defenderGroupId = null): static {
 		$this->defender_group_id = $defenderGroupId;
 
 		return $this;
@@ -229,7 +229,7 @@ class BattleReport extends ReportBase {
 	 *
 	 * @return BattleReport
 	 */
-	public function setEpicness(int $epicness = null): static {
+	public function setEpicness(?int $epicness = null): static {
 		$this->epicness = $epicness;
 
 		return $this;
@@ -251,7 +251,7 @@ class BattleReport extends ReportBase {
 	 *
 	 * @return BattleReport
 	 */
-	public function setPrimaryAttacker(BattleReportGroup $primaryAttacker = null): static {
+	public function setPrimaryAttacker(?BattleReportGroup $primaryAttacker = null): static {
 		$this->primary_attacker = $primaryAttacker;
 
 		return $this;
@@ -273,7 +273,7 @@ class BattleReport extends ReportBase {
 	 *
 	 * @return BattleReport
 	 */
-	public function setPrimaryDefender(BattleReportGroup $primaryDefender = null): static {
+	public function setPrimaryDefender(?BattleReportGroup $primaryDefender = null): static {
 		$this->primary_defender = $primaryDefender;
 
 		return $this;
@@ -357,7 +357,7 @@ class BattleReport extends ReportBase {
 	 *
 	 * @return BattleReport
 	 */
-	public function setWar(War $war = null): static {
+	public function setWar(?War $war = null): static {
 		$this->war = $war;
 
 		return $this;
@@ -379,7 +379,7 @@ class BattleReport extends ReportBase {
 	 *
 	 * @return BattleReport
 	 */
-	public function setSiege(Siege $siege = null): static {
+	public function setSiege(?Siege $siege = null): static {
 		$this->siege = $siege;
 
 		return $this;

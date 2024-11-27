@@ -349,7 +349,7 @@ class Message {
 	 *
 	 * @return Message
 	 */
-	public function setConversation(Conversation $conversation = null): static {
+	public function setConversation(?Conversation $conversation = null): static {
 		$this->conversation = $conversation;
 
 		return $this;
@@ -371,7 +371,7 @@ class Message {
 	 *
 	 * @return Message
 	 */
-	public function setSender(Character $sender = null): static {
+	public function setSender(?Character $sender = null): static {
 		$this->sender = $sender;
 
 		return $this;
@@ -393,7 +393,7 @@ class Message {
 	 *
 	 * @return Message
 	 */
-	public function setReplyTo(Message $replyTo = null): static {
+	public function setReplyTo(?Message $replyTo = null): static {
 		$this->reply_to = $replyTo;
 
 		return $this;

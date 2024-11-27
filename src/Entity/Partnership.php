@@ -210,7 +210,7 @@ class Partnership {
 	 *
 	 * @return Partnership
 	 */
-	public function setInitiator(Character $initiator = null): static {
+	public function setInitiator(?Character $initiator = null): static {
 		$this->initiator = $initiator;
 
 		return $this;

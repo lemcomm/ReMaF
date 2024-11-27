@@ -124,7 +124,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setActiveArtifact(Artifact $activeArtifact = null): static {
+	public function setActiveArtifact(?Artifact $activeArtifact = null): static {
 		$this->active_artifact = $activeArtifact;
 
 		return $this;
@@ -146,7 +146,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setActiveSettlement(Settlement $activeSettlement = null): static {
+	public function setActiveSettlement(?Settlement $activeSettlement = null): static {
 		$this->active_settlement = $activeSettlement;
 
 		return $this;
@@ -168,7 +168,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setActivePlace(Place $activePlace = null): static {
+	public function setActivePlace(?Place $activePlace = null): static {
 		$this->active_place = $activePlace;
 
 		return $this;
@@ -190,7 +190,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setActiveRealm(Realm $activeRealm = null): static {
+	public function setActiveRealm(?Realm $activeRealm = null): static {
 		$this->active_realm = $activeRealm;
 
 		return $this;
@@ -212,7 +212,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setActiveHouse(House $activeHouse = null): static {
+	public function setActiveHouse(?House $activeHouse = null): static {
 		$this->active_house = $activeHouse;
 
 		return $this;
@@ -234,7 +234,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setActivePortal(Portal $activePortal = null): static {
+	public function setActivePortal(?Portal $activePortal = null): static {
 		$this->active_portal = $activePortal;
 
 		return $this;
@@ -256,7 +256,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setActiveAssociation(Association $activeAssociation = null): static {
+	public function setActiveAssociation(?Association $activeAssociation = null): static {
 		$this->active_association = $activeAssociation;
 
 		return $this;
@@ -278,7 +278,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setActiveAssociationRank(AssociationRank $activeAssociationRank = null): static {
+	public function setActiveAssociationRank(?AssociationRank $activeAssociationRank = null): static {
 		$this->active_association_rank = $activeAssociationRank;
 
 		return $this;
@@ -300,7 +300,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setActiveDeity(Deity $activeDeity = null): static {
+	public function setActiveDeity(?Deity $activeDeity = null): static {
 		$this->active_deity = $activeDeity;
 
 		return $this;
@@ -322,7 +322,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setActiveUser(User $activeUser = null): static {
+	public function setActiveUser(?User $activeUser = null): static {
 		$this->active_user = $activeUser;
 
 		return $this;
@@ -344,7 +344,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setPrevious(Description $previous = null): static {
+	public function setPrevious(?Description $previous = null): static {
 		$this->previous = $previous;
 
 		return $this;
@@ -366,7 +366,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setNext(Description $next = null): static {
+	public function setNext(?Description $next = null): static {
 		$this->next = $next;
 
 		return $this;
@@ -388,7 +388,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setArtifact(Artifact $artifact = null): static {
+	public function setArtifact(?Artifact $artifact = null): static {
 		$this->artifact = $artifact;
 
 		return $this;
@@ -410,7 +410,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -432,7 +432,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;
@@ -454,7 +454,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setRealm(Realm $realm = null): static {
+	public function setRealm(?Realm $realm = null): static {
 		$this->realm = $realm;
 
 		return $this;
@@ -476,7 +476,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setHouse(House $house = null): static {
+	public function setHouse(?House $house = null): static {
 		$this->house = $house;
 
 		return $this;
@@ -498,7 +498,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setPortal(Portal $portal = null): static {
+	public function setPortal(?Portal $portal = null): static {
 		$this->portal = $portal;
 
 		return $this;
@@ -520,7 +520,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setAssociation(Association $association = null): static {
+	public function setAssociation(?Association $association = null): static {
 		$this->association = $association;
 
 		return $this;
@@ -542,7 +542,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setAssociationRank(AssociationRank $associationRank = null): static {
+	public function setAssociationRank(?AssociationRank $associationRank = null): static {
 		$this->association_rank = $associationRank;
 
 		return $this;
@@ -564,7 +564,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setDeity(Deity $deity = null): static {
+	public function setDeity(?Deity $deity = null): static {
 		$this->deity = $deity;
 
 		return $this;
@@ -586,7 +586,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setUser(User $user = null): static {
+	public function setUser(?User $user = null): static {
 		$this->user = $user;
 
 		return $this;
@@ -608,7 +608,7 @@ class Description {
 	 *
 	 * @return Description
 	 */
-	public function setUpdater(Character $updater = null): static {
+	public function setUpdater(?Character $updater = null): static {
 		$this->updater = $updater;
 
 		return $this;

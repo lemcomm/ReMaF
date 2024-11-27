@@ -174,7 +174,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setAttacks(int $attacks = null): static {
+	public function setAttacks(?int $attacks = null): static {
 		$this->attacks = $attacks;
 
 		return $this;
@@ -196,7 +196,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setHitsTaken(int $hitsTaken = null): static {
+	public function setHitsTaken(?int $hitsTaken = null): static {
 		$this->hits_taken = $hitsTaken;
 
 		return $this;
@@ -218,7 +218,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setHitsMade(int $hitsMade = null): static {
+	public function setHitsMade(?int $hitsMade = null): static {
 		$this->hits_made = $hitsMade;
 
 		return $this;
@@ -240,7 +240,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setWounds(int $wounds = null): static {
+	public function setWounds(?int $wounds = null): static {
 		$this->wounds = $wounds;
 
 		return $this;
@@ -302,7 +302,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setActivityReport(ActivityReport $activityReport = null): static {
+	public function setActivityReport(?ActivityReport $activityReport = null): static {
 		$this->activity_report = $activityReport;
 
 		return $this;
@@ -324,7 +324,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setGroupReport(ActivityReportGroup $groupReport = null): static {
+	public function setGroupReport(?ActivityReportGroup $groupReport = null): static {
 		$this->group_report = $groupReport;
 
 		return $this;
@@ -346,7 +346,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -368,7 +368,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setWeapon(EquipmentType $weapon = null): static {
+	public function setWeapon(?EquipmentType $weapon = null): static {
 		$this->weapon = $weapon;
 
 		return $this;
@@ -390,7 +390,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setArmour(EquipmentType $armour = null): static {
+	public function setArmour(?EquipmentType $armour = null): static {
 		$this->armour = $armour;
 
 		return $this;
@@ -412,7 +412,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setEquipment(EquipmentType $equipment = null): static {
+	public function setEquipment(?EquipmentType $equipment = null): static {
 		$this->equipment = $equipment;
 
 		return $this;
@@ -434,7 +434,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setMount(EquipmentType $mount = null): static {
+	public function setMount(?EquipmentType $mount = null): static {
 		$this->mount = $mount;
 
 		return $this;

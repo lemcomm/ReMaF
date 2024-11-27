@@ -283,7 +283,7 @@ class Unit {
 	 *
 	 * @return Unit
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -305,7 +305,7 @@ class Unit {
 	 *
 	 * @return Unit
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -327,7 +327,7 @@ class Unit {
 	 *
 	 * @return Unit
 	 */
-	public function setPlace(Place $place = null): static {
+	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
 		return $this;
@@ -349,7 +349,7 @@ class Unit {
 	 *
 	 * @return Unit
 	 */
-	public function setDefendingSettlement(Settlement $defendingSettlement = null): static {
+	public function setDefendingSettlement(?Settlement $defendingSettlement = null): static {
 		$this->defending_settlement = $defendingSettlement;
 
 		return $this;
@@ -446,7 +446,7 @@ class Unit {
 	 *
 	 * @return Unit
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;
@@ -468,7 +468,7 @@ class Unit {
 	 *
 	 * @return Unit
 	 */
-	public function setSettings(UnitSettings $settings = null): static {
+	public function setSettings(?UnitSettings $settings = null): static {
 		$this->settings = $settings;
 
 		return $this;
@@ -574,7 +574,7 @@ class Unit {
 	 *
 	 * @return Unit
 	 */
-	public function setMarshal(Character $marshal = null): static {
+	public function setMarshal(?Character $marshal = null): static {
 		$this->marshal = $marshal;
 
 		return $this;
@@ -596,7 +596,7 @@ class Unit {
 	 *
 	 * @return Unit
 	 */
-	public function setSupplier(Settlement $supplier = null): static {
+	public function setSupplier(?Settlement $supplier = null): static {
 		$this->supplier = $supplier;
 
 		return $this;

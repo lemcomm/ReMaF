@@ -39,7 +39,7 @@ class ActivityGroup {
 	 *
 	 * @return ActivityGroup
 	 */
-	public function setName(string $name = null): static {
+	public function setName(?string $name = null): static {
 		$this->name = $name;
 
 		return $this;
@@ -132,7 +132,7 @@ class ActivityGroup {
 	 *
 	 * @return ActivityGroup
 	 */
-	public function setActivity(Activity $activity = null): static {
+	public function setActivity(?Activity $activity = null): static {
 		$this->activity = $activity;
 
 		return $this;

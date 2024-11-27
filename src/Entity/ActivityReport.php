@@ -65,7 +65,7 @@ class ActivityReport extends ReportBase {
 	 *
 	 * @return ActivityReport
 	 */
-	public function setActivity(Activity $activity = null): static {
+	public function setActivity(?Activity $activity = null): static {
 		$this->activity = $activity;
 
 		return $this;
@@ -180,7 +180,7 @@ class ActivityReport extends ReportBase {
 	 *
 	 * @return ActivityReport
 	 */
-	public function setType(ActivityType $type = null): static {
+	public function setType(?ActivityType $type = null): static {
 		$this->type = $type;
 
 		return $this;
@@ -202,7 +202,7 @@ class ActivityReport extends ReportBase {
 	 *
 	 * @return ActivityReport
 	 */
-	public function setSubtype(ActivitySubType $subtype = null): static {
+	public function setSubtype(?ActivitySubType $subtype = null): static {
 		$this->subtype = $subtype;
 
 		return $this;
@@ -224,7 +224,7 @@ class ActivityReport extends ReportBase {
 	 *
 	 * @return ActivityReport
 	 */
-	public function setGeoData(GeoData $geoData = null): static {
+	public function setGeoData(?GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
 		return $this;

@@ -36,7 +36,7 @@ class ActivityBoutParticipant {
 	 *
 	 * @return ActivityBoutParticipant
 	 */
-	public function setBout(ActivityBout $bout = null): static {
+	public function setBout(?ActivityBout $bout = null): static {
 		$this->bout = $bout;
 
 		return $this;
@@ -58,7 +58,7 @@ class ActivityBoutParticipant {
 	 *
 	 * @return ActivityBoutParticipant
 	 */
-	public function setParticipant(ActivityParticipant $participant = null): static {
+	public function setParticipant(?ActivityParticipant $participant = null): static {
 		$this->participant = $participant;
 
 		return $this;

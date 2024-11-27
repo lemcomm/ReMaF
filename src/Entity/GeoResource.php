@@ -172,7 +172,7 @@ class GeoResource {
 	 *
 	 * @return GeoResource
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -194,7 +194,7 @@ class GeoResource {
 	 *
 	 * @return GeoResource
 	 */
-	public function setGeoData(GeoData $geoData = null): static {
+	public function setGeoData(?GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
 		return $this;
@@ -212,7 +212,7 @@ class GeoResource {
 	 *
 	 * @return GeoResource
 	 */
-	public function setMapRegion(MapRegion $reg = null): static {
+	public function setMapRegion(?MapRegion $reg = null): static {
 		$this->mapRegion = $reg;
 
 		return $this;
@@ -234,7 +234,7 @@ class GeoResource {
 	 *
 	 * @return GeoResource
 	 */
-	public function setType(ResourceType $type = null): static {
+	public function setType(?ResourceType $type = null): static {
 		$this->type = $type;
 
 		return $this;

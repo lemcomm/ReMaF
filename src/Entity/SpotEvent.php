@@ -109,7 +109,7 @@ class SpotEvent {
 	 *
 	 * @return SpotEvent
 	 */
-	public function setSpotter(Character $spotter = null): static {
+	public function setSpotter(?Character $spotter = null): static {
 		$this->spotter = $spotter;
 
 		return $this;
@@ -131,7 +131,7 @@ class SpotEvent {
 	 *
 	 * @return SpotEvent
 	 */
-	public function setTarget(Character $target = null): static {
+	public function setTarget(?Character $target = null): static {
 		$this->target = $target;
 
 		return $this;
@@ -153,7 +153,7 @@ class SpotEvent {
 	 *
 	 * @return SpotEvent
 	 */
-	public function setTower(GeoFeature $tower = null): static {
+	public function setTower(?GeoFeature $tower = null): static {
 		$this->tower = $tower;
 
 		return $this;

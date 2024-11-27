@@ -48,7 +48,7 @@ class RegionBase {
 	 *
 	 * @return RegionBase
 	 */
-	public function setSettlement(Settlement $settlement = null): static {
+	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
 
 		return $this;
@@ -163,7 +163,7 @@ class RegionBase {
 	 *
 	 * @return RegionBase
 	 */
-	public function setBiome(Biome $biome = null): static {
+	public function setBiome(?Biome $biome = null): static {
 		$this->biome = $biome;
 
 		return $this;

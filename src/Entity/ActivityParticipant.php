@@ -54,7 +54,7 @@ class ActivityParticipant {
 	 *
 	 * @return ActivityParticipant
 	 */
-	public function setOrganizer(bool $organizer = null): static {
+	public function setOrganizer(?bool $organizer = null): static {
 		$this->organizer = $organizer;
 
 		return $this;
@@ -83,7 +83,7 @@ class ActivityParticipant {
 	 *
 	 * @return ActivityParticipant
 	 */
-	public function setRole(string $role = null): static {
+	public function setRole(?string $role = null): static {
 		$this->role = $role;
 
 		return $this;
@@ -145,7 +145,7 @@ class ActivityParticipant {
 	 *
 	 * @return ActivityParticipant
 	 */
-	public function setActivity(Activity $activity = null): static {
+	public function setActivity(?Activity $activity = null): static {
 		$this->activity = $activity;
 
 		return $this;
@@ -167,7 +167,7 @@ class ActivityParticipant {
 	 *
 	 * @return ActivityParticipant
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
@@ -189,7 +189,7 @@ class ActivityParticipant {
 	 *
 	 * @return ActivityParticipant
 	 */
-	public function setStyle(Style $style = null): static {
+	public function setStyle(?Style $style = null): static {
 		$this->style = $style;
 
 		return $this;
@@ -211,7 +211,7 @@ class ActivityParticipant {
 	 *
 	 * @return ActivityParticipant
 	 */
-	public function setWeapon(EquipmentType $weapon = null): static {
+	public function setWeapon(?EquipmentType $weapon = null): static {
 		$this->weapon = $weapon;
 
 		return $this;
@@ -233,7 +233,7 @@ class ActivityParticipant {
 	 *
 	 * @return ActivityParticipant
 	 */
-	public function setGroup(ActivityGroup $group = null): static {
+	public function setGroup(?ActivityGroup $group = null): static {
 		$this->group = $group;
 
 		return $this;
@@ -259,7 +259,7 @@ class ActivityParticipant {
 	 *
 	 * @return ActivityParticipant
 	 */
-	public function setAccepted(bool $accepted = null): static {
+	public function setAccepted(?bool $accepted = null): static {
 		$this->accepted = $accepted;
 
 		return $this;

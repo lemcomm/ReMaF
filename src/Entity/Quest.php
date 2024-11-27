@@ -163,7 +163,7 @@ class Quest {
 	 *
 	 * @return Quest
 	 */
-	public function setLog(EventLog $log = null): static {
+	public function setLog(?EventLog $log = null): static {
 		$this->log = $log;
 
 		return $this;
@@ -216,7 +216,7 @@ class Quest {
 	 *
 	 * @return Quest
 	 */
-	public function setOwner(Character $owner = null): static {
+	public function setOwner(?Character $owner = null): static {
 		$this->owner = $owner;
 
 		return $this;
@@ -238,7 +238,7 @@ class Quest {
 	 *
 	 * @return Quest
 	 */
-	public function setHome(Settlement $home = null): static {
+	public function setHome(?Settlement $home = null): static {
 		$this->home = $home;
 
 		return $this;

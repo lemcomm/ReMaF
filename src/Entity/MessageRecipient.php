@@ -32,7 +32,7 @@ class MessageRecipient {
 	 *
 	 * @return MessageRecipient
 	 */
-	public function setMessage(Message $message = null): static {
+	public function setMessage(?Message $message = null): static {
 		$this->message = $message;
 
 		return $this;
@@ -54,7 +54,7 @@ class MessageRecipient {
 	 *
 	 * @return MessageRecipient
 	 */
-	public function setCharacter(Character $character = null): static {
+	public function setCharacter(?Character $character = null): static {
 		$this->character = $character;
 
 		return $this;
