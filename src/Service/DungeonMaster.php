@@ -770,7 +770,7 @@ In short before a dungeon starts you get a bit longer, but when it's running you
 		// set character health based on wounds
 		// this can get characters above mortally wounded, but will never kill them
 		$health = $hero->getWounds() / $this->starting_wounds;
-		$char->setWounded($char->getWounded() + ceil($health * $char->full_health));
+		$char->setWounded($char->getWounded() + ceil($health * $char->getRace()->getHp()));
 
 		// the more (additional to the basic set) cards I have, the deeper I have to go in to get new ones
 		$cards -= floor(($hero->getCards()->count()-5)/10);

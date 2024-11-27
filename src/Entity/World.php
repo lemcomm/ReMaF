@@ -14,6 +14,8 @@ class World {
 	private Collection $settlements;
 	private Collection $places;
 	private Collection $activities;
+	private Collection $geoMarkers;
+	private Collection $artifacts;
 
 	/**
 	 * Constructor
@@ -25,6 +27,8 @@ class World {
 		$this->settlements = new ArrayCollection();
 		$this->places = new ArrayCollection();
 		$this->activities = new ArrayCollection();
+		$this->geoMarkers = new ArrayCollection();
+		$this->artifacts = new ArrayCollection();
 	}
 
 	/**
@@ -176,4 +180,31 @@ class World {
 	public function getSettlements(): ArrayCollection|Collection {
 		return $this->settlements;
 	}
+
+	public function addGeoMarker(GeoFeature $feat): static {
+		$this->geoMarkers[] = $feat;
+		return $this;
+	}
+
+	public function removeGeoMarker(GeoFeature $feat): void {
+		$this->geoMarkers->removeElement($feat);
+	}
+
+	public function getGeoMarkers(): ArrayCollection|Collection {
+		return $this->geoMarkers;
+	}
+
+	public function addArtifact(Artifact $artifact): static {
+		$this->artifacts[] = $artifact;
+		return $this;
+	}
+
+	public function removeArtifact(Artifact $artifact): void {
+		$this->artifacts->removeElement($artifact);
+	}
+
+	public function getArtifacts(): ArrayCollection|Collection {
+		return $this->artifacts;
+	}
+
 }

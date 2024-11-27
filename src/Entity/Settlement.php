@@ -5,67 +5,386 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-
 class Settlement {
-	public bool $corruption = false;
-	private string $name;
-	private int $population;
-	private int $thralls;
-	private int $recruited;
-	private float $starvation;
-	private int $gold;
-	private int $war_fatigue;
-	private ?int $abduction_cooldown = null;
-	private bool $allow_thralls;
-	private ?bool $feed_soldiers = null;
-	private ?int $id = null;
-	private ?Description $description;
-	private ?GeoData $geo_data = null;
-	private ?MapRegion $mapRegion = null;
-	private ?World $world = null;
-	private ?GeoFeature $geo_marker = null;
-	private ?EventLog $log = null;
-	private ?Siege $siege = null;
-	private Collection $descriptions;
-	private Collection $places;
-	private Collection $capital_of;
-	private Collection $resources;
-	private Collection $buildings;
-	private Collection $soldiers_old;
-	private Collection $houses_present;
-	private Collection $claims;
-	private Collection $trades_outbound;
-	private Collection $trades_inbound;
-	private Collection $quests;
-	private Collection $wartargets;
-	private Collection $characters_present;
-	private Collection $battles;
-	private Collection $related_actions;
-	private Collection $permissions;
-	private Collection $occupation_permissions;
-	private Collection $requests;
-	private Collection $related_requests;
-	private Collection $part_of_requests;
-	private Collection $supplied_units;
-	private Collection $sent_supplies;
-	private Collection $units;
-	private Collection $defending_units;
-	private Collection $vassals;
-	private Collection $activities;
-	private Collection $laws;
-	private ?Culture $culture = null;
-	private ?Character $owner = null;
-	private ?Character $steward = null;
-	private ?Realm $realm = null;
-	private ?Character $occupant = null;
-	private ?Realm $occupier = null;
-	private Collection $chat_messages;
-	private float $assignedRoads = -1;
-	private float $assignedBuildings = -1;
-	private float $assignedFeatures = -1;
-	private float $employees = -1;
-	private ?Association $faith = null;
-	private float $food_provision_limit = 1;
+	public bool $corruption = false {
+		get {
+			return $this->corruption;
+		}
+		set {
+			$this->corruption = $value;
+		}
+	}
+	private ?string $name = null {
+		get {
+			return $this->name;
+		}
+		set {
+			$this->name = $value;
+		}
+	}
+	private int $population {
+		get {
+			return $this->population;
+		}
+		set {
+			$this->population = $value;
+		}
+	}
+	private int $thralls {
+		get {
+			return $this->thralls;
+		}
+		set {
+			$this->thralls = $value;
+		}
+	}
+	private int $recruited {
+		get {
+			return $this->recruited;
+		}
+		set {
+			$this->recruited = $value;
+		}
+	}
+	private float $starvation {
+		get {
+			return $this->starvation;
+		}
+		set {
+			$this->starvation = $value;
+		}
+	}
+	private int $gold {
+		get {
+			return $this->gold;
+		}
+		set {
+			$this->gold = $value;
+		}
+	}
+	private int $war_fatigue {
+		get {
+			return $this->war_fatigue;
+		}
+		set {
+			$this->war_fatigue = $value;
+		}
+	}
+	private ?int $abduction_cooldown = null {
+		get {
+			return $this->abduction_cooldown;
+		}
+		set {
+			$this->abduction_cooldown = $value;
+		}
+	}
+	private bool $allow_thralls {
+		set {
+			$this->allow_thralls = $value;
+		}
+	}
+	private ?bool $feed_soldiers = null {
+		get {
+			return $this->feed_soldiers;
+		}
+		set {
+			$this->feed_soldiers = $value;
+		}
+	}
+	private ?int $id = null {
+		get {
+			return $this->id;
+		}
+	}
+	private ?Description $description {
+		get {
+			return $this->description;
+		}
+		set {
+			$this->description = $value;
+		}
+	}
+	private ?GeoData $geo_data = null {
+		get {
+			return $this->geo_data;
+		}
+		set {
+			$this->geo_data = $value;
+		}
+	}
+	private ?MapRegion $mapRegion = null {
+		get {
+			return $this->mapRegion;
+		}
+		set {
+			$this->mapRegion = $value;
+		}
+	}
+	private ?World $world = null {
+		get {
+			return $this->world;
+		}
+		set {
+			$this->world = $value;
+		}
+	}
+	private ?GeoFeature $geo_marker = null {
+		get {
+			return $this->geo_marker;
+		}
+		set {
+			$this->geo_marker = $value;
+		}
+	}
+	private ?EventLog $log = null {
+		get {
+			return $this->log;
+		}
+		set {
+			$this->log = $value;
+		}
+	}
+	private ?Siege $siege = null {
+		get {
+			return $this->siege;
+		}
+		set {
+			$this->siege = $value;
+		}
+	}
+	private Collection $descriptions {
+		get {
+			return $this->descriptions;
+		}
+	}
+	private Collection $places {
+		get {
+			return $this->places;
+		}
+	}
+	private Collection $capital_of {
+		get {
+			return $this->capital_of;
+		}
+	}
+	private Collection $resources {
+		get {
+			return $this->resources;
+		}
+	}
+	private Collection $buildings {
+		get {
+			return $this->buildings;
+		}
+	}
+	private Collection $soldiers_old {
+		get {
+			return $this->soldiers_old;
+		}
+	}
+	private Collection $houses_present {
+		get {
+			return $this->houses_present;
+		}
+	}
+	private Collection $claims {
+		get {
+			return $this->claims;
+		}
+	}
+	private Collection $trades_outbound {
+		get {
+			return $this->trades_outbound;
+		}
+	}
+	private Collection $trades_inbound {
+		get {
+			return $this->trades_inbound;
+		}
+	}
+	private Collection $quests {
+		get {
+			return $this->quests;
+		}
+	}
+	private Collection $wartargets {
+		get {
+			return $this->wartargets;
+		}
+	}
+	private Collection $characters_present {
+		get {
+			return $this->characters_present;
+		}
+	}
+	private Collection $battles {
+		get {
+			return $this->battles;
+		}
+	}
+	private Collection $related_actions {
+		get {
+			return $this->related_actions;
+		}
+	}
+	private Collection $permissions {
+		get {
+			return $this->permissions;
+		}
+	}
+	private Collection $occupation_permissions {
+		get {
+			return $this->occupation_permissions;
+		}
+	}
+	private Collection $requests {
+		get {
+			return $this->requests;
+		}
+	}
+	private Collection $related_requests {
+		get {
+			return $this->related_requests;
+		}
+	}
+	private Collection $part_of_requests {
+		get {
+			return $this->part_of_requests;
+		}
+	}
+	private Collection $supplied_units {
+		get {
+			return $this->supplied_units;
+		}
+	}
+	private Collection $sent_supplies {
+		get {
+			return $this->sent_supplies;
+		}
+	}
+	private Collection $units {
+		get {
+			return $this->units;
+		}
+	}
+	private Collection $defending_units {
+		get {
+			return $this->defending_units;
+		}
+	}
+	private Collection $vassals {
+		get {
+			return $this->vassals;
+		}
+	}
+	private Collection $activities {
+		get {
+			return $this->activities;
+		}
+	}
+	private Collection $laws {
+		get {
+			return $this->laws;
+		}
+	}
+	private ?Culture $culture = null {
+		get {
+			return $this->culture;
+		}
+		set {
+			$this->culture = $value;
+		}
+	}
+	private ?Character $owner = null {
+		get {
+			return $this->owner;
+		}
+		set {
+			$this->owner = $value;
+		}
+	}
+	private ?Character $steward = null {
+		get {
+			return $this->steward;
+		}
+		set {
+			$this->steward = $value;
+		}
+	}
+	private ?Realm $realm = null {
+		get {
+			return $this->realm;
+		}
+		set {
+			$this->realm = $value;
+		}
+	}
+	private ?Character $occupant = null {
+		get {
+			return $this->occupant;
+		}
+		set {
+			$this->occupant = $value;
+		}
+	}
+	private ?Realm $occupier = null {
+		get {
+			return $this->occupier;
+		}
+		set {
+			$this->occupier = $value;
+		}
+	}
+	private Collection $chat_messages {
+		get {
+			return $this->chat_messages;
+		}
+	}
+	private float $assignedRoads = -1 {
+		get {
+			return $this->assignedRoads;
+		}
+		set {
+			$this->assignedRoads = $value;
+		}
+	}
+	private float $assignedBuildings = -1 {
+		get {
+			return $this->assignedBuildings;
+		}
+		set {
+			$this->assignedBuildings = $value;
+		}
+	}
+	private float $assignedFeatures = -1 {
+		get {
+			return $this->assignedFeatures;
+		}
+		set {
+			$this->assignedFeatures = $value;
+		}
+	}
+	private float $employees = -1 {
+		set {
+			$this->employees = $value;
+		}
+	}
+	private ?Association $faith = null {
+		get {
+			return $this->faith;
+		}
+		set {
+			$this->faith = $value;
+		}
+	}
+	private float $food_provision_limit = 1 {
+		get {
+			return $this->food_provision_limit;
+		}
+		set {
+			$this->food_provision_limit = $value;
+		}
+	}
 
 	/**
 	 * Constructor
@@ -236,112 +555,6 @@ class Settlement {
 		return round($time_to_take);
 	}
 
-	/**
-	 * Get units
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getUnits(): ArrayCollection|Collection {
-		return $this->units;
-	}
-
-	/**
-	 * Get claims
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getClaims(): ArrayCollection|Collection {
-		return $this->claims;
-	}
-
-	/**
-	 * Get population
-	 *
-	 * @return integer
-	 */
-	public function getPopulation(): int {
-		return $this->population;
-	}
-
-	/**
-	 * Set population
-	 *
-	 * @param integer $population
-	 *
-	 * @return Settlement
-	 */
-	public function setPopulation(int $population): static {
-		$this->population = $population;
-
-		return $this;
-	}
-
-	/**
-	 * Get owner
-	 *
-	 * @return Character|null
-	 */
-	public function getOwner(): ?Character {
-		return $this->owner;
-	}
-
-	/**
-	 * Set owner
-	 *
-	 * @param Character|null $owner
-	 *
-	 * @return Settlement
-	 */
-	public function setOwner(Character $owner = null): static {
-		$this->owner = $owner;
-
-		return $this;
-	}
-
-	/**
-	 * Get realm
-	 *
-	 * @return Realm|null
-	 */
-	public function getRealm(): ?Realm {
-		return $this->realm;
-	}
-
-	/**
-	 * Set realm
-	 *
-	 * @param Realm|null $realm
-	 *
-	 * @return Settlement
-	 */
-	public function setRealm(Realm $realm = null): static {
-		$this->realm = $realm;
-
-		return $this;
-	}
-
-	/**
-	 * Get occupant
-	 *
-	 * @return Character|null
-	 */
-	public function getOccupant(): ?Character {
-		return $this->occupant;
-	}
-
-	/**
-	 * Set occupant
-	 *
-	 * @param Character|null $occupant
-	 *
-	 * @return Settlement
-	 */
-	public function setOccupant(Character $occupant = null): static {
-		$this->occupant = $occupant;
-
-		return $this;
-	}
-
 	public function getRecruitLimit($ignore_recruited = false) {
 		// TODO: this should take population density, etc. into account, I think, which means it would have to be moved into the military service
 		$max = ceil($this->population / 10);
@@ -359,24 +572,6 @@ class Settlement {
 		return $resource->first();
 	}
 
-	/**
-	 * Get resources
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getResources(): ArrayCollection|Collection {
-		return $this->resources;
-	}
-
-	/**
-	 * Get id
-	 *
-	 * @return int|null
-	 */
-	public function getId(): ?int {
-		return $this->id;
-	}
-
 	public function getType(): string {
 		return 'settlement.size.' . $this->getSize();
 	}
@@ -389,41 +584,10 @@ class Settlement {
 		}
 	}
 
-	/**
-	 * Get name
-	 *
-	 * @return string
-	 */
-	public function getName(): string {
-		return $this->name;
-	}
-
-	/**
-	 * Set name
-	 *
-	 * @param string $name
-	 *
-	 * @return Settlement
-	 */
-	public function setName(string $name): static {
-		$this->name = $name;
-
-		return $this;
-	}
-
 	public function getActiveBuildings(): ArrayCollection|Collection {
 		return $this->getBuildings()->filter(function ($entry) {
 			return ($entry->getActive());
 		});
-	}
-
-	/**
-	 * Get buildings
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getBuildings(): ArrayCollection|Collection {
-		return $this->buildings;
 	}
 
 	public function hasBuilding(BuildingType $type, $with_inactive = false) {
@@ -502,39 +666,8 @@ class Settlement {
 		return $defenders;
 	}
 
-	/**
-	 * Get related_actions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getRelatedActions(): ArrayCollection|Collection {
-		return $this->related_actions;
-	}
-
 	public function getAvailableWorkforce() {
 		return $this->getPopulation() + $this->getThralls() - $this->getRoadWorkers() - $this->getBuildingWorkers() - $this->getFeatureWorkers() - $this->getEmployees();
-	}
-
-	/**
-	 * Get thralls
-	 *
-	 * @return integer
-	 */
-	public function getThralls(): int {
-		return $this->thralls;
-	}
-
-	/**
-	 * Set thralls
-	 *
-	 * @param integer $thralls
-	 *
-	 * @return Settlement
-	 */
-	public function setThralls(int $thralls): static {
-		$this->thralls = $thralls;
-
-		return $this;
 	}
 
 	public function getRoadWorkers(): float {
@@ -552,55 +685,6 @@ class Settlement {
 		}
 
 		return $this->assignedRoads;
-	}
-
-	/**
-	 * Get geo_data
-	 *
-	 * @return GeoData|null
-	 */
-	public function getGeoData(): ?GeoData {
-		return $this->geo_data;
-	}
-
-	/**
-	 * Set geo_data
-	 *
-	 * @param GeoData|null $geoData
-	 *
-	 * @return Settlement
-	 */
-	public function setGeoData(GeoData $geoData = null): static {
-		$this->geo_data = $geoData;
-
-		return $this;
-	}
-
-	/**
-	 * @return MapRegion|null
-	 */
-	public function getMapRegion(): ?MapRegion {
-		return $this->mapRegion;
-	}
-
-	/**
-	 * @param MapRegion|null $reg
-	 *
-	 * @return Settlement
-	 */
-	public function setMapRegion(MapRegion $reg = null): static {
-		$this->mapRegion = $reg;
-
-		return $this;
-	}
-
-	public function getWorld(): ?World {
-		return $this->world;
-	}
-
-	public function setWorld(World $world = null): static {
-		$this->world = $world;
-		return $this;
 	}
 
 	public function getBuildingWorkers(): float {
@@ -667,226 +751,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get recruited
-	 *
-	 * @return integer
-	 */
-	public function getRecruited(): int {
-		return $this->recruited;
-	}
-
-	/**
-	 * Set recruited
-	 *
-	 * @param integer $recruited
-	 *
-	 * @return Settlement
-	 */
-	public function setRecruited(int $recruited): static {
-		$this->recruited = $recruited;
-
-		return $this;
-	}
-
-	/**
-	 * Get starvation
-	 *
-	 * @return float
-	 */
-	public function getStarvation(): float {
-		return $this->starvation;
-	}
-
-	/**
-	 * Set starvation
-	 *
-	 * @param float $starvation
-	 *
-	 * @return Settlement
-	 */
-	public function setStarvation(float $starvation): static {
-		$this->starvation = $starvation;
-
-		return $this;
-	}
-
-	/**
-	 * Get gold
-	 *
-	 * @return integer
-	 */
-	public function getGold(): int {
-		return $this->gold;
-	}
-
-	/**
-	 * Set gold
-	 *
-	 * @param integer $gold
-	 *
-	 * @return Settlement
-	 */
-	public function setGold(int $gold): static {
-		$this->gold = $gold;
-
-		return $this;
-	}
-
-	/**
-	 * Get war_fatigue
-	 *
-	 * @return integer
-	 */
-	public function getWarFatigue(): int {
-		return $this->war_fatigue;
-	}
-
-	/**
-	 * Set war_fatigue
-	 *
-	 * @param integer $warFatigue
-	 *
-	 * @return Settlement
-	 */
-	public function setWarFatigue(int $warFatigue): static {
-		$this->war_fatigue = $warFatigue;
-
-		return $this;
-	}
-
-	/**
-	 * Get abduction_cooldown
-	 *
-	 * @return int|null
-	 */
-	public function getAbductionCooldown(): ?int {
-		return $this->abduction_cooldown;
-	}
-
-	/**
-	 * Set abduction_cooldown
-	 *
-	 * @param int|null $abductionCooldown
-	 *
-	 * @return Settlement
-	 */
-	public function setAbductionCooldown(?int $abductionCooldown = null): static {
-		$this->abduction_cooldown = $abductionCooldown;
-
-		return $this;
-	}
-
-	/**
-	 * Get feed_soldiers
-	 *
-	 * @return bool|null
-	 */
-	public function getFeedSoldiers(): ?bool {
-		return $this->feed_soldiers;
-	}
-
-	/**
-	 * Set feed_soldiers
-	 *
-	 * @param boolean|null $feedSoldiers
-	 *
-	 * @return Settlement
-	 */
-	public function setFeedSoldiers(?bool $feedSoldiers = null): static {
-		$this->feed_soldiers = $feedSoldiers;
-
-		return $this;
-	}
-
-	/**
-	 * Get description
-	 *
-	 * @return Description|null
-	 */
-	public function getDescription(): ?Description {
-		return $this->description;
-	}
-
-	/**
-	 * Set description
-	 *
-	 * @param Description|null $description
-	 *
-	 * @return Settlement
-	 */
-	public function setDescription(Description $description = null): static {
-		$this->description = $description;
-
-		return $this;
-	}
-
-	/**
-	 * Get geo_marker
-	 *
-	 * @return GeoFeature|null
-	 */
-	public function getGeoMarker(): ?GeoFeature {
-		return $this->geo_marker;
-	}
-
-	/**
-	 * Set geo_marker
-	 *
-	 * @param GeoFeature|null $geoMarker
-	 *
-	 * @return Settlement
-	 */
-	public function setGeoMarker(GeoFeature $geoMarker = null): static {
-		$this->geo_marker = $geoMarker;
-
-		return $this;
-	}
-
-	/**
-	 * Get log
-	 *
-	 * @return EventLog|null
-	 */
-	public function getLog(): ?EventLog {
-		return $this->log;
-	}
-
-	/**
-	 * Set log
-	 *
-	 * @param EventLog|null $log
-	 *
-	 * @return Settlement
-	 */
-	public function setLog(EventLog $log = null): static {
-		$this->log = $log;
-
-		return $this;
-	}
-
-	/**
-	 * Get siege
-	 *
-	 * @return Siege|null
-	 */
-	public function getSiege(): ?Siege {
-		return $this->siege;
-	}
-
-	/**
-	 * Set siege
-	 *
-	 * @param Siege|null $siege
-	 *
-	 * @return Settlement
-	 */
-	public function setSiege(Siege $siege = null): static {
-		$this->siege = $siege;
-
-		return $this;
-	}
-
-	/**
 	 * Add descriptions
 	 *
 	 * @param Description $descriptions
@@ -906,15 +770,6 @@ class Settlement {
 	 */
 	public function removeDescription(Description $descriptions): void {
 		$this->descriptions->removeElement($descriptions);
-	}
-
-	/**
-	 * Get descriptions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getDescriptions(): ArrayCollection|Collection {
-		return $this->descriptions;
 	}
 
 	/**
@@ -940,15 +795,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get places
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getPlaces(): ArrayCollection|Collection {
-		return $this->places;
-	}
-
-	/**
 	 * Add capital_of
 	 *
 	 * @param Realm $capitalOf
@@ -968,15 +814,6 @@ class Settlement {
 	 */
 	public function removeCapitalOf(Realm $capitalOf): void {
 		$this->capital_of->removeElement($capitalOf);
-	}
-
-	/**
-	 * Get capital_of
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getCapitalOf(): ArrayCollection|Collection {
-		return $this->capital_of;
 	}
 
 	/**
@@ -1046,15 +883,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get soldiers_old
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getSoldiersOld(): ArrayCollection|Collection {
-		return $this->soldiers_old;
-	}
-
-	/**
 	 * Add houses_present
 	 *
 	 * @param House $housesPresent
@@ -1074,15 +902,6 @@ class Settlement {
 	 */
 	public function removeHousesPresent(House $housesPresent): void {
 		$this->houses_present->removeElement($housesPresent);
-	}
-
-	/**
-	 * Get houses_present
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getHousesPresent(): ArrayCollection|Collection {
-		return $this->houses_present;
 	}
 
 	/**
@@ -1130,15 +949,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get trades_outbound
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getTradesOutbound(): ArrayCollection|Collection {
-		return $this->trades_outbound;
-	}
-
-	/**
 	 * Add trades_inbound
 	 *
 	 * @param Trade $tradesInbound
@@ -1158,15 +968,6 @@ class Settlement {
 	 */
 	public function removeTradesInbound(Trade $tradesInbound): void {
 		$this->trades_inbound->removeElement($tradesInbound);
-	}
-
-	/**
-	 * Get trades_inbound
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getTradesInbound(): ArrayCollection|Collection {
-		return $this->trades_inbound;
 	}
 
 	/**
@@ -1192,15 +993,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get quests
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getQuests(): ArrayCollection|Collection {
-		return $this->quests;
-	}
-
-	/**
 	 * Add wartargets
 	 *
 	 * @param WarTarget $wartargets
@@ -1220,15 +1012,6 @@ class Settlement {
 	 */
 	public function removeWartarget(WarTarget $wartargets): void {
 		$this->wartargets->removeElement($wartargets);
-	}
-
-	/**
-	 * Get wartargets
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getWartargets(): ArrayCollection|Collection {
-		return $this->wartargets;
 	}
 
 	/**
@@ -1254,15 +1037,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get characters_present
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getCharactersPresent(): ArrayCollection|Collection {
-		return $this->characters_present;
-	}
-
-	/**
 	 * Add battles
 	 *
 	 * @param Battle $battles
@@ -1282,15 +1056,6 @@ class Settlement {
 	 */
 	public function removeBattle(Battle $battles): void {
 		$this->battles->removeElement($battles);
-	}
-
-	/**
-	 * Get battles
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getBattles(): ArrayCollection|Collection {
-		return $this->battles;
 	}
 
 	/**
@@ -1338,15 +1103,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get permissions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getPermissions(): ArrayCollection|Collection {
-		return $this->permissions;
-	}
-
-	/**
 	 * Add occupation_permissions
 	 *
 	 * @param SettlementPermission $occupationPermissions
@@ -1366,15 +1122,6 @@ class Settlement {
 	 */
 	public function removeOccupationPermission(SettlementPermission $occupationPermissions): void {
 		$this->occupation_permissions->removeElement($occupationPermissions);
-	}
-
-	/**
-	 * Get occupation_permissions
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getOccupationPermissions(): ArrayCollection|Collection {
-		return $this->occupation_permissions;
 	}
 
 	/**
@@ -1400,15 +1147,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get requests
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getRequests(): ArrayCollection|Collection {
-		return $this->requests;
-	}
-
-	/**
 	 * Add related_requests
 	 *
 	 * @param GameRequest $relatedRequests
@@ -1428,15 +1166,6 @@ class Settlement {
 	 */
 	public function removeRelatedRequest(GameRequest $relatedRequests): void {
 		$this->related_requests->removeElement($relatedRequests);
-	}
-
-	/**
-	 * Get related_requests
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getRelatedRequests(): ArrayCollection|Collection {
-		return $this->related_requests;
 	}
 
 	/**
@@ -1462,15 +1191,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get part_of_requests
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getPartOfRequests(): ArrayCollection|Collection {
-		return $this->part_of_requests;
-	}
-
-	/**
 	 * Add supplied_units
 	 *
 	 * @param Unit $suppliedUnits
@@ -1493,15 +1213,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get supplied_units
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getSuppliedUnits(): ArrayCollection|Collection {
-		return $this->supplied_units;
-	}
-
-	/**
 	 * Add sent_supplies
 	 *
 	 * @param Supply $sentSupplies
@@ -1521,15 +1232,6 @@ class Settlement {
 	 */
 	public function removeSentSupply(Supply $sentSupplies): void {
 		$this->sent_supplies->removeElement($sentSupplies);
-	}
-
-	/**
-	 * Get sent_supplies
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getSentSupplies(): ArrayCollection|Collection {
-		return $this->sent_supplies;
 	}
 
 	/**
@@ -1577,15 +1279,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get defending_units
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getDefendingUnits(): ArrayCollection|Collection {
-		return $this->defending_units;
-	}
-
-	/**
 	 * Add vassals
 	 *
 	 * @param Character $vassals
@@ -1605,15 +1298,6 @@ class Settlement {
 	 */
 	public function removeVassal(Character $vassals): void {
 		$this->vassals->removeElement($vassals);
-	}
-
-	/**
-	 * Get vassals
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getVassals(): ArrayCollection|Collection {
-		return $this->vassals;
 	}
 
 	/**
@@ -1639,15 +1323,6 @@ class Settlement {
 	}
 
 	/**
-	 * Get activities
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getActivities(): ArrayCollection|Collection {
-		return $this->activities;
-	}
-
-	/**
 	 * Add laws
 	 *
 	 * @param Law $laws
@@ -1669,105 +1344,8 @@ class Settlement {
 		$this->laws->removeElement($laws);
 	}
 
-	/**
-	 * Get laws
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getLaws(): ArrayCollection|Collection {
-		return $this->laws;
-	}
-
-	/**
-	 * Get culture
-	 *
-	 * @return Culture|null
-	 */
-	public function getCulture(): ?Culture {
-		return $this->culture;
-	}
-
-	/**
-	 * Set culture
-	 *
-	 * @param Culture|null $culture
-	 *
-	 * @return Settlement
-	 */
-	public function setCulture(Culture $culture = null): static {
-		$this->culture = $culture;
-
-		return $this;
-	}
-
-	/**
-	 * Get steward
-	 *
-	 * @return Character|null
-	 */
-	public function getSteward(): ?Character {
-		return $this->steward;
-	}
-
-	/**
-	 * Set steward
-	 *
-	 * @param Character|null $steward
-	 *
-	 * @return Settlement
-	 */
-	public function setSteward(Character $steward = null): static {
-		$this->steward = $steward;
-
-		return $this;
-	}
-
-	/**
-	 * Get occupier
-	 *
-	 * @return Realm|null
-	 */
-	public function getOccupier(): ?Realm {
-		return $this->occupier;
-	}
-
-	/**
-	 * Set occupier
-	 *
-	 * @param Realm|null $occupier
-	 *
-	 * @return Settlement
-	 */
-	public function setOccupier(Realm $occupier = null): static {
-		$this->occupier = $occupier;
-
-		return $this;
-	}
-
 	public function isAllowThralls(): ?bool {
 		return $this->allow_thralls;
-	}
-
-	/**
-	 * Get allow_thralls
-	 *
-	 * @return boolean
-	 */
-	public function getAllowThralls(): bool {
-		return $this->allow_thralls;
-	}
-
-	/**
-	 * Set allow_thralls
-	 *
-	 * @param boolean $allowThralls
-	 *
-	 * @return Settlement
-	 */
-	public function setAllowThralls(bool $allowThralls): static {
-		$this->allow_thralls = $allowThralls;
-
-		return $this;
 	}
 
 	/**
@@ -1790,49 +1368,5 @@ class Settlement {
 	 */
 	public function removeMessage(ChatMessage $messages): void {
 		$this->chat_messages->removeElement($messages);
-	}
-
-	/**
-	 * Get messages
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getMessages(): ArrayCollection|Collection {
-		return $this->chat_messages;
-	}
-
-	public function getChatMembers(): Collection {
-		return $this->getCharactersPresent();
-	}
-
-	/**
-	 * Get faith
-	 *
-	 * @return Association|null
-	 */
-	public function getFaith(): ?Association {
-		return $this->faith;
-	}
-
-	/**
-	 * Set faith
-	 *
-	 * @param Association|null $faith
-	 *
-	 * @return Character
-	 */
-	public function setFaith(Association $faith = null): static {
-		$this->faith = $faith;
-
-		return $this;
-	}
-
-	public function getFoodProvisionLimit(): float {
-		return $this->food_provision_limit;
-	}
-
-	public function setFoodProvisionLimit(float $limit): static {
-		$this->food_provision_limit = $limit;
-		return $this;
 	}
 }

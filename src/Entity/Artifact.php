@@ -18,6 +18,8 @@ class Artifact {
 	private ?User $creator = null;
 	private ?Point $location = null;
 	private DateTime $available_after;
+	private ?MapRegion $mapRegion = null;
+	private ?World $world = null;
 
 	/**
 	 * Constructor
@@ -239,6 +241,36 @@ class Artifact {
 	public function setAvailableAfter(DateTime $available_after = null): static {
 		$this->available_after = $available_after;
 
+		return $this;
+	}
+
+	/**
+	 * @return MapRegion|null
+	 */
+	public function getMapRegion(): ?MapRegion {
+		return $this->mapRegion;
+	}
+
+	/**
+	 * @param MapRegion|null $mapRegion
+	 */
+	public function setMapRegion(?MapRegion $mapRegion): static {
+		$this->mapRegion = $mapRegion;
+		return $this;
+	}
+
+	/**
+	 * @return World|null
+	 */
+	public function getWorld(): ?World {
+		return $this->world;
+	}
+
+	/**
+	 * @param World|null $world
+	 */
+	public function setWorld(?World $world): static {
+		$this->world = $world;
 		return $this;
 	}
 }

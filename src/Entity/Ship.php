@@ -9,6 +9,7 @@ class Ship {
 	private int $cycle;
 	private ?int $id = null;
 	private ?Character $owner = null;
+	private ?World $world = null;
 
 	/**
 	 * Get location
@@ -82,6 +83,21 @@ class Ship {
 	public function setOwner(Character $owner = null): static {
 		$this->owner = $owner;
 
+		return $this;
+	}
+
+	/**
+	 * @return World|null
+	 */
+	public function getWorld(): ?World {
+		return $this->world;
+	}
+
+	/**
+	 * @param World|null $world
+	 */
+	public function setWorld(?World $world): static {
+		$this->world = $world;
 		return $this;
 	}
 }

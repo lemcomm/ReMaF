@@ -394,6 +394,7 @@ class PlaceController extends AbstractController {
 				$place->setType($data['type']);
 				$place->setRealm($form->get('realm')->getData());
 				$place->setDestroyed(false);
+				$place->setWorld($character->getWorld());
 				if ($where = $character->getInsideSettlement()) {
 					$place->setSettlement($character->getInsideSettlement());
 					if ($where->getGeoData()) {
@@ -412,7 +413,9 @@ class PlaceController extends AbstractController {
 						$feat->setActive(true);
 						$feat->setWorkers(0);
 						$feat->setCondition(0);
+						$feat->setWorld($character->getWorld());
 						$feat->setType($em->getRepository(FeatureType::class)->findOneBy(['name'=>'place']));
+						$em->persist($feat);
 						$em->flush(); #We need the above to set the below and do relations.
 						$place->setGeoMarker($feat);
 						$place->setLocation($loc);
@@ -770,6 +773,7 @@ class PlaceController extends AbstractController {
 			if ($spawn = $place->getSpawn()) {
 				$em->remove($spawn);
 			}
+			$em->flush();
 			if ($siege = $place->getSiege()) {
 				$war->disbandSiege($siege, null, true);
 			}

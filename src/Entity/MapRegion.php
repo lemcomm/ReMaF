@@ -10,6 +10,7 @@ class MapRegion extends RegionBase {
 	private ?array $modifiers = [];
 	private Collection $exits;
 	private Collection $entrances;
+	private Collection $artifacts;
 
 	/**
 	 * Constructor
@@ -82,5 +83,18 @@ class MapRegion extends RegionBase {
 
 	public function getEntrances(): Collection {
 		return $this->entrances;
+	}
+
+	public function addArtifact (Artifact $artifacts): static {
+		$this->artifacts[] = $artifacts;
+		return $this;
+	}
+
+	public function removeArtifact (Artifact $artifacts): void {
+		$this->artifacts->removeElement($artifacts);
+	}
+
+	public function getArtifacts(): Collection {
+		return $this->artifacts;
 	}
 }

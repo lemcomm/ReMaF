@@ -15,6 +15,7 @@
 
 		<one-to-one field="settlement" target-entity="Settlement" mapped-by="geo_marker"/>
 		<one-to-one field="place" target-entity="Place" mapped-by="geo_marker"/>
+		<many-to-one field="world" target-entity="World" inversed-by="geoMarkers"/>
 
 	</entity>
 </doctrine-mapping>

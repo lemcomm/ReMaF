@@ -7,6 +7,8 @@
 		<field name="name" type="string"/>
 		<field name="old_description" type="text"/>
 		<field name="location" type="point" nullable="true"/>
+		<many-to-one field="mapRegion" target-entity="MapRegion" inversed-by="artifacts"/>
+		<many-to-one field="world" target-entity="World" inversed-by="artifacts"/>
 		<field name="available_after" type="datetime" nullable="true"/>
 		
 		<one-to-many field="descriptions" target-entity="Description" mapped-by="artifact"/>

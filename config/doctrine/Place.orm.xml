@@ -66,9 +66,6 @@
 		<one-to-many field="related_requests" target-entity="GameRequest" mapped-by="to_place" fetch="EXTRA_LAZY"/>
 		<one-to-many field="part_of_requests" target-entity="GameRequest" mapped-by="include_place" fetch="EXTRA_LAZY"/>
 
-		<one-to-many field="outbound_portals" target-entity="Portal" mapped-by="origin"/>
-		<one-to-many field="inbound_portals" target-entity="Portal" mapped-by="destination"/>
-
 		<one-to-one field="siege" target-entity="Siege" mapped-by="place"/>
 
 		<one-to-many field="related_actions" target-entity="Action" mapped-by="target_place"/>
@@ -84,6 +81,8 @@
 				<order-by-field name="ts" direction="DESC"/>
 			</order-by>
 		</one-to-many>
+		<one-to-many field="exits" target-entity="PlaceTransit" mapped-by="fromPlace"/>
+		<one-to-many field="entrances" target-entity="PlaceTransit" mapped-by="toPlace"/>
 
 	</entity>
 </doctrine-mapping>

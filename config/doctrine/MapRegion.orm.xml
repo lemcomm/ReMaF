@@ -12,12 +12,13 @@
 
 		<one-to-many field="places" target-entity="Place" mapped-by="mapRegion"/>
 		<one-to-many field="activities" target-entity="Activity" mapped-by="mapRegion"/>
+		<one-to-many field="artifacts" target-entity="Artifact" mapped-by="mapRegion"/>
 
 		<one-to-one field="settlement" target-entity="Settlement" mapped-by="mapRegion"/>
 		<one-to-many field="resources" target-entity="GeoResource" mapped-by="mapRegion"/>
 
-		<one-to-many field="exits" target-entity="Transit" mapped-by="fromRegion"/>
-		<one-to-many field="entrances" target-entity="Transit" mapped-by="toRegion"/>
+		<one-to-many field="exits" target-entity="MapTransit" mapped-by="fromRegion"/>
+		<one-to-many field="entrances" target-entity="MapTransit" mapped-by="toRegion"/>
 
 	</entity>
 </doctrine-mapping>

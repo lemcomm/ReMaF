@@ -114,6 +114,8 @@ class UpdateDatabaseCommand extends  Command {
 			$em->createQuery('UPDATE App:Settlement s SET s.world = :world')->setParameters(['world'=>$world])->execute();
 			$em->createQuery('UPDATE App:Activity a SET a.world = :world')->setParameters(['world'=>$world])->execute();
 			$em->createQuery('UPDATE App:Character c SET c.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App:GeoFeature f SET f.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App:Ship s SET s.world = :world')->setParameters(['world'=>$world])->execute();
 		}
 
 		return Command::SUCCESS;

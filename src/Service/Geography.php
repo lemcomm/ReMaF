@@ -16,6 +16,7 @@ use App\Entity\Setting;
 use App\Entity\Ship;
 use App\Entity\Settlement;
 
+use App\Entity\World;
 use DateTime;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityManagerInterface;
@@ -110,9 +111,16 @@ class Geography {
 		if ($character->getInsideRegion()) {
 			return $character->getInsideRegion();
 		}
-		$query = $this->em->createQuery('SELECT g FROM App:GeoData g, App:Character c where c = :me AND ST_Contains(g.poly, c.location) = true AND g.passable = true');
+		$query = $this->em->createQuery('SELECT g FROM App:GeoData g, App:Character c where c = :me AND ST_Contains(g.poly, c.location) = true AND g.passable = true AND g.world = c.world');
 		$query->setParameters(['me'=>$character]);
 		$query->setMaxResults(1); // FIXME: due to small overlaps in the geometry, we can get multiple rows here. This hack is not the best solution, we should probably order by biome or something
+		return $query->getOneOrNullResult();
+	}
+
+	public function findRegionFromPoint(Point $loc, World $world) {
+		$query = $this->em->createQuery('SELECT g FROM App:GeoData g WHERE ST_Contains(g.poly, :location) = true AND g.world = :world');
+		$query->setParameters(['location'=>$loc, 'world'=>$world]);
+		$query->setMaxResults(1);
 		return $query->getOneOrNullResult();
 	}
 
@@ -143,14 +151,14 @@ class Geography {
 	public function findWatchTowers(Character $character) {
 		// FIXME: this and others like it should probably use ST_DWithin (http://postgis.net/docs/manual-2.0/ST_DWithin.html) which is probably faster
 		$distance = $this->calculateSpottingDistance($character);
-		$query = $this->em->createQuery('SELECT f as feature, ST_AsGeoJSON(f.location) as json, t.name as typename FROM App:GeoFeature f JOIN f.type t, App:Character c WHERE c = :me AND t.name = :tower AND f.active = true AND ST_Distance(f.location, c.location) <= :maxdistance');
+		$query = $this->em->createQuery('SELECT f as feature, ST_AsGeoJSON(f.location) as json, t.name as typename FROM App:GeoFeature f JOIN f.type t, App:Character c WHERE c = :me AND t.world = c.world AND t.name = :tower AND f.active = true AND ST_Distance(f.location, c.location) <= :maxdistance');
 		$query->setParameters(['me'=>$character, 'tower'=>'tower', 'maxdistance'=>$distance*0.5]);
 		return $query->getResult();
 	}
 
 	public function findNearbyArtifacts(Character $char) {
 		$now = new DateTime('now');
-		if ($this->em->createQuery('SELECT count(a.id) FROM App:Artifact a WHERE a.location IS NOT NULL and a.available_after <= :now')->setParameters(['now'=>$now])->getSingleScalarResult() > 0) {
+		if ($this->em->createQuery('SELECT count(a.id) FROM App:Artifact a WHERE a.location IS NOT NULL and a.available_after <= :now AND a.world = c.world')->setParameters(['now'=>$now])->getSingleScalarResult() > 0) {
 			$distance = $this->calculateSpottingDistance($char);
 			$query = $this->em->createQuery('SELECT a FROM App:Artifact a WHERE a.location IS NOT NULL AND a.available_after <= :now AND ST_DWithin(a.location, :me, :maxdistance) = true');
 			$query->setParameters(['me'=>$char->getLocation(), 'maxdistance'=>$distance, 'now'=>$now]);
@@ -215,7 +223,7 @@ class Geography {
 	}
 
 	public function findNearestDock(Character $character) {
-		$query = $this->em->createQuery('SELECT f, ST_Distance(f.location, c.location) AS distance FROM App:GeoFeature f JOIN f.type t, App:Character c WHERE c = :char AND t.name = :type AND f.active = true ORDER BY distance ASC');
+		$query = $this->em->createQuery('SELECT f, ST_Distance(f.location, c.location) AS distance FROM App:GeoFeature f JOIN f.type t, App:Character c WHERE c = :char AND t.name = :type AND f.active = true AND f.world = c.world ORDER BY distance ASC');
 		$query->setParameters(['char'=> $character, 'type'=>'docks']);
 		$query->setMaxResults(1);
 		$results = $query->getResult();
@@ -231,7 +239,7 @@ class Geography {
 		if (!$my_ship) {
 			return array('0'=>null,'distance'=>0);
 		}
-		$query = $this->em->createQuery('SELECT s, ST_Distance(c.location, s.location) AS distance FROM App:Ship s JOIN s.owner c WHERE s = :ship');
+		$query = $this->em->createQuery('SELECT s, ST_Distance(c.location, s.location) AS distance FROM App:Ship s JOIN s.owner c WHERE s = :ship AND s.world = c.world');
 		$query->setParameters(array('ship'=>$my_ship));
 		$query->setMaxResults(1);
 		$results = $query->getResult();
@@ -240,7 +248,7 @@ class Geography {
 
 	public function findEmbarkPoint(Character $character): Point {
 		// find nearest water:
-		$query = $this->em->createQuery('SELECT g, ST_Distance(g.poly, c.location) as distance, ST_AsGeoJSON(ST_ClosestPoint(g.poly, c.location)) as coast FROM App:GeoData g, App:Character c WHERE g.biome in (:water) AND c = :me ORDER BY distance ASC');
+		$query = $this->em->createQuery('SELECT g, ST_Distance(g.poly, c.location) as distance, ST_AsGeoJSON(ST_ClosestPoint(g.poly, c.location)) as coast FROM App:GeoData g, App:Character c WHERE g.biome in (:water) AND c = :me AND g.world = c.world ORDER BY distance ASC');
 		$query->setParameters(['water'=>$this->water(), 'me'=>$character]);
 		$query->setMaxResults(1);
 		$result = $query->getSingleResult();
@@ -263,6 +271,8 @@ class Geography {
 
 		return $embark;
 	}
+
+	#TODO: The rest of this file from here.!!!
 
 	public function findLandPoint(Point $point): array {
 		$query = $this->em->createQuery('SELECT g, ST_Distance(g.poly, ST_Point(:x, :y)) as distance, ST_AsGeoJSON(ST_ClosestPoint(g.poly, ST_Point(:x, :y))) as coast FROM App:GeoData g WHERE g.biome not in (:cantwalk) ORDER BY distance ASC');

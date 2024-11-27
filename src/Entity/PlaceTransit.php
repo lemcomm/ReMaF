@@ -5,17 +5,17 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class Transit {
+class PlaceTransit {
 	private ?int $id = null;
 
-	private float $travelTime;
-	private string $direction;
+	private ?float $travelTime = null;
+	private ?string $direction = null;
 
 	private ?World $world = null;
 	private ?TransitType $type = null;
 
-	private MapRegion $fromRegion;
-	private MapRegion $toRegion;
+	private ?Place $fromPlace = null;
+	private ?Place $toPlace = null;
 
 	private Collection $characters;
 
@@ -39,24 +39,6 @@ class Transit {
 
 	public function getType(): TransitType {
 		return $this->type;
-	}
-
-	public function setToRegion(MapRegion $region): static {
-		$this->toRegion = $region;
-		return $this;
-	}
-
-	public function getToRegion(): MapRegion {
-		return $this->toRegion;
-	}
-
-	public function setFromRegion(MapRegion $region): static {
-		$this->fromRegion = $region;
-		return $this;
-	}
-
-	public function getFromRegion(): MapRegion {
-		return $this->fromRegion;
 	}
 
 	public function setTravelTime(float $time): static {
@@ -105,5 +87,35 @@ class Transit {
 
 	public function getCharacters (): ArrayCollection|Collection {
 		return $this->characters;
+	}
+
+	/**
+	 * @return Place|null
+	 */
+	public function getFromPlace(): ?Place {
+		return $this->fromPlace;
+	}
+
+	/**
+	 * @param Place|null $fromPlace
+	 */
+	public function setFromPlace(?Place $fromPlace): static {
+		$this->fromPlace = $fromPlace;
+		return $this;
+	}
+
+	/**
+	 * @return Place|null
+	 */
+	public function getToPlace(): ?Place {
+		return $this->toPlace;
+	}
+
+	/**
+	 * @param Place|null $toPlace
+	 */
+	public function setToPlace(?Place $toPlace): static {
+		$this->toPlace = $toPlace;
+		return $this;
 	}
 }

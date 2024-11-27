@@ -29,7 +29,7 @@
 		<field name="location" type="point" nullable="true"/>
 		<many-to-one field="insideRegion" target-entity="MapRegion" inversed-by="characters"/>
 		<many-to-one field="movingToRegion" target-entity="MapRegion"/>
-		<many-to-one field="usingTransit" target-entity="Transit" inversed-by="characters"/>
+		<many-to-one field="usingMapTransit" target-entity="MapTransit" inversed-by="characters"/>
 		<field name="travelTime" type="integer" nullable="true"/>
 		<field name="travel" type="linestring" nullable="true"/>
 		<field name="travel_locked" type="boolean"/>
@@ -145,9 +145,6 @@
 		<one-to-one field="active_report" target-entity="BattleReportCharacter"/>
 
 		<one-to-many field="siege_equipment" target-entity="SiegeEquipment" mapped-by="owner"/>
-
-		<one-to-many field="portals" target-entity="Portal" mapped-by="maintainer"/>
-		<many-to-one field="used_portal" target-entity="Portal" inversed-by="recently_used_by"/>
 
 		<one-to-many field="conv_permissions" target-entity="ConversationPermission" mapped-by="character" fetch="EXTRA_LAZY"/>
 		<one-to-one field="local_conversation" target-entity="Conversation" mapped-by="local_for" fetch="EXTRA_LAZY"/>

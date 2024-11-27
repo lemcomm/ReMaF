@@ -36,8 +36,6 @@ class Place implements ChatLocationInterface {
 	private Collection $requests;
 	private Collection $related_requests;
 	private Collection $part_of_requests;
-	private Collection $outbound_portals;
-	private Collection $inbound_portals;
 	private Collection $related_actions;
 	private Collection $vassals;
 	private Collection $activities;
@@ -59,6 +57,16 @@ class Place implements ChatLocationInterface {
 	private ?World $world = null;
 	private Collection $upgrades;
 	private Collection $chat_messages;
+	private Collection $exits {
+		get {
+			return $this->exits;
+		}
+	}
+	private Collection $entrances {
+		get {
+			return $this->entrances;
+		}
+	}
 
 	/**
 	 * Constructor
@@ -75,8 +83,6 @@ class Place implements ChatLocationInterface {
 		$this->requests = new ArrayCollection();
 		$this->related_requests = new ArrayCollection();
 		$this->part_of_requests = new ArrayCollection();
-		$this->outbound_portals = new ArrayCollection();
-		$this->inbound_portals = new ArrayCollection();
 		$this->related_actions = new ArrayCollection();
 		$this->vassals = new ArrayCollection();
 		$this->activities = new ArrayCollection();
@@ -84,6 +90,8 @@ class Place implements ChatLocationInterface {
 		$this->battles = new ArrayCollection();
 		$this->upgrades = new ArrayCollection();
 		$this->chat_messages = new ArrayCollection();
+		$this->exits = new ArrayCollection();
+		$this->entrances = new ArrayCollection();
 	}
 
 	public function isFortified(): bool {
@@ -1080,68 +1088,6 @@ class Place implements ChatLocationInterface {
 	}
 
 	/**
-	 * Add outbound_portals
-	 *
-	 * @param Portal $outboundPortals
-	 *
-	 * @return Place
-	 */
-	public function addOutboundPortal(Portal $outboundPortals): static {
-		$this->outbound_portals[] = $outboundPortals;
-
-		return $this;
-	}
-
-	/**
-	 * Remove outbound_portals
-	 *
-	 * @param Portal $outboundPortals
-	 */
-	public function removeOutboundPortal(Portal $outboundPortals): void {
-		$this->outbound_portals->removeElement($outboundPortals);
-	}
-
-	/**
-	 * Get outbound_portals
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getOutboundPortals(): ArrayCollection|Collection {
-		return $this->outbound_portals;
-	}
-
-	/**
-	 * Add inbound_portals
-	 *
-	 * @param Portal $inboundPortals
-	 *
-	 * @return Place
-	 */
-	public function addInboundPortal(Portal $inboundPortals): static {
-		$this->inbound_portals[] = $inboundPortals;
-
-		return $this;
-	}
-
-	/**
-	 * Remove inbound_portals
-	 *
-	 * @param Portal $inboundPortals
-	 */
-	public function removeInboundPortal(Portal $inboundPortals): void {
-		$this->inbound_portals->removeElement($inboundPortals);
-	}
-
-	/**
-	 * Get inbound_portals
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getInboundPortals(): ArrayCollection|Collection {
-		return $this->inbound_portals;
-	}
-
-	/**
 	 * Add related_actions
 	 *
 	 * @param Action $relatedActions
@@ -1426,5 +1372,27 @@ class Place implements ChatLocationInterface {
 	 */
 	public function getMessages(): ArrayCollection|Collection {
 		return $this->chat_messages;
+	}
+
+	/**
+	 * Add messages
+	 *
+	 * @param Placetransit $transit
+	 *
+	 * @return Place
+	 */
+	public function addEntrance(Placetransit $transit): static {
+		$this->entrances[] = $transit;
+
+		return $this;
+	}
+
+	/**
+	 * Remove messages
+	 *
+	 * @param Placetransit $transit
+	 */
+	public function removeEntrance(Placetransit $transit): void {
+		$this->entrances->removeElement($transit);
 	}
 }

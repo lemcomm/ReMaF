@@ -25,9 +25,6 @@
 		<many-to-one field="house" target-entity="House" inversed-by="descriptions"/>
 		<one-to-one field="active_house" target-entity="House" inversed-by="description"/>
 
-		<many-to-one field="portal" target-entity="Portal" inversed-by="descriptions"/>
-		<one-to-one field="active_portal" target-entity="Portal" inversed-by="description"/>
-
 		<many-to-one field="association" target-entity="Association" inversed-by="descriptions"/>
 		<one-to-one field="active_association" target-entity="Association" inversed-by="description"/>
 

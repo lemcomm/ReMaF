@@ -9,7 +9,6 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class Character extends CharacterBase {
-	public int $full_health = 100;
 	protected bool|Character $ultimate = false;
 	protected ?ArrayCollection $my_realms = null;
 	protected ?ArrayCollection $my_houses = null;
@@ -34,7 +33,7 @@ class Character extends CharacterBase {
 	private ?World $world = null;
 	private ?MapRegion $insideRegion = null;
 	private ?MapRegion $movingToRegion = null;
-	private ?Transit $usingTransit = null;
+	private ?MapTransit $usingMapTransit = null;
 	private ?int $travelTime = null;
 	private ?Point $location = null;
 	private ?LineString $travel = null;
@@ -1455,19 +1454,19 @@ class Character extends CharacterBase {
 	}
 
 	/**
-	 * @return Transit|null
+	 * @return MapTransit|null
 	 */
-	public function getUsingTransit(): ?Transit {
-		return $this->usingTransit;
+	public function getUsingMapTransit(): ?MapTransit {
+		return $this->usingMapTransit;
 	}
 
 	/**
-	 * @param Transit|null $usingTransit
+	 * @param MapTransit|null $usingTransit
 	 *
 	 * @return Character
 	 */
-	public function setUsingTransit(?Transit $usingTransit): Character {
-		$this->usingTransit = $usingTransit;
+	public function setUsingMapTransit(?MapTransit $usingTransit): Character {
+		$this->usingMapTransit = $usingTransit;
 		return $this;
 	}
 
