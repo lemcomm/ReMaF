@@ -57,17 +57,8 @@ class Place implements ChatLocationInterface {
 	private ?World $world = null;
 	private Collection $upgrades;
 	private Collection $chat_messages;
-	private Collection $exits {
-		get {
-			return $this->exits;
-		}
-	}
-	private Collection $entrances {
-		get {
-			return $this->entrances;
-		}
-	}
-
+	private Collection $exits;
+	private Collection $entrances;
 	/**
 	 * Constructor
 	 */
@@ -1394,5 +1385,23 @@ class Place implements ChatLocationInterface {
 	 */
 	public function removeEntrance(Placetransit $transit): void {
 		$this->entrances->removeElement($transit);
+	}
+
+	public function getExits(): Collection {
+		return $this->exits;
+	}
+
+	public function getEntrances(): Collection {
+		return $this->entrances;
+	}
+
+	public function addExit(Placetransit $transit): static {
+		$this->exits[] = $transit;
+
+		return $this;
+	}
+
+	public function removeExit(Placetransit $transit): void {
+		$this->exits->removeElement($transit);
 	}
 }
