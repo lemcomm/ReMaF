@@ -14,7 +14,6 @@ class Description {
 	private ?Place $active_place = null;
 	private ?Realm $active_realm = null;
 	private ?House $active_house = null;
-	private ?Portal $active_portal = null;
 	private ?Association $active_association = null;
 	private ?AssociationRank $active_association_rank = null;
 	private ?Deity $active_deity = null;
@@ -26,7 +25,6 @@ class Description {
 	private ?Place $place = null;
 	private ?Realm $realm = null;
 	private ?House $house = null;
-	private ?Portal $portal = null;
 	private ?Association $association = null;
 	private ?AssociationRank $association_rank = null;
 	private ?Deity $deity = null;
@@ -214,28 +212,6 @@ class Description {
 	 */
 	public function setActiveHouse(?House $activeHouse = null): static {
 		$this->active_house = $activeHouse;
-
-		return $this;
-	}
-
-	/**
-	 * Get active_portal
-	 *
-	 * @return Portal|null
-	 */
-	public function getActivePortal(): ?Portal {
-		return $this->active_portal;
-	}
-
-	/**
-	 * Set active_portal
-	 *
-	 * @param Portal|null $activePortal
-	 *
-	 * @return Description
-	 */
-	public function setActivePortal(?Portal $activePortal = null): static {
-		$this->active_portal = $activePortal;
 
 		return $this;
 	}
@@ -478,28 +454,6 @@ class Description {
 	 */
 	public function setHouse(?House $house = null): static {
 		$this->house = $house;
-
-		return $this;
-	}
-
-	/**
-	 * Get portal
-	 *
-	 * @return Portal|null
-	 */
-	public function getPortal(): ?Portal {
-		return $this->portal;
-	}
-
-	/**
-	 * Set portal
-	 *
-	 * @param Portal|null $portal
-	 *
-	 * @return Description
-	 */
-	public function setPortal(?Portal $portal = null): static {
-		$this->portal = $portal;
 
 		return $this;
 	}

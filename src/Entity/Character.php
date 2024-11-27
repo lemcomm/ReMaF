@@ -120,7 +120,6 @@ class Character extends CharacterBase {
 	private ?Settlement $inside_settlement = null;
 	private ?Place $inside_place = null;
 	private ?House $house = null;
-	private ?Portal $used_portal = null;
 	private ?Realm $realm = null;
 	private ?Settlement $liege_land = null;
 	private ?Place $liege_place = null;
@@ -2986,28 +2985,6 @@ class Character extends CharacterBase {
 	}
 
 	/**
-	 * Add portals
-	 *
-	 * @param Portal $portals
-	 *
-	 * @return Character
-	 */
-	public function addPortal(Portal $portals): static {
-		$this->portals[] = $portals;
-
-		return $this;
-	}
-
-	/**
-	 * Remove portals
-	 *
-	 * @param Portal $portals
-	 */
-	public function removePortal(Portal $portals): void {
-		$this->portals->removeElement($portals);
-	}
-
-	/**
 	 * Get portals
 	 *
 	 * @return ArrayCollection|Collection
@@ -3462,28 +3439,6 @@ class Character extends CharacterBase {
 	 */
 	public function setInsidePlace(?Place $insidePlace = null): static {
 		$this->inside_place = $insidePlace;
-
-		return $this;
-	}
-
-	/**
-	 * Get used_portal
-	 *
-	 * @return Portal|null
-	 */
-	public function getUsedPortal(): ?Portal {
-		return $this->used_portal;
-	}
-
-	/**
-	 * Set used_portal
-	 *
-	 * @param Portal|null $usedPortal
-	 *
-	 * @return Character
-	 */
-	public function setUsedPortal(?Portal $usedPortal = null): static {
-		$this->used_portal = $usedPortal;
 
 		return $this;
 	}
