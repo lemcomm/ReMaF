@@ -126,6 +126,7 @@ event:
   stewarddeath: Is now steward-less due to the passing of {character}.
   stewardretire: Is now steward-less due to the retiring of {character}.
   stewardpromote: Is now steward-less due to the promotion of {character}.
+  skirmish:     "{character} has started a battle within the settlement."
   siege:
    assault: "{character} is leading an assault against the settlement."
    assault2: "{character} is leading an assault against {settlement}."
@@ -453,6 +454,7 @@ event:
   realmfail:    Returned to independence with the failing of {realm}.
   realmfail2:   Became part of {realm_1} with the failing of {realm_2}.
   abandoned:    Abandoned after the collapse of {house} following the death of {character}.
+  skirmish:     "{character} has started a battle within the location."
   siege:
    assault: "{character} is leading an assault against the location."
    assault2: "{character} is leading an assault against {place}."
