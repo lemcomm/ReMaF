@@ -1012,6 +1012,7 @@ yes:          yes
 no:           no
 techtree:     Technology Tree
 charstatus:
+ prebattle:    pre-battle
  inbattle:     battle
  travelling:   travel
  annexing:     annex
