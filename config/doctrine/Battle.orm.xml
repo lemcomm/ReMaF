@@ -5,7 +5,6 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<field name="location" type="point"/>
-		<field name="is_siege" type="boolean"/>
 		<field name="started" type="datetime"/>
 		<field name="complete" type="datetime"/>
 		<field name="initial_complete" type="datetime"/>

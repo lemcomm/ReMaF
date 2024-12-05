@@ -8,7 +8,7 @@ use Exception;
 
 
 class BattleGroup {
-	protected ArrayCollection $soldiers;
+	protected ?ArrayCollection $soldiers = null;
 	private bool $attacker;
 	private bool $engaged;
 	private ?int $id = null;

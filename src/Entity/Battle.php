@@ -446,30 +446,4 @@ class Battle {
 
 		return $this;
 	}
-
-	public function isIsSiege(): ?bool {
-		return $this->is_siege;
-	}
-
-	/**
-	 * Get is_siege
-	 *
-	 * @return boolean
-	 */
-	public function getIsSiege(): bool {
-		return $this->is_siege;
-	}
-
-	/**
-	 * Set is_siege
-	 *
-	 * @param boolean $isSiege
-	 *
-	 * @return Battle
-	 */
-	public function setIsSiege(bool $isSiege): static {
-		$this->is_siege = $isSiege;
-
-		return $this;
-	}
 }
