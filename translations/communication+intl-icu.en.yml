@@ -604,6 +604,7 @@ siege:
  noattackers:
   settlement:   As the attacking force has no members, the siege of {settlement} has been disbanded.
   place:        As the attacking force has no members, the siege of {place} has been disbanded.
+ owningattacker: The siege has been disbanded as the siege leader is also the owner/occupant of the besieged location (as appropriate).
 
 mail:
  sender:        "Might & Fealty"
