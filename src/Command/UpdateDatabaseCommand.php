@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Permission;
+use App\Entity\Race;
 use App\Entity\RealmDesignation;
 use App\Entity\World;
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,7 +58,7 @@ class UpdateDatabaseCommand extends  Command {
 			$output->writeln('Loading Realm Designation Data');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
-				'--group' => 'LoadRealmDesignationData',
+				'--group' => ['LoadRealmDesignationData'],
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
@@ -116,6 +117,24 @@ class UpdateDatabaseCommand extends  Command {
 			$em->createQuery('UPDATE App:Character c SET c.world = :world')->setParameters(['world'=>$world])->execute();
 			$em->createQuery('UPDATE App:GeoFeature f SET f.world = :world')->setParameters(['world'=>$world])->execute();
 			$em->createQuery('UPDATE App:Ship s SET s.world = :world')->setParameters(['world'=>$world])->execute();
+		}
+		if (in_array('5', $versions)) {
+			$output->writeln('Setting initial character Race flags');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadRaceData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Race Data Loaded');
+			$output->writeln('Updating Player Character Races');
+			$playerRace = $em->getRepository(Race::class)->findOneBy(['name'=>'first one']);
+			$em->createQuery('UPDATE App:Character c SET c.race = :race')->setParameters(['race'=>$playerRace])->execute();
+			$output->writeln('Updating Non-Player Character Races');
+			$npcRace = $em->getRepository(Race::class)->findOneBy(['name'=>'second one']);
+			$em->createQuery('UPDATE App:Soldier s SET s.race = :race')->setParameters(['race'=>$npcRace])->execute();
+			$em->createQuery('UPDATE App:Entourage e SET e.race = :race')->setParameters(['race'=>$npcRace])->execute();
+			$output->writeln('Race Data Applied');
 		}
 
 		return Command::SUCCESS;

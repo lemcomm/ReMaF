@@ -6,10 +6,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class BattleReportGroup {
-	private array $start;
-	private array $hunt;
-	private array $finish;
-	private array $fates;
+	private ?array $start = null;
+	private ?array $hunt = null;
+	private ?array $finish = null;
+	private ?array $fates = null;
 	private int $count;
 	private ?int $id = null;
 	private Collection $combat_stages;
@@ -30,9 +30,9 @@ class BattleReportGroup {
 	/**
 	 * Get start
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getStart(): array {
+	public function getStart(): ?array {
 		return $this->start;
 	}
 
@@ -52,9 +52,9 @@ class BattleReportGroup {
 	/**
 	 * Get hunt
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getHunt(): array {
+	public function getHunt(): ?array {
 		return $this->hunt;
 	}
 
@@ -74,9 +74,9 @@ class BattleReportGroup {
 	/**
 	 * Get finish
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getFinish(): array {
+	public function getFinish(): ?array {
 		return $this->finish;
 	}
 

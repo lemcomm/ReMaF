@@ -42,13 +42,13 @@ class ProcessBattlesCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$cycle = $this->cs->getCycle();
 		$opt_time = $input->getOption('time');
 		$arg_debug = $input->getArgument('debug level');
 
 		if ($this->cs->getGlobal('battling') == 0) {
-			$this->log->info("battles: starting...");
+			$output->writeln("battles: starting...");
 			$this->cs->setGlobal('battling', 1);
 
 			$stopwatch = new Stopwatch();
@@ -72,18 +72,19 @@ class ProcessBattlesCommand extends Command {
 			}
 			if ($opt_time) {
 				$event = $stopwatch->lap('battles');
-				$this->log->info("battles: computation timing ".date("G:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
+				$output->writeln("battles: computation timing ".date("G:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
 			}
-			$this->log->info("battles: ...flushing...");
+			$output->writeln("battles: ...flushing...");
 			$this->em->flush();
 			if ($opt_time) {
 				$event = $stopwatch->stop('battles');
-				$this->log->info("battles: flush data timing ".date("G:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
+				$output->writeln("battles: flush data timing ".date("G:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
 			}
 			$this->cs->setGlobal('battling', 0);
-			$this->log->info("battles: ...complete");
+			$output->writeln("battles: ...complete");
 		} else {
-			$this->log->info("battles: additional running prevented");
+			$output->writeln("battles: additional running prevented");
 		}
+		return Command::SUCCESS;
 	}
 }

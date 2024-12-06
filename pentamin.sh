@@ -8,4 +8,4 @@ DAY=`date +%a`
 # sudo setfacl -dR -m u:www-data:rwX -m u:maf:rwX ~/symfony/app/cache ~/symfony/app/logs ~/symfony/app/spool
 # sudo setfacl -R -m u:www-data:rwX -m u:maf:rwX ~/symfony/app/cache ~/symfony/app/logs ~/symfony/app/spool
 
-php $APP --env=prod maf:process:actions 2>&1 >> $LOGDIR/minutely-$DAY.log
+php $APP maf:process:actions 2>&1 >> $LOGDIR/minutely-$DAY.log

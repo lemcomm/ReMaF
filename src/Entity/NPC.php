@@ -6,7 +6,7 @@ class NPC extends CharacterBase {
 	private int $experience;
 	private bool $locked;
 	private int $hungry;
-	private int $distance_home;
+	private int $distance_home=0;
 	private ?Settlement $home = null;
 
 	// Non-property methods.

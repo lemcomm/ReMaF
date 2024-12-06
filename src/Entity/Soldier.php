@@ -19,7 +19,7 @@ class Soldier extends NPC {
 	protected int $casualties = 0;
 	protected int $xp_gained = 0;
 	private float $training;
-	private int $training_required;
+	private int $training_required = 0;
 	private int $group;
 	private bool $routed;
 	private ?int $assigned_since;
@@ -311,7 +311,7 @@ class Soldier extends NPC {
 	}
 
 	public function setMorale($value): static {
-		$this->morale = $value;
+		$this->morale = floor($value);
 		return $this;
 	}
 

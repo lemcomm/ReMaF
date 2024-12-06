@@ -8,6 +8,7 @@ use App\Entity\BattleReport;
 use App\Entity\BattleReportGroup;
 use App\Entity\BattleReportStage;
 use App\Entity\BattleReportCharacter;
+use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Entity\Settlement;
 use App\Entity\Soldier;
@@ -46,7 +47,7 @@ class BattleRunner {
 	private int $attCurrentContacts = 0;
 	private $attSlain;
 
-	private BattleReport $report;
+	private ?BattleReport $report = null;
 	private mixed $nobility;
 	private int $battlesize=1;
 	private int $defenseBonus=0;
@@ -67,8 +68,15 @@ class BattleRunner {
 		private WarManager $warman) {
 	}
 
+	#TODO: Fine tune logging.
+	/**
+	 * Set the debug level to use when logging. Defaults to log every loggable item.
+	 * @param $level
+	 *
+	 * @return void
+	 */
 	public function enableLog($level=9999): void {
-		$this->debug=$level;
+		$level?$this->debug=$level:$this->debug=9999;
 	}
 	public function disableLog(): void {
 		$this->debug=0;
@@ -544,9 +552,10 @@ class BattleRunner {
 	private function addNobility(BattleGroup $group): void {
 		foreach ($group->getCharacters() as $char) {
 			// TODO: might make this actual buy options, instead of hardcoded
+			/** @var Character $char */
 			$weapon = $char->getWeapon();
 			if (!$weapon) {
-				$weapon = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'sword']);
+				$weapon = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'broadsword']);
 			}
 			$armour = $char->getArmour();
 			if (!$armour) {
@@ -554,17 +563,22 @@ class BattleRunner {
 			}
 			$equipment = $char->getEquipment();
 			if (!$equipment) {
-				$equipment = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'war horse']);
+				$equipment = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'shield']);
+			}
+			$mount = $char->getMount();
+			if (!$mount) {
+				$mount = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'war horse']);
 			}
 
 			$noble = new Soldier();
-			$noble->setWeapon($weapon)->setArmour($armour)->setEquipment($equipment);
+			$noble->setWeapon($weapon)->setArmour($armour)->setEquipment($equipment)->setMount($mount);
 			$noble->setNoble(true);
 			$noble->setName($char->getName());
 			$noble->setWounded($char->getWounded());
 			$noble->setLocked(false)->setRouted(false)->setAlive(true);
 			$noble->setHungry(0);
 			$noble->setExperience(1000)->setTraining(0);
+			$noble->setRace($char->getRace());
 
 			$noble->setCharacter($char);
 			$group->getSoldiers()->add($noble);
@@ -953,7 +967,7 @@ class BattleRunner {
 							$total += $soldier->getMorale();
 							$count++;
 							$this->log(50, $soldier->getName()." (".$soldier->getType()."): morale ".round($soldier->getMorale()));
-							$health = $soldier->getHealthValue();
+							$health = $soldier->healthValue();
 							if ($soldier->getMorale()*2 < rand(0,100) || ($health < 0.30 && $health*100 < rand(0,100))) {
 								#TODO: Add PlayerCharacter retreat at HP flag.
 								if ($soldier->isNoble()) {

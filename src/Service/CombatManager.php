@@ -588,7 +588,7 @@ class CombatManager {
 					default => 90,
 				};
 				if ($target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
-					$logs[] = "killed mount & wounded\n";
+					$logs[] = "killed mount & wounded (HP:".$target->healthValue().")\n";
 					$target->wound(intval($wound / 2));
 					$target->dropMount();
 					$this->history->addToSoldierLog($target, 'wounded.' . $phase);
@@ -599,7 +599,7 @@ class CombatManager {
 					$myNoble = $this->findNobleFromSoldier($me);
 					$target->wound($wound);
 					if ($target->isNoble() && $myNoble && $target->healthValue() < 0.5 && $random < $surrender) {
-						$logs[] = "captured\n";
+						$logs[] = "captured (HP:".$target->healthValue().")\n";
 						$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
 						$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
 						$result = 'capture';
@@ -612,12 +612,12 @@ class CombatManager {
 								$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
 							}
 						}
-						$logs[] = "killed\n";
+						$logs[] = "killed (HP:".$target->healthValue().")\n";
 						$target->kill();
 						$this->history->addToSoldierLog($target, 'killed');
 						$result = 'kill';
 					} else {
-						$logs[] = "wounded\n";
+						$logs[] = "wounded (HP:".$target->healthValue().")\n";
 						$result = 'wound';
 					}
 				}
@@ -626,7 +626,7 @@ class CombatManager {
 			}
 		} else {
 			if ($battle) {
-				$logs[] = "no damage\n";
+				$logs[] = "no damage (HP:".$target->healthValue().")\n";
 			}
 			$result = 'fail';
 		}

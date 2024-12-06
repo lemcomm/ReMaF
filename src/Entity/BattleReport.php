@@ -10,11 +10,11 @@ class BattleReport extends ReportBase {
 	private bool $sortie;
 	private bool $urban;
 	private int $defender_group_id;
-	private array $start;
-	private array $combat;
-	private array $hunt;
-	private array $finish;
-	private int $epicness;
+	private ?array $start = null;
+	private ?array $combat = null;
+	private ?array $hunt = null;
+	private ?array $finish = null;
+	private ?int $epicness = null;
 	private ?BattleReportGroup $primary_attacker = null;
 	private ?BattleReportGroup $primary_defender = null;
 	private Collection $participants;
@@ -128,9 +128,9 @@ class BattleReport extends ReportBase {
 	/**
 	 * Get start
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getStart(): array {
+	public function getStart(): ?array {
 		return $this->start;
 	}
 
@@ -150,9 +150,9 @@ class BattleReport extends ReportBase {
 	/**
 	 * Get combat
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getCombat(): array {
+	public function getCombat(): ?array {
 		return $this->combat;
 	}
 
@@ -172,9 +172,9 @@ class BattleReport extends ReportBase {
 	/**
 	 * Get hunt
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getHunt(): array {
+	public function getHunt(): ?array {
 		return $this->hunt;
 	}
 
@@ -194,9 +194,9 @@ class BattleReport extends ReportBase {
 	/**
 	 * Get finish
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	public function getFinish(): array {
+	public function getFinish(): ?array {
 		return $this->finish;
 	}
 
