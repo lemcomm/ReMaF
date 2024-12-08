@@ -1,15 +1,14 @@
 {% extends "Conversation/layout.html.twig" %}
 
 {% block content %}
-<h2>
-	{{ 'conversation.new.title3'|trans({}, "conversations")|title }}</h2>
-{# TODO: translate #}
-<div id="insertbox">
-	<input id="realmsearch" placeholder="insert realm" />
-	<input id="settlementsearch" placeholder="insert settlement" />
-	<input id="charactersearch" placeholder="insert character" />
-</div>
-{{ form(form) }}
+	<h2>{{ 'conversation.new.title3'|trans({}, "conversations")|title }}</h2>
+
+	{% include "element/msgautoinsertbox.html.twig" %}
+	{{ form(form) }}
+	{% if preview %}
+		<h3>{{ 'conversation.preview'|trans({}, "conversations")|title }}</h3>
+		{{ preview|raw }}
+	{% endif %}
 
 {% endblock %}
 

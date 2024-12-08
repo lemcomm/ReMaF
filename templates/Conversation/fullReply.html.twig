@@ -1,0 +1,35 @@
+{% extends "Conversation/layout.html.twig" %}
+
+{% block content %}
+	<h2>{{ 'message.reply.title'|trans({}, "conversations") }}</h2>
+	{% if replyingTo %}
+		{{ replyingTo|raw }}
+		<hr>
+	{% endif %}
+			{% include "Conversation/syntax.html.twig" %}
+
+			{% include "element/msgautoinsertbox.html.twig" %}
+			{{ form(form) }}
+		{% if preview %}
+			<h3>{{ 'conversation.preview'|trans({}, "conversations")|title }}</h3>
+			{{ preview|raw }}
+		{% endif %}
+
+{% endblock %}
+
+{% block jquery %}
+
+	$("#syntaxhelp").click(function(){
+		$("#help").toggle();
+	});
+
+	{% include "element/msgautocomplete.js.twig" %}
+
+	function search_insert(insert) {
+	var caretPos = document.getElementById("new_local_message_content").selectionStart;
+	var textAreaTxt = $("#new_local_message_content").val();
+	$("#new_local_message_content").val(textAreaTxt.substring(0, caretPos) + insert + textAreaTxt.substring(caretPos) );
+
+	}
+
+{% endblock %}

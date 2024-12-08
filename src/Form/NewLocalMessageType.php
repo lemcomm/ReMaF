@@ -75,6 +75,7 @@ class NewLocalMessageType extends AbstractType {
 		]);
 		$builder->add('reply_to', HiddenType::class);
 
+		$builder->add('preview', SubmitType::class, array('label'=>'message.preview', 'attr'=>array('class'=>'cmsg_button')));
 		$builder->add('submit', SubmitType::class, array('label'=>'message.send', 'attr'=>array('class'=>'cmsg_button')));
 	}
 

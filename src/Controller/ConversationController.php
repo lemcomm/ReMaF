@@ -184,7 +184,8 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(NewConversationType::class, null, ['contacts' => $contacts, 'distance' => $distance, 'char' => $char, 'settlement' => $settlement, 'org' => $org]);
 
 		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
+		$subview = false;
+		if ($form->getClickedButton() && $form->getClickedButton()->getName() === 'submit' && $form->isValid()) {
 			$data = $form->getData();
 			if (!$org) {
 				$recipients = new ArrayCollection;
@@ -235,13 +236,24 @@ class ConversationController extends AbstractController {
 			$url = $this->generateUrl('maf_conv_read', ['conv' => $conv->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 			$this->addFlash('notice', $this->trans->trans('conversation.created', ["%url%"=>$url], 'conversations'));
 			return $this->redirectToRoute('maf_conv_summary');
+		} elseif ($form->getClickedButton() && $form->getClickedButton()->getName() === 'preview') {
+			#TODO: Figure out how to make this render correctly.
+			$data = $form->getData();
+			$msg = new Message();
+			$msg->setRead(false)->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
+			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
+				'messages' => [$msg],
+				'preview' => true,
+				'char' => $char,
+			]);
 		}
 
 		return $this->render('Conversation/newconversation.html.twig', [
 			'form' => $form->createView(),
 			'realm' => $realm,
 			'house' => $house,
-			'assoc' => $assoc
+			'assoc' => $assoc,
+			'preview' => $subview,
 		]);
 	}
 
@@ -256,7 +268,8 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(NewLocalMessageType::class, null, ['settlement' => $char->getInsideSettlement(), 'place' => $char->getInsidePlace(), 'reply' => false]);
 
 		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
+		$subview = false;
+		if ($form->getClickedButton() && $form->getClickedButton()->getName() === 'submit' && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['target'] == 'local') {
 				$target = new ArrayCollection();
@@ -271,11 +284,22 @@ class ConversationController extends AbstractController {
 			$url = $this->generateUrl('maf_conv_local', [], UrlGeneratorInterface::ABSOLUTE_URL).'#'.$msg->getId();
 			$this->addFlash('notice', $this->trans->trans('conversation.created', ["%url%"=>$url], 'conversations'));
 			return $this->redirectToRoute('maf_conv_summary');
+		} elseif ($form->getClickedButton() && $form->getClickedButton()->getName() === 'preview') {
+			#TODO: Figure out how to make this render correctly.
+			$data = $form->getData();
+			$msg = new Message();
+			$msg->setRead(false)->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
+			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
+				'messages' => [$msg],
+				'preview' => true,
+				'char' => $char,
+			]);
 		}
 
 		return $this->render('Conversation/newlocal.html.twig', [
 			'form' => $form->createView(),
 			'nearby' => $allNearby,
+			'preview' => $subview,
 			'gm' => false, #layout_wrapper.html.twig expects this to be defined, but there's no GM access to local convs yet.
 		]);
 	}
@@ -300,7 +324,8 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(RecentMessageReplyType::class, null, ['settlement' => $char->getInsideSettlement(), 'place' => $char->getInsidePlace()]);
 
 		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
+		$subview = false;
+		if ($form->getClickedButton() && $form->getClickedButton()->getName() === 'submit' && $form->isValid()) {
 			$data = $form->getData();
 			$allNearby = $this->allNearby($char);
 			if ($data['target'] == 'local') {
@@ -329,10 +354,21 @@ class ConversationController extends AbstractController {
 
 				return new RedirectResponse($this->generateUrl('maf_conv_recent', ['window' => $window]).'#'.$message->getId());
 			}
+		} elseif ($form->getClickedButton() && $form->getClickedButton()->getName() === 'preview') {
+			#TODO: Figure out how to make this render correctly.
+			$data = $form->getData();
+			$msg = new Message();
+			$msg->setRead(false)->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type'])->setTopic($data['topic']?:null);
+			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
+				'messages' => [$msg],
+				'preview' => true,
+				'char' => $char,
+			]);
 		}
 
 		return $this->render('Conversation/reply.html.twig', [
-			'form' => $form->createView()
+			'form' => $form->createView(),
+			'preview' => $subview,
 		]);
 	}
 
@@ -437,8 +473,8 @@ class ConversationController extends AbstractController {
 
 		#Find the timestamp of the last read message.
 
-		$veryold = new \DateTime('now');
-		$veryold->sub(new \DateInterval("P30D")); // TODO: make this user-configurable
+		$veryold = new DateTime('now');
+		$veryold->sub(new DateInterval("P30D")); // TODO: make this user-configurable
 
 		if ($conv->findType() == 'org') {
 			if ($assoc = $conv->getAssociation()) {
@@ -874,7 +910,8 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(MessageReplyType::class);
 
 		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
+		$subview = false;
+		if ($form->getClickedButton() && $form->getClickedButton()->getName() === 'submit' && $form->isValid()) {
 			$data = $form->getData();
 			$replyTo = $data['reply_to'];
 
@@ -885,10 +922,30 @@ class ConversationController extends AbstractController {
 				$this->addFlash('notice', $this->trans->trans('error.conversation.'.$message, [], 'conversations'));
 				return new RedirectResponse($this->generateUrl('maf_conv_read', ['conv' => $conv->getId()]));
 			}
+		} elseif ($form->getClickedButton() && $form->getClickedButton()->getName() === 'preview') {
+			$data = $form->getData();
+			$msg = new Message();
+			$msg->setRead(false)->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
+
+			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
+				'messages' => [$msg],
+				'preview' => true,
+				'char' => $char
+			]);
+			$replyingTo = $this->renderView('Conversation/msg_loop.html.twig', [
+				'messages' => [$this->em->getRepository('App\Entity\Message')->findOneBy(['id'=>$data['reply_to']])?:false],
+				'preview' => true,
+				'char' => $char
+			]);
+			return $this->render('Conversation/fullReply.html.twig', [
+				'form' => $form,
+				'preview' => $subview,
+				'replyingTo' => $replyingTo,
+			]);
 		}
 
 		return $this->render('Conversation/reply.html.twig', [
-			'form' => $form->createView()
+			'form' => $form,
 		]);
 	}
 
@@ -907,7 +964,8 @@ class ConversationController extends AbstractController {
 		$form = $this->createForm(NewLocalMessageType::class, null, ['settlement' => $char->getInsideSettlement(), 'place' => $char->getInsidePlace(), 'reply' => true]);
 
 		$form->handleRequest($request);
-		if ($form->isSubmitted() && $form->isValid()) {
+		$subview = false;
+		if ($form->getClickedButton() && $form->getClickedButton()->getName() === 'submit' && $form->isValid()) {
 			$data = $form->getData();
 			if ($data['target'] == 'local') {
 				$target = new ArrayCollection();
@@ -921,10 +979,30 @@ class ConversationController extends AbstractController {
 			$msg = $this->convman->writeLocalMessage($char, $target, $data['topic'], $data['type'], $data['content'], $data['reply_to'], $data['target']);
 
 			return new RedirectResponse($this->generateUrl('maf_conv_local').'#'.$msg->getId());
+		} elseif ($form->getClickedButton() && $form->getClickedButton()->getName() === 'preview') {
+			$data = $form->getData();
+			$msg = new Message();
+			$msg->setRead(false)->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
+
+			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
+				'messages' => [$msg],
+				'preview' => true,
+				'char' => $char
+			]);
+			$replyingTo = $this->renderView('Conversation/msg_loop.html.twig', [
+				'messages' => [$this->em->getRepository('App\Entity\Message')->findOneBy(['id'=>$data['reply_to']])?:false],
+				'preview' => true,
+				'char' => $char
+			]);
+			return $this->render('Conversation/fullReply.html.twig', [
+				'form' => $form,
+				'preview' => $subview,
+				'replyingTo' => $replyingTo,
+			]);
 		}
 
 		return $this->render('Conversation/reply.html.twig', [
-			'form' => $form->createView()
+			'form' => $form,
 		]);
 	}
 

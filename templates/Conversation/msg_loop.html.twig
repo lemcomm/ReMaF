@@ -1,4 +1,12 @@
 {% set in_sys = false %}
+{% if preview is defined %}
+	{% set archive = false %}
+	{% set veryold = false %}
+	{% set privacy = false %}
+	{% set in_hidden = false %}
+{% else %}
+	{% set preview = false %}
+{% endif %}
 {% for message in messages %}
 	{% if not archive %}
 		{% if in_hidden == false and message.sent < veryold %}
@@ -10,12 +18,12 @@
 			{% set in_hidden = false %}
 		{% endif %}
 	{% endif %}
-	{% if archive %}
-		<hr>
-		<div class="cmsg_message">
-	{% else %}
-		<div class="cmsg_message{% if last is defined and last is not null and last.timestamp > message.sent.timestamp %} cmsg_old{% endif %}" data-id="{{ message.id }}" data-conv="{{ message.conversation.id }}">
-	{% endif %}
+		{% if archive or preview %}
+			<hr>
+			<div class="cmsg_message">
+		{% else %}
+			<div class="cmsg_message{% if last is defined and last is not null and last.timestamp > message.sent.timestamp %} cmsg_old{% endif %}" data-id="{{ message.id }}" data-conv="{{ message.conversation.id }}">
+		{% endif %}
 			<div class="cmsg_message_wrapper_{{message.type}}">
 				{% if message.type != 'system' %}
 					<div class="cmsg_message_header_{{message.type}}">
@@ -29,7 +37,7 @@
 							{% set sender = "<i>The System</i>" %}
 						{% endif %}
 
-						<a id="{{message.id}}"></a>
+						{% if not preview %}<a id="{{message.id}}"></a>{% endif %}
 						{{ "index.#{message.type}" |trans({"%sender%":sender, "%day%":message.cycle|gametime("short"), "%ts%":message.sent|date}, "conversations")|raw  }}
 						--
 						{% if message.recipientCount %}
@@ -58,6 +66,7 @@
 						{{ message.content|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 					</div>
 
+					{% if not preview %}
 					<div class="cmsg_message_meta_{{message.type}}">
 						{% if not archive %}
 							<ul class="cmsg_actions">
@@ -95,6 +104,7 @@
 							</ul>
 						{% endif %}
 					</div>
+						{% endif %}
 				{% else %}
 						<i>{{ (message.content ~ ' -- ' ~ (message.cycle|gametime("short")) ~ ' (' ~ (message.sent|date) ~ ')')|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}</i>
 				{% endif %}

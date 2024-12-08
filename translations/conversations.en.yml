@@ -73,6 +73,7 @@ flagged:
 
 conversation:
  title:		  Conversation
+ preview:     Message Preview
  new:
   title:		  New Private Conversation
   title2:   New Conversation within %realm%
@@ -152,6 +153,8 @@ message:
   title:		Reply to Message
   submit:	  Send reply
  send:      Send Message
+ preview:   Preview Message
+ replyto:   Replying To...
  new:       new
  response:  "in response to:"
  responses: responses

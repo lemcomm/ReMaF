@@ -57,13 +57,13 @@ class ProcessActionsCommand extends Command {
 				$count = 0;
 				foreach ($iterableResult as $action) {
 					$i++;
+					$this->ar->resolve($action);
+					$count++;
 					if ($i > 200) {
 						$this->em->flush(); # All actions should flush themselves, but just in case.
 						$this->em->clear();
 						$i = 0;
 					}
-					$this->ar->resolve($action);
-					$count++;
 				}
 				$this->cs->setGlobal('actions.running', 0);
 				$now = new DateTime('now');
