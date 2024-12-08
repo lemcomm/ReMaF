@@ -16,8 +16,8 @@ class Action {
 	private bool $can_cancel = true;
 	private bool $block_travel;
 	private int $priority;
-	private float $number_value;
-	private string $string_value;
+	private ?float $number_value = null;
+	private ?string $string_value = null;
 	private Collection $assigned_entourage;
 	private Collection $supporting_actions;
 	private Collection $opposing_actions;
@@ -132,7 +132,7 @@ class Action {
 		return $this;
 	}
 
-	public function getNumberValue(): float {
+	public function getNumberValue(): float|null {
 		return $this->number_value;
 	}
 
@@ -142,7 +142,7 @@ class Action {
 		return $this;
 	}
 
-	public function getStringValue(): string {
+	public function getStringValue(): string|null {
 		return $this->string_value;
 	}
 

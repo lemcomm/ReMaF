@@ -40,6 +40,7 @@ class RealmCapitalType extends AbstractType {
 				$qb->orderBy('e.name');
 				return $qb;
 			},
+			'mapped'=>false,
 		));
 
 		$builder->add('submit', SubmitType::class, array('label'=>'realm.capital.submit'));

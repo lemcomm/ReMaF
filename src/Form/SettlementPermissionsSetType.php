@@ -30,6 +30,7 @@ class SettlementPermissionsSetType extends AbstractType {
 			'data_class'		=> Settlement::class,
 			'translation_domain' => 'actions'
 		));
+		$resolver->setRequired(['lord', 'me']);
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options) {
@@ -56,7 +57,7 @@ class SettlementPermissionsSetType extends AbstractType {
 				'required' => false,
 			));
 			$builder->add('permissions', CollectionType::class, array(
-				'type'		=> SettlementPermissionsType::class,
+				'entry_type'		=> SettlementPermissionsType::class,
 				'entry_options'	=> [
 					'me'=>$me,
 					'settlement'=>$builder->getData(),
@@ -67,7 +68,7 @@ class SettlementPermissionsSetType extends AbstractType {
 			));
 		} else {
 			$builder->add('occupation_permissions', CollectionType::class, array(
-				'type'		=> SettlementOccupationPermissionsType::class,
+				'entry_type'		=> SettlementOccupationPermissionsType::class,
 				'entry_options'	=> [
 					'me'=>$me,
 					'settlement'=>$builder->getData(),

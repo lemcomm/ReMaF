@@ -1,13 +1,11 @@
 {% extends "layout.html.twig" %}
 
 {% macro permission_row(permission, owner) %}
-{% spaceless %}<td style="display:none">
-{{ form_widget(permission.occupied_place) }}</td>
+<td style="display:none">{{ form_widget(permission.occupied_place) }}</td>
 <td>{{ form_widget(permission.permission) }}</td>
 <td>{{ form_widget(permission.value) }}</td>
 <td>{{ form_widget(permission.reserve) }}</td>
 <td>{{ form_widget(permission.listing) }}</td>
-{% endspaceless %}
 {% endmacro %}
 
 {% import _self as macros %}
