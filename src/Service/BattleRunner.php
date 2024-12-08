@@ -1645,7 +1645,7 @@ class BattleRunner {
 		}
 	}
 
-	private function progressSiege(Battle $battle, ?BattleGroup $victor = null, $flag): void {
+	private function progressSiege(Battle $battle, ?BattleGroup $victor, $flag): void {
 		$siege = $battle->getSiege();
 		$report = $this->report;
 		$current = $siege->getStage();

@@ -7,7 +7,7 @@ use UnexpectedValueException;
 
 class JWT
 {
-    public static function decode(string $jwt, string $key = null, bool $verify = true): object {
+    public static function decode(string $jwt, ?string $key = null, bool $verify = true): object {
         $tks = explode('.', $jwt);
         if (count($tks) != 3) {
             throw new UnexpectedValueException('Wrong number of segments');

@@ -15,7 +15,9 @@ use App\Entity\Realm;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\StatisticGlobal;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -25,86 +27,86 @@ class ConversationManager {
 		private CommonService $common) {
 	}
 
-        public function getConversations(Character $char) {
+        public function getConversations(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT c FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me ORDER BY c.realm ASC, c.updated DESC');
                 $query->setParameter('me', $char);
                 return $query->getResult();
         }
 
-        public function getOrgConversations(Character $char) {
+        public function getOrgConversations(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT c FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL) ORDER BY c.updated DESC');
                 $query->setParameter('me', $char);
                 return $query->getResult();
         }
 
-        public function getPrivateConversations(Character $char) {
+        public function getPrivateConversations(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT c FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND c.realm IS NULL AND c.house IS NULL AND c.association IS NULL ORDER BY c.updated DESC');
                 $query->setParameter('me', $char);
                 return $query->getResult();
         }
 
-        public function getConversationsCount(Character $char) {
+        public function getConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getOrgConversationsCount(Character $char) {
+        public function getOrgConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL)');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getPrivateConversationsCount(Character $char) {
+        public function getPrivateConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND c.realm IS NULL AND c.house IS NULL');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getActiveConversationsCount(Character $char) {
+        public function getActiveConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getActiveOrgConversationsCount(Character $char) {
+        public function getActiveOrgConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL)');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getActivePrivateConversationsCount(Character $char) {
+        public function getActivePrivateConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true AND c.realm IS NULL AND c.house IS NULL AND c.association IS NULL');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getLegacyContacts(Character $char) {
+        public function getLegacyContacts(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT c FROM App:Character c JOIN c.conv_permissions p JOIN p.conversation t WHERE t IN (SELECT conv FROM App:Conversation conv JOIN conv.permissions perm WHERE perm.character = :me AND perm.active = TRUE) and c.alive = true and (c.retired = false OR c.retired is null)');
                 $query->setParameter('me', $char);
                 return $query->getResult();
 	}
 
-        public function getUnreadConvPermissions(Character $char) {
+        public function getUnreadConvPermissions(Character $char): Collection {
                 $criteria = Criteria::create()->where(Criteria::expr()->gt("unread", 0));
                 return $char->getConvPermissions()->matching($criteria);
         }
 
-        public function getActiveConvPermissions(Character $char) {
+        public function getActiveConvPermissions(Character $char): Collection {
                 $criteria = Criteria::create()->where(Criteria::expr()->eq("active", true));
                 return $char->getConvPermissions()->matching($criteria);
         }
 
-        public function getActivePrivatePermissions(Character $char) {
+        public function getActivePrivatePermissions(Character $char): ArrayCollection {
                 $query = $this->em->createQuery('SELECT p FROM App:ConversationPermission p JOIN p.conversation c WHERE p.active = true and c.realm is null and c.house is null AND c.association IS NULL and p.character = :me');
                 $query->setParameters(['me'=>$char]);
                 return new ArrayCollection($query->getResult());
         }
 
-        public function getAllRecentMessages(Character $char, string $string) {
+        public function getAllRecentMessages(Character $char, string $string): ArrayCollection {
                 # Start simple, get a datetime object of the earliest mesage we want to se, get a datetime object of now.
-                $startTime = new \DateTime($string);
-                $now = new \DateTime("now");
+                $startTime = new DateTime($string);
+                $now = new DateTime("now");
 
                 # Get all the permissions that end after the earliest date or don't have an end set (are null) that are for our character and where the associated conversation actually has relevant messages.
                 $query = $this->em->createQuery('SELECT p.id as perm, c.id as conv, p.start_time as start, p.end_time FROM App:ConversationPermission p JOIN p.conversation c WHERE p.character = :me AND (p.end_time > :start_time OR p.end_time IS NULL) AND (c.updated >= :start_time)');
@@ -209,7 +211,7 @@ class ConversationManager {
                         if ($perm->getUnread() > 0) {
                                 $perm->setUnread(0);
                         }
-                        $perm->setLastAccess(new \DateTime("now"));
+                        $perm->setLastAccess(new DateTime("now"));
                         if ($perm->getUnread() > 0) {
                                 foreach ($perm->getConversation()->getMessages() as $message) {
                                         if ($message->sent() > $perm->getLastAccess()) {
@@ -288,7 +290,7 @@ class ConversationManager {
 		return true;
         }
 
-        public function writeMessage(Conversation $conv, $replyTo, ?Character $char, $text, $type, $total = null, $flush = true, $antiTickUp = false, $internal = false) {
+        public function writeMessage(Conversation $conv, $replyTo, ?Character $char, $text, $type, $total = null, $flush = true, $antiTickUp = false, $internal = false): string|Message {
                 if ($type == 'system' || $internal) {
                         $valid = true;
                 } else {
@@ -304,7 +306,7 @@ class ConversationManager {
                         } else {
                                 $org = false;
                         }
-                        $now = new \DateTime("now");
+                        $now = new DateTime("now");
                         $new = new Message();
                         $this->em->persist($new);
                         $new->setType($type);
@@ -358,7 +360,7 @@ class ConversationManager {
                 }
         }
 
-        public function newLocalConversation(Character $char, $now, $cycle = null) {
+        public function newLocalConversation(Character $char, $now, $cycle = null): Conversation {
                 $conv = new Conversation();
                 $this->em->persist($conv);
                 $conv->setLocalFor($char);
@@ -372,7 +374,7 @@ class ConversationManager {
                 return $conv;
         }
 
-        public function writeLocalMessage(Character $char, $target, $topic, $type, $text, $replyTo, $group) {
+        public function writeLocalMessage(Character $char, $target, $topic, $type, $text, $replyTo, $group): Message {
                 if ($target == 'place') {
                         $recipients = $char->getInsidePlace()->getCharactersPresent();
                 } elseif ($target == 'settlement') {
@@ -385,7 +387,7 @@ class ConversationManager {
                         $recipients->add($char);
                 }
 
-                $now = new \DateTime("now");
+                $now = new DateTime("now");
                 $cycle = $this->common->getCycle();
                 if ($replyTo) {
                         $origTarget = $this->em->getRepository(Message::class)->find($replyTo);
@@ -439,7 +441,7 @@ class ConversationManager {
                 return $mine;
         }
 
-        public function newConversation(?Character $char, $recipients, $topic, $type, $content = null, $org = null, $system = null, $local = false) {
+        public function newConversation(?Character $char, $recipients, $topic, $type, $content = null, $org = null, $system = null, $local = false): Conversation|string {
                 if ($recipients === null && $org === null && $local === false) {
                         return 'no recipients';
                 }
@@ -455,7 +457,7 @@ class ConversationManager {
                                 $house = $org;
                         }
                 }
-                $now = new \DateTime("now");
+                $now = new DateTime("now");
                 $cycle = $this->common->getCycle();
 
                 $conv = new Conversation();
@@ -539,7 +541,7 @@ class ConversationManager {
                 return $conv;
         }
 
-        public function newSystemMessage(Conversation $conv, $type, ?ArrayCollection $data=null, ?Character $originator=null, $flush=true, $extra=null) {
+        public function newSystemMessage(Conversation $conv, $type, ?ArrayCollection $data=null, ?Character $originator=null, $flush=true, $extra=null): string|Message {
                 $antiTickUp = false;
                 if ($originator) {
                         $origin = '[c:'.$originator->getId().']';
@@ -613,7 +615,7 @@ class ConversationManager {
                 return $msg;
         }
 
-        public function pruneConversation(Conversation $conv) {
+        public function pruneConversation(Conversation $conv): string {
                 $keep = new ArrayCollection();
                 $perms = $conv->getPermissions();
                 $all = $conv->getMessages();
@@ -649,9 +651,9 @@ class ConversationManager {
                 return 'pruned';
         }
 
-        public function leaveAllConversations(Character $char) {
+        public function leaveAllConversations(Character $char): void {
                 $change = false;
-                $now = new \DateTime("now");
+                $now = new DateTime("now");
                 foreach ($char->getConvPermissions() as $perm) {
                         if ($perm->getActive()) {
 				if ($perm->getOwner()) {
@@ -669,7 +671,7 @@ class ConversationManager {
                 }
         }
 
-        public function removeAllConversations(Character $char) {
+        public function removeAllConversations(Character $char): void {
                 $change = false;
                 $allConvs = new ArrayCollection();
                 foreach ($char->getConvPermissions() as $perm) {
@@ -691,7 +693,7 @@ class ConversationManager {
                 $assoc = $conv->getAssociation();
                 $added = new ArrayCollection();
                 $removed = new ArrayCollection();
-                $now = new \DateTime("now");
+                $now = new DateTime("now");
 
                 if ($realm) {
                         $entity = $realm;
@@ -747,7 +749,7 @@ class ConversationManager {
                 return array('added'=>$added, 'removed'=>$removed);
         }
 
-        public function sendNewCharacterMsg(?Realm $realm = null, ?House $house = null, Place $place, Character $char) {
+        public function sendNewCharacterMsg(?Realm $realm, ?House $house, Place $place, Character $char) {
                 $em = $this->em;
                 $ultimate = null;
                 $same = false;
@@ -794,7 +796,7 @@ class ConversationManager {
                 return [$conv, $supConv];
         }
 
-        public function sendExistingCharacterMsg(?Realm $realm = null, ?Settlement $settlement = null, ?Place $place = null, ?RealmPosition $pos = null, Character $char, $publicJoin = FALSE) {
+        public function sendExistingCharacterMsg(?Realm $realm, ?Settlement $settlement, ?Place $place, ?RealmPosition $pos, Character $char, $publicJoin = FALSE) {
                 $em = $this->em;
                 if ($realm === NULL && $settlement && $settlement->getRealm()) {
                         $realm = $settlement->getRealm();
@@ -864,7 +866,7 @@ class ConversationManager {
         public function addParticipant(Conversation $conv, Character $char) {
                 $perm = $this->em->getRepository('App\Entity\ConversationPermission')->findOneBy(['conversation'=>$conv, 'character'=>$char,'active'=>true]);
                 if (!$perm) {
-                        $now = new \DateTime("now");
+                        $now = new DateTime("now");
                         $perm = new ConversationPermission();
                         $this->em->persist($perm);
                         $perm->setConversation($conv);

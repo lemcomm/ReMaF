@@ -546,7 +546,7 @@ class MilitaryManager {
 		return true;
 	}
 
-	public function newUnit(?Character $character=null, ?Settlement $home = null, $data): Unit {
+	public function newUnit(?Character $character, ?Settlement $home, $data): Unit {
 		$unit = new Unit();
 		$this->em->persist($unit);
 		$unit->setSettlement($home);

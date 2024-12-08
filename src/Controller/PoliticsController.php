@@ -349,7 +349,8 @@ class PoliticsController extends AbstractController {
 			'characters'=>$availableLords,
 			'label' => 'successor.submit',
 			'submit' => 'successor.submit',
-			'domain' => 'politics'
+			'domain' => 'politics',
+			'required' => false,
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -365,19 +366,25 @@ class PoliticsController extends AbstractController {
 
 				// FIXME: can $successor be NULL? (i.e. setting no successor) => in such case, this throws an exception
 				// 		 (and the one in the else as well)
-				$this->hist->logEvent(
-					$character,
-					'politics.successor.changed',
-					array('%link-character-1%'=>$character->getSuccessor()->getId(), '%link-character-2%'=>$successor->getId()),
-					History::LOW
-				);
-			} else {
+				if ($successor) {
+					$this->hist->logEvent(
+						$character,
+						'politics.successor.changed',
+						array('%link-character-1%'=>$character->getSuccessor()->getId(), '%link-character-2%'=>$successor->getId()),
+						History::LOW
+					);
+					$this->addFlash('info', $this->trans->trans('successor.success', ['%link-character%'=>$successor->getId()], 'politics'));
+				} else {
+					$this->addFlash('info', $this->trans->trans('successor.noone', [], 'politics'));
+				}
+			} elseif ($successor) {
 				$this->hist->logEvent(
 					$character,
 					'politics.successor.set',
 					array('%link-character%'=>$successor->getId()),
 					History::LOW
 				);
+				$this->addFlash('info', $this->trans->trans('successor.success', ['%link-character%'=>$successor->getId()], 'politics'));
 			}
 
 			$character->setSuccessor($successor);

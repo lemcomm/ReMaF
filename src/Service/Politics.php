@@ -797,7 +797,7 @@ class Politics {
 		} /* end switch */
 	}
 
-	public function changeSettlementOccupier(?Character $char = null, Settlement $settlement, ?Realm $realm = null): void {
+	public function changeSettlementOccupier(?Character $char, Settlement $settlement, ?Realm $realm = null): void {
 		$new = false;
 		$old = null;
 		if (!$settlement->getOccupier()) {
@@ -917,7 +917,7 @@ class Politics {
 	}
 
 
-	public function changePlaceOccupier(?Character $char = null, Place $place, ?Realm $realm = null) {
+	public function changePlaceOccupier(?Character $char, Place $place, ?Realm $realm = null) {
 		$new = false;
 		$old = null;
 		if (!$place->getOccupier()) {

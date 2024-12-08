@@ -44,6 +44,7 @@ place:
  permissions:
   name:      Place Permissions
   description: Set and manage the permissions of others.
+  longdesc:  This menu allows you to manage the permissions of what others may do in this location.
   intro:     "From this screen you can manage the many aspects of this Place, from changing individual permissions (which are further detailed in the manual) to allowing those who know about this location to spawn here (TODO: soon ;) )."
   manage:    Manage Your Permissions
  history:    History
