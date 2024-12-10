@@ -587,8 +587,9 @@ class CombatManager {
 					'hunt' => 95,
 					default => 90,
 				};
+				$oldHp = $target->healthValue();
 				if ($target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
-					$logs[] = "killed mount & wounded (HP:".$target->healthValue().")\n";
+					$logs[] = "killed mount & wounded for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
 					$target->wound(intval($wound / 2));
 					$target->dropMount();
 					$this->history->addToSoldierLog($target, 'wounded.' . $phase);
@@ -599,7 +600,7 @@ class CombatManager {
 					$myNoble = $this->findNobleFromSoldier($me);
 					$target->wound($wound);
 					if ($target->isNoble() && $myNoble && $target->healthValue() < 0.5 && $random < $surrender) {
-						$logs[] = "captured (HP:".$target->healthValue().")\n";
+						$logs[] = "captured for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
 						$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
 						$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
 						$result = 'capture';
@@ -612,12 +613,12 @@ class CombatManager {
 								$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
 							}
 						}
-						$logs[] = "killed (HP:".$target->healthValue().")\n";
+						$logs[] = "killed for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
 						$target->kill();
 						$this->history->addToSoldierLog($target, 'killed');
 						$result = 'kill';
 					} else {
-						$logs[] = "wounded (HP:".$target->healthValue().")\n";
+						$logs[] = "wounded for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
 						$result = 'wound';
 					}
 				}

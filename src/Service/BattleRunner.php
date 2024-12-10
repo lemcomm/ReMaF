@@ -628,11 +628,11 @@ class BattleRunner {
 			# Main combat loop, go!
 			# TODO: Expand this for multiple ranged phases.
 			if ($phase === 1 && $doRanged) {
-				$this->log(20, "...ranged phase...\n");
+				$this->log(20, "...Ranged, Phase #".$phase."...\n");
 				$combat = $this->runStage('ranged', $rangedPenalty, $phase, $doRanged);
 				$phase++;
 			} else {
-				$this->log(20, "...melee phase...\n");
+				$this->log(20, "...Melee, Phase #".$phase."...\n");
 				$combat = $this->runStage('normal', $rangedPenalty, $phase, $doRanged);
 				$phase++;
 			}
@@ -1248,6 +1248,7 @@ class BattleRunner {
 						$mod = min(0.99, $mod+0.1);
 					}
 					$soldier->setMorale($soldier->getMorale() * $mod);
+					$health = $soldier->healthValue();
 					if ($soldier->getMorale() < rand(0,100) || ($health < 0.5 && $health*100 < rand(0,100))) {
 						if ($soldier->isNoble()) {
 							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." - has no fear\n");
