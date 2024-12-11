@@ -229,9 +229,11 @@ class Soldier extends NPC {
 	 *
 	 * @return int
 	 */
-	public function getWounded($character_real = false): int {
-		if (!$character_real || $this->getType() !== 'noble') return parent::getWounded();
-		return $this->getCharacter()->getWounded();
+	public function getWounded(): int {
+		if ($this->isNoble) {
+			return $this->getCharacter()->getWounded();
+		}
+		return parent::getWounded();
 	}
 
 	public function isRouted(): bool {
@@ -261,12 +263,28 @@ class Soldier extends NPC {
 	}
 
 	public function wound($value = 1): static {
-		if ($this->getType() == 'noble') {
+		if ($this->isNoble) {
+			# Make sure this pushes to the Player Character as well.
 			$this->getCharacter()->wound($value);
-		} else {
-			parent::wound($value);
 		}
+		parent::wound($value);
 		return $this;
+	}
+
+	# Redeclared so we can ensure it reads noble vs soldier health correctly.
+	public function healthStatus(): string {
+		$h = $this->healthValue();
+		if ($h > 0.9) return 'perfect';
+		if ($h > 0.75) return 'lightly';
+		if ($h > 0.5) return 'moderately';
+		if ($h > 0.25) return 'seriously';
+		return 'mortally';
+	}
+
+	# Redeclared so we can ensure it reads noble vs soldier health correctly.
+	public function healthValue(): float|int {
+		$maxHp = $this->race->getHp();
+		return max(0.0, ($maxHp - $this->getWounded())) / $maxHp;
 	}
 
 	public function setFighting($value): static {

@@ -594,10 +594,10 @@ class WarManager {
 		foreach ($siege->getBattles() as $battle) {
 			$battle->setSiege(null);
 		}
-		if ($siege->getSettlement()) {
+		if ($settlement) {
 			$siege->getSettlement()->setSiege(NULL);
 			$siege->setSettlement(NULL);
-		} else {
+		} elseif ($place) {
 			$siege->getPlace()->setSiege(NULL);
 			$siege->setPlace(NULL);
 		}
@@ -613,7 +613,7 @@ class WarManager {
 							array('%link-settlement%'=>$settlement->getId(), '%link-character%'=>$leader->getId()),
 							History::LOW, true
 						);
-					} else {
+					} elseif ($place) {
 						$this->history->logEvent(
 							$character,
 							'event.character.siege.disband2',

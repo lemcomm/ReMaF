@@ -280,7 +280,7 @@ class CombatManager {
 			$result = $result . " " . $counterType . $innerResult;
 		}
 		if ($battle) {
-			$target->addAttack(5);
+			$target->addAttack(4);
 			$this->equipmentDamage($me, $target);
 		}
 
@@ -433,7 +433,7 @@ class CombatManager {
 			$logs[] = $each;
 		}
 		if ($battle) {
-			$target->addAttack(2);
+			$target->addAttack(1);
 			$this->equipmentDamage($me, $target);
 
 		}
@@ -507,7 +507,7 @@ class CombatManager {
 			if ($recurve) {
 				$power += 50;
 			}
-			return $power;
+			return $power * $me->getRace()->getRangedModifier();
 		}
 		# If either above the above ifs compare as true we don't get here, so this is technically an else/if regardless.
 		$power += $me->ExperienceBonus($power);

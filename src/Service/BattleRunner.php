@@ -1065,6 +1065,7 @@ class BattleRunner {
 								}
 							} else {
 								$mMissed++;
+								$this->log(10, "missed in melee\n");
 							}
 							/*
 							if ($battle->getType() == 'siegeassault') {
@@ -1204,6 +1205,7 @@ class BattleRunner {
 		# In order to support legacy melee morale handling, we need to break this apart. First, refactor it. Second, rework the ranged morale into it and give them both a distinct area.
 		if ($type == 'normal') {
 			foreach ($groups as $group) {
+				$staredDeath = 0;
 				$this->log(10, "morale checks:\n");
 				$stageResult = $group->getActiveReport()->getCombatStages()->last(); #getCombatStages always returns these in round ascending order. Thus, the latest one will be last. :)
 				$routed = 0;
