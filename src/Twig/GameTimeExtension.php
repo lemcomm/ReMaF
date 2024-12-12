@@ -44,9 +44,9 @@ class GameTimeExtension extends AbstractExtension {
 		} elseif ($days > 1) {
 			return $this->trans->trans("realtime.day", array('%d%'=>$days, '%count%'=>$days));
 		} elseif ($hours > 1) {
-			return $this->trans->trans("realtime.hour", array('%h%'=>$hours));
+			return $this->trans->trans("realtime.hour", array('%h%'=>$hours, '%count%'=>$hours));
 		} else {
-			return $this->trans->trans("realtime.minute", array('%m%'=>$min));
+			return $this->trans->trans("realtime.minute", array('%m%'=>$min, '%count%'=>$min));
 		}
 	}
 
