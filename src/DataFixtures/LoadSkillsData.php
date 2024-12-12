@@ -93,7 +93,7 @@ class LoadSkillsData extends Fixture {
                 "javelin" => array('cat' => 'thrown'),
         );
 
-	public function load(ObjectManager $manager) {
+	public function load(ObjectManager $manager): void {
 		echo 'Loading Skill Categories...';
 		foreach ($this->categories as $name=>$data) {
 			$type = $manager->getRepository(SkillCategory::class)->findOneBy(['name'=>$name]);

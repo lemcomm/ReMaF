@@ -1206,9 +1206,10 @@ class BattleRunner {
 		if ($type == 'normal') {
 			foreach ($groups as $group) {
 				$staredDeath = 0;
+				$retreated = 0;
+				$routed = 0;
 				$this->log(10, "morale checks:\n");
 				$stageResult = $group->getActiveReport()->getCombatStages()->last(); #getCombatStages always returns these in round ascending order. Thus, the latest one will be last. :)
-				$routed = 0;
 
 				$countUs = $group->getActiveSoldiers()->count();
 				foreach ($group->getReinforcedBy() as $reinforcement) {
@@ -1220,6 +1221,15 @@ class BattleRunner {
 					$countEnemy += $enemygroup->getActiveSoldiers()->count();
 				}
 				foreach ($group->getActiveSoldiers() as $soldier) {
+					// Check for ability to do damage
+					if ($this->combat->MeleePower($soldier, true, $soldier->getWeapon(), $countUs, true) < 1 || $this->combat->RangedPower($soldier, true, $soldier->getWeapon(), $countUs, true) < 1) {
+						$retreated++;
+						$this->log(10, $soldier->getName()." (".$soldier->getType().") - withdraws\n");
+						$soldier->setRouted(true);
+						$countUs--;
+						$this->history->addToSoldierLog($soldier, 'retreated.melee');
+						continue; #Morale is recalculated for every battle, and since they retreated, we don't care about their morale.
+					}
 					// still alive? check for panic
 					if ($countEnemy > 0) {
 						$ratio = $countUs / $countEnemy;
@@ -1269,6 +1279,7 @@ class BattleRunner {
 				$combatResults = $stageResult->getData(); # CFetch original array.
 				$combatResults['routed'] = $routed; # Append routed info.
 				$combatResults['stared'] = $staredDeath;
+				$combatResults['retreated'] = $retreated;
 				$stageResult->setData($combatResults); # Add routed to array and save.
 			}
 		}

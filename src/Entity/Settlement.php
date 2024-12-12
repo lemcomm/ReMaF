@@ -1831,8 +1831,12 @@ class Settlement {
 		return $this->food_provision_limit;
 	}
 
-	public function setFoodProvisionLimit(float $limit): static {
-		$this->food_provision_limit = $limit;
+	public function setFoodProvisionLimit(?float $limit): static {
+		if ($limit === null) {
+			$this->food_provision_limit = 1;
+		} else {
+			$this->food_provision_limit = $limit;
+		}
 		return $this;
 	}
 }

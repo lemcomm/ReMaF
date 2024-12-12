@@ -22,7 +22,7 @@ class LoadNames extends Fixture {
 		array('name'=>'african', 'colour'=>'#302000', 'free'=>false, 'cost'=>500, 'contains'=>array('names')),
 	);
 
-	public function load(ObjectManager $manager) {
+	public function load(ObjectManager $manager): void {
 		foreach ($this->cultures as $data) {
 			$type = new Culture;
 			$type->setName($data['name']);

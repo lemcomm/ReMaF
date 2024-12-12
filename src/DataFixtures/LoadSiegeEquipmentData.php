@@ -18,7 +18,7 @@ class LoadSiegeEquipmentData extends Fixture {
 		'trebuchet'	=> array('hours' => 48, 'ranged' => true,  'soldiers' => 4, 'contacts' => 0)
 	);
 
-	public function load(ObjectManager $manager) {
+	public function load(ObjectManager $manager): void {
 		foreach ($this->types as $name=>$data) {
 			$type = $manager->getRepository(SiegeEquipmentType::class)->findOneBy(['name'=>$name]);
 			if (!$type) {

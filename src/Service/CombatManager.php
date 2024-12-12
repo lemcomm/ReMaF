@@ -287,12 +287,12 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-	public function MeleePower($me, $sol = false, ?EquipmentType $weapon = null, $groupSize = 1) {
+	public function MeleePower(ActivityParticipant|Soldier $me, $sol = false, ?EquipmentType $weapon = null, $groupSize = 1, $recalculate = false) {
 		$noble = false;
 		$act = false;
 		# $sol is just a bypass for "Is this a soldier instance" or not.
 		if ($sol) {
-			if ($me->MeleePower() != -1) return $me->MeleePower();
+			if ($me->MeleePower() != -1 && !$recalculate) return $me->MeleePower();
 			if ($me->isNoble()) {
 				$noble = true;
 				$mod = 1;
@@ -440,11 +440,11 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-	public function RangedPower($me, $sol = false, ?EquipmentType $weapon = null, $groupSize = 1) {
+	public function RangedPower(ActivityParticipant|Soldier $me, $sol = false, ?EquipmentType $weapon = null, $groupSize = 1, $recalculate = false) {
 		$noble = false;
 		# $sol is just a bypass for "Is this a soldier instance" or not.
 		if ($sol) {
-			if ($me->RangedPower() != -1) return $me->RangedPower();
+			if ($me->RangedPower() != -1 && !$recalculate) return $me->RangedPower();
 			if ($me->isNoble()) {
 				$noble = true;
 				$mod = 1;

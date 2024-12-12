@@ -27,7 +27,7 @@ class LoadSettings extends Fixture {
 	/**
 	* {@inheritDoc}
 	*/
-	public function load(ObjectManager $manager) {
+	public function load(ObjectManager $manager): void {
 		foreach ($this->settings as $key=>$val) {
 			$this->common->setGlobal($key, $val);
 		}
