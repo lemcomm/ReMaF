@@ -59,7 +59,7 @@ class GameTimeExtension extends AbstractExtension {
 	}
 
 	public function untilTurnFunction() {
-		$next = ceil((date("G")+1)/6)*6; // remember to change this when the cronjob is changed
+		$next = ceil(((int) date("G")+1)/6)*6; // remember to change this when the cronjob is changed
 
 		$hours = $next - date("G") - 1;
 		$minutes = 60 - date("i");

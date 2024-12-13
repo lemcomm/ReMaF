@@ -189,7 +189,7 @@ class SettlementController extends AbstractController {
 			$page = 'Settlement/occupationPermissions.html.twig';
 		}
 
-		$form = $this->createForm(SettlementPermissionsSetType::class, $settlement, ['me' => $character, 'lord'=>$lord]);
+		$form = $this->createForm(SettlementPermissionsSetType::class, $settlement, ['me' => $character, 'lord'=>$lord, 's'=>$settlement]);
 		// FIXME: right now, nothing happens if we disallow thralls while having some
 		//			 something should happen - set them free? most should vanish, but some stay as peasants?
 		//			 but do we want large numbers of people to simply disappear? where will they go?

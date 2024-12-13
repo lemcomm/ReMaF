@@ -27,25 +27,34 @@ class SettlementPermissionsSetType extends AbstractType {
 	public function configureOptions(OptionsResolver $resolver) {
 		$resolver->setDefaults(array(
 			'intention'       => 'sps_41312',
-			'data_class'		=> Settlement::class,
-			'translation_domain' => 'actions'
+			'translation_domain' => 'actions',
+			'data_class' => Settlement::class,
 		));
-		$resolver->setRequired(['lord', 'me']);
+		$resolver->setRequired(['lord', 'me', 's']);
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 		$lord = $options['lord'];
 		$me = $options['me'];
+		/** @var Settlement $settlement */
+		$settlement = $options['s'];
 		$builder->add('allow_thralls', CheckboxType::class, array(
 			'label' => "control.permissions.thralls",
 			'required' => false,
 			'mapped' => false,
+			'data'=>$settlement->getAllowThralls(),
 		));
-
+		$builder->add('feed_soldiers', CheckboxType::class, array(
+			'label' => "control.permissions.feedsoldiers",
+			'required' => false,
+			'mapped' => false,
+			'data'=>$settlement->getFeedSoldiers(),
+		));
 		$builder->add('food_provision_limit', PercentType::class, [
 			'label'=>'control.permissions.foodlimit',
 			'required' => false,
 			'mapped' => false,
+			'data' => $settlement->getFoodProvisionLimit(),
 			'constraints'=>[
 				new Positive(['message'=>'number.positive']),
 				new LessThanOrEqual([
@@ -55,31 +64,28 @@ class SettlementPermissionsSetType extends AbstractType {
 			]
 		]);
 		if ($lord) {
-			$builder->add('feed_soldiers', CheckboxType::class, array(
-				'label' => "control.permissions.feedsoldiers",
-				'required' => false,
-				'mapped' => false,
-			));
 			$builder->add('permissions', CollectionType::class, array(
 				'entry_type'		=> SettlementPermissionsType::class,
 				'entry_options'	=> [
 					'me'=>$me,
-					'settlement'=>$builder->getData(),
+					'settlement'=>$settlement,
 				],
 				'allow_add'	=> true,
 				'allow_delete' => true,
 				'constraints' => new Valid(),
+				'mapped' => true,
 			));
 		} else {
 			$builder->add('occupation_permissions', CollectionType::class, array(
 				'entry_type'		=> SettlementOccupationPermissionsType::class,
 				'entry_options'	=> [
 					'me'=>$me,
-					'settlement'=>$builder->getData(),
+					'settlement'=>$settlement,
 				],
 				'allow_add'	=> true,
 				'allow_delete' => true,
 				'constraints' => new Valid(),
+				'mapped' => true,
 			));
 		}
 	}

@@ -33,6 +33,6 @@
 		<one-to-many field="provides_equipment" target-entity="EquipmentType" mapped-by="provider"/>
 		<one-to-many field="provides_training" target-entity="EquipmentType" mapped-by="trainer"/>
 
-		<one-to-many field="buildings" target-entity="App\Entity\Building" mapped-by="type"/>
+		<one-to-many field="buildings" target-entity="Building" mapped-by="type"/>
 	</entity>
 </doctrine-mapping>
