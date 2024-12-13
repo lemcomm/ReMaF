@@ -29,6 +29,7 @@ use App\Service\History;
 use App\Service\Dispatcher\WarDispatcher;
 use App\Service\WarManager;
 
+use App\Twig\GameTimeExtension;
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -44,7 +45,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class WarController extends AbstractController {
@@ -53,6 +54,7 @@ class WarController extends AbstractController {
 		private EntityManagerInterface $em,
 		private Geography $geo,
 		private History $hist,
+		private TranslatorInterface $trans,
 		private WarDispatcher $warDisp,
 		private WarManager $wm) {
 	}
@@ -1032,7 +1034,7 @@ class WarController extends AbstractController {
 							$pick = array_rand($buildings);
 							$target = $buildings[$pick];
 							$type = $target->getType()->getName();
-							list(, $damage) = $this->lootvalue(round($my_soldiers * 32 / $targets)); #Drop first return -- yes, it looks weird.
+							[, $damage] = $this->lootvalue(round($my_soldiers * 32 / $targets)); #Drop first return -- yes, it looks weird.
 							if (!isset($result['burn'][$type])) {
 								$result['burn'][$type] = 0;
 							}
@@ -1317,7 +1319,7 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/nobles/attack', name:'maf_war_nobles_attack')]
-	public function attackOthersAction(CharacterManager $cm, Request $request): RedirectResponse|Response {
+	public function attackOthersAction(CharacterManager $cm, GameTimeExtension $gt, Request $request): RedirectResponse|Response {
 		$character = $this->warDisp->gateway('militaryAttackNoblesTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -1352,29 +1354,22 @@ class WarController extends AbstractController {
 						$force += $unit->getVisualSize();
 					}
 				}
-				if ($mine*200<=$force) {
+				if ($mine * 200 <= $force) {
 					# The enemy force overwhelms you and immediately captures you.
 					$cm->imprison($character, $target);
-					$this->hist->logEvent(
-						$character,
-						'event.character.overwhelmedby',
-						array('%link-character%'=>$target->getId()),
-						History::HIGH, true
-					);
-					$this->hist->logEvent(
-						$target,
-						'event.character.overwhelmed',
-						array('%link-character%'=>$character->getId()),
-						History::HIGH, true
-					);
+					$this->hist->logEvent($character, 'event.character.overwhelmedby', ['%link-character%' => $target->getId()], History::HIGH, true);
+					$this->hist->logEvent($target, 'event.character.overwhelmed', ['%link-character%' => $character->getId()], History::HIGH, true);
+					$this->addFlash("warning", $this->trans->trans("military.battles.initiate.backfire", ["%link-character%" => $target->getId()], "actions"));
 				} else {
 					$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target']);
 					if ($result['outside'] && $character->getInsideSettlement()) {
 						// leave settlement if we attack targets outside
 						$character->setInsideSettlement(null);
 					}
+					$this->addFlash('notice', $this->trans->trans("military.battles.initiate.success", ["time" => $gt->realtimeFilter(['time'])], "actions"));
 				}
 				$em->flush();
+				return $this->redirectToRoute("maf_actions");
 			}
 		}
 

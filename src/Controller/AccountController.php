@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -716,7 +716,7 @@ class AccountController extends AbstractController {
 			}
 		}
 
-		return $this->render('Account/familytreedata.json.twig', [
+		return $this->render('Account/familytree.json.twig', [
 			'tree' => [
 				'nodes'=>$nodes,
 				'links'=>$links

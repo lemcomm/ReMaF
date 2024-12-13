@@ -392,9 +392,9 @@ class Settlement {
 	/**
 	 * Get name
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getName(): string {
+	public function getName(): null|string {
 		return $this->name;
 	}
 

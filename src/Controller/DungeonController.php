@@ -28,7 +28,7 @@ use App\Entity\Dungeoneer;
 use App\Entity\DungeonLevel;
 use App\Entity\DungeonMonster;
 use App\Entity\DungeonTreasure;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DungeonController extends AbstractController {

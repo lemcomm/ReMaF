@@ -640,6 +640,7 @@ military:
      You are now engaging the enemy and battle prepartions are being made on both sides, the estimated time until the battle will commence is {time},
      but this could change as you and/or the enemy get more support.<br />
      Your enemy has been notified of the impending attack.
+   backfire: "Due to the overwhelming odds, you have found yourself overwhelmed and immediately taken prisoner by {character}."
   join:
    name:          Join battle
    description:   Join a nearby battle and choose your side.
