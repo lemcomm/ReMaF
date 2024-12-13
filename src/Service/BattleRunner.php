@@ -1222,7 +1222,7 @@ class BattleRunner {
 				}
 				foreach ($group->getActiveSoldiers() as $soldier) {
 					// Check for ability to do damage
-					if ($this->combat->MeleePower($soldier, true, $soldier->getWeapon(), $countUs, true) < 1 || $this->combat->RangedPower($soldier, true, $soldier->getWeapon(), $countUs, true) < 1) {
+					if ($this->combat->MeleePower($soldier, true, $soldier->getWeapon(), $countUs, true) < 1 && $this->combat->RangedPower($soldier, true, $soldier->getWeapon(), $countUs, true) < 1) {
 						$retreated++;
 						$this->log(10, $soldier->getName()." (".$soldier->getType().") - withdraws\n");
 						$soldier->setRouted(true);

@@ -24,15 +24,6 @@ class PermissionManager {
 					// realm rulers always have all permissions without limits
 					return array(true, null, 'ruler', null, null);
 				}
-				foreach ($position->getPermissions() as $perm) {
-					if ($perm->getName() == $permission) {
-						if ($return_details) {
-							return array(true, null, 'position', $perm->getValue(), $perm->getReserve());
-						} else {
-							return false;
-						}
-					}
-				}
 			}
 		}
 

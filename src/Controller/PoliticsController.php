@@ -373,9 +373,9 @@ class PoliticsController extends AbstractController {
 						array('%link-character-1%'=>$character->getSuccessor()->getId(), '%link-character-2%'=>$successor->getId()),
 						History::LOW
 					);
-					$this->addFlash('info', $this->trans->trans('successor.success', ['%link-character%'=>$successor->getId()], 'politics'));
+					$this->addFlash('notice', $this->trans->trans('successor.success', ['%link-character%'=>$successor->getId()], 'politics'));
 				} else {
-					$this->addFlash('info', $this->trans->trans('successor.noone', [], 'politics'));
+					$this->addFlash('notice', $this->trans->trans('successor.noone', [], 'politics'));
 				}
 			} elseif ($successor) {
 				$this->hist->logEvent(
@@ -384,7 +384,7 @@ class PoliticsController extends AbstractController {
 					array('%link-character%'=>$successor->getId()),
 					History::LOW
 				);
-				$this->addFlash('info', $this->trans->trans('successor.success', ['%link-character%'=>$successor->getId()], 'politics'));
+				$this->addFlash('notice', $this->trans->trans('successor.success', ['%link-character%'=>$successor->getId()], 'politics'));
 			}
 
 			$character->setSuccessor($successor);
@@ -398,11 +398,7 @@ class PoliticsController extends AbstractController {
 			);
 
 			$em->flush();
-
-			#TODO: Convert this to a redirect and flash.
-			return $this->render('Politics/successor.html.twig', [
-				'success'=>true
-			]);
+			return $this->redirectToRoute('maf_politics_relations');
 		}
 
 		return $this->render('Politics/successor.html.twig', [
@@ -437,16 +433,19 @@ class PoliticsController extends AbstractController {
 		}
 		foreach ($others as $other) {
 			$char = $other['character'];
-			if ($character->getNonHeteroOptions()) {
-				if (!$char->isNPC() && $char->isActive(true) && !in_array($char, $existingpartners)) {
-					$choices[$char->getId()] = $char->getName();
+			if ($existingpartners) {
+				if ($character->getNonHeteroOptions()) {
+					if (!$char->isNPC() && $char->isActive(true) && !in_array($char, $existingpartners)) {
+						$choices[$char->getId()] = $char->getName();
+					}
+				} else {
+					if (!$char->isNPC() && $char->isActive(true) && !in_array($char, $existingpartners) && $char->getMale() != $character->getMale()) {
+						$choices[$char->getId()] = $char->getName();
+					}
 				}
-			} else {
-				if (!$char->isNPC() && $char->isActive(true) && !in_array($char, $existingpartners) && $char->getMale() != $character->getMale()) {
-					$choices[$char->getId()] = $char->getName();
-				}
+				// TODO: filter out existing partnerships
 			}
-			// TODO: filter out existing partnerships
+
 		}
 		$formNew = $this->createForm(PartnershipsNewType::class, null, ['others'=>$choices]);
 		$formNewView = $formNew->createView();

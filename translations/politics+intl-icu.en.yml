@@ -222,9 +222,9 @@ successor:
  set:       Assign a new successor
  choose:    (no one)
  submit:    Set successor
- success:   You have now chosen {successor} as your new successor.
+ success:   You have now chosen {character} as your new successor.
  noone:     You have now chosen to not have a successor.
- hasone:    You have currently declared {successor} as your successor.
+ hasone:    You have currently declared {character} as your successor.
 
 partners:
  name:      Manage partners

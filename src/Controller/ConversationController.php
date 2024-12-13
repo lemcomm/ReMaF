@@ -570,7 +570,8 @@ class ConversationController extends AbstractController {
 			'active'=> false,
 			'manager'=> false,
 			'archive'=> false,
-			'char' => $char
+			'char' => $char,
+			'gm'=>false,
 		]);
 	}
 
