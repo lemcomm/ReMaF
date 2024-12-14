@@ -1366,7 +1366,7 @@ class WarController extends AbstractController {
 						// leave settlement if we attack targets outside
 						$character->setInsideSettlement(null);
 					}
-					$this->addFlash('notice', $this->trans->trans("military.battles.initiate.success", ["time" => $gt->realtimeFilter(['time'])], "actions"));
+					$this->addFlash('notice', $this->trans->trans("military.battles.initiate.success", ["time" => $gt->realtimeFilter($result['time'])], "actions"));
 				}
 				$em->flush();
 				return $this->redirectToRoute("maf_actions");
@@ -1375,7 +1375,6 @@ class WarController extends AbstractController {
 
 		return $this->render('War/attackOthers.html.twig', [
 			'form'=>$form->createView(),
-			'result'=>$result
 		]);
 	}
 
