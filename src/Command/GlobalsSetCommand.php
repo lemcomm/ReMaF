@@ -20,7 +20,7 @@ class GlobalsSetCommand extends Command {
 		$this->em = $em;
 		parent::__construct();
 	}
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:globals:set')
 			->setDescription('Sets a specific global to a specific value. Some, like actions, may reset other values in order to maintain game setting consistency. Common choices are "battles" and "actions.running".')
@@ -29,7 +29,7 @@ class GlobalsSetCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$which = $input->getArgument('which');
 		$value = $input->getArgument('value');
 

@@ -44,7 +44,7 @@ class ProcessExpiresCommand extends Command {
 		return Command::SUCCESS;
 	}
 
-	public function expireEvents() {
+	public function expireEvents(): void {
 		$this->output->writeln("expiring events...");
 		$query = $this->em->createQuery('SELECT e FROM App:Event e WHERE e.lifetime IS NOT NULL AND e.cycle + e.lifetime < :cycle');
 		$query->setParameter('cycle', $this->cycle);
@@ -60,14 +60,14 @@ class ProcessExpiresCommand extends Command {
 		$query->execute();
 	}
 
-	public function expireMarkers() {
+	public function expireMarkers(): void {
 		$this->output->writeln("expiring markers...");
 		$query = $this->em->createQuery('DELETE FROM App:MapMarker m WHERE m.placed < :cycle');
 		$query->setParameter('cycle', $this->cycle - $this->marker_lifetime);
 		$query->execute();
 	}
 
-	public function expireShips() {
+	public function expireShips(): void {
 		$this->output->writeln("ships cleanup...");
 
 		$query = $this->em->createQuery('DELETE FROM App:Ship s WHERE s.cycle < :before');

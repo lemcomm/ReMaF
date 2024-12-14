@@ -27,7 +27,7 @@ class HourlyCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('dungeons:hourly')
 			->setDescription('hourly dungeons resolution')
@@ -35,7 +35,7 @@ class HourlyCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->info("running dungeons...");
 		$em = $this->em;
 		$creator = $this->dc;
@@ -86,13 +86,13 @@ class HourlyCommand extends Command {
 	}
 
 
-	private function debug($text) {
+	private function debug($text): void {
 		$this->logger->debug($text);
 	}
-	private function info($text) {
+	private function info($text): void {
 		$this->logger->info($text);
 	}
-	private function error($text) {
+	private function error($text): void {
 		$this->logger->error($text);
 	}
 

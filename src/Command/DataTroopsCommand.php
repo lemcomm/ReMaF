@@ -24,7 +24,7 @@ class DataTroopsCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 
 		$id = 0;
 
@@ -67,6 +67,7 @@ class DataTroopsCommand extends Command {
 		}
 
 		echo ']}';
+		return Command::SUCCESS;
 	}
 
 

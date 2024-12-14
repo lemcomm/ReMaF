@@ -30,14 +30,14 @@ class PaymentCommand extends Command {
 
 	private int $inactivityDays = 21;
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:payment:cycle')
 			->setDescription('Run payment cycle')
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$output->writeln('maintenance and payment cycle:');
 
 		$inactives = 0;

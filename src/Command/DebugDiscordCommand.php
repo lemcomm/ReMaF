@@ -21,7 +21,7 @@ class DebugDiscordCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:debug:discord')
 			->setDescription('Debug the discord push with a battle report')
@@ -29,11 +29,12 @@ class DebugDiscordCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$id = $input->getArgument('i');
 		$output->writeln("Looking for BattleReport #".$id);
 		$entity = $this->em->getRepository(BattleReport::class)->findOneBy(['id'=>$id]);
 		$this->nm->spoolBattle($entity, 5);
+		return Command::SUCCESS;
 	}
 
 

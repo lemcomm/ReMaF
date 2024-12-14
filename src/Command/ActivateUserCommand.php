@@ -41,7 +41,7 @@ class ActivateUserCommand extends  Command {
 		return Command::SUCCESS;
 	}
 
-	protected function interact(InputInterface $input, OutputInterface $output) {
+	protected function interact(InputInterface $input, OutputInterface $output): void {
 		$helper = $this->getHelper('question');
 		if (!$input->getArgument('username')) {
 			$need = new Question('Please supply a username of a user to activate: ');

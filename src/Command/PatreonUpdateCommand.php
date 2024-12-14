@@ -24,7 +24,7 @@ class PatreonUpdateCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		[$free, $patron, $active, $credits, $expired, $storage, $banned] = $this->pay->paymentCycle(true);
 		$output->writeln("$free free accounts");
 		$output->writeln("$patron patron accounts");
@@ -33,6 +33,6 @@ class PatreonUpdateCommand extends Command {
 		$output->writeln("$expired accounts with insufficient credits");
 		$output->writeln("$banned accounts banned and set to level 0");
 
-		return true;
+		return Command::SUCCESS;
 	}
 }

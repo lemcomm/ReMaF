@@ -21,7 +21,7 @@ class DebugKillCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:debug:kill')
 			->setDescription('Debug command for fixing failed deaths (by rerunning them)')
@@ -31,7 +31,7 @@ class DebugKillCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$id = $input->getArgument('c');
                 $output->writeln("Looking for Character #".$id);
 		$char = $this->em->getRepository(Character::class)->findOneBy(['id'=>$id]);
@@ -50,8 +50,10 @@ class DebugKillCommand extends Command {
 
 		if ($this->cm->kill($char, $killer, false, $msg)) {
 	                $output->writeln('Character '.$char->getName().' ('.$id.') killed succesfully!');
+			return Command::SUCCESS;
 		} else {
                 	$output->writeln("Something went wrong");
+			return Command::FAILURE;
 		}
 
 	}

@@ -36,7 +36,7 @@ class InitSpawnCommand extends  Command {
 		$this->um = $um;
 		parent::__construct();
 	}
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:init')
 			->setDescription('Spawn a character in game, create a realm, a spawn, and allow regular character generation.')

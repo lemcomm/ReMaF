@@ -36,8 +36,10 @@ class DebugRetireCommand extends Command {
 
 		if ($this->cm->retire($char)) {
 			$output->writeln('Character '.$char->getName().' ('.$id.') retired succesfully!');
+			return Command::SUCCESS;
 		} else {
 			$output->writeln("Something went wrong");
+			return Command::FAILURE;
 		}
 
 	}

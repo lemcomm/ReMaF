@@ -18,7 +18,7 @@ class DemoteUserCommand extends  Command {
 		$this->em = $em;
 		parent::__construct();
 	}
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:user:demote')
 			->setDescription('Removes a role from a user')
@@ -43,7 +43,7 @@ class DemoteUserCommand extends  Command {
 		return Command::SUCCESS;
 	}
 
-	protected function interact(InputInterface $input, OutputInterface $output) {
+	protected function interact(InputInterface $input, OutputInterface $output): void {
 		$helper = $this->getHelper('question');
 		if (!$input->getArgument('username')) {
 			$need = new Question('Please supply a username: ');

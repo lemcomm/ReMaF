@@ -13,13 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DebugRemoveBattleCommand extends Command {
-
-	private EntityManagerInterface $em;
-	private CharacterManager $cm;
-
-	public function __construct(CharacterManager $cm, EntityManagerInterface $em) {
-		$this->cm = $cm;
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 

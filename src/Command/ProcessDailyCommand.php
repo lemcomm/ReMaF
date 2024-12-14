@@ -17,14 +17,14 @@ class ProcessDailyCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:daily')
 			->setDescription('Run the once-per-day updates')
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->em->createQuery('UPDATE App\Entity\User u SET u.new_chars_limit = u.new_chars_limit +1 WHERE u.new_chars_limit < 10')->execute();
 		$output->writeln('<info>Users given one more character to spawn.</info>');
 		return Command::SUCCESS;

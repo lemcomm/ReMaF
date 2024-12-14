@@ -22,7 +22,7 @@ class ProcessEconomyCommand extends AbstractProcessCommand {
 	}
 
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:economy')
 			->setDescription('Process economy cycle and construction')
@@ -51,18 +51,18 @@ class ProcessEconomyCommand extends AbstractProcessCommand {
 		return Command::SUCCESS;
 	}
 
-	protected function ExtraEffects() {
+	protected function ExtraEffects(): void {
 		$query = $this->em->createQuery('UPDATE App:Settlement s SET s.war_fatigue = s.war_fatigue - 1 WHERE s.war_fatigue > 0');
 		$query->execute();
 	}
 
 
-	protected function resetResupply() {
+	protected function resetResupply(): void {
 		$query = $this->em->createQuery('UPDATE App:SettlementPermission p SET p.value_remaining = p.value WHERE p.value IS NOT NULL');
 		$query->execute();
 	}
 
-	public function fixWorkers() {
+	public function fixWorkers(): void {
 		// check for crazy worker values
 		$query = $this->em->createQuery('SELECT f FROM App:GeoFeature f JOIN f.geo_data g JOIN g.settlement s WHERE f.workers > 0 AND f.workers * s.population < 1');
 		foreach ($query->getResult() as $feature) {

@@ -30,7 +30,7 @@ class CreateUserCommand extends  Command {
 		$this->userMan = $userMan;
 		parent::__construct();
 	}
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:user:create')
 			->setDescription('Create a new user')
@@ -64,7 +64,7 @@ class CreateUserCommand extends  Command {
 		return Command::SUCCESS;
 	}
 
-	protected function interact(InputInterface $input, OutputInterface $output) {
+	protected function interact(InputInterface $input, OutputInterface $output): void {
 		$helper = $this->getHelper('question');
 		if (!$input->getArgument('username')) {
 			$need = new Question('Please supply a username for the new user: ');

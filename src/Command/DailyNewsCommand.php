@@ -25,14 +25,14 @@ class DailyNewsCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:newsletter')
 			->setDescription('Send daily newsletter to players (retention mailings)')
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$query = $this->em->createQuery('SELECT u FROM App:User u WHERE u.newsletter=true');
 		$iterableResult = $query->toIterable();
 		$i=1; $batchsize=500;
@@ -106,6 +106,7 @@ class DailyNewsCommand extends Command {
 		}
 		$this->em->flush();
 		$this->em->clear();
+		return Command::SUCCESS;
 	}
 
 

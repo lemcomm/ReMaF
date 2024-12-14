@@ -18,15 +18,16 @@ class MailCommand extends Command {
 		$this->mm = $mm;
 		parent::__construct();
 	}
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:mail')
 			->setDescription('Process internal mail spool and send email to users')
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->mm->sendEventEmails();
+		return Command::SUCCESS;
 	}
 
 

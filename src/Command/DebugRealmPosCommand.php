@@ -19,7 +19,7 @@ class DebugRealmPosCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:debug:realmpos')
 			->setDescription('Debug command for giving a character a realm position')
@@ -28,7 +28,7 @@ class DebugRealmPosCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$c = $input->getArgument('c');
 		$r = $input->getArgument('r');
 		$output->writeln("Looking for Character #".$c);
@@ -41,8 +41,10 @@ class DebugRealmPosCommand extends Command {
 			$char->addPosition($rpos);
 			$this->em->flush();
 			$output->writeln("Character ".$char->getName()." added to RealmPosition #".$r);
+			return Command::SUCCESS;
 		} else {
 			$output->writeln("Bad inputs?");
+			return Command::FAILURE;
 		}
 
 	}

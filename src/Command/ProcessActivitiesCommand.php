@@ -17,14 +17,14 @@ class ProcessActivitiesCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:activities')
 			->setDescription('Run activity runners')
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$this->am->runAll();
 		$output->writeln("...activities complete");
 		return Command::SUCCESS;

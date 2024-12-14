@@ -22,7 +22,7 @@ class ProcessConvsCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:convs')
 			->setDescription('Process Conversation Permission Updates (ideally does nothing)')
@@ -30,7 +30,7 @@ class ProcessConvsCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$timing = $input->getOption('time');
 
 		$complete = $this->gr->runConversationsCleanup();

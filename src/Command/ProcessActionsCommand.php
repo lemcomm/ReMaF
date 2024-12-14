@@ -33,7 +33,7 @@ class ProcessActionsCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:actions')
 			->setDescription('Check for pending actions to complete and complete them')
@@ -41,7 +41,7 @@ class ProcessActionsCommand extends Command {
 	}
 
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$now = new DateTime('now');
 		if ($this->cs->getGlobal('actions.running') == 0) {
 			$query = $this->em->createQuery('SELECT count(a.id) FROM App:Action a where a.complete IS NOT NULL AND a.complete < :now')->setParameters(['now'=>$now]);
