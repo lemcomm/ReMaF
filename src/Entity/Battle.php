@@ -27,6 +27,7 @@ class Battle {
 	private ?int $soldiers = null;
 	private ?int $attackers = null;
 	private ?int $defenders = null;
+	private ?BattleReport $report = null;
 
 	/**
 	 * Constructor
@@ -444,6 +445,15 @@ class Battle {
 	public function setSiege(?Siege $siege = null): static {
 		$this->siege = $siege;
 
+		return $this;
+	}
+
+	public function getReport(): ?BattleReport {
+		return $this->report;
+	}
+
+	public function setReport(?BattleReport $report): static {
+		$this->report = $report;
 		return $this;
 	}
 }

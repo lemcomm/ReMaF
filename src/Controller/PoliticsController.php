@@ -435,11 +435,11 @@ class PoliticsController extends AbstractController {
 			$char = $other['character'];
 			if ($existingpartners) {
 				if ($character->getNonHeteroOptions()) {
-					if (!$char->isNPC() && $char->isActive(true) && !in_array($char, $existingpartners)) {
+					if (!$char->isNPC() && $char->isActive() && !in_array($char, $existingpartners)) {
 						$choices[$char->getId()] = $char->getName();
 					}
 				} else {
-					if (!$char->isNPC() && $char->isActive(true) && !in_array($char, $existingpartners) && $char->getMale() != $character->getMale()) {
+					if (!$char->isNPC() && $char->isActive() && !in_array($char, $existingpartners) && $char->getMale() != $character->getMale()) {
 						$choices[$char->getId()] = $char->getName();
 					}
 				}

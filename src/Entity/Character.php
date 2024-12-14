@@ -9,6 +9,7 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class Character extends CharacterBase {
+	private ?int $id = null;
 	protected bool|Character $ultimate = false;
 	protected ?ArrayCollection $my_realms = null;
 	protected ?ArrayCollection $my_houses = null;
@@ -30,6 +31,7 @@ class Character extends CharacterBase {
 	private DateTime $last_access;
 	private bool $slumbering;
 	private bool $special;
+	private ?float $withdrawLevel = 0.25;
 	private ?World $world = null;
 	private ?MapRegion $insideRegion = null;
 	private ?MapRegion $movingToRegion = null;
@@ -53,7 +55,6 @@ class Character extends CharacterBase {
 	private ?bool $non_hetero_options = null;
 	private ?bool $oath_current = null;
 	private ?DateTime $oath_time = null;
-	private ?int $id = null;
 	private ?CharacterBackground $background = null;
 	private ?EventLog $log = null;
 	private ?Dungeoneer $dungeoneer = null;
@@ -419,13 +420,13 @@ class Character extends CharacterBase {
 	}
 
 
-	public function isActive($include_wounded = false, $include_slumbering = false): bool {
+	public function isActive($include_slumbering = false): bool {
 		if (!$this->location) return false;
 		if (!$this->alive) return false;
 		if ($this->retired) return false;
 		if ($this->slumbering && !$include_slumbering) return false;
 		// we can take a few wounds before we go inactive
-		if ($this->healthValue() < 0.5 && !$include_wounded) return false;
+		if ($this->healthValue() <= $this->withdrawLevel) return false;
 		if ($this->isPrisoner()) return false;
 		return true;
 	}
@@ -3777,5 +3778,18 @@ class Character extends CharacterBase {
 	 */
 	public function getChatMessages(): ArrayCollection|Collection {
 		return $this->chat_messages;
+	}
+
+	public function getWithdrawLevel(): ?float {
+		return $this->withdrawLevel;
+	}
+
+	public function setWithdrawLevel(?float $withdrawLevel): static {
+		if ($withdrawLevel >= 0.25 && $withdrawLevel <= 1.0) {
+			$this->withdrawLevel = $withdrawLevel;
+		} else {
+			$this->withdrawLevel = 0.25;
+		}
+		return $this;
 	}
 }

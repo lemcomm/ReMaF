@@ -691,7 +691,7 @@ class WarController extends AbstractController {
 									$siege->setLeader('defenders', $character);
 									$em->flush();
 								}
-							} elseif ($siege->getAttacker()->getCharacters()->contains($character) && (!$siege->getAttacker()->getLeader() || !$siege->getAttacker()->getLeader()->isActive(true))) {
+							} elseif ($siege->getAttacker()->getCharacters()->contains($character) && (!$siege->getAttacker()->getLeader() || !$siege->getAttacker()->getLeader()->isActive())) {
 								$siege->setLeader('attackers', $character);
 								$em->flush();
 							}

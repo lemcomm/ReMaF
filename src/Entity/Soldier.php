@@ -157,21 +157,21 @@ class Soldier extends NPC {
 		if (!$this->isAlive() || $this->getTrainingRequired() > 0 || $this->getTravelDays() > 0) return false;
 		if ($this->getType() == 'noble') {
 			// nobles have their own active check
-			return $this->getCharacter()->isActive($include_routed, true);
+			return $this->getCharacter()->isActive(true);
 		}
 		// we can take a few wounds before we go inactive
-		$limit = 50;
+		$limit = 75;
 
 		$xp = $this->getExperience();
 		if ($xp > 100) {
-			$limit -= 15;
+			$limit -= 35; #Retreat below 40% HP
 		} elseif ($xp > 30) {
-			$limit -= 10;
+			$limit -= 25; #Retreat below 50% HP
 		} elseif ($xp > 10) {
-			$limit -= 5;
+			$limit -= 15; #Retreat below 60% HP
 		}
 		if ($militia) {
-			$limit -= 5; # Militia are willing to fight, even wounded.
+			$limit -= 15; # Militia are willing to fight, even wounded. Works out to 25%/35%/45% HP.
 		}
 
 		if (parent::healthValue()*100 < $limit) return false;

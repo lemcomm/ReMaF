@@ -1226,7 +1226,7 @@ class GameRunner {
 				$rulers = $realm->findRulers();
 				if (!$rulers->isEmpty()) {
 					foreach ($rulers as $ruler) {
-						if ($ruler->isActive(true)) {
+						if ($ruler->isActive()) {
 							$msguser = $ruler;
 							break;
 						}
@@ -1234,7 +1234,7 @@ class GameRunner {
 				} else {
 					if (!$members->isEmpty()) {
 						foreach ($members as $member) {
-							if ($member->isActive(true)) {
+							if ($member->isActive()) {
 								$msguser = $member;
 								break;
 							}
@@ -1256,7 +1256,7 @@ class GameRunner {
 				$rulers = $realm->findRulers();
 				if (!$rulers->isEmpty()) {
 					foreach ($rulers as $ruler) {
-						if ($ruler->isActive(true)) {
+						if ($ruler->isActive()) {
 							$msguser = $ruler;
 							break;
 						}
@@ -1264,7 +1264,7 @@ class GameRunner {
 				} else {
 					if (!$members->isEmpty()) {
 						foreach ($members as $member) {
-							if ($member->isActive(true)) {
+							if ($member->isActive()) {
 								$msguser = $member;
 								break;
 							}

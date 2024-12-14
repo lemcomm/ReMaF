@@ -902,10 +902,10 @@ class CharacterManager {
 		$difhead = false;
 		$notheir = false;
 		$superior = false;
-		if ($house->getSuccessor() && $house->getSuccessor()->getHouse() === $character->getHouse() && !$house->getSuccessor()->isActive(true)) {
+		if ($house->getSuccessor() && $house->getSuccessor()->getHouse() === $character->getHouse() && !$house->getSuccessor()->isActive()) {
 			# House has a successor, this takes priority, so long as they're also in the house and active (alive, not slumbering or retired)
 			$successor = $house->getSuccessor();
-		} elseif ($character->getSuccessor() && $character->getSuccessor()->isActive(true)) {
+		} elseif ($character->getSuccessor() && $character->getSuccessor()->isActive()) {
 			$heir = $character->getSuccessor();
 			if ($heir->getHouse() === $character->getHouse()) {
 				# Successor is heir in this house.
@@ -1269,7 +1269,7 @@ class CharacterManager {
 		}
 
 		if ($heir = $character->getSuccessor()) {
-			if ($heir->isActive(true)) {
+			if ($heir->isActive()) {
 				return array($heir, $from);
 			} else {
 				return $this->findHeir($heir, $from);

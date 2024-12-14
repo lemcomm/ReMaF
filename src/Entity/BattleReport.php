@@ -415,4 +415,16 @@ class BattleReport extends ReportBase {
 	public function getDefenseBuildings(): ArrayCollection|Collection {
 		return $this->defense_buildings;
 	}
+
+	public function getObservers(): Collection {
+		return $this->observers;
+	}
+
+	public function addObserver($observer): static {
+		$this->observers[] = $observer;
+		return $this;
+	}
+	public function removeObserver($observer): void {
+		$this->observers->removeElement($observer);
+	}
 }

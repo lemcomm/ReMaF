@@ -457,7 +457,6 @@ class CombatManager {
 			$me = $me->getCharacter(); #for stndardizing the getEquipment type calls.
 			$mod = 1;
 		}
-//		if (!$this->isActive()) return 0; -- disabled - it prevents counter-attacks
 
 		$power = 0;
 		$hasW = false;

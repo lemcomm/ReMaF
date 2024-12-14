@@ -7,6 +7,7 @@ use App\Entity\Election;
 use App\Entity\Realm;
 use App\Entity\RealmDesignation;
 use App\Entity\RealmPosition;
+use App\Entity\Vote;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -316,11 +317,12 @@ class RealmManager {
 		$position = $election->getPosition();
 
 		$candidates = array();
+		/** @var Vote $vote */
 		foreach ($election->getVotes() as $vote) {
 			$target = $vote->getTargetCharacter();
 			$c = $target->getId();
 			# Only allow slumbering electees on positions that allow you to hold it while slumbering. Never allow the dead to be voted in.
-			if (!$position || (!$position->getKeepOnSlumber() && $target->isActive(true)) || ($position->getKeepOnSlumber() && $target->isAlive())) {
+			if (!$position || (!$position->getKeepOnSlumber() && $target->isActive()) || ($position->getKeepOnSlumber() && $target->isAlive())) {
 				if (!isset($candidates[$c])) {
 					$candidates[$c] = array('char'=>$vote->getTargetCharacter(), 'votes'=>0, 'weight'=>0);
 				}

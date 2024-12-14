@@ -48,6 +48,7 @@ class BattleRunner {
 	private $attSlain;
 
 	private ?BattleReport $report = null;
+	private ?string $tempLog;
 	private mixed $nobility;
 	private int $battlesize=1;
 	private int $defenseBonus=0;
@@ -253,6 +254,7 @@ class BattleRunner {
 		$this->report->setDebug("");
 		$this->em->persist($this->report);
 		$this->em->flush(); // because we need the report ID below to set associations
+		# $battle->setReport($this->report); #TODO: Rework this function to handle resuming previous battles.
 
 		$this->log(15, "populating characters and locking...\n");
 		$this->regionType = false;
@@ -1222,7 +1224,8 @@ class BattleRunner {
 				}
 				foreach ($group->getActiveSoldiers() as $soldier) {
 					// Check for ability to do damage
-					if ($this->combat->MeleePower($soldier, true, $soldier->getWeapon(), $countUs, true) < 1 && $this->combat->RangedPower($soldier, true, $soldier->getWeapon(), $countUs, true) < 1) {
+					/** @var Soldier $soldier */
+					if (!$soldier->getWeapon()) {
 						$retreated++;
 						$this->log(10, $soldier->getName()." (".$soldier->getType().") - withdraws\n");
 						$soldier->setRouted(true);
@@ -1592,7 +1595,13 @@ class BattleRunner {
 
 	public function log($level, $text): void {
 		if ($this->report) {
-			$this->report->setDebug($this->report->getDebug().$text);
+			if ($this->tempLog) {
+				$this->report->setDebug($this->tempLog.$text);
+			} else {
+				$this->report->setDebug($this->report->getDebug().$text);
+			}
+		} else {
+			$this->tempLog = $this->tempLog.$text;
 		}
 		if ($level <= $this->debug) {
 			$this->logger->info($text);

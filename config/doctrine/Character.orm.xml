@@ -39,6 +39,7 @@
 		<field name="progress" type="float" nullable="true"/>
 		<field name="speed" type="float" nullable="true"/>
 		<field name="wounded" type="smallint"/>
+		<field name="withdrawLevel" type="float" scale="2" nullable="true"/>
 		<field name="gold" type="integer"/>
 		<field name="npc" type="boolean"/>
 		<field name="spotting_distance" type="integer"/>
