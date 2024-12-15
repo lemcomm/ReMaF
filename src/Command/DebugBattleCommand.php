@@ -36,7 +36,7 @@ class DebugBattleCommand extends Command {
 			$battle->setStarted($start);
 			$now = new \DateTime('now');
 			$battle->setInitialComplete($now)->setComplete($now);
-			$output->writeln("Battle ".$battle->getId()."set to run successfully.");
+			$output->writeln("Battle ".$battle->getId()." set to run successfully.");
 			$this->em->flush();
 			return Command::SUCCESS;
 		} else {

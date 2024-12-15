@@ -48,7 +48,7 @@ class BattleRunner {
 	private $attSlain;
 
 	private ?BattleReport $report = null;
-	private ?string $tempLog;
+	private ?string $tempLog = null;
 	private mixed $nobility;
 	private int $battlesize=1;
 	private int $defenseBonus=0;
@@ -643,12 +643,25 @@ class BattleRunner {
 		$this->runStage('hunt', $rangedPenalty, $phase, $doRanged);
 	}
 
-	private function prepareRound(): void {
+	private function prepareRound($first = false): void {
 		// store who is active, because this changes with hits and would give the first group to resolve the initiative while we want things to be resolved simultaneously
 		foreach ($this->battle->getGroups() as $group) {
+			/** @var Soldier $soldier */
 			foreach ($group->getSoldiers() as $soldier) {
 				$soldier->setFighting($soldier->isActive());
 				$soldier->resetAttacks();
+			}
+			$count = $group->getFightingSoldiers()->getCount();
+			if (!$first) {
+				foreach ($group->getFightingSoldiers() as $soldier) {
+					if ($soldier->isActive()) {
+						if ($soldier->isRanged()) {
+							$this->combat->RangedPower($soldier, true, null, $count, true);
+						} else {
+							$this->combat->MeleePower($soldier, true, null, $count, true);
+						}
+					}
+				}
 			}
 		}
 		// Updated siege assault contact scores. When we have siege engines, this will get ridiculously simpler to calculate. Defenders always get it slightly easier.
@@ -833,6 +846,7 @@ class BattleRunner {
 			$chargeFail =0;
 			$lightShieldFail = 0;
 			$missed = 0;
+			$mMissed = 0;
 			$crowded = 0;
 			$staredDeath = 0;
 			$noTargets = 0;
@@ -889,7 +903,9 @@ class BattleRunner {
 			*/
 			if ($type == 'ranged') {
 				$bonus = sqrt($enemies); // easier to hit if there are many enemies
-				foreach ($group->getFightingSoldiers() as $soldier) {
+				$soldierShuffle = $group->getFightingSoldiers()->toArray();
+				shuffle ($soldierShuffle);
+				foreach ($soldierShuffle as $soldier) {
 					if ($this->combat->RangedPower($soldier, true, null, $attackers) > 0) {
 						// ranged soldier - fire!
 						$result=false;
@@ -1004,7 +1020,9 @@ class BattleRunner {
 			*/
 			if ($type == 'normal') {
 				$bonus = sqrt($enemies);
-				foreach ($group->getFightingSoldiers() as $soldier) {
+				$soldierShuffle = $group->getFightingSoldiers()->toArray();
+				shuffle ($soldierShuffle);
+				foreach ($soldierShuffle as $soldier) {
 					$result = false;
 					$target = false;
 					$counter = null;
@@ -1597,6 +1615,7 @@ class BattleRunner {
 		if ($this->report) {
 			if ($this->tempLog) {
 				$this->report->setDebug($this->tempLog.$text);
+				$this->tempLog = null;
 			} else {
 				$this->report->setDebug($this->report->getDebug().$text);
 			}

@@ -10,7 +10,7 @@ use Doctrine\Persistence\ObjectManager;
 class LoadRaceData extends Fixture {
 
 	private array $races = [
-		'first one'		=> ['hp'=>1000, 'avgPackSize'=>1, 'maxPackSize'=>1, 'melee'=>2, 'ranged'=>2, 'mDef'=>2, 'rDef'=>2, 'morale'=>5.00, 'eats'=>false, 'maxHunger'=>null, 'undeath'=>false, 'aging'=>false, 'equipment'=>true],
+		'first one'		=> ['hp'=>200, 'avgPackSize'=>1, 'maxPackSize'=>1, 'melee'=>2, 'ranged'=>2, 'mDef'=>2, 'rDef'=>2, 'morale'=>5.00, 'eats'=>false, 'maxHunger'=>null, 'undeath'=>false, 'aging'=>false, 'equipment'=>true],
 		'second one'		=> ['roads' => 0.8, 'undeath'=>false, 'equipment'=>true],
 		'human'			=> ['equipment'=>true],
 		'orc'			=> ['hp'=>150, 'avgPackSize'=>10, 'maxPackSize'=>100, 'travel'=>0.75, 'roads'=>0.75, 'size'=>1.25, 'melee'=>1.5, 'mDef'=>1.5, 'equipment'=>true],
