@@ -155,8 +155,8 @@ class Soldier extends NPC {
 
 	public function isActive($include_routed = false, $militia = false): bool {
 		if (!$this->isAlive() || $this->getTrainingRequired() > 0 || $this->getTravelDays() > 0) return false;
-		if ($this->getType() == 'noble') {
-			// nobles have their own active check
+		if ($this->getType() == 'noble' && $include_routed) {
+			# nobles have their own active check, but FOs withdraw sometimes, so if they're routed they aren't active.
 			return $this->getCharacter()->isActive(true);
 		}
 		// we can take a few wounds before we go inactive

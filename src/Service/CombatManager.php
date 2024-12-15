@@ -46,10 +46,11 @@ class CombatManager {
 
 
 		$logs[] = $target->getName()." (".$target->getType().") - ";
-		$logs[] = (round($attack*10)/10)." vs. ".(round($defense*10)/10)." - ";
-
-		$attRoll = rand(0, (int) floor($attack * $this->woundPenalty($me)));
-		$defRoll = rand(0, (int) floor($defense * $this->woundPenalty($target)));
+		$actAtt = (int) floor($attack * $this->woundPenalty($me));
+		$actDef = (int) floor($defense * $this->woundPenalty($target));
+		$attRoll = rand(0, $actAtt);
+		$defRoll = rand(0, $actDef);
+		$logs[] = "O:".round($attack)."/A:".$actAtt."/R:".$attRoll." vs. O:".round($defense)."/A:".$actDef."/R:".$defRoll." - ";
 		[$result, $sublogs] = $this->checkDamage($me, $attRoll, $target, $defRoll, $type, 'charge', $counterType, $xpMod, $defBonus);
 		foreach ($sublogs as $each) {
 			$logs[] = $each;
@@ -264,10 +265,10 @@ class CombatManager {
 		}
 
 		$logs[] = $target->getName()." (".$target->getType().") - ";
-		$actAtt = $attack * $this->woundPenalty($me);
-		$actDef = $defense * $this->woundPenalty($target);
-		$attRoll = rand(0, (int) floor($actAtt));
-		$defRoll = rand(0, (int) floor($actDef));
+		$actAtt = (int) floor($attack * $this->woundPenalty($me));
+		$actDef = (int) floor($defense * $this->woundPenalty($target));
+		$attRoll = rand(0, $actAtt);
+		$defRoll = rand(0, $actDef);
 		$logs[] = "O:".round($attack)."/A:".$actAtt."/R:".$attRoll." vs. O:".round($defense)."/A:".$actDef."/R:".$defRoll." - ";
 		[$result, $sublogs] = $this->checkDamage($me, $attRoll, $target, $defRoll, $type, 'melee', $counterType);
 		foreach ($sublogs as $each) {
@@ -428,10 +429,10 @@ class CombatManager {
 			}
 		}
 
-		$actAtt = $attack * $this->woundPenalty($me);
-		$actDef = $defense * $this->woundPenalty($target);
-		$attRoll = rand(0, (int) floor($actAtt));
-		$defRoll = rand(0, (int) floor($actDef));
+		$actAtt = (int) floor($attack * $this->woundPenalty($me));
+		$actDef = (int) floor($defense * $this->woundPenalty($target));
+		$attRoll = rand(0, $actAtt);
+		$defRoll = rand(0, $actDef);
 		$logs[] = "hits ".$target->getName()." (".$target->getType().") - (O:".round($attack)."/A:".$actAtt."/R:".$attRoll." vs. O:".round($defense)."/A:".$actDef."/R:".$defRoll.") = ";
 		[$result, $sublogs] = $this->checkDamage($me, $attRoll, $target, $defRoll, $type, 'ranged', false);
 		foreach ($sublogs as $each) {

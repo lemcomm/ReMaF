@@ -651,7 +651,7 @@ class BattleRunner {
 				$soldier->setFighting($soldier->isActive());
 				$soldier->resetAttacks();
 			}
-			$count = $group->getFightingSoldiers()->getCount();
+			$count = $group->getFightingSoldiers()->count();
 			if (!$first) {
 				foreach ($group->getFightingSoldiers() as $soldier) {
 					if ($soldier->isActive()) {
@@ -1228,6 +1228,7 @@ class BattleRunner {
 				$staredDeath = 0;
 				$retreated = 0;
 				$routed = 0;
+				$extras = [];
 				$this->log(10, "morale checks:\n");
 				$stageResult = $group->getActiveReport()->getCombatStages()->last(); #getCombatStages always returns these in round ascending order. Thus, the latest one will be last. :)
 
@@ -1249,6 +1250,13 @@ class BattleRunner {
 						$soldier->setRouted(true);
 						$countUs--;
 						$this->history->addToSoldierLog($soldier, 'retreated.melee');
+						if ($soldier->isNoble()) {
+							$extra = [
+								'what' => 'noble.withdraw',
+								'who' => $soldier->getCharacter()->getId(),
+							];
+							$extras[] = $extra;
+						}
 						continue; #Morale is recalculated for every battle, and since they retreated, we don't care about their morale.
 					}
 					// still alive? check for panic
@@ -1302,6 +1310,11 @@ class BattleRunner {
 				$combatResults['stared'] = $staredDeath;
 				$combatResults['retreated'] = $retreated;
 				$stageResult->setData($combatResults); # Add routed to array and save.
+				$stageExtra = $stageResult->getExtra();
+				foreach ($extras as $extra) {
+					$stageExtra[] = $extra;
+				}
+				$stageResult->setExtra($stageExtra);
 			}
 		}
 

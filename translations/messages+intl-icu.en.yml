@@ -1420,6 +1420,7 @@ battle:
   noble:
    kill:        "{who} was killed by {by}."
    capture:     "{who} was captured by {by}."
+   withdraw:    "{who} withdrew"
   mortal:
    kill:        "{who} was killed by a mortal."
   ranged:
