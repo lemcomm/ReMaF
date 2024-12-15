@@ -377,16 +377,16 @@ class Soldier extends NPC {
 			case 'noble':
 				return 5;
 			case 'cavalry':
-			case 'light cavalry':
 			case 'heavy cavalry':
 				return 4;
 			case 'mounted archer':
-			case 'armoured archer':
+			case 'light cavalry':
 			case 'heavy infantry':
 				return 3;
-			case 'archer':
+			case 'armoured archer':
 			case 'medium infantry':
 				return 2;
+			case 'archer':
 			case 'light infantry':
 			default:
 				return 1;

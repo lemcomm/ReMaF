@@ -892,8 +892,6 @@ class BattleRunner {
 				} else {
 					$this->log(5, "group ".$group->getActiveReport()->getId()." (Reinforcing group ".$group->getReinforcing()->getActiveReport()->getId().") - ".$attackers." left, $enemies targets\n");
 				}
-
-				$results = array();
 			}
 
 			/*
@@ -1000,10 +998,11 @@ class BattleRunner {
 							} else {
 								$this->log(50, " - has resolve\n");
 							}
-							$this->log(50, "\n");
 						}
 					}
-					$this->log(10, "==> avg. morale: ".round($total/max(1,$count))."\n");
+					$this->log(10, "==> avg. morale: ".round($total/max(1,$count))."\n\n");
+				} else {
+					$this->log(10, "==> no hits taken, morale unaffected\n\n");
 				}
 
 				$stageResult = array('shots'=>$shots, 'rangedHits'=>$rangedHits, 'fail'=>$fail, 'wound'=>$wound, 'capture'=>$capture, 'kill'=>$kill, 'routed'=>$routed, 'stared'=>$staredDeath);
@@ -1290,19 +1289,21 @@ class BattleRunner {
 					}
 					$soldier->setMorale($soldier->getMorale() * $mod);
 					$health = $soldier->healthValue();
-					if ($soldier->getMorale() < rand(0,100) || ($health < 0.5 && $health*100 < rand(0,100))) {
+					$rand = rand(0,100);
+					$hRand = rand(0,100);
+					if ($soldier->getMorale() < $rand || ($health < 0.5 && $health*100 < $hRand)) {
 						if ($soldier->isNoble()) {
-							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." - has no fear\n");
+							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." / HP: $health vs $rand / $hRand - has no fear\n");
 							$staredDeath++;
 						} else {
 							$routed++;
-							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." - panics\n");
+							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." / HP: $health vs $rand / $hRand - panics\n");
 							$soldier->setRouted(true);
 							$countUs--;
 							$this->history->addToSoldierLog($soldier, 'routed.melee');
 						}
 					} else {
-						$this->log(20, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())."\n");
+						$this->log(20, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." / HP: $health vs $rand / $hRand \n");
 					}
 				}
 				$combatResults = $stageResult->getData(); # CFetch original array.

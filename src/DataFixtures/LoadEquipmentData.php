@@ -138,10 +138,10 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 		'scale armour'      => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' =>  40, 'train' => 30, 'resupply' =>100,	'provider' => 'Armourer', 'trainer' => 'Barracks',		'icon' => 'items/schuppenpanzer2.png'),
 		'lamellar armour'   => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' =>  55, 'train' => 40, 'resupply' =>170,	'provider' => 'Armourer', 'trainer' => 'Barracks',		'icon' => null),
 		'chainmail'         => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' =>  70, 'train' => 50, 'resupply' =>300,	'provider' => 'Heavy Armourer', 'trainer' => 'Garrison',		'icon' => 'items/kettenpanzer2.png'),
-		'plate armour'      => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' => 100, 'train' => 80, 'resupply' =>500,	'provider' => 'Heavy Armourer',	'trainer' => 'Wood Castle',		'icon' => 'items/plattenpanzer2.png'),
+		'plate armour'      => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' => 85, 'train' => 80, 'resupply' =>500,	'provider' => 'Heavy Armourer',	'trainer' => 'Wood Castle',		'icon' => 'items/plattenpanzer2.png'),
 
-		'horse'             => array('type' => 'mount', 'ranged' =>  0, 'melee' =>  30, 'defense' =>  30, 'train' => 60, 'resupply' =>300,	'provider' => 'Stables', 'trainer' => 'Barracks',		'icon' => 'items/packpferd2.png'),
-		'war horse'         => array('type' => 'mount', 'ranged' =>  0, 'melee' =>  50, 'defense' =>  50, 'train' =>100, 'resupply' =>800,	'provider' => 'Royal Mews', 'trainer' => 'Wood Castle',		'icon' => 'items/warhorse2.png'),
+		'horse'             => array('type' => 'mount', 'ranged' =>  0, 'melee' =>  5, 'defense' =>  10, 'train' => 60, 'resupply' =>300,	'provider' => 'Stables', 'trainer' => 'Barracks',		'icon' => 'items/packpferd2.png'),
+		'war horse'         => array('type' => 'mount', 'ranged' =>  0, 'melee' =>  10, 'defense' =>  20, 'train' =>100, 'resupply' =>800,	'provider' => 'Royal Mews', 'trainer' => 'Wood Castle',		'icon' => 'items/warhorse2.png'),
 
 		'shield'            => array('type' => 'equipment', 'ranged' =>  0, 'melee' =>   0, 'defense' =>  35, 'train' => 40, 'resupply' => 40,	'provider' => 'Carpenter', 'trainer' => 'Guardhouse',	'icon' => 'items/shield2.png'),
 		'javelin'           => array('type' => 'equipment', 'ranged' => 65, 'melee' =>  10, 'defense' =>   0, 'train' => 40, 'resupply' => 35,	'provider' => 'Weaponsmith', 'trainer' => 'Guardhouse',	'icon' => 'items/javelin2.png', 'skill'=> 'javelin'),
