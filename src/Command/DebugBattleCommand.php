@@ -28,7 +28,7 @@ class DebugBattleCommand extends Command {
 		$output->writeln("Looking for Battle #".$id);
 		$battle = $this->em->getRepository(Battle::class)->findOneBy(['id'=>$id]);
 
-		if ($this->cm->retire($battle)) {
+		if ($battle) {
 			$time = $this->war->calculatePreparationTime($battle);
 
 			$start = new \DateTime('now');
