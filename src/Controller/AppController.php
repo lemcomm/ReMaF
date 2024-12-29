@@ -80,10 +80,7 @@ class AppController extends AbstractController {
 		$hea = $xml->createElement('description', $msg);
 		$cha->appendChild($hea);
 
-		$hea = $xml->createElement('link', htmlentities('http://xml-rss.de'));
-		$cha->appendChild($hea);
-
-		$hea = $xml->createElement('lastBuildDate', mb_convert_encoding(date("D, j M Y H:i:s ") . 'GMT', 'UTF-8'));
+		$hea = $xml->createElement('lastBuildDate', mb_convert_encoding(date("D, j M Y H:i:s ") . 'GMT', 'UTF-6'));
 		$cha->appendChild($hea);
 
 
@@ -111,16 +108,13 @@ class AppController extends AbstractController {
 		$hea = $xml->createElement('language', mb_convert_encoding($user->getLanguage() ? $user->getLanguage() : 'en', 'UTF-8'));
 		$cha->appendChild($hea);
 
-		$hea = $xml->createElement('link', htmlentities('http://xml-rss.de'));
-		$cha->appendChild($hea);
-
 		$hea = $xml->createElement('lastBuildDate', mb_convert_encoding(date("D, j M Y H:i:s ") . 'GMT', 'UTF-8'));
 		$cha->appendChild($hea);
 
 		return array($xml, $cha);
 	}
 
-	private function addEvent($xml, $cha, $event, $log) {
+	private function addEvent($xml, $cha, $event, $log): void {
 		$itm = $xml->createElement('item');
 		$cha->appendChild($itm);
 

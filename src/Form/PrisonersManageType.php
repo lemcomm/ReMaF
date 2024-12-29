@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityRepository;
 
 class PrisonersManageType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'prisonersmanage_91356',
 			'translation_domain' => 'politics'
@@ -22,7 +22,7 @@ class PrisonersManageType extends AbstractType {
 		$resolver->setRequired(['prisoners', 'others']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('prisoners', FormType::class);
 		$others = $options['others'];
 

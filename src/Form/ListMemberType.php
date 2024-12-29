@@ -19,7 +19,7 @@ use App\Entity\Listing;
 
 class ListMemberType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'translation_domain' => 'politics',
 			'data_class'		=> ListMember::class,
@@ -27,7 +27,7 @@ class ListMemberType extends AbstractType {
 		$resolver->setRequired(['em', 'listing']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$l = $options['listing'];
 		if ($l) {
 			if ($l->getId()>0) {

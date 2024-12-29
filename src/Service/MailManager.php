@@ -88,7 +88,7 @@ class MailManager {
 	public function sendEventEmails(): void {
 		$now = new DateTime("now");
 		$em = $this->em;
-		$query = $em->createQuery("SELECT u FROM App:User u JOIN u.mail_entries m WHERE m.type = :type");
+		$query = $em->createQuery("SELECT u FROM App\Entity\User u JOIN u.mail_entries m WHERE m.type = :type");
 		$query->setParameters(['type'=>'event']);
 		$users = $query->getResult();
 		$twoMonths = new DateTime("-2 months");

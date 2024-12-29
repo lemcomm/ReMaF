@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class NewsEditorType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'newseditor_93245',
 			'translation_domain' => 'communication',
@@ -17,7 +17,7 @@ class NewsEditorType extends AbstractType {
 		$resolver->setRequired(['paper']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$paper = $options['paper'];
 
 		$builder->add('owner', CheckboxType::class, array(

@@ -10,13 +10,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UserReportType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'userreport_9432',
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('text', TextareaType::class, array(
 			'label'=>'olympus.report.form.help',
 			'attr' => array('title'=>'olympus.report.form.text'),

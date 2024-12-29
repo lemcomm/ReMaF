@@ -23,7 +23,7 @@ class UpdateTorExitsCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:tor:update')
 			->setDescription('Request the game update the TOR exit nodes listing.')

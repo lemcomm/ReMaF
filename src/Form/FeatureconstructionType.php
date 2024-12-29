@@ -16,7 +16,7 @@ use Doctrine\ORM\EntityRepository;
 
 class FeatureconstructionType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults([
 			'intention'     	=> 'featureconstruction_5215',
 			'translation_domain' 	=> 'economy',
@@ -26,7 +26,7 @@ class FeatureconstructionType extends AbstractType {
 		]);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('existing', FormType::class);
 
 		foreach ($options['features'] as $feature) {

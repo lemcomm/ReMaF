@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AssocManageMemberType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'updatembr_1779',
 			'translation_domain' => 'orgs'
@@ -19,7 +19,7 @@ class AssocManageMemberType extends AbstractType {
 		$resolver->setRequired(['ranks', 'me']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$ranks = $options['ranks'];
 		$me = $options['me'];
 		$builder->add('rank', EntityType::class, array(

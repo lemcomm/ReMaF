@@ -37,7 +37,7 @@ class StatisticsTurnCommand extends Command {
 		parent::__construct();
 	}
 	
-	protected function configure() {
+	protected function configure(): void {
 		$this
 		->setName('maf:stats:turn')
 		->setDescription('statistics: gather turn data')
@@ -53,7 +53,7 @@ class StatisticsTurnCommand extends Command {
 	 * @throws NoResultException
 	 * @throws NonUniqueResultException
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$cycle = $this->common->getCycle();
 		$debug = $input->getOption('debug');
 		$oneWeek = new DateTime("-1 week");

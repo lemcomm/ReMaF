@@ -72,7 +72,7 @@ class ActivityController extends AbstractController {
 		if (! $char instanceof Character) {
                         return $this->redirectToRoute($char);
 		}
-                $query = $this->em->createQuery('SELECT a, p FROM App:Activity a JOIN a.participants p WHERE p.character = :char AND p.accepted = :acc');
+                $query = $this->em->createQuery('SELECT a, p FROM App\Entity\Activity a JOIN a.participants p WHERE p.character = :char AND p.accepted = :acc');
 		$query->setParameters(['char'=>$char, 'acc'=>false]);
 		$duels = $query->getResult();
 

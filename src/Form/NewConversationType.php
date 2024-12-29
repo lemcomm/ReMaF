@@ -16,7 +16,7 @@ use Doctrine\ORM\EntityRepository;
 
 class NewConversationType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'new_conversation_134',
 			'translation_domain' => 'conversations',
@@ -28,7 +28,7 @@ class NewConversationType extends AbstractType {
 		$resolver->setRequired(['char']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('topic', TextType::class, array(
 			'required' => true,
 			'label' => 'conversation.topic.label',

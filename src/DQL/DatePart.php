@@ -7,6 +7,7 @@ namespace App\DQL;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\TokenType;
 
@@ -16,7 +17,10 @@ class DatePart extends FunctionNode {
 	public $partExpression = null;
 	public $dateExpression = null;
 
-	public function parse(Parser $parser) {
+	/**
+	 * @throws QueryException
+	 */
+	public function parse(Parser $parser): void {
 		$parser->match(TokenType::T_IDENTIFIER); // (2)
 		$parser->match(TokenType::T_OPEN_PARENTHESIS); // (3)
 		$this->partExpression = $parser->StringPrimary(); // (4)
@@ -25,7 +29,7 @@ class DatePart extends FunctionNode {
 		$parser->match(TokenType::T_CLOSE_PARENTHESIS); // (3)
 	}
 
-	public function getSql(SqlWalker $sqlWalker) {
+	public function getSql(SqlWalker $sqlWalker): string {
 		return 'DATE_PART(' .
 			$this->partExpression->dispatch($sqlWalker) . ', ' .
 			$this->dateExpression->dispatch($sqlWalker) .

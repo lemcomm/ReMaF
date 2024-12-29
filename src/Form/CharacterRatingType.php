@@ -2,9 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Character;
 use App\Entity\CharacterRating;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -15,7 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CharacterRatingType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'characterrating_96515',
 			'data_class'	=> CharacterRating::class,
@@ -25,7 +23,7 @@ class CharacterRatingType extends AbstractType {
 		$resolver->setRequired('characterId');
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$char = $options['characterId'];
 		$builder->add('content', TextareaType::class, array(
 			'label'=>'rating.content',

@@ -62,7 +62,7 @@ class SettlementController extends AbstractController {
 
 		// FIXME: shouldn't this use geodata?
 		$query = $em->createQuery('SELECT s.id, s.name, ST_Distance(y.center, x.center) AS distance, ST_Azimuth(y.center, x.center) AS direction
-			FROM App:Settlement s JOIN s.geo_data x, App:GeoData y WHERE y=:here AND ST_Touches(x.poly, y.poly)=true');
+			FROM App\Entity\Settlement s JOIN s.geo_data x, App\Entity\GeoData y WHERE y=:here AND ST_Touches(x.poly, y.poly)=true');
 		$query->setParameter('here', $settlement);
 		$neighbours = $query->getArrayResult();
 
@@ -87,7 +87,7 @@ class SettlementController extends AbstractController {
 		}
 
 		// FIXME: better: some trend analysis
-		$query = $em->createQuery('SELECT s.population as pop FROM App:StatisticSettlement s WHERE s.settlement = :here ORDER BY s.cycle DESC');
+		$query = $em->createQuery('SELECT s.population as pop FROM App\Entity\StatisticSettlement s WHERE s.settlement = :here ORDER BY s.cycle DESC');
 		$query->setParameter('here', $settlement);
 		$query->setMaxResults(3);
 		$data = $query->getArrayResult();

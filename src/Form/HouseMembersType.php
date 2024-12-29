@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityRepository;
 
 class HouseMembersType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'housemembers_8675309',
 			'translation_domain' => 'politics',
@@ -22,7 +22,7 @@ class HouseMembersType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$members = $options['members'];
 		$notinclude = $options['notinclude'];
 

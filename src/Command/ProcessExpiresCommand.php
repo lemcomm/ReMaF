@@ -24,7 +24,7 @@ class ProcessExpiresCommand extends Command {
 	}
 
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:expires')
 			->setDescription('Run various expiration routines')

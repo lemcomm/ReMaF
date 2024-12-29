@@ -93,7 +93,7 @@ class CommonService {
 			# Not all weapons have skills, this just catches those.
 			return false;
 		}
-		$query = $this->em->createQuery('SELECT s FROM App:Skill s WHERE s.character = :me AND s.type = :type ORDER BY s.id ASC')->setParameters(['me'=>$char, 'type'=>$type])->setMaxResults(1);
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Skill s WHERE s.character = :me AND s.type = :type ORDER BY s.id ASC')->setParameters(['me'=>$char, 'type'=>$type])->setMaxResults(1);
 		$training = $query->getResult();
 		if ($pract && $pract < 1) {
 			$pract = 1;
@@ -140,7 +140,7 @@ class CommonService {
 	}
 
 	public function findNearestSettlement(Character $character) {
-		$query = $this->em->createQuery('SELECT s, ST_Distance(g.center, c.location) AS distance FROM App:Settlement s JOIN s.geo_data g, App:Character c WHERE c = :char ORDER BY distance ASC');
+		$query = $this->em->createQuery('SELECT s, ST_Distance(g.center, c.location) AS distance FROM App\Entity\Settlement s JOIN s.geo_data g, App\Entity\Character c WHERE c = :char ORDER BY distance ASC');
 		$query->setParameter('char', $character);
 		$query->setMaxResults(1);
 		return $query->getSingleResult();
@@ -149,7 +149,7 @@ class CommonService {
 	/* achievements */
 	public function getAchievement(Character $character, $key) {
 		# The below bypasses the doctrine cache, meaning it will always pull the current value from the database.
-		$query = $this->em->createQuery('SELECT a FROM App:Achievement a WHERE a.character = :me AND a.type = :type ORDER BY a.id ASC')->setParameters(['me'=>$character, 'type'=>$key])->setMaxResults(1);
+		$query = $this->em->createQuery('SELECT a FROM App\Entity\Achievement a WHERE a.character = :me AND a.type = :type ORDER BY a.id ASC')->setParameters(['me'=>$character, 'type'=>$key])->setMaxResults(1);
 		$result = $query->getResult();
 		if ($result) {
 			return $result[0];

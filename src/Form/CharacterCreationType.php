@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityRepository;
 
 class CharacterCreationType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'newchar_482',
 			'attr'		=> array('class'=>'wide'),
@@ -24,7 +24,7 @@ class CharacterCreationType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$user = $options['user'];
 		$builder->add('name', TextType::class, array(
 			'label'=>'character.name',

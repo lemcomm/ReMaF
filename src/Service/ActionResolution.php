@@ -32,7 +32,7 @@ class ActionResolution {
 	}
 
 	public function progress(): void {
-		$query = $this->em->createQuery("SELECT a FROM App:Action a WHERE a.complete IS NOT NULL AND a.complete < :now");
+		$query = $this->em->createQuery("SELECT a FROM App\Entity\Action a WHERE a.complete IS NOT NULL AND a.complete < :now");
 		$query->setParameter('now', new DateTime("now"));
 		#$iterableResult = $query->toIterable();
 		foreach ($query->getResult() as $action) {
@@ -690,7 +690,7 @@ class ActionResolution {
 			$this->em->flush(); #Probably not needed, but just in case.
 		}
 
-		$query = $this->em->createQuery('SELECT MAX(e.cycle) FROM App:Event e WHERE e.log=:log AND e.cycle < :earliest');
+		$query = $this->em->createQuery('SELECT MAX(e.cycle) FROM App\Entity\Event e WHERE e.log=:log AND e.cycle < :earliest');
 		$query->setParameters(array('log'=>$log, 'earliest'=>$meta->getAccessFrom()));
 		$next = $query->getSingleScalarResult();
 		$meta->setAccessFrom($next);

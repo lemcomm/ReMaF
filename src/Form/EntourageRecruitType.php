@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EntourageRecruitType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'recruit_23469',
 			'translation_domain' => 'actions',
@@ -19,7 +19,7 @@ class EntourageRecruitType extends AbstractType {
 		$resolver->setRequired('entourage');
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('recruits', FormType::class);
 		$entourage = $options['entourage'];
 

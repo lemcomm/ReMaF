@@ -21,7 +21,7 @@ class RoadNetworkCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 		->setName('maf:roads')
 		->setDescription('calculate road network')
@@ -30,7 +30,7 @@ class RoadNetworkCommand extends Command {
 	}
 
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		echo 'Command requires rework, but is not required for game function.';
 		return Command::SUCCESS;
 		$settlement_id = $input->getArgument('settlement');
@@ -47,9 +47,10 @@ class RoadNetworkCommand extends Command {
 				$output->writeln($feature['name']." - ".round($feature['distance'])." miles - ".$feature['cost']." cost");
 			}
 		}
+		return Command::SUCCESS;
 	}
 
-	protected function getDestinations($feature, $travel_points, $distance=0) {
+	protected function getDestinations($feature, $travel_points, $distance=0): void {
 		$query = $this->em->createQuery('SELECT r,ST_Length(r.path) as length,ST_Length(r.path)/r.quality as cost FROM App:Road r JOIN r.waypoints w WHERE w = :me AND r.quality > 0');
 		$query->setParameter('me', $feature);
 

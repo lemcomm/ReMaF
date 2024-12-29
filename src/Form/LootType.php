@@ -20,7 +20,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class LootType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'loot_1541',
 			'translation_domain' 	=> 'actions',
@@ -29,7 +29,7 @@ class LootType extends AbstractType {
 		$resolver->setRequired(['settlement', 'em', 'inside']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		if ($options['inside']) {
 			$choices = array(
 				'military.settlement.loot.option.thralls' => 'thralls',

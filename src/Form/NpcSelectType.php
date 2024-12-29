@@ -13,14 +13,14 @@ use Doctrine\ORM\EntityRepository;
 
 class NpcSelectType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'npc_select_5214',
 			'freeNPCs'	=> []
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$characters = $options['freeNPCs'];
 
 		$builder->add('npc', EntityType::class, array(

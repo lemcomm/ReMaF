@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ChatType extends AbstractType {
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'chat_14',
 			'data_class'		=> ChatMessage::class,
@@ -21,7 +21,7 @@ class ChatType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		#TODO: Rework this to be a TextareaType that resizes on pages with enter to submit and shift+enter for new line.
 		$builder->add('content', TextType::class, array(
 			'label' => false,

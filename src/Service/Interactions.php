@@ -63,7 +63,7 @@ class Interactions {
 			$center = $settlement->getGeoData()->getCenter();
 			$loc = new Point($center->getX() + $x, $center->getY() + $y);
 			// make sure this doesn't put us into the ocean in coastal settlements!
-			$query = $this->em->createQuery('SELECT g.passable FROM App:GeoData g WHERE ST_Contains(g.poly, ST_Point(:x,:y))=true')->setParameters(array('x'=>$loc->getX(), 'y'=>$loc->getY()));
+			$query = $this->em->createQuery('SELECT g.passable FROM App\Entity\GeoData g WHERE ST_Contains(g.poly, ST_Point(:x,:y))=true')->setParameters(array('x'=>$loc->getX(), 'y'=>$loc->getY()));
 			$passable = $query->getSingleScalarResult();
 		}
 		$character->setLocation($loc);
@@ -291,7 +291,7 @@ class Interactions {
 				$center = $settlement->getGeoData()->getCenter();
 				$loc = new Point($center->getX() + $x, $center->getY() + $y);
 				// make sure this doesn't put us into the ocean in coastal settlements!
-				$query = $this->em->createQuery('SELECT g.passable FROM App:GeoData g WHERE ST_Contains(g.poly, ST_Point(:x,:y))=true')->setParameters(array('x'=>$loc->getX(), 'y'=>$loc->getY()));
+				$query = $this->em->createQuery('SELECT g.passable FROM App\Entity\GeoData g WHERE ST_Contains(g.poly, ST_Point(:x,:y))=true')->setParameters(array('x'=>$loc->getX(), 'y'=>$loc->getY()));
 				$passable = $query->getSingleScalarResult();
 			}
 		} else {

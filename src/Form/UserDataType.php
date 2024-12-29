@@ -16,12 +16,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Regex;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 
 class UserDataType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults([
 			'translation_domain' => 'core',
 			'display' => null,
@@ -37,7 +36,7 @@ class UserDataType extends AbstractType {
 		$resolver->setRequired(['username', 'email']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('username', TextType::class, [
 			'label' => 'form.username.username',
 			'required' => false,

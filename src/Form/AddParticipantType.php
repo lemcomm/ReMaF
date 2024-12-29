@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityRepository;
 
 class AddParticipantType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'new_conversation_134',
 			'translation_domain' => 'conversations',
@@ -21,7 +21,7 @@ class AddParticipantType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$recipients = $options['contacts'];
 		$builder->add('contacts', EntityType::class, array(
 			'required' => false,

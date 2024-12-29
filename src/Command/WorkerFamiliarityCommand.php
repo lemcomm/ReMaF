@@ -20,7 +20,7 @@ class WorkerFamiliarityCommand extends  Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:worker:familiarity')
 			->setDescription('Update character/region familiarity - worker component - do not call directly')
@@ -40,7 +40,7 @@ class WorkerFamiliarityCommand extends  Command {
 		return Command::SUCCESS;
 	}
 
-	private function updateByArea($start, $end) {
+	private function updateByArea($start, $end): void {
 		$query = $this->em->createQuery("SELECT c.id as character, g.id as area, c.travel as travel FROM App:Character c, App:GeoData g WHERE c.id >= :start AND c.id <= :end AND c.alive=true AND c.slumbering=false AND c.prisoner_of IS NULL AND ST_Contains(g.poly,c.location)=true");
 		$query->setParameters(array('start'=>$start, 'end'=>$end));
 		foreach ($query->getResult() as $row) {
@@ -48,7 +48,7 @@ class WorkerFamiliarityCommand extends  Command {
 		}
 	}
 
-	private function updateByEstate($start, $end) {
+	private function updateByEstate($start, $end): void {
 		$query = $this->em->createQuery('SELECT o.id as character, g.id as area FROM App:Settlement s JOIN s.geo_data g JOIN s.owner o WHERE s.owner IS NOT NULL AND o.id >= :start AND o.id < :end AND o.slumbering=false AND o.alive=true AND o.prisoner_of IS NULL');
 		$query->setParameters(array('start'=>$start, 'end'=>$end));
 		foreach ($query->getResult() as $row) {
@@ -56,7 +56,7 @@ class WorkerFamiliarityCommand extends  Command {
 		}
 	}
 
-	private function addFamiliarity($character_id, $geo_id, $amount, $limit=10000) {
+	private function addFamiliarity($character_id, $geo_id, $amount, $limit=10000): void {
 		$exists = $this->em->getRepository(RegionFamiliarity::class)->findOneBy(array('character'=>$character_id, 'geo_data'=>$geo_id));
 		if ($exists) {
 			if ($exists->getAmount() < $limit) {

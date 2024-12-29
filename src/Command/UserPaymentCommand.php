@@ -22,7 +22,7 @@ class UserPaymentCommand extends  Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:payment:user')
 			->setDescription('Manually process a payment')
@@ -33,7 +33,7 @@ class UserPaymentCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): void {
 		$em = $this->em;
 		$pm = $this->pay;
 

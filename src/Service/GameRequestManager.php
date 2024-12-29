@@ -83,7 +83,7 @@ class GameRequestManager {
 
 	public function findHouseApplicationRequests(Character $char) {
 		if ($char->getHouse() && $char->getHouse()->getHead() === $char) {
-			$queryString = 'SELECT r FROM App:GameRequest r WHERE r.to_house = :house';
+			$queryString = 'SELECT r FROM App\Entity\GameRequest r WHERE r.to_house = :house';
 			$query = $this->em->createQuery($queryString);
 			$query->setParameters(['house'=>$char->getHouse()->getId()]);
 			try {
@@ -102,7 +102,7 @@ class GameRequestManager {
 		# TODO: When we have multiple ranks/roles within a single org that can manage different requests, we'll have to build that analysis into the SQL query we make here.
 
 		# Prepare string and param set.
-		$queryString = 'SELECT r FROM App:GameRequest r WHERE ';
+		$queryString = 'SELECT r FROM App\Entity\GameRequest r WHERE ';
 		$innerString = 'r.to_character = :char';
 		$params = ['char'=>$char];
 
@@ -529,7 +529,7 @@ class GameRequestManager {
 
 	public function getAvailableFoodSuppliers(Character $char): ArrayCollection {
 		# Build the list of settlements we can get food from...
-                $query = $this->em->createQuery('SELECT r FROM App:GameRequest r WHERE r.type = :type AND r.from_character = :char AND r.accepted = TRUE')->setParameters(array('char'=>$char, 'type'=>'soldier.food'));
+                $query = $this->em->createQuery('SELECT r FROM App\Entity\GameRequest r WHERE r.type = :type AND r.from_character = :char AND r.accepted = TRUE')->setParameters(array('char'=>$char, 'type'=>'soldier.food'));
                 # Doctrine will lose it's mind if it tries to pass a null variable to a query, so we trick it by declaring this as '0'.
                 # Doctrine will process this as a integer, and then check to see if any request has an ID that is in 0.
                 # Which will never happen.
@@ -538,7 +538,7 @@ class GameRequestManager {
 			$settlements->add($result->getToSettlement());
                 }
 		$query2 = $this->em->createQuery(
-			'SELECT s FROM App:Settlement s
+			'SELECT s FROM App\Entity\Settlement s
 			WHERE ((s.owner = :char OR s.steward = :char) AND s.occupant IS NULL)
 			OR s.occupant = :char')
 		->setParameters(['char'=>$char]);

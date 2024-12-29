@@ -12,7 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UserSettingsType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'settings_41234',
 			'attr'		=> array('class'=>'wide'),
@@ -22,7 +22,7 @@ class UserSettingsType extends AbstractType {
 	}
 
 	// FIXME: change this to use the user object (it's very old code, I didn't know about it)
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('newsletter', CheckboxType::class, array(
 			'label' => 'account.settings.newsletter',
 			'required' => false,

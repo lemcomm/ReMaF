@@ -26,7 +26,7 @@ class RealmHistoricCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:realm:historic')
 			->setDescription('Get the realm and subrealm IDs at a specific cycle')
@@ -36,7 +36,7 @@ class RealmHistoricCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): void {
 		$r = $input->getArgument('realm');
 		$start_cycle = $input->getArgument('start');
 		$end_cycle = $input->getArgument('end');
@@ -85,7 +85,7 @@ class RealmHistoricCommand extends Command {
 		echo "ffmpeg -r 30 -qscale 2 -i realm-". $realm->getId()."-%05d.png realm-movie.mp4\n";
 	}
 
-	protected function addInferiors($realm_id) {
+	protected function addInferiors($realm_id): void {
 		$this->all->add($realm_id);
 
 		$query = $this->em->createQuery("SELECT r.id FROM App:StatisticRealm s join s.realm r JOIN s.superior x WHERE x.id = :me AND s.cycle = :cycle");

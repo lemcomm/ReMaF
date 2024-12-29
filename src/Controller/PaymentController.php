@@ -43,10 +43,10 @@ class PaymentController extends AbstractController {
 
 	private function fetchPatreon($creator = null) {
 		if (!$creator) {
-			$query = $this->em->createQuery("SELECT p FROM App:Patreon p WHERE p.id > 0");
+			$query = $this->em->createQuery("SELECT p FROM App\Entity\Patreon p WHERE p.id > 0");
 			$result = $query->getResult();
 		} else {
-			$query = $this->em->createQuery("SELECT p FROM App:Patreon p WHERE p.creator = :name");
+			$query = $this->em->createQuery("SELECT p FROM App\Entity\Patreon p WHERE p.creator = :name");
 			$query->setParameters(["name"=>$creator]);
 			$result = $query->getSingleResult();
 		}
@@ -276,8 +276,8 @@ class PaymentController extends AbstractController {
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
-		$allcultures = $this->em->createQuery('SELECT c FROM App:Culture c INDEX BY c.id')->getResult();
-		$nc = $this->em->createQuery('SELECT c.id as id, count(n.id) as amount FROM App:NameList n JOIN n.culture c GROUP BY c.id')->getResult();
+		$allcultures = $this->em->createQuery('SELECT c FROM App\Entity\Culture c INDEX BY c.id')->getResult();
+		$nc = $this->em->createQuery('SELECT c.id as id, count(n.id) as amount FROM App\Entity\NameList n JOIN n.culture c GROUP BY c.id')->getResult();
 		$namescount = array();
 		foreach ($nc as $ncx) {
 			$namescount[$ncx['id']] = $ncx['amount'];
@@ -320,7 +320,7 @@ class PaymentController extends AbstractController {
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
-		$all = $this->em->createQuery('SELECT r FROM App:RealmDesignation r ORDER BY r.max_tier DESC, r.name ASC')->getResult();
+		$all = $this->em->createQuery('SELECT r FROM App\Entity\RealmDesignation r ORDER BY r.max_tier DESC, r.name ASC')->getResult();
 		$form = $this->createForm(AreYouSureType::class, null, ['translation_domain'=>'messages', 'label'=>'account.realmpack.select', 'submit'=>'account.realmpack.purchase']);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -390,12 +390,12 @@ class PaymentController extends AbstractController {
 			$data = $form->getData();
 			$value = $this->giftchoices[$data['credits']];
 
-			$target = $this->em->getRepository(User::class)->findOneByEmail($data['email']);
+			$target = $this->em->getRepository(User::class)->findOneBy(['email'=>$data['email']]);
 			if (!$target) {
 				sleep(1); // to make brute-forcing e-mail addresses a bit slower
 				return $this->render('Payment/gift.html.twig', array('error'=>'notarget'));
 			}
-			if ($target == $user) {
+			if ($target === $user) {
 				return $this->render('Payment/gift.html.twig', array('error'=>'self'));
 			}
 

@@ -12,14 +12,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AssocJoinType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'assocjoin_8',
 			'translation_domain' => 'orgs'
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('subject', TextType::class, array(
 			'label' => 'assoc.form.join.subject',
 			'required' => true

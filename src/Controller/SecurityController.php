@@ -4,19 +4,21 @@ namespace App\Controller;
 
 use App\Entity\AppKey;
 use App\Entity\User;
-use App\Form\ForgotUsernameFormType;
 use App\Form\ForgotUsernameType;
 use App\Form\RegistrationFormType;
 use App\Form\RequestResetFormType;
 use App\Form\ResetPasswordFormType;
 use App\Form\NewTokenFormType;
 use App\Form\UserDataType;
+use App\Form\UserDeleteType;
 use App\Service\AppState;
 use App\Service\DescriptionManager;
 use App\Service\MailManager;
 
 use App\Service\NotificationManager;
 use App\Service\UserManager;
+use DateInterval;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use ReCaptcha\ReCaptcha;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,7 +43,7 @@ class SecurityController extends AbstractController {
 
 		#Fetch last username entered by the user.
 		$last = $authenticationUtils->getLastUsername();
-		$query = $em->createQuery('SELECT u from App:User u where LOWER(u.username) like :name and u.watched = true and u.enabled = false');
+		$query = $em->createQuery('SELECT u from App\Entity\User u where LOWER(u.username) like :name and u.watched = true and u.enabled = false');
 		$query->setParameters(['name'=>$last]);
 		$query->setMaxResults(1);
 		$check = $query->getOneOrNullResult();
@@ -95,8 +97,8 @@ class SecurityController extends AbstractController {
 				#Generate activation token
 
 				#Log user creation time and set user to inactive.
-				$until = new \DateTime('now');
-				$until->add(new \DateInterval('P30D'));
+				$until = new DateTime('now');
+				$until->add(new DateInterval('P30D'));
 				$method = $_ENV['ACTIVATION'];
 				if ($method == 'automatic') {
 					$user->setEnabled(true);
@@ -169,9 +171,9 @@ class SecurityController extends AbstractController {
 					$form->addError(new FormError("reCAPTCHA failed to validate. Are you a bot?"));
 				} elseif ($form->isValid()) {
 					$data = $form->getData();
-					$user = $em->getRepository(User::class)->findOneByEmail($data['text']);
+					$user = $em->getRepository(User::class)->findOneBy(['email'=>$data['text']]);
 					if (!$user) {
-						$user = $em->getRepository(User::class)->findOneByUsername($data['text']);
+						$user = $em->getRepository(User::class)->findOneBy(['username'=>$data['text']]);
 					}
 					if ($user) {
 						$user->setResetToken($app->generateAndCheckToken(64, 'User', 'reset_token'));
@@ -205,7 +207,7 @@ class SecurityController extends AbstractController {
                                 $form->handleRequest($request);
                                 if ($form->isSubmitted() && $form->isValid()) {
 					$user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
-					$user->setLastPassword(new \DateTime('now'));
+					$user->setLastPassword(new DateTime('now'));
                                         $user->unsetResetToken();
                                         $user->unsetResetTime();
                                         $em->flush();
@@ -334,7 +336,7 @@ class SecurityController extends AbstractController {
         }
 
 	#[Route ('/security/data', name:'maf_account_data')]
-	public function account(Request $request, AppState $app, DescriptionManager $descman, EntityManagerInterface $em, MailManager $mail, Security $sec, TranslatorInterface $trans, UserPasswordHasherInterface $passwordHasher) {
+	public function account(Request $request, AppState $app, DescriptionManager $descman, EntityManagerInterface $em, MailManager $mail, Security $sec, TranslatorInterface $trans, UserPasswordHasherInterface $passwordHasher): RedirectResponse|Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -370,7 +372,7 @@ class SecurityController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$username = $form->get('username')->getData();
 			if ($username !== NULL && $username !== $user->getUsername()) {
-				$query = $em->createQuery('SELECT COUNT(u.id) FROM App:User u WHERE u.username LIKE :new')->setParameters(['new'=>$username]);
+				$query = $em->createQuery('SELECT COUNT(u.id) FROM App\Entity\User u WHERE u.username LIKE :new')->setParameters(['new'=>$username]);
 				if ($query->getSingleScalarResult() > 0) {
 					$this->addFlash('error', $trans->trans('security.account.change.username.notunique', [], 'core'));
 					return new RedirectResponse($this->generateUrl('maf_account_data'));
@@ -389,7 +391,7 @@ class SecurityController extends AbstractController {
 			}
 			$email = $form->get('email')->getData();
 			if ($email !== NULL && $email !== $user->getEmail()) {
-				$query = $em->createQuery('SELECT COUNT(u.id) FROM App:User u WHERE u.email LIKE :new')->setParameters(['new'=>$email]);
+				$query = $em->createQuery('SELECT COUNT(u.id) FROM App\Entity\User u WHERE u.email LIKE :new')->setParameters(['new'=>$email]);
 				if ($query->getSingleScalarResult() > 0) {
 					$this->addFlash('error', $trans->trans('security.account.change.email.notunique', [], 'core'));
 					return new RedirectResponse($this->generateUrl('maf_account_data'));
@@ -428,7 +430,7 @@ class SecurityController extends AbstractController {
 	}
 
 	#[Route ('/security/delete', name:'maf_account_delete')]
-	public function delete(EntityManagerInterface $em, TranslatorInterface $trans, NotificationManager $note, Request $request) {
+	public function delete(EntityManagerInterface $em, TranslatorInterface $trans, NotificationManager $note, Request $request): RedirectResponse|Response {
 		/** @var User $user */
 		$user = $this->getUser();
 		if ($user->isBanned()) {
@@ -507,10 +509,10 @@ class SecurityController extends AbstractController {
 				$em->flush();
 				$em->remove($user);
 				$note->spoolError('Account deleted successfully.');
-				$this->addFlash($trans->trans('user.delete.success', [], 'core'));
+				$this->addFlash('notice', $trans->trans('user.delete.success', [], 'core'));
 				return new RedirectResponse($this->generateUrl('maf_account'));
 			} else {
-				$form->addError($trans->trans('user.delete.emailmistmatch', [], 'core'));
+				$form->addError(new FormError($trans->trans('user.delete.emailmistmatch', [], 'core')));
 			}
 		}
 		return $this->render('Account/delete.html.twig', [

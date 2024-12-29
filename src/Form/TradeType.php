@@ -15,7 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TradeType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'trade_5710',
 			'data_class'	=> Trade::class,
@@ -23,7 +23,7 @@ class TradeType extends AbstractType {
 		$resolver->setRequired(['character', 'settlement', 'sources', 'dests', 'allowed']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$character = $options['character'];
 		$sources = $options['sources'];
 		$dests = $options['dests'];

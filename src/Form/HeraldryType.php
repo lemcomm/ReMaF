@@ -100,7 +100,7 @@ class HeraldryType extends AbstractType {
 		)
 	);
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'heraldry_561561',
 			'data_class'		=> 'App\Entity\Heraldry',
@@ -108,7 +108,7 @@ class HeraldryType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('name', TextType::class, array(
 			'label' => "label.name"
 		));

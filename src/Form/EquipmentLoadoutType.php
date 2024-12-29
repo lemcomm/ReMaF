@@ -12,14 +12,14 @@ use App\Entity\EquipmentType;
 
 class EquipmentLoadoutType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'equipmentselect4321'
 		));
 		$resolver->setRequired(['opts', 'labels', 'domain']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$domain = $options['domain'];
 		$opts = $options['opts'];
 		$label = $options['label'];

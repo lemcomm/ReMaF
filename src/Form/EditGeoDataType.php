@@ -15,7 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class EditGeoDataType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'data_class' => GeoData::class,
 			'food'=>null,
@@ -25,7 +25,7 @@ class EditGeoDataType extends AbstractType {
 	}
 
 	# TODO: Incorporate the GeoResources into this.
-        public function buildForm(FormBuilderInterface $builder, array $options) {
+        public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$food = $options['food'];
 		$wood = $options['wood'];
 		$metal = $options['metal'];

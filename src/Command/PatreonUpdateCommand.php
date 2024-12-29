@@ -17,7 +17,7 @@ class PatreonUpdateCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:patreon:update')
 			->setDescription('Updates all patron information via the Patreon API')

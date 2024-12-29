@@ -25,7 +25,7 @@ class WorkerRoadconstructionCommand extends  Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:worker:construction:roads')
 			->setDescription('Roadconstruction - worker component - do not call directly')

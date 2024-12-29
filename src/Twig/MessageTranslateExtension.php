@@ -23,8 +23,6 @@ use App\Entity\Settlement;
 use App\Entity\SoldierLog;
 use App\Entity\Unit;
 use App\Entity\War;
-use App\Twig\LinksExtension;
-use App\Twig\GeographyExtension;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -34,23 +32,13 @@ use Twig\TwigFilter;
 
 class MessageTranslateExtension extends AbstractExtension {
 
-	private $em;
-	private $trans;
-	private $links;
-	private $geo;
-
 	private $absolute=false;
 
 	// FIXME: type hinting for $translator removed because the addition of LoggingTranslator is breaking it
-	public function __construct(EntityManagerInterface $em, TranslatorInterface $trans, LinksExtension $links, GeographyExtension $geo) {
-		$this->em = $em;
-		$this->trans = $trans;
-		$this->links = $links;
-		$this->geo = $geo;
+	public function __construct(private EntityManagerInterface $em, private TranslatorInterface $trans, private LinksExtension $links, private GeographyExtension $geo) {
 	}
 
-
-	public function getFilters() {
+	public function getFilters(): array {
 		return array(
 			new TwigFilter('messagetranslate', array($this, 'messageTranslate'), array('is_safe' => array('html'))),
 			new TwigFilter('eventtranslate', array($this, 'eventTranslate'), array('is_safe' => array('html'))),
@@ -59,7 +47,7 @@ class MessageTranslateExtension extends AbstractExtension {
 	}
 
 	// TODO: different strings if owner views his own log (you have... instead of has, etc.)
-	public function eventTranslate(Event $event, $absolute=false) {
+	public function eventTranslate(Event $event, $absolute=false): string {
 		$this->absolute = $absolute;
 		$data = $this->parseData($event->getData());
 		if ($event->getContent()=='multi') {
@@ -91,7 +79,7 @@ class MessageTranslateExtension extends AbstractExtension {
 		}
 	}
 
-	public function logTranslate(SoldierLog $event) {
+	public function logTranslate(SoldierLog $event): string {
 		$data = $this->parseData($event->getData());
 		if ($event->getContent()=='multi') {
 			$strings = array();
@@ -106,7 +94,7 @@ class MessageTranslateExtension extends AbstractExtension {
 		}
 	}
 
-	public function messageTranslate($input) {
+	public function messageTranslate($input): string {
 		if (is_array($input) || is_object($input)) {
 			$strings = array();
 			foreach ($input as $in) {
@@ -118,7 +106,7 @@ class MessageTranslateExtension extends AbstractExtension {
 		}
 	}
 
-	public function messageTranslateOne($input) {
+	public function messageTranslateOne($input): string {
 		$json = json_decode($input);
 		if (!$json) return $input;
 
@@ -131,19 +119,15 @@ class MessageTranslateExtension extends AbstractExtension {
 		return $this->trans->trans($json->text, $data, "communication");
 	}
 
-	public function getName() {
+	public function getName(): string {
 		return 'message_translate_extension';
 	}
 
 
-	private function parseData($input) {
+	private function parseData($input): array {
 		if (!$input) return array();
 		$data=array();
-		if (isset($input['domain'])) {
-			$domain = $input['domain'];
-		} else {
-			$domain = 'communication';
-		}
+		$domain = $input['domain'] ?? 'communication';
 		foreach ($input as $key=>$value) {
 			if (preg_match('/%link-([^-]+)(-.*)?%/', $key, $matches)) {
 				// link elements, syntax %link-(type)%
@@ -165,6 +149,7 @@ class MessageTranslateExtension extends AbstractExtension {
 					case 'place':
 						$place = $this->em->getRepository(Place::class)->find($value);
 						$data['{place'.$index.'}'] = $this->links->ObjectLink($place, false, $this->absolute);
+						break;
 					case 'battle':
 						$battle = $this->em->getRepository(BattleReport::class)->find($value);
 						$data['{battle'.$index.'}'] = $this->links->ObjectLink($battle, false, $this->absolute);
@@ -240,7 +225,7 @@ class MessageTranslateExtension extends AbstractExtension {
 			} elseif (preg_match('/%name-([^-]+)(-.*)?%/', $key, $matches)) {
 				// translation elements, syntax %name-(type)%
 				$subkey = $matches[1];
-				if (isset($matches[2])) $index = $matches[2]; else $index='';
+				$index = $matches[2] ?? '';
 				switch ($subkey) {
 					case 'card':
 						$card = $this->em->getRepository(DungeonCardType::class)->find($value);

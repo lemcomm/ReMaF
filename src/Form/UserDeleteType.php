@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints\Email;
  */
 class UserDeleteType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'userdelete_14728',
 			'translation_domain' => 'core',
@@ -29,7 +29,7 @@ class UserDeleteType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('email', EmailType::class, [
 			'label' => 'form.delete.email',
 			'required' => false,

@@ -14,25 +14,25 @@ class SettlementTransformer implements DataTransformerInterface {
 		$this->em = $em;
 	}
 
-	public function transform($settlement) {
-		if (null === $settlement) {
+	public function transform($value): mixed {
+		if (null === $value) {
 			return "";
 		}
 
-		return $settlement->getName();
+		return $value->getName();
 	}
 
-	public function reverseTransform($name) {
-		if (!$name) {
+	public function reverseTransform($value): mixed {
+		if (!$value) {
 			return null;
 		}
 
-		$settlement = $this->em->getRepository(Settlement::class)->findOneByName($name);
+		$settlement = $this->em->getRepository(Settlement::class)->findOneByName($value);
 
 		if (null === $settlement) {
 			throw new TransformationFailedException(sprintf(
 				'Settlement named "%s" does not exist!',
-				$name
+				$value
 			));
 		}
 		return $settlement;

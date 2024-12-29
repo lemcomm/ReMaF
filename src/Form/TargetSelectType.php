@@ -10,7 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TargetSelectType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'targetselect_513',
 			'translation_domain' => 'dungeons',
@@ -19,7 +19,7 @@ class TargetSelectType extends AbstractType {
 		$resolver->setRequired(['type', 'choices', 'current']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$type = $options['type'];
 		$choices = $options['choices'];
 		$current = $options['current'];

@@ -164,7 +164,7 @@ class MapController extends AbstractController {
 	private function dataPolygons($mode, $lowleft, $upright): array {
 		$features = array();
 		$em = $this->em;
-		$query = $em->createQuery('SELECT g.id, b.name, g.humidity, ST_AsGeoJSON(g.poly) AS geopoly FROM App:GeoData g JOIN g.biome b WHERE g.passable=true AND ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), g.poly) = true');
+		$query = $em->createQuery('SELECT g.id, b.name, g.humidity, ST_AsGeoJSON(g.poly) AS geopoly FROM App\Entity\GeoData g JOIN g.biome b WHERE g.passable=true AND ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), g.poly) = true');
 		$query->setParameters(array('ax'=>$lowleft[0], 'ay'=>$lowleft[1], 'bx'=>$upright[0], 'by'=>$upright[1]));
 		$iterableResult = $query->toIterable();
 		while ($row = $iterableResult->next()) {
@@ -186,7 +186,7 @@ class MapController extends AbstractController {
 	private function dataPOI($mode, $lowleft, $upright): array {
 		$features = array();
 		$em = $this->em;
-		$query = $em->createQuery('SELECT p.id, p.name, ST_AsGeoJSON(p.geom) as geometry FROM App:MapPOI p WHERE ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), p.geom) = true');
+		$query = $em->createQuery('SELECT p.id, p.name, ST_AsGeoJSON(p.geom) as geometry FROM App\Entity\MapPOI p WHERE ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), p.geom) = true');
 		$query->setParameters(array('ax'=>$lowleft[0], 'ay'=>$lowleft[1], 'bx'=>$upright[0], 'by'=>$upright[1]));
 		$iterableResult = $query->toIterable();
 		while ($row = $iterableResult->next()) {
@@ -215,7 +215,7 @@ class MapController extends AbstractController {
 				foreach ($my_realms as $realm) {
 					$realms[] = $realm->getId();
 				}
-				$query = $em->createQuery('SELECT m.id, m.name, m.type, ST_AsGeoJSON(m.location) as location FROM App:MapMarker m WHERE (m.realm IN (:realms) OR m.owner = :me)');
+				$query = $em->createQuery('SELECT m.id, m.name, m.type, ST_AsGeoJSON(m.location) as location FROM App\Entity\MapMarker m WHERE (m.realm IN (:realms) OR m.owner = :me)');
 				$query->setParameters(array('realms'=>$realms, 'me'=>$character));
 				foreach ($query->getResult() as $row) {
 					$features[] = array(
@@ -241,7 +241,7 @@ class MapController extends AbstractController {
 			$em = $this->em;
 
 			$targets = array();
-			$query = $em->createQuery('SELECT s.location, s.current, t.id, t.name, u.id as family FROM App:SpotEvent s JOIN s.target t JOIN t.user u LEFT JOIN s.tower w LEFT JOIN w.geo_data g LEFT JOIN g.settlement x WHERE (s.spotter = :me OR (s.spotter IS NULL AND x.owner = :me)) ORDER BY s.target, s.ts DESC');
+			$query = $em->createQuery('SELECT s.location, s.current, t.id, t.name, u.id as family FROM App\Entity\SpotEvent s JOIN s.target t JOIN t.user u LEFT JOIN s.tower w LEFT JOIN w.geo_data g LEFT JOIN g.settlement x WHERE (s.spotter = :me OR (s.spotter IS NULL AND x.owner = :me)) ORDER BY s.target, s.ts DESC');
 			$query->setParameter('me', $character);
 			foreach ($query->getArrayResult() as $row) {
 				$id = $row['id'];
@@ -292,12 +292,12 @@ class MapController extends AbstractController {
 
 			$qb = $em->createQueryBuilder();
 			$qb->select('c.id, c.name, u.id as userid, ST_AsGeoJSON(c.location) as geometry')
-				->from('App:Character', 'c')
+				->from('App\Entity\Character', 'c')
 				->join('c.user', 'u')
-				->from('App:Character', 'me');
+				->from('App\Entity\Character', 'me');
 			$towers = $this->geo->findWatchTowers($character);
 			if (!empty($towers)) {
-				$qb->from('App:GeoFeature', 'f');
+				$qb->from('App\Entity\GeoFeature', 'f');
 				$qb->where('ST_Distance(c.location, me.location) < :spotting OR ST_Distance(c.location, f.location) < :towerspot');
 				$qb->andWhere('f in (:towers)');
 				$qb->setParameter('towers', $towers)
@@ -351,7 +351,7 @@ class MapController extends AbstractController {
 	private function dataCultures($mode, $lowleft, $upright): array {
 		$features = array();
 		$em = $this->em;
-		$query = $em->createQuery('SELECT g.id, c.name as culture, c.colour_hex as colour, ST_AsGeoJSON(g.poly) AS geopoly FROM App:GeoData g JOIN g.settlement s JOIN s.culture c WHERE g.passable=true AND ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), g.poly) = true');
+		$query = $em->createQuery('SELECT g.id, c.name as culture, c.colour_hex as colour, ST_AsGeoJSON(g.poly) AS geopoly FROM App\Entity\GeoData g JOIN g.settlement s JOIN s.culture c WHERE g.passable=true AND ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), g.poly) = true');
 		$query->setParameters(array('ax'=>$lowleft[0], 'ay'=>$lowleft[1], 'bx'=>$upright[0], 'by'=>$upright[1]));
 		$iterableResult = $query->toIterable();
 		while ($row = $iterableResult->next()) {
@@ -373,7 +373,7 @@ class MapController extends AbstractController {
 	private function dataSettlements($mode, $lowleft, $upright): array {
 		$features = array();
 		$em = $this->em;
-		$query = $em->createQuery('SELECT s.id, s.name, c.id as owner_id, r.id as occupier_id, o.id as occupant_id, s.population+s.thralls as population, ST_AsGeoJson(m.location) as center, SUM(CASE WHEN b.active = true THEN t.defenses ELSE 0 END) as defenses FROM App:Settlement s JOIN s.geo_data g LEFT JOIN s.geo_marker m LEFT JOIN s.owner c LEFT JOIN s.buildings b LEFT JOIN b.type t LEFT JOIN s.occupant r LEFT JOIN s.occupier o WHERE ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), g.center) = true GROUP BY s.id, c.id, r.id, o.id, m.location');
+		$query = $em->createQuery('SELECT s.id, s.name, c.id as owner_id, r.id as occupier_id, o.id as occupant_id, s.population+s.thralls as population, ST_AsGeoJson(m.location) as center, SUM(CASE WHEN b.active = true THEN t.defenses ELSE 0 END) as defenses FROM App\Entity\Settlement s JOIN s.geo_data g LEFT JOIN s.geo_marker m LEFT JOIN s.owner c LEFT JOIN s.buildings b LEFT JOIN b.type t LEFT JOIN s.occupant r LEFT JOIN s.occupier o WHERE ST_Contains(ST_MakeBox2D(ST_Point(:ax,:ay), ST_Point(:bx,:by)), g.center) = true GROUP BY s.id, c.id, r.id, o.id, m.location');
 		$query->setParameters(array('ax'=>$lowleft[0], 'ay'=>$lowleft[1], 'bx'=>$upright[0], 'by'=>$upright[1]));
 		foreach ($query->getResult() as $r) {
 			$def = 0;
@@ -416,7 +416,7 @@ class MapController extends AbstractController {
 
 		if ($character && $character->getLocation()) {
 			$seen = array(0); // use 0 value to prevent empty arrays, which would break the query one below
-			$query = $em->createQuery('SELECT r.id, r.quality, ST_AsGeoJSON(r.path) as roadpath FROM App:Road r, App:Character me WHERE me = :me AND ST_Distance(r.path, me.location) < :maxdistance');
+			$query = $em->createQuery('SELECT r.id, r.quality, ST_AsGeoJSON(r.path) as roadpath FROM App\Entity\Road r, App\Entity\Character me WHERE me = :me AND ST_Distance(r.path, me.location) < :maxdistance');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>Geography::DISTANCE_FEATURE));
 			foreach ($query->getResult() as $r) {
 				$seen[]=$r['id'];
@@ -429,7 +429,7 @@ class MapController extends AbstractController {
 				);
 			}
 
-			$query = $em->createQuery('SELECT k.amount, r.id, r.quality, ST_AsGeoJSON(r.path) as roadpath FROM App:RegionFamiliarity k JOIN k.geo_data g JOIN g.roads r JOIN k.character me WHERE me = :me AND r.id NOT IN (:seen)');
+			$query = $em->createQuery('SELECT k.amount, r.id, r.quality, ST_AsGeoJSON(r.path) as roadpath FROM App\Entity\RegionFamiliarity k JOIN k.geo_data g JOIN g.roads r JOIN k.character me WHERE me = :me AND r.id NOT IN (:seen)');
 			$query->setParameters(array('me'=>$character, 'seen'=>$seen));
 			foreach ($query->getResult() as $r) {
 				$features[] = array(
@@ -452,7 +452,7 @@ class MapController extends AbstractController {
 
 		if ($character && $character->getLocation()) {
 			$seen = array(0); // use 0 value to prevent empty arrays, which would break the query one below
-			$query = $em->createQuery('SELECT f.id, f.name, t.name as type, f.active, ST_AsGeoJSON(f.location) as location FROM App:GeoFeature f JOIN f.type t, App:Character me WHERE me = :me AND t.hidden=false AND ST_Distance(f.location, me.location) < :maxdistance');
+			$query = $em->createQuery('SELECT f.id, f.name, t.name as type, f.active, ST_AsGeoJSON(f.location) as location FROM App\Entity\GeoFeature f JOIN f.type t, App\Entity\Character me WHERE me = :me AND t.hidden=false AND ST_Distance(f.location, me.location) < :maxdistance');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>Geography::DISTANCE_FEATURE));
 			foreach ($query->getResult() as $r) {
 				$seen[]=$r['id'];
@@ -468,7 +468,7 @@ class MapController extends AbstractController {
 				);
 			}
 
-			$query = $em->createQuery('SELECT k.amount, f.id, f.name, t.name as type, f.active, ST_AsGeoJSON(f.location) as location FROM App:RegionFamiliarity k JOIN k.geo_data g JOIN g.features f JOIN f.type t JOIN k.character me WHERE me = :me AND t.hidden=false AND f.id NOT IN (:seen)');
+			$query = $em->createQuery('SELECT k.amount, f.id, f.name, t.name as type, f.active, ST_AsGeoJSON(f.location) as location FROM App\Entity\RegionFamiliarity k JOIN k.geo_data g JOIN g.features f JOIN f.type t JOIN k.character me WHERE me = :me AND t.hidden=false AND f.id NOT IN (:seen)');
 			$query->setParameters(array('me'=>$character, 'seen'=>$seen));
 			foreach ($query->getResult() as $r) {
 				$features[] = array(
@@ -484,7 +484,7 @@ class MapController extends AbstractController {
 			}
 
 			// mix in battles
-			$query = $em->createQuery('SELECT b.id, ST_AsGeoJSON(b.location) as location FROM App:Battle b, App:Character me WHERE me = :me AND ST_Distance(b.location, me.location) < :maxdistance');
+			$query = $em->createQuery('SELECT b.id, ST_AsGeoJSON(b.location) as location FROM App\Entity\Battle b, App\Entity\Character me WHERE me = :me AND ST_Distance(b.location, me.location) < :maxdistance');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>Geography::DISTANCE_BATTLE));
 			foreach ($query->getResult() as $b) {
 				$features[] = array(
@@ -501,7 +501,7 @@ class MapController extends AbstractController {
 			}
 
 			// mix in ships
-			$query = $em->createQuery('SELECT s.id, ST_AsGeoJSON(s.location) as location FROM App:Ship s, App:Character me WHERE me = :me AND (ST_Distance(s.location, me.location) < :maxdistance OR s.owner = :me)');
+			$query = $em->createQuery('SELECT s.id, ST_AsGeoJSON(s.location) as location FROM App\Entity\Ship s, App\Entity\Character me WHERE me = :me AND (ST_Distance(s.location, me.location) < :maxdistance OR s.owner = :me)');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>Geography::DISTANCE_FEATURE));
 			$iterableResult = $query->toIterable();
 			while (($row = $iterableResult->next()) != false) {
@@ -521,7 +521,7 @@ class MapController extends AbstractController {
 			}
 
 			// mix in dungeons
-			$query = $em->createQuery('SELECT d.id, d.area as area, ST_AsGeoJSON(d.location) as location FROM App:Dungeon d, App:Character me WHERE me = :me AND ST_Distance(d.location, me.location) < :maxdistance');
+			$query = $em->createQuery('SELECT d.id, d.area as area, ST_AsGeoJSON(d.location) as location FROM App\Entity\Dungeon d, App\Entity\Character me WHERE me = :me AND ST_Distance(d.location, me.location) < :maxdistance');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>$this->geo->calculateSpottingDistance($character)));
 			$iterableResult = $query->toIterable();
 			while (($row = $iterableResult->next()) != false) {
@@ -569,7 +569,7 @@ class MapController extends AbstractController {
 				$realms = $em->getRepository(Realm::class)->findAll();
 				break;
 			case '2nd':
-				$query = $em->createQuery('SELECT r FROM App:Realm r JOIN r.superior s WHERE s.superior IS NULL');
+				$query = $em->createQuery('SELECT r FROM App\Entity\Realm r JOIN r.superior s WHERE s.superior IS NULL');
 				$realms = $query->getResult();
 				break;
 			case '1': case '2': case '3': case '4': case '5': case '6': case '7':
@@ -648,10 +648,10 @@ class MapController extends AbstractController {
 		$em = $this->em;
 		if ($resource) {
 			$resource = $em->getRepository(ResourceType::class)->findOneBy(['name'=>$resource]);
-			$query = $em->createQuery('SELECT t.id, t.amount, r.name, ST_AsGeoJSON(ST_MakeLine(aa.center, bb.center)) as geometry FROM App:Trade t JOIN t.resource_type r JOIN t.source a JOIN a.geo_data aa JOIN t.destination b JOIN b.geo_data bb WHERE r = :resource');
+			$query = $em->createQuery('SELECT t.id, t.amount, r.name, ST_AsGeoJSON(ST_MakeLine(aa.center, bb.center)) as geometry FROM App\Entity\Trade t JOIN t.resource_type r JOIN t.source a JOIN a.geo_data aa JOIN t.destination b JOIN b.geo_data bb WHERE r = :resource');
 			$query->setParameters(['resource' => $resource]);
 		} else {
-			$query = $em->createQuery('SELECT t.id, t.amount, r.name, ST_AsGeoJSON(ST_MakeLine(aa.center, bb.center)) as geometry FROM App:Trade t JOIN t.resource_type r JOIN t.source a JOIN a.geo_data aa JOIN t.destination b JOIN b.geo_data bb');
+			$query = $em->createQuery('SELECT t.id, t.amount, r.name, ST_AsGeoJSON(ST_MakeLine(aa.center, bb.center)) as geometry FROM App\Entity\Trade t JOIN t.resource_type r JOIN t.source a JOIN a.geo_data aa JOIN t.destination b JOIN b.geo_data bb');
 		}
 		$iterableResult = $query->toIterable();
 		foreach ($iterableResult as $row) {

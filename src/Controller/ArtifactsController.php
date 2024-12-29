@@ -11,13 +11,16 @@ use App\Form\CharacterSelectType;
 use App\Form\InteractionType;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ArtifactsController extends AbstractController {
@@ -29,7 +32,7 @@ class ArtifactsController extends AbstractController {
 	}
 
 	#[Route ('/artifact/owned', name:'maf_artifact_owned')]
-	public function ownedAction() {
+	public function ownedAction(): Response {
 		$user = $this->getUser();
 
 		return $this->render('Artifacts/owned.html.twig', [
@@ -39,7 +42,7 @@ class ArtifactsController extends AbstractController {
 	}
 
 	#[Route ('/artifact/create', name:'maf_artifact_create')]
-	public function createAction(Request $request) {
+	public function createAction(Request $request): RedirectResponse|Response {
 		$user = $this->getUser();
 
 		if ($user->getArtifacts()->count() < $user->getFreeArtifacts()) {
@@ -59,38 +62,43 @@ class ArtifactsController extends AbstractController {
 				$data = $form->getData();
 				$name = trim($data['name']);
 				$desc = trim($data['description']);
+				$valid = true;
 
 				if (strlen($name) < 6) {
 					$form->addError(new FormError("Your name should be at least 6 characters long."));
-					return array('form'=>$form->createView());
+					$valid = false;
 				}
 
 				// TODO: this might become expensive when we have a lot, as similar_text has a complexity of O(N^3)
-				foreach ($this->em->getRepository(Artifact::class)->findAll() as $check) {
-					similar_text(strtolower($name), strtolower($check->getName()), $percent);
-					if ($percent > 90.0) {
-						$form->addError(new FormError("Your name is too similar to an existing name (".$check->getName()."). Please choose a more unique name."));
-						return array('form'=>$form->createView());
+				if ($valid) {
+					foreach ($this->em->getRepository(Artifact::class)->findAll() as $check) {
+						similar_text(strtolower($name), strtolower($check->getName()), $percent);
+						if ($percent > 90.0) {
+							$form->addError(new FormError("Your name is too similar to an existing name (".$check->getName()."). Please choose a more unique name."));
+							$valid = false;
+							break;
+						}
 					}
 				}
 
-				$artifact = new Artifact;
-				$artifact->setName($name);
-				$artifact->setOldDescription($desc);
-				$artifact->setCreator($user);
-				$this->em->persist($artifact);
+				if ($valid) {
+					$artifact = new Artifact;
+					$artifact->setName($name);
+					$artifact->setOldDescription($desc);
+					$artifact->setCreator($user);
+					$this->em->persist($artifact);
 
-				$this->history->logEvent(
-					$artifact,
-					'event.artifact.created',
-					array(),
-					History::MEDIUM, true
-				);
+					$this->history->logEvent(
+						$artifact,
+						'event.artifact.created',
+						array(),
+						History::MEDIUM, true
+					);
 
-				$this->em->flush();
-				return $this->redirectToRoute('maf_artifact_details', array('id'=>$artifact->getId()));
+					$this->em->flush();
+					return $this->redirectToRoute('maf_artifact_details', array('id'=>$artifact->getId()));
+				}
 			}
-
 			return $this->render('Artifacts/create.html.twig', [
 				'form'=>$form->createView(),
 			]);
@@ -102,22 +110,25 @@ class ArtifactsController extends AbstractController {
 	}
 
 	#[Route ('/artifact/details/{id}', name:'maf_artifact_details', requirements:['id'=>'\d+'])]
-	public function detailsAction(Artifact $id) {
+	public function detailsAction(Artifact $id): Response {
 		return $this->render('Artifacts/details.html.twig', [
 			'artifact'=>$id,
 		]);
 	}
 
 	#[Route ('/artifact/assign/{id}', name:'maf_artifact_assign', requirements:['id'=>'\d+'])]
-	public function assignAction(Artifact $id, Request $request) {
+	public function assignAction(Artifact $id, Request $request): Response|RedirectResponse {
 		$user = $this->getUser();
 		$artifact = $id;
 
-		if ($artifact->getCreator() != $user) {
-			throw new \Exception("Not your artifact.");
+		#TODO: Convert these to translation strings. Maybe route this through dispatcher?
+		if ($artifact->getCreator() !== $user) {
+			$this->addFlash('warning', 'This artifact does not belong to you.');
+			return $this->redirectToRoute('maf_artifact_details', array('id'=>$artifact));
 		}
 		if ($artifact->getOwner()) {
-			throw new \Exception("Artifact already has an owner.");
+			$this->addFlash('warning', 'This artifact is already held by a character.');
+			return $this->redirectToRoute('maf_artifact_details', array('id'=>$artifact));
 		}
 
 		$characters = array();
@@ -151,17 +162,18 @@ class ArtifactsController extends AbstractController {
 	}
 
 	#[Route ('/artifact/spawn/{id}', name:'maf_artifact_spawn', requirements:['id'=>'\d+'])]
-	public function spawnAction(Artifact $id, Request $request) {
+	public function spawnAction(Artifact $id, Request $request): RedirectResponse|Response {
 		$user = $this->getUser();
 		$artifact = $id;
 
-		throw new \Exception("Area spawning is not yet supported.");
+		$this->addFlash('warning', 'We appreciate your enthusiam but area spawning is not yet supported.');
+		return $this->redirectToRoute('maf_chars');
 
 		if ($artifact->getCreator() != $user) {
-			throw new \Exception("Not your artifact.");
+			throw new Exception("Not your artifact.");
 		}
 		if ($artifact->getOwner()) {
-			throw new \Exception("Artifact already has an owner.");
+			throw new Exception("Artifact already has an owner.");
 		}
 
 		$form = $this->createFormBuilder()
@@ -201,7 +213,7 @@ class ArtifactsController extends AbstractController {
 	}
 
 	#[Route ('/artifact/give', name:'maf_artifact_give')]
-	public function giveAction(Request $request) {
+	public function giveAction(Request $request): Response {
 		$character = $this->disp->gateway('locationGiveArtifactTest');
 
 		$form = $this->createForm(InteractionType::class, null, ['action'=>'giveartifact', 'maxdistance'=>$this->geo->calculateInteractionDistance($character), 'me'=>$character]);

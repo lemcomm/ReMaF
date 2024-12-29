@@ -29,7 +29,7 @@ class WorkerScoutSpottingCommand extends  Command {
 	}
 
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:worker:spot:scouts')
 			->setDescription('Generate scout spotting alarms - worker component - do not call directly')
@@ -138,7 +138,7 @@ class WorkerScoutSpottingCommand extends  Command {
 	}
 
 
-	private function spotResults($query, $type) {
+	private function spotResults($query, $type): void {
 		$now = new \DateTime("now");
 
 		$new = 0; $updated = 0; $rows = 0;

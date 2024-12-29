@@ -21,7 +21,7 @@ class UpdateDatabaseCommand extends  Command {
 		$this->em = $em;
 		parent::__construct();
 	}
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:database:update')
 			->setAliases(['maf:db:update'])

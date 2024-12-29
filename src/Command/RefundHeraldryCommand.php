@@ -18,14 +18,14 @@ class RefundHeraldryCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:refund:heraldry')
 			->setDescription('Refund the heraldry bought at 500 credits with 250 credits per heraldry.')
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): void {
 		$query = $this->em->createQuery('SELECT u from App:User u join u.crests h');
 		$all = $query->getResult();
 		$total = 0;

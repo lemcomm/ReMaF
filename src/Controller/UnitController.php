@@ -48,13 +48,13 @@ class UnitController extends AbstractController {
                 $pm = $this->pm;
                 $settlement = $character->getInsideSettlement();
                 if ($settlement && ($pm->checkSettlementPermission($settlement, $character, 'units'))) {
-                        $query = $em->createQuery('SELECT u FROM App:Unit u WHERE (u.character = :char OR u.settlement = :settlement OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY u.name ASC');
+                        $query = $em->createQuery('SELECT u FROM App\Entity\Unit u WHERE (u.character = :char OR u.settlement = :settlement OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY u.name ASC');
                         $query->setParameters(array('char'=>$character, 'settlement'=>$character->getInsideSettlement()));
                 } elseif ($character->getInsideSettlement()) {
-                        $query = $em->createQuery('SELECT u FROM App:Unit u WHERE (u.character = :char OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY u.name ASC');
+                        $query = $em->createQuery('SELECT u FROM App\Entity\Unit u WHERE (u.character = :char OR (u.marshal = :char AND u.settlement = :settlement)) AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY u.name ASC');
                         $query->setParameters(array('char'=>$character, 'settlement'=>$character->getInsideSettlement()));
                 } else {
-                        $query = $em->createQuery('SELECT u FROM App:Unit u WHERE u.character = :char AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY u.name ASC');
+                        $query = $em->createQuery('SELECT u FROM App\Entity\Unit u WHERE u.character = :char AND (u.disbanded IS NULL or u.disbanded = false) ORDER BY u.name ASC');
                         $query->setParameter('char', $character);
                 }
                 return $query->getResult();
@@ -651,7 +651,7 @@ class UnitController extends AbstractController {
      		}
      		$em = $this->em;
 
-                $query = $em->createQuery('SELECT COUNT(s) as number, SUM(s.training_required) AS training FROM App:Soldier s JOIN s.unit u WHERE u.settlement = :here AND s.training_required > 0');
+                $query = $em->createQuery('SELECT COUNT(s) as number, SUM(s.training_required) AS training FROM App\Entity\Soldier s JOIN s.unit u WHERE u.settlement = :here AND s.training_required > 0');
      		$query->setParameter('here', $settlement);
      		$allocated = $query->getSingleResult();
                 $allUnits = $settlement->getUnits();
@@ -662,7 +662,7 @@ class UnitController extends AbstractController {
                         }
                 }
                 if (count($units) < 1) {
-                        $units[] = $this->mm->newUnit(null, $settlement, null); #Ensure we always have atleast 1!
+                        $this->mm->newUnit(null, $settlement, null); #Ensure we always have atleast 1!
      			return $this->redirectToRoute('maf_recruit'); # Reload page to avoid the "property assessore requires a graph or array of objects to operate on" error.
                 }
 

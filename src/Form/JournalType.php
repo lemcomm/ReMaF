@@ -14,14 +14,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class JournalType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'journal_22020329',
 			'translation_domain' => 'messages',
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('topic', TextType::class, array(
 			'required' => true,
 			'label' => 'journal.form.topic.label',

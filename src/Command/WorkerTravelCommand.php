@@ -34,7 +34,7 @@ class WorkerTravelCommand extends  Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:worker:travel')
 			->setDescription('Update travel - worker component - do not call directly')

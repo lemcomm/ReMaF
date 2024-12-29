@@ -25,7 +25,7 @@ class WorkerFeatureconstructionCommand extends  Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:worker:construction:features')
 			->setDescription('Featureconstruction - worker component - do not call directly')

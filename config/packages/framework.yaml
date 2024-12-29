@@ -20,6 +20,9 @@ framework:
 
     error_controller: App\Controller\ExceptionController::exceptionAction
 
+    annotations:
+        enabled: false
+
 when@test:
     framework:
         test: true

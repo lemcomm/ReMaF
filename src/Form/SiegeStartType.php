@@ -22,7 +22,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class SiegeStartType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'siegestart_9753',
 			'translation_domain' => 'actions',
@@ -31,7 +31,7 @@ class SiegeStartType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$wars = $options['wars'];
 		$realms = $options['realms'];
 		$builder->add('confirm', CheckboxType::class, array(

@@ -265,7 +265,7 @@ class ConversationController extends AbstractController {
                 }
 
 		$allNearby = $this->allNearby($char);
-		$form = $this->createForm(NewLocalMessageType::class, null, ['settlement' => $char->getInsideSettlement(), 'place' => $char->getInsidePlace(), 'reply' => false]);
+		$form = $this->createForm(NewLocalMessageType::class, null, ['settlement' => $char->getInsideSettlement(), 'place' => $char->getInsidePlace()]);
 
 		$form->handleRequest($request);
 		$subview = false;
@@ -962,7 +962,7 @@ class ConversationController extends AbstractController {
 		# findCharactersNearMe(Character $character, $maxdistance, $only_outside_settlement=false, $exclude_prisoners=true, $match_battle=false, $exclude_slumbering=false, $only_oustide_place=false)
 		$allNearby = $this->geo->findCharactersNearMe($char, $distance, false, false);
 
-		$form = $this->createForm(NewLocalMessageType::class, null, ['settlement' => $char->getInsideSettlement(), 'place' => $char->getInsidePlace(), 'reply' => true]);
+		$form = $this->createForm(NewLocalMessageType::class, null, ['settlement' => $char->getInsideSettlement(), 'place' => $char->getInsidePlace()]);
 
 		$form->handleRequest($request);
 		$subview = false;
@@ -1013,7 +1013,7 @@ class ConversationController extends AbstractController {
 		$em = $this->em;
 
 		if ($source==1) {
-			$query = $em->createQuery('SELECT m FROM App:Message m WHERE m.conversation = :conv AND m.sent <= :date ORDER BY m.sent DESC');
+			$query = $em->createQuery('SELECT m FROM App\Entity\Message m WHERE m.conversation = :conv AND m.sent <= :date ORDER BY m.sent DESC');
 	                $query->setParameters(['conv'=>$msg->getConversation(), 'date'=>$msg->getSent()]);
 			$query->setMaxResults(1);
 	                $nextOldest = $query->getResult();

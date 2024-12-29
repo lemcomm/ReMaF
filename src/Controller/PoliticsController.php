@@ -123,7 +123,7 @@ class PoliticsController extends AbstractController {
 		]);
 	}
 
-	private function addToHierarchy(Character $character) {
+	private function addToHierarchy(Character $character): void {
 		if (!isset($this->hierarchy[$character->getId()])) {
 			$this->hierarchy[$character->getId()] = $character;
 			if ($liege = $character->findLiege()) {
@@ -415,7 +415,7 @@ class PoliticsController extends AbstractController {
 		$em = $this->em;
 		$newavailable = false;
 
-		$query = $em->createQuery('SELECT DISTINCT p FROM App:Partnership p JOIN p.partners c WHERE c = :me AND p.end_date IS NULL');
+		$query = $em->createQuery('SELECT DISTINCT p FROM App\Entity\Partnership p JOIN p.partners c WHERE c = :me AND p.end_date IS NULL');
 		$query->setParameter('me', $character);
 		$currentRelations = $query->getResult();
 		$formOld = $this->createForm(PartnershipsOldType::class, null, ['me'=>$character, 'others'=>$currentRelations]);

@@ -58,7 +58,7 @@ class GameRunner {
 		}
 
 		$old = new DateTime("-90 days");
-		$query = $this->em->createQuery('DELETE FROM App:UserLog u WHERE u.ts < :old');
+		$query = $this->em->createQuery('DELETE FROM App\Entity\UserLog u WHERE u.ts < :old');
 		$query->setParameter('old', $old);
 		$query->execute();
 
@@ -104,7 +104,7 @@ class GameRunner {
 				$this->eventNewYear();
 			}
 		}
-		$query = $this->em->createQuery('UPDATE App:Setting s SET s.value=0 WHERE s.name LIKE :cycle');
+		$query = $this->em->createQuery('UPDATE App\Entity\Setting s SET s.value=0 WHERE s.name LIKE :cycle');
 		$query->setParameter('cycle', 'cycle.'.'%');
 		$query->execute();
 		$this->em->flush();
@@ -132,7 +132,7 @@ class GameRunner {
 		$this->output("Game Request Cycle...");
 
 		$now = new DateTime("now");
-		$query = $this->em->createQuery('SELECT r FROM App:GameRequest r WHERE r.expires <= :now and r.id > :last ORDER BY r.id ASC')->setParameters(['now'=> $now, 'last'=>$last]);
+		$query = $this->em->createQuery('SELECT r FROM App\Entity\GameRequest r WHERE r.expires <= :now and r.id > :last ORDER BY r.id ASC')->setParameters(['now'=> $now, 'last'=>$last]);
 		$result = $query->toIterable();
 		$i = 1;
 		foreach ($result as $row) {
@@ -197,14 +197,14 @@ class GameRunner {
 		$this->output("Characters Cycle...");
 
 		// healing
-		$query = $this->em->createQuery('UPDATE App:Character c SET c.wounded=0 WHERE c.wounded <= 10');
+		$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.wounded=0 WHERE c.wounded <= 10');
 		$query->execute();
-		$query = $this->em->createQuery('UPDATE App:Character c SET c.wounded=c.wounded-10 WHERE c.wounded > 10');
+		$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.wounded=c.wounded-10 WHERE c.wounded > 10');
 		$query->execute();
 
 		$this->output("  Checking for dead and slumbering characters that need sorting...");
 		// NOTE: We're going to want to change this from c.system is null to something else, or build additional logic down the line, when we have more thant 'procd_inactive' as the system flag.
-		$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE (c.alive = false AND c.location IS NOT NULL AND (c.system IS NULL OR c.system <> :system)) OR (c.alive = true and c.slumbering = true AND (c.system IS NULL OR c.system <> :system))');
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE (c.alive = false AND c.location IS NOT NULL AND (c.system IS NULL OR c.system <> :system)) OR (c.alive = true and c.slumbering = true AND (c.system IS NULL OR c.system <> :system))');
 		$query->setParameter('system', 'procd_inactive');
 		$result = $query->getResult();
 		if (count($result) > 0) {
@@ -386,21 +386,21 @@ class GameRunner {
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date -- Soldiers update...");
 
-		$query = $this->em->createQuery('UPDATE App:Soldier s SET s.locked=false');
+		$query = $this->em->createQuery('UPDATE App\Entity\Soldier s SET s.locked=false');
 		$query->execute();
 
-		$query = $this->em->createQuery('UPDATE App:Entourage e SET e.locked=false');
+		$query = $this->em->createQuery('UPDATE App\Entity\Entourage e SET e.locked=false');
 		$query->execute();
 
-		$query = $this->em->createQuery('UPDATE App:Settlement s SET s.recruited=0');
+		$query = $this->em->createQuery('UPDATE App\Entity\Settlement s SET s.recruited=0');
 		$query->execute();
 
 		// dead are rotting (to prevent running-around-with-a-thousand-dead abuses)
 		$this->output("rotting...");
-		$query = $this->em->createQuery('UPDATE App:Soldier s SET s.hungry = s.hungry +1 where s.alive = false');
+		$query = $this->em->createQuery('UPDATE App\Entity\Soldier s SET s.hungry = s.hungry +1 where s.alive = false');
 		$rotting = $query->execute();
 
-		$query = $this->em->createQuery('DELETE FROM App:Soldier s WHERE s.alive = false AND s.hungry > 40');
+		$query = $this->em->createQuery('DELETE FROM App\Entity\Soldier s WHERE s.alive = false AND s.hungry > 40');
 		$deleted = $query->execute();
 		$this->output("  $rotting soldiers rotting, $deleted were deleted");
 
@@ -409,18 +409,18 @@ class GameRunner {
 		// militia
 		// dead militia is auto-buried
 		// need to manually delete this because the cascade doesn't work if I delete by DQL, we also use the opportunity to clean up orphaned records
-		$query = $this->em->createQuery('DELETE FROM App:SoldierLog l WHERE l.soldier IS NULL OR l.soldier IN (SELECT s.id FROM App:Soldier s WHERE s.base IS NOT NULL AND s.alive=false)');
+		$query = $this->em->createQuery('DELETE FROM App\Entity\SoldierLog l WHERE l.soldier IS NULL OR l.soldier IN (SELECT s.id FROM App\Entity\Soldier s WHERE s.base IS NOT NULL AND s.alive=false)');
 		$query->execute();
 		$this->em->flush();
-		$query = $this->em->createQuery('DELETE FROM App:Soldier s WHERE s.base IS NOT NULL AND s.alive=false');
+		$query = $this->em->createQuery('DELETE FROM App\Entity\Soldier s WHERE s.base IS NOT NULL AND s.alive=false');
 		$query->execute();
 
 		// routed militia - for now, just return them
-		$query = $this->em->createQuery('UPDATE App:Soldier s SET s.routed = false WHERE s.routed = true AND s.character IS NULL');
+		$query = $this->em->createQuery('UPDATE App\Entity\Soldier s SET s.routed = false WHERE s.routed = true AND s.character IS NULL');
 		$query->execute();
 
 		// militia auto-resupply
-		$query = $this->em->createQuery('SELECT s FROM App:Soldier s WHERE s.base IS NOT NULL AND s.alive=true AND s.wounded=0 AND s.routed=false AND
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Soldier s WHERE s.base IS NOT NULL AND s.alive=true AND s.wounded=0 AND s.routed=false AND
 			(s.has_weapon=false OR s.has_armour=false OR s.has_equipment=false)');
 		$iterableResult = $query->toIterable();
 		$i=1;
@@ -437,7 +437,7 @@ class GameRunner {
 		// wounded troops: heal or die
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Heal or die...");
-		$query = $this->em->createQuery('SELECT s FROM App:Soldier s WHERE s.wounded > 0');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Soldier s WHERE s.wounded > 0');
 		$iterableResult = $query->toIterable();
 		$i=1;
 		foreach ($iterableResult as $soldier) {
@@ -452,7 +452,7 @@ class GameRunner {
 
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Processing units of slumberers...");
-		$query = $this->em->createQuery('SELECT u FROM App:Unit u JOIN u.character c WHERE c.slumbering = true');
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\Unit u JOIN u.character c WHERE c.slumbering = true');
 		$result = $query->getResult();
 		foreach ($result as $unit) {
 			if ($unit->getSettlement()) {
@@ -470,7 +470,7 @@ class GameRunner {
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking for disbandable entourage.");
 		$disband_entourage = 0;
-		$query = $this->em->createQuery('SELECT e, c FROM App:Entourage e JOIN e.character c WHERE c.slumbering = true');
+		$query = $this->em->createQuery('SELECT e, c FROM App\Entity\Entourage e JOIN e.character c WHERE c.slumbering = true');
 		$iterableResult = $query->toIterable();
 		$i=1;
 		$now = new DateTime("now");
@@ -511,13 +511,13 @@ class GameRunner {
 
 		// Update Soldier travel times.
 		$this->output("  Deducting a day from soldier travel times...");
-		$query = $this->em->createQuery('UPDATE App:Soldier s SET s.travel_days = (s.travel_days - 1) WHERE s.travel_days IS NOT NULL');
+		$query = $this->em->createQuery('UPDATE App\Entity\Soldier s SET s.travel_days = (s.travel_days - 1) WHERE s.travel_days IS NOT NULL');
 		$query->execute();
 
 		// Update soldier recruit training times. This will also set the training times for units, so this and the above affect whether travel starts same day or next (I'm going with next day).
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking on recruits...");
-		$query = $this->em->createQuery('SELECT s FROM App:Settlement s WHERE s.id > 0');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Settlement s WHERE s.id > 0');
 		foreach ($query->getResult() as $settlement) {
 			if (!$settlement->getSiege() || !$settlement->getSiege()->getEncircled()) {
 				$this->milman->TrainingCycle($settlement);
@@ -528,7 +528,7 @@ class GameRunner {
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking if soldiers have arrived...");
 		$count = 0;
-		$query = $this->em->createQuery('SELECT s FROM App:Soldier s WHERE s.travel_days <= 0');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Soldier s WHERE s.travel_days <= 0');
 		$units = [];
 		$skippables = [];
 		foreach ($query->getResult() as $soldier) {
@@ -591,14 +591,14 @@ class GameRunner {
 
 		// Update Unit travel times.
 		$this->output("  Deducting a day from unit travel times...");
-		$query = $this->em->createQuery('UPDATE App:Unit u SET u.travel_days = (u.travel_days - 1) WHERE u.travel_days IS NOT NULL');
+		$query = $this->em->createQuery('UPDATE App\Entity\Unit u SET u.travel_days = (u.travel_days - 1) WHERE u.travel_days IS NOT NULL');
 		$query->execute();
 
 		// Update Unit arrivals based on travel times being at or below zero.
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking if units have arrived...");
 		$count = 0;
-		$query = $this->em->createQuery('SELECT u FROM App:Unit u WHERE u.travel_days <= 0');
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\Unit u WHERE u.travel_days <= 0');
 		$units = [];
 		unset($unit);
 		foreach ($query->getResult() as $unit) {
@@ -663,7 +663,7 @@ class GameRunner {
 
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking if units have gotten supplies...");
-		$query = $this->em->createQuery('SELECT r FROM App:Resupply r WHERE r.travel_days <= 1');
+		$query = $this->em->createQuery('SELECT r FROM App\Entity\Resupply r WHERE r.travel_days <= 1');
 		$iterableResult = $query->toIterable();
 		foreach ($iterableResult as $resupply) {
 			$unit = $resupply->getUnit();
@@ -716,7 +716,7 @@ class GameRunner {
 		}
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking if units have food to eat...");
-		$query = $this->em->createQuery('SELECT u FROM App:Unit u WHERE u.id > 0');
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\Unit u WHERE u.id > 0');
 		$iterableResult = $query->toIterable();
 		$fed = 0;
 		$starved = 0;
@@ -912,7 +912,7 @@ class GameRunner {
 		// Update Unit resupply travel times.
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Deducting a day from unit resupply times...");
-		$query = $this->em->createQuery('UPDATE App:Resupply r SET r.travel_days = (r.travel_days - 1) WHERE r.travel_days IS NOT NULL');
+		$query = $this->em->createQuery('UPDATE App\Entity\Resupply r SET r.travel_days = (r.travel_days - 1) WHERE r.travel_days IS NOT NULL');
 		$query->execute();
 
 		$this->common->setGlobal('cycle.soldiers', 'complete');
@@ -1068,9 +1068,9 @@ class GameRunner {
 		$this->output("Actions Cycle...");
 
 		if ($hourly) {
-			$querystring = 'SELECT a FROM App:Action a WHERE a.id>:last AND a.hourly = true ORDER BY a.id ASC';
+			$querystring = 'SELECT a FROM App\Entity\Action a WHERE a.id>:last AND a.hourly = true ORDER BY a.id ASC';
 		} else {
-			$querystring = 'SELECT a FROM App:Action a WHERE a.id>:last ORDER BY a.id ASC';
+			$querystring = 'SELECT a FROM App\Entity\Action a WHERE a.id>:last ORDER BY a.id ASC';
 		}
 		$query = $this->em->createQuery($querystring);
 		$query->setParameter('last', $last);
@@ -1111,7 +1111,7 @@ class GameRunner {
 		$max_items = $this->common->getGlobal('supply.max_items', 15);
 		$max_food = $this->common->getGlobal('supply.max_food', 100);
 
-		$query = $this->em->createQuery('SELECT e FROM App:Entourage e JOIN e.type t JOIN e.character c JOIN c.inside_settlement s WHERE c.prisoner_of IS NULL AND c.slumbering = false and c.travel is null and e.id>:last ORDER BY e.id ASC');
+		$query = $this->em->createQuery('SELECT e FROM App\Entity\Entourage e JOIN e.type t JOIN e.character c JOIN c.inside_settlement s WHERE c.prisoner_of IS NULL AND c.slumbering = false and c.travel is null and e.id>:last ORDER BY e.id ASC');
 		$query->setParameter('last', $last);
 		$iterableResult = $query->toIterable();
 		$i = 1;
@@ -1184,7 +1184,7 @@ class GameRunner {
 		$timeout = new DateTime("now");
 		$timeout->sub(new DateInterval("P7D"));
 
-		$query = $this->em->createQuery('SELECT p FROM App:RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND p.ruler = true AND h.id IS NULL AND p NOT IN (SELECT y FROM App:Election x JOIN x.position y WHERE x.closed=false) GROUP BY p');
+		$query = $this->em->createQuery('SELECT p FROM App\Entity\RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND p.ruler = true AND h.id IS NULL AND p NOT IN (SELECT y FROM App\Entity\Election x JOIN x.position y WHERE x.closed=false) GROUP BY p');
 		$result = $query->getResult();
 		$this->output("  Checking for inactive realms...");
 		# This one checks for realms that don't have rulers, while the next query checks for conversations.
@@ -1200,10 +1200,10 @@ class GameRunner {
 		}
 		$this->output("  Checking for missing realm conversations...");
 
-		$realmquery = $this->em->createQuery('SELECT r FROM App:Realm r WHERE r.active = true');
+		$realmquery = $this->em->createQuery('SELECT r FROM App\Entity\Realm r WHERE r.active = true');
 		$realms = $realmquery->getResult();
 		foreach ($realms as $realm) {
-			$convoquery = $this->em->createQuery('SELECT c FROM App:Conversation c WHERE c.realm = :realm AND c.system IS NOT NULL');
+			$convoquery = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c WHERE c.realm = :realm AND c.system IS NOT NULL');
 			$convoquery->setParameter('realm', $realm);
 			$convos = $convoquery->getResult();
 			$announcements = false;
@@ -1297,7 +1297,7 @@ class GameRunner {
 
 		$this->output("  Checking for missing House conversations...");
 
-		$query = $this->em->createQuery('SELECT h FROM App:House h WHERE h.id > :last AND (h.active = true OR h.active IS NULL)');
+		$query = $this->em->createQuery('SELECT h FROM App\Entity\House h WHERE h.id > :last AND (h.active = true OR h.active IS NULL)');
 		$query->setParameters(['last'=>$last]);
 		$i = 1;
 		foreach ($query->toIterable() as $house) {
@@ -1358,7 +1358,7 @@ class GameRunner {
 
 		$this->output("  Checking for missing Assoc conversations...");
 
-		$query = $this->em->createQuery('SELECT a FROM App:Association a WHERE a.id > :last AND (a.active = true OR a.active IS NULL)');
+		$query = $this->em->createQuery('SELECT a FROM App\Entity\Association a WHERE a.id > :last AND (a.active = true OR a.active IS NULL)');
 		$query->setParameters(['last'=>$last]);
 		$i = 1;
 		foreach ($query->getResult() as $assoc) {
@@ -1417,7 +1417,7 @@ class GameRunner {
 		$lastRealm=(int)$lastRealm;
 		$this->output("Conversation Cycle...");
 		$this->output("  Updating realm conversation permissions...");
-		$query = $this->em->createQuery("SELECT r from App:Realm r WHERE r.active = TRUE AND r.id > :last ORDER BY r.id ASC");
+		$query = $this->em->createQuery("SELECT r from App\Entity\Realm r WHERE r.active = TRUE AND r.id > :last ORDER BY r.id ASC");
 		$query->setParameters(['last'=>$lastRealm]);
 		$added = 0;
 		$total = 0;
@@ -1451,7 +1451,7 @@ class GameRunner {
 		$lastHouse = $this->common->getGlobal('cycle.convs.house', 0);
 		$lastHouse=(int)$lastHouse;
 		$this->output("  Updating house conversation permissions...");
-		$query = $this->em->createQuery("SELECT h from App:House h WHERE (h.active = TRUE OR h.active IS NULL) AND h.id > :last ORDER BY h.id ASC");
+		$query = $this->em->createQuery("SELECT h from App\Entity\House h WHERE (h.active = TRUE OR h.active IS NULL) AND h.id > :last ORDER BY h.id ASC");
 		$query->setParameters(['last'=>$lastHouse]);
 		$added = 0;
 		$total = 0;
@@ -1484,7 +1484,7 @@ class GameRunner {
 		$lastAssoc = $this->common->getGlobal('cycle.convs.assoc', 0);
 		$lastAssoc=(int)$lastAssoc;
 		$this->output("  Updating association conversation permissions...");
-		$query = $this->em->createQuery("SELECT a from App:Association a WHERE (a.active = TRUE OR a.active IS NULL) AND a.id > :last ORDER BY a.id ASC");
+		$query = $this->em->createQuery("SELECT a from App\Entity\Association a WHERE (a.active = TRUE OR a.active IS NULL) AND a.id > :last ORDER BY a.id ASC");
 		$query->setParameters(['last'=>$lastAssoc]);
 		$added = 0;
 		$total = 0;
@@ -1515,7 +1515,7 @@ class GameRunner {
 		$this->common->setGlobal('cycle.convs.assoc', 'complete');
 		$this->output("  Result: ".$total." associations, ".$convs." conversations, ".$added." added permissions, ".$removed." removed permissions");
 
-		$query = $this->em->createQuery('UPDATE App:Setting s SET s.value=0 WHERE s.name LIKE :cycle');
+		$query = $this->em->createQuery('UPDATE App\Entity\Setting s SET s.value=0 WHERE s.name LIKE :cycle');
 		$query->setParameter('cycle', 'cycle.convs.'.'%');
 		$query->execute();
 		return 1;
@@ -1534,7 +1534,7 @@ class GameRunner {
 		$this->output("Positions Cycle...");
 
 		$this->output("  Processing Finished Elections...");
-		$query = $this->em->createQuery('SELECT e FROM App:Election e WHERE e.closed = false AND e.complete < :now');
+		$query = $this->em->createQuery('SELECT e FROM App\Entity\Election e WHERE e.closed = false AND e.complete < :now');
 		$query->setParameter('now', new DateTime("now"));
 		$seenpositions = [];
 
@@ -1576,7 +1576,7 @@ class GameRunner {
 		$this->output("  Checking realm rulers, vacant electeds, and minholders...");
 		$timeout = new DateTime("now");
 		$timeout->sub(new DateInterval("P7D")); // hardcoded to 7 day intervals between election attempts
-		$query = $this->em->createQuery('SELECT p FROM App:RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND h.id IS NULL AND p NOT IN (SELECT y FROM App:Election x JOIN x.position y WHERE x.closed=false OR x.complete > :timeout) GROUP BY p');
+		$query = $this->em->createQuery('SELECT p FROM App\Entity\RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND h.id IS NULL AND p NOT IN (SELECT y FROM App\Entity\Election x JOIN x.position y WHERE x.closed=false OR x.complete > :timeout) GROUP BY p');
 		$query->setParameter('timeout', $timeout);
 		$result = $query->getResult();
 		foreach ($result as $position) {
@@ -1648,7 +1648,7 @@ class GameRunner {
 
 		$this->output("  Checking for routine elections...");
 		$cycle = $this->cycle;
-		$query = $this->em->createQuery("SELECT p FROM App:RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND p.elected = true AND (p.retired = false OR p.retired IS NULL) AND p.cycle <= :cycle AND p.cycle IS NOT NULL AND h.id IS NOT NULL AND p NOT IN (SELECT y FROM App:Election x JOIN x.position y WHERE x.closed=false OR x.complete > :timeout) GROUP BY p");
+		$query = $this->em->createQuery("SELECT p FROM App\Entity\RealmPosition p JOIN p.realm r LEFT JOIN p.holders h WHERE r.active = true AND p.elected = true AND (p.retired = false OR p.retired IS NULL) AND p.cycle <= :cycle AND p.cycle IS NOT NULL AND h.id IS NOT NULL AND p NOT IN (SELECT y FROM App\Entity\Election x JOIN x.position y WHERE x.closed=false OR x.complete > :timeout) GROUP BY p");
 		$query->setParameter('timeout', $timeout);
 		$query->setParameter('cycle', $cycle);
 		foreach ($query->getResult() as $position) {
@@ -1709,7 +1709,7 @@ class GameRunner {
 		if ($last==='complete') return 1;
 		$this->output("Sea Food Cycle...");
 
-		$query = $this->em->createQuery("SELECT c FROM App:Character c, App:GeoData g JOIN g.biome b WHERE c.id > :last AND ST_Contains(g.poly, c.location) = true AND b.name IN ('ocean', 'water') ORDER BY c.id");
+		$query = $this->em->createQuery("SELECT c FROM App\Entity\Character c, App\Entity\GeoData g JOIN g.biome b WHERE c.id > :last AND ST_Contains(g.poly, c.location) = true AND b.name IN ('ocean', 'water') ORDER BY c.id");
 		$query->setParameter('last', $last);
 		$iterableResult = $query->toIterable();
 		$i = 1;
@@ -1752,7 +1752,7 @@ class GameRunner {
 	 * @return void
 	 */
 	public function eventNewYear(): void {
-		$query = $this->em->createQuery('SELECT s FROM App:Settlement s ORDER BY s.id ASC');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Settlement s ORDER BY s.id ASC');
 		$iterableResult = $query->toIterable();
 
 		$i=1;
@@ -1784,7 +1784,7 @@ class GameRunner {
 	 * @return void
 	 */
 	public function postToRealm(RealmPosition $position, $systemflag, $msg): void {
-		$query = $this->em->createQuery('SELECT c FROM App:Conversation c WHERE c.realm = :realm AND c.system = :system');
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c WHERE c.realm = :realm AND c.system = :system');
 		switch ($systemflag) {
 			case 'announcements':
 				$query->setParameter('system', 'announcements');

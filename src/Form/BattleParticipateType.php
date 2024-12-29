@@ -17,14 +17,14 @@ use Doctrine\ORM\EntityRepository;
  */
 class BattleParticipateType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'battleparticipate_5106',
 		));
 		$resolver->setRequired(['battles']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$battles = $options['battles'];
 
 		$builder->add('group', EntityType::class, array(

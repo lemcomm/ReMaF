@@ -13,24 +13,18 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class NewLocalMessageType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'new_local_messsage_134',
 			'translation_domain' => 'conversations',
 			'settlement'	=> null,
 			'place'		=> null,
 		));
-		$resolver->setRequired(['reply']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$place = $options['place'];
 		$settlement = $options['settlement'];
-		if ($options['reply']) {
-			$reply = 'reply';
-		} else {
-			$reply = 'new';
-		}
 
 		$target = ['conversation.target.local'=>'local'];
 		if ($place) {

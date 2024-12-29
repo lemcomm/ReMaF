@@ -148,7 +148,7 @@ class ConstructionController extends AbstractController {
 
 						// test if we cross any impassable terrain, or a cliff
 						// FIXME: this sometimes results in an error, with $gemo being only 1 point - why?
-						$query = $em->createQuery('SELECT ST_Length(ST_Intersection(g.poly, ST_GeomFromText(:path))) as blocked FROM App:GeoData g WHERE g.passable = false AND ST_Intersects(g.poly, ST_GeomFromText(:path))=true');
+						$query = $em->createQuery('SELECT ST_Length(ST_Intersection(g.poly, ST_GeomFromText(:path))) as blocked FROM App\Entity\GeoData g WHERE g.passable = false AND ST_Intersects(g.poly, ST_GeomFromText(:path))=true');
 						$query->setParameter('path', 'LINESTRING('.$geom.')');
 						$invalid = $query->getOneOrNullResult();
 						if ($invalid && $invalid['blocked']> 5.0) { // small tolerance because otherwise it would sometimes trigger when connecting to docks
@@ -327,7 +327,7 @@ class ConstructionController extends AbstractController {
 	private function buildDocks($new): Point {
 		// find point to build the docks
 		$em = $this->em;
-		$query = $em->createQuery('SELECT ST_ClosestPoint(o.poly, ST_POINT(:x,:y)), ST_Distance(o.poly, ST_POINT(:x,:y)) AS distance FROM App:GeoData o JOIN o.biome b WHERE b.name = :ocean ORDER BY distance ASC');
+		$query = $em->createQuery('SELECT ST_ClosestPoint(o.poly, ST_POINT(:x,:y)), ST_Distance(o.poly, ST_POINT(:x,:y)) AS distance FROM App\Entity\GeoData o JOIN o.biome b WHERE b.name = :ocean ORDER BY distance ASC');
 		$query->setParameters(array('ocean'=>'ocean', 'x'=>$new['location_x'], 'y'=>$new['location_y']));
 		$query->setMaxResults(1);
 		$result = $query->getSingleResult();
@@ -344,7 +344,7 @@ class ConstructionController extends AbstractController {
 	private function buildBridge($new): Point {
 		// find point to build the bridge
 		$em = $this->em;
-		$query = $em->createQuery('SELECT ST_ClosestPoint(r.course, ST_POINT(:x,:y)), ST_Distance(r.course, ST_POINT(:x,:y)) AS distance FROM App:River r ORDER BY distance ASC');
+		$query = $em->createQuery('SELECT ST_ClosestPoint(r.course, ST_POINT(:x,:y)), ST_Distance(r.course, ST_POINT(:x,:y)) AS distance FROM App\Entity\River r ORDER BY distance ASC');
 		$query->setParameters(array('x'=>$new['location_x'], 'y'=>$new['location_y']));
 		$query->setMaxResults(1);
 		$result = $query->getSingleResult();
@@ -365,7 +365,7 @@ class ConstructionController extends AbstractController {
 	 */
 	private function nearestBorderPoint($new, $geo): Point {
 		$em = $this->em;
-		$query = $em->createQuery('SELECT ST_ClosestPoint(ST_Boundary(g.poly), ST_POINT(:x,:y)) FROM App:GeoData g WHERE g = :geo');
+		$query = $em->createQuery('SELECT ST_ClosestPoint(ST_Boundary(g.poly), ST_POINT(:x,:y)) FROM App\Entity\GeoData g WHERE g = :geo');
 		$query->setParameters(array('geo'=>$geo, 'x'=>$new['location_x'], 'y'=>$new['location_y']));
 		$result = $query->getSingleResult();
 		$parser = new BinaryParser(array_shift($result));
@@ -483,7 +483,6 @@ class ConstructionController extends AbstractController {
 			foreach ($settlement->getBuildings() as $old) {
 				if ($old->getType()==$required && $old->getActive()) {
 					$have=true;
-					continue;
 				}
 			}
 			if (!$have) {

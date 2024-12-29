@@ -87,13 +87,13 @@ class Geography {
 		return $this->biomes_invalid;
 	}
 	public function travelDetails(Character $character, $to=1.0) {
-		$query = $this->em->createQuery('SELECT s as place,b.name as biome,ST_Length(ST_Intersection(g.poly, ST_Line_Substring(c.travel, c.progress, :to))) as length from App:Settlement s JOIN s.geo_data g JOIN g.biome b, App:Character c WHERE c = :me AND ST_Intersects(g.poly, ST_Line_Substring(c.travel, c.progress, :to)) = true');
+		$query = $this->em->createQuery('SELECT s as place,b.name as biome,ST_Length(ST_Intersection(g.poly, ST_Line_Substring(c.travel, c.progress, :to))) as length from App\Entity\Settlement s JOIN s.geo_data g JOIN g.biome b, App\Entity\Character c WHERE c = :me AND ST_Intersects(g.poly, ST_Line_Substring(c.travel, c.progress, :to)) = true');
 		$query->setParameters(['me'=>$character, 'to'=>$to]);
 		return $query->getResult();
 	}
 
 	public function checkContains(GeoData $geo, $point) {
-		$query = $this->em->createQuery('SELECT ST_Contains(g.poly, ST_POINT(:x, :y)) FROM App:GeoData g WHERE g = :geo');
+		$query = $this->em->createQuery('SELECT ST_Contains(g.poly, ST_POINT(:x, :y)) FROM App\Entity\GeoData g WHERE g = :geo');
 		$query->setParameters(['geo'=>$geo, 'x'=>$point->getX(), 'y'=>$point->getY()]);
 		$query->setMaxResults(1); // FIXME: due to small overlaps in the geometry, we can get multiple rows here. This hack is not the best solution, we should probably order by biome or something
 		$results = $query->getSingleResult();
@@ -101,7 +101,7 @@ class Geography {
 	}
 
 	public function findRegionPolygon(Settlement $settlement) {
-		$query = $this->em->createQuery('SELECT ST_AsText(g.poly) AS poly FROM App:GeoData g where g = :g');
+		$query = $this->em->createQuery('SELECT ST_AsText(g.poly) AS poly FROM App\Entity\GeoData g where g = :g');
 		$query->setParameters(['g'=>$settlement->getGeoData()]);
 		$data = $query->getSingleResult();
 		return $data['poly'];
@@ -111,14 +111,14 @@ class Geography {
 		if ($character->getInsideRegion()) {
 			return $character->getInsideRegion();
 		}
-		$query = $this->em->createQuery('SELECT g FROM App:GeoData g, App:Character c where c = :me AND ST_Contains(g.poly, c.location) = true AND g.passable = true AND g.world = c.world');
+		$query = $this->em->createQuery('SELECT g FROM App\Entity\GeoData g, App\Entity\Character c where c = :me AND ST_Contains(g.poly, c.location) = true AND g.passable = true AND g.world = c.world');
 		$query->setParameters(['me'=>$character]);
 		$query->setMaxResults(1); // FIXME: due to small overlaps in the geometry, we can get multiple rows here. This hack is not the best solution, we should probably order by biome or something
 		return $query->getOneOrNullResult();
 	}
 
 	public function findRegionFromPoint(Point $loc, World $world) {
-		$query = $this->em->createQuery('SELECT g FROM App:GeoData g WHERE ST_Contains(g.poly, :location) = true AND g.world = :world');
+		$query = $this->em->createQuery('SELECT g FROM App\Entity\GeoData g WHERE ST_Contains(g.poly, :location) = true AND g.world = :world');
 		$query->setParameters(['location'=>$loc, 'world'=>$world]);
 		$query->setMaxResults(1);
 		return $query->getOneOrNullResult();
@@ -142,7 +142,7 @@ class Geography {
 	}
 
 	public function findRegionsPolygon($settlements) {
-		$query = $this->em->createQuery('SELECT ST_AsText(ST_UNION(g.poly)) AS poly FROM App:GeoData g JOIN g.settlement s WHERE s IN (:settlements)');
+		$query = $this->em->createQuery('SELECT ST_AsText(ST_UNION(g.poly)) AS poly FROM App\Entity\GeoData g JOIN g.settlement s WHERE s IN (:settlements)');
 		$query->setParameters(['settlements'=>$settlements->toArray()]);
 		$data = $query->getSingleResult();
 		return $data['poly'];
@@ -151,16 +151,16 @@ class Geography {
 	public function findWatchTowers(Character $character) {
 		// FIXME: this and others like it should probably use ST_DWithin (http://postgis.net/docs/manual-2.0/ST_DWithin.html) which is probably faster
 		$distance = $this->calculateSpottingDistance($character);
-		$query = $this->em->createQuery('SELECT f as feature, ST_AsGeoJSON(f.location) as json, t.name as typename FROM App:GeoFeature f JOIN f.type t, App:Character c WHERE c = :me AND t.world = c.world AND t.name = :tower AND f.active = true AND ST_Distance(f.location, c.location) <= :maxdistance');
+		$query = $this->em->createQuery('SELECT f as feature, ST_AsGeoJSON(f.location) as json, t.name as typename FROM App\Entity\GeoFeature f JOIN f.type t, App\Entity\Character c WHERE c = :me AND t.world = c.world AND t.name = :tower AND f.active = true AND ST_Distance(f.location, c.location) <= :maxdistance');
 		$query->setParameters(['me'=>$character, 'tower'=>'tower', 'maxdistance'=>$distance*0.5]);
 		return $query->getResult();
 	}
 
 	public function findNearbyArtifacts(Character $char) {
 		$now = new DateTime('now');
-		if ($this->em->createQuery('SELECT count(a.id) FROM App:Artifact a WHERE a.location IS NOT NULL and a.available_after <= :now AND a.world = c.world')->setParameters(['now'=>$now])->getSingleScalarResult() > 0) {
+		if ($this->em->createQuery('SELECT count(a.id) FROM App\Entity\Artifact a WHERE a.location IS NOT NULL and a.available_after <= :now AND a.world = c.world')->setParameters(['now'=>$now])->getSingleScalarResult() > 0) {
 			$distance = $this->calculateSpottingDistance($char);
-			$query = $this->em->createQuery('SELECT a FROM App:Artifact a WHERE a.location IS NOT NULL AND a.available_after <= :now AND ST_DWithin(a.location, :me, :maxdistance) = true');
+			$query = $this->em->createQuery('SELECT a FROM App\Entity\Artifact a WHERE a.location IS NOT NULL AND a.available_after <= :now AND ST_DWithin(a.location, :me, :maxdistance) = true');
 			$query->setParameters(['me'=>$char->getLocation(), 'maxdistance'=>$distance, 'now'=>$now]);
 			$result = $query->getResult();
 			if ($result->count() > 0) {
@@ -184,7 +184,7 @@ class Geography {
 			return null;
 		} else {
 			if ($format=='json') { $as='ST_AsGeoJSON'; } else { $as='ST_AsText'; }
-			$query = $this->em->createQuery('SELECT '.$as.'(ST_UNION(g.poly)) as poly FROM App:GeoData g JOIN g.settlement s WHERE s.id IN (:settlements)');
+			$query = $this->em->createQuery('SELECT '.$as.'(ST_UNION(g.poly)) as poly FROM App\Entity\GeoData g JOIN g.settlement s WHERE s.id IN (:settlements)');
 			$query->setParameters(array('settlements'=>$settlement_ids));
 			$data = $query->getSingleResult();
 			return $data['poly'];
@@ -216,14 +216,14 @@ class Geography {
 		if (empty($settlement_ids)) {
 			return 0;
 		} else {
-			$query = $this->em->createQuery('SELECT ST_Area(ST_UNION(g.poly)) as poly FROM App:GeoData g JOIN g.settlement s WHERE s.id IN (:settlements)');
+			$query = $this->em->createQuery('SELECT ST_Area(ST_UNION(g.poly)) as poly FROM App\Entity\GeoData g JOIN g.settlement s WHERE s.id IN (:settlements)');
 			$query->setParameters(array('settlements'=>$settlement_ids));
 			return $query->getSingleScalarResult(); // this is in square m
 		}
 	}
 
 	public function findNearestDock(Character $character) {
-		$query = $this->em->createQuery('SELECT f, ST_Distance(f.location, c.location) AS distance FROM App:GeoFeature f JOIN f.type t, App:Character c WHERE c = :char AND t.name = :type AND f.active = true AND f.world = c.world ORDER BY distance ASC');
+		$query = $this->em->createQuery('SELECT f, ST_Distance(f.location, c.location) AS distance FROM App\Entity\GeoFeature f JOIN f.type t, App\Entity\Character c WHERE c = :char AND t.name = :type AND f.active = true AND f.world = c.world ORDER BY distance ASC');
 		$query->setParameters(['char'=> $character, 'type'=>'docks']);
 		$query->setMaxResults(1);
 		$results = $query->getResult();
@@ -239,7 +239,7 @@ class Geography {
 		if (!$my_ship) {
 			return array('0'=>null,'distance'=>0);
 		}
-		$query = $this->em->createQuery('SELECT s, ST_Distance(c.location, s.location) AS distance FROM App:Ship s JOIN s.owner c WHERE s = :ship AND s.world = c.world');
+		$query = $this->em->createQuery('SELECT s, ST_Distance(c.location, s.location) AS distance FROM App\Entity\Ship s JOIN s.owner c WHERE s = :ship AND s.world = c.world');
 		$query->setParameters(array('ship'=>$my_ship));
 		$query->setMaxResults(1);
 		$results = $query->getResult();
@@ -248,7 +248,7 @@ class Geography {
 
 	public function findEmbarkPoint(Character $character): Point {
 		// find nearest water:
-		$query = $this->em->createQuery('SELECT g, ST_Distance(g.poly, c.location) as distance, ST_AsGeoJSON(ST_ClosestPoint(g.poly, c.location)) as coast FROM App:GeoData g, App:Character c WHERE g.biome in (:water) AND c = :me AND g.world = c.world ORDER BY distance ASC');
+		$query = $this->em->createQuery('SELECT g, ST_Distance(g.poly, c.location) as distance, ST_AsGeoJSON(ST_ClosestPoint(g.poly, c.location)) as coast FROM App\Entity\GeoData g, App\Entity\Character c WHERE g.biome in (:water) AND c = :me AND g.world = c.world ORDER BY distance ASC');
 		$query->setParameters(['water'=>$this->water(), 'me'=>$character]);
 		$query->setMaxResults(1);
 		$result = $query->getSingleResult();
@@ -275,7 +275,7 @@ class Geography {
 	#TODO: The rest of this file from here.!!!
 
 	public function findLandPoint(Point $point): array {
-		$query = $this->em->createQuery('SELECT g, ST_Distance(g.poly, ST_Point(:x, :y)) as distance, ST_AsGeoJSON(ST_ClosestPoint(g.poly, ST_Point(:x, :y))) as coast FROM App:GeoData g WHERE g.biome not in (:cantwalk) ORDER BY distance ASC');
+		$query = $this->em->createQuery('SELECT g, ST_Distance(g.poly, ST_Point(:x, :y)) as distance, ST_AsGeoJSON(ST_ClosestPoint(g.poly, ST_Point(:x, :y))) as coast FROM App\Entity\GeoData g WHERE g.biome not in (:cantwalk) ORDER BY distance ASC');
 		$query->setParameters(['cantwalk'=>$this->cantwalk(), 'x'=>$point->getX(), 'y'=>$point->getY()]);
 		$query->setMaxResults(1);
 		$result = $query->getSingleResult();
@@ -295,13 +295,13 @@ class Geography {
 		$land = new Point($coast->coordinates[0] + $x_off, $coast->coordinates[1] + $y_off);
 
 		// verify that the resulting point really is valid, and extrapolate further if not
-		$query = $this->em->createQuery('SELECT g.passable FROM App:GeoData g WHERE ST_Contains(g.poly, ST_Point(:x, :y)) = true');
+		$query = $this->em->createQuery('SELECT g.passable FROM App\Entity\GeoData g WHERE ST_Contains(g.poly, ST_Point(:x, :y)) = true');
 		$query->setParameters(array('x'=>$land->getX(), 'y'=>$land->getY()));
 		$passable = $query->getSingleScalarResult();
 
 		if (!$passable) {
 			$land = new Point($coast->coordinates[0] + $x_off*2, $coast->coordinates[1] + $y_off*2);
-			$query = $this->em->createQuery('SELECT g.passable FROM App:GeoData g WHERE ST_Contains(g.poly, ST_Point(:x, :y)) = true');
+			$query = $this->em->createQuery('SELECT g.passable FROM App\Entity\GeoData g WHERE ST_Contains(g.poly, ST_Point(:x, :y)) = true');
 			$query->setParameters(array('x'=>$land->getX(), 'y'=>$land->getY()));
 			$passable = $query->getSingleScalarResult();
 			if (!$passable) {
@@ -319,7 +319,7 @@ class Geography {
 
 	public function findNearestPlace(Character $character) {
 		$location = $character->getLocation();
-		$query = $this->em->createQuery('SELECT p, ST_Distance(p.location, ST_Point(:x, :y)) AS distance FROM App:Place p WHERE p.location IS NOT NULL ORDER BY distance ASC');
+		$query = $this->em->createQuery('SELECT p, ST_Distance(p.location, ST_Point(:x, :y)) AS distance FROM App\Entity\Place p WHERE p.location IS NOT NULL ORDER BY distance ASC');
 		$query->setParameters(array('x'=>$location->getX(), 'y'=>$location->getY()));
 		$query->setMaxResults(1);
 		return $query->getOneOrNullResult();
@@ -328,14 +328,14 @@ class Geography {
 	public function findNearestActionablePlace(Character $character) {
 		$maxdistance = $this->calculateInteractionDistance($character);
 		$location = $character->getLocation();
-		$query = $this->em->createQuery('SELECT p, ST_Distance(p.location, ST_Point(:x, :y)) AS distance FROM App:Place p WHERE p.location IS NOT NULL AND ST_Distance(ST_Point(:x, :y), p.location) < :maxdistance ORDER BY distance ASC');
+		$query = $this->em->createQuery('SELECT p, ST_Distance(p.location, ST_Point(:x, :y)) AS distance FROM App\Entity\Place p WHERE p.location IS NOT NULL AND ST_Distance(ST_Point(:x, :y), p.location) < :maxdistance ORDER BY distance ASC');
 		$query->setParameters(array('maxdistance'=>$maxdistance, 'x'=>$location->getX(), 'y'=>$location->getY()));
 		$query->setMaxResults(1);
 		return $query->getOneOrNullResult();
 	}
 
 	public function findNearestSettlementToPoint(Point $point) {
-		$query = $this->em->createQuery('SELECT s, ST_Distance(g.center, ST_Point(:x, :y)) AS distance FROM App:Settlement s JOIN s.geo_data g ORDER BY distance ASC');
+		$query = $this->em->createQuery('SELECT s, ST_Distance(g.center, ST_Point(:x, :y)) AS distance FROM App\Entity\Settlement s JOIN s.geo_data g ORDER BY distance ASC');
 		$query->setParameters(['x'=>$point->getX(), 'y'=>$point->getY()]);
 		$query->setMaxResults(1);
 		return $query->getSingleResult();
@@ -356,13 +356,13 @@ class Geography {
 
 	public function findSettlementRoads(Settlement $settlement) {
 		$query = $this->em->createQuery('SELECT r as road, ST_Length(r.path) as length
-			FROM App:Road r JOIN r.geo_data g WHERE g = :geo');
+			FROM App\Entity\Road r JOIN r.geo_data g WHERE g = :geo');
 		$query->setParameter('geo', $settlement->getGeoData());
 		return $query->getResult();
 	}
 
 	public function calculateArea(GeoData $geo) {
-		$query = $this->em->createQuery('SELECT ST_AREA(g.poly) FROM App:GeoData g WHERE g.id=:id');
+		$query = $this->em->createQuery('SELECT ST_AREA(g.poly) FROM App\Entity\GeoData g WHERE g.id=:id');
 		$query->setParameter('id', $geo->getId());
 		return $query->getSingleScalarResult(); // this is in square m
 	}
@@ -374,20 +374,20 @@ class Geography {
 
 
 	public function calculateDistanceBetweenSettlements(Settlement $a, Settlement $b) {
-		$query = $this->em->createQuery('SELECT ST_Distance(ga.center, gb.center) AS distance FROM App:Settlement a JOIN a.geo_data ga, App:Settlement b JOIN b.geo_data gb WHERE a=:a and b=:b');
+		$query = $this->em->createQuery('SELECT ST_Distance(ga.center, gb.center) AS distance FROM App\Entity\Settlement a JOIN a.geo_data ga, App\Entity\Settlement b JOIN b.geo_data gb WHERE a=:a and b=:b');
 		$query->setParameters(array('a'=>$a, 'b'=>$b));
 		return $query->getSingleScalarResult();
 	}
 
 	public function calculateDistanceToSettlement(Character $a, Settlement $b) {
-		$query = $this->em->createQuery('SELECT ST_Distance(a.location, gb.center) AS distance FROM App:Character a, App:Settlement b JOIN b.geo_data gb WHERE a=:a and b=:b');
+		$query = $this->em->createQuery('SELECT ST_Distance(a.location, gb.center) AS distance FROM App\Entity\Character a, App\Entity\Settlement b JOIN b.geo_data gb WHERE a=:a and b=:b');
 		$query->setParameters(array('a'=>$a, 'b'=>$b));
 		return $query->getSingleScalarResult();
 	}
 
 	public function calculateDistanceToPlace(Character $a, Place $b) {
 		if ($b->getLocation()) {
-			$query = $this->em->createQuery('SELECT ST_Distance(a.location, b.location) AS distance FROM App:Character a, App:Place b WHERE a=:a and b=:b');
+			$query = $this->em->createQuery('SELECT ST_Distance(a.location, b.location) AS distance FROM App\Entity\Character a, App\Entity\Place b WHERE a=:a and b=:b');
 			$query->setParameters(array('a'=>$a, 'b'=>$b));
 			return $query->getSingleScalarResult();
 		} else {
@@ -396,7 +396,7 @@ class Geography {
 	}
 
 	public function calculateDistanceToCharacter(Character $a, Character $b) {
-		$query = $this->em->createQuery('SELECT ST_Distance(a.location, b.location) AS distance FROM App:Character a, App:Character b WHERE a=:a and b=:b');
+		$query = $this->em->createQuery('SELECT ST_Distance(a.location, b.location) AS distance FROM App\Entity\Character a, App\Entity\Character b WHERE a=:a and b=:b');
 		$query->setParameters(['a'=>$a, 'b'=>$b]);
 		return $query->getSingleScalarResult();
 	}
@@ -459,7 +459,7 @@ class Geography {
 	}
 
 	public function findCharactersInArea($geo) {
-		$query = $this->em->createQuery('SELECT c FROM App:Character c, App:GeoData g WHERE g.id = :here AND ST_Contains(g.poly, c.location) = true');
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c, App\Entity\GeoData g WHERE g.id = :here AND ST_Contains(g.poly, c.location) = true');
 		$query->setParameter('here', $geo);
 		return $query->getResult();
 	}
@@ -494,7 +494,7 @@ class Geography {
 				return NULL;
 			}
 		} else {
-			$query = $this->em->createQuery('SELECT p as place, ST_Distance(me.location, p.location) AS distance, ST_Azimuth(me.location, p.location) AS direction FROM App:Character me, App:Place p WHERE me.id = :me AND ST_Distance(me.location, p.location) < :maxdistance AND (p.destroyed IS NULL or p.destroyed = false)');
+			$query = $this->em->createQuery('SELECT p as place, ST_Distance(me.location, p.location) AS distance, ST_Azimuth(me.location, p.location) AS direction FROM App\Entity\Character me, App\Entity\Place p WHERE me.id = :me AND ST_Distance(me.location, p.location) < :maxdistance AND (p.destroyed IS NULL or p.destroyed = false)');
 			$query->setParameters(['me'=>$character, 'maxdistance'=>$maxdistance]);
 			$results = $query->getResult();
 
@@ -542,9 +542,9 @@ class Geography {
 
 	public function findBattlesNearMe(Character $character, $maxdistance) {
 		if ($character->getInsideSettlement()) {
-			$query = $this->em->createQuery("SELECT b as battle, ST_Distance(me.location, b.location) AS distance, ST_Azimuth(me.location, b.location) AS direction FROM App:Character me, App:Battle b WHERE me.id = :me AND ST_Distance(me.location, b.location) < :maxdistance AND b.siege IS NULL AND b.type = 'urban'");
+			$query = $this->em->createQuery("SELECT b as battle, ST_Distance(me.location, b.location) AS distance, ST_Azimuth(me.location, b.location) AS direction FROM App\Entity\Character me, App\Entity\Battle b WHERE me.id = :me AND ST_Distance(me.location, b.location) < :maxdistance AND b.siege IS NULL AND b.type = 'urban'");
 		} else {
-			$query = $this->em->createQuery("SELECT b as battle, ST_Distance(me.location, b.location) AS distance, ST_Azimuth(me.location, b.location) AS direction FROM App:Character me, App:Battle b WHERE me.id = :me AND ST_Distance(me.location, b.location) < :maxdistance AND b.siege IS NULL AND (b.type <> 'urban' OR b.type IS NULL)");
+			$query = $this->em->createQuery("SELECT b as battle, ST_Distance(me.location, b.location) AS distance, ST_Azimuth(me.location, b.location) AS direction FROM App\Entity\Character me, App\Entity\Battle b WHERE me.id = :me AND ST_Distance(me.location, b.location) < :maxdistance AND b.siege IS NULL AND (b.type <> 'urban' OR b.type IS NULL)");
 		}
 		$query->setParameters(['me'=>$character, 'maxdistance'=>$maxdistance]);
 		return $query->getResult();
@@ -562,7 +562,7 @@ class Geography {
 		$qb = $this->em->createQueryBuilder();
 		$qb->select('d as dungeon, ST_Distance(me.location, d.location) AS distance, ST_Azimuth(me.location, d.location) AS direction')
 			->from('App\Entity\Character', 'me')
-			->from('App:Dungeon', 'd')
+			->from('App\Entity\Dungeon', 'd')
 			->where('me = :me')
 			->andWhere('ST_Distance(me.location, d.location) < :maxdistance')
 			->setParameters(['me'=>$character, 'maxdistance'=>$maxdistance]);
@@ -582,13 +582,13 @@ class Geography {
 		if ($maxdistance==-1) {
 			$maxdistance = $this->calculateInteractionDistance($character);
 		}
-		$query = $this->em->createQuery('SELECT f as feature FROM App:GeoFeature f JOIN f.type t, App:Character c WHERE c = :me AND t.hidden = false AND ST_DWithin(f.location, c.location, :maxdistance) = true');
+		$query = $this->em->createQuery('SELECT f as feature FROM App\Entity\GeoFeature f JOIN f.type t, App\Entity\Character c WHERE c = :me AND t.hidden = false AND ST_DWithin(f.location, c.location, :maxdistance) = true');
 		$query->setParameters(array('me'=>$character, 'maxdistance'=>$maxdistance));
 		return $query->getResult();
 	}
 
 	public function findMercenariesNear(Settlement $settlement, $maxdistance) {
-		$query = $this->em->createQuery('SELECT m FROM App:Mercenaries m, App:Settlement s JOIN s.geo_data g WHERE m.active = true AND s = :here AND ST_Distance(g.center, m.location) < :maxdistance AND m.hired_by IS NULL');
+		$query = $this->em->createQuery('SELECT m FROM App\Entity\Mercenaries m, App\Entity\Settlement s JOIN s.geo_data g WHERE m.active = true AND s = :here AND ST_Distance(g.center, m.location) < :maxdistance AND m.hired_by IS NULL');
 		$query->setParameters(array('here'=>$settlement, 'maxdistance'=>$maxdistance));
 		return $query->getResult();
 	}
@@ -597,7 +597,7 @@ class Geography {
 		if ($character->getTravel()) {
 			// split my existing route into already-completed and future
 			if ($character->getProgress() > 0) {
-				$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_Line_Substring(c.travel, 0.0, c.progress)) as completed, ST_AsGeoJSON(ST_Line_Substring(c.travel, c.progress, 1.0)) as future FROM App:Character c where c.id=:me');
+				$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_Line_Substring(c.travel, 0.0, c.progress)) as completed, ST_AsGeoJSON(ST_Line_Substring(c.travel, c.progress, 1.0)) as future FROM App\Entity\Character c where c.id=:me');
 				$query->setParameter('me', $character);
 				$result = $query->getSingleResult();
 				$completed = $result['completed'];
@@ -685,7 +685,7 @@ class Geography {
 
 
 	public function getLocalBiome(Character $character) {
-		$query = $this->em->createQuery('SELECT b as biome, ST_DISTANCE(c.location, g.center) as distance FROM App:Biome b join b.geo_data g, App:Character c WHERE c = :me AND ST_Contains(g.poly, c.location)=true ORDER BY distance ASC');
+		$query = $this->em->createQuery('SELECT b as biome, ST_DISTANCE(c.location, g.center) as distance FROM App\Entity\Biome b join b.geo_data g, App\Entity\Character c WHERE c = :me AND ST_Contains(g.poly, c.location)=true ORDER BY distance ASC');
 		$query->setParameter('me', $character);
 		$query->setMaxResults(1); // should not be necessary, but we cannot 100% rule out tiny overlaps in the region data
 		$result = $query->getSingleResult();
@@ -718,7 +718,7 @@ class Geography {
 		if ($owner->getSlumbering()) {
 			return false;
 		}
-		$query = $this->em->createQuery('SELECT ST_Distance(g.center, c.location) AS distance FROM App:Settlement s JOIN s.geo_data g JOIN s.owner c WHERE s = :here');
+		$query = $this->em->createQuery('SELECT ST_Distance(g.center, c.location) AS distance FROM App\Entity\Settlement s JOIN s.geo_data g JOIN s.owner c WHERE s = :here');
 		$query->setParameter('here', $settlement);
 		$distance = $query->getSingleScalarResult();
 		$max = $this->calculateActionDistance($settlement);
@@ -736,7 +736,7 @@ class Geography {
 		// TODO: find geofeatures as well (that can replace the below since geofeatures contains the hidden settlements and a link to geodata)
 		//			so we can name for bridges, border crossings, etc.
 
-		$query = $this->em->createQuery('SELECT g FROM App:GeoData g WHERE ST_Contains(g.poly, ST_Point(:x,:y)) = true');
+		$query = $this->em->createQuery('SELECT g FROM App\Entity\GeoData g WHERE ST_Contains(g.poly, ST_Point(:x,:y)) = true');
 		$query->setParameters(['x'=>$point->getX(), 'y'=>$point->getY()]);
 		$result = $query->getOneOrNullResult();
 		if ($result) {
@@ -755,7 +755,7 @@ class Geography {
 
 
 	public function checkTravelSea(Character $character, $invalid) {
-		$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_Intersection(c.travel, g.poly)) as intersections FROM App:Character c, App:GeoData g WHERE c = :me AND g.biome not in (:water) AND ST_Intersects(c.travel, g.poly)=true');
+		$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_Intersection(c.travel, g.poly)) as intersections FROM App\Entity\Character c, App\Entity\GeoData g WHERE c = :me AND g.biome not in (:water) AND ST_Intersects(c.travel, g.poly)=true');
 		$query->setParameters(['me'=> $character, 'water'=>$this->water()]);
 		$result = $query->getResult();
 		$crosses_land = false;
@@ -767,14 +767,14 @@ class Geography {
 
 		if ($crosses_land) {
 			// hardcoded 100m final distance from land
-			$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_StartPoint(ST_GeometryN(ST_Intersection(c.travel, ST_Buffer(g.poly, :buffer)),1))) as disembark FROM App:Character c, App:GeoData g WHERE c = :me AND g.biome not in (:water) AND ST_Intersects(c.travel, g.poly)=true');
+			$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_StartPoint(ST_GeometryN(ST_Intersection(c.travel, ST_Buffer(g.poly, :buffer)),1))) as disembark FROM App\Entity\Character c, App\Entity\GeoData g WHERE c = :me AND g.biome not in (:water) AND ST_Intersects(c.travel, g.poly)=true');
 			$query->setParameters(['me'=> $character, 'water'=>$this->water(), 'buffer'=>$this->embark_distance/10]);
 			$result = $query->getResult();
 			$point = json_decode($result[0]['disembark']);
 
 			$invalid[] = array('type'=>'feature', 'geometry'=>$point);
 			// FIXME: this breaks because: ST_Line_Substring: "If 'start' and 'end' have the same value this is equivalent to ST_Line_Interpolate_Point."
-			$query = $this->em->createQuery('UPDATE App:Character c SET c.travel = ST_Line_Substring(c.travel, 0, ST_Line_Locate_Point(c.travel, ST_Point(:x,:y))) WHERE c=:me');
+			$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.travel = ST_Line_Substring(c.travel, 0, ST_Line_Locate_Point(c.travel, ST_Point(:x,:y))) WHERE c=:me');
 			$query->setParameters(['me'=>$character, 'x'=>$point->coordinates[0], 'y'=>$point->coordinates[1]]);
 			$query->execute();
 		}
@@ -782,7 +782,7 @@ class Geography {
 	}
 
 	public function checkTravelLand(Character $character, $invalid) {
-		$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_Intersection(c.travel, g.poly)) as intersections FROM App:Character c, App:GeoData g WHERE c = :me AND g.passable=false AND ST_Intersects(c.travel, g.poly)=true');
+		$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_Intersection(c.travel, g.poly)) as intersections FROM App\Entity\Character c, App\Entity\GeoData g WHERE c = :me AND g.passable=false AND ST_Intersects(c.travel, g.poly)=true');
 		$query->setParameter('me', $character);
 		$result = $query->getResult();
 		foreach ($result as $data) {
@@ -794,7 +794,7 @@ class Geography {
 	public function checkTravelRivers(Character $character, $invalid) {
 		$bridges = array();
 		// FIXME: I think this is a bit ugly with AsText and AsGeoJSON... but it works...
-		$query = $this->em->createQuery('SELECT r as river, ST_AsText(ST_Intersection(r.course, c.travel)) as intersection, ST_AsGeoJSON(ST_Intersection(r.course, c.travel)) as json  FROM App:River r, App:Character c WHERE ST_Intersects(r.course, c.travel)=true AND c.id=:me');
+		$query = $this->em->createQuery('SELECT r as river, ST_AsText(ST_Intersection(r.course, c.travel)) as intersection, ST_AsGeoJSON(ST_Intersection(r.course, c.travel)) as json  FROM App\Entity\River r, App\Entity\Character c WHERE ST_Intersects(r.course, c.travel)=true AND c.id=:me');
 		$query->setParameter('me', $character);
 		$result = $query->getResult();
 		foreach ($result as $data) {
@@ -802,7 +802,7 @@ class Geography {
 			// look for a nearby bridge
 			$bridgedistance = $this->em->getRepository(Setting::class)->findOneBy(['name'=>'travel.bridgedistance']);
 			$bridge = $this->em->getRepository(FeatureType::class)->findOneBy(['name'=>'bridge']);
-			$query = $this->em->createQuery('SELECT f FROM App:GeoFeature f WHERE ST_Distance(f.location, ST_GeomFromText(:intersection)) < :distance AND f.active=true AND f.type=:bridge');
+			$query = $this->em->createQuery('SELECT f FROM App\Entity\GeoFeature f WHERE ST_Distance(f.location, ST_GeomFromText(:intersection)) < :distance AND f.active=true AND f.type=:bridge');
 			$query->setParameters(['intersection'=>$data['intersection'], 'distance'=>$bridgedistance->getValue(), 'bridge'=>$bridge]);
 			$query->setMaxResults(1);
 			$bridge = $query->getResult();
@@ -817,7 +817,7 @@ class Geography {
 
 	public function checkTravelCliffs(Character $character, $invalid) {
 		// FIXME: I think this is a bit ugly with AsText and AsGeoJSON... but it works...
-		$query = $this->em->createQuery('SELECT ST_AsText(ST_Intersection(x.path, c.travel)) as intersection, ST_AsGeoJSON(ST_Intersection(x.path, c.travel)) as json  FROM App:Cliff x, App:Character c WHERE ST_Intersects(x.path, c.travel)=true AND c.id=:me');
+		$query = $this->em->createQuery('SELECT ST_AsText(ST_Intersection(x.path, c.travel)) as intersection, ST_AsGeoJSON(ST_Intersection(x.path, c.travel)) as json  FROM App\Entity\Cliff x, App\Entity\Character c WHERE ST_Intersects(x.path, c.travel)=true AND c.id=:me');
 		$query->setParameter('me', $character);
 		$result = $query->getResult();
 		foreach ($result as $data) {
@@ -828,7 +828,7 @@ class Geography {
 
 	public function checkTravelRoads(Character $character) {
 		$roads = array();
-		$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_Intersection(c.travel, ST_Buffer(r.path, :buffer))) as intersections FROM App:Character c, App:Road r WHERE c = :me AND r.quality > 0 AND ST_Intersects(c.travel, ST_Buffer(r.path, :buffer))=true');
+		$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_Intersection(c.travel, ST_Buffer(r.path, :buffer))) as intersections FROM App\Entity\Character c, App\Entity\Road r WHERE c = :me AND r.quality > 0 AND ST_Intersects(c.travel, ST_Buffer(r.path, :buffer))=true');
 		$query->setParameters(['me'=> $character, 'buffer'=>$this->road_buffer]);
 		$result = $query->getResult();
 		foreach ($result as $data) {
@@ -843,7 +843,7 @@ class Geography {
 	}
 
 	public function updateTravelSpeed(Character $character) {
-		$query = $this->em->createQuery('SELECT ST_Length(c.travel) as length FROM App:Character c where c.id=:me');
+		$query = $this->em->createQuery('SELECT ST_Length(c.travel) as length FROM App\Entity\Character c where c.id=:me');
 		$query->setParameter('me', $character);
 		$length = $query->getSingleScalarResult();
 		if ($length <= 0) return false;
@@ -879,7 +879,7 @@ class Geography {
 		}
 
 		// modify further if we are near/on a road:
-		$query = $this->em->createQuery('SELECT r FROM App:Road r,  App:Character c WHERE c = :me AND ST_Distance(r.path, c.location) < :buffer AND r.quality > 0 ORDER BY r.quality DESC');
+		$query = $this->em->createQuery('SELECT r FROM App\Entity\Road r,  App\Entity\Character c WHERE c = :me AND ST_Distance(r.path, c.location) < :buffer AND r.quality > 0 ORDER BY r.quality DESC');
 		$query->setParameters(array('me'=> $character, 'buffer'=>$this->road_buffer));
 		$query->setMaxResults(1);
 		if ($road = $query->getOneOrNullResult()) {
@@ -907,7 +907,7 @@ class Geography {
 			$x = rand($this->world['x_min'], $this->world['x_max']);
 			$y = rand($this->world['y_min'], $this->world['y_max']);
 
-			$query = $this->em->createQuery('SELECT g FROM App:GeoData g WHERE ST_Contains(g.poly, ST_Point(:x,:y))=true and g.passable=true');
+			$query = $this->em->createQuery('SELECT g FROM App\Entity\GeoData g WHERE ST_Contains(g.poly, ST_Point(:x,:y))=true and g.passable=true');
 			$query->setParameters(['x'=>$x, 'y'=>$y]);
 			$geo = $query->getOneOrNullResult();
 			if ($geo) {
@@ -920,7 +920,7 @@ class Geography {
 
 	public function findRandomPointInsidePOI(MapPOI $poi) {
 		// FIXME: this also should run on the database using the passable check and code from here: http://trac.osgeo.org/postgis/wiki/UserWikiRandomPoint
-		$query = $this->em->createQuery('SELECT ST_Extent(p.geom) as extent FROM App:MapPOI p WHERE p = :me');
+		$query = $this->em->createQuery('SELECT ST_Extent(p.geom) as extent FROM App\Entity\MapPOI p WHERE p = :me');
 		$query->setParameter('me', $poi);
 		$result = $query->getSingleResult();
 		// unfortunately, we have to parse this ourselves - BOX(x,y)
@@ -936,7 +936,7 @@ class Geography {
 			$x = rand($x_min, $x_max);
 			$y = rand($y_min, $y_max);
 
-			$query = $this->em->createQuery('SELECT g FROM App:GeoData g, App:MapPOI p WHERE ST_Contains(g.poly, ST_Point(:x,:y))=true and g.passable=true and ST_Contains(ST_BUFFER(p.geom, :buffer), ST_Point(:x,:y))=true and p = :me');
+			$query = $this->em->createQuery('SELECT g FROM App\Entity\GeoData g, App\Entity\MapPOI p WHERE ST_Contains(g.poly, ST_Point(:x,:y))=true and g.passable=true and ST_Contains(ST_BUFFER(p.geom, :buffer), ST_Point(:x,:y))=true and p = :me');
 			$query->setParameters(['x'=>$x, 'y'=>$y, 'me'=>$poi, 'buffer'=>5000]);
 			$geo = $query->getOneOrNullResult();
 			if ($geo) {

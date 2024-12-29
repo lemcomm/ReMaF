@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityRepository;
 
 class EntourageAssignType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'assign_123956',
 			'translation_domain' => 'actions'
@@ -22,7 +22,7 @@ class EntourageAssignType extends AbstractType {
 		$resolver->setRequired(['actions', 'entourage']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$entourage = $options['entourage'];
 
 		if (is_array($options['actions'])) {

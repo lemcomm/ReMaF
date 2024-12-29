@@ -99,20 +99,12 @@ class InfoController extends AbstractController {
 
 	private function alltypes($type, $request): array {
 		$em = $this->em;
-		switch ($type) {
-			case 'BuildingType':
-				$all = $em->getRepository(BuildingType::class)->findBy([], ['name'=>'asc']);
-				break;
-			case 'FeatureType':
-				$all = $em->getRepository(FeatureType::class)->findBy([], ['name'=>'asc']);
-				break;
-			case 'EntourageType':
-				$all = $em->getRepository(EntourageType::class)->findBy([], ['name'=>'asc']);
-				break;
-			case 'EquipmentType':
-			default:
-				$all = $em->getRepository(EquipmentType::class)->findBy([], ['name'=>'asc']);
-		}
+		$all = match ($type) {
+			'BuildingType' => $em->getRepository(BuildingType::class)->findBy([], ['name' => 'asc']),
+			'FeatureType' => $em->getRepository(FeatureType::class)->findBy([], ['name' => 'asc']),
+			'EntourageType' => $em->getRepository(EntourageType::class)->findBy([], ['name' => 'asc']),
+			default => $em->getRepository(EquipmentType::class)->findBy([], ['name' => 'asc']),
+		};
 		$toc = $this->pager->getPage('manual', 'toc', $request->getLocale());
 
 		return [

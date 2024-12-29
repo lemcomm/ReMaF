@@ -12,7 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class PartnershipsOldType extends AbstractType {
 
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'partnership_5712',
 			'translation_domain' => 'politics'
@@ -20,11 +20,11 @@ class PartnershipsOldType extends AbstractType {
 		$resolver->setRequired(['me', 'others']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$this->buildFormOld($builder, $options);
 	}
 
-	public function buildFormOld(FormBuilderInterface $builder, array $options) {
+	public function buildFormOld(FormBuilderInterface $builder, array $options): void {
 		$builder->add('partnership', FormType::class);
 
 		foreach ($options['others'] as $partnership) {

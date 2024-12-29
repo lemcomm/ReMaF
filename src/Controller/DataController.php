@@ -11,6 +11,7 @@ use App\Entity\Journal;
 use App\Entity\User;
 use App\Service\CommonService;
 use App\Twig\LinksExtension;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,7 +46,7 @@ class DataController extends AbstractController {
 		}
 		$em = $this->em;
 		$cycle = $this->common->getCycle()-1;
-		$query = $em->createQuery('SELECT s.today_users as active_users FROM App:StatisticGlobal s WHERE s.cycle = :cycle');
+		$query = $em->createQuery('SELECT s.today_users as active_users FROM App\Entity\StatisticGlobal s WHERE s.cycle = :cycle');
 		$query->setParameter('cycle', $cycle);
 		$result['active_players'] = $query->getArrayResult()[0];
 		$result['name'] = "Might & Fealty";
@@ -65,7 +66,7 @@ class DataController extends AbstractController {
 		}
 		$term = $request->query->get("term");
 		$em = $this->em;
-		$query = $em->createQuery('SELECT c.id, c.name as value FROM App:Character c WHERE c.alive=false AND LOWER(c.name) LIKE :term ORDER BY c.name ASC');
+		$query = $em->createQuery('SELECT c.id, c.name as value FROM App\Entity\Character c WHERE c.alive=false AND LOWER(c.name) LIKE :term ORDER BY c.name ASC');
 		$query->setParameter('term', '%'.strtolower($term).'%');
 		$result = [];
 		$result['data'] = $query->getArrayResult();
@@ -81,7 +82,7 @@ class DataController extends AbstractController {
 		}
 		$term = $request->query->get("term");
 		$em = $this->em;
-		$query = $em->createQuery('SELECT c.id, c.name as value FROM App:Character c WHERE c.alive=true AND (c.retired = false OR c.retired IS NULL) AND c.slumbering=false AND LOWER(c.name) LIKE :term ORDER BY c.name ASC');
+		$query = $em->createQuery('SELECT c.id, c.name as value FROM App\Entity\Character c WHERE c.alive=true AND (c.retired = false OR c.retired IS NULL) AND c.slumbering=false AND LOWER(c.name) LIKE :term ORDER BY c.name ASC');
 		$query->setParameter('term', '%'.strtolower($term).'%');
 		$result = [];
 		$result['data'] = $query->getArrayResult();
@@ -97,7 +98,7 @@ class DataController extends AbstractController {
 		}
 		$term = $request->query->get("term");
 		$em = $this->em;
-		$query = $em->createQuery('SELECT c.id, c.name as value FROM App:Character c WHERE c.alive=true AND LOWER(c.name) LIKE :term ORDER BY c.name ASC');
+		$query = $em->createQuery('SELECT c.id, c.name as value FROM App\Entity\Character c WHERE c.alive=true AND LOWER(c.name) LIKE :term ORDER BY c.name ASC');
 		$query->setParameter('term', '%'.strtolower($term).'%');
 		$result = [];
 		$result['data'] = $query->getArrayResult();
@@ -113,7 +114,7 @@ class DataController extends AbstractController {
 		}
 		$term = $request->query->get("term");
 		$em = $this->em;
-		$query = $em->createQuery('SELECT r.id, r.name as value FROM App:Realm r WHERE LOWER(r.name) LIKE :term OR LOWER(r.formal_name) LIKE :term ORDER BY r.name ASC');
+		$query = $em->createQuery('SELECT r.id, r.name as value FROM App\Entity\Realm r WHERE LOWER(r.name) LIKE :term OR LOWER(r.formal_name) LIKE :term ORDER BY r.name ASC');
 		$query->setParameter('term', '%'.strtolower($term).'%');
 		$result = [];
 		$result['data'] = $query->getArrayResult();
@@ -129,7 +130,7 @@ class DataController extends AbstractController {
 		}
 		$term = $request->query->get("term");
 		$em = $this->em;
-		$query = $em->createQuery('SELECT s.id, s.name as value, ST_X(g.center) as x, ST_Y(g.center) as y, r.name as label FROM App:Settlement s JOIN s.geo_data g LEFT JOIN s.realm r WHERE LOWER(s.name) LIKE :term ORDER BY s.name ASC');
+		$query = $em->createQuery('SELECT s.id, s.name as value, ST_X(g.center) as x, ST_Y(g.center) as y, r.name as label FROM App\Entity\Settlement s JOIN s.geo_data g LEFT JOIN s.realm r WHERE LOWER(s.name) LIKE :term ORDER BY s.name ASC');
 		$query->setParameter('term', '%'.strtolower($term).'%');
 		$result = [];
 		$result['data'] = $query->getArrayResult();
@@ -145,7 +146,7 @@ class DataController extends AbstractController {
 		}
 		$term = $request->query->get("term");
 		$em = $this->em;
-		$query = $em->createQuery('SELECT a.id, a.name as value FROM App:Association a WHERE LOWER(a.name) LIKE :term OR LOWER(a.formal_name) LIKE :term ORDER BY a.name ASC');
+		$query = $em->createQuery('SELECT a.id, a.name as value FROM App\Entity\Association a WHERE LOWER(a.name) LIKE :term OR LOWER(a.formal_name) LIKE :term ORDER BY a.name ASC');
 		$query->setParameter('term', '%'.strtolower($term).'%');
 		$result = [];
 		$result['data'] = $query->getArrayResult();
@@ -161,7 +162,7 @@ class DataController extends AbstractController {
 		}
 		$term = $request->query->get("term");
 		$em = $this->em;
-		$query = $em->createQuery('SELECT d.id, d.name FROM App:Deity d WHERE LOWER(d.name) LIKE :term ORDER BY d.name ASC');
+		$query = $em->createQuery('SELECT d.id, d.name FROM App\Entity\Deity d WHERE LOWER(d.name) LIKE :term ORDER BY d.name ASC');
 		$query->setParameter('term', '%'.strtolower($term).'%');
 		$result = [];
 		$result['data'] = $query->getArrayResult();
@@ -177,7 +178,7 @@ class DataController extends AbstractController {
 		}
 		$term = $request->query->get("term");
 		$em = $this->em;
-		$query = $em->createQuery('SELECT p.id, p.name as value FROM App:Place p WHERE LOWER(p.name) LIKE :term OR LOWER(p.formal_name) LIKE :term ORDER BY p.name ASC');
+		$query = $em->createQuery('SELECT p.id, p.name as value FROM App\Entity\Place p WHERE LOWER(p.name) LIKE :term OR LOWER(p.formal_name) LIKE :term ORDER BY p.name ASC');
 		$query->setParameter('term', '%'.strtolower($term).'%');
 		$result = [];
 		$result['data'] = $query->getArrayResult();
@@ -193,7 +194,7 @@ class DataController extends AbstractController {
 		}
 		$term = $request->query->get("term");
 		$em = $this->em;
-		$query = $em->createQuery('SELECT h.id, h.name as value FROM App:House h WHERE LOWER(h.name) LIKE :term ORDER BY h.name ASC');
+		$query = $em->createQuery('SELECT h.id, h.name as value FROM App\Entity\House h WHERE LOWER(h.name) LIKE :term ORDER BY h.name ASC');
 		$query->setParameter('term', '%'.strtolower($term).'%');
 		$result = [];
 		$result['data'] = $query->getArrayResult();
@@ -209,7 +210,7 @@ class DataController extends AbstractController {
 		}
 		$term = $request->query->get("term");
 		$em = $this->em;
-		$query = $em->createQuery('SELECT b.id, b.name, b.icon, b.min_population, b.auto_population, b.per_people, b.defenses, b.special_conditions, b.built_in FROM App:BuildingType b WHERE LOWER(b.name) LIKE :term ORDER BY b.name ASC');
+		$query = $em->createQuery('SELECT b.id, b.name, b.icon, b.min_population, b.auto_population, b.per_people, b.defenses, b.special_conditions, b.built_in FROM App\Entity\BuildingType b WHERE LOWER(b.name) LIKE :term ORDER BY b.name ASC');
 		$query->setParameter('term', '%'.strtolower($term).'%');
 		$result = [];
 		$result['data'] = $query->getArrayResult();
@@ -256,7 +257,7 @@ class DataController extends AbstractController {
 		$cycle = $this->common->getCycle()-1;
 
 		$em = $this->em;
-		$query = $em->createQuery('SELECT s.today_users as active_users FROM App:StatisticGlobal s WHERE s.cycle = :cycle');
+		$query = $em->createQuery('SELECT s.today_users as active_users FROM App\Entity\StatisticGlobal s WHERE s.cycle = :cycle');
 		$query->setParameter('cycle', $cycle);
 		$result['data'] = $query->getArrayResult()[0];
 
@@ -346,7 +347,7 @@ class DataController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$query = $em->createQuery('SELECT s.id as id, s.name as name, s.population+s.thralls as population, c.id as owner_id, c.name as owner_name, bio.name as biome, g.center as center, SUM(CASE WHEN b.active = true THEN t.defenses ELSE 0 END) as defenses FROM App:Settlement s JOIN s.geo_data g JOIN g.biome bio LEFT JOIN s.owner c LEFT JOIN s.buildings b LEFT JOIN b.type t GROUP BY s.id, c.id, g.center, bio.name');
+		$query = $em->createQuery('SELECT s.id as id, s.name as name, s.population+s.thralls as population, c.id as owner_id, c.name as owner_name, bio.name as biome, g.center as center, SUM(CASE WHEN b.active = true THEN t.defenses ELSE 0 END) as defenses FROM App\Entity\Settlement s JOIN s.geo_data g JOIN g.biome bio LEFT JOIN s.owner c LEFT JOIN s.buildings b LEFT JOIN b.type t GROUP BY s.id, c.id, g.center, bio.name');
 
 		$settlements = array();
 		foreach ($query->getResult() as $r) {
@@ -538,7 +539,7 @@ class DataController extends AbstractController {
 		# Applies MetaData.
 		$data['license'] = 'All Rights Reserved Iungard Systems, LLC';
 		$spent = microtime(true)-$this->start;
-		$time = new \DateTime("now");
+		$time = new DateTime("now");
 		$data['metadata'] = [
 			'system' => 'Might & Fealty API',
 			'api-version' => '1.0.3.0',

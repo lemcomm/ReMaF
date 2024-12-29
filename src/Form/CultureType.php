@@ -15,7 +15,7 @@ use App\Entity\Culture;
 
 class CultureType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'culture_9413',
 			'attr'		=> array('class'=>'wide'),
@@ -25,7 +25,7 @@ class CultureType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$user = $options['user'];
 		$old_culture = $options['old_culture'];
 		if ($options['available']) {

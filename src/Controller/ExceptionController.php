@@ -47,11 +47,9 @@ class ExceptionController extends AbstractController {
 			}
 		}
 
-		switch ($type) {
-			case 'application/json':
-				return new JsonResponse($data, 500, ['content-type'=>'application/json']);
-			default:
-				return $this->render('Exception/exception.html.twig', $data);
-		}
+		return match ($type) {
+			'application/json' => new JsonResponse($data, 500, ['content-type' => 'application/json']),
+			default => $this->render('Exception/exception.html.twig', $data),
+		};
 	}
 }

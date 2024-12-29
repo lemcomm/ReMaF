@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PlaceNewType extends AbstractType {
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'newplace_1337',
 			'translation_domain' => 'places'
@@ -20,7 +20,7 @@ class PlaceNewType extends AbstractType {
 		$resolver->setRequired(['types', 'realms']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$types = $options['types'];
 		$realms = $options['realms'];
 		$builder->add('name', TextType::class, array(

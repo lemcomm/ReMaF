@@ -3,6 +3,8 @@
 namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,7 +27,7 @@ class AbstractProcessCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:abstract')
 			->setDescription('abstract process command - do not call directly')
@@ -44,6 +46,10 @@ class AbstractProcessCommand extends Command {
 		$this->stopwatch->start($topic);
 	}
 
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 */
 	protected function process($worker, $entity, $timeout=null): void {
 		/* Welcome to, arguably, one of the most complex functions in M&F. This 50 ish lines of code mutli-threads a process against an entity.
 		 * It accepts a $worker (a maf:worker:$worker command entry), an $entity to work against for input IDs, and a $timeout, which force kills it if it takes too long.
@@ -61,13 +67,11 @@ class AbstractProcessCommand extends Command {
 		$pool = array();
 		$consoleDir = $_ENV['ROOT_DIR'].'/bin/console';
 		$php = $_ENV['PHP_CMD'];
-		$done = [];
 		$this->output->writeln("Starting ID of $min, ending ID of $max, batches of $batch_size...");
 		for ($i=$min; $i<=$max; $i+=$batch_size) {
 			$process = new Process([$php, $consoleDir, 'maf:worker:'.$worker, $i, $i+$batch_size], null, null, null, $timeout);
 			$process->start();
 			$pool[] = $process;
-			$done[$process->getPid()] = false;
 			$i++;
 		}
 		$this->output->writeln($worker.": started ".count($pool)." jobs");

@@ -12,14 +12,14 @@ use Doctrine\ORM\EntityRepository;
 
 class TradeCancelType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'tradecancel_255',
 			'trades' => [],
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 
 		$trades = $options['trades'];
 		if (!empty($trades)) {

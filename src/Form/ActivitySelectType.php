@@ -17,14 +17,14 @@ use App\Entity\EquipmentType;
 
 class ActivitySelectType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'interaction_12331',
 			'translation_domain' 	=> 'activity',
 		));
 		$resolver->setRequired(['action', 'maxdistance', 'me', 'subselect']);
 	}
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$action = $options['action'];
 		$builder->add('name', TextType::class, array(
 			'label'=>$action.'.form.name',
@@ -41,7 +41,8 @@ class ActivitySelectType extends AbstractType {
 		]);
 	}
 
-	private function duelFields(FormBuilderInterface $builder, array $options) {
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function duelFields(FormBuilderInterface $builder, array $options): void {
 		$me = $options['me'];
 		$maxdistance = $options['maxdistance'];
 		$subselect = $options['subselect'];

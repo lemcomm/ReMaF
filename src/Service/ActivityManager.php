@@ -250,7 +250,7 @@ class ActivityManager {
 	public function runAll(): true {
 		$em = $this->em;
                 $now = new DateTime("now");
-		$query = $em->createQuery('SELECT a FROM App:Activity a WHERE a.ready = true');
+		$query = $em->createQuery('SELECT a FROM App\Entity\Activity a WHERE a.ready = true');
 		$all = $query->getResult();
 		foreach ($all as $act) {
 			$type = $act->getType()->getName();

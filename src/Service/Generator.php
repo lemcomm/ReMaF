@@ -21,7 +21,7 @@ class Generator {
 	public function randomName(?Settlement $home=null, $gender=false): string {
 		$culture = $home?->getCulture();
 		$qb = $this->em->createQueryBuilder();
-		$qb->select('count(n.id)')->from('App:NameList', 'n');
+		$qb->select('count(n.id)')->from('App\Entity\NameList', 'n');
 		if ($culture) {
 			$qb->where('n.culture = :culture')->setParameter('culture', $culture);
 		}
@@ -38,7 +38,7 @@ class Generator {
 		// so we save the processing power to test for it
 
 		$qb = $this->em->createQueryBuilder();
-		$qb->select('n')->from('App:NameList', 'n');
+		$qb->select('n')->from('App\Entity\NameList', 'n');
 		if ($culture) {
 			$qb->where('n.culture = :culture')->setParameter('culture', $culture);
 		}

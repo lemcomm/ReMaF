@@ -26,11 +26,11 @@ class BuildingController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$query = $em->createQuery('SELECT s FROM App:Settlement s JOIN s.geo_data g, App:GeoData me WHERE ST_Distance(g.center, me.center) < :maxdistance AND me.id = :me AND s != me');
+		$query = $em->createQuery('SELECT s FROM App\Entity\Settlement s JOIN s.geo_data g, App\Entity\GeoData me WHERE ST_Distance(g.center, me.center) < :maxdistance AND me.id = :me AND s != me');
 		$query->setParameters(array('me'=>$settlement->getGeoData()->getId(), 'maxdistance'=>20000));
 		$nearby_settlements = $query->getResult();
 
-		$query = $em->createQuery('SELECT DISTINCT c FROM App:Character c JOIN c.inside_settlement s JOIN s.geo_data g JOIN c.positions p, App:GeoData me WHERE ST_Distance(g.center, me.center) < :maxdistance AND me.id = :me AND s != me AND c.slumbering = false');
+		$query = $em->createQuery('SELECT DISTINCT c FROM App\Entity\Character c JOIN c.inside_settlement s JOIN s.geo_data g JOIN c.positions p, App\Entity\GeoData me WHERE ST_Distance(g.center, me.center) < :maxdistance AND me.id = :me AND s != me AND c.slumbering = false');
 		$query->setParameters(array('me'=>$settlement->getGeoData()->getId(), 'maxdistance'=>20000));
 		$nearby_people = $query->getResult();
 
@@ -49,13 +49,13 @@ class BuildingController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$query = $em->createQuery('SELECT s FROM App:Settlement s ORDER BY s.population+s.thralls DESC');
+		$query = $em->createQuery('SELECT s FROM App\Entity\Settlement s ORDER BY s.population+s.thralls DESC');
 		$query->setMaxResults(5);
 		$top_settlements = $query->getResult();
 
 		$cycle = $common->getCycle();
 
-		$query = $em->createQuery('SELECT s as stat, r, (s.population + s.area * 10) as size FROM App:StatisticRealm s JOIN s.realm r WHERE s.cycle = :cycle ORDER BY size DESC');
+		$query = $em->createQuery('SELECT s as stat, r, (s.population + s.area * 10) as size FROM App\Entity\StatisticRealm s JOIN s.realm r WHERE s.cycle = :cycle ORDER BY size DESC');
 		$query->setParameter('cycle', $cycle);
 		$query->setMaxResults(5);
 		$top_realms = $query->getResult();
@@ -102,7 +102,7 @@ class BuildingController extends AbstractController {
 			"thralls"		=> array("label" => "thralls", "data" => array()),
 		);
 		$em = $this->em;
-		$query = $em->createQuery('SELECT s FROM App:StatisticSettlement s WHERE s.settlement = :me ORDER BY s.cycle DESC');
+		$query = $em->createQuery('SELECT s FROM App\Entity\StatisticSettlement s WHERE s.settlement = :me ORDER BY s.cycle DESC');
 		$query->setMaxResults(600); // TODO: max two in-game years - for now. No idea how much flot.js can handle.
 		$query->setParameter('me', $settlement);
 		$current_cycle = intval($common->getGlobal('cycle'));
@@ -128,7 +128,7 @@ class BuildingController extends AbstractController {
 			"militia"		=> array("label" => "militia", "data" => array()),
 		);
 		$em = $this->em;
-		$query = $em->createQuery('SELECT s FROM App:StatisticSettlement s WHERE s.settlement = :me ORDER BY s.cycle DESC');
+		$query = $em->createQuery('SELECT s FROM App\Entity\StatisticSettlement s WHERE s.settlement = :me ORDER BY s.cycle DESC');
 		$query->setMaxResults(600); // TODO: max two in-game years - for now. No idea how much flot.js can handle.
 		$query->setParameter('me', $settlement);
 		$current_cycle = intval($common->getGlobal('cycle'));

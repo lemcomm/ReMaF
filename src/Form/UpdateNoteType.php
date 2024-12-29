@@ -13,14 +13,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UpdateNoteType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'update_42691337',
 			'note'		=> null
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$note = $options['note'];
 		$builder->add('version', TextType::class, array(
 			'required' => true,

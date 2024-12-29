@@ -127,7 +127,7 @@ class RealmManager {
 		// everyone on here gets unlimited access, because the realm just got founded
 		$this->history->openLog($realm, $char);
 
-		$query = $this->em->createQuery('SELECT c FROM App:Conversation c WHERE c.realm = :realm');
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c WHERE c.realm = :realm');
 		$query->setParameter('realm', $realm);
 		foreach ($query->getResult() as $conversation) {
 			$this->convman->updateMembers($conversation);

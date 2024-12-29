@@ -23,7 +23,7 @@ class RunCommand extends  Command {
 		$this->note = $note;
 		parent::__construct();
 	}
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:run')
 			->setDescription('Run various game parts')

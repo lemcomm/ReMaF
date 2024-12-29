@@ -13,7 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class NewsArticleType extends AbstractType {
 
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'		=> 'newsarticle_2461',
 			'data_class'		=> 'App\Entity\NewsArticle',
@@ -21,7 +21,7 @@ class NewsArticleType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('title', TextType::class, [
 			'label'=>'news.article.title',
 			'required' => true,

@@ -199,6 +199,7 @@ class LinksExtension extends AbstractExtension {
 		return preg_replace_callback($pattern, array(get_class($this), "manuallinksReplacer"), $input);
 	}
 
+	/** @noinspection PhpUnusedPrivateMethodInspection */
 	private function manuallinksReplacer($matches): string {
 		$link = '';
 		foreach ($matches as $match) {
@@ -246,10 +247,13 @@ class LinksExtension extends AbstractExtension {
 	}
 
 	// TODO: pluralization!
+
+	/** @noinspection PhpMissingBreakStatementInspection */
 	public function ObjectLink($entity, $raw=false, $absolute=false, $number=1, $extra=null): string {
 		if (!is_object($entity)) {
 			$this->logger->error("link() called without object - $entity"); // fuck, it's impossible to get a backtrace! - out of memory
 			$this->logger->error("dump: ".\Doctrine\Common\Util\Debug::dump($entity, 1, true, false));
+
 			if ($this->request_stack->getCurrentRequest()) {
 				$this->logger->error("request: ".$this->request_stack->getCurrentRequest()->getRequestUri());
 			}

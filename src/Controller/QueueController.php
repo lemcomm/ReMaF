@@ -48,7 +48,7 @@ class QueueController extends AbstractController {
 		if (!$action) {
 			throw $this->createNotFoundException('error.notfound.action');
 		}
-		if ($action->getCharacter() != $character) {
+		if ($action->getCharacter() !== $character) {
 			$can_see = false;
 			foreach ($action->getSupportingActions() as $support) {
 				if ($support->getCharacter() == $character) { $can_see = true; }

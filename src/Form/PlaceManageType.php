@@ -15,7 +15,7 @@ use App\Entity\Character;
 
 class PlaceManageType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'manageplace_1947',
 			'translation_domain' => 'places'
@@ -23,7 +23,7 @@ class PlaceManageType extends AbstractType {
 		$resolver->setRequired(['description', 'me', 'char']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$me = $options['me'];
 		$char = $options['char'];
 		$type = $me->getType()->getName();

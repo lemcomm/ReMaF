@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HouseCreationType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'housecreation_78315',
 			'translation_domain' 	=> 'politics',
@@ -23,7 +23,7 @@ class HouseCreationType extends AbstractType {
 		));
 	}
 	
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$name = $options['name'];
 		$motto = $options['motto'];
 		$desc = $options['desc'];

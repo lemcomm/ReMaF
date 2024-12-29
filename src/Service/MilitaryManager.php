@@ -89,8 +89,8 @@ class MilitaryManager {
 		switch($this->common->getClassName($entity)) {
 			case 'Settlement':
 				if ($with_trainers) {
-					$query = $this->em->createQuery('SELECT e as item, ba.resupply FROM App:EquipmentType e LEFT JOIN e.provider p LEFT JOIN p.buildings ba LEFT JOIN ba.settlement sa LEFT JOIN e.trainer t LEFT JOIN t.buildings bb LEFT JOIN bb.settlement sb WHERE sa = :location AND ba.active = true AND sb = :location AND bb.active = true ORDER BY p.name ASC, e.name ASC');				} else {
-					$query = $this->em->createQuery('SELECT e as item, b.resupply FROM App:EquipmentType e LEFT JOIN e.provider p LEFT JOIN p.buildings b LEFT JOIN b.settlement s WHERE s = :location AND b.active = true ORDER BY p.name ASC, e.name ASC');
+					$query = $this->em->createQuery('SELECT e as item, ba.resupply FROM App\Entity\EquipmentType e LEFT JOIN e.provider p LEFT JOIN p.buildings ba LEFT JOIN ba.settlement sa LEFT JOIN e.trainer t LEFT JOIN t.buildings bb LEFT JOIN bb.settlement sb WHERE sa = :location AND ba.active = true AND sb = :location AND bb.active = true ORDER BY p.name ASC, e.name ASC');				} else {
+					$query = $this->em->createQuery('SELECT e as item, b.resupply FROM App\Entity\EquipmentType e LEFT JOIN e.provider p LEFT JOIN p.buildings b LEFT JOIN b.settlement s WHERE s = :location AND b.active = true ORDER BY p.name ASC, e.name ASC');
 				}
 				$query->setParameter('location', $entity);
 				return $query->getResult();
@@ -463,7 +463,7 @@ class MilitaryManager {
 		$soldier->setBase($settlement);
 
 		if ($this->group_militia==0) {
-			$query = $this->em->createQuery('SELECT MAX(s.group) FROM App:Soldier s WHERE s.base = :target');
+			$query = $this->em->createQuery('SELECT MAX(s.group) FROM App\Entity\Soldier s WHERE s.base = :target');
 			$query->setParameter('target', $settlement->getId());
 			$this->group_militia = min($this->max_group, (int)$query->getSingleScalarResult() + 1);
 		}
@@ -481,7 +481,7 @@ class MilitaryManager {
 		}
 
 		if ($this->group_soldier==0) {
-			$query = $this->em->createQuery('SELECT MAX(s.group) FROM App:Soldier s WHERE s.character = :target');
+			$query = $this->em->createQuery('SELECT MAX(s.group) FROM App\Entity\Soldier s WHERE s.character = :target');
 			$query->setParameter('target', $character->getId());
 			$this->group_soldier = min($this->max_group, (int)$query->getSingleScalarResult() + 1);
 		}
@@ -518,7 +518,7 @@ class MilitaryManager {
 		$soldier->cleanOffers();
 
 		if ($this->group_assign==0) {
-			$query = $this->em->createQuery('SELECT MAX(s.group) FROM App:Soldier s WHERE s.character = :target');
+			$query = $this->em->createQuery('SELECT MAX(s.group) FROM App\Entity\Soldier s WHERE s.character = :target');
 			$query->setParameter('target', $to->getId());
 			// FIXME: this will never use group a, even if the character has no groups in use
 			$this->group_assign = min($this->max_group, (int)$query->getSingleScalarResult() + 1);

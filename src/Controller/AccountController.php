@@ -19,6 +19,8 @@ use App\Service\Geography;
 use App\Service\PaymentManager;
 use App\Service\UserManager;
 
+use DateInterval;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -65,8 +67,8 @@ class AccountController extends AbstractController {
 		$user->setCurrentCharacter(null);
 		$em->flush();
 
-		list($announcements, $notices) = $this->notifications($em, $pay);
-		$update = $em->createQuery('SELECT u from App:UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult()[0];
+		[$announcements, $notices] = $this->notifications($em, $pay);
+		$update = $em->createQuery('SELECT u from App\Entity\UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult()[0];
 		if ($userMan->legacyPasswordCheck($user)) {
 			$this->addFlash('warning', $trans->trans('account.password.legacy', ['here'=>$this->generateUrl('maf_account_data')], 'messages'));
 		}
@@ -133,7 +135,7 @@ class AccountController extends AbstractController {
 				$unread = 0;
 				$events = 0;
 			}
-			if ($character->getBattling() && $character->getBattleGroups()->isEmpty() == TRUE) {
+			if ($character->getBattling() && $character->getBattleGroups()->isEmpty()) {
 				# NOTE: Because sometimes, battling isn't reset after a battle. May be related to entity locking.
 				$character->setBattling(false);
 				$em->flush();
@@ -170,7 +172,7 @@ class AccountController extends AbstractController {
 					}
 				}
 			}
-			if ($alive && !is_null($character->getRetiredOn()) && $character->getRetiredOn()->diff(new \DateTime("now"))->days > 7) {
+			if ($alive && !is_null($character->getRetiredOn()) && $character->getRetiredOn()->diff(new DateTime("now"))->days > 7) {
 				$unretirable = true;
 			} else {
 				$unretirable = false;
@@ -224,12 +226,12 @@ class AccountController extends AbstractController {
 		}
 		uasort($characters, array($this,'character_sort'));
 
-		list($announcements, $notices) = $this->notifications($em, $pay);
+		[$announcements, $notices] = $this->notifications($em, $pay);
 
 		$this->checkCharacterLimit($user, $pay, $em);
 
 		// check when our next payment is due and if we have enough to pay it
-		$now = new \DateTime("now");
+		$now = new DateTime("now");
 		$daysleft = (int)$now->diff($user->getPaidUntil())->format("%r%a");
 		$next_fee = $pay->calculateUserFee($user);
 		if ($user->getCredits() >= $next_fee) {
@@ -252,7 +254,7 @@ class AccountController extends AbstractController {
 			$this->addFlash('warning', $trans->trans('account.password.legacy', ['%link%'=>$this->generateUrl('maf_account_data')], 'messages'));
 		}
 
-		$update = $em->createQuery('SELECT u from App:UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult();
+		$update = $em->createQuery('SELECT u from App\Entity\UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult();
 
 		return $this->render('Account/characters.html.twig', [
 			'announcements' => $announcements,
@@ -316,7 +318,7 @@ class AccountController extends AbstractController {
 		}
 		$form = $this->createForm(CharacterCreationType::class, null, ['user'=>$user, 'slotsavailable'=>$user->getNewCharsLimit()>0]);
 
-		list($make_more, $characters_active, $characters_allowed) = $this->checkCharacterLimit($user, $pay, $em);
+		[$make_more, $characters_active, $characters_allowed] = $this->checkCharacterLimit($user, $pay, $em);
 		if (!$make_more) {
 			throw new AccessDeniedHttpException('newcharacter.overlimit');
 		}
@@ -348,9 +350,9 @@ class AccountController extends AbstractController {
 			$works = true;
 
 			// avoid bursts / client bugs by only allowing a character creation every 60 seconds
-			$query = $em->createQuery('SELECT c FROM App:Character c WHERE c.user = :me AND c.created > :recent');
-			$now = new \DateTime("now");
-			$recent = $now->sub(new \DateInterval("PT60S"));
+			$query = $em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.user = :me AND c.created > :recent');
+			$now = new DateTime("now");
+			$recent = $now->sub(new DateInterval("PT60S"));
 			$query->setParameters(array(
 				'me' => $user,
 				'recent' => $recent
@@ -386,7 +388,7 @@ class AccountController extends AbstractController {
 					// check that parents have a relation that includes sex
 					$havesex = false;
 					foreach ($data['father']->getPartnerships() as $p) {
-						if ($p->getOtherPartner($data['father']) == $data['mother'] && $p->getWithSex()==true) {
+						if ($p->getOtherPartner($data['father']) == $data['mother'] && $p->getWithSex()) {
 							$havesex = true;
 						}
 					}
@@ -410,7 +412,7 @@ class AccountController extends AbstractController {
 			if ($works) {
 				$character = $charMan->create($user, $data['name'], $data['gender'], !$data['dead'], $data['father'], $data['mother'], $data['partner']);
 
-				if ($data['dead']!=true) {
+				if (!$data['dead']) {
 					$user->setNewCharsLimit($user->getNewCharsLimit()-1);
 				}
 				$user->setCurrentCharacter($character);
@@ -447,7 +449,7 @@ class AccountController extends AbstractController {
 	}
 
 	private function findSexPartners($char, EntityManagerInterface $em) {
-		$query = $em->createQuery('SELECT p.id, p.name, u.id as user FROM App:Character p JOIN p.user u JOIN p.partnerships m WITH m.with_sex=true JOIN m.partners me WITH p!=me WHERE me=:me AND me.male != p.male ORDER BY p.name');
+		$query = $em->createQuery('SELECT p.id, p.name, u.id as user FROM App\Entity\Character p JOIN p.user u JOIN p.partnerships m WITH m.with_sex=true JOIN m.partners me WITH p!=me WHERE me=:me AND me.male != p.male ORDER BY p.name');
 		if (is_object($char)) {
 			$query->setParameter('me', $char);
 		} else {
@@ -539,7 +541,7 @@ class AccountController extends AbstractController {
 			var_dump($data);
 			echo "---";
 			$character = $em->getRepository(Character::class)->find($data['char']);
-			if (!$character || $character->getUser() != $user) {
+			if (!$character || $character->getUser() !== $user) {
 				return new Response("error");
 			}
 			$character->setList($data['list']);
@@ -558,7 +560,7 @@ class AccountController extends AbstractController {
 		if (!$character) {
 			throw new AccessDeniedHttpException('error.notfound.character');
 		}
-		if ($character->getUser() != $user) {
+		if ($character->getUser() !== $user) {
 			throw new AccessDeniedHttpException('error.noaccess.character');
 		}
 
@@ -596,7 +598,7 @@ class AccountController extends AbstractController {
 			throw $this->createAccessDeniedException('error.noaccess.battling');
 		}
 		# Make sure this character can return from retirement. This function will throw an exception if the given character has not been retired for a week.
-		if ($character->isAlive() && !is_null($character->getRetiredOn()) && $character->getRetiredOn()->diff(new \DateTime("now"))->days <= 7) {
+		if ($character->isAlive() && !is_null($character->getRetiredOn()) && $character->getRetiredOn()->diff(new DateTime("now"))->days <= 7) {
 			throw $this->createAccessDeniedException('error.noaccess.notreturnable');
 		}
 
@@ -610,8 +612,8 @@ class AccountController extends AbstractController {
 		$app->setSessionData($character);
 		switch ($logic) {
 			case 'play':
-				$user->setLastPlay(new \DateTime("now"));
-				$character->setLastAccess(new \DateTime("now"));
+				$user->setLastPlay(new DateTime("now"));
+				$character->setLastAccess(new DateTime("now"));
 				$character->setSlumbering(false);
 				if ($character->getSystem() == 'procd_inactive') {
 					$character->setSystem(NULL);
@@ -625,7 +627,7 @@ class AccountController extends AbstractController {
 				}
 				return $this->redirectToRoute('maf_char_recent');
 			case 'placenew':
-				$character->setLastAccess(new \DateTime("now"));
+				$character->setLastAccess(new DateTime("now"));
 				$character->setSlumbering(false);
 				if ($character->getSystem() == 'procd_inactive') {
 					$character->setSystem(NULL);
@@ -640,7 +642,7 @@ class AccountController extends AbstractController {
 				$em->flush();
 				return $this->redirectToRoute('maf_events_log', array('id'=>$character->getLog()->getId()));
 			case 'newbackground':
-				$character->setLastAccess(new \DateTime("now"));
+				$character->setLastAccess(new DateTime("now"));
 				$character->setSlumbering(false);
 				if ($character->getSystem() == 'procd_inactive') {
 					$character->setSystem(NULL);
@@ -655,7 +657,7 @@ class AccountController extends AbstractController {
 				return $this->redirectToRoute('maf_char_background');
 			case 'unretire':
 				# This should look a lot like 'placenew' above, because it's a very similar process ;) --Andrew, 20180213
-				$character->setLastAccess(new \DateTime("now"));
+				$character->setLastAccess(new DateTime("now"));
 				$character->setSlumbering(false);
 				if ($character->getSystem() == 'procd_inactive') {
 					$character->setSystem(NULL);

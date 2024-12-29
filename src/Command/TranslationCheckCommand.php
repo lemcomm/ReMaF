@@ -10,7 +10,7 @@ use Symfony\Component\Yaml\Yaml;
 
 class TranslationCheckCommand extends Command {
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:check')
 			->setDescription('Check translation files, output an updated file')
@@ -39,7 +39,7 @@ class TranslationCheckCommand extends Command {
 	}
 
 
-	private function recursive_check(OutputInterface $output, $level, $source, $target) {
+	private function recursive_check(OutputInterface $output, $level, $source, $target): void {
 		$spaces = str_repeat(" ", $level);
 		foreach ($source as $key=>$data) {
 			if (is_array($data)) {

@@ -19,7 +19,7 @@ use Doctrine\ORM\EntityRepository;
 
 class SoldierFoodType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'soldierfood_1998',
 			'translation_domain' => 'actions',
@@ -27,7 +27,7 @@ class SoldierFoodType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$settlements = $options['settlements'];
 
 		$builder->add('subject', TextType::class, array(

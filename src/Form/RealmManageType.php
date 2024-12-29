@@ -15,7 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RealmManageType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'realmmanage_13535',
 			'translation_domain' => 'politics',
@@ -24,7 +24,7 @@ class RealmManageType extends AbstractType {
 		$resolver->setRequired(['min','max', 'designations']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$min = $options['min']+1;
 		$max = $options['max'];
 		$designations = $options['designations'];

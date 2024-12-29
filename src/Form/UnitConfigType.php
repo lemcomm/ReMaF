@@ -4,13 +4,11 @@ namespace App\Form;
 
 use App\Entity\Settlement;
 use App\Entity\Unit;
-use App\Entity\UnitSettings;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ORM\EntityRepository;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -33,7 +31,7 @@ use Symfony\Component\Validator\Constraints\Positive;
  */
 class UnitConfigType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'unitsettings_1337',
 			'translation_domain' 	=> 'settings',
@@ -44,7 +42,7 @@ class UnitConfigType extends AbstractType {
 		$resolver->setRequired(['lord']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$lord = $options['lord'];
 		$unit = $builder->getData();
 		$settlements = $options['settlements'];

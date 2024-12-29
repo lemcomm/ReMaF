@@ -32,8 +32,11 @@ use App\Service\PermissionManager;
 use App\Service\Politics;
 use App\Service\Dispatcher\UnitDispatcher;
 use App\Twig\LinksExtension;
+use DateInterval;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -121,7 +124,7 @@ class ActionsController extends AbstractController {
 			$support->setCharacter($character);
 			$support->setType('support');
 			$support->setSupportedAction($action);
-			$support->setStarted(new \DateTime("now"));
+			$support->setStarted(new DateTime("now"));
 			$support->setHidden(false)->setCanCancel(true);
 			$support->setBlockTravel($action->getBlockTravel());
 			$em->persist($support);
@@ -174,7 +177,7 @@ class ActionsController extends AbstractController {
 			$oppose->setCharacter($character);
 			$oppose->setType('oppose');
 			$oppose->setOpposedAction($action);
-			$oppose->setStarted(new \DateTime("now"));
+			$oppose->setStarted(new DateTime("now"));
 			$oppose->setHidden(false)->setCanCancel(true);
 			$oppose->setBlockTravel($action->getBlockTravel());
 			$em->persist($oppose);
@@ -345,7 +348,7 @@ class ActionsController extends AbstractController {
 				// FIXME: this should NOT automatically remove my old ship, due to small abuse potential, but for now that's the fastest solution
 				$em->remove($his_ship);
 			}
-			$query = $em->createQuery("SELECT s FROM App:Ship s WHERE s.owner = :me")->setParameter('me', $character);
+			$query = $em->createQuery("SELECT s FROM App\Entity\Ship s WHERE s.owner = :me")->setParameter('me', $character);
 			$ship = $query->getOneOrNullResult();
 			if ($ship) {
 				$ship->setOwner($data['target']);
@@ -435,8 +438,8 @@ class ActionsController extends AbstractController {
 			$act->setType('settlement.take')->setCharacter($character);
 			$act->setTargetSettlement($settlement)->setTargetRealm($targetrealm);
 			$act->setBlockTravel(true);
-			$complete = new \DateTime("now");
-			$complete->add(new \DateInterval("PT".$time_to_take."S"));
+			$complete = new DateTime("now");
+			$complete->add(new DateInterval("PT".$time_to_take."S"));
 			$act->setComplete($complete);
 			$result = $this->actman->queue($act);
 
@@ -471,7 +474,7 @@ class ActionsController extends AbstractController {
 				);
 			}
 			$this->em->flush();
-			$endTime = new \DateTime("+ ".$time_to_take." Seconds");
+			$endTime = new DateTime("+ ".$time_to_take." Seconds");
 
 			if ($result) {
 				$this->addFlash('notice', $this->trans->trans('event.settlement.take.start', ["%time%"=>$endTime->format('Y-M-d H:i:s')], 'communication'));
@@ -581,8 +584,8 @@ class ActionsController extends AbstractController {
 						$soldiers += $unit->getSoldiers()->count();
 					}
 					$time_to_grant = round((sqrt($settlement->getPopulation()) + sqrt($soldiers))*3);
-					$complete = new \DateTime("now");
-					$complete->add(new \DateInterval("PT".$time_to_grant."M"));
+					$complete = new DateTime("now");
+					$complete->add(new DateInterval("PT".$time_to_grant."M"));
 					$act->setComplete($complete);
 					$result = $this->actman->queue($act);
 
@@ -685,8 +688,8 @@ class ActionsController extends AbstractController {
 				$act->setType('settlement.rename')->setCharacter($character);
 				$act->setTargetSettlement($settlement)->setStringValue($newname);
 				$act->setBlockTravel(true);
-				$complete = new \DateTime("now");
-				$complete->add(new \DateInterval("PT6H"));
+				$complete = new DateTime("now");
+				$complete->add(new DateInterval("PT6H"));
 				$act->setComplete($complete);
 				$result = $this->actman->queue($act);
 
@@ -787,10 +790,10 @@ class ActionsController extends AbstractController {
 
 		# This is here so we can abuse the fact that we know if we have permissions or not already.
 		if ($allowed) {
-			$query = $em->createQuery('SELECT t FROM App:Trade t JOIN t.source s JOIN t.destination d WHERE (t.source=:here OR t.destination=:here)');
+			$query = $em->createQuery('SELECT t FROM App\Entity\Trade t JOIN t.source s JOIN t.destination d WHERE (t.source=:here OR t.destination=:here)');
 			$query->setParameters(array('here'=>$settlement));
 		} else{
-			$query = $em->createQuery('SELECT t FROM App:Trade t JOIN t.source s JOIN t.destination d WHERE (t.source=:here OR t.destination=:here) AND (s.owner=:me OR d.owner=:me)');
+			$query = $em->createQuery('SELECT t FROM App\Entity\Trade t JOIN t.source s JOIN t.destination d WHERE (t.source=:here OR t.destination=:here) AND (s.owner=:me OR d.owner=:me)');
 			$query->setParameters(array('here'=>$settlement, 'me'=>$character));
 		}
 		$trades = $query->getResult();
@@ -844,7 +847,7 @@ class ActionsController extends AbstractController {
 				if ($trade->getAmount()>0) {
 					if ($trade->getSource()!=$settlement && $trade->getDestination()!=$settlement) {
 						$form->addError(new FormError("trade.allremote"));
-					} elseif ($trade->getSource()==$trade->getDestination()) {
+					} elseif ($trade->getSource()===$trade->getDestination()) {
 						$form->addError(new FormError("trade.same"));
 					} else {
 						// TODO: check if we don't already have such a deal (same source, destination and resource)
@@ -956,7 +959,7 @@ class ActionsController extends AbstractController {
 		}
 		$em = $this->em;
 
-		$query = $em->createQuery('SELECT e as type, p as provider FROM App:EntourageType e LEFT JOIN e.provider p LEFT JOIN p.buildings b
+		$query = $em->createQuery('SELECT e as type, p as provider FROM App\Entity\EntourageType e LEFT JOIN e.provider p LEFT JOIN p.buildings b
 			WHERE p.id IS NULL OR (b.settlement=:here AND b.active=true)');
 		$query->setParameter('here', $settlement);
 		$entourage = $query->getResult();
@@ -998,7 +1001,7 @@ class ActionsController extends AbstractController {
 					for ($i=0;$i<$amount;$i++) {
 						$trainer = $settlement->getBuildingByType($type->getProvider());
 						if (!$trainer) {
-							throw new \Exception("invalid trainer");
+							throw new Exception("invalid trainer");
 						}
 						if ($trainer->getResupply() < $type->getTraining()) {
 							$fail++;
@@ -1067,7 +1070,7 @@ class ActionsController extends AbstractController {
 				$act->setType('settlement.occupant')->setCharacter($character);
 				$act->setTargetSettlement($settlement)->setTargetCharacter($data['target']);
 				$act->setBlockTravel(true);
-				$complete = new \DateTime("+2 hours");
+				$complete = new DateTime("+2 hours");
 				$act->setComplete($complete);
 				$this->actman->queue($act);
 				$this->addFlash('notice', $this->trans->trans('event.settlement.occupant.start', ["%time%"=>$complete->format('Y-M-d H:i:s')], 'communication'));

@@ -9,7 +9,6 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Doctrine\ORM\EntityManager;
 
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\Positive;
@@ -24,7 +23,7 @@ use Symfony\Component\Validator\Constraints\Valid;
  */
 class SettlementPermissionsSetType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'sps_41312',
 			'translation_domain' => 'actions',
@@ -33,7 +32,7 @@ class SettlementPermissionsSetType extends AbstractType {
 		$resolver->setRequired(['lord', 'me', 's']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$lord = $options['lord'];
 		$me = $options['me'];
 		/** @var Settlement $settlement */

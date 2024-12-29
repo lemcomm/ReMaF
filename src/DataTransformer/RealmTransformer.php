@@ -14,25 +14,25 @@ class RealmTransformer implements DataTransformerInterface {
 	public function __construct(EntityManagerInterface $em) {
 		$this->em = $em;
 	}
-	public function transform($realm) {
-		if (null === $realm) {
+	public function transform($value): mixed {
+		if (null === $value) {
 			return "";
 		}
 
-		return $realm->getName();
+		return $value->getName();
 	}
 
-	public function reverseTransform($name) {
-		if (!$name) {
+	public function reverseTransform($value): mixed {
+		if (!$value) {
 			return null;
 		}
 
-		$realm = $this->em->getRepository(Realm::class)->findOneBy(['name'=>$name]);
+		$realm = $this->em->getRepository(Realm::class)->findOneBy(['name'=>$value]);
 
 		if (null === $realm) {
 			throw new TransformationFailedException(sprintf(
 				'Realm named "%s" does not exist!',
-				$name
+				$value
 			));
 		}
 		return $realm;

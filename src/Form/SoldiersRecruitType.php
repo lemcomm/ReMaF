@@ -22,7 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
  */
 class SoldiersRecruitType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'recruit_23469',
 			'attr'		=> array('class'=>'wide'),
@@ -37,7 +37,7 @@ class SoldiersRecruitType extends AbstractType {
 		$resolver->setRequired(['units','available_equipment']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$available = $options['available_equipment'];
 		$units = $options['units'];
 		$equipment = array();

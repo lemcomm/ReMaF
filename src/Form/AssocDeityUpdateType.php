@@ -13,7 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AssocDeityUpdateType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'updatedeity_1779',
 			'translation_domain' => 'orgs'
@@ -21,7 +21,7 @@ class AssocDeityUpdateType extends AbstractType {
 		$resolver->setRequired(['deity', 'aspects']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$aspects = $options['aspects'];
 		$deity = $options['deity'];
 		$deityAspects = [];

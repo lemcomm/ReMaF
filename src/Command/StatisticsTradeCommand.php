@@ -21,7 +21,7 @@ class StatisticsTradeCommand extends  Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:stats:trade')
 			->setDescription('statistics: trade network')
@@ -29,7 +29,7 @@ class StatisticsTradeCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): void {
 		$resource = $input->getArgument('resource');
 
 		$trades = $this->em->getRepository(Trade::class)->findAll();

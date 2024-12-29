@@ -14,7 +14,7 @@ use Doctrine\ORM\EntityRepository;
 
 class PlacePermissionsType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'placepermissions_68351',
 			'translation_domain' => 'places',
@@ -23,7 +23,7 @@ class PlacePermissionsType extends AbstractType {
 		$resolver->setRequired(['p', 'me']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$p = $options['p'];
 		$me = $options['me'];
 		$builder->add('place', EntityType::class, array(

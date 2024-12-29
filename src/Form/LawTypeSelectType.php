@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LawTypeSelectType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'law_313375',
 			'translation_domain' => 'orgs'
@@ -19,7 +19,7 @@ class LawTypeSelectType extends AbstractType {
 		$resolver->setRequired(['types']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 
 		$builder->add('target', EntityType::class, array(
 			'placeholder' => 'law.form.type.empty',

@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Service\AppState;
 use App\Service\MailManager;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,16 +13,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 
 class DailyNewsCommand extends Command {
-	private AppState $app;
-	private EntityManagerInterface $em;
-	private MailManager $mailer;
-	private TranslatorInterface $trans;
-
-	public function __construct(AppState $app, EntityManagerInterface $em, MailManager $mailer, TranslatorInterface $trans) {
-		$this->app = $app;
-		$this->em = $em;
-		$this->mailer = $mailer;
-		$this->trans = $trans;
+	public function __construct(private EntityManagerInterface $em, private MailManager $mailer, private TranslatorInterface $trans) {
 		parent::__construct();
 	}
 
@@ -41,12 +33,12 @@ class DailyNewsCommand extends Command {
 			we tell it immediately to sleep this execution a random full second value between 1 and 3 seconds.
 			We don't usually send many of these anyways, so this should never end up taking very long. */
 			sleep(rand(1,3));
-			$days = $user->getCreated()->diff(new \DateTime("now"), true)->days;
-			$fakestart = new \DateTime("2015-10-30");
-			$fakedays = $fakestart->diff(new \DateTime("now"), true)->days;
+			$days = $user->getCreated()->diff(new DateTime("now"), true)->days;
+			$fakestart = new DateTime("2015-10-30");
+			$fakedays = $fakestart->diff(new DateTime("now"), true)->days;
 			$days = min($days, $fakedays);
 			if ($user->getLastLogin()) {
-				$last = $user->getLastLogin()->diff(new \DateTime("now"), true)->days;
+				$last = $user->getLastLogin()->diff(new DateTime("now"), true)->days;
 			} else {
 				$last = -1;
 			}

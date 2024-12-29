@@ -17,7 +17,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LawEditType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'lawedit_43230',
 			'translation_domain' 	=> 'orgs',
@@ -29,7 +29,7 @@ class LawEditType extends AbstractType {
 		$resolver->setRequired(['type']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$type = $options['type']->getName();
 		$law = $options['law'];
 		$choices = $options['choices'];

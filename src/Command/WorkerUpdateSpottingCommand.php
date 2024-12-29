@@ -22,7 +22,7 @@ class WorkerUpdateSpottingCommand extends  Command {
 		parent::__construct();
 	}
 	
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:worker:spot:update')
 			->setDescription('Update spotting distance and visibility - worker component - do not call directly')

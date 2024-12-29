@@ -8,12 +8,12 @@ use App\Entity\PlaceType;
 use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Entity\Spawn;
-use App\Entity\User;
 use App\Service\DescriptionManager;
 use App\Service\History;
 use App\Service\RealmManager;
 use App\Service\UserManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,19 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
 class InitSpawnCommand extends  Command {
-
-	private EntityManagerInterface $em;
-	private RealmManager $rm;
-	private History $hist;
-	private DescriptionManager $dm;
-	private UserManager $um;
-
-	public function __construct(EntityManagerInterface $em, RealmManager $rm, History $hist, DescriptionManager $dm, UserManager $um) {
-		$this->em = $em;
-		$this->rm = $rm;
-		$this->hist = $hist;
-		$this->dm = $dm;
-		$this->um = $um;
+	public function __construct(private EntityManagerInterface $em, private RealmManager $rm, private History $hist, private DescriptionManager $dm, private UserManager $um) {
 		parent::__construct();
 	}
 	protected function configure(): void {
@@ -182,13 +170,13 @@ class InitSpawnCommand extends  Command {
 		return Command::SUCCESS;
 	}
 
-	protected function interact(InputInterface $input, OutputInterface $output) {
+	protected function interact(InputInterface $input, OutputInterface $output): void {
 		$helper = $this->getHelper('question');
 		if (!$input->getArgument('character')) {
 			$need = new Question('Which character ID shall be used to start the intial realm? ');
 			$need->setValidator(function ($char) {
 				if (empty($char)) {
-					throw new \Exception('Character ID cannot be empty!');
+					throw new Exception('Character ID cannot be empty!');
 				}
 				return $char;
 			});
@@ -198,7 +186,7 @@ class InitSpawnCommand extends  Command {
 			$need = new Question('Which settlement ID shall be the capital of the intial realm? ');
 			$need->setValidator(function ($realm) {
 				if (empty($realm)) {
-					throw new \Exception('Settlement ID cannot be empty!');
+					throw new Exception('Settlement ID cannot be empty!');
 				}
 				return $realm;
 			});
@@ -208,7 +196,7 @@ class InitSpawnCommand extends  Command {
 			$need = new Question('What shall the intial realm be called? ');
 			$need->setValidator(function ($realm) {
 				if (empty($realm)) {
-					throw new \Exception('Realm name cannot be empty!');
+					throw new Exception('Realm name cannot be empty!');
 				}
 				return $realm;
 			});
@@ -218,7 +206,7 @@ class InitSpawnCommand extends  Command {
 			$need = new Question('What shall the initial Place of Interest be called? ');
 			$need->setValidator(function ($place) {
 				if (empty($place)) {
-					throw new \Exception('Place name cannot be empty!');
+					throw new Exception('Place name cannot be empty!');
 				}
 				return $place;
 			});
@@ -228,7 +216,7 @@ class InitSpawnCommand extends  Command {
 			$need = new Question('What level of realm should be created (1->9, Baronet -> Empire)? ');
 			$need->setValidator(function ($realmLevel) {
 				if (empty($realmLevel)) {
-					throw new \Exception('Realm level cannot be empty!');
+					throw new Exception('Realm level cannot be empty!');
 				}
 				return $realmLevel;
 			});
@@ -238,7 +226,7 @@ class InitSpawnCommand extends  Command {
 			$need = new Question('What type of place should the initial place of interest be? ');
 			$need->setValidator(function ($placeType) {
 				if (empty($placeType)) {
-					throw new \Exception('Realm level cannot be empty!');
+					throw new Exception('Realm level cannot be empty!');
 				}
 				return $placeType;
 			});

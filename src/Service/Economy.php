@@ -654,7 +654,7 @@ class Economy {
 	this old code is more transparent, but takes a lot longer
 		$militia_bonus = round($settlement->getMilitia()->count() / 2);
 */
-		$query = $this->em->createQuery('SELECT count(s) FROM App:Soldier s JOIN s.base b WHERE b = :here AND s.training_required <= 0');
+		$query = $this->em->createQuery('SELECT count(s) FROM App\Entity\Soldier s JOIN s.base b WHERE b = :here AND s.training_required <= 0');
 		$query->setParameter('here', $settlement);
 		$militia_bonus = $query->getSingleScalarResult() * 0.5;
 		$workforce = $settlement->getAvailableWorkforce() + $militia_bonus;
@@ -703,7 +703,7 @@ class Economy {
 	}
 
 	public function ResourceFromBuildings(Settlement $settlement, ResourceType $resource) {
-		$query = $this->em->createQuery('SELECT r FROM App:BuildingResource r JOIN r.resource_type t JOIN r.building_type bt JOIN bt.buildings b JOIN b.settlement s WHERE s=:here AND t=:resource AND b.active=true AND (r.provides_operation>0 OR r.provides_operation_bonus>0)');
+		$query = $this->em->createQuery('SELECT r FROM App\Entity\BuildingResource r JOIN r.resource_type t JOIN r.building_type bt JOIN bt.buildings b JOIN b.settlement s WHERE s=:here AND t=:resource AND b.active=true AND (r.provides_operation>0 OR r.provides_operation_bonus>0)');
 		$query->setParameters(array('here'=>$settlement, 'resource'=>$resource));
 		$base = 0; $bonus = 0;
 		foreach ($query->getResult() as $result) {
@@ -784,7 +784,7 @@ class Economy {
 	}
 
 	public function ResourceForBuildingOperation(Settlement $settlement, ResourceType $resource) {
-		$query = $this->em->createQuery('SELECT r, b.focus FROM App:BuildingResource r JOIN r.resource_type t JOIN r.building_type bt JOIN bt.buildings b JOIN b.settlement s WHERE s=:here AND t=:resource AND b.active=true and r.requires_operation > 0');
+		$query = $this->em->createQuery('SELECT r, b.focus FROM App\Entity\BuildingResource r JOIN r.resource_type t JOIN r.building_type bt JOIN bt.buildings b JOIN b.settlement s WHERE s=:here AND t=:resource AND b.active=true and r.requires_operation > 0');
 		$query->setParameters(array('here'=>$settlement, 'resource'=>$resource));
 		$amount = 0;
 		foreach ($query->getResult() as $result) {
@@ -804,7 +804,7 @@ class Economy {
 	}
 
 	public function ResourceForBuildingConstruction(Settlement $settlement, ResourceType $resource) {
-		$query = $this->em->createQuery('SELECT b as building, r.requires_construction as required, bt.build_hours as buildHours FROM App:Building b JOIN b.type bt JOIN bt.resources r JOIN r.resource_type rt JOIN b.settlement s WHERE s=:here AND rt=:resource AND b.active=false');
+		$query = $this->em->createQuery('SELECT b as building, r.requires_construction as required, bt.build_hours as buildHours FROM App\Entity\Building b JOIN b.type bt JOIN bt.resources r JOIN r.resource_type rt JOIN b.settlement s WHERE s=:here AND rt=:resource AND b.active=false');
 		$query->setParameters(array('here'=>$settlement, 'resource'=>$resource));
 
 		$total = 0;
@@ -892,7 +892,7 @@ class Economy {
 			return $amount;
 		}
 
-		$query = $this->em->createQuery('SELECT t FROM App:Trade t WHERE t.resource_type = :resource AND (t.source = :here OR t.destination = :here)');
+		$query = $this->em->createQuery('SELECT t FROM App\Entity\Trade t WHERE t.resource_type = :resource AND (t.source = :here OR t.destination = :here)');
 		$query->setParameters(array('resource'=>$resource, 'here'=>$settlement));
 
 		foreach ($query->getResult() as $trade) {
@@ -1081,7 +1081,7 @@ class Economy {
 			$settlements = 0;
 			if ($settlement->getOwner()) {
 				$user = $settlement->getOwner()->getUser();
-				$query = $this->em->createQuery('SELECT count(s) FROM App:Settlement s JOIN s.owner c WHERE c.user = :user');
+				$query = $this->em->createQuery('SELECT count(s) FROM App\Entity\Settlement s JOIN s.owner c WHERE c.user = :user');
 				$query->setParameter('user', $user);
 				$settlements = $query->getSingleScalarResult();
 			}

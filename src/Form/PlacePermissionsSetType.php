@@ -10,7 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Valid;
 
 class PlacePermissionsSetType extends AbstractType {
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'pps_499912',
 			'data_class'		=> 'App\Entity\Place',
@@ -19,7 +19,7 @@ class PlacePermissionsSetType extends AbstractType {
 		$resolver->setRequired(['me', 'owner', 'p']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$owner = $options['owner'];
 		$me = $options['me'];
 		$p = $options['p'];

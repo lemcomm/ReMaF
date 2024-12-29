@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class AssocCreateRankType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'newassocrank_13349',
 			'translation_domain' => 'orgs'
@@ -24,7 +24,7 @@ class AssocCreateRankType extends AbstractType {
 		$resolver->setRequired(['ranks', 'me']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$ranks = $options['ranks'];
 		$me = $options['me'];
 		$builder->add('name', TextType::class, array(

@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,11 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
 class DemoteUserCommand extends  Command {
-
-	private EntityManagerInterface $em;
-
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 	protected function configure(): void {
@@ -49,7 +46,7 @@ class DemoteUserCommand extends  Command {
 			$need = new Question('Please supply a username: ');
 			$need->setValidator(function ($username) {
 				if (empty($username)) {
-					throw new \Exception('Username cannot be empty!');
+					throw new Exception('Username cannot be empty!');
 				}
 				return $username;
 			});
@@ -59,7 +56,7 @@ class DemoteUserCommand extends  Command {
 			$need = new Question('Please supply a role to be removed: ');
 			$need->setValidator(function ($role) {
 				if (empty($role)) {
-					throw new \Exception('Role cannot be empty!');
+					throw new Exception('Role cannot be empty!');
 				}
 				return $role;
 			});

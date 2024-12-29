@@ -2,8 +2,6 @@
 
 namespace App\Form;
 
-use App\Entity\RealmDesignation;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -13,14 +11,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RealmCreationType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'newrealm_1845',
 			'translation_domain' => 'politics'
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('name', TextType::class, array(
 			'label'=>'realm.name',
 			'required'=>true,

@@ -443,7 +443,7 @@ class GameController extends AbstractController {
 				"trade"=>array("label"=>$resource->getName()." trade", "data"=>array(), "yaxis"=>2)
 			);
 		}
-		$query = $this->em->createQuery('SELECT s FROM App:StatisticResources s WHERE s.cycle >= :start ORDER BY s.cycle ASC');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\StatisticResources s WHERE s.cycle >= :start ORDER BY s.cycle ASC');
 		$query->setParameters(array('start'=>$this->start_cycle));
 		foreach ($query->getResult() as $row) {
 			$cycle = $row->getCycle();
@@ -481,13 +481,13 @@ class GameController extends AbstractController {
 	
 	#[Route ('/game/techtree', name:'maf_game_techtree')]
 	public function techtreeAction(): Response {
-		$query = $this->em->createQuery('SELECT e from App:EquipmentType e');
+		$query = $this->em->createQuery('SELECT e from App\Entity\EquipmentType e');
 		$equipment = $query->getResult();
 
-		$query = $this->em->createQuery('SELECT e from App:EntourageType e');
+		$query = $this->em->createQuery('SELECT e from App\Entity\EntourageType e');
 		$entourage = $query->getResult();
 
-		$query = $this->em->createQuery('SELECT b from App:BuildingType b');
+		$query = $this->em->createQuery('SELECT b from App\Entity\BuildingType b');
 		$buildings = $query->getResult();
 
 		$descriptorspec = array(

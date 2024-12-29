@@ -19,7 +19,7 @@ use Doctrine\ORM\EntityRepository;
  */
 class SubrealmType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'estates_824',
 			'translation_domain' => 'politics',
@@ -28,7 +28,7 @@ class SubrealmType extends AbstractType {
 		$resolver->setRequired(['realm']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$realm = $options['realm'];
 		$realmtypes = array();
 		for ($i=1;$i<$realm->getType();$i++) {

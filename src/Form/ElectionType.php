@@ -13,7 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
 class ElectionType extends AbstractType {
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults([
 			'intention'       	=> 'election_23865',
 			'translation_domain' 	=> 'politics',
@@ -21,7 +21,7 @@ class ElectionType extends AbstractType {
 			'attr'			=> ['class'=>'wide']
 		]);
 	}
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('name', TextType::class, [
 			'label'=>'elections.title',
 			'required'=>true,

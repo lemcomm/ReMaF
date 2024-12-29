@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Service\CharacterManager;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -13,19 +14,11 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 
 class ProcessSlumbersCommand extends Command {
-
-	private CharacterManager $cm;
-	private EntityManagerInterface $em;
-	private LoggerInterface $log;
-
-	public function __construct(CharacterManager $cm, EntityManagerInterface $em, LoggerInterface $log) {
-		$this->cm = $cm;
-		$this->em = $em;
-		$this->log = $log;
+	public function __construct(private CharacterManager $cm, private EntityManagerInterface $em, private LoggerInterface $log) {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:slumbers')
 			->setDescription('Remove long time slumberers and double check positions are held by actives.')
@@ -42,7 +35,7 @@ class ProcessSlumbersCommand extends Command {
 		$this->log->info("Slumbers cleanup started...");
 		$output->writeln("<info>Slumbers cleanup started!</info>");
 
-		$now = new \DateTime('now');
+		$now = new DateTime('now');
 		$twomos = $now->modify('-60 days');
 		$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.last_access <= :date AND c.alive = true AND c.location IS NOT NULL AND (c.retired = false OR c.retired IS NULL)');
 		$query->setParameters(['date'=>$twomos]);

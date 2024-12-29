@@ -5,7 +5,6 @@ namespace App\Form;
 use App\Entity\Character;
 use App\Entity\Place;
 use App\Entity\Settlement;
-use App\Entity\Siege;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -28,7 +27,7 @@ use Doctrine\ORM\EntityRepository;
  */
 class SiegeType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'csrf_token_id'		=> 'siege_97',
 			'translation_domain'	=> 'actions',
@@ -37,7 +36,7 @@ class SiegeType extends AbstractType {
 		$resolver->setRequired(['character', 'location', 'siege']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$siege = $options['siege'];
 		$location = $options['location'];
 		$character = $options['character'];

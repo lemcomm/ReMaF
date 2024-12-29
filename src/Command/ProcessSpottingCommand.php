@@ -24,7 +24,7 @@ class ProcessSpottingCommand extends AbstractProcessCommand {
 	}
 
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:spotting')
 			->setDescription('Generate spotting alarms')

@@ -10,7 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SubscriptionType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'subscription_145615',
 			'all_levels'	=> false,
@@ -18,7 +18,7 @@ class SubscriptionType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$choices = array();
 		foreach ($options['all_levels'] as $i=>$level) {
 			if ($level["selectable"]) {

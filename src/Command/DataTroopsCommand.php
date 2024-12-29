@@ -9,15 +9,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class DataTroopsCommand extends Command {
-
-	private EntityManagerInterface $em;
-
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 		->setName('maf:data:troops')
 		->setDescription('data: troops location/density')

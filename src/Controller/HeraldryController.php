@@ -41,6 +41,7 @@ class HeraldryController extends AbstractController {
 			// TODO: repeat validation (if you have a charge, it needs a colour, etc.) - this should be in the form somewhere
 			if ($user->getCredits() < $crestfee) {
 				$form->addError(new FormError($trans->trans("design.poor"), null, array("%amount%"=>$user->getCredits())));
+				$valid = false;
 			}
 
 			if ($valid) {

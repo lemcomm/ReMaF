@@ -20,7 +20,7 @@ class StatisticsHeatmapCommand extends  Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 		->setName('maf:stats:heatmap')
 		->setDescription('statistics: generate the source data for various heatmaps')
@@ -29,7 +29,7 @@ class StatisticsHeatmapCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): void {
 		$since = $input->getArgument('since')?:0;
 
 		switch ($input->getArgument('which')) {
@@ -59,15 +59,15 @@ class StatisticsHeatmapCommand extends  Command {
 		}
 	}
 
-	private function header() {
+	private function header(): void {
 		echo '{"type":"FeatureCollection","features":['."\n";
 	}
 
-	private function footer() {
+	private function footer(): void {
 		echo "\n]}\n";
 	}
 
-	private function feature($id, $coordinates, $properties=null) {
+	private function feature($id, $coordinates, $properties=null): void {
 		if ($this->first) {
 			$this->first=false;
 		} else {
@@ -91,7 +91,7 @@ class StatisticsHeatmapCommand extends  Command {
 
 	}
 
-	private function map_familiarity() {
+	private function map_familiarity(): void {
 		$query = $this->em->createQuery('SELECT g.id, g.center, sum(f.amount) as total FROM App:RegionFamiliarity f JOIN f.geo_data g GROUP BY g');
 
 		foreach ($query->getResult() as $row) {
@@ -100,7 +100,7 @@ class StatisticsHeatmapCommand extends  Command {
 
 	}
 
-	private function map_battles() {
+	private function map_battles(): void {
 		$battles = $this->em->getRepository(BattleReport::class)->findAll();
 
 		foreach ($battles as $battle) {
@@ -114,7 +114,7 @@ class StatisticsHeatmapCommand extends  Command {
 		}
 	}
 
-	private function map_deaths($since) {
+	private function map_deaths($since): void {
 		$query = $this->em->createQuery('SELECT r FROM App:BattleReport r WHERE r.cycle >= :since');
 		$query->setParameter('since', $since);
 

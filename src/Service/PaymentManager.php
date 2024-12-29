@@ -133,7 +133,7 @@ class PaymentManager {
 		$storage = 0;
 		$credits = 0;
 		$bannedcount = 0;
-		$bannedquery = $this->em->createQuery("SELECT u FROM App:User u WHERE u.account_level > 0 AND u.roles LIKE '%ROLE_BANNED%'");
+		$bannedquery = $this->em->createQuery("SELECT u FROM App\Entity\User u WHERE u.account_level > 0 AND u.roles LIKE '%ROLE_BANNED%'");
 		foreach ($bannedquery->getResult() as $banned) {
 			$bannedcount++;
 			$this->changeSubscription($banned, 0);
@@ -147,7 +147,7 @@ class PaymentManager {
 		$uCount = 0;
 		$pledges = 0;
 		$skip = false;
-		$patronquery = $this->em->createQuery('SELECT u, p FROM App:User u JOIN u.patronizing p');
+		$patronquery = $this->em->createQuery('SELECT u, p FROM App\Entity\User u JOIN u.patronizing p');
 		$users = new ArrayCollection();
 		$now = new \DateTime("now");
 		$old = new \DateTime("-12 hours");
@@ -202,7 +202,7 @@ class PaymentManager {
 		$this->logger->info("Refreshed ".$pledges." pledges for ".$uCount." users.");
 
 		$now = new \DateTime("now");
-		$query = $this->em->createQuery('SELECT u FROM App:User u WHERE u.account_level > 0 AND u.paid_until < :now');
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\User u WHERE u.account_level > 0 AND u.paid_until < :now');
 		$query->setParameters(array('now'=>$now));
 
 		$this->logger->info("  User Subscription Processing...");
@@ -277,7 +277,7 @@ class PaymentManager {
 			}
 		}
 		$this->logger->info("  Updating Limits...");
-		$query = $this->em->createQuery('SELECT u FROM App:User u');
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\User u');
 		$now = new \DateTime("now");
 		foreach ($query->getResult() as $user) {
 			/** @var UserLimits $limits */
@@ -587,7 +587,7 @@ class PaymentManager {
 
 			if (!in_array($src, $this->patreonAlikes)) {
 				// check if we had a friend code
-				$query = $this->em->createQuery('SELECT c FROM App:Code c WHERE c.used_by = :me AND c.sender IS NOT NULL AND c.sender != :me ORDER BY c.used_on ASC');
+				$query = $this->em->createQuery('SELECT c FROM App\Entity\Code c WHERE c.used_by = :me AND c.sender IS NOT NULL AND c.sender != :me ORDER BY c.used_on ASC');
 				$query->setParameter('me', $user);
 				$query->setMaxResults(1);
 				$code = $query->getOneOrNullResult();

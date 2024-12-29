@@ -10,7 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AssocDeityWordsType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'wordsdeity_1779',
 			'translation_domain' => 'orgs'
@@ -18,7 +18,7 @@ class AssocDeityWordsType extends AbstractType {
 		$resolver->setRequired('deity');
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$deity = $options['deity'];
 		$builder->add('words', TextareaType::class, array(
 			'label'=>'deity.form.new.words',

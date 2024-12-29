@@ -20,15 +20,13 @@ class ProcessBattlesCommand extends Command {
 
 	private EntityManagerInterface $em;
 	private BattleRunner $br;
-	private LoggerInterface $log;
 	private WarManager $wm;
 	private CommonService $cs;
 
-	public function __construct(BattleRunner $br, CommonService $cs, EntityManagerInterface $em, LoggerInterface $log, WarManager $wm) {
+	public function __construct(BattleRunner $br, CommonService $cs, EntityManagerInterface $em, WarManager $wm) {
 		$this->br = $br;
 		$this->cs = $cs;
 		$this->em = $em;
-		$this->log = $log;
 		$this->wm = $wm;
 		parent::__construct();
 	}

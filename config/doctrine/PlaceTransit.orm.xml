@@ -8,7 +8,7 @@
 		<many-to-one field="type" target-entity="TransitType"/>
 		<many-to-one field="fromPlace" target-entity="Place" inversed-by="exits"/>
 		<many-to-one field="toPlace" target-entity="Place" inversed-by="entrances"/>
-		<one-to-many field="characters" target-entity="Character" mapped-by="usingTransit"/>
+		<one-to-many field="characters" target-entity="Character" mapped-by="usingPlaceTransit"/>
 
 		<field name="travelTime" type="float"/>
 		<field name="direction" type="string" length="16"/>

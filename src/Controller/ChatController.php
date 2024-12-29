@@ -29,15 +29,15 @@ class ChatController extends AbstractController {
 		if (in_array($decode, ['s', 'p', 'd'])) {
 			if ($here->getChatMembers()->contains($char)) {
 				if ($decode === 's') {
-					$new = $this->em->createQuery('SELECT m, c FROM App:ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.settlement = :here ORDER BY m.id DESC')
+					$new = $this->em->createQuery('SELECT m, c FROM App\Entity\ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.settlement = :here ORDER BY m.id DESC')
 						->setParameters(['id'=>$msg->getId(), 'here'=>$here])
 						->getResult();
 				} elseif ($decode === 'p') {
-					$new = $this->em->createQuery('SELECT m, c FROM App:ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.place = :here ORDER BY m.id DESC')
+					$new = $this->em->createQuery('SELECT m, c FROM App\Entity\ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.place = :here ORDER BY m.id DESC')
 						->setParameters(['id'=>$msg->getId(), 'here'=>$here])
 						->getResult();
 				} elseif ($decode === 'd') {
-					$new = $this->em->createQuery('SELECT m, c FROM App:ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.party = :here ORDER BY m.id DESC')
+					$new = $this->em->createQuery('SELECT m, c FROM App\Entity\ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.party = :here ORDER BY m.id DESC')
 						->setParameters(['id'=>$msg->getId(), 'here'=>$here])
 						->getResult();
 				} else {
@@ -86,7 +86,7 @@ class ChatController extends AbstractController {
 		return false;
 	}
 
-	private function parseChatForm(FormInterface $chat, string $where, $here, Character $char) {
+	private function parseChatForm(FormInterface $chat, string $where, $here, Character $char): void {
 		/** @var ChatMessage $msg */
 		$msg = $chat->getData();
 		$msg->setSender($char);

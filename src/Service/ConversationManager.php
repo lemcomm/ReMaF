@@ -28,61 +28,61 @@ class ConversationManager {
 	}
 
         public function getConversations(Character $char): mixed {
-                $query = $this->em->createQuery('SELECT c FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me ORDER BY c.realm ASC, c.updated DESC');
+                $query = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me ORDER BY c.realm ASC, c.updated DESC');
                 $query->setParameter('me', $char);
                 return $query->getResult();
         }
 
         public function getOrgConversations(Character $char): mixed {
-                $query = $this->em->createQuery('SELECT c FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL) ORDER BY c.updated DESC');
+                $query = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL) ORDER BY c.updated DESC');
                 $query->setParameter('me', $char);
                 return $query->getResult();
         }
 
         public function getPrivateConversations(Character $char): mixed {
-                $query = $this->em->createQuery('SELECT c FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND c.realm IS NULL AND c.house IS NULL AND c.association IS NULL ORDER BY c.updated DESC');
+                $query = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND c.realm IS NULL AND c.house IS NULL AND c.association IS NULL ORDER BY c.updated DESC');
                 $query->setParameter('me', $char);
                 return $query->getResult();
         }
 
         public function getConversationsCount(Character $char): mixed {
-                $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me');
+                $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
         public function getOrgConversationsCount(Character $char): mixed {
-                $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL)');
+                $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL)');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
         public function getPrivateConversationsCount(Character $char): mixed {
-                $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND c.realm IS NULL AND c.house IS NULL');
+                $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND c.realm IS NULL AND c.house IS NULL');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
         public function getActiveConversationsCount(Character $char): mixed {
-                $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true');
+                $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
         public function getActiveOrgConversationsCount(Character $char): mixed {
-                $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL)');
+                $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL)');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
         public function getActivePrivateConversationsCount(Character $char): mixed {
-                $query = $this->em->createQuery('SELECT count(c.id) FROM App:Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true AND c.realm IS NULL AND c.house IS NULL AND c.association IS NULL');
+                $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true AND c.realm IS NULL AND c.house IS NULL AND c.association IS NULL');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
         public function getLegacyContacts(Character $char): mixed {
-                $query = $this->em->createQuery('SELECT c FROM App:Character c JOIN c.conv_permissions p JOIN p.conversation t WHERE t IN (SELECT conv FROM App:Conversation conv JOIN conv.permissions perm WHERE perm.character = :me AND perm.active = TRUE) and c.alive = true and (c.retired = false OR c.retired is null)');
+                $query = $this->em->createQuery('SELECT c FROM App\Entity\Character c JOIN c.conv_permissions p JOIN p.conversation t WHERE t IN (SELECT conv FROM App\Entity\Conversation conv JOIN conv.permissions perm WHERE perm.character = :me AND perm.active = TRUE) and c.alive = true and (c.retired = false OR c.retired is null)');
                 $query->setParameter('me', $char);
                 return $query->getResult();
 	}
@@ -98,7 +98,7 @@ class ConversationManager {
         }
 
         public function getActivePrivatePermissions(Character $char): ArrayCollection {
-                $query = $this->em->createQuery('SELECT p FROM App:ConversationPermission p JOIN p.conversation c WHERE p.active = true and c.realm is null and c.house is null AND c.association IS NULL and p.character = :me');
+                $query = $this->em->createQuery('SELECT p FROM App\Entity\ConversationPermission p JOIN p.conversation c WHERE p.active = true and c.realm is null and c.house is null AND c.association IS NULL and p.character = :me');
                 $query->setParameters(['me'=>$char]);
                 return new ArrayCollection($query->getResult());
         }
@@ -109,13 +109,13 @@ class ConversationManager {
                 $now = new DateTime("now");
 
                 # Get all the permissions that end after the earliest date or don't have an end set (are null) that are for our character and where the associated conversation actually has relevant messages.
-                $query = $this->em->createQuery('SELECT p.id as perm, c.id as conv, p.start_time as start, p.end_time FROM App:ConversationPermission p JOIN p.conversation c WHERE p.character = :me AND (p.end_time > :start_time OR p.end_time IS NULL) AND (c.updated >= :start_time)');
+                $query = $this->em->createQuery('SELECT p.id as perm, c.id as conv, p.start_time as start, p.end_time FROM App\Entity\ConversationPermission p JOIN p.conversation c WHERE p.character = :me AND (p.end_time > :start_time OR p.end_time IS NULL) AND (c.updated >= :start_time)');
                 $query->setParameters(['start_time' => $startTime, 'me' => $char]);
                 $perms = $query->getResult();
 
                 # Variable preparation. $megaString is used for our main query.
                 $allPerms = [];
-                $megaString = 'SELECT m, c, p FROM App:Message m JOIN m.sender p JOIN m.conversation c WHERE';
+                $megaString = 'SELECT m, c, p FROM App\Entity\Message m JOIN m.sender p JOIN m.conversation c WHERE';
                 $first = true;
                 $i = 1;
                 $sets = [];
@@ -194,11 +194,11 @@ class ConversationManager {
                 $allMsgs = $megaQuery->getResult();
 
                 # Update permissions for conversations that we've viewed to show that we've viewed them.
-                $query = $this->em->createQuery('UPDATE App:ConversationPermission p SET p.unread = 0, p.last_access = :date WHERE p in (:perms)');
+                $query = $this->em->createQuery('UPDATE App\Entity\ConversationPermission p SET p.unread = 0, p.last_access = :date WHERE p in (:perms)');
                 $query->setParameters(['date'=>$now, 'perms'=>$allPerms]);
                 $query->execute();
                 if ($local) {
-                        $query = $this->em->createQuery('UPDATE App:Message m SET m.read = TRUE WHERE m.conversation = :local AND m.sent >= :startTime');
+                        $query = $this->em->createQuery('UPDATE App\Entity\Message m SET m.read = TRUE WHERE m.conversation = :local AND m.sent >= :startTime');
                         $query->setParameters(['local'=>$local, 'startTime'=>$startTime]);
                         $query->execute();
                 }
@@ -265,19 +265,19 @@ class ConversationManager {
                         return true; #Realm conversations are managed separately.
                 }
 
-                $query = $this->em->createQuery('SELECT count(p.id) FROM App:ConversationPermission p WHERE p.character != :me AND p.conversation = :conv AND p.owner = true AND p.active = true');
+                $query = $this->em->createQuery('SELECT count(p.id) FROM App\Entity\ConversationPermission p WHERE p.character != :me AND p.conversation = :conv AND p.owner = true AND p.active = true');
                 $query->setParameters(['me'=>$char, 'conv'=>$conv]);
                 if ($query->getSingleScalarResult() > 0) {
                         return true; # We already have another owner.
                 }
 
-                $query = $this->em->createQuery('SELECT p FROM App:ConversationPermission p WHERE p.character != :me AND p.conversation = :conv AND p.manager = true AND p.active = true ORDER BY p.start_time ASC');
+                $query = $this->em->createQuery('SELECT p FROM App\Entity\ConversationPermission p WHERE p.character != :me AND p.conversation = :conv AND p.manager = true AND p.active = true ORDER BY p.start_time ASC');
                 $query->setParameters(['me'=>$char, 'conv'=>$conv]);
                 $options = $query->getResult();
                 if (count($options) > 0) {
                         $options[0]->setOwner(true);
                 } else {
-                        $query = $this->em->createQuery('SELECT p FROM App:ConversationPermission p WHERE p.character != :me AND p.conversation = :conv AND p.active = true ORDER BY p.start_time ASC');
+                        $query = $this->em->createQuery('SELECT p FROM App\Entity\ConversationPermission p WHERE p.character != :me AND p.conversation = :conv AND p.active = true ORDER BY p.start_time ASC');
                         $query->setParameters(['me'=>$char, 'conv'=>$conv]);
                         $options = $query->getResult();
                         if (count($options) > 0) {
@@ -346,7 +346,7 @@ class ConversationManager {
                         $new->setRecipientCount($count);
                         $new->setConversation($conv);
                         $conv->setUpdated($now);
-			$stats = $this->em->createQuery('SELECT s FROM App:StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
+			$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
 			if ($stats) {
 				/** @var StatisticGlobal $stats */
 				$stats->setNewMessages($stats->getNewMessages()+1);
@@ -432,7 +432,7 @@ class ConversationManager {
                                 $mine = $msg;
                         }
                 }
-		$stats = $this->em->createQuery('SELECT s FROM App:StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
+		$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
 		if ($stats) {
 			/** @var StatisticGlobal $stats */
 			$stats->setNewMessages($stats->getNewMessages()+1);
@@ -524,7 +524,7 @@ class ConversationManager {
                                 $added[] = $recipient;
                         }
                 }
-		$stats = $this->em->createQuery('SELECT s FROM App:StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
+		$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
 		if ($stats) {
 			/** @var StatisticGlobal $stats */
 			$stats->setNewConversations($stats->getNewConversations()+1);

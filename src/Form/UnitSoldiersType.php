@@ -28,7 +28,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class UnitSoldiersType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'soldiersmanage_1533',
 			'translation_domain' => 'actions'
@@ -36,7 +36,7 @@ class UnitSoldiersType extends AbstractType {
 		$resolver->setRequired(['soldiers', 'available_resupply', 'available_training', 'others', 'reassign', 'unit', 'me', 'hasUnitPerm']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		if (is_array($options['soldiers'])) {
 			$soldiers = $options['soldiers'];
 		} else {

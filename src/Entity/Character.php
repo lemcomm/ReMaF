@@ -36,6 +36,7 @@ class Character extends CharacterBase {
 	private ?MapRegion $insideRegion = null;
 	private ?MapRegion $movingToRegion = null;
 	private ?MapTransit $usingMapTransit = null;
+	private ?PlaceTransit $usingPlaceTransit = null;
 	private ?int $travelTime = null;
 	private ?Point $location = null;
 	private ?LineString $travel = null;
@@ -3790,6 +3791,15 @@ class Character extends CharacterBase {
 		} else {
 			$this->withdrawLevel = 0.25;
 		}
+		return $this;
+	}
+
+	public function getUsingPlaceTransit(): ?PlaceTransit {
+		return $this->usingPlaceTransit;
+	}
+
+	public function setUsingPlaceTransit(?PlaceTransit $usingPlaceTransit): static {
+		$this->usingPlaceTransit = $usingPlaceTransit;
 		return $this;
 	}
 }

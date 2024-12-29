@@ -25,7 +25,7 @@ class ProcessTravelCommand extends AbstractProcessCommand {
 		parent::__construct($em);
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:travel')
 			->setDescription('Update travel')
@@ -49,7 +49,7 @@ class ProcessTravelCommand extends AbstractProcessCommand {
 		return Command::SUCCESS;
 	}
 
-	private function travelPreUpdates() {
+	private function travelPreUpdates(): void {
 		// fix up characters who for whatever reason have an invalid progress column
 		$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.travel IS NOT NULL AND (c.progress IS NULL OR c.speed IS NULL)');
 		foreach ($query->getResult() as $char) {
@@ -68,7 +68,7 @@ class ProcessTravelCommand extends AbstractProcessCommand {
 		$query->execute();
 	}
 
-	private function travelPostUpdates() {
+	private function travelPostUpdates(): void {
 		// everyone still travelling - update progress
 		$query = $this->em->createQuery('UPDATE App:Character c SET c.location=ST_Line_Interpolate_Point(c.travel, c.progress) WHERE c.travel IS NOT NULL AND c.travel_locked = false');
 		$query->execute();

@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityRepository;
 
 class EntourageManageType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'entouragemanage_1456',
 			'translation_domain' => 'actions',
@@ -24,7 +24,7 @@ class EntourageManageType extends AbstractType {
 		$resolver->setRequired(['entourage']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('npcs', FormType::class);
 
 		foreach ($options['entourage'] as $npc) {

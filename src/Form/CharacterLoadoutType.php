@@ -12,7 +12,7 @@ use App\Entity\EquipmentType;
 
 class CharacterLoadoutType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'characterloadout_19',
 			'translation_domain' => 'settings',
@@ -23,7 +23,7 @@ class CharacterLoadoutType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
                 $builder->add('weapon', EntityType::class, array(
                         'label'=>'loadout.weapon',
                         'placeholder'=>'loadout.none',

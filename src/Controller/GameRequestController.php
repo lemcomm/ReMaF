@@ -71,7 +71,7 @@ class GameRequestController extends AbstractController {
 				}
 				break;
 			case 'oath.offer':
-				if ($id->getToSettlement() && ($id->getToSettlement()->getOwner() != $char)) {
+				if ($id->getToSettlement() && ($id->getToSettlement()->getOwner() !== $char)) {
 					$result = false;
 				} elseif ($id->getToPlace()) {
 					if ($id->getToPlace()->isOwner($char)) {
@@ -118,7 +118,7 @@ class GameRequestController extends AbstractController {
 						array('%link-character%'=>$id->getFromCharacter()->getId()),
 						History::LOW, true
 					);
-					if ($character == $settlement->getOwner()) {
+					if ($character === $settlement->getOwner()) {
 						$this->hist->logEvent(
 							$id->getFromCharacter(),
 							'event.military.supplied.food.start',
@@ -312,7 +312,7 @@ class GameRequestController extends AbstractController {
 				if ($allowed) {
 					$target = $id->getToRealm();
 					$realm = $id->getFromRealm();
-					$query = $em->createQuery("DELETE FROM App:GameRequest r WHERE r.type = 'realm.join' AND r.id != :id AND r.from_realm = :realm");
+					$query = $em->createQuery("DELETE FROM App\Entity\GameRequest r WHERE r.type = 'realm.join' AND r.id != :id AND r.from_realm = :realm");
 					$query->setParameters(['id'=>$id->getId(), 'realm'=>$realm->getId()]);
 
 					$realm->setSuperior($target);
@@ -474,7 +474,7 @@ class GameRequestController extends AbstractController {
 			case 'house.join':
 				if ($allowed) {
 					$house = $id->getToHouse();
-					$query = $em->createQuery("DELETE FROM App:GameRequest r WHERE r.type = 'house.join' AND r.id != :id AND r.from_character = :char");
+					$query = $em->createQuery("DELETE FROM App\Entity\GameRequest r WHERE r.type = 'house.join' AND r.id != :id AND r.from_character = :char");
 					$query->setParameters(['id'=>$id->getId(), 'char'=>$character->getId()]);
 					$this->hist->logEvent(
 						$id->getFromCharacter(),
@@ -508,7 +508,7 @@ class GameRequestController extends AbstractController {
 			case 'oath.offer':
 				if ($allowed) {
 					$character = $id->getFromCharacter();
-					$query = $em->createQuery("DELETE FROM App:GameRequest r WHERE r.type = 'oath.offer' AND r.id != :id AND r.from_character = :char");
+					$query = $em->createQuery("DELETE FROM App\Entity\GameRequest r WHERE r.type = 'oath.offer' AND r.id != :id AND r.from_character = :char");
 					$query->setParameters(['id'=>$id->getId(), 'char'=>$character->getId()]);
 					if ($settlement = $id->getToSettlement()) {
 						$this->hist->logEvent(
@@ -622,7 +622,7 @@ class GameRequestController extends AbstractController {
 			case 'house.cadet':
 				if ($allowed) {
 					$house = $id->getToHouse();
-					$query = $em->createQuery("DELETE FROM App:GameRequest r WHERE r.type = 'house.cadet' AND r.id != :id AND r.from_house = :house");
+					$query = $em->createQuery("DELETE FROM App\Entity\GameRequest r WHERE r.type = 'house.cadet' AND r.id != :id AND r.from_house = :house");
 					$query->setParameters(['id'=>$id->getId(), 'house'=>$id->getFromHouse()->getId()]);
 					$this->hist->logEvent(
 						$id->getFromHouse(),

@@ -15,14 +15,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class SettlementAbandonType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'	=> 'settlementabandon_490',
 			'translation_domain' => 'actions'
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('keep', CheckboxType::class, array(
 			'label' => 'control.abandon.keep',
 			'required' => false

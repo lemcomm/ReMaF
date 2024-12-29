@@ -359,7 +359,7 @@ class PlaceController extends AbstractController {
 		}
 
 		#Now generate the list of things we can build!
-		$query = $this->em->createQuery("select p from App:PlaceType p where (p.requires in (:rights) OR p.requires IS NULL) AND p.visible = TRUE")->setParameter('rights', $rights);
+		$query = $this->em->createQuery("select p from App\Entity\PlaceType p where (p.requires in (:rights) OR p.requires IS NULL) AND p.visible = TRUE")->setParameter('rights', $rights);
 
 		$form = $this->createForm(PlaceNewType::class, null, ['types'=>$query->getResult(), 'realms' => $character->findRealms()]);
 		$form->handleRequest($request);

@@ -112,7 +112,7 @@ class RealmController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$query = $em->createQuery('SELECT r FROM App:RealmRelation r WHERE r.source_realm = :me OR r.target_realm = :me');
+		$query = $em->createQuery('SELECT r FROM App\Entity\RealmRelation r WHERE r.source_realm = :me OR r.target_realm = :me');
 		$query->setParameter('me', $realm);
 
 		$diplomacy = array();
@@ -223,11 +223,11 @@ class RealmController extends AbstractController {
 			$max = 0;
 		}
 		if ($character->getUser()->getLimits()->getRealmPack()) {
-			$desigs = $this->em->createQuery('SELECT r FROM App:RealmDesignation r WHERE r.min_tier >= :type AND r.max_tier <= :type ORDER BY r.max_tier DESC, r.name ASC')
+			$desigs = $this->em->createQuery('SELECT r FROM App\Entity\RealmDesignation r WHERE r.min_tier >= :type AND r.max_tier <= :type ORDER BY r.max_tier DESC, r.name ASC')
 				->setParameters(['type'=>$realm->getType()])
 				->getResult();
 		} else {
-			$desigs = $this->em->createQuery('SELECT r FROM App:RealmDesignation r WHERE r.min_tier >= :type AND r.max_tier <= :type AND r.paid = false ORDER BY r.max_tier DESC, r.name ASC')
+			$desigs = $this->em->createQuery('SELECT r FROM App\Entity\RealmDesignation r WHERE r.min_tier >= :type AND r.max_tier <= :type AND r.paid = false ORDER BY r.max_tier DESC, r.name ASC')
 				->setParameters(['type'=>$realm->getType()])
 				->getResult();
 		}
@@ -725,7 +725,7 @@ class RealmController extends AbstractController {
 		]);
 	}
 
-	private function addToHierarchy(Realm $realm) {
+	private function addToHierarchy(Realm $realm): void {
 		if (!isset($this->hierarchy[$realm->getId()])) {
 			$this->hierarchy[$realm->getId()] = $realm;
 			if ($realm->getSuperior()) {
@@ -1121,14 +1121,14 @@ class RealmController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$query = $em->createQuery('SELECT r FROM App:RealmRelation r WHERE r.source_realm = :me AND r.target_realm = :they');
+		$query = $em->createQuery('SELECT r FROM App\Entity\RealmRelation r WHERE r.source_realm = :me AND r.target_realm = :they');
 		$query->setParameters(array(
 			'me' => $realm,
 			'they' => $target
 		));
 		$we_to_them = $query->getOneOrNullResult();
 
-		$query = $em->createQuery('SELECT r FROM App:RealmRelation r WHERE r.source_realm = :they AND r.target_realm = :me');
+		$query = $em->createQuery('SELECT r FROM App\Entity\RealmRelation r WHERE r.source_realm = :they AND r.target_realm = :me');
 		$query->setParameters(array(
 			'me' => $realm,
 			'they' => $target

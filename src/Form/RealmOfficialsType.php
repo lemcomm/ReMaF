@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityRepository;
 
 class RealmOfficialsType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'realmofficials_96532',
 			'translation_domain' => 'politics',
@@ -21,7 +21,7 @@ class RealmOfficialsType extends AbstractType {
 		$resolver->setRequired(['holders', 'candidates']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$candidates = $options['candidates'];
 		$holders = $options['holders'];
 		$candidatesIDs = [];

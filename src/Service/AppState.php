@@ -96,7 +96,7 @@ class AppState {
 			}
 			#$this->session->set('soldiers', $character->getLivingSoldiers()->count());
 			#$this->session->set('entourage', $character->getLivingEntourage()->count());
-			$query = $this->em->createQuery('SELECT s.id, s.name FROM App:Settlement s WHERE s.owner = :me');
+			$query = $this->em->createQuery('SELECT s.id, s.name FROM App\Entity\Settlement s WHERE s.owner = :me');
 			$query->setParameter('me', $character);
 			$settlements = array();
 			foreach ($query->getResult() as $row) {
@@ -182,10 +182,10 @@ class AppState {
 	 * Logs a given user if they have $user->getWatched set to true or if $alwaysLog is set to true.
 	 * @param $user
 	 * @param string $route
-	 * @param false $alwaysLog
+	 * @param bool $alwaysLog
 	 * @return void
 	 */
-	public function logUser($user, string $route, false $alwaysLog = false): void {
+	public function logUser($user, string $route, bool $alwaysLog = false): void {
 		$ip = $this->findIp();
 		$agent = $_SERVER['HTTP_USER_AGENT'];
 		if ($user) {

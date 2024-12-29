@@ -122,7 +122,7 @@ class NewsManager {
 	}
 
 	public function latestEdition(NewsPaper $paper) {
-		$query = $this->em->createQuery('SELECT e FROM App:NewsEdition e WHERE e.paper = :paper AND e.published IS NOT NULL ORDER BY e.number DESC');
+		$query = $this->em->createQuery('SELECT e FROM App\Entity\NewsEdition e WHERE e.paper = :paper AND e.published IS NOT NULL ORDER BY e.number DESC');
 		$query->setParameters(array('paper'=>$paper));
 		$query->setMaxResults(1);
 		return $query->getOneOrNullResult();

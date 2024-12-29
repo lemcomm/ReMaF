@@ -18,7 +18,7 @@ class PromoteUserCommand extends  Command {
 		$this->em = $em;
 		parent::__construct();
 	}
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:user:promote')
 			->setDescription('Adds a role to a user')
@@ -43,7 +43,7 @@ class PromoteUserCommand extends  Command {
 		return Command::SUCCESS;
 	}
 
-	protected function interact(InputInterface $input, OutputInterface $output) {
+	protected function interact(InputInterface $input, OutputInterface $output): void {
 		$helper = $this->getHelper('question');
 		if (!$input->getArgument('username')) {
 			$need = new Question('User(name) to promote: ');

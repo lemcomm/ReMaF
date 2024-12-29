@@ -4,8 +4,6 @@ namespace App\Command;
 
 use App\Entity\BattleReport;
 use App\Entity\BattleReportGroup;
-use App\Entity\Character;
-use App\Service\CharacterManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -13,11 +11,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DebugRemoveBattleCommand extends Command {
-	public function __construct(private EntityManagerInterface $em) {
+	public function __construct(private readonly EntityManagerInterface $em) {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:debug:remove:battlereport')
 			->setDescription('Debug command for removing excessive (or broken) battle reports')
@@ -25,7 +23,7 @@ class DebugRemoveBattleCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$id = $input->getArgument('battleReportId');
 		$output->writeln("Looking for BattleReport #".$id);
 		$em = $this->em;

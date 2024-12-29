@@ -11,13 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DebugDiscordCommand extends Command {
-
-	private EntityManagerInterface $em;
-	private NotificationManager $nm;
-
-	public function __construct(EntityManagerInterface $em, NotificationManager $nm) {
-		$this->em = $em;
-		$this->nm = $nm;
+	public function __construct(private EntityManagerInterface $em, private NotificationManager $nm) {
 		parent::__construct();
 	}
 

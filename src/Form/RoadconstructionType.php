@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityRepository;
 class RoadconstructionType extends AbstractType {
 
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'roadconstruction_0345',
 			'translation_domain' 	=> 'actions',
@@ -26,7 +26,7 @@ class RoadconstructionType extends AbstractType {
 
 // FIXME: why don't I go on the entity here and access the workers variable directly ??
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('existing', FormType::class);
 
 		foreach ($options['roads'] as $data) {

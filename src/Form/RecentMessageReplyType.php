@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RecentMessageReplyType extends AbstractType {
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'recent_reply_93',
 			'translation_domain' => 'conversations',
@@ -21,7 +21,7 @@ class RecentMessageReplyType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$target = ['local'=>'conversation.target.local'];
 		if ($options['place']) {
 			$target['place'] = 'conversation.target.place';

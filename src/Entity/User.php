@@ -288,7 +288,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		return $this;
 	}
 
-	public function eraseCredentials() {
+	public function eraseCredentials(): void {
 		// If you store any temporary, sensitive data on the user, clear it here
 		// $this->plainPassword = null;
 	}
@@ -839,7 +839,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param Description $descriptions
 	 */
-	public function removeDescription(Description $descriptions) {
+	public function removeDescription(Description $descriptions): void {
 		$this->descriptions->removeElement($descriptions);
 	}
 
@@ -870,7 +870,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param UserPayment $payments
 	 */
-	public function removePayment(UserPayment $payments) {
+	public function removePayment(UserPayment $payments): void {
 		$this->payments->removeElement($payments);
 	}
 
@@ -901,7 +901,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param CreditHistory $creditHistory
 	 */
-	public function removeCreditHistory(CreditHistory $creditHistory) {
+	public function removeCreditHistory(CreditHistory $creditHistory): void {
 		$this->credit_history->removeElement($creditHistory);
 	}
 
@@ -932,7 +932,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param Character $characters
 	 */
-	public function removeCharacter(Character $characters) {
+	public function removeCharacter(Character $characters): void {
 		$this->characters->removeElement($characters);
 	}
 
@@ -954,7 +954,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param CharacterRating $ratingsGiven
 	 */
-	public function removeRatingsGiven(CharacterRating $ratingsGiven) {
+	public function removeRatingsGiven(CharacterRating $ratingsGiven): void {
 		$this->ratings_given->removeElement($ratingsGiven);
 	}
 
@@ -985,7 +985,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param CharacterRatingVote $ratingVotes
 	 */
-	public function removeRatingVote(CharacterRatingVote $ratingVotes) {
+	public function removeRatingVote(CharacterRatingVote $ratingVotes): void {
 		$this->rating_votes->removeElement($ratingVotes);
 	}
 
@@ -1016,7 +1016,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param Artifact $artifacts
 	 */
-	public function removeArtifact(Artifact $artifacts) {
+	public function removeArtifact(Artifact $artifacts): void {
 		$this->artifacts->removeElement($artifacts);
 	}
 
@@ -1038,7 +1038,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param Listing $listings
 	 */
-	public function removeListing(Listing $listings) {
+	public function removeListing(Listing $listings): void {
 		$this->listings->removeElement($listings);
 	}
 
@@ -1069,7 +1069,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param Heraldry $crests
 	 */
-	public function removeCrest(Heraldry $crests) {
+	public function removeCrest(Heraldry $crests): void {
 		$this->crests->removeElement($crests);
 	}
 
@@ -1100,7 +1100,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param Patron $patronizing
 	 */
-	public function removePatronizing(Patron $patronizing) {
+	public function removePatronizing(Patron $patronizing): void {
 		$this->patronizing->removeElement($patronizing);
 	}
 
@@ -1131,7 +1131,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param UserReport $reports
 	 */
-	public function removeReport(UserReport $reports) {
+	public function removeReport(UserReport $reports): void {
 		$this->reports->removeElement($reports);
 	}
 
@@ -1162,7 +1162,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param UserReportAgainst $reportsAgainst
 	 */
-	public function removeReportsAgainst(UserReportAgainst $reportsAgainst) {
+	public function removeReportsAgainst(UserReportAgainst $reportsAgainst): void {
 		$this->reports_against->removeElement($reportsAgainst);
 	}
 
@@ -1193,7 +1193,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param UserReportNote $addedReportNotes
 	 */
-	public function removeAddedReportNote(UserReportNote $addedReportNotes) {
+	public function removeAddedReportNote(UserReportNote $addedReportNotes): void {
 		$this->added_report_notes->removeElement($addedReportNotes);
 	}
 
@@ -1224,7 +1224,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param MailEntry $mailEntries
 	 */
-	public function removeMailEntry(MailEntry $mailEntries) {
+	public function removeMailEntry(MailEntry $mailEntries): void {
 		$this->mail_entries->removeElement($mailEntries);
 	}
 
@@ -1255,7 +1255,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param AppKey $keys
 	 */
-	public function removeKey(AppKey $keys) {
+	public function removeKey(AppKey $keys): void {
 		$this->keys->removeElement($keys);
 	}
 
@@ -1286,7 +1286,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	 *
 	 * @param Culture $cultures
 	 */
-	public function removeCulture(Culture $cultures) {
+	public function removeCulture(Culture $cultures): void {
 		$this->cultures->removeElement($cultures);
 	}
 

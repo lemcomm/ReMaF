@@ -23,14 +23,14 @@ use Doctrine\ORM\EntityRepository;
  */
 class CharacterSelectType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'character_7141'
 		));
 		$resolver->setRequired(['characters', 'empty', 'label', 'submit', 'domain', 'required']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		
 		$characters = $options['characters'];
 

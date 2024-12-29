@@ -19,7 +19,7 @@ class RealmMembersCommand extends Command {
 		$this->em = $em;
 		parent::__construct();
 	}
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:realm:members')
 			->setDescription('Get the memberlist of a realm')
@@ -28,7 +28,7 @@ class RealmMembersCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): void {
 		$r = $input->getArgument('realm');
 
 		if (intval($r)) {

@@ -30,6 +30,7 @@
 		<many-to-one field="insideRegion" target-entity="MapRegion" inversed-by="characters"/>
 		<many-to-one field="movingToRegion" target-entity="MapRegion"/>
 		<many-to-one field="usingMapTransit" target-entity="MapTransit" inversed-by="characters"/>
+		<many-to-one field="usingPlaceTransit" target-entity="PlaceTransit" inversed-by="characters"/>
 		<field name="travelTime" type="integer" nullable="true"/>
 		<field name="travel" type="linestring" nullable="true"/>
 		<field name="travel_locked" type="boolean"/>

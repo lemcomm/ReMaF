@@ -21,29 +21,29 @@ class EntityToIdTransformer implements DataTransformerInterface {
 		$this->class = $class;
 	}
 
-	public function transform($entity) {
-		if (null === $entity || '' === $entity) {
+	public function transform($value): mixed {
+		if (null === $value || '' === $value) {
 			return 'null';
 		}
-		if (!is_object($entity)) {
-			throw new UnexpectedTypeException($entity, 'object');
+		if (!is_object($value)) {
+			throw new UnexpectedTypeException($value, 'object');
 		}
-		if (!$this->unitOfWork->isInIdentityMap($entity)) {
+		if (!$this->unitOfWork->isInIdentityMap($value)) {
 			throw new TransformationFailedException('Entities passed to the choice field must be managed');
 		}
-		return $entity->getId();
+		return $value->getId();
 	}
 
-	public function reverseTransform($id) {
-		if ('' === $id || null === $id) {
+	public function reverseTransform($value): mixed {
+		if ('' === $value || null === $value) {
 			return null;
 		}
-		if (!is_numeric($id)) {
-			throw new UnexpectedTypeException($id, 'numeric' . $id);
+		if (!is_numeric($value)) {
+			throw new UnexpectedTypeException($value, 'numeric' . $value);
 		}
-		$entity = $this->em->getRepository($this->class)->findOneBy(['id'=>$id]);
+		$entity = $this->em->getRepository($this->class)->findOneBy(['id'=>$value]);
 		if ($entity === null) {
-			throw new TransformationFailedException(sprintf('The entity with key "%s" could not be found', $id));
+			throw new TransformationFailedException(sprintf('The entity with key "%s" could not be found', $value));
 		}
 		return $entity;
 	}

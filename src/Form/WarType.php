@@ -22,7 +22,7 @@ use Doctrine\ORM\EntityRepository;
  */
 class WarType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'war_1911',
 			'translation_domain' 	=> 'actions',
@@ -32,7 +32,7 @@ class WarType extends AbstractType {
 		$resolver->setRequired(['me']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('summary', TextType::class, array(
 			'label'=>'military.war.summary',
 			'required'=>true,

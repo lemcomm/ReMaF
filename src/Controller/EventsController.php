@@ -38,7 +38,7 @@ class EventsController extends AbstractController {
 		}
 
 		$em = $this->em;
-		$query = $em->createQuery('SELECT l FROM App:EventLog l JOIN l.metadatas m WHERE m.reader = :me GROUP BY l');
+		$query = $em->createQuery('SELECT l FROM App\Entity\EventLog l JOIN l.metadatas m WHERE m.reader = :me GROUP BY l');
 		$query->setParameter('me', $character);
 		$logs = $query->getResult();
 
@@ -170,7 +170,7 @@ class EventsController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 		$em = $this->em;
-		$query = $em->createQuery('SELECT m FROM App:EventMetadata m JOIN m.reader r WHERE m.log = :log AND r.user = :me');
+		$query = $em->createQuery('SELECT m FROM App\Entity\EventMetadata m JOIN m.reader r WHERE m.log = :log AND r.user = :me');
 		$query->setParameters(array('log'=>$log, 'me'=>$character->getUser()));
 		foreach ($query->getResult() as $meta) {
 			// FIXME: this should use the display time, not now - just in case the player looks at the screen for a long time and new events happen inbetween!
@@ -200,11 +200,11 @@ class EventsController extends AbstractController {
 						$logs[$logid] = $logid;
 					}
 				}
-				$query = $em->createQuery('SELECT m FROM App:EventMetadata m JOIN m.reader r WHERE r.user = :me and m.log in (:logs)');
+				$query = $em->createQuery('SELECT m FROM App\Entity\EventMetadata m JOIN m.reader r WHERE r.user = :me and m.log in (:logs)');
 				$query->setParameters(array('me'=>$character->getUser(), 'logs'=>$logs));
 				break;
 			default:
-			$query = $em->createQuery('SELECT m FROM App:EventMetadata m JOIN m.reader r WHERE r = :me');
+			$query = $em->createQuery('SELECT m FROM App\Entity\EventMetadata m JOIN m.reader r WHERE r = :me');
 			$query->setParameters(array('me'=>$character));
 		}
 		foreach ($query->getResult() as $meta) {

@@ -2,32 +2,18 @@
 
 namespace App\Command;
 
-use App\Entity\RealmDesignation;
 use App\Entity\User;
-use App\Service\GameRunner;
-use App\Service\NotificationManager;
 use App\Service\UserManager;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
+use Exception;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class CreateUserCommand extends  Command {
-
-	private EntityManagerInterface $em;
-	private UserManager $userMan;
-
-	public function __construct(EntityManagerInterface $em, UserManager $userMan) {
-		$this->em = $em;
-		$this->userMan = $userMan;
+	public function __construct(private EntityManagerInterface $em, private UserManager $userMan) {
 		parent::__construct();
 	}
 	protected function configure(): void {
@@ -70,7 +56,7 @@ class CreateUserCommand extends  Command {
 			$need = new Question('Please supply a username for the new user: ');
 			$need->setValidator(function ($username) {
 				if (empty($username)) {
-					throw new \Exception('Username cannot be empty!');
+					throw new Exception('Username cannot be empty!');
 				}
 				return $username;
 			});
@@ -80,7 +66,7 @@ class CreateUserCommand extends  Command {
 			$need = new Question('Please supply an email for the new user: ');
 			$need->setValidator(function ($email) {
 				if (empty($email)) {
-					throw new \Exception('Email cannot be empty!');
+					throw new Exception('Email cannot be empty!');
 				}
 				return $email;
 			});
@@ -90,7 +76,7 @@ class CreateUserCommand extends  Command {
 			$need = new Question('Please supply a password for the new user: ');
 			$need->setValidator(function ($password) {
 				if (empty($password)) {
-					throw new \Exception('Password cannot be empty!');
+					throw new Exception('Password cannot be empty!');
 				}
 				return $password;
 			});

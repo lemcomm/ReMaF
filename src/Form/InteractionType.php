@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnusedPrivateMethodInspection */
 
 namespace App\Form;
 
@@ -28,11 +28,11 @@ use Doctrine\ORM\EntityRepository;
  * * 'required' - boolean (true) - Set target field as required/don't accept null.
  */
 class InteractionType extends AbstractType {
-	public function getName() {
+	public function getName(): string {
 		return 'interaction';
 	}
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'interaction_12331',
 			'multiple'	=> false,
@@ -42,7 +42,7 @@ class InteractionType extends AbstractType {
 		$resolver->setRequired(['action', 'maxdistance', 'me']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$me = $options['me'];
 		$maxdistance = $options['maxdistance'];
 		$settlementcheck = $options['settlementcheck'];
@@ -82,7 +82,7 @@ class InteractionType extends AbstractType {
 		$builder->add('submit', SubmitType::class, array('label'=>'interaction.'.$options['action'].'.submit'));
 	}
 
-	private function messageFields(FormBuilderInterface $builder) {
+	private function messageFields(FormBuilderInterface $builder): void {
 		$builder->add('subject', TextType::class, array(
 			'label' => 'interaction.message.subject',
 			'required' => true
@@ -94,7 +94,7 @@ class InteractionType extends AbstractType {
 		));
 	}
 
-	private function grantFields(FormBuilderInterface $builder) {
+	private function grantFields(FormBuilderInterface $builder): void {
 		$builder->add('withrealm', CheckboxType::class, array(
 			'required' => false,
 			'label' => 'control.grant.withrealm',
@@ -109,14 +109,14 @@ class InteractionType extends AbstractType {
 		));
 	}
 
-	private function givegoldFields(FormBuilderInterface $builder) {
+	private function givegoldFields(FormBuilderInterface $builder): void {
 		$builder->add('amount', IntegerType::class, array(
 			'required' => true,
 			'label' => 'interaction.givegold.amount',
 		));
 	}
 
-	private function giveartifactFields(FormBuilderInterface $builder, array $options) {
+	private function giveartifactFields(FormBuilderInterface $builder, array $options): void {
 		$me = $options['me'];
 		$builder->add('artifact', EntityType::class, array(
 			'required' => true,

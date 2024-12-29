@@ -16,15 +16,11 @@ class GeographyExtension extends AbstractExtension {
 	protected $sqm = 3429904; // square mile = $mile^2 -- ugly: this is also hard-coded in Geography.php
 	protected $sql = 56738556.25; // square league = $league^2
 
-	protected $trans;
-
-	// FIXME: type hinting removed because the addition of LoggingTranslator is breaking it
-	public function __construct(TranslatorInterface $trans) {
-		$this->trans = $trans;
+	public function __construct(protected TranslatorInterface $trans) {
 	}
 
 
-	public function getFilters() {
+	public function getFilters(): array {
 		return array(
 			new TwigFilter('direction', array($this, 'directionFilter')),
 			new TwigFilter('distance', array($this, 'distanceFilter'), array('is_safe' => array('html'))),
@@ -32,7 +28,7 @@ class GeographyExtension extends AbstractExtension {
 		);
 	}
 
-	public function directionFilter($rad, $long=false, $rough=false) {
+	public function directionFilter($rad, $long=false, $rough=false): string {
 		if ($long) $format='long'; else $format='short';
 		$deg = $rad/(2*pi())*360;
 
@@ -55,7 +51,7 @@ class GeographyExtension extends AbstractExtension {
 		}
 	}
 
-	public function distanceFilter($distance, $abbrev=false) {
+	public function distanceFilter($distance, $abbrev=false): string {
 		$yards = round($distance / $this->yard);
 
 		if ($distance < $this->mile * 1.5) {
@@ -92,7 +88,7 @@ class GeographyExtension extends AbstractExtension {
 		return '<span class="tt" title="'.$tt.'">'.$result.'</span>';
 	}
 
-	public function areaFilter($area) {
+	public function areaFilter($area): string {
 		$hectares = round($area / $this->hectare);
 		$tt = $this->trans->trans("area.hectare", array('count' => $hectares, '%value%' => $hectares));
 
@@ -119,7 +115,7 @@ class GeographyExtension extends AbstractExtension {
 		return '<span class="tt" title="'.$tt.'">'.$result.'</span>';
 	}
 
-	public function getName() {
+	public function getName(): string {
 		return 'geography_extension';
 	}
 }

@@ -19,7 +19,7 @@ use Doctrine\ORM\EntityRepository;
  */
 class UnitRebaseType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'rebase_12345',
 			'translation_domain' => 'actions',
@@ -27,7 +27,7 @@ class UnitRebaseType extends AbstractType {
 		$resolver->setRequired(['settlements']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$all = $options['settlements'];
 
 		$builder->add('settlement', EntityType::class, array(

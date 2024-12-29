@@ -18,7 +18,7 @@ class ProcessFamiliarityCommand extends AbstractProcessCommand {
 		parent::__construct($em);
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:process:familiarity')
 			->setDescription('Update character/region familiarity')
@@ -47,7 +47,7 @@ class ProcessFamiliarityCommand extends AbstractProcessCommand {
 		return Command::SUCCESS;
 	}
 
-	private function decayFamiliarity() {
+	private function decayFamiliarity(): void {
 		$this->em->createQuery('UPDATE App:RegionFamiliarity f SET f.amount=f.amount-1')->execute();
 		$this->em->createQuery('DELETE FROM App:RegionFamiliarity f WHERE f.amount <= 0')->execute();
 	}

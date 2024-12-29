@@ -5,19 +5,12 @@ namespace App\Command;
 use App\Service\CommonService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class GlobalsSetCommand extends Command {
-
-	private CommonService $cs;
-	private EntityManagerInterface $em;
-
-	public function __construct(CommonService $cs, EntityManagerInterface $em) {
-		$this->cs = $cs;
-		$this->em = $em;
+	public function __construct(private CommonService $cs) {
 		parent::__construct();
 	}
 	protected function configure(): void {

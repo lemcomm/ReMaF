@@ -14,7 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class GiftType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention' => 'gift_131',
 			'attr'		=> array('class'=>'wide'),
@@ -23,7 +23,7 @@ class GiftType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('email', EmailType::class, array(
 			'label'=>'account.gift.email',
 			'required'=>true,

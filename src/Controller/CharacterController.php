@@ -38,6 +38,8 @@ use App\Service\Interactions;
 use App\Service\MilitaryManager;
 use App\Service\PermissionManager;
 use App\Service\UserManager;
+use DateInterval;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -71,7 +73,7 @@ class CharacterController extends AbstractController {
 	}
 
 	private function getSpottings(Character $character): array {
-		$query = $this->em->createQuery('SELECT e FROM App:SpotEvent e JOIN e.target c LEFT JOIN e.tower t LEFT JOIN t.geo_data g LEFT JOIN g.settlement s WHERE e.current = true AND (e.spotter = :me OR (e.spotter IS NULL AND s.owner = :me)) ORDER BY c.id,e.id,s.id');
+		$query = $this->em->createQuery('SELECT e FROM App\Entity\SpotEvent e JOIN e.target c LEFT JOIN e.tower t LEFT JOIN t.geo_data g LEFT JOIN g.settlement s WHERE e.current = true AND (e.spotter = :me OR (e.spotter IS NULL AND s.owner = :me)) ORDER BY c.id,e.id,s.id');
 		$query->setParameter('me', $character);
 		$spottings = array();
 		foreach ($query->getResult() as $spotevent) {
@@ -217,7 +219,7 @@ class CharacterController extends AbstractController {
 		$settlements = array();
 		foreach ($character->findControlledSettlements() as $settlement) {
 			// FIXME: better: some trend analysis
-			$query = $em->createQuery('SELECT s.population as pop FROM App:StatisticSettlement s WHERE s.settlement = :here ORDER BY s.cycle DESC');
+			$query = $em->createQuery('SELECT s.population as pop FROM App\Entity\StatisticSettlement s WHERE s.settlement = :here ORDER BY s.cycle DESC');
 			$query->setParameter('here', $settlement);
 			$query->setMaxResults(3);
 			$data = $query->getArrayResult();
@@ -298,7 +300,7 @@ class CharacterController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$now = new \DateTime('now');
+		$now = new DateTime('now');
 		$user = $character->getUser();
 		$em = $this->em;
 		$canSpawn = $this->userman->checkIfUserCanSpawnCharacters($user, true);
@@ -320,28 +322,28 @@ class CharacterController extends AbstractController {
 
 		switch(rand(0,7)) {
 			case 0:
-				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.id DESC');
+				$query = $em->createQuery('SELECT s, r FROM App\Entity\Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.id DESC');
 				break;
 			case 1:
-				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.id ASC');
+				$query = $em->createQuery('SELECT s, r FROM App\Entity\Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.id ASC');
 				break;
 			case 2:
-				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.name DESC');
+				$query = $em->createQuery('SELECT s, r FROM App\Entity\Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.name DESC');
 				break;
 			case 3:
-				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.name ASC');
+				$query = $em->createQuery('SELECT s, r FROM App\Entity\Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.name ASC');
 				break;
 			case 4:
-				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.formal_name DESC');
+				$query = $em->createQuery('SELECT s, r FROM App\Entity\Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.formal_name DESC');
 				break;
 			case 5:
-				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.formal_name ASC');
+				$query = $em->createQuery('SELECT s, r FROM App\Entity\Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.formal_name ASC');
 				break;
 			case 6:
-				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.superior DESC');
+				$query = $em->createQuery('SELECT s, r FROM App\Entity\Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.superior DESC');
 				break;
 			case 7:
-				$query = $em->createQuery('SELECT s, r FROM App:Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.superior ASC');
+				$query = $em->createQuery('SELECT s, r FROM App\Entity\Spawn s JOIN s.realm r WHERE r.active = true AND s.active = true ORDER BY r.superior ASC');
 				break;
 		}
 		$result = $query->getResult();
@@ -360,22 +362,22 @@ class CharacterController extends AbstractController {
 		} elseif (!$character->getHouse()) {
 			switch(rand(0,5)) {
 				case 0:
-					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.id DESC');
+					$query = $em->createQuery('SELECT s, h FROM App\Entity\Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.id DESC');
 					break;
 				case 1:
-					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.id ASC');
+					$query = $em->createQuery('SELECT s, h FROM App\Entity\Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.id ASC');
 					break;
 				case 2:
-					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.name DESC');
+					$query = $em->createQuery('SELECT s, h FROM App\Entity\Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.name DESC');
 					break;
 				case 3:
-					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.name ASC');
+					$query = $em->createQuery('SELECT s, h FROM App\Entity\Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.name ASC');
 					break;
 				case 4:
-					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.superior DESC');
+					$query = $em->createQuery('SELECT s, h FROM App\Entity\Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.superior DESC');
 					break;
 				case 5:
-					$query = $em->createQuery('SELECT s, h FROM App:Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.superior ASC');
+					$query = $em->createQuery('SELECT s, h FROM App\Entity\Spawn s JOIN s.house h WHERE h.active = true AND s.active = true ORDER BY h.superior ASC');
 					break;
 			}
 			$result = $query->getResult();
@@ -560,14 +562,11 @@ class CharacterController extends AbstractController {
 			if ($realm) {
 				if ($realm->getSuperior()) {
 					$supConv = $em->getRepository(Conversation::class)->findOneBy(['realm'=>$realm->getSuperior(), 'system'=>'announcements']);
-				} else {
-					$supConv = null;
 				}
 				$conv = $em->getRepository(Conversation::class)->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
 			} elseif ($character->getHouse()) {
 				$house = $character->getHouse();
 				$conv = $em->getRepository(Conversation::class)->findOneBy(['house'=>$house, 'system'=>'announcements']);
-				$supConv = null;
 			}
 		}
 
@@ -674,13 +673,13 @@ class CharacterController extends AbstractController {
 				$my_rating->setHonor($data->getHonor());
 				$my_rating->setTrust($data->getTrust());
 				$my_rating->setRespect($data->getRespect());
-				$my_rating->setLastChange(new \DateTime("now"));
+				$my_rating->setLastChange(new DateTime("now"));
 			} else {
 				// new rating
 				$data->setCharacter($char);
 				$data->setGivenByUser($this->getUser());
 				$data->setContent(substr($data->getContent(),0,250));
-				$data->setLastChange(new \DateTime("now"));
+				$data->setLastChange(new DateTime("now"));
 				$em->persist($data);
 			}
 			$em->flush();
@@ -700,7 +699,7 @@ class CharacterController extends AbstractController {
 			$rating = $em->getRepository(CharacterRating::class)->find($request->request->get("id"));
 			if (!$rating) return new Response("rating not found");
 			$char = $em->getRepository(Character::class)->find($rating->getCharacter());
-			if ($char->getUser() == $this->getUser()) return new Response("can't vote on ratings for your own characters");
+			if ($char->getUser() === $this->getUser()) return new Response("can't vote on ratings for your own characters");
 			$my_vote = $em->getRepository(CharacterRatingVote::class)->findOneBy(array('rating'=>$rating, 'user'=>$this->getUser()));
 			if (!$my_vote) {
 				$my_vote = new CharacterRatingVote;
@@ -1093,7 +1092,7 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/surrender', name:'maf_char_surrender')]
-	public function surrenderAction(Request $request) {
+	public function surrenderAction(Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('personalSurrenderTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -1160,8 +1159,8 @@ class CharacterController extends AbstractController {
 
 			$act = new Action;
 			$act->setType('character.escape')->setCharacter($character);
-			$complete = new \DateTime("now");
-			$complete->add(new \DateInterval("PT".$hours."H"));
+			$complete = new DateTime("now");
+			$complete->add(new DateInterval("PT".$hours."H"));
 			$act->setComplete($complete);
 			$act->setBlockTravel(false);
 			$actman->queue($act);
@@ -1472,11 +1471,11 @@ class CharacterController extends AbstractController {
 		if (!$sec->isGranted('ROLE_ADMIN')) {
 			$check = $report->checkForObserver($character);
 			if (!$check) {
-				$query = $em->createQuery('SELECT p FROM App:BattleParticipant p WHERE p.battle_report = :br AND p.character = :me');
+				$query = $em->createQuery('SELECT p FROM App\Entity\BattleParticipant p WHERE p.battle_report = :br AND p.character = :me');
 				$query->setParameters(array('br'=>$report, 'me'=>$character));
 				$check = $query->getOneOrNullResult();
 				if (!$check) {
-					$query = $em->createQuery('SELECT p FROM App:BattleReportCharacter p JOIN p.group_report g WHERE p.character = :me AND g.battle_report = :br');
+					$query = $em->createQuery('SELECT p FROM App\Entity\BattleReportCharacter p JOIN p.group_report g WHERE p.character = :me AND g.battle_report = :br');
 					$query->setParameters(array('br'=>$report, 'me'=>$character));
 					$check = $query->getOneOrNullResult();
 					if (!$check) {

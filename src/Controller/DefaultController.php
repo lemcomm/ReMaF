@@ -22,7 +22,7 @@ class DefaultController extends AbstractController {
 	#[Route ('/', name:'maf_index')]
 	#[Route ('/', name:'maf_homepage')]
 	public function indexAction(EntityManagerInterface $em): Response {
-		$query = $em->createQuery('SELECT j, c from App:Journal j JOIN j.character c WHERE j.public = true AND j.graphic = false AND j.pending_review = false AND j.GM_private = false AND j.GM_graphic = false ORDER BY j.date DESC')->setMaxResults(3);
+		$query = $em->createQuery('SELECT j, c from App\Entity\Journal j JOIN j.character c WHERE j.public = true AND j.graphic = false AND j.pending_review = false AND j.GM_private = false AND j.GM_graphic = false ORDER BY j.date DESC')->setMaxResults(3);
 		$journals = $query->getResult();
 
 		if ($this->getUser()) {
@@ -69,7 +69,7 @@ class DefaultController extends AbstractController {
 
 	#[Route ('/vips', name:'maf_vips')]
 	public function vipsAction(EntityManagerInterface $em): Response {
-		$query = $em->createQuery('SELECT u.display_name, u.vip_status FROM App:User u WHERE u.vip_status > 0 ORDER BY u.vip_status DESC, u.display_name');
+		$query = $em->createQuery('SELECT u.display_name, u.vip_status FROM App\Entity\User u WHERE u.vip_status > 0 ORDER BY u.vip_status DESC, u.display_name');
 		$vips = $query->getResult();
 
 		return $this->render('Default/vips.html.twig', [
@@ -88,7 +88,7 @@ class DefaultController extends AbstractController {
 
   	#[Route ('/credits', name:'maf_credits')]
 	public function creditsAction(EntityManagerInterface $em): Response {
-		$query = $em->createQuery('SELECT u FROM App:User u JOIN u.patronizing p WHERE u.show_patronage = :true ORDER BY u.display_name ASC');
+		$query = $em->createQuery('SELECT u FROM App\Entity\User u JOIN u.patronizing p WHERE u.show_patronage = :true ORDER BY u.display_name ASC');
 		$query->setParameters(['true'=>true]);
 
 		return $this->render('Default/credits.html.twig', [
@@ -174,5 +174,4 @@ class DefaultController extends AbstractController {
 		}
 		return $this->redirect('/'.$locale.'/'.$url);
 	}
-
 }

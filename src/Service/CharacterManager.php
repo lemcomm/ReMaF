@@ -206,7 +206,7 @@ class CharacterManager {
 			}
 
 			// remove all votes
-			$query = $this->em->createQuery('DELETE FROM App:Vote v WHERE v.character = :me OR v.target_character = :me');
+			$query = $this->em->createQuery('DELETE FROM App\Entity\Vote v WHERE v.character = :me OR v.target_character = :me');
 			$query->setParameter('me', $character);
 			$query->execute();
 
@@ -258,7 +258,7 @@ class CharacterManager {
 		}
 
 		// assigned troops now can't be reclaimed anymore, because I'm DEAD, you know?
-		$query = $this->em->createQuery('UPDATE App:Soldier s SET s.liege = NULL WHERE s.liege = :me');
+		$query = $this->em->createQuery('UPDATE App\Entity\Soldier s SET s.liege = NULL WHERE s.liege = :me');
 		$query->setParameter('me', $character);
 		$query->execute();
 
@@ -537,7 +537,7 @@ class CharacterManager {
 		}
 
 		// remove all votes
-		$query = $this->em->createQuery('DELETE FROM App:Vote v WHERE v.character = :me OR v.target_character = :me');
+		$query = $this->em->createQuery('DELETE FROM App\Entity\Vote v WHERE v.character = :me OR v.target_character = :me');
 		$query->setParameter('me', $character);
 		$query->execute();
 
@@ -593,7 +593,7 @@ class CharacterManager {
 		*/
 
 		// assigned troops now can't be reclaimed anymore, as character is retired
-		$query = $this->em->createQuery('UPDATE App:Soldier s SET s.liege = NULL WHERE s.liege = :me');
+		$query = $this->em->createQuery('UPDATE App\Entity\Soldier s SET s.liege = NULL WHERE s.liege = :me');
 		$query->setParameter('me', $character);
 		$query->execute();
 
@@ -1089,7 +1089,7 @@ class CharacterManager {
 						}
 						break;
 					case 'oldest':
-						$query = $this->em->createQuery('SELECT m FROM App:AssociationMember m WHERE m.association = :assoc and m.id != :rank ORDER BY m.join_date ASC')
+						$query = $this->em->createQuery('SELECT m FROM App\Entity\AssociationMember m WHERE m.association = :assoc and m.id != :rank ORDER BY m.join_date ASC')
 							->setParameters(['assoc'=>$assoc, 'rank'=>$mbr->getId()])
 							->setMaxResults(1);
 						$oldest = $query->getOneOrNullResult();
@@ -1389,7 +1389,7 @@ class CharacterManager {
 	}
 
 	public function findEvents(Character $character) {
-		$query = $this->em->createQuery('SELECT e, l, m FROM App:Event e JOIN e.log l JOIN l.metadatas m WHERE m.reader = :me AND e.ts > m.last_access AND (m.access_until IS NULL OR e.cycle <= m.access_until) AND (m.access_from IS NULL OR e.cycle >= m.access_from) ORDER BY e.ts DESC');
+		$query = $this->em->createQuery('SELECT e, l, m FROM App\Entity\Event e JOIN e.log l JOIN l.metadatas m WHERE m.reader = :me AND e.ts > m.last_access AND (m.access_until IS NULL OR e.cycle <= m.access_until) AND (m.access_from IS NULL OR e.cycle >= m.access_from) ORDER BY e.ts DESC');
 		$query->setParameter('me', $character);
 		return $query->getResult();
 	}

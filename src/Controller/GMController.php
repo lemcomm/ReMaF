@@ -50,7 +50,7 @@ class GMController extends AbstractController {
 	#[Route ('/olympus/update')]
 	public function updateNoteAction(CommonService $common, Request $request, ?UpdateNote $id=null): RedirectResponse|Response {
 		if ($request->query->get('last')) {
-			$id = $this->em->createQuery('SELECT n FROM App:UpdateNote n ORDER BY n.id DESC')->setMaxResults(1)->getSingleResult();
+			$id = $this->em->createQuery('SELECT n FROM App\Entity\UpdateNote n ORDER BY n.id DESC')->setMaxResults(1)->getSingleResult();
 		}
 		$form = $this->createForm(UpdateNoteType::class, null, ['note'=>$id]);
 		$form->handleRequest($request);

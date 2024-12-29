@@ -15,7 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class DescriptionNewType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'newdescription_95315',
 			'translation_domain' => 'actions',
@@ -23,7 +23,7 @@ class DescriptionNewType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$text = $options['text'];
 		$builder->add('text', TextareaType::class, array(
 			'label'=>'control.description.full',

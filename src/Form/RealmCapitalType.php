@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityRepository;
 
 class RealmCapitalType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'capital_931',
 			'translation_domain' => 'politics',
@@ -21,7 +21,7 @@ class RealmCapitalType extends AbstractType {
 		$resolver->setRequired(['realm']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$allrealms = $options['realm']->findAllInferiors(true);
 		$realms = [];
 		foreach ($allrealms as $realm) {

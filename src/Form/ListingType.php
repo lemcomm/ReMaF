@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityRepository;
 
 class ListingType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'listing_12354',
 			'data_class'		=> 'App\Entity\Listing',
@@ -23,7 +23,7 @@ class ListingType extends AbstractType {
 		$resolver->setRequired(['em', 'available']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 
 		$builder->add('name', TextType::class, [
 			'required' => true,

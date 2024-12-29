@@ -15,16 +15,14 @@ class WorkerEconomyCommand extends Command {
 
 	private EntityManagerInterface $em;
 	private Economy $economy;
-	private LoggerInterface $logger;
 
-	public function __construct(EntityManagerInterface $em, Economy $econ, LoggerInterface $logger) {
+	public function __construct(EntityManagerInterface $em, Economy $econ) {
 		$this->em = $em;
 		$this->economy = $econ;
-		$this->logger = $logger;
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 			->setName('maf:worker:economy')
 			->setDescription('Economy - worker component - do not call directly')
@@ -122,7 +120,7 @@ class WorkerEconomyCommand extends Command {
 	 * @return int|string
 	 * @noinspection PhpMissingBreakStatementInspection
 	 */
-	private function return_bytes($val) {
+	private function return_bytes($val): int|string {
 		if ($val === '-1') {
 			return 1073741824; #1GB expressed in Bytes.
 		}

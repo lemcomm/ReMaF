@@ -14,7 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 
 class RealmRelationType extends AbstractType {
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'realmrelation_5414',
 			'data_class'		=> RealmRelation::class,
@@ -23,7 +23,7 @@ class RealmRelationType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('target_realm', EntityType::class, array(
 			'placeholder' => 'diplomacy.relations.emptytarget',
 			'label'=>'diplomacy.relations.target',

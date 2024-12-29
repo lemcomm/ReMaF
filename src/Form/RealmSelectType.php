@@ -20,7 +20,7 @@ use Doctrine\ORM\EntityRepository;
  */
 class RealmSelectType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       => 'realm_9012356',
 			'translation_domain' => 'actions',
@@ -29,7 +29,7 @@ class RealmSelectType extends AbstractType {
 		));
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$realms = $options['realms'];
 		$type = $options['type'];
 		switch ($type) {
@@ -96,7 +96,7 @@ class RealmSelectType extends AbstractType {
 		if ($msg !== null) {
 			$builder->add('message', TextareaType::class, [
 				'label' => $msg,
-				'translation_domain'=>'politics',
+				'translation_domain'=>$domain,
 				'required' => true
 			]);
 		}

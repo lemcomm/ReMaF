@@ -11,13 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DebugKillCommand extends Command {
-
-	private EntityManagerInterface $em;
-	private CharacterManager $cm;
-
-	public function __construct(CharacterManager $cm, EntityManagerInterface $em) {
-		$this->cm = $cm;
-		$this->em = $em;
+	public function __construct(private CharacterManager $cm, private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 

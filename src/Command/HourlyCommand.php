@@ -13,17 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class HourlyCommand extends Command {
-
-	private LoggerInterface $logger;
-	private DungeonCreator $dc;
-	private EntityManagerInterface $em;
-	private DungeonMaster $dm;
-
-	public function __construct(DungeonCreator $dc, DungeonMaster $dm, EntityManagerInterface $em, LoggerInterface $logger) {
-		$this->dc = $dc;
-		$this->dm = $dm;
-		$this->em = $em;
-		$this->logger = $logger;
+	public function __construct(private DungeonCreator $dc, private DungeonMaster $dm, private EntityManagerInterface $em, private LoggerInterface $logger) {
 		parent::__construct();
 	}
 

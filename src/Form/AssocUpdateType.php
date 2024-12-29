@@ -14,7 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AssocUpdateType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'updateassoc_1779',
 			'translation_domain' => 'orgs'
@@ -22,7 +22,7 @@ class AssocUpdateType extends AbstractType {
 		$resolver->setRequired(['types', 'assocs', 'me']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$types = $options['types'];
 		$assocs = $options['assocs'];
 		$me = $options['me'];

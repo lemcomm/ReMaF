@@ -16,7 +16,7 @@ use App\Entity\AssociationType;
 
 class AssocCreationType extends AbstractType {
 
-	public function configureOptions(OptionsResolver $resolver) {
+	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
 			'intention'       	=> 'newassoc_1779',
 			'translation_domain' => 'orgs',
@@ -24,7 +24,7 @@ class AssocCreationType extends AbstractType {
 		$resolver->setRequired(['types', 'assocs']);
 	}
 
-	public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$types = $options['types'];
 		$assocs = $options['assocs'];
 		$builder->add('name', TextType::class, array(

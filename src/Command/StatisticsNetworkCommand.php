@@ -18,14 +18,14 @@ class StatisticsNetworkCommand extends  Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$this
 		->setName('maf:stats:network')
 		->setDescription('statistics: character relations network')
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute(InputInterface $input, OutputInterface $output): void {
 		echo "graph characters {\n";
 		$characters = $this->em->getRepository(Character::class)->findAll();
 		foreach ($characters as $character) {
@@ -53,7 +53,7 @@ class StatisticsNetworkCommand extends  Command {
 	}
 
 
-	private function link(Character $from, Character $to, $color) {
+	private function link(Character $from, Character $to, $color): void {
 		echo "\"".$from->getId()."\" -- \"".$to->getId()."\" [color=\"$color\"];\n";
 	}
 }
