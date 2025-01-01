@@ -28,12 +28,20 @@
 
 # Cleanup old minutely logs
 0 0 * * 0 rm /var/www/maf/var/log/minutely-Sun.log
+0 0 * * 0 rm /var/www/maf/var/log/quarterhourly-Sun.log
 0 0 * * 1 rm /var/www/maf/var/log/minutely-Mon.log
+0 0 * * 1 rm /var/www/maf/var/log/quarterhourly-Mon.log
 0 0 * * 2 rm /var/www/maf/var/log/minutely-Tue.log
+0 0 * * 2 rm /var/www/maf/var/log/quarterhourly-Tue.log
 0 0 * * 3 rm /var/www/maf/var/log/minutely-Wed.log
+0 0 * * 3 rm /var/www/maf/var/log/quarterhourly-Wed.log
 0 0 * * 4 rm /var/www/maf/var/log/minutely-Thu.log
+0 0 * * 4 rm /var/www/maf/var/log/quarterhourly-Thu.log
 0 0 * * 5 rm /var/www/maf/var/log/minutely-Fri.log
+0 0 * * 5 rm /var/www/maf/var/log/quarterhourly-Fri.log
 0 0 * * 6 rm /var/www/maf/var/log/minutely-Sat.log
+0 0 * * 6 rm /var/www/maf/var/log/quarterhourly-Sat.log
+
 
 # Run M&F Daily Command at 0220L, Payment Processor at 0115L, and Newsletter handler at 0045L.
 20 2 * * * php /var/www/maf/app/console --env=prod maf:process:daily 2>&1 >> /var/www/maf/var/log/daily.log
