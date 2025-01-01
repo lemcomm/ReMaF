@@ -7,14 +7,14 @@ security:
   email:
    subject: "%sitename%: Confirm Your Email"
    text: |
-    Hello,
+    Hello,\n\n
 
-    In order to confirm your email with your account at %sitename%, please click the link below:
+    In order to confirm your email with your account at %sitename%, please click the link below:\n\n
 
-    %link%
+    %link%\n\n
 
-    Respectfully,
-    %sitename% Administration
+    Respectfully,\n
+    %sitename% Administration\n\n
 
     If you believe you received this email in error, please forward it to %adminemail%.
   flash:
@@ -54,25 +54,25 @@ security:
   email:
    subject: "%sitename%: Account Activation"
    text1: |
-    Hello %username%, thank you for registering at %sitename%!
+    Hello %username%, thank you for registering at %sitename%!\n\n
 
-    In order to fully activate your account please click the link below. Thank you!
+    In order to fully activate your account please click the link below. Thank you!\n\n
 
-    %link%
+    %link%\n\n
 
-    Respectfully,
-    %sitename% Administration
+    Respectfully,\n
+    %sitename% Administration\n\n
 
     If you believe you received this email in error, please forward it to %adminemail%.
    text2: |
-    Hello %username%, someone, hopefully you, requested a new activation token from %sitename%!
+    Hello %username%, someone, hopefully you, requested a new activation token from %sitename%!\n\n
 
-    In order to fully activate your account please click the link below. Thank you!
+    In order to fully activate your account please click the link below. Thank you!\n\n
 
-    %link%
+    %link%\n\n
 
-    Respectfully,
-    %sitename% Administration
+    Respectfully,\n
+    %sitename% Administration\n\n
 
     If you believe you received this email in error, please forward it to %adminemail%.
   flash: Thank you for registering! If you haven't already, please check your email for your activation link. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
@@ -82,16 +82,16 @@ security:
   email:
    subject: "%sitename%: Your Username"
    text: |
-    Hello %username%,
+    Hello %username%,\n\n
 
-    Someone, hopefully you, requested we send you your username at %sitename%.
+    Someone, hopefully you, requested we send you your username at %sitename%.\n\n
 
-    If you remember your password you can log in at: %login%
+    If you remember your password you can log in at: %login%\n\n
 
-    Otherwise, you can request a new password at: %reset%.
+    Otherwise, you can request a new password at: %reset%.\n\n
 
-    Respectfully,
-    %sitename% Administration
+    Respectfully,\n
+    %sitename% Administration\n\n
 
     If you believe you received thisemail in error, please forward it to %adminemail%.
   flash: If a matching email has been located in our system, a reminder with your username has been sent. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
@@ -102,12 +102,12 @@ security:
   email:
    subject: "%sitename%: Password Reset"
    text: |
-    Hello, someone, hopefully you, requested a password reset email for their account at %sitename%. In order to complete this reset, please click th link below:
+    Hello, someone, hopefully you, requested a password reset email for their account at %sitename%. In order to complete this reset, please click th link below:\n
 
-    %link%
+    %link%\n\n
 
-    Respectfully,
-    %sitename% Administration
+    Respectfully,\n
+    %sitename% Administration\n\n
 
     If you believe you received this email in error, please forward it to %adminemail%.
   flash:
