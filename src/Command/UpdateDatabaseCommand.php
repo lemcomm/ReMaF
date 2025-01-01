@@ -133,6 +133,7 @@ class UpdateDatabaseCommand extends  Command {
 				'--group' => ['LoadEquipmentData'],
 				'--append' => true,
 			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
 			$output->writeln('Equipment Data Updated');
 		}
 
