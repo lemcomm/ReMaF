@@ -39,22 +39,22 @@ class UpdateDatabaseCommand extends  Command {
 		$em = $this->em;
 		if (in_array('1', $versions)) {
 			$output->writeln('Updating Realms, Level 7 -> 9');
-			$em->createQuery('UPDATE App:Realm r SET r.type = 9 WHERE r.type = 7')->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.type = 9 WHERE r.type = 7')->execute();
 			$output->writeln('Updating Realms, Level 6 -> 8');
-			$em->createQuery('UPDATE App:Realm r SET r.type = 8 WHERE r.type = 6')->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.type = 8 WHERE r.type = 6')->execute();
 			$output->writeln('Updating Realms, Level 5 -> 7');
-			$em->createQuery('UPDATE App:Realm r SET r.type = 7 WHERE r.type = 5')->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.type = 7 WHERE r.type = 5')->execute();
 			$output->writeln('Updating Realms, Level 4 -> 6');
-			$em->createQuery('UPDATE App:Realm r SET r.type = 6 WHERE r.type = 4')->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.type = 6 WHERE r.type = 4')->execute();
 			$output->writeln('Updating Realms, Level 3 -> 5');
-			$em->createQuery('UPDATE App:Realm r SET r.type = 5 WHERE r.type = 3')->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.type = 5 WHERE r.type = 3')->execute();
 			$output->writeln('Updating Realms, Level 2 -> 4');
-			$em->createQuery('UPDATE App:Realm r SET r.type = 4 WHERE r.type = 2')->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.type = 4 WHERE r.type = 2')->execute();
 			$output->writeln('Updating Realms, Level 1 -> 2');
-			$em->createQuery('UPDATE App:Realm r SET r.type = 2 WHERE r.type = 1')->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.type = 2 WHERE r.type = 1')->execute();
 			$output->writeln('Updating Realms Complete');
 			$output->writeln('Updating User Payment Statuses');
-			$em->createQuery('UPDATE App:UserLimits u SET u.artifact_sub_bonus = true WHERE u.artifacts > 0');
+			$em->createQuery('UPDATE App\Entity\UserLimits u SET u.artifact_sub_bonus = true WHERE u.artifacts > 0');
 			$output->writeln('Loading Realm Designation Data');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
@@ -66,19 +66,19 @@ class UpdateDatabaseCommand extends  Command {
 			$output->writeln('Updating Realm Designations');
 			$desRepo = $em->getRepository(RealmDesignation::class);
 			$des = $desRepo->findOneBy(['name'=>'empire'])->getId();
-			$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 9')->setParameters(['des'=>$des])->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.designation = :des WHERE r.type = 9')->setParameters(['des'=>$des])->execute();
 			$des = $desRepo->findOneBy(['name'=>'kingdom'])->getId();
-			$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 8')->setParameters(['des'=>$des])->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.designation = :des WHERE r.type = 8')->setParameters(['des'=>$des])->execute();
 			$des = $desRepo->findOneBy(['name'=>'principality'])->getId();
-			$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 7')->setParameters(['des'=>$des])->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.designation = :des WHERE r.type = 7')->setParameters(['des'=>$des])->execute();
 			$des = $desRepo->findOneBy(['name'=>'duchy'])->getId();
-			$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 6')->setParameters(['des'=>$des])->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.designation = :des WHERE r.type = 6')->setParameters(['des'=>$des])->execute();
 			$des = $desRepo->findOneBy(['name'=>'march'])->getId();
-			$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 5')->setParameters(['des'=>$des])->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.designation = :des WHERE r.type = 5')->setParameters(['des'=>$des])->execute();
 			$des = $desRepo->findOneBy(['name'=>'county'])->getId();
-			$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 4')->setParameters(['des'=>$des])->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.designation = :des WHERE r.type = 4')->setParameters(['des'=>$des])->execute();
 			$des = $desRepo->findOneBy(['name'=>'barony'])->getId();
-			$em->createQuery('UPDATE App:Realm r SET r.designation = :des WHERE r.type = 2')->setParameters(['des'=>$des])->execute();
+			$em->createQuery('UPDATE App\Entity\Realm r SET r.designation = :des WHERE r.type = 2')->setParameters(['des'=>$des])->execute();
 			$output->writeln('Realm Designations Updated');
 		}
 		if (in_array('2', $versions)) {
@@ -100,7 +100,7 @@ class UpdateDatabaseCommand extends  Command {
 		if (in_array('3', $versions)) {
 			$output->writeln('Removing Settlement Manage Recruits permission...');
 			$type = $em->getRepository(Permission::class)->findOneBy(['class'=>'settlement', 'name'=>'recruit']);
-			$em->createQuery('DELETE FROM App:SettlementPermission s WHERE s.permission = :type')->setParameters(['type'=>$type])->execute();
+			$em->createQuery('DELETE FROM App\Entity\SettlementPermission s WHERE s.permission = :type')->setParameters(['type'=>$type])->execute();
 			$em->remove($type);
 			$em->flush();
 			$output->writeln('Permission removed!');
@@ -110,13 +110,13 @@ class UpdateDatabaseCommand extends  Command {
 			$world = new World;
 			$em->persist($world);
 			$em->flush();
-			$em->createQuery('UPDATE App:GeoData g SET g.world = :world')->setParameters(['world'=>$world])->execute();
-			$em->createQuery('UPDATE App:Place p SET p.world = :world')->setParameters(['world'=>$world])->execute();
-			$em->createQuery('UPDATE App:Settlement s SET s.world = :world')->setParameters(['world'=>$world])->execute();
-			$em->createQuery('UPDATE App:Activity a SET a.world = :world')->setParameters(['world'=>$world])->execute();
-			$em->createQuery('UPDATE App:Character c SET c.world = :world')->setParameters(['world'=>$world])->execute();
-			$em->createQuery('UPDATE App:GeoFeature f SET f.world = :world')->setParameters(['world'=>$world])->execute();
-			$em->createQuery('UPDATE App:Ship s SET s.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App\Entity\GeoData g SET g.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App\Entity\Place p SET p.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App\Entity\Settlement s SET s.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App\Entity\Activity a SET a.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App\Entity\Character c SET c.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App\Entity\GeoFeature f SET f.world = :world')->setParameters(['world'=>$world])->execute();
+			$em->createQuery('UPDATE App\Entity\Ship s SET s.world = :world')->setParameters(['world'=>$world])->execute();
 		}
 		if (in_array('5', $versions)) {
 			$output->writeln('Setting initial character Race flags');
@@ -129,11 +129,11 @@ class UpdateDatabaseCommand extends  Command {
 			$output->writeln('Race Data Loaded');
 			$output->writeln('Updating Player Character Races');
 			$playerRace = $em->getRepository(Race::class)->findOneBy(['name'=>'first one']);
-			$em->createQuery('UPDATE App:Character c SET c.race = :race')->setParameters(['race'=>$playerRace])->execute();
+			$em->createQuery('UPDATE App\Entity\Character c SET c.race = :race')->setParameters(['race'=>$playerRace])->execute();
 			$output->writeln('Updating Non-Player Character Races');
 			$npcRace = $em->getRepository(Race::class)->findOneBy(['name'=>'second one']);
-			$em->createQuery('UPDATE App:Soldier s SET s.race = :race')->setParameters(['race'=>$npcRace])->execute();
-			$em->createQuery('UPDATE App:Entourage e SET e.race = :race')->setParameters(['race'=>$npcRace])->execute();
+			$em->createQuery('UPDATE App\Entity\Soldier s SET s.race = :race')->setParameters(['race'=>$npcRace])->execute();
+			$em->createQuery('UPDATE App\Entity\Entourage e SET e.race = :race')->setParameters(['race'=>$npcRace])->execute();
 			$output->writeln('Race Data Applied');
 		}
 

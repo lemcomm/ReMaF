@@ -92,7 +92,7 @@ class StatisticsHeatmapCommand extends  Command {
 	}
 
 	private function map_familiarity(): void {
-		$query = $this->em->createQuery('SELECT g.id, g.center, sum(f.amount) as total FROM App:RegionFamiliarity f JOIN f.geo_data g GROUP BY g');
+		$query = $this->em->createQuery('SELECT g.id, g.center, sum(f.amount) as total FROM App\Entity\RegionFamiliarity f JOIN f.geo_data g GROUP BY g');
 
 		foreach ($query->getResult() as $row) {
 			$this->feature($row['id'], $row['center'], array('total'=>$row['total']));
@@ -115,7 +115,7 @@ class StatisticsHeatmapCommand extends  Command {
 	}
 
 	private function map_deaths($since): void {
-		$query = $this->em->createQuery('SELECT r FROM App:BattleReport r WHERE r.cycle >= :since');
+		$query = $this->em->createQuery('SELECT r FROM App\Entity\BattleReport r WHERE r.cycle >= :since');
 		$query->setParameter('since', $since);
 
 		foreach ($query->getResult() as $battle) {

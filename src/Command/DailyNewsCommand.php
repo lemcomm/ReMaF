@@ -25,7 +25,7 @@ class DailyNewsCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-		$query = $this->em->createQuery('SELECT u FROM App:User u WHERE u.newsletter=true');
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\User u WHERE u.newsletter=true');
 		$iterableResult = $query->toIterable();
 		$i=1; $batchsize=500;
 		foreach ($iterableResult as $user) {

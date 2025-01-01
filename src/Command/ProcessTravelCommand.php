@@ -51,30 +51,30 @@ class ProcessTravelCommand extends AbstractProcessCommand {
 
 	private function travelPreUpdates(): void {
 		// fix up characters who for whatever reason have an invalid progress column
-		$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.travel IS NOT NULL AND (c.progress IS NULL OR c.speed IS NULL)');
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.travel IS NOT NULL AND (c.progress IS NULL OR c.speed IS NULL)');
 		foreach ($query->getResult() as $char) {
 			$msg = "invalid travel record for character ".$char->getId()." - progress ".$char->getProgress()." / speed ".$char->getSpeed()." !";
 			$this->logger->error($msg);
 			$this->output->writeln($msg);
-			$query = $this->em->createQuery('UPDATE App:Character c SET c.travel=null where c.travel IS NOT NULL AND (c.progress IS NULL OR c.speed IS NULL)');
+			$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.travel=null where c.travel IS NOT NULL AND (c.progress IS NULL OR c.speed IS NULL)');
 			$query->execute();
 		}
 
 		// update travel_locked
-		$query = $this->em->createQuery('UPDATE App:Character c SET c.travel_locked = false');
+		$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.travel_locked = false');
 		$query->execute();
 
-		$query = $this->em->createQuery('UPDATE App:Character c SET c.travel_locked = true WHERE c IN (SELECT DISTINCT IDENTITY(a.character) FROM App:Action a WHERE a.block_travel=true)');
+		$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.travel_locked = true WHERE c IN (SELECT DISTINCT IDENTITY(a.character) FROM App\Entity\Action a WHERE a.block_travel=true)');
 		$query->execute();
 	}
 
 	private function travelPostUpdates(): void {
 		// everyone still travelling - update progress
-		$query = $this->em->createQuery('UPDATE App:Character c SET c.location=ST_Line_Interpolate_Point(c.travel, c.progress) WHERE c.travel IS NOT NULL AND c.travel_locked = false');
+		$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.location=ST_Line_Interpolate_Point(c.travel, c.progress) WHERE c.travel IS NOT NULL AND c.travel_locked = false');
 		$query->execute();
 
 		// check and fix land/sea travel
-		$query = $this->em->createQuery("SELECT c, b.name as biome FROM App:Character c, App:GeoData g JOIN g.biome b WHERE ST_Contains(g.poly, c.location) = true AND ( (c.travel_at_sea = true AND b.name NOT IN ('ocean', 'water')) OR (c.travel_at_sea = false AND b.name IN ('ocean', 'water')) )");
+		$query = $this->em->createQuery("SELECT c, b.name as biome FROM App\Entity\Character c, App\Entity\GeoData g JOIN g.biome b WHERE ST_Contains(g.poly, c.location) = true AND ( (c.travel_at_sea = true AND b.name NOT IN ('ocean', 'water')) OR (c.travel_at_sea = false AND b.name IN ('ocean', 'water')) )");
 		foreach ($query->getResult() as $broken) {
 			$char = array_shift($broken);
 			$biome = $broken['biome'];

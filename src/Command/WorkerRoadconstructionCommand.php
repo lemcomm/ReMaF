@@ -44,8 +44,8 @@ class WorkerRoadconstructionCommand extends  Command {
 		// NOTICE: with no roads on the map, this errors out somewhere, but I can't spot the problem
 
 // use this when we enable deterioration
-//		$query = $this->em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App:Road r JOIN r.geo_data g JOIN g.biome b WHERE r.id>:last AND (r.workers>0 OR r.quality>0) ORDER BY r.id ASC');
-		$query = $em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App:Road r JOIN r.geo_data g JOIN g.biome b WHERE g.id >= :start AND g.id <= :end AND r.workers>0');
+//		$query = $this->em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App\Entity\Road r JOIN r.geo_data g JOIN g.biome b WHERE r.id>:last AND (r.workers>0 OR r.quality>0) ORDER BY r.id ASC');
+		$query = $em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App\Entity\Road r JOIN r.geo_data g JOIN g.biome b WHERE g.id >= :start AND g.id <= :end AND r.workers>0');
 		$query->setParameters(array('start'=>$start, 'end'=>$end));
 		foreach ($query->getResult() as $row) {
 			$road = $row['road'];

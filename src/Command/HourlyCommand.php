@@ -31,10 +31,10 @@ class HourlyCommand extends Command {
 		$creator = $this->dc;
 		$master = $this->dm;
 
-		$query = $em->createQuery('SELECT count(d.id) FROM App:Dungeon d');
+		$query = $em->createQuery('SELECT count(d.id) FROM App\Entity\Dungeon d');
 		$dungeons = $query->getSingleScalarResult();
 
-		$query = $em->createQuery('SELECT s FROM App:StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1);
+		$query = $em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1);
 		$result = $query->getSingleResult();
 		$players = $result->getReallyActiveUsers(); # This isn't exact, but it's better than counting the spambots.
 
@@ -52,10 +52,10 @@ class HourlyCommand extends Command {
 		}
 
 		$this->debug("updating parties...");
-		$query = $em->createQuery('UPDATE App:DungeonParty p SET p.counter=p.counter + 1 WHERE p.counter IS NOT NULL');
+		$query = $em->createQuery('UPDATE App\Entity\DungeonParty p SET p.counter=p.counter + 1 WHERE p.counter IS NOT NULL');
 		$query->execute();
 
-		$query = $em->createQuery('SELECT p FROM App:DungeonParty p WHERE p.counter > 50');
+		$query = $em->createQuery('SELECT p FROM App\Entity\DungeonParty p WHERE p.counter > 50');
 		foreach ($query->getResult() as $party) {
 			$this->debug("party #".$party->getId()." timed out");
 			$master->dissolveParty($party);

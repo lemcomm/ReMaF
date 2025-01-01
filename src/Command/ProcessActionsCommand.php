@@ -43,14 +43,14 @@ class ProcessActionsCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$now = new DateTime('now');
 		if ($this->cs->getGlobal('actions.running') == 0) {
-			$query = $this->em->createQuery('SELECT count(a.id) FROM App:Action a where a.complete IS NOT NULL AND a.complete < :now')->setParameters(['now'=>$now]);
+			$query = $this->em->createQuery('SELECT count(a.id) FROM App\Entity\Action a where a.complete IS NOT NULL AND a.complete < :now')->setParameters(['now'=>$now]);
 			if ($query->getSingleScalarResult() > 0) {
 				$this->logger->info('Action processing running...');
 				$this->cs->setGlobal('actions.running', 1);
 				$this->cs->setGlobal('actions.last', $now->format('Y-m-d H:i:s'));
 				$stopwatch = new Stopwatch();
 				$stopwatch->start('actions');
-				$query = $this->em->createQuery("SELECT a FROM App:Action a WHERE a.complete IS NOT NULL AND a.complete < :now")->setParameters(['now'=>$now]);
+				$query = $this->em->createQuery("SELECT a FROM App\Entity\Action a WHERE a.complete IS NOT NULL AND a.complete < :now")->setParameters(['now'=>$now]);
 				$iterableResult = $query->toIterable();
 				$i = 0;
 				$count = 0;
@@ -68,7 +68,7 @@ class ProcessActionsCommand extends Command {
 				$now = new DateTime('now');
 				$this->cs->setGlobal('actions.last', $now->format('Y-m-d H:i:s'));
 				$this->cs->setGlobal('actions.reported', 0);
-				$stats = $this->em->createQuery('SELECT s FROM App:StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
+				$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
 				if ($stats) {
 					/** @var StatisticGlobal $stats */
 					$stats->setActions($stats->getActions()+$count);

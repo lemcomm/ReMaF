@@ -38,7 +38,7 @@ class WorkerEconomyCommand extends Command {
 		$memory_limit = $this->return_bytes(ini_get('memory_limit'));
 		$output->writeln("Working economy for settlements from $start to $end.");
 
-		$query = $this->em->createQuery('SELECT s FROM App:Settlement s WHERE s.id >= :start AND s.id <= :end');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Settlement s WHERE s.id >= :start AND s.id <= :end');
 		$query->setParameters(array('start'=>$start, 'end'=>$end));
 		$iterableResult = $query->toIterable();
 		$count = 0;

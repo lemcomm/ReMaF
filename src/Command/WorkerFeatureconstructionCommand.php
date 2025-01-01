@@ -41,7 +41,7 @@ class WorkerFeatureconstructionCommand extends  Command {
 		$start = $input->getArgument('start');
 		$end = $input->getArgument('end');
 
-		$query = $em->createQuery('SELECT f FROM App:GeoFeature f JOIN f.type t JOIN f.geo_data g WHERE g.id >= :start and g.id <= :end AND f.workers > 0 OR (f.workers = 0 AND f.condition < 0 AND f.condition > -t.build_hours)');
+		$query = $em->createQuery('SELECT f FROM App\Entity\GeoFeature f JOIN f.type t JOIN f.geo_data g WHERE g.id >= :start and g.id <= :end AND f.workers > 0 OR (f.workers = 0 AND f.condition < 0 AND f.condition > -t.build_hours)');
 		$query->setParameters(array('start'=>$start, 'end'=>$end));
 		foreach ($query->getResult() as $feature) {
 			if ($feature->getWorkers() > 0) {

@@ -26,7 +26,7 @@ class RefundHeraldryCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): void {
-		$query = $this->em->createQuery('SELECT u from App:User u join u.crests h');
+		$query = $this->em->createQuery('SELECT u from App\Entity\User u join u.crests h');
 		$all = $query->getResult();
 		$total = 0;
 		foreach ($all as $each) {

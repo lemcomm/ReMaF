@@ -43,13 +43,13 @@ class WorkerUpdateSpottingCommand extends  Command {
 		$qb = $em->createQueryBuilder();
 		// TODO: currently using a 50% spot biome mod, should probably have a seperate "looking out from" value
 		$qb->select(array('c as character', '(:base + SQRT(count(DISTINCT e))*:mod + POW(count(DISTINCT s), 0.3333333))*((1.0+b.spot)/2.0) as spotdistance', 'b.spot as spotmod', 'f.amount as familiarity'))
-			->from('App:GeoData', 'g')
+			->from('App\Entity\GeoData', 'g')
 			->join('g.biome', 'b')
-			->from('App:Character', 'c')
+			->from('App\Entity\Character', 'c')
 			->leftJoin('c.soldiers_old', 's', 'WITH', 's.alive=true')
 			->leftJoin('c.entourage', 'e', 'WITH', '(e.type = :scout AND e.alive=true)')
 			->where($qb->expr()->eq('ST_Contains(g.poly, c.location)', 'true'))
-			->from('App:RegionFamiliarity', 'f')
+			->from('App\Entity\RegionFamiliarity', 'f')
 			->andWhere($qb->expr()->eq('f.character', 'c'))
 			->andWhere($qb->expr()->eq('f.geo_data', 'g'))
 			->andWhere($qb->expr()->eq('c.alive', $qb->expr()->literal(true))) // we see nothing if we are dead,

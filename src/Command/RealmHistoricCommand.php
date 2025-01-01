@@ -47,7 +47,7 @@ class RealmHistoricCommand extends Command {
 			$realm = $this->em->getRepository(Realm::class)->findOneBy(['name'=>$r]);
 		}
 
-		$query = $this->em->createQuery('SELECT min(s.cycle) as minimum, max(s.cycle) as maximum FROM App:StatisticSettlement s JOIN s.realm r WHERE r = :me');
+		$query = $this->em->createQuery('SELECT min(s.cycle) as minimum, max(s.cycle) as maximum FROM App\Entity\StatisticSettlement s JOIN s.realm r WHERE r = :me');
 		$query->setParameter('me', $realm);
 		$result = $query->getOneOrNullResult();
 
@@ -88,7 +88,7 @@ class RealmHistoricCommand extends Command {
 	protected function addInferiors($realm_id): void {
 		$this->all->add($realm_id);
 
-		$query = $this->em->createQuery("SELECT r.id FROM App:StatisticRealm s join s.realm r JOIN s.superior x WHERE x.id = :me AND s.cycle = :cycle");
+		$query = $this->em->createQuery("SELECT r.id FROM App\Entity\StatisticRealm s join s.realm r JOIN s.superior x WHERE x.id = :me AND s.cycle = :cycle");
 		$query->setParameters(array('me'=>$realm_id, 'cycle'=>$this->cycle));
 		foreach ($query->getScalarResult() as $row) {
 			$this->addInferiors($row['id']);

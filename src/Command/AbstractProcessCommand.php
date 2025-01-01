@@ -60,8 +60,8 @@ class AbstractProcessCommand extends Command {
 		 * TODO: Rework this to grab an ID count of the entity, and then divide that by the number of threads.
 		 * And of course rework the individual work commands to also process them using $query->setMaxResults() starting from the $id of the next batch ordering by ID.
 		 */
-		$min = $this->em->createQuery('SELECT MIN(e.id) FROM App:'.$entity.' e')->getSingleScalarResult();
-		$max = $this->em->createQuery('SELECT MAX(e.id) FROM App:'.$entity.' e')->getSingleScalarResult();
+		$min = $this->em->createQuery('SELECT MIN(e.id) FROM App\Entity\\'.$entity.' e')->getSingleScalarResult();
+		$max = $this->em->createQuery('SELECT MAX(e.id) FROM App\Entity\\'.$entity.' e')->getSingleScalarResult();
 
 		$batch_size = ceil((($max-$min)+1)/$this->parallel);
 		$pool = array();

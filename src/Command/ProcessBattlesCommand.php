@@ -55,14 +55,14 @@ class ProcessBattlesCommand extends Command {
 			$now = new DateTime("now");
 
 			// recalculate battle timers for battles I'm about to resolve to fix various trickery
-			$query = $this->em->createQuery('SELECT b FROM App:Battle b WHERE b.complete < :now ORDER BY b.id ASC');
+			$query = $this->em->createQuery('SELECT b FROM App\Entity\Battle b WHERE b.complete < :now ORDER BY b.id ASC');
 			$query->setParameters(array('now'=>$now));
 			foreach ($query->getResult() as $battle) {
 				$this->wm->recalculateBattleTimer($battle);
 			}
 			$this->em->flush();
 
-			$query = $this->em->createQuery('SELECT b FROM App:Battle b WHERE b.complete < :now ORDER BY b.id ASC');
+			$query = $this->em->createQuery('SELECT b FROM App\Entity\Battle b WHERE b.complete < :now ORDER BY b.id ASC');
 			$query->setParameters(array('now'=>$now));
 			foreach ($query->getResult() as $battle) {
 				$this->br->enableLog($arg_debug);

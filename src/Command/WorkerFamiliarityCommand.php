@@ -41,7 +41,7 @@ class WorkerFamiliarityCommand extends  Command {
 	}
 
 	private function updateByArea($start, $end): void {
-		$query = $this->em->createQuery("SELECT c.id as character, g.id as area, c.travel as travel FROM App:Character c, App:GeoData g WHERE c.id >= :start AND c.id <= :end AND c.alive=true AND c.slumbering=false AND c.prisoner_of IS NULL AND ST_Contains(g.poly,c.location)=true");
+		$query = $this->em->createQuery("SELECT c.id as character, g.id as area, c.travel as travel FROM App\Entity\Character c, App\Entity\GeoData g WHERE c.id >= :start AND c.id <= :end AND c.alive=true AND c.slumbering=false AND c.prisoner_of IS NULL AND ST_Contains(g.poly,c.location)=true");
 		$query->setParameters(array('start'=>$start, 'end'=>$end));
 		foreach ($query->getResult() as $row) {
 			$this->addFamiliarity($row['character'], $row['area'], $row['travel']?5:3);
@@ -49,7 +49,7 @@ class WorkerFamiliarityCommand extends  Command {
 	}
 
 	private function updateByEstate($start, $end): void {
-		$query = $this->em->createQuery('SELECT o.id as character, g.id as area FROM App:Settlement s JOIN s.geo_data g JOIN s.owner o WHERE s.owner IS NOT NULL AND o.id >= :start AND o.id < :end AND o.slumbering=false AND o.alive=true AND o.prisoner_of IS NULL');
+		$query = $this->em->createQuery('SELECT o.id as character, g.id as area FROM App\Entity\Settlement s JOIN s.geo_data g JOIN s.owner o WHERE s.owner IS NOT NULL AND o.id >= :start AND o.id < :end AND o.slumbering=false AND o.alive=true AND o.prisoner_of IS NULL');
 		$query->setParameters(array('start'=>$start, 'end'=>$end));
 		foreach ($query->getResult() as $row) {
 			$this->addFamiliarity($row['character'], $row['area'], 1, 6000);
@@ -64,8 +64,8 @@ class WorkerFamiliarityCommand extends  Command {
 			}
 		} else {
 			$exists = new RegionFamiliarity;
-			$exists->setCharacter($this->em->getReference('App:Character', $character_id));
-			$exists->setGeoData($this->em->getReference('App:GeoData', $geo_id));
+			$exists->setCharacter($this->em->getReference('App\Entity\Character', $character_id));
+			$exists->setGeoData($this->em->getReference('App\Entity\GeoData', $geo_id));
 			$exists->setAmount($amount);
 			$this->em->persist($exists);
 		}

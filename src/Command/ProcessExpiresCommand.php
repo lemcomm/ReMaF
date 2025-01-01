@@ -46,7 +46,7 @@ class ProcessExpiresCommand extends Command {
 
 	public function expireEvents(): void {
 		$this->output->writeln("expiring events...");
-		$query = $this->em->createQuery('SELECT e FROM App:Event e WHERE e.lifetime IS NOT NULL AND e.cycle + e.lifetime < :cycle');
+		$query = $this->em->createQuery('SELECT e FROM App\Entity\Event e WHERE e.lifetime IS NOT NULL AND e.cycle + e.lifetime < :cycle');
 		$query->setParameter('cycle', $this->cycle);
 		$all = $query->getResult();
 		foreach ($all as $each) {
@@ -56,13 +56,13 @@ class ProcessExpiresCommand extends Command {
 		}
 		$this->em->flush();
 
-		$query = $this->em->createQuery('DELETE FROM App:SoldierLog l WHERE l.soldier IS NULL');
+		$query = $this->em->createQuery('DELETE FROM App\Entity\SoldierLog l WHERE l.soldier IS NULL');
 		$query->execute();
 	}
 
 	public function expireMarkers(): void {
 		$this->output->writeln("expiring markers...");
-		$query = $this->em->createQuery('DELETE FROM App:MapMarker m WHERE m.placed < :cycle');
+		$query = $this->em->createQuery('DELETE FROM App\Entity\MapMarker m WHERE m.placed < :cycle');
 		$query->setParameter('cycle', $this->cycle - $this->marker_lifetime);
 		$query->execute();
 	}
@@ -70,7 +70,7 @@ class ProcessExpiresCommand extends Command {
 	public function expireShips(): void {
 		$this->output->writeln("ships cleanup...");
 
-		$query = $this->em->createQuery('DELETE FROM App:Ship s WHERE s.cycle < :before');
+		$query = $this->em->createQuery('DELETE FROM App\Entity\Ship s WHERE s.cycle < :before');
 		$query->setParameters(array('before'=>$this->cycle-60));
 		$query->execute();
 	}

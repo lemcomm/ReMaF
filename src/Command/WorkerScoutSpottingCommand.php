@@ -51,8 +51,8 @@ class WorkerScoutSpottingCommand extends  Command {
 			'ST_Azimuth(a.location, b.location) as azimuth',
 			'ST_Distance(a.location, b.location) as distance',
 		));
-		$qb->from('App:Character', 'a')
-			->from('App:Character', 'b')
+		$qb->from('App\Entity\Character', 'a')
+			->from('App\Entity\Character', 'b')
 			->where($qb->expr()->neq('a', 'b'))
 			->andWhere($qb->expr()->orX( // exclude your own prisoners
 					$qb->expr()->isNull('b.prisoner_of'),
@@ -81,9 +81,9 @@ class WorkerScoutSpottingCommand extends  Command {
 			'ST_Azimuth(f.location, b.location) as azimuth',
 			'ST_Distance(f.location, b.location) as distance',
 		));
-		$qb->from('App:Character', 'a')
-			->from('App:Character', 'b')
-			->from('App:GeoFeature', 'f')
+		$qb->from('App\Entity\Character', 'a')
+			->from('App\Entity\Character', 'b')
+			->from('App\Entity\GeoFeature', 'f')
 			->where($qb->expr()->neq('a', 'b'))
 			->andWhere($qb->expr()->eq('f.type', ':tower'))->setParameter('tower', $tower)
 			->andWhere($qb->expr()->eq('f.active', $qb->expr()->literal(true)))
@@ -111,8 +111,8 @@ class WorkerScoutSpottingCommand extends  Command {
 			'ST_Azimuth(f.location, b.location) as azimuth',
 			'ST_Distance(f.location, b.location) as distance',
 		));
-		$qb->from('App:Character', 'b')
-			->from('App:GeoFeature', 'f')
+		$qb->from('App\Entity\Character', 'b')
+			->from('App\Entity\GeoFeature', 'f')
 			->join('f.geo_data', 'g')
 			->join('g.settlement', 's')
 			->join('s.owner', 'a')
@@ -146,14 +146,14 @@ class WorkerScoutSpottingCommand extends  Command {
 			$rows++;
 			$me = null; $tower = null;
 			if (isset($row['spotter'])) {
-				$me = $this->em->getReference('App:Character', $row['spotter']);
+				$me = $this->em->getReference('App\Entity\Character', $row['spotter']);
 			}
 			if (isset($row['tower'])) {
-				$tower = $this->em->getReference('App:GeoFeature', $row['tower']);				
+				$tower = $this->em->getReference('App\Entity\GeoFeature', $row['tower']);				
 			}
-			$target = $this->em->getReference('App:Character', $row['target']);
+			$target = $this->em->getReference('App\Entity\Character', $row['target']);
 
-			$subquery = $this->em->createQuery('SELECT s FROM App:SpotEvent s WHERE s.spotter = :me AND s.target = :target ORDER BY s.ts DESC');
+			$subquery = $this->em->createQuery('SELECT s FROM App\Entity\SpotEvent s WHERE s.spotter = :me AND s.target = :target ORDER BY s.ts DESC');
 			$subquery->setParameters(array('me'=>$me, 'target'=>$target));
 			$subquery->setMaxResults(1);
 			$last = $subquery->getOneOrNullResult();

@@ -68,7 +68,7 @@ class UpdateTorExitsCommand extends Command {
 		$total = $new+$changed+$skipped;
 		$em->flush();
 		$date = new DateTime('-30 days', $utc);
-		$query = $em->createQuery('DELETE FROM App:NetExit n WHERE n.last_seen < :when');
+		$query = $em->createQuery('DELETE FROM App\Entity\NetExit n WHERE n.last_seen < :when');
 		$query->setParameters(['when'=>$date]);
 		$query->execute();
 		$end = microtime(true);

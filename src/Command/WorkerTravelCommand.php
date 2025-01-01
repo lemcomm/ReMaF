@@ -54,7 +54,7 @@ class WorkerTravelCommand extends  Command {
 		$artifactsNaN = false; #Artifact check short circuit flag.
 
 		// primary travel action - update our speed, check if we've arrived and update progress
-		$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.id >= :start AND c.id <= :end AND c.travel IS NOT NULL AND c.travel_locked = false');
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.id >= :start AND c.id <= :end AND c.travel IS NOT NULL AND c.travel_locked = false');
 		$query->setParameters(array('start'=>$start, 'end'=>$end));
 		foreach ($query->getResult() as $char) {
 			if ($char->getInsidePlace()) {

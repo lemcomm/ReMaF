@@ -43,7 +43,7 @@ class WorkerBuildingconstructionCommand extends  Command {
 		$start = $input->getArgument('start');
 		$end = $input->getArgument('end');
 
-		$query = $this->em->createQuery('SELECT s FROM App:Settlement s WHERE s.id >= :start AND s.id <= :end');
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Settlement s WHERE s.id >= :start AND s.id <= :end');
 		$query->setParameters(array('start'=>$start, 'end'=>$end));
 		foreach ($query->getResult() as $settlement) {
 			$supply = $economy->getSupply($settlement);
@@ -168,7 +168,7 @@ class WorkerBuildingconstructionCommand extends  Command {
 	}
 
 	public function autoBuildings(Settlement $settlement): ArrayCollection {
-		$query = $this->em->createQuery('SELECT t FROM App:BuildingType t WHERE t.auto_population > 0 AND t.auto_population <= :pop');
+		$query = $this->em->createQuery('SELECT t FROM App\Entity\BuildingType t WHERE t.auto_population > 0 AND t.auto_population <= :pop');
 		$query->setParameter('pop', $settlement->getFullPopulation());
 		$BuildingTypes = new ArrayCollection($query->getResult());
 

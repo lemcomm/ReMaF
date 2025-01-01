@@ -52,29 +52,29 @@ class ProcessEconomyCommand extends AbstractProcessCommand {
 	}
 
 	protected function ExtraEffects(): void {
-		$query = $this->em->createQuery('UPDATE App:Settlement s SET s.war_fatigue = s.war_fatigue - 1 WHERE s.war_fatigue > 0');
+		$query = $this->em->createQuery('UPDATE App\Entity\Settlement s SET s.war_fatigue = s.war_fatigue - 1 WHERE s.war_fatigue > 0');
 		$query->execute();
 	}
 
 
 	protected function resetResupply(): void {
-		$query = $this->em->createQuery('UPDATE App:SettlementPermission p SET p.value_remaining = p.value WHERE p.value IS NOT NULL');
+		$query = $this->em->createQuery('UPDATE App\Entity\SettlementPermission p SET p.value_remaining = p.value WHERE p.value IS NOT NULL');
 		$query->execute();
 	}
 
 	public function fixWorkers(): void {
 		// check for crazy worker values
-		$query = $this->em->createQuery('SELECT f FROM App:GeoFeature f JOIN f.geo_data g JOIN g.settlement s WHERE f.workers > 0 AND f.workers * s.population < 1');
+		$query = $this->em->createQuery('SELECT f FROM App\Entity\GeoFeature f JOIN f.geo_data g JOIN g.settlement s WHERE f.workers > 0 AND f.workers * s.population < 1');
 		foreach ($query->getResult() as $feature) {
 			$this->output->writeln("feature ".$feature->getName()." has low workers");
 			$feature->setWorkers(0);
 		}
-		$query = $this->em->createQuery('SELECT r FROM App:Road r JOIN r.geo_data g JOIN g.settlement s WHERE r.workers > 0 AND r.workers * s.population < 1');
+		$query = $this->em->createQuery('SELECT r FROM App\Entity\Road r JOIN r.geo_data g JOIN g.settlement s WHERE r.workers > 0 AND r.workers * s.population < 1');
 		foreach ($query->getResult() as $road) {
 			$this->output->writeln("road ".$road->getId()." has low workers");
 			$road->setWorkers(0);
 		}
-		$query = $this->em->createQuery('SELECT b FROM App:Building b JOIN b.settlement s WHERE b.workers > 0 AND b.workers * s.population < 1');
+		$query = $this->em->createQuery('SELECT b FROM App\Entity\Building b JOIN b.settlement s WHERE b.workers > 0 AND b.workers * s.population < 1');
 		foreach ($query->getResult() as $building) {
 			$this->output->writeln("building ".$building->getType()->getName()." has low workers");
 			$building->setWorkers(0);

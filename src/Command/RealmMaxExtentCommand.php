@@ -37,7 +37,7 @@ class RealmMaxExtentCommand extends Command {
 		}
 
 		// FIXME: we sometimes have duplicates - that should be fixed on the DB level, but how?
-		$query = $this->em->createQuery('SELECT DISTINCT r.cycle FROM App:StatisticRealm r WHERE r.realm = :me ORDER BY r.cycle ASC');
+		$query = $this->em->createQuery('SELECT DISTINCT r.cycle FROM App\Entity\StatisticRealm r WHERE r.realm = :me ORDER BY r.cycle ASC');
 		$query->setParameter('me', $realm);
 
 		$output->writeln("Gathering data for ".$realm->getName()." by cycle...");
@@ -72,7 +72,7 @@ class RealmMaxExtentCommand extends Command {
 		}
 
 		if (!$seen) {
-			$query = $this->em->createQuery('SELECT x.id FROM App:StatisticRealm r JOIN r.realm x WHERE r.cycle = :cycle AND r.superior = :me');
+			$query = $this->em->createQuery('SELECT x.id FROM App\Entity\StatisticRealm r JOIN r.realm x WHERE r.cycle = :cycle AND r.superior = :me');
 			$query->setParameters(array('cycle'=>$cycle, 'me'=>$id));
 			foreach ($query->getResult() as $row) {
 				$realms = $this->gatherSubrealms($row['id'], $cycle, $realms);

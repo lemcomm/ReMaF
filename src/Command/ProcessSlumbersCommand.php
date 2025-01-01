@@ -37,7 +37,7 @@ class ProcessSlumbersCommand extends Command {
 
 		$now = new DateTime('now');
 		$twomos = $now->modify('-60 days');
-		$query = $this->em->createQuery('SELECT c FROM App:Character c WHERE c.last_access <= :date AND c.alive = true AND c.location IS NOT NULL AND (c.retired = false OR c.retired IS NULL)');
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.last_access <= :date AND c.alive = true AND c.location IS NOT NULL AND (c.retired = false OR c.retired IS NULL)');
 		$query->setParameters(['date'=>$twomos]);
 		$result = $query->getResult();
 		if (count($result) < 1) {
