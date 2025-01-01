@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout.html.twig' %}
 
 {% trans_default_domain 'core' %}
 
@@ -10,11 +10,11 @@
     <h1>{% trans %}security.reset.header{% endtrans %}</h1>
 
     {% if request_form %}
-        {{ form_start(form) }}
-        {{ form_row(form.text) }}
-        <center><div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div></center>
-        {{ form_row(form.submit) }}
-        {{ form_end(form) }}
+        {{ form_start(request_form) }}
+        {{ form_row(request_form.text) }}<br>
+        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div><br>
+        {{ form_row(request_form.submit) }}
+        {{ form_end(request_form) }}
     {% else %}
         {{ form(reset_form) }}
     {% endif %}

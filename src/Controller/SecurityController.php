@@ -163,8 +163,9 @@ class SecurityController extends AbstractController {
         public function reset(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request, UserPasswordHasherInterface $passwordHasher, string $token = '0', string $email = '0'): RedirectResponse|Response {
                 if ($token == '0') {
                         $form = $this->createForm(RequestResetFormType::class);
+			echo "what?";
                         $form->handleRequest($request);
-                        if ($form->isSubmitted()) {
+                        if ($form->isSubmitted() && $form->isValid()) {
 				$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
 				$resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
 				if (!$resp->isSuccess()) {
@@ -190,8 +191,8 @@ class SecurityController extends AbstractController {
 						$subject = $trans->trans('security.reset.email.subject', ['%sitename%' => $_ENV['SITE_NAME']], 'core');
 
 						$mail->sendEmail($user->getEmail(), $subject, $text);
-						$this->addFlash('notice', $trans->trans('security.reset.flash.requested', [], 'core'));
 					}
+					$this->addFlash('notice', $trans->trans('security.reset.flash.requested', [], 'core'));
 					return new RedirectResponse($this->generateUrl('maf_index'));
 				}
                         }

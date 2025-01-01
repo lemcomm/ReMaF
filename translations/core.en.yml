@@ -154,6 +154,7 @@ form:
  reset:
   password: Password
   repeat: Confirm Password
+ usernameoremail: "Username or Email:"
  delete:
   sure: Confirm Deletetion
   email: Account Email
