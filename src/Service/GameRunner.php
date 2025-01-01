@@ -523,6 +523,8 @@ class GameRunner {
 				$this->milman->TrainingCycle($settlement);
 			}
 		}
+		$this->em->flush();
+		$this->em->clear();
 
 		// Update soldier arrivals to units based on travel times being at or below zero.
 		$date = date("Y-m-d H:i:s");
@@ -588,6 +590,7 @@ class GameRunner {
 			}
 		}
 		$this->em->flush();
+		$this->em->clear();
 
 		// Update Unit travel times.
 		$this->output("  Deducting a day from unit travel times...");
@@ -660,14 +663,17 @@ class GameRunner {
 			}
 		}
 		$this->em->flush();
+		$this->em->clear();
 
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking if units have gotten supplies...");
 		$query = $this->em->createQuery('SELECT r FROM App\Entity\Resupply r WHERE r.travel_days <= 1');
 		$iterableResult = $query->toIterable();
+		$i = 1;
 		foreach ($iterableResult as $resupply) {
 			$unit = $resupply->getUnit();
 			$encircled = false;
+			#TODO: Cache some of this stuff so we don't have to look it up every unit.
 			if ($unit->getCharacter()) {
 				$char = $unit->getCharacter();
 				if ($char->getInsideSettlement()) {
@@ -710,9 +716,16 @@ class GameRunner {
 				$date = date("Y-m-d H:i:s");
 				$this->debug("$date --   Unit ".$unit->getId()." is encircled, and thus skipped..");
 			}
-			#TODO: Give the food to the attackers.
 			$this->em->remove($resupply);
-			$this->em->flush();
+			#TODO: Give the food to the attackers.
+			if ($i < 25) {
+				$i++;
+				$this->em->flush();
+			} else {
+				$i = 0;
+				$this->em->flush();
+				$this->em->clear();
+			}
 		}
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking if units have food to eat...");

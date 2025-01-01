@@ -46,6 +46,10 @@ class CharacterBase {
 		return 'mortally';
 	}
 
+	/**
+	 * Returns a characters health as a float representing percentage of full, 0% - 100%.
+	 * @return float|int
+	 */
 	public function healthValue(): float|int {
 		$maxHp = $this->race->getHp();
 		return max(0.0, ($maxHp - $this->getWounded())) / $maxHp;

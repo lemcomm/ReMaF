@@ -30,12 +30,27 @@ class NPC extends CharacterBase {
 	}
 
 	public function HealOrDie(): bool {
-		if (rand(0, 100) < $this->wounded) {
+		$current = $this->healthValue();
+		if ($current >= 1) {
+			return 1; #Why are you here?
+		}
+		$rand = rand(0, 100);
+		if ($rand === 0 && $current < 0.25) {
+			# Critical failure at  low health = death.
 			$this->kill();
-			return false;
+			return 0;
 		} else {
-			$this->heal(rand(1, 10));
-			return true;
+			if ($rand < 10) {
+				$this->wound(rand(1,5));
+				if ($this->healthValue() < 0) {
+					$this->kill();
+					return 0;
+				}
+				return -1;
+			} else {
+				$this->heal(rand(1,10));
+				return 1;
+			}
 		}
 	}
 
