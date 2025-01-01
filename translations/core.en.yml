@@ -7,16 +7,14 @@ security:
   email:
    subject: "%sitename%: Confirm Your Email"
    text: |
-    Hello,\n\n
+    <p>Hello! In order to confirm your email with your account at %sitename%, please click the link below:</p>
 
-    In order to confirm your email with your account at %sitename%, please click the link below:\n\n
+    <p>%link%</p>
 
-    %link%\n\n
+    <p>Respectfully,<br>
+    %sitename% Administration</p>
 
-    Respectfully,\n
-    %sitename% Administration\n\n
-
-    If you believe you received this email in error, please forward it to %adminemail%.
+    <p>If you believe you received this email in error, please forward it to %adminemail%.</p>
   flash:
    success: Your email has been successfully confirmed.
    already: Your email does not require confirmation.
@@ -54,27 +52,27 @@ security:
   email:
    subject: "%sitename%: Account Activation"
    text1: |
-    Hello %username%, thank you for registering at %sitename%!\n\n
+    <p>Hello %username%, thank you for registering at %sitename%!</p>
 
-    In order to fully activate your account please click the link below. Thank you!\n\n
+    <p>In order to fully activate your account please click the link below. Thank you!</p>
 
-    %link%\n\n
+    <p>%link%</p>
 
-    Respectfully,\n
-    %sitename% Administration\n\n
+    <p>Respectfully,<br>
+    %sitename% Administration</p>
 
-    If you believe you received this email in error, please forward it to %adminemail%.
+    <p>If you believe you received this email in error, please forward it to %adminemail%.</p>
    text2: |
-    Hello %username%, someone, hopefully you, requested a new activation token from %sitename%!\n\n
+    <p>Hello %username%, someone, hopefully you, requested a new activation token from %sitename%!</p>
 
-    In order to fully activate your account please click the link below. Thank you!\n\n
+    <p>In order to fully activate your account please click the link below. Thank you!</p>
 
-    %link%\n\n
+    <p>%link%</p>
 
-    Respectfully,\n
-    %sitename% Administration\n\n
+    <p>Respectfully,<br>
+    %sitename% Administration</p>
 
-    If you believe you received this email in error, please forward it to %adminemail%.
+    <p>If you believe you received this email in error, please forward it to %adminemail%.</p>
   flash: Thank you for registering! If you haven't already, please check your email for your activation link. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
  remind:
   header: Forgot Username
@@ -82,18 +80,18 @@ security:
   email:
    subject: "%sitename%: Your Username"
    text: |
-    Hello %username%,\n\n
+    <p>Hello %username%,</p>
 
-    Someone, hopefully you, requested we send you your username at %sitename%.\n\n
+    <p>Someone, hopefully you, requested we send you your username at %sitename%.</p>
 
-    If you remember your password you can log in at: %login%\n\n
+    <p>If you remember your password you can log in at: %login%</p>
 
-    Otherwise, you can request a new password at: %reset%.\n\n
+    <p>Otherwise, you can request a new password at: %reset%.</p>
 
-    Respectfully,\n
-    %sitename% Administration\n\n
-
-    If you believe you received thisemail in error, please forward it to %adminemail%.
+    <p>Respectfully,<br>
+    %sitename% Administration</p>
+    
+    <p>If you believe you received thisemail in error, please forward it to %adminemail%.</p>
   flash: If a matching email has been located in our system, a reminder with your username has been sent. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
  reset:
   header: Request A Password Reset
@@ -102,14 +100,14 @@ security:
   email:
    subject: "%sitename%: Password Reset"
    text: |
-    Hello, someone, hopefully you, requested a password reset email for their account at %sitename%. In order to complete this reset, please click th link below:\n
+    <p>Hello, someone, hopefully you, requested a password reset email for their account at %sitename%. In order to complete this reset, please click th link below:</p>
 
-    %link%\n\n
+    %link%<br><br>
 
-    Respectfully,\n
-    %sitename% Administration\n\n
+    <p>Respectfully,<br>
+    %sitename% Administration</p>
 
-    If you believe you received this email in error, please forward it to %adminemail%.
+    <p>If you believe you received this email in error, please forward it to %adminemail%.</p>
   flash:
    requested: If a matching email has been located in our system, an email has been dispatched with new a new activation link. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
    completed: Your password has been reset!

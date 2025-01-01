@@ -143,7 +143,7 @@ class MailManager {
 			$message->cc($cc);
 		}
 		$message->text(strip_tags($text));
-		$message->html($text, 'text/html');
+		$message->html($text);
 		$this->mailer->send($message);
 	}
 
