@@ -127,6 +127,13 @@ class UpdateDatabaseCommand extends  Command {
 			$em->createQuery('UPDATE App\Entity\Soldier s SET s.race = :race')->setParameters(['race'=>$npcRace])->execute();
 			$em->createQuery('UPDATE App\Entity\Entourage e SET e.race = :race')->setParameters(['race'=>$npcRace])->execute();
 			$output->writeln('Race Data Applied');
+			$output->writeln('Updating Equipment Data');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadEquipmentData'],
+				'--append' => true,
+			]);
+			$output->writeln('Equipment Data Updated');
 		}
 
 		return Command::SUCCESS;
