@@ -37,7 +37,7 @@ class UpdateDatabaseCommand extends  Command {
 		$versions = str_replace(' ', '', $versions);
 		$versions = explode(',', $versions);
 		$em = $this->em;
-		if (in_array('1', $versions)) {
+		if (in_array('A1', $versions)) {
 			$output->writeln('Updating Realms, Level 7 -> 9');
 			$em->createQuery('UPDATE App\Entity\Realm r SET r.type = 9 WHERE r.type = 7')->execute();
 			$output->writeln('Updating Realms, Level 6 -> 8');
@@ -80,8 +80,6 @@ class UpdateDatabaseCommand extends  Command {
 			$des = $desRepo->findOneBy(['name'=>'barony'])->getId();
 			$em->createQuery('UPDATE App\Entity\Realm r SET r.designation = :des WHERE r.type = 2')->setParameters(['des'=>$des])->execute();
 			$output->writeln('Realm Designations Updated');
-		}
-		if (in_array('2', $versions)) {
 			$output->writeln('Converting UnitSettings Table into Unit Table columns...');
 			$em->getConnection()->executeStatement('UPDATE unit
 				SET name = unitsettings.name, 
@@ -96,16 +94,12 @@ class UpdateDatabaseCommand extends  Command {
 				FROM unitsettings
 				WHERE unit.id = unitsettings.unit_id');
 			$output->writeln('UnitSettings converted!');
-		}
-		if (in_array('3', $versions)) {
 			$output->writeln('Removing Settlement Manage Recruits permission...');
 			$type = $em->getRepository(Permission::class)->findOneBy(['class'=>'settlement', 'name'=>'recruit']);
 			$em->createQuery('DELETE FROM App\Entity\SettlementPermission s WHERE s.permission = :type')->setParameters(['type'=>$type])->execute();
 			$em->remove($type);
 			$em->flush();
 			$output->writeln('Permission removed!');
-		}
-		if (in_array('4', $versions)) {
 			$output->writeln('Creating Default World and Applying World IDs');
 			$world = new World;
 			$em->persist($world);
@@ -117,8 +111,6 @@ class UpdateDatabaseCommand extends  Command {
 			$em->createQuery('UPDATE App\Entity\Character c SET c.world = :world')->setParameters(['world'=>$world])->execute();
 			$em->createQuery('UPDATE App\Entity\GeoFeature f SET f.world = :world')->setParameters(['world'=>$world])->execute();
 			$em->createQuery('UPDATE App\Entity\Ship s SET s.world = :world')->setParameters(['world'=>$world])->execute();
-		}
-		if (in_array('5', $versions)) {
 			$output->writeln('Setting initial character Race flags');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
