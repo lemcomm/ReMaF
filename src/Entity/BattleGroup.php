@@ -10,7 +10,6 @@ use Exception;
 class BattleGroup {
 	protected ?ArrayCollection $soldiers = null;
 	private bool $attacker;
-	private bool $engaged;
 	private ?int $id = null;
 	private ?Siege $attacking_in_siege;
 	private ?BattleReportGroup $active_report;
@@ -236,28 +235,6 @@ class BattleGroup {
 	 */
 	public function setAttacker(bool $attacker): static {
 		$this->attacker = $attacker;
-
-		return $this;
-	}
-
-	/**
-	 * Get engaged
-	 *
-	 * @return bool|null
-	 */
-	public function getEngaged(): ?bool {
-		return $this->engaged;
-	}
-
-	/**
-	 * Set engaged
-	 *
-	 * @param boolean|null $engaged
-	 *
-	 * @return BattleGroup
-	 */
-	public function setEngaged(?bool $engaged = null): static {
-		$this->engaged = $engaged;
 
 		return $this;
 	}

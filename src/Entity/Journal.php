@@ -40,7 +40,7 @@ class Journal {
 	}
 
 	public function isGraphic(): bool {
-		if (!$this->graphic || $this->GM_graphic) {
+		if ($this->graphic || $this->GM_graphic) {
 			return true;
 		}
 		return false;
