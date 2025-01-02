@@ -51,22 +51,25 @@ class BattleRunner {
 	private ?string $tempLog = null;
 	private mixed $nobility;
 	private int $battlesize=1;
-	private int $defenseBonus=0;
+
+	# Public to allow manipulation by SimulateBattleCommand.
+	public int $defenseBonus=0;
+	public bool $defenseOverride = false;
 
 
 	public function __construct(
-		private EntityManagerInterface $em,
-		private LoggerInterface $logger,
-		private History $history,
-		private Geography $geo,
-		private CharacterManager $character_manager,
-		private CommonService $common,
-		private Interactions $interactions,
-		private Politics $politics,
-		private MilitaryManager $milman,
-		private HelperService $helper,
-		private CombatManager $combat,
-		private WarManager $warman) {
+		public EntityManagerInterface $em,
+		public LoggerInterface $logger,
+		public History $history,
+		public Geography $geo,
+		public CharacterManager $character_manager,
+		public CommonService $common,
+		public Interactions $interactions,
+		public Politics $politics,
+		public MilitaryManager $milman,
+		public HelperService $helper,
+		public CombatManager $combat,
+		public WarManager $warman) {
 	}
 
 	#TODO: Fine tune logging.
@@ -91,36 +94,7 @@ class BattleRunner {
 		$this->battle = $battle;
 		$this->log(1, "Battle ".$battle->getId()."\n");
 
-		$char_count = 0;
-		$slumberers = 0;
-
-		foreach ($battle->getGroups() as $group) {
-			foreach ($group->getCharacters() as $char) {
-				if ($char->getSlumbering() == true) {
-					$slumberers++;
-				}
-				$char_count++;
-			}
-		}
-		$this->log(15, "Found ".$char_count." characters and ".$slumberers." slumberers\n");
-		if ($char_count > 0) {
-			$xpRatio = $slumberers/$char_count;
-		} else {
-			$xpRatio = 1;
-		}
-		if ($xpRatio < 0.1) {
-			$xpMod = 1;
-		} else if ($xpRatio < 0.2) {
-			$xpMod = 0.5;
-		} else if ($xpRatio < 0.3) {
-			$xpMod = 0.2;
-		} else if ($xpRatio < 0.5) {
-			$xpMod = 0.1;
-		} else {
-			$xpMod = 0;
-		}
-		$this->xpMod = $xpMod;
-		$this->log(15, "XP modifier set to ".$xpMod." with ".$char_count." characters and ".$slumberers." slumberers\n");
+		$this->findXpMod($battle);
 
 		$this->report = new BattleReport;
 		$this->report->setAssault(FALSE);
@@ -129,6 +103,7 @@ class BattleRunner {
 		$myStage = NULL;
 		$maxStage = NULL;
 		$place = $battle->getPlace();
+		$settlement = $battle->getSettlement();
 		$type = $battle->getType();
 		if (in_array($battle->getType(), ['siegesortie', 'siegeassault']) && !$battle->getSiege()) {
 			# Ideally, it shouldn't be possible to have a siege battle without a siege, but just in case...
@@ -145,12 +120,14 @@ class BattleRunner {
 					} else {
 						$location = array('key'=>'battle.location.of', 'id'=>$battle->getPlace()->getId(), 'name'=>$battle->getPlace()->getName());
 					}
-				} else {
+				} elseif ($settlement) {
 					if ($myStage > 1) {
 						$location = array('key'=>'battle.location.sortie', 'id'=>$battle->getSettlement()->getId(), 'name'=>$battle->getSettlement()->getName());
 					} else {
 						$location = array('key'=>'battle.location.of', 'id'=>$battle->getSettlement()->getId(), 'name'=>$battle->getSettlement()->getName());
 					}
+				} else {
+					$location = ['key'=>'battle.location.somewhere'];
 				}
 				$this->siegeFinale = FALSE;
 				break;
@@ -166,7 +143,7 @@ class BattleRunner {
 						$location = array('key'=>'battle.location.assault', 'id'=>$battle->getPlace()->getId(), 'name'=>$battle->getPlace()->getName());
 						$this->siegeFinale = FALSE;
 					}
-				} else {
+				} elseif ($settlement) {
 					if ($myStage > 2 && $myStage == $maxStage) {
 						$location = array('key'=>'battle.location.castle', 'id'=>$battle->getSettlement()->getId(), 'name'=>$battle->getSettlement()->getName());
 						$this->siegeFinale = TRUE;
@@ -174,60 +151,21 @@ class BattleRunner {
 						$location = array('key'=>'battle.location.assault', 'id'=>$battle->getSettlement()->getId(), 'name'=>$battle->getSettlement()->getName());
 						$this->siegeFinale = FALSE;
 					}
+				} else {
+					$location = ['key'=>'battle.location.somewhere'];
 				}
 				if (!$place) {
-					# So, this looks a bit weird, but stone stuff counts during stages 1 and 2, while wood stuff and moats only count during stage 1. Stage 3 gives you the fortress, and stage 4 gives the citadel bonus.
-					# If you're wondering why this looks different from how we figure out the max stage, that's because the final stage works differently.
-					foreach ($battle->getDefenseBuildings() as $building) {
-						switch (strtolower($building->getType()->getName())) {
-							case 'stone wall': # 10 points
-							case 'stone towers': # 5 points
-							case 'stone castle': # 5 points
-								if ($myStage < 3) {
-									$this->report->addDefenseBuilding($building->getType());
-									$this->defenseBonus += $building->getDefenseScore();
-								}
-								break;
-							case 'palisade': # 10 points
-							case 'empty moat': # 5 points
-							case 'filled moat': # 5 points
-							case 'wood wall': # 10 points
-							case 'wood towers': # 5 points
-							case 'wood castle': # 5 points
-								if ($myStage < 2) {
-									$this->report->addDefenseBuilding($building->getType());
-									$this->defenseBonus += $building->getDefenseScore();
-								}
-								break;
-							case 'fortress': # 50 points
-								if ($myStage == 3) {
-									$this->report->addDefenseBuilding($building->getType());
-									$this->defenseBonus += $building->getDefenseScore();
-								}
-								break;
-							case 'citadel': # 70 points
-								if ($myStage == 4) {
-									$this->report->addDefenseBuilding($building->getType());
-									$this->defenseBonus += $building->getDefenseScore();
-								}
-								break;
-							default:
-								# Seats of power are all 5 pts each.
-								# Apothercary and alchemist are also 5.
-								# This grants up to 30 points.
-								$this->report->addDefenseBuilding($building->getType()); #Yes, this means Alchemists, and Seats of Governance ALWAYS give their bonus, if they exist.
-								$this->defenseBonus += $building->getDefenseScore();
-								break;
-						}
-					}
+					$this->calculateDefenseScore($battle);
 				}
 				break;
 			case 'urban':
 				$this->report->setUrban(TRUE);
 				if ($place) {
 					$location = array('key'=>'battle.location.of', 'id'=>$battle->getPlace()->getId(), 'name'=>$battle->getPlace()->getName());
-				} else {
+				} elseif ($settlement) {
 					$location = array('key'=>'battle.location.of', 'id'=>$battle->getSettlement()->getId(), 'name'=>$battle->getSettlement()->getName());
+				}  else {
+					$location = ['key'=>'battle.location.somewhere'];
 				}
 				$this->siegeFinale = FALSE;
 				break;
@@ -365,7 +303,93 @@ class BattleRunner {
 		$this->history->evaluateBattle($this->report);
 	}
 
-	private function prepare(): array {
+	private function findXpMod($battle) {
+		$char_count = 0;
+		$slumberers = 0;
+
+		foreach ($battle->getGroups() as $group) {
+			foreach ($group->getCharacters() as $char) {
+				if ($char->getSlumbering() == true) {
+					$slumberers++;
+				}
+				$char_count++;
+			}
+		}
+		$this->log(15, "Found ".$char_count." characters and ".$slumberers." slumberers\n");
+		if ($char_count > 0) {
+			$xpRatio = $slumberers/$char_count;
+		} else {
+			$xpRatio = 1;
+		}
+		if ($xpRatio < 0.1) {
+			$xpMod = 1;
+		} elseif ($xpRatio < 0.2) {
+			$xpMod = 0.5;
+		} elseif ($xpRatio < 0.3) {
+			$xpMod = 0.2;
+		} elseif ($xpRatio < 0.5) {
+			$xpMod = 0.1;
+		} else {
+			$xpMod = 0;
+		}
+		$this->xpMod = $xpMod;
+		$this->log(15, "XP modifier set to ".$xpMod." with ".$char_count." characters and ".$slumberers." slumberers\n");
+	}
+
+	private function calculateDefenseScore($battle) {
+		if ($this->defenseOverride) {
+			return;
+		}
+		# So, this looks a bit weird, but stone stuff counts during stages 1 and 2, while wood stuff and moats only count during stage 1. Stage 3 gives you the fortress, and stage 4 gives the citadel bonus.
+		# If you're wondering why this looks different from how we figure out the max stage, that's because the final stage works differently.
+		$myStage = $battle->getSiege()->getStage();
+		if ($battle->getSettlement()) {
+			foreach ($battle->getDefenseBuildings() as $building) {
+				switch (strtolower($building->getType()->getName())) {
+					case 'stone wall': # 10 points
+					case 'stone towers': # 5 points
+					case 'stone castle': # 5 points
+						if ($myStage < 3) {
+							$this->report->addDefenseBuilding($building->getType());
+							$this->defenseBonus += $building->getDefenseScore();
+						}
+						break;
+					case 'palisade': # 10 points
+					case 'empty moat': # 5 points
+					case 'filled moat': # 5 points
+					case 'wood wall': # 10 points
+					case 'wood towers': # 5 points
+					case 'wood castle': # 5 points
+						if ($myStage < 2) {
+							$this->report->addDefenseBuilding($building->getType());
+							$this->defenseBonus += $building->getDefenseScore();
+						}
+						break;
+					case 'fortress': # 50 points
+						if ($myStage == 3) {
+							$this->report->addDefenseBuilding($building->getType());
+							$this->defenseBonus += $building->getDefenseScore();
+						}
+						break;
+					case 'citadel': # 70 points
+						if ($myStage == 4) {
+							$this->report->addDefenseBuilding($building->getType());
+							$this->defenseBonus += $building->getDefenseScore();
+						}
+						break;
+					default:
+						# Seats of power are all 5 pts each.
+						# Apothercary and alchemist are also 5.
+						# This grants up to 30 points.
+						$this->report->addDefenseBuilding($building->getType()); #Yes, this means Alchemists, and Seats of Governance ALWAYS give their bonus, if they exist.
+						$this->defenseBonus += $building->getDefenseScore();
+						break;
+				}
+			}
+		}
+	}
+
+	public function prepare(): array {
 		$battle = $this->battle;
 		$combatworthygroups = 0;
 		$this->nobility = new ArrayCollection;
@@ -383,6 +407,7 @@ class BattleRunner {
 		}
 		$totalCount = 0;
 		foreach ($battle->getGroups() as $group) {
+			/** @var BattleGroup $group */
 			if ($siege && $defGroup == NULL) {
 				if ($group != $attGroup && !$group->getReinforcing()) {
 					$defGroup = $group;
@@ -551,7 +576,7 @@ class BattleRunner {
 		}
 	}
 
-	private function addNobility(BattleGroup $group): void {
+	public function addNobility(BattleGroup $group): void {
 		foreach ($group->getCharacters() as $char) {
 			// TODO: might make this actual buy options, instead of hardcoded
 			/** @var Character $char */
@@ -588,7 +613,7 @@ class BattleRunner {
 		}
 	}
 
-	private function resolveBattle($myStage, $maxStage): void {
+	public function resolveBattle($myStage, $maxStage): void {
 		$battle = $this->battle;
 		$phase = 1; # Initial value.
 		$combat = true; # Initial value.
@@ -643,7 +668,7 @@ class BattleRunner {
 		$this->runStage('hunt', $rangedPenalty, $phase, $doRanged);
 	}
 
-	private function prepareRound($first = false): void {
+	public function prepareRound($first = false): void {
 		// store who is active, because this changes with hits and would give the first group to resolve the initiative while we want things to be resolved simultaneously
 		foreach ($this->battle->getGroups() as $group) {
 			/** @var Soldier $soldier */
@@ -689,7 +714,7 @@ class BattleRunner {
 
 	}
 
-	private function prepareBattlefield(): void {
+	public function prepareBattlefield(): void {
 		$battle = $this->battle;
 		if ($battle->getType() === 'siegesortie') {
 			$siege = $battle->getSiege();
@@ -744,7 +769,7 @@ class BattleRunner {
 		}
 	}
 
-	private function deployGroup($group, $startX, $highY, $invert, $gCount, $tGCount, $angle = null): array {
+	public function deployGroup($group, $startX, $highY, $invert, $gCount, $tGCount, $angle = null): array {
 		/*
 		group is the group we're depling.
 		startX is the initial x position we're working from.
@@ -821,11 +846,11 @@ class BattleRunner {
 		return [$highY. $gCount];
 	}
 
-	private function rotateCoords($x, $y, $focus, $angle): void {
+	public function rotateCoords($x, $y, $focus, $angle): void {
 		# Do some math!
 	}
 
-	private function runStage($type, $rangedPenaltyStart, $phase, $doRanged): bool {
+	public function runStage($type, $rangedPenaltyStart, $phase, $doRanged): bool {
 		$groups = $this->battle->getGroups();
 		$battle = $this->battle;
 		foreach ($groups as $group) {
@@ -1480,7 +1505,7 @@ class BattleRunner {
 		}
 	}
 
-	private function concludeBattle() {
+	public function concludeBattle() {
 		$battle = $this->battle;
 		$this->log(3, "survivors:\n");
 		$this->prepareRound(); // to update the isFighting setting correctly
@@ -1641,7 +1666,7 @@ class BattleRunner {
 		}
 	}
 
-	private function getRandomSoldier($group, $retry = 0) {
+	public function getRandomSoldier($group, $retry = 0) {
 		$max = $group->count();
 		$index = rand(1, $max);
 		$target = $group->first();
@@ -1661,7 +1686,7 @@ class BattleRunner {
 		return $target;
 	}
 
-	private function addNobleResult($noble, $result, $enemy): void {
+	public function addNobleResult($noble, $result, $enemy): void {
 		# TODO: This is primarily for later, when we have time to implement this.
 		$report = $noble->getActiveReport();
 		if ($result == 'fail' || $result == 'wound' || $result == 'capture' || $result =='kill') {
@@ -1701,7 +1726,7 @@ class BattleRunner {
 		}
 	}
 
-	private function progressSiege(Battle $battle, ?BattleGroup $victor, $flag): void {
+	public function progressSiege(Battle $battle, ?BattleGroup $victor, $flag): void {
 		$siege = $battle->getSiege();
 		$report = $this->report;
 		$current = $siege->getStage();

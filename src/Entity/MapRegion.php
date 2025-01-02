@@ -11,6 +11,7 @@ class MapRegion extends RegionBase {
 	private Collection $exits;
 	private Collection $entrances;
 	private Collection $artifacts;
+	private Collection $battles;
 
 	/**
 	 * Constructor
@@ -20,6 +21,8 @@ class MapRegion extends RegionBase {
 		$this->characters = new ArrayCollection();
 		$this->exits = new ArrayCollection();
 		$this->entrances = new ArrayCollection();
+		$this->battles = new ArrayCollection();
+		$this->artifacts = new ArrayCollection();
 	}
 
 	public function getModifiers(): array {
@@ -96,5 +99,18 @@ class MapRegion extends RegionBase {
 
 	public function getArtifacts(): Collection {
 		return $this->artifacts;
+	}
+
+	public function addBattle (Battle $battle): static {
+		$this->battles[] = $battle;
+		return $this;
+	}
+
+	public function removeBattle (Battle $battle): void {
+		$this->battles->removeElement($battle);
+	}
+
+	public function getBattles(): Collection {
+		return $this->battles;
 	}
 }

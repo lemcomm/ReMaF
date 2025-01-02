@@ -9,7 +9,7 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 
 class Battle {
-	private Point $location;
+	private ?Point $location = null;
 	private bool $is_siege;
 	private DateTime $started;
 	private DateTime $complete;
@@ -28,6 +28,7 @@ class Battle {
 	private ?int $attackers = null;
 	private ?int $defenders = null;
 	private ?BattleReport $report = null;
+	private ?MapRegion $mapRegion = null;
 
 	/**
 	 * Constructor
@@ -231,11 +232,11 @@ class Battle {
 	/**
 	 * Set location
 	 *
-	 * @param point $location
+	 * @param Point|null $location
 	 *
 	 * @return Battle
 	 */
-	public function setLocation(point $location): static {
+	public function setLocation(?point $location): static {
 		$this->location = $location;
 
 		return $this;
@@ -454,6 +455,15 @@ class Battle {
 
 	public function setReport(?BattleReport $report): static {
 		$this->report = $report;
+		return $this;
+	}
+
+	public function getMapRegion(): ?MapRegion {
+		return $this->mapRegion;
+	}
+
+	public function setMapRegion(?MapRegion $mapRegion): static {
+		$this->mapRegion = $mapRegion;
 		return $this;
 	}
 }
