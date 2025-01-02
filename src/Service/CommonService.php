@@ -106,7 +106,6 @@ class CommonService {
 			$theory = round($theory);
 		}
 		if (!$training) {
-			echo 'making new skill - ';
 			$training = new Skill();
 			$this->em->persist($training);
 			$training->setCharacter($char);
@@ -118,7 +117,6 @@ class CommonService {
 			$training->setTheoryHigh($theory);
 		} else {
 			$training = $training[0];
-			echo 'updating skill '.$training->getId().' - ';
 			if ($pract) {
 				$newPract = $training->getPractice() + $pract;
 				$training->setPractice($newPract);

@@ -545,7 +545,7 @@ class MilitaryManager {
 		return true;
 	}
 
-	public function newUnit(?Character $character, ?Settlement $home, $data): Unit {
+	public function newUnit(?Character $character, ?Settlement $home, $data = null): Unit {
 		$unit = new Unit();
 		$this->em->persist($unit);
 		$unit->setSettlement($home);
@@ -563,7 +563,7 @@ class MilitaryManager {
 				$this->history->openLog($unit, $steward);
 			}
 		}
-		if ($character && $data && isset($data['assignto'])) {
+		if ($character && $data && array_key_exists('assignto', $data) && isset($data['assignto'])) {
 			$this->history->logEvent(
 				$data['assignto'],
 				'event.military.newUnit',

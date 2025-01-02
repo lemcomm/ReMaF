@@ -16,6 +16,7 @@
 
 		<one-to-one field="settlement" target-entity="Settlement" mapped-by="mapRegion"/>
 		<one-to-many field="resources" target-entity="GeoResource" mapped-by="mapRegion"/>
+		<one-to-many field="battles" target-entity="Battle" mapped-by="mapRegion"/>
 
 		<one-to-many field="exits" target-entity="MapTransit" mapped-by="fromRegion"/>
 		<one-to-many field="entrances" target-entity="MapTransit" mapped-by="toRegion"/>

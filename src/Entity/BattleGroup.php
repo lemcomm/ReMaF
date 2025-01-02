@@ -11,16 +11,16 @@ class BattleGroup {
 	protected ?ArrayCollection $soldiers = null;
 	private bool $attacker;
 	private ?int $id = null;
-	private ?Siege $attacking_in_siege;
-	private ?BattleReportGroup $active_report;
+	private ?Siege $attacking_in_siege = null;
+	private ?BattleReportGroup $active_report = null;
 	private Collection $related_actions;
 	private Collection $reinforced_by;
 	private Collection $attacking_in_battles;
 	private Collection $defending_in_battles;
-	private ?Battle $battle;
-	private ?Character $leader;
-	private ?Siege $siege;
-	private ?BattleGroup $reinforcing;
+	private ?Battle $battle = null;
+	private ?Character $leader = null;
+	private ?Siege $siege = null;
+	private ?BattleGroup $reinforcing = null;
 	private Collection $characters;
 
 	/**
