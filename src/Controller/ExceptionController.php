@@ -42,7 +42,7 @@ class ExceptionController extends AbstractController {
 		$agent = $request->headers->get('User-Agent');
 		$bits = explode("::", $error);
 		echo print_r($bits);
-		if (!(array_key_exists(1, $bits) && str_starts_with($bits[1], 'unavailable.intro'))) {
+		if ($code !== 404 && !(array_key_exists(1, $bits) && str_starts_with($bits[1], 'unavailable.intro'))) {
 			# Filter out Dispathcer generated errors--those are the game working as intended. No need to forward.
 			try {
 				$text = "Status Code: $code \nError: $error\nRequestUri:$uri\nReferer:$ref\nUser: $user\nAgent: $agent\nTrace:\n$trace";
