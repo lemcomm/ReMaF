@@ -362,7 +362,7 @@ class RealmController extends AbstractController {
 
 		$success=false;
 		$form = $this->createForm(InteractionType::class, null, [
-			'action'=>'abidcate',
+			'subaction'=>'abidcate',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
 			'me'=>$character,
 			'settlementcheck'=>true,

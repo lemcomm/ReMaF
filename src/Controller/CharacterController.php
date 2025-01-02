@@ -1099,7 +1099,7 @@ class CharacterController extends AbstractController {
 		}
 
 		$form = $this->createForm(InteractionType::class, null, [
-			'action'=>'surrender',
+			'subaction'=>'surrender',
 			'maxdistance' => $this->geo->calculateInteractionDistance($character),
 			'me' => $character
 		]);

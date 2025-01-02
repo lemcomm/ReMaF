@@ -32,7 +32,7 @@ class SubrealmType extends AbstractType {
 		$realm = $options['realm'];
 		$realmtypes = array();
 		for ($i=1;$i<$realm->getType();$i++) {
-			$realmtypes[$i] = 'realm.type.'.$i;
+			$realmtypes['realm.type.'.$i] = $i;
 		}
 
 		$builder->add('settlement', EntityType::class, array(

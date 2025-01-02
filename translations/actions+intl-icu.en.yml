@@ -746,6 +746,9 @@ military:
   join:
    name:        Join an Ongoing Siege
    description: Order your men to join you in partaking in the ongoing siege.
+   success:
+    attackers:  You've successfully joined the Attackers.
+    defenders:  You've successfully joined the Defenders.
   confirm:
    leadership:  Who shall take command?
    assume:      Confirm Assumption
@@ -1407,7 +1410,7 @@ unit:
   food:     Has {amount} food stored, enough for {days} game days.
  resupply:
   food:     Is expecting {average} to arrive each day, if travel is clear.
-  freq:     More will average, on average every {frequency} game days.
+  freq:     More will arrive, on average, every {frequency} game days.
   next:     The next shipment will arrive in {days} game days.
  assign:
   name:     Assign a Leader to {name}
@@ -1452,8 +1455,8 @@ unit:
    info:       "This page provides you the current supply status for your unit, both the exact current on-hand and the average quantity of incoming supplies, along with when those supplies are next expected. If you're travelling, this is an estimate, but if you're staying in one place this should be quite accurate unless you find yourself under siege."
    name:       Item
    onhand:     Available On Hand
-   next:       Next Shipment Has...
-   frequency:  And Will Arrive In...
+   next:       Next Shipment Has
+   frequency:  And Will Arrive In
    days:       "{days} day(s)"
-   last:       Last Shipment In...
+   last:       Last Shipment In
    total:      Total Shipments Coming

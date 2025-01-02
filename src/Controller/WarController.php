@@ -250,14 +250,14 @@ class WarController extends AbstractController {
 					'character'=>$character,
 					'location'=>$settlement,
 					'siege'=>$siege,
-					'action'=>$action
+					'mainaction'=>$action
 				]);
 			} else {
 				$form = $this->createForm(SiegeType::class, null, [
 					'character'=>$character,
 					'location'=>$place,
 					'siege'=>$siege,
-					'action'=>$action
+					'mainaction'=>$action
 				]);
 			}
 		} else {
@@ -481,9 +481,9 @@ class WarController extends AbstractController {
 				return $this->redirectToRoute('maf_war_siege', array('action'=>'select'));
 			} else {
 				# Either request doesn't have AreYouSureType or data['sure'] did not equal true.
-				if($data['action'] != 'selected') {
+				if($data['mainaction'] != 'selected') {
 					# if action is not already selected that means we shouldn't be here yet, rereoute the user to whatever action is.
-					switch($data['action']){
+					switch($data['mainaction']){
 						case 'leadership':
 							if ($place) {
 								return $this->redirectToRoute('maf_war_siege_place', array('place'=>$place->getId(), 'action'=>'leadership'));
@@ -671,6 +671,7 @@ class WarController extends AbstractController {
 										->setCanCancel(false)
 										->setBlockTravel(true);
 									$this->am->queue($act);
+									$this->addFlash('notice', $trans->trans('military.siege.join.success.'.$data['side'], [], "actions"));
 								}
 								if ($place) {
 									return $this->redirectToRoute('maf_war_siege_place', array('place'=>$place->getId(), 'action'=>'select'));
@@ -1328,7 +1329,7 @@ class WarController extends AbstractController {
 		$result = false;
 
 		$form = $this->createForm(InteractionType::class, null, [
-			'action'=>'attack',
+			'subaction'=>'attack',
 			'maxdistance'=> $this->geo->calculateInteractionDistance($character),
 			'me'=>$character,
 			'multiple'=>true,

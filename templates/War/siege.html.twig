@@ -27,9 +27,9 @@
 				<p>{{ "military.siege.menu.active"|trans({"%settlement%":settlement.name}, "actions")|raw }}</p>
 			{% endif %}
 			{% if siege.encircled %}
-				{{ "military.siege.status.encirlced"|trans({"%current%":siege.stage, "%max%":siege.maxStage, "%soldiers%":siege.encirclement},"actions"|raw) }}
+				{{ "military.siege.status.encircled"|trans({"%current%":siege.stage, "%max%":siege.maxStage, "%soldiers%":siege.encirclement},"actions"|raw) }}
 			{% else %}
-				{{ "military.siege.status.notencirlced"|trans({"%current%":siege.stage, "%max%":siege.maxStage, "%soldiers%":siege.encirclement},"actions"|raw) }}
+				{{ "military.siege.status.notencircled"|trans({"%current%":siege.stage, "%max%":siege.maxStage, "%soldiers%":siege.encirclement},"actions"|raw) }}
 			{% endif %}
 			{{ form(form) }}
 		{% else %}

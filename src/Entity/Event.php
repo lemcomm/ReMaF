@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 
 class Event {
 	private string $content;
-	private ?array $data = null;
+	private null|array|int $data = null;
 	private bool $public;
 	private DateTime $ts;
 	private int $cycle;

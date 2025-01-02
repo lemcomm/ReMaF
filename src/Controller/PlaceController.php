@@ -469,7 +469,7 @@ class PlaceController extends AbstractController {
 		}
 
 		$form = $this->createForm(InteractionType::class, null, [
-			'action' => 'placetransfer',
+			'subaction' => 'placetransfer',
 			'maxdistance' => $geo->calculateInteractionDistance($character),
 			'me' => $character
 		]);
@@ -617,7 +617,7 @@ class PlaceController extends AbstractController {
 		}
 
 		$form = $this->createForm(InteractionType::class, null, [
-			'action' => 'occupier',
+			'subaction' => 'occupier',
 			'maxdistance' => $geo->calculateInteractionDistance($character),
 			'me' => $character
 		]);

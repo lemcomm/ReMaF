@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Artifact;
+use App\Entity\Character;
 use App\Entity\MapPOI;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\Geography;
@@ -10,6 +11,7 @@ use App\Service\History;
 use App\Form\CharacterSelectType;
 use App\Form\InteractionType;
 
+use App\Twig\LinksExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -22,6 +24,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ArtifactsController extends AbstractController {
 	public function __construct(
@@ -213,10 +216,13 @@ class ArtifactsController extends AbstractController {
 	}
 
 	#[Route ('/artifact/give', name:'maf_artifact_give')]
-	public function giveAction(Request $request): Response {
+	public function giveAction(Request $request, TranslatorInterface $trans, LinksExtension $link): Response {
 		$character = $this->disp->gateway('locationGiveArtifactTest');
+		if (! $character instanceof Character) {
+			return $this->redirectToRoute($character);
+		}
 
-		$form = $this->createForm(InteractionType::class, null, ['action'=>'giveartifact', 'maxdistance'=>$this->geo->calculateInteractionDistance($character), 'me'=>$character]);
+		$form = $this->createForm(InteractionType::class, null, ['subaction'=>'giveartifact', 'maxdistance'=>$this->geo->calculateInteractionDistance($character), 'me'=>$character]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$artifact = $form->get('artifact')->getData();
@@ -238,9 +244,8 @@ class ArtifactsController extends AbstractController {
 				History::MEDIUM, true, 20
 			);
 			$this->em->flush();
-			return $this->render('Artifacts/give.html.twig', [
-				'success'=>true, 'artifact'=>$artifact, 'target'=>$target
-			]);
+			$this->addFlash('notice', $trans->trans('artifact.give.success', ["%artifact%"=>$link->ObjectLink($artifact), "%character%"=>$link->ObjectLink($character)]));
+			return $this->redirectToRoute('maf_char_recent');
 		}
 		return $this->render('Artifacts/give.html.twig', [
 			'form'=>$form->createView()

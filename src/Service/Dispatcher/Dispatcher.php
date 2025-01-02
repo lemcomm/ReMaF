@@ -2310,12 +2310,12 @@ class Dispatcher {
 			$check = true;
 		}
 		if (!$check) {
-			$query = $this->em->createQuery('SELECT p FROM BM2SiteBundle:BattleParticipant p WHERE p.battle_report = :br AND p.character = :me');
+			$query = $this->em->createQuery('SELECT p FROM App\Entity\BattleParticipant p WHERE p.battle_report = :br AND p.character = :me');
 			$query->setParameters(array('br'=>$report, 'me'=>$char));
 			$check = $query->getOneOrNullResult();
 		}
 		if (!$check) {
-			$query = $this->em->createQuery('SELECT p FROM BM2SiteBundle:BattleReportCharacter p JOIN p.group_report g WHERE p.character = :me AND g.battle_report = :br');
+			$query = $this->em->createQuery('SELECT p FROM App\Entity\BattleReportCharacter p JOIN p.group_report g WHERE p.character = :me AND g.battle_report = :br');
 			$query->setParameters(array('br'=>$report, 'me'=>$char));
 			$check = $query->getOneOrNullResult();
 		}

@@ -35,21 +35,32 @@ class ExceptionController extends AbstractController {
 			'status_code' => $code,
 			'exception' => $error,
 		];
+		$uri = $request->getRequestUri();
 		$type = $request->headers->get('accept');
-		if ($code !== 404) {
-			# Suppress 404 errors, so we don't get a message every time some random bot tries to hit /admin.php
-			# Or some other similar non-existent URL because this isn't WordPress.
+		$ref = $request->server->get('HTTP_REFERER');
+		$user = $this->getUser()?->getId()?:'(none)';
+		$agent = $request->headers->get('User-Agent');
+		$bits = explode("::", $error);
+		echo print_r($bits);
+		if (!(array_key_exists(1, $bits) && str_starts_with($bits[1], 'unavailable.intro'))) {
+			# Filter out Dispathcer generated errors--those are the game working as intended. No need to forward.
 			try {
-				$text = "Status Code: $code \nError: $error\nTrace:\n$trace";
+				$text = "Status Code: $code \nError: $error\nRequestUri:$uri\nReferer:$ref\nUser: $user\nAgent: $agent\nTrace:\n$trace";
 				$this->discord->pushToErrors($text);
 			} catch (Exception $e) {
 				// Do nothing.
 			}
 		}
 
-		return match ($type) {
-			'application/json' => new JsonResponse($data, 500, ['content-type' => 'application/json']),
-			default => $this->render('Exception/exception.html.twig', $data),
-		};
+		if ($type==='application/json') {
+			new JsonResponse($data, 500, ['content-type' => 'application/json']);
+		}
+
+		if ($bits[0] === 'messages') {
+			unset($bits[0]);
+		}
+		$data['bits'] = $bits;
+
+		return $this->render('Exception/exception.html.twig', $data);
 	}
 }

@@ -362,13 +362,22 @@ class ConversationController extends AbstractController {
 			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
 				'messages' => [$msg],
 				'preview' => true,
-				'char' => $char,
+				'char' => $char
+			]);
+			$replyingTo = $this->renderView('Conversation/msg_loop.html.twig', [
+				'messages' => [$this->em->getRepository('App\Entity\Message')->findOneBy(['id'=>$data['reply_to']])?:false],
+				'preview' => true,
+				'char' => $char
+			]);
+			return $this->render('Conversation/fullReply.html.twig', [
+				'form' => $form,
+				'preview' => $subview,
+				'replyingTo' => $replyingTo,
 			]);
 		}
 
 		return $this->render('Conversation/reply.html.twig', [
-			'form' => $form->createView(),
-			'preview' => $subview,
+			'form' => $form,
 		]);
 	}
 

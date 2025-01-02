@@ -5,8 +5,8 @@
 <p>{{ 'account.culture.intro'|trans|raw }}</p>
 
 {% if bought is defined %}
-	<h3>{{ 'account.culture.bought.title'|trans({'%choice%':bought.count})|title }}</h3>
-	<p>{{ 'account.culture.bought.intro'|trans({"%choice%":bought.count, "%amount%":bought.count})|raw }}</p>
+	<h3>{{ 'account.culture.bought.title'|trans({'%count%':bought.count})|title }}</h3>
+	<p>{{ 'account.culture.bought.intro'|trans({"%amount%":bought.count, "%count%":bought.count})|raw }}</p>
 	<dl>
 		{% for culture in bought %}
 		<dt>{{ ('culture.'~culture.name)|trans }}</dt>

@@ -6,14 +6,14 @@
 		{{ replyingTo|raw }}
 		<hr>
 	{% endif %}
-			{% include "Conversation/syntax.html.twig" %}
+	{% if preview %}
+		<h3>{{ 'conversation.preview'|trans({}, "conversations")|title }}</h3>
+		{{ preview|raw }}
+	{% endif %}
+	{% include "Conversation/syntax.html.twig" %}
 
-			{% include "element/msgautoinsertbox.html.twig" %}
-			{{ form(form) }}
-		{% if preview %}
-			<h3>{{ 'conversation.preview'|trans({}, "conversations")|title }}</h3>
-			{{ preview|raw }}
-		{% endif %}
+	{% include "element/msgautoinsertbox.html.twig" %}
+	{{ form(form) }}
 
 {% endblock %}
 

@@ -13,6 +13,10 @@
 	{% else %}
 		{{ 'conversation.new.title'|trans({}, "conversations")|title }}</h2>
 	{% endif %}
+	{% if preview %}
+		<h3>{{ 'conversation.preview'|trans({}, "conversations")|title }}</h3>
+		{{ preview|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
+	{% endif %}
 
 {% include "Conversation/reply.html.twig" %}
 

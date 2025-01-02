@@ -97,7 +97,7 @@ class UnitSoldiersType extends AbstractType {
 					if (!$in_battle) {
 						if ($local) {
 							if (!empty($avail_train) && $soldier->isActive()) {
-								$actions['recruit.manage.retrain'] = 'recruit';
+								$actions['recruit.manage.retrain'] = 'retrain';
 								$actions['recruit.manage.disband'] = 'disband';
 							}
 							if ($reassign) {

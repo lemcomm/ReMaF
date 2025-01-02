@@ -572,7 +572,7 @@ class MapController extends AbstractController {
 				$query = $em->createQuery('SELECT r FROM App\Entity\Realm r JOIN r.superior s WHERE s.superior IS NULL');
 				$realms = $query->getResult();
 				break;
-			case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+			case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
 				$realms = $em->getRepository(Realm::class)->findBy(['type'=>$mode]);
 				break;
 			default:

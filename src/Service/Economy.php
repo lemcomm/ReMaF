@@ -751,7 +751,7 @@ class Economy {
 
 				}
 				#$suppliedNPCs += $unit->getLivingEntourage()->count(); // TODO: Determine if we want to feed entourage or just pay them.
-				$need = $settlement->getPopulation() + $settlement->getThralls()*0.75 + $suppliedNPCs;
+				$need = $settlement->getPopulation() + $settlement->getThralls()*0.75 + $suppliedNPCs*0.8;
 				break;
 			case 'wood':
 				$base = sqrt($population) + exp(sqrt($population)/150) - 5;

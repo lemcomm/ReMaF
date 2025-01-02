@@ -218,7 +218,7 @@ class NewsController extends AbstractController {
 		}
 		$distance = $geo->calculateInteractionDistance($character);
 		$form = $this->createForm(InteractionType::class, null, [
-			'action'=>'publication',
+			'subaction'=>'publication',
 			'maxdistance'=>$distance,
 			'me'=>$character,
 			'multiple'=>true
@@ -251,7 +251,7 @@ class NewsController extends AbstractController {
 
 			$distance = $geo->calculateInteractionDistance($character);
 			$form = $this->createForm(InteractionType::class, null, [
-				'action'=>'publication',
+				'subaction'=>'publication',
 				'maxdistance'=>$distance,
 				'me'=>$character,
 				'multiple'=>true

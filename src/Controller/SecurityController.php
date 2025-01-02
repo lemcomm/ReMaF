@@ -160,10 +160,10 @@ class SecurityController extends AbstractController {
 	}
 
 	#[Route ('/security/reset', name:'maf_account_reset')]
-        public function reset(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request, UserPasswordHasherInterface $passwordHasher, string $token = '0', string $email = '0'): RedirectResponse|Response {
-                if ($token == '0') {
+        public function reset(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request, UserPasswordHasherInterface $passwordHasher): RedirectResponse|Response {
+		$token = $request->query->get('token');
+                if (!$token) {
                         $form = $this->createForm(RequestResetFormType::class);
-			echo "what?";
                         $form->handleRequest($request);
                         if ($form->isSubmitted() && $form->isValid()) {
 				$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
@@ -202,15 +202,17 @@ class SecurityController extends AbstractController {
 				'recaptcha_site_key' => $_ENV['RECAPTCHA_SITE_KEY'],
                         ]);
                 } else {
-                        $user = $em->getRepository(User::class)->findOneBy(['reset_token' => $token, 'email' => $email]);
+			$email = $request->query->get('email');
+			/** @var User $user */
+			$user = $em->getRepository(User::class)->findOneBy(['reset_token' => $token, 'email' => $email]);
                         if ($user) {
                                 $form = $this->createForm(ResetPasswordFormType::class);
                                 $form->handleRequest($request);
                                 if ($form->isSubmitted() && $form->isValid()) {
 					$user->setPassword($passwordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
 					$user->setLastPassword(new DateTime('now'));
-                                        $user->unsetResetToken();
-                                        $user->unsetResetTime();
+                                        $user->setResetToken(null);
+                                        $user->setResetTime(null);
                                         $em->flush();
 
                                         $this->addFlash('notice', $trans->trans('security.reset.flash.completed', [], 'core'));

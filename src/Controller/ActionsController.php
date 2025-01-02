@@ -290,7 +290,7 @@ class ActionsController extends AbstractController {
 		}
 
 		$form = $this->createForm(InteractionType::class, null, [
-			'action'=>'givegold', 
+			'subaction'=>'givegold',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character), 
 			'me'=>$character
 		]);
@@ -334,7 +334,7 @@ class ActionsController extends AbstractController {
 		}
 
 		$form = $this->createForm(InteractionType::class, null, [
-			'action'=>'giveship',
+			'subaction'=>'giveship',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
 			'me'=>$character
 		]);
@@ -551,7 +551,7 @@ class ActionsController extends AbstractController {
 		}
 
 		$form = $this->createForm(InteractionType::class, null, [
-			'action'=>$settlement->getRealm()?'grant':'grant2',
+			'subaction'=>$settlement->getRealm()?'grant':'grant2',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
 			'me'=>$character
 		]);
@@ -613,7 +613,7 @@ class ActionsController extends AbstractController {
 		}
 
 		$form = $this->createForm(InteractionType::class, null, [
-			'action'=>'steward',
+			'subaction'=>'steward',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
 			'me'=>$character,
 			'required'=>false
@@ -1056,7 +1056,7 @@ class ActionsController extends AbstractController {
 		}
 
 		$form = $this->createForm(InteractionType::class, null, [
-			'action'=>'occupier',
+			'subaction'=>'occupier',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
 			'me'=>$character
 		]);

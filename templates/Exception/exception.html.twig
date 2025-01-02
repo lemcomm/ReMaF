@@ -3,7 +3,9 @@
 {% block content %}
 <div class="exception">
 	<h2>{{ 'error.title'|trans|title }}</h2>
-	{{ exception|trans|raw }}
+	{% for each in bits %}
+		{{ each|trans|raw }}
+	{% endfor %}
 </div>
 {% endblock %}
 

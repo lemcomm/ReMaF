@@ -31,7 +31,7 @@ class SiegeType extends AbstractType {
 		$resolver->setDefaults(array(
 			'csrf_token_id'		=> 'siege_97',
 			'translation_domain'	=> 'actions',
-			'action'		=> null,
+			'mainaction'		=> null,
 		));
 		$resolver->setRequired(['character', 'location', 'siege']);
 	}
@@ -40,7 +40,7 @@ class SiegeType extends AbstractType {
 		$siege = $options['siege'];
 		$location = $options['location'];
 		$character = $options['character'];
-		$action = $options['action'];
+		$action = $options['mainaction'];
 		$isLeader = FALSE;
 		$isAttacker = FALSE;
 		$isDefender = FALSE;
@@ -125,14 +125,14 @@ class SiegeType extends AbstractType {
 				$actionslist = array_merge($actionslist, array('military.siege.join.name' => 'join'));
 			}
 			ksort($actionslist, 2); #Sort array as strings.
-			$builder->add('action', ChoiceType::class, array(
+			$builder->add('mainaction', ChoiceType::class, array(
 				'required'=>true,
 				'choices' => $actionslist,
 				'placeholder'=>'military.siege.no_action',
 				'label'=> 'military.siege.actions.all'
 			));
 		} else {
-			$builder->add('action', HiddenType::class, array(
+			$builder->add('mainaction', HiddenType::class, array(
 				'data'=>'selected'
 			));
 			switch($action) {
@@ -237,9 +237,9 @@ class SiegeType extends AbstractType {
 					));
 					# Later we'll extend this to include reinforcing parties, hence the arrays. Those looking to attack the attackers and those looking to attack the defenders but weren't part of the original siege (presumably because they showed up late).
 					if ($character->getInsideSettlement() == $location || $character->getInsidePlace() == $location) {
-						$sides = array('defenders' => 'military.siege.side.defenders');
+						$sides = array('military.siege.side.defenders' => 'defenders');
 					} else {
-						$sides = array('attackers' => 'military.siege.side.attackers');
+						$sides = array('military.siege.side.attackers' => 'attackers');
 					}
 					$builder->add('side', ChoiceType::class, array(
 						'required'=>true,

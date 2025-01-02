@@ -302,7 +302,7 @@ class AssociationDispatcher extends Dispatcher {
 		if (!$rank || !$rank->getOwner()) {
 			return array("name"=>"assoc.deities.viewAll.name", "description"=>"unavailable.notassocowner");
 		} else {
-			return $this->action("assoc.deities.viewAll", "maf_all_deities", true,
+			return $this->action("assoc.deities.viewAll", "maf_assoc_all_deities", true,
 				array('id'=>$assoc->getId()),
 				array("%name%"=>$assoc->getName())
 			);

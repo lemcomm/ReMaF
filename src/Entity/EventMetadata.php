@@ -15,9 +15,11 @@ class EventMetadata {
 	public function countNewEvents(): int {
 		$count = 0;
 		if ($this->getAccessUntil()) return 0; // FIXME: this is a hack to prevent the new start lighting up for closed logs
-		foreach ($this->getLog()?->getEvents() as $event) {
-			if ($event->getTs() > $this->last_access) {
-				$count++;
+		if ($this->getLog()) {
+			foreach ($this->getLog()->getEvents() as $event) {
+				if ($event->getTs() > $this->last_access) {
+					$count++;
+				}
 			}
 		}
 		return $count;

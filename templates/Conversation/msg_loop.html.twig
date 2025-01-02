@@ -95,13 +95,15 @@
 							</ul>
 						{% endif %}
 						{% if not archive %}
-							{% set tag = message.findTag(char) %}
-							<ul class="cmsg_flags">
-								<li><button class="cmsg_icon icon-star3{% if tag and tag.type == "important" %} active{% endif %}" title="{{ 'flag.important'|trans({}, "conversations") }}" data-msg="{{ message.id }}" data-flag="important"></button></li>
-								<li><button class="cmsg_icon icon-lightning{% if tag and  tag.type == "act" %} active{% endif %}" title="{{ 'flag.act'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="act"></button></li>
-								<li><button class="cmsg_icon icon-history{% if tag and  tag.type == "remind" %} active{% endif %}" title="{{ 'flag.remind'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="remind"></button></li>
-								<li><button class="cmsg_icon icon-drawer2{% if tag and  tag.type == "keep" %} active{% endif %}" title="{{ 'flag.keep'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="keep"></button></li>
-							</ul>
+							{% if char %}
+								{% set tag = message.findTag(char) %}
+								<ul class="cmsg_flags">
+									<li><button class="cmsg_icon icon-star3{% if tag and tag.type == "important" %} active{% endif %}" title="{{ 'flag.important'|trans({}, "conversations") }}" data-msg="{{ message.id }}" data-flag="important"></button></li>
+									<li><button class="cmsg_icon icon-lightning{% if tag and  tag.type == "act" %} active{% endif %}" title="{{ 'flag.act'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="act"></button></li>
+									<li><button class="cmsg_icon icon-history{% if tag and  tag.type == "remind" %} active{% endif %}" title="{{ 'flag.remind'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="remind"></button></li>
+									<li><button class="cmsg_icon icon-drawer2{% if tag and  tag.type == "keep" %} active{% endif %}" title="{{ 'flag.keep'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="keep"></button></li>
+								</ul>
+							{% endif %}
 						{% endif %}
 					</div>
 						{% endif %}

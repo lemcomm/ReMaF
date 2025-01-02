@@ -344,7 +344,7 @@ realm:
   longdesc:     Lesser positions within {name} can be defined, appointed and revoked by you.
   empty:        The realm does not have any positions defined at this time.
   new:          Create a New Position!
-  holder:       Holder{count, plural, =1 {} other {s}}"
+  holder:       Holder{count, plural, =1 {} other {s}}
   manage:       Manage Position
   appoint:      Appoint Officials
   active:

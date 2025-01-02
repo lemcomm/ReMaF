@@ -22,55 +22,62 @@ class ChatController extends AbstractController {
 	public function __construct(private AppState $app, private Dispatcher $disp, private EntityManagerInterface $em) {}
 
 	# Route annotation deliberately ommited in order to facilitate unlocalized JSON request.
-	public function chatCheckAction(ChatMessage $msg, string $target): JsonResponse {
-		$here = $msg->findTarget();
-		$char = $this->app->getCharacter();
-		$decode = substr($target, 0, 1);
-		if (in_array($decode, ['s', 'p', 'd'])) {
-			if ($here->getChatMembers()->contains($char)) {
-				if ($decode === 's') {
-					$new = $this->em->createQuery('SELECT m, c FROM App\Entity\ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.settlement = :here ORDER BY m.id DESC')
-						->setParameters(['id'=>$msg->getId(), 'here'=>$here])
-						->getResult();
-				} elseif ($decode === 'p') {
-					$new = $this->em->createQuery('SELECT m, c FROM App\Entity\ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.place = :here ORDER BY m.id DESC')
-						->setParameters(['id'=>$msg->getId(), 'here'=>$here])
-						->getResult();
-				} elseif ($decode === 'd') {
-					$new = $this->em->createQuery('SELECT m, c FROM App\Entity\ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.party = :here ORDER BY m.id DESC')
-						->setParameters(['id'=>$msg->getId(), 'here'=>$here])
-						->getResult();
-				} else {
-					return new JsonResponse(['response'=>'invalid', 'payload'=>'bad target']);
-				}
-				if (count($new) > 0) {
-					$data = [];
-					$cache = [];
-					foreach ($new as $each) {
-						$sender = $each->getSender();
-						/** @var ChatMessage $each */
-						$id = $each->getId();
-						$data[$id]['name'] = $each->getSender()->getName();
-						if (array_key_exists($sender->getId(), $cache)) {
-							$data[$id]['link'] = $cache[$sender->getId()];
-						} else {
-							$link = $this->generateUrl('maf_char_view', ['id'=>$sender->getId()]);
-							$data[$id]['link'] = $link;
-							$cache[$sender->getId()] = $link;
-						}
-						$data[$id]['text'] = $each->getContent();
-						$data[$id]['ts'] = $each->getTs();
+	public function chatCheckAction(string $msg, string $target): JsonResponse {
+		$msg = $this->em->getRepository(ChatMessage::class)->findOneBy(['id' => $msg]);
+		/** @var ChatMessage $msg */
+		if ($msg) {
+			$here = $msg->findTarget();
+			$char = $this->app->getCharacter();
+			$decode = substr($target, 0, 1);
+			if (in_array($decode, ['s', 'p', 'd'])) {
+				if ($here->getChatMembers()->contains($char)) {
+					if ($decode === 's') {
+						$new = $this->em->createQuery('SELECT m, c FROM App\Entity\ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.settlement = :here ORDER BY m.id DESC')
+							->setParameters(['id'=>$msg->getId(), 'here'=>$here])
+							->getResult();
+					} elseif ($decode === 'p') {
+						$new = $this->em->createQuery('SELECT m, c FROM App\Entity\ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.place = :here ORDER BY m.id DESC')
+							->setParameters(['id'=>$msg->getId(), 'here'=>$here])
+							->getResult();
+					} elseif ($decode === 'd') {
+						$new = $this->em->createQuery('SELECT m, c FROM App\Entity\ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.party = :here ORDER BY m.id DESC')
+							->setParameters(['id'=>$msg->getId(), 'here'=>$here])
+							->getResult();
+					} else {
+						return new JsonResponse(['response'=>'invalid', 'payload'=>'bad target']);
 					}
-					return new JsonResponse(['response'=>'new', 'payload'=>$data]);
+					if (count($new) > 0) {
+						$data = [];
+						$cache = [];
+						foreach ($new as $each) {
+							$sender = $each->getSender();
+							/** @var ChatMessage $each */
+							$id = $each->getId();
+							$data[$id]['name'] = $each->getSender()->getName();
+							if (array_key_exists($sender->getId(), $cache)) {
+								$data[$id]['link'] = $cache[$sender->getId()];
+							} else {
+								$link = $this->generateUrl('maf_char_view', ['id'=>$sender->getId()]);
+								$data[$id]['link'] = $link;
+								$cache[$sender->getId()] = $link;
+							}
+							$data[$id]['text'] = $each->getContent();
+							$data[$id]['ts'] = $each->getTs();
+						}
+						return new JsonResponse(['response'=>'new', 'payload'=>$data]);
+					} else {
+						return new JsonResponse(['response'=>'current']);
+					}
 				} else {
-					return new JsonResponse(['response'=>'current']);
+					return new JsonResponse(['response'=>'invalid', 'payload'=>'not present']);
 				}
 			} else {
-				return new JsonResponse(['response'=>'invalid', 'payload'=>'not present']);
+				return new JsonResponse(['response'=>'invalid', 'payload'=>'bad request']);
 			}
 		} else {
-			return new JsonResponse(['response'=>'invalid', 'payload'=>'bad target']);
+			return new JsonResponse(['response'=>'current']);
 		}
+
 	}
 
 	private function validateChatReferrer(string $ref): string|false {

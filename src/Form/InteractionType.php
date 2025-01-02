@@ -39,7 +39,7 @@ class InteractionType extends AbstractType {
 			'settlementcheck' => false,
 			'required'	=> true,
 		));
-		$resolver->setRequired(['action', 'maxdistance', 'me']);
+		$resolver->setRequired(['subaction', 'maxdistance', 'me']);
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
@@ -47,7 +47,7 @@ class InteractionType extends AbstractType {
 		$maxdistance = $options['maxdistance'];
 		$settlementcheck = $options['settlementcheck'];
 		$builder->add('target', EntityType::class, array(
-			'label'=>'interaction.'.$options['action'].'.name',
+			'label'=>'interaction.'.$options['subaction'].'.name',
 			'placeholder'=>$options['multiple']?'character.none':null,
 			'multiple'=>$options['multiple'],
 			'expanded'=>true,
@@ -74,12 +74,12 @@ class InteractionType extends AbstractType {
 				return $qb;
 		}));
 
-		$method = $options['action']."Fields";
+		$method = $options['subaction']."Fields";
 		if (method_exists(__CLASS__, $method)) {
 			$this->$method($builder, $options);
 		}
 
-		$builder->add('submit', SubmitType::class, array('label'=>'interaction.'.$options['action'].'.submit'));
+		$builder->add('submit', SubmitType::class, array('label'=>'interaction.'.$options['subaction'].'.submit'));
 	}
 
 	private function messageFields(FormBuilderInterface $builder): void {
@@ -122,7 +122,7 @@ class InteractionType extends AbstractType {
 			'required' => true,
 			'label' => 'interaction.giveartifact.which',
 			'class'=>Artifact::class,
-			'property'=>'name',
+			'choice_label'=>'name',
 			'query_builder'=>function(EntityRepository $er) use ($me) {
 				return $er->createQueryBuilder('a')->where('a.owner = :me')->setParameter('me', $me);
 			}

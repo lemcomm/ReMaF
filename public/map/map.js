@@ -74,7 +74,9 @@ if (typeof mapstrings == "undefined") {
 		'duchies': "Duchies",
 		'marches': "Marches",
 		'counties': "Counties",
+		'viscounties': "Viscounties",
 		'baronies': "Baronies",
+		'baronets': "Baronets",
 		'poi': "Points of Interest",
 		'cultures': "Cultures",
 		'features': "Features",
@@ -382,7 +384,7 @@ function addrealms() {
 		},
 		strategies: [new OpenLayers.Strategy.Fixed()],
 		protocol: new OpenLayers.Protocol.HTTP({
-			url: basepath+"data?type=realms&mode=7",
+			url: basepath+"data?type=realms&mode=9",
 			format: new OpenLayers.Format.GeoJSON()
 		})
 	});
@@ -399,7 +401,7 @@ function addrealms() {
 		},
 		strategies: [new OpenLayers.Strategy.Fixed()],
 		protocol: new OpenLayers.Protocol.HTTP({
-			url: basepath+"data?type=realms&mode=6",
+			url: basepath+"data?type=realms&mode=8",
 			format: new OpenLayers.Format.GeoJSON()
 		})
 	});
@@ -416,7 +418,7 @@ function addrealms() {
 		},
 		strategies: [new OpenLayers.Strategy.Fixed()],
 		protocol: new OpenLayers.Protocol.HTTP({
-			url: basepath+"data?type=realms&mode=5",
+			url: basepath+"data?type=realms&mode=7",
 			format: new OpenLayers.Format.GeoJSON()
 		})
 	});
@@ -433,7 +435,7 @@ function addrealms() {
 		},
 		strategies: [new OpenLayers.Strategy.Fixed()],
 		protocol: new OpenLayers.Protocol.HTTP({
-			url: basepath+"data?type=realms&mode=4",
+			url: basepath+"data?type=realms&mode=6",
 			format: new OpenLayers.Format.GeoJSON()
 		})
 	});
@@ -450,7 +452,7 @@ function addrealms() {
 		},
 		strategies: [new OpenLayers.Strategy.Fixed()],
 		protocol: new OpenLayers.Protocol.HTTP({
-			url: basepath+"data?type=realms&mode=3",
+			url: basepath+"data?type=realms&mode=5",
 			format: new OpenLayers.Format.GeoJSON()
 		})
 	});
@@ -467,13 +469,30 @@ function addrealms() {
 		},
 		strategies: [new OpenLayers.Strategy.Fixed()],
 		protocol: new OpenLayers.Protocol.HTTP({
-			url: basepath+"data?type=realms&mode=2",
+			url: basepath+"data?type=realms&mode=4",
 			format: new OpenLayers.Format.GeoJSON()
 		})
 	});
 	layer.setVisibility(false);
 	map.addLayer(layer);
 	map.setLayerIndex(layer, 94);
+
+	var layer = new OpenLayers.Layer.Vector(mapstrings.viscounties, {
+		renderers: ["SVG2", "SVG", "VML", "Canvas"],
+		styleMap: new OpenLayers.StyleMap(style),
+		eventListeners: {
+			'loadstart': function(event){ loader_on('realms', mapstrings.viscounties); },
+			'loadend': function(event){ loader_off('realms'); }
+		},
+		strategies: [new OpenLayers.Strategy.Fixed()],
+		protocol: new OpenLayers.Protocol.HTTP({
+			url: basepath+"data?type=realms&mode=3",
+			format: new OpenLayers.Format.GeoJSON()
+		})
+	});
+	layer.setVisibility(false);
+	map.addLayer(layer);
+	map.setLayerIndex(layer, 93);
 
 	var layer = new OpenLayers.Layer.Vector(mapstrings.baronies, {
 		renderers: ["SVG2", "SVG", "VML", "Canvas"],
@@ -484,13 +503,30 @@ function addrealms() {
 		},
 		strategies: [new OpenLayers.Strategy.Fixed()],
 		protocol: new OpenLayers.Protocol.HTTP({
+			url: basepath+"data?type=realms&mode=2",
+			format: new OpenLayers.Format.GeoJSON()
+		})
+	});
+	layer.setVisibility(false);
+	map.addLayer(layer);
+	map.setLayerIndex(layer, 92);
+
+	var layer = new OpenLayers.Layer.Vector(mapstrings.baronets, {
+		renderers: ["SVG2", "SVG", "VML", "Canvas"],
+		styleMap: new OpenLayers.StyleMap(style),
+		eventListeners: {
+			'loadstart': function(event){ loader_on('realms', mapstrings.baronets); },
+			'loadend': function(event){ loader_off('realms'); }
+		},
+		strategies: [new OpenLayers.Strategy.Fixed()],
+		protocol: new OpenLayers.Protocol.HTTP({
 			url: basepath+"data?type=realms&mode=1",
 			format: new OpenLayers.Format.GeoJSON()
 		})
 	});
 	layer.setVisibility(false);
 	map.addLayer(layer);
-	map.setLayerIndex(layer, 93);
+	map.setLayerIndex(layer, 91);
 }
 
 

@@ -357,7 +357,7 @@ class WarDispatcher extends Dispatcher {
 		if ($siege->getPlace()) {
 			return $this->action("military.siege.assault", "maf_war_siege_place", false, array('action'=>'leadership', 'place'=>$siege->getPlace()->getId()));
 		} else {
-			return $this->action("military.siege.assault", "bm2_site_war_siege", false, array('action'=>'leadership'));
+			return $this->action("military.siege.assault", "maf_war_siege", false, array('action'=>'leadership'));
 		}
 	}
 
@@ -426,7 +426,7 @@ class WarDispatcher extends Dispatcher {
 		if ($siege->getPlace()) {
 			return $this->action("military.siege.assume", "maf_war_siege_place", false, array('action'=>'assume', 'place'=>$siege->getPlace()->getId()));
 		} else {
-			return $this->action("military.siege.assume", "bm2_site_war_siege", false, array('action'=>'assume'));
+			return $this->action("military.siege.assume", "maf_war_siege", false, array('action'=>'assume'));
 		}
 	}
 
@@ -535,7 +535,7 @@ class WarDispatcher extends Dispatcher {
 		if ($siege->getPlace()) {
 			return $this->action("military.siege.assault", "maf_war_siege_place", false, array('action'=>'assault', 'place'=>$siege->getPlace()->getId()));
 		} else {
-			return $this->action("military.siege.assault", "bm2_site_war_siege", false, array('action'=>'assault'));
+			return $this->action("military.siege.assault", "maf_war_siege", false, array('action'=>'assault'));
 		}
 	}
 
@@ -549,6 +549,7 @@ class WarDispatcher extends Dispatcher {
 			return array("name"=>"military.siege.disband.name", "description"=>"unavailable.prisoner");
 		}
 		$isLeader = FALSE;
+		$inSiege = FALSE;
 		foreach ($siege->getGroups() as $group) {
 			if ($group->getCharacters()->contains($this->getCharacter())) {
 				$inSiege = TRUE;
@@ -575,7 +576,7 @@ class WarDispatcher extends Dispatcher {
 		if ($siege->getPlace()) {
 			return $this->action("military.siege.disband", "maf_war_siege_place", false, array('action'=>'disband', 'place'=>$siege->getPlace()->getId()));
 		} else {
-			return $this->action("military.siege.disband", "bm2_site_war_siege", false, array('action'=>'disband'));
+			return $this->action("military.siege.disband", "maf_war_siege", false, array('action'=>'disband'));
 		}
 	}
 
@@ -605,7 +606,7 @@ class WarDispatcher extends Dispatcher {
 		if ($siege->getPlace()) {
 			return $this->action("military.siege.leave", "maf_war_siege_place", false, array('action'=>'leave', 'place'=>$siege->getPlace()->getId()));
 		} else {
-			return $this->action("military.siege.leave", "bm2_site_war_siege", false, array('action'=>'leave'));
+			return $this->action("military.siege.leave", "maf_war_siege", false, array('action'=>'leave'));
 		}
 	}
 
@@ -784,7 +785,7 @@ class WarDispatcher extends Dispatcher {
 		if ($siege && $siege->getPlace()) {
 			return $this->action("military.siege.join", "maf_war_siege_place", false, array('action'=>'joinsiege', 'place'=>$siege->getPlace()->getId()));
 		} else {
-			return $this->action("military.siege.join", "bm2_site_war_siege", false, array('action'=>'joinsiege'));
+			return $this->action("military.siege.join", "maf_war_siege", false, array('action'=>'joinsiege'));
 		}
 	}
 
