@@ -17,7 +17,7 @@
 </thead><tbody>
 {% set counter = 0 %}
 {% for journal in char.journals %}
-	{% if not journal.isPrivate and not journal.isGraphic %}
+	{% if not journal.private and not journal.graphic %}
 		{% set counter = counter + 1 %}
 		<tr>
 			<td>{{ journal.cycle|gametime("short") }}</td>
