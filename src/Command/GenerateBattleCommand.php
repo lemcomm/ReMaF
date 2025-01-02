@@ -11,18 +11,20 @@ use App\Entity\Place;
 use App\Entity\Settlement;
 use App\Entity\Unit;
 use App\Service\BattleRunner;
+use App\Service\CommonService;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SimulateBattleCommand extends Command {
+class GenerateBattleCommand extends Command {
 
 	private $whereString = '';
-	public function __construct(private EntityManagerInterface $em, private BattleRunner $runner) {
+	public function __construct(private EntityManagerInterface $em, private BattleRunner $runner, private CommonService $common) {
 		parent::__construct();
 	}
 
@@ -30,29 +32,37 @@ class SimulateBattleCommand extends Command {
 		$this
 			->setName('maf:generate:battle')
 			->setDescription('Generator command for creating a battle. To be used with other generator commands to make a battle for the game to process.')
-			->addArgument('w', InputArgument::REQUIRED, 'Where is the battle? Should be in the format of Location:ID, i.e.: GeoData:8, MapRegion:15, Settlement:16, Place:9.')
-			->addArgument('b', InputArgument::OPTIONAL, 'Defense score to override the battle calculation with. Will be calculated based on battle location if not declared.', null)
-			->addArgument('a', InputArgument::REQUIRED, 'Comma separated list of attacking character IDs')
-			->addArgument('d', InputArgument::REQUIRED, 'Comma separated list of defending character IDs')
-			->addArgument('s', InputArgument::OPTIONAL, 'Optionally: is this a siege? 0 = no. 1 = yes.', '0')
-			->addArgument('t', InputArgument::OPTIONAL, 'Battle type: sortie, assault, urban, field. Defaults to field.', 'field')
+			->addArgument('where', InputArgument::REQUIRED, 'Where is the battle? Should be in the format of Location:ID, i.e.: GeoData:8, MapRegion:15, Settlement:16, Place:9.')
+			->addArgument('attackers', InputArgument::REQUIRED, 'Comma separated list of attacking character IDs')
+			->addArgument('defenders', InputArgument::REQUIRED, 'Comma separated list of defending character IDs')
+			->addOption('siege', 's', InputArgument::OPTIONAL, 'Optionally: is this a siege? 0 = no. 1 = yes.', '0')
+			->addOption('type', 't', InputArgument::OPTIONAL, 'Battle type: sortie, assault, urban, field. Defaults to field.', 'field')
+			->addOption('defScore', 'b', InputArgument::OPTIONAL, 'Defense score to override the battle calculation with. Will be calculated based on battle location if not declared.', null)
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$battle = new Battle();
-		$battle = $this->findWhere($input->getArgument('w'), $battle);
-		$attackers = $this->findCharacters($input->getArgument('a'));
-		$defenders = $this->findCharacters($input->getArgument('b'));
-		$battle = $this->findType($input->getArgument('t'), $battle);
-		$score = $input->getArgument('b');
+		$battle = $this->findWhere($input->getArgument('where'), $battle);
+		$output->writeln('<info>Battle location detected as '.$this->whereString.'</info>');
+		$attackers = $this->findCharacters($input->getArgument('attackers'));
+		$output->writeln('<info>Attackers: '.$attackers->count().'</info>');
+		$defenders = $this->findCharacters($input->getArgument('defenders'));
+		$output->writeln('<info>Defenders: '.$defenders->count().'</info>');
+		$battle = $this->findType($input->getOption('type'), $battle);
+		$output->writeln('<info>Battle type: '.$battle->getType().'</info>');
+		$score = $input->getOption('defScore');
 		$runner = $this->runner;
 		if ($score !== null) {
 			$score = (int) $score;
 			$runner->defenseOverride = true;
 			$runner->defenseBonus = $score;
+			$output->writeln('<info>Score: '.$score.'</info>');
+		} else {
+			$output->writeln('<info>Score will be calculated based on settlement.</info>');
 		}
 		if ($attackers && $defenders) {
+			$output->writeln('<info>Inputs appear to be valid. Building out entities!</info>');
 			$battle->setStarted(new DateTime("-30 Days"));
 			$battle->setComplete(new DateTime("now"));
 			$battle->setInitialComplete(new DateTime("now"));
@@ -63,6 +73,7 @@ class SimulateBattleCommand extends Command {
 			$battle->setPrimaryAttacker($attGrp);
 			$attGrp->setBattle($battle);
 			$attGrp->setLeader($attackers->first());
+			$attGrp->setAttacker(true);
 			$battle->addGroup($attGrp);
 
 			$defGrp = new BattleGroup();
@@ -71,11 +82,20 @@ class SimulateBattleCommand extends Command {
 			}
 			$defGrp->setBattle($battle);
 			$defGrp->setLeader($defenders->first());
+			$defGrp->setAttacker(false);
 			$battle->setPrimaryDefender($defGrp);
 			$battle->addgroup($defGrp);
-
+			$this->em->persist($battle);
+			$this->em->persist($defGrp);
+			$this->em->persist($attGrp);
+			$this->em->flush();
+			$output->writeln('<info>Battle ready for processing!</info>');
+			$output->writeln('<info>Running!</info>');
+			$cycle = $this->common->getCycle();
+			$runner->run($battle, $cycle);
 			return Command::SUCCESS;
 		} else {
+			$output->writeln('<warning>Not enough attackers and defenders.</warning>');
 			return Command::FAILURE;
 		}
 	}
@@ -131,18 +151,6 @@ class SimulateBattleCommand extends Command {
 			$char = $this->em->getRepository(Character::class)->findOneBy(['id' => $char]);
 			if ($char) {
 				$all->add($char);
-			}
-		}
-		return $all->count()?$all:false;
-	}
-
-	private function findMilitia($string): false|ArrayCollection {
-		$all = new ArrayCollection();
-		$string = explode(',', $string);
-		foreach ($string as $unit) {
-			$unit = $this->em->getRepository(Unit::class)->findOneBy(['id' => $unit]);
-			if ($unit) {
-				$all->add($unit);
 			}
 		}
 		return $all->count()?$all:false;
