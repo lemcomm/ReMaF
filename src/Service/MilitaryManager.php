@@ -141,7 +141,7 @@ class MilitaryManager {
 		}
 	}
 
-	public function manageUnit($soldiers, $data, Settlement $settlement, Character $character, $canResupply, $canRecruit, $canReassign): array {
+	public function manageUnit($soldiers, $data, ?Settlement $settlement, Character $character, $canResupply, $canRecruit, $canReassign): array {
 		$success=0; $fail=0;
 
 		foreach ($data['npcs'] as $npc=>$action) {
@@ -573,6 +573,9 @@ class MilitaryManager {
 		}
 		if ($home && $character) {
 			$this->prepareUnit($character, $unit, $home);
+		}
+		if ($character) {
+			$unit->setCharacter($character);
 		}
 		$this->em->flush();
 		return $unit;

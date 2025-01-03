@@ -1396,6 +1396,7 @@ unit:
   marshal:  Can be marshalled by {character}.
   nomarshal: Marshalling of this unit is reserved by the settlement's owner.
   assign:   Assign a Leader
+  take:     Take Leadership
   appoint:  Appoint a Marshal
   disband:  Disband Unit
   return:   Send Unit Home

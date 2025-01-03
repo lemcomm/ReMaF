@@ -46,7 +46,7 @@ class UserDataType extends AbstractType {
 			'constraints' => [
 				new Regex([
 					'pattern' => '/^[a-zA-Z0-9 \-_]*$/',
-					'message' => 'form.username.help',
+					'message' => 'username',
 				]),
 			],
 			'data' => $options['username'],
@@ -60,7 +60,7 @@ class UserDataType extends AbstractType {
 			'constraints' => [
 				new Regex([
 					'pattern' => '/^[a-zA-Z0-9 \-_]*$/',
-					'message' => 'form.register.displayhelp',
+					'message' => 'displayname',
 				]),
 			],
 			'data' => $options['display'],
@@ -117,7 +117,7 @@ class UserDataType extends AbstractType {
 			'constraints' => [
 				new Length([
 					'min' => 8,
-					'minMessage' => 'form.password.help',
+					'minMessage' => 'password.minlength',
 					# max length allowed by Symfony for security reasons
 					'max' => 4096,
 				]),

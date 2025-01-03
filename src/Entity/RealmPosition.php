@@ -75,7 +75,7 @@ class RealmPosition {
 		return $this;
 	}
 
-	public function getFName(): string {
+	public function getFName(): ?string {
 		return $this->fName;
 	}
 

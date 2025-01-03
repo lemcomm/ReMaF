@@ -20,6 +20,11 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 7776000
+                token_provider:
+                    doctrine: true
         main:
             lazy: true
             provider: users
@@ -35,6 +40,8 @@ security:
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 7776000
+                token_provider:
+                    doctrine: true
 
 
             # activate different ways to authenticate

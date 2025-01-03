@@ -396,6 +396,28 @@ class UnitController extends AbstractController {
                 return new RedirectResponse($this->generateUrl('maf_unit_soldiers', ["unit"=>$unit->getId()]).'#recruits');
         }
 
+	#[Route('/units/{unit}/take', name:'maf_unit_take', requirements:['unit'=>'\d+'])]
+	public function unitTakeAction(Unit $unit): RedirectResponse {
+		$character = $this->gateway('unitAssignTest', $unit);
+		# Distpatcher->getTest('test', default, default, default, UnitId)
+		# Deliberate reuse. If we can appoint a leader, we can take leadership ourself.
+		if (! $character instanceof Character) {
+			return $this->redirectToRoute($character);
+		}
+
+		$unit->setCharacter($character);
+		$this->em->flush();
+		$this->hist->openLog($unit, $character);
+		$this->hist->logEvent(
+			$character,
+			'event.unit.assigned2',
+			array('%link-unit%'=>$unit->getId()),
+			History::MEDIUM, false, 30
+		);
+		$this->addFlash('notice', $this->trans->trans('unit.assign.success', array(), 'actions'));
+		return $this->redirectToRoute('maf_units');
+	}
+
 	#[Route('/units/{unit}/assign', name:'maf_unit_assign', requirements:['unit'=>'\d+'])]
         public function unitAssignAction(Request $request, Unit $unit): RedirectResponse|Response {
                 $character = $this->gateway('unitAssignTest', $unit);
@@ -436,12 +458,22 @@ class UnitController extends AbstractController {
                         }
                         $unit->setCharacter($data['target']);
                         $this->hist->openLog($unit, $data['target']);
-                        $this->hist->logEvent(
-				$data['target'],
-				'event.unit.assigned',
-				array('%link-unit%'=>$unit->getId(), '%link-character%'=>$character->getId()),
-				History::MEDIUM, false, 30
-			);
+			if ($data['target'] === $character->getId()) {
+				$this->hist->logEvent(
+					$character,
+					'event.unit.assigned2',
+					array('%link-unit%'=>$unit->getId()),
+					History::MEDIUM, false, 30
+				);
+			} else {
+				$this->hist->logEvent(
+					$data['target'],
+					'event.unit.assigned',
+					array('%link-unit%'=>$unit->getId(), '%link-character%'=>$character->getId()),
+					History::MEDIUM, false, 30
+				);
+			}
+
                         $em->flush();
                         $this->addFlash('notice', $this->trans->trans('unit.assign.success', array(), 'actions'));
                         return $this->redirectToRoute('maf_units');

@@ -111,71 +111,120 @@ class BattleRunner {
 		}
 		switch ($type) {
 			case 'siegesortie':
-				$this->report->setSortie(TRUE);
+				$this->report->setSortie(true);
 				$myStage = $battle->getSiege()->getStage();
 				$maxStage = $battle->getSiege()->getMaxStage();
 				if ($place) {
 					if ($myStage > 1) {
-						$location = array('key'=>'battle.location.sortie', 'id'=>$battle->getPlace()->getId(), 'name'=>$battle->getPlace()->getName());
+						$location = [
+							'key' => 'battle.location.sortie',
+							'id' => $battle->getPlace()->getId(),
+							'name' => $battle->getPlace()->getName()
+						];
 					} else {
-						$location = array('key'=>'battle.location.of', 'id'=>$battle->getPlace()->getId(), 'name'=>$battle->getPlace()->getName());
+						$location = [
+							'key' => 'battle.location.of',
+							'id' => $battle->getPlace()->getId(),
+							'name' => $battle->getPlace()->getName()
+						];
 					}
 				} elseif ($settlement) {
 					if ($myStage > 1) {
-						$location = array('key'=>'battle.location.sortie', 'id'=>$battle->getSettlement()->getId(), 'name'=>$battle->getSettlement()->getName());
+						$location = [
+							'key' => 'battle.location.sortie',
+							'id' => $battle->getSettlement()->getId(),
+							'name' => $battle->getSettlement()->getName()
+						];
 					} else {
-						$location = array('key'=>'battle.location.of', 'id'=>$battle->getSettlement()->getId(), 'name'=>$battle->getSettlement()->getName());
+						$location = [
+							'key' => 'battle.location.of',
+							'id' => $battle->getSettlement()->getId(),
+							'name' => $battle->getSettlement()->getName()
+						];
 					}
 				} else {
-					$location = ['key'=>'battle.location.somewhere'];
+					$location = ['key' => 'battle.location.somewhere'];
 				}
-				$this->siegeFinale = FALSE;
+				$this->siegeFinale = false;
 				break;
 			case 'siegeassault':
-				$this->report->setAssault(TRUE);
+				$this->report->setAssault(true);
 				$myStage = $battle->getSiege()->getStage();
 				$maxStage = $battle->getSiege()->getMaxStage();
 				if ($place) {
 					if ($myStage > 2 && $myStage == $maxStage) {
-						$location = array('key'=>'battle.location.castle', 'id'=>$battle->getPlace()->getId(), 'name'=>$battle->getPlace()->getName());
-						$this->siegeFinale = TRUE;
+						$location = [
+							'key' => 'battle.location.castle',
+							'id' => $battle->getPlace()->getId(),
+							'name' => $battle->getPlace()->getName()
+						];
+						$this->siegeFinale = true;
 					} else {
-						$location = array('key'=>'battle.location.assault', 'id'=>$battle->getPlace()->getId(), 'name'=>$battle->getPlace()->getName());
-						$this->siegeFinale = FALSE;
+						$location = [
+							'key' => 'battle.location.assault',
+							'id' => $battle->getPlace()->getId(),
+							'name' => $battle->getPlace()->getName()
+						];
+						$this->siegeFinale = false;
 					}
 				} elseif ($settlement) {
 					if ($myStage > 2 && $myStage == $maxStage) {
-						$location = array('key'=>'battle.location.castle', 'id'=>$battle->getSettlement()->getId(), 'name'=>$battle->getSettlement()->getName());
-						$this->siegeFinale = TRUE;
+						$location = [
+							'key' => 'battle.location.castle',
+							'id' => $battle->getSettlement()->getId(),
+							'name' => $battle->getSettlement()->getName()
+						];
+						$this->siegeFinale = true;
 					} else {
-						$location = array('key'=>'battle.location.assault', 'id'=>$battle->getSettlement()->getId(), 'name'=>$battle->getSettlement()->getName());
-						$this->siegeFinale = FALSE;
+						$location = [
+							'key' => 'battle.location.assault',
+							'id' => $battle->getSettlement()->getId(),
+							'name' => $battle->getSettlement()->getName()
+						];
+						$this->siegeFinale = false;
 					}
 				} else {
-					$location = ['key'=>'battle.location.somewhere'];
+					$location = ['key' => 'battle.location.somewhere'];
 				}
 				if (!$place) {
 					$this->calculateDefenseScore($battle);
 				}
 				break;
 			case 'urban':
-				$this->report->setUrban(TRUE);
+				$this->report->setUrban(true);
 				if ($place) {
-					$location = array('key'=>'battle.location.of', 'id'=>$battle->getPlace()->getId(), 'name'=>$battle->getPlace()->getName());
+					$location = [
+						'key' => 'battle.location.of',
+						'id' => $battle->getPlace()->getId(),
+						'name' => $battle->getPlace()->getName()
+					];
 				} elseif ($settlement) {
-					$location = array('key'=>'battle.location.of', 'id'=>$battle->getSettlement()->getId(), 'name'=>$battle->getSettlement()->getName());
-				}  else {
-					$location = ['key'=>'battle.location.somewhere'];
+					$location = [
+						'key' => 'battle.location.of',
+						'id' => $battle->getSettlement()->getId(),
+						'name' => $battle->getSettlement()->getName()
+					];
+				} else {
+					$location = ['key' => 'battle.location.somewhere'];
 				}
-				$this->siegeFinale = FALSE;
+				$this->siegeFinale = false;
 				break;
 			case 'field':
 			default:
 				if ($battle->getLocation()) {
-					$loc = $this->geo->locationName($battle->getLocation());
-					$location = array('key'=>'battle.location.'.$loc['key'], 'id'=>$loc['entity']->getId(), 'name'=>$loc['entity']->getName());
+					$loc = $this->geo->locationName($battle->getLocation(), $battle->getWorld());
+					$location = [
+						'key' => 'battle.location.' . $loc['key'],
+						'id' => $loc['entity']->getId(),
+						'name' => $loc['entity']->getName()
+					];
+				} elseif ($battle->getMapRegion()) {
+					$location = [
+						'key' => 'battle.location.of',
+						'id' => $battle->getMapRegion()->getId(),
+					];
 				} else {
-					$location = ['key'=>'battle.location.somewhere'];
+					$location = ['key' => 'battle.location.somewhere'];
 				}
 				$this->siegeFinale = FALSE;
 				break;
@@ -675,6 +724,7 @@ class BattleRunner {
 			foreach ($group->getSoldiers() as $soldier) {
 				$soldier->setFighting($soldier->isActive());
 				$soldier->resetAttacks();
+				$soldier->resetHitsTaken();
 			}
 			$count = $group->getFightingSoldiers()->count();
 			if (!$first) {
@@ -875,6 +925,7 @@ class BattleRunner {
 			$crowded = 0;
 			$staredDeath = 0;
 			$noTargets = 0;
+			$damagingHits = 0;
 			#$attSlain = $this->attSlain; # For Sieges.
 			#$defSlain = $this->defSlain; # For Sieges.
 			$extras = array();
@@ -905,6 +956,7 @@ class BattleRunner {
 
 				$enemyCollection = new ArrayCollection;
 				foreach ($group->getEnemies() as $enemygroup) {
+					/** @var BattleGroup $enemygroup */
 					foreach ($enemygroup->getActiveSoldiers() as $soldier) {
 						$enemyCollection->add($soldier);
 					}
@@ -948,10 +1000,13 @@ class BattleRunner {
 									$fail++;
 								} elseif ($result=='wound') {
 									$wound++;
+									$damagingHits++;
 								} elseif ($result=='capture') {
 									$capture++;
+									$damagingHits++;
 								} elseif ($result=='kill') {
 									$kill++;
+									$damagingHits++;
 								}
 								if ($result=='kill'||$result=='capture') {
 									$enemies--;
@@ -990,47 +1045,7 @@ class BattleRunner {
 						}
 					}
 				}
-				if ($enemies > 0 && $rangedHits > 0) {
-					// morale damage - a function of how much fire we are taking
-					// yes, this makes hits count several times - morale reduction above and twice here (since they're also always a shot)
-					// we also double the effective morale of a soldier (after damage), because even a single hit triggers this test
-					// and we don't want it to be overwhelming
-					$moraledamage = ($shots+$rangedHits*2) / $enemies;
-					$this->log(10, "morale damage: $moraledamage\n");
-					$total = 0; $count = 0;
-					foreach ($group->getEnemies() as $enemygroup) {
-						foreach ($enemygroup->getActiveSoldiers() as $soldier) {
-							if ($soldier->isFortified()) {
-								$soldier->reduceMorale($moraledamage/2);
-							} else {
-								$soldier->reduceMorale($moraledamage);
-							}
-							$total += $soldier->getMorale();
-							$count++;
-							$this->log(50, $soldier->getName()." (".$soldier->getType()."): morale ".round($soldier->getMorale()));
-							$health = $soldier->healthValue();
-							if ($soldier->getMorale()*2 < rand(0,100) || ($health < 0.30 && $health*100 < rand(0,100))) {
-								#TODO: Add PlayerCharacter retreat at HP flag.
-								if ($soldier->isNoble()) {
-									$this->log(50, " - has no fear\n");
-									$staredDeath++;
-								} else {
-									$this->log(50, " - panics\n");
-									$soldier->setRouted(true);
-									$this->history->addToSoldierLog($soldier, 'routed.ranged');
-									$routed++;
-								}
-							} else {
-								$this->log(50, " - has resolve\n");
-							}
-						}
-					}
-					$this->log(10, "==> avg. morale: ".round($total/max(1,$count))."\n\n");
-				} else {
-					$this->log(10, "==> no hits taken, morale unaffected\n\n");
-				}
-
-				$stageResult = array('shots'=>$shots, 'rangedHits'=>$rangedHits, 'fail'=>$fail, 'wound'=>$wound, 'capture'=>$capture, 'kill'=>$kill, 'routed'=>$routed, 'stared'=>$staredDeath);
+				$stageResult = array('shots'=>$shots, 'rangedHits'=>$rangedHits, 'fail'=>$fail, 'wound'=>$wound, 'capture'=>$capture, 'kill'=>$kill);
 			}
 			/*
 
@@ -1246,8 +1261,12 @@ class BattleRunner {
 		Ranged & Melee Phase Morale Handling Code
 
 		*/
-		# In order to support legacy melee morale handling, we need to break this apart. First, refactor it. Second, rework the ranged morale into it and give them both a distinct area.
-		if ($type == 'normal') {
+		# TODO: Move this into it's own function.
+		if ($type == 'normal' || $type == 'ranged') {
+			$moraleMod = 1;
+			if ($type == 'ranged') {
+				$moraleMod = 2;
+			}
 			foreach ($groups as $group) {
 				$staredDeath = 0;
 				$retreated = 0;
@@ -1265,6 +1284,32 @@ class BattleRunner {
 				foreach ($enemies as $enemygroup) {
 					$countEnemy += $enemygroup->getActiveSoldiers()->count();
 				}
+				#TODO: Look into replacing the $mod calculation with something based on current and original group soldier counts. Maybe between start and end of round? Should lead to soldiers retreating less.
+				if ($countEnemy > 0) {
+					$ratio = $countUs / $countEnemy;
+					if ($ratio > 10) {
+						$mod = 0.95;
+					} elseif ($ratio > 5) {
+						$mod = 0.9;
+					} elseif ($ratio > 2) {
+						$mod = 0.8;
+					} elseif ($ratio > 0.5) {
+						$mod = 0.75;
+					} elseif ($ratio > 0.25) {
+						$mod = 0.65;
+					} elseif ($ratio > 0.15) {
+						$mod = 0.6;
+					} elseif ($ratio > 0.1) {
+						$mod = 0.5;
+					} else {
+						$mod = 0.4;
+					}
+				} else {
+					// no enemies left
+					$mod = 0.99;
+				}
+				$total = 0;
+				$count = 0;
 				foreach ($group->getActiveSoldiers() as $soldier) {
 					// Check for ability to do damage
 					/** @var Soldier $soldier */
@@ -1283,40 +1328,22 @@ class BattleRunner {
 						}
 						continue; #Morale is recalculated for every battle, and since they retreated, we don't care about their morale.
 					}
+					$count++;
 					// still alive? check for panic
-					if ($countEnemy > 0) {
-						$ratio = $countUs / $countEnemy;
-						if ($ratio > 10) {
-							$mod = 0.95;
-						} elseif ($ratio > 5) {
-							$mod = 0.9;
-						} elseif ($ratio > 2) {
-							$mod = 0.8;
-						} elseif ($ratio > 0.5) {
-							$mod = 0.75;
-						} elseif ($ratio > 0.25) {
-							$mod = 0.65;
-						} elseif ($ratio > 0.15) {
-							$mod = 0.6;
-						} elseif ($ratio > 0.1) {
-							$mod = 0.5;
-						} else {
-							$mod = 0.4;
-						}
-					} else {
-						// no enemies left
-						$mod = 0.99;
-					}
 
-					if ($soldier->getAttacks()==0) {
-						// we did not get attacked this round
+					if ($soldier->getHitsTaken()==0) {
+						// we did not take any damage this round
 						$mod = min(0.99, $mod+0.1);
 					}
+
 					$soldier->setMorale($soldier->getMorale() * $mod);
+					$total += $soldier->getMorale();
 					$health = $soldier->healthValue();
 					$rand = rand(0,100);
 					$hRand = rand(0,100);
-					if ($soldier->getMorale() < $rand || ($health < 0.5 && $health*100 < $hRand)) {
+
+					# $moraleMod makes it harder to break during ranged phase.
+					if ($soldier->getMorale()*$moraleMod < $rand || ($health < 0.5 && $health*100 < $hRand)) {
 						if ($soldier->isNoble()) {
 							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." / HP: $health vs $rand / $hRand - has no fear\n");
 							$staredDeath++;
@@ -1331,6 +1358,7 @@ class BattleRunner {
 						$this->log(20, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." / HP: $health vs $rand / $hRand \n");
 					}
 				}
+				$this->log(10, "==> avg. morale: ".round($total/max(1,$count))."\n\n");
 				$combatResults = $stageResult->getData(); # CFetch original array.
 				$combatResults['routed'] = $routed; # Append routed info.
 				$combatResults['stared'] = $staredDeath;

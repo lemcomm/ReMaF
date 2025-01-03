@@ -5,7 +5,9 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 
+		<field name="name" type="string" nullable="true"/>
 		<field name="travelType" type="string" nullable="true"/>
+		<field name="subterranean" type="boolean" nullable="true"/>
 
 		<one-to-many field="characters" target-entity="Character" mapped-by="world" fetch="EXTRA_LAZY"/>
 		<one-to-many field="geoData" target-entity="GeoData" mapped-by="world" fetch="EXTRA_LAZY"/>

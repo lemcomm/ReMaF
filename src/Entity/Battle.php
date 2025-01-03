@@ -29,6 +29,7 @@ class Battle {
 	private ?int $defenders = null;
 	private ?BattleReport $report = null;
 	private ?MapRegion $mapRegion = null;
+	private ?World $world = null;
 
 	/**
 	 * Constructor
@@ -464,6 +465,15 @@ class Battle {
 
 	public function setMapRegion(?MapRegion $mapRegion): static {
 		$this->mapRegion = $mapRegion;
+		return $this;
+	}
+
+	public function getWorld(): ?World {
+		return $this->world;
+	}
+
+	public function setWorld(?World $world): static {
+		$this->world = $world;
 		return $this;
 	}
 }

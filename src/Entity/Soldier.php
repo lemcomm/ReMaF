@@ -16,6 +16,7 @@ class Soldier extends NPC {
 	protected bool $isNoble = false;
 	protected bool $isFighting = false;
 	protected int $attacks = 0;
+	protected int $hitsTaken = 0;
 	protected int $casualties = 0;
 	protected int $xp_gained = 0;
 	private float $training;
@@ -155,6 +156,14 @@ class Soldier extends NPC {
 
 	public function isActive($include_routed = false, $militia = false): bool {
 		if (!$this->isAlive() || $this->getTrainingRequired() > 0 || $this->getTravelDays() > 0) return false;
+		if ($this->getType() == 'noble') {
+			if ($include_routed) {
+				return $this->getCharacter()->isActive(true);
+			}
+			if ($this->getCharacter()->isPrisoner()) {
+				return false;
+			}
+		}
 		if ($this->getType() == 'noble' && $include_routed) {
 			# nobles have their own active check, but FOs withdraw sometimes, so if they're routed they aren't active.
 			return $this->getCharacter()->isActive(true);
@@ -300,12 +309,24 @@ class Soldier extends NPC {
 		return $this->attacks;
 	}
 
-	public function addAttack($value = 1) {
+	public function addAttack($value = 1): void {
 		$this->attacks += $value;
 	}
 
-	public function resetAttacks() {
+	public function resetAttacks(): void {
 		$this->attacks = 0;
+	}
+
+	public function getHitsTaken(): int {
+		return $this->hitsTaken;
+	}
+
+	public function addHitsTaken($value = 1): void {
+		$this->hitsTaken += $value;
+	}
+
+	public function resetHitsTaken(): void {
+		$this->hitsTaken = 0;
 	}
 
 	public function addXP($xp) {

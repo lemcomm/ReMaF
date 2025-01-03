@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 class World {
 	private ?int $id = null;
 	private ?string $travelType = null;
+	private ?bool $subterranean = null;
+	private ?string $name = null;
 	private Collection $characters;
 	private Collection $geoData;
 	private Collection $mapRegions;
@@ -207,4 +209,21 @@ class World {
 		return $this->artifacts;
 	}
 
+	public function getSubterranean(): ?bool {
+		return $this->subterranean;
+	}
+
+	public function setSubterranean(?bool $subterranean): static {
+		$this->subterranean = $subterranean;
+		return $this;
+	}
+
+	public function getName(): ?string {
+		return $this->name;
+	}
+
+	public function setName(?string $name): static {
+		$this->name = $name;
+		return $this;
+	}
 }

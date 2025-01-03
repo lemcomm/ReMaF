@@ -133,6 +133,7 @@ class Character extends CharacterBase {
 	private Collection $positions;
 	private Collection $battlegroups;
 	private Collection $chat_messages;
+	private ?Unit $leading_unit = null;
 
 	public function __construct() {
 		$this->achievements = new ArrayCollection();
@@ -3800,6 +3801,15 @@ class Character extends CharacterBase {
 
 	public function setUsingPlaceTransit(?PlaceTransit $usingPlaceTransit): static {
 		$this->usingPlaceTransit = $usingPlaceTransit;
+		return $this;
+	}
+
+	public function getLeadingUnit(): ?Unit {
+		return $this->leading_unit;
+	}
+
+	public function setLeadingUnit(?Unit $leading_unit): static {
+		$this->leading_unit = $leading_unit;
 		return $this;
 	}
 }

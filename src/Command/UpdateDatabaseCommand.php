@@ -136,6 +136,23 @@ class UpdateDatabaseCommand extends  Command {
 			$this->getApplication()->doRun($fixtureInput, $output);
 			$output->writeln('Equipment Data Updated');
 		}
+		if (in_array('A2', $versions)) {
+			$worlds = $this->em->getRepository(World::class)->findAll()[0];
+			$worldCount = count($worlds);
+			$failout = false;
+			if ($worldCount > 1) {
+				$failout = true;
+			} else {
+				/** @var World $world */
+				$world = $worlds[0];
+			}
+			if (!$failout) {
+				$em->createQuery('UPDATE App\Entity\Battle b SET b.world = :world')->setParameters(['world'=>$world])->execute();
+				$world->setSubterranean(false);
+				$world->setName("old world");
+				$em->flush();
+			}
+		}
 
 		return Command::SUCCESS;
 	}

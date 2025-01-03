@@ -33,6 +33,7 @@ class Unit {
 	private ?bool $reinforcements = null;
 	private float $consumption = 1;
 	private float $provision = 1;
+	private ?Character $character_leader = null;
 
 	/**
 	 * Constructor
@@ -809,6 +810,15 @@ class Unit {
 
 	public function setProvision(float $provision): static {
 		$this->provision = $provision;
+		return $this;
+	}
+
+	public function getCharacterLeader(): ?Character {
+		return $this->character_leader;
+	}
+
+	public function setCharacterLeader(?Character $character_leader): static {
+		$this->character_leader = $character_leader;
 		return $this;
 	}
 }

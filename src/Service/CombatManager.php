@@ -60,7 +60,6 @@ class CombatManager {
 		} else {
 			$me->gainExperience(($result=='kill'?2:1)*$xpMod);
 		}
-		$target->addAttack(5);
 		$sublogs = $this->equipmentDamage($me, $target);
 		foreach ($sublogs as $each) {
 			$logs[] = $each;
@@ -285,7 +284,6 @@ class CombatManager {
 			$result = $result . " " . $counterType . $innerResult;
 		}
 		if ($battle) {
-			$target->addAttack(4);
 			$this->equipmentDamage($me, $target);
 		}
 
@@ -439,7 +437,6 @@ class CombatManager {
 			$logs[] = $each;
 		}
 		if ($battle) {
-			$target->addAttack(1);
 			$this->equipmentDamage($me, $target);
 
 		}
@@ -592,6 +589,13 @@ class CombatManager {
 					'hunt' => 95,
 					default => 90,
 				};
+				if ($phase == 'melee') {
+					$target->addAttack(4);
+				} elseif ($phase == 'ranged') {
+					$target->addAttack(1);
+				} elseif ($phase == 'charge') {
+					$target->addAttack(5);
+				}
 				$oldHp = $target->healthValue();
 				if ($target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
 					$logs[] = "killed mount & wounded for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
@@ -600,6 +604,7 @@ class CombatManager {
 					$this->history->addToSoldierLog($target, 'wounded.' . $phase);
 					$result = 'wound';
 					$resolved = true;
+					$target->addHitsTaken();
 				}
 				if (!$resolved) {
 					$myNoble = $this->findNobleFromSoldier($me);
@@ -625,6 +630,7 @@ class CombatManager {
 					} else {
 						$logs[] = "wounded for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
 						$result = 'wound';
+						$target->addHitsTaken();
 					}
 				}
 			} else {

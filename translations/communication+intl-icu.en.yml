@@ -139,7 +139,8 @@ event:
  character:
   created:      First mention in family chronicle.
   start:        Has appeared at {settlement}.
-  start2:        Has appeared at {place}.
+  start2:       Has appeared at {place}.
+  start3:       Has appeared coming from the wilds.
   renamed:      Has changed name from "{oldname}" to "{newname}".
   knownas1:     Now known as "{newname}".
   knownas2:     No longer known as "{oldname}".
@@ -309,6 +310,7 @@ event:
   defection2:   After seeing {character} being unwilling to fight you, {unit} has decided they'll fight for you instead.
  unit:
   assigned:     "{character} has given you command of {unit}."
+  assigned2:    "You have taken command of {unit}."
   appointed:    "{character} has appointed you marshal of {unit}."
   basetaken:    "{settlement} has been taken by {realm}, leaving this unit to your direct command."
   basetaken2:   "{settlement} has been taken by an unaligned first one, leaving this unit to your direct command."

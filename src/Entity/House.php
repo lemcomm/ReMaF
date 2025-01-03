@@ -198,7 +198,7 @@ class House extends Faction {
 	 *
 	 * @return string
 	 */
-	public function getMotto(): string {
+	public function getMotto(): ?string {
 		return $this->motto;
 	}
 

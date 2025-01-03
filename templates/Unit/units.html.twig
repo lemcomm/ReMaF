@@ -48,6 +48,7 @@
 		| <a href="{{ path('maf_unit_stocks', {"unit":id}) }}"><button id="manage">{{ 'unit.list.stocks'|trans({},"actions") }}</button></a>
 		{% if unit.owner %}
 			{% if not unit.obj.character and unit.obj.travelDays < 1 %}
+				| <a href="{{ path('maf_unit_take', {"unit":id}) }}"><button id="take">{{ 'unit.list.take'|trans({},"actions") }}</button></a>
 				| <a href="{{ path('maf_unit_assign', {"unit":id}) }}"><button id="assign">{{ 'unit.list.assign'|trans({},"actions") }}</button></a>
 			{% elseif unit.obj.character != character and unit.base and unit.obj.travelDays < 1 %}
 				| <a href="{{ path('maf_unit_recall', {"unit":id}) }}"><button id="assign">{{ 'unit.list.recall'|trans({},"actions") }}</button></a>
@@ -71,7 +72,8 @@
 			{% endif %}
 		{% endif %}
 		{% if unit.marshal and not unit.owner %}
-			{% if not unit.obj.character %}
+			{% if not unit.obj.character and unit.obj.travelDays < 1 %}
+				| <a href="{{ path('maf_unit_take', {"unit":id}) }}"><button id="take">{{ 'unit.list.take'|trans({},"actions") }}</button></a>
 				| <a href="{{ path('maf_unit_assign', {"unit":id}) }}"><button id="assign">{{ 'unit.list.assign'|trans({},"actions") }}</button></a>
 			{% elseif unit.obj.character != character and unit.base %}
 				| <a href="{{ path('maf_unit_recall', {"unit":id}) }}"><button id="assign">{{ 'unit.list.recall'|trans({},"actions") }}</button></a>

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Character;
 use App\Entity\Code;
+use App\Entity\Race;
 use App\Entity\User;
 
 use App\Form\CharacterCreationType;
@@ -410,7 +411,8 @@ class AccountController extends AbstractController {
 			}
 
 			if ($works) {
-				$character = $charMan->create($user, $data['name'], $data['gender'], !$data['dead'], $data['father'], $data['mother'], $data['partner']);
+				$race = $em->getRepository(Race::class)->findOneBy(array('name'=>'first one'));
+				$character = $charMan->create($user, $data['name'], $data['gender'], !$data['dead'], $race, $data['father'], $data['mother'], $data['partner']);
 
 				if (!$data['dead']) {
 					$user->setNewCharsLimit($user->getNewCharsLimit()-1);

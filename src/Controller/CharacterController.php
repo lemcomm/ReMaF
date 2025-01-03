@@ -446,6 +446,7 @@ class CharacterController extends AbstractController {
 		]);
 	}
 
+	#TODO Combine all this placement stuff with the logic in GenerateCharacterCommand::execute
       	#[Route ('/char/spawnin/home', name:'maf_spawn_home')]
     	#[Route ('/char/spawnin/s{spawn}', name:'maf_spawn_in', requirements: ['spawn'=>'\d+'])]
 	public function firstAction(?Spawn $spawn = null): RedirectResponse|Response {
@@ -513,15 +514,19 @@ class CharacterController extends AbstractController {
 			if ($place->getLocation()) {
 				$character->setLocation($place->getLocation());
 				$settlement = null;
-			} else {
+			} elseif ($place->getSettlement()) {
 				$settlement = $place->getSettlement();
 				$character->setLocation($settlement->getGeoMarker()->getLocation());
 				$character->setInsideSettlement($settlement);
+			} else {
+				$region = $place->getMapRegion();
+				$character->setInsideRegion($region);
 			}
 			if ($character->getRetired()) {
 				$character->setRetired(false);
 			}
 			$character->setInsidePlace($place);
+			$character->setWorld($place->getWorld());
 			if ($character->getList() != 1) {
 				# Resets this on formerly retired characters.
 				$character->setList(1);

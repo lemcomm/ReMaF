@@ -345,6 +345,7 @@ realm:
   empty:        The realm does not have any positions defined at this time.
   new:          Create a New Position!
   holder:       Holder{count, plural, =1 {} other {s}}
+  ruler:        This is the ruler position for the realm.
   manage:       Manage Position
   appoint:      Appoint Officials
   active:

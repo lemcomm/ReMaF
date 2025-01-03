@@ -13,15 +13,16 @@
 		{% for position in positions %}
 			{% if not position.retired %}
 			<dt>
-				{% if position.ruler %}
+				{% if position.ruler and position.name == 'ruler' %}
 					{{ ('realm.title.male.'~realm.type)|trans({},"politics")|title }} / {{ ('realm.title.female.'~realm.type)|trans({},"politics")|title }}
 				{% else %}
-					{{ position.name }}
+					{{ position.name }} {% if position.fName %}/ {{ position.fName }}{% endif %}
 				{% endif %}
 			</dt>
 			<dd>
 				{{ position.description|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 				<hr />
+				{% if position.ruler %}<i>{{ 'realm.positions.ruler'|trans({}, "politics") }}</i><br>{% endif %}
 				{{ 'realm.positions.holder'|trans({'count':position.holders.count}, "politics") }}:
 				<ul class="shortlist" style="display:inline">
 					{% for holder in position.holders %}

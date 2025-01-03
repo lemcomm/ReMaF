@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout.html.twig' %}
 
 {% trans_default_domain 'core' %}
 
@@ -10,7 +10,7 @@
     <h1>{% trans %}security.remind.header{% endtrans %}</h1>
     {{ form_start(form) }}
     {{ form_row(form.email) }}
-    <center><div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div></center>
+    <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
     {{ form_row(form.submit) }}
     {{ form_end(form) }}
 {% endblock %}

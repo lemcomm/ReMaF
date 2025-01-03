@@ -10,6 +10,7 @@ use App\Entity\MapRegion;
 use App\Entity\Place;
 use App\Entity\Settlement;
 use App\Entity\Unit;
+use App\Entity\World;
 use App\Service\BattleRunner;
 use App\Service\CommonService;
 use DateTime;
@@ -88,6 +89,7 @@ class GenerateBattleCommand extends Command {
 			$this->em->persist($battle);
 			$this->em->persist($defGrp);
 			$this->em->persist($attGrp);
+
 			$this->em->flush();
 			$output->writeln('<info>Battle ready for processing!</info>');
 			$output->writeln('<info>Running!</info>');
@@ -104,6 +106,8 @@ class GenerateBattleCommand extends Command {
 		$set = explode(':', $where);
 		if (!array_key_exists(1, $set)) {
 			$battle->setLocation(null);
+			$world = $this->em->getRepository(World::class)->findOneBy(['name'=>'old world']);
+			$battle->setWorld($world);
 			$this->whereString = 'Unknown Location???';
 		} else {
 			switch ($set[0]) {
@@ -111,7 +115,9 @@ class GenerateBattleCommand extends Command {
 				case 'GeoData':
 					$here = $this->em->getRepository(GeoData::class)->findOneBy(['id' => $set[1]]);
 					if ($here) {
+						/** @var GeoData $here */
 						$battle->setLocation($here->getCenter());
+						$battle->setWorld($here->getWorld());
 					}
 					$this->whereString = 'GeoData: '. $here->getId();
 					break;
@@ -119,7 +125,9 @@ class GenerateBattleCommand extends Command {
 				case 'MapRegion':
 					$here = $this->em->getRepository(MapRegion::class)->findOneBy(['id' => $set[1]]);
 					if ($here) {
+						/** @var MapRegion $here */
 						$battle->setMapRegion($here);
+						$battle->setWorld($here->getWorld());
 					}
 					$this->whereString = 'MapRegion: '. $here->getId();
 					break;
@@ -127,7 +135,9 @@ class GenerateBattleCommand extends Command {
 				case 'Place':
 					$here = $this->em->getRepository(Place::class)->findOneBy(['id' => $set[1]]);
 					if ($here) {
+						/** @var Place $here */
 						$battle->setPlace($here);
+						$battle->setWorld($here->getWorld());
 					}
 					$this->whereString = 'Place: '. $here->getId();
 					break;
@@ -135,7 +145,9 @@ class GenerateBattleCommand extends Command {
 				case 'Settlement':
 					$here = $this->em->getRepository(Settlement::class)->findOneBy(['id' => $set[1]]);
 					if ($here) {
+						/** @var Settlement $here */
 						$battle->setSettlement($here);
+						$battle->setWorld($here->getWorld());
 					}
 					$this->whereString = 'Settlement: '. $here->getId();
 					break;

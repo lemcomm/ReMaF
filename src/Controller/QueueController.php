@@ -84,7 +84,7 @@ class QueueController extends AbstractController {
 		if ($battle->getSettlement()) {
 			$location = array('key'=>'battle.location.of', 'entity'=>$battle->getSettlement());
 		} else {
-			$loc = $geo->locationName($battle->getLocation());
+			$loc = $geo->locationName($battle->getLocation(), $battle->getWorld());
 			$location = array('key'=>'battle.location.'.$loc['key'], 'entity'=>$loc['entity']);
 		}
 

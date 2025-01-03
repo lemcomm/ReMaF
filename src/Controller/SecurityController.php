@@ -140,9 +140,9 @@ class SecurityController extends AbstractController {
 	}
 
 	#[Route ('/security/activate/{id}/{token}', name:'maf_account_activate')]
-	public function activate(EntityManagerInterface $em, TranslatorInterface $trans, string $id, string $email, string $token): RedirectResponse {
+	public function activate(EntityManagerInterface $em, TranslatorInterface $trans, string $id, string $token): RedirectResponse {
 		# Handles user activation after a user registers.
-		$user = $em->getRepository(User::class)->findOneBy(['id' => $id, 'email' => $email]);
+		$user = $em->getRepository(User::class)->findOneBy(['id' => $id]);
 		if ($user && $user->getActive() === false && $token == $user->getToken()) {
 			$user->unsetToken();
 			$user->setConfirmed(true);
@@ -243,8 +243,6 @@ class SecurityController extends AbstractController {
 				$user = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]);
 
 				if ($user) {
-					$user->setResetToken($app->generateAndCheckToken(64, 'User', 'reset_token'));
-					$em->flush();
 					$resetLink = $this->generateUrl('maf_account_reset', [], UrlGeneratorInterface::ABSOLUTE_URL);
 					$loginLink = $this->generateUrl('maf_login', [], UrlGeneratorInterface::ABSOLUTE_URL);
 					$text = $trans->trans('security.remind.email.text', [

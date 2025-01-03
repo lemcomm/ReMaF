@@ -729,15 +729,15 @@ class Geography {
 		return true;
 	}
 
-	public function locationName($point) {
+	public function locationName($point, World $world) {
 		$key = 'nowhere';
 		$settlement = null;
 
 		// TODO: find geofeatures as well (that can replace the below since geofeatures contains the hidden settlements and a link to geodata)
 		//			so we can name for bridges, border crossings, etc.
 
-		$query = $this->em->createQuery('SELECT g FROM App\Entity\GeoData g WHERE ST_Contains(g.poly, ST_Point(:x,:y)) = true');
-		$query->setParameters(['x'=>$point->getX(), 'y'=>$point->getY()]);
+		$query = $this->em->createQuery('SELECT g FROM App\Entity\GeoData g WHERE ST_Contains(g.poly, ST_Point(:x,:y)) = true AND g.world = :world');
+		$query->setParameters(['x'=>$point->getX(), 'y'=>$point->getY(), 'world' => $world]);
 		$result = $query->getOneOrNullResult();
 		if ($result) {
 			$key = 'near';

@@ -266,7 +266,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 	}
 
 	public function getUserIdentifier(): string {
-		return strtolower($this->username);
+		return $this->username;
 	}
 
 	public function getPassword(): string {

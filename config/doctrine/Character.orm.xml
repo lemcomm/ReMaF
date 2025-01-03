@@ -143,6 +143,7 @@
 		<one-to-many field="units" target-entity="Unit" mapped-by="character"/>
 		<one-to-many field="marshalling_units" target-entity="Unit" mapped-by="marshal"/>
 		<one-to-many field="leading_battlegroup" target-entity="BattleGroup" mapped-by="leader"/>
+		<one-to-one field="leading_unit" target-entity="Unit" mapped-by="character_leader"/>
 
 		<one-to-one field="active_report" target-entity="BattleReportCharacter"/>
 

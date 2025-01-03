@@ -38,7 +38,8 @@ class RealmPositionType extends AbstractType {
 
 		$builder->add('name', TextType::class, array(
 			'label'=>'position.name',
-			'required'=>true,
+			'required'=>false,
+			'empty_data'=> 'ruler',
 			'attr' => array('size'=>20, 'maxlength'=>40)
 		));
 		$builder->add('fName', TextType::class, array(

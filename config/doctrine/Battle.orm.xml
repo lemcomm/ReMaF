@@ -19,6 +19,7 @@
 		<many-to-one field="war" target-entity="War" inversed-by="related_battles"/>
 		<many-to-one field="siege" target-entity="Siege" inversed-by="battles"/>
 		<one-to-one field="report" target-entity="BattleReport"/>
+		<many-to-one field="world" target-entity="World"/>
 
 	</entity>
 </doctrine-mapping>

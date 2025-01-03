@@ -35,7 +35,7 @@ class CharacterManager {
 		private AssociationManager $assocman) {
 	}
 
-	public function create(User $user, $name, $gender='m', $alive=true, ?Character $father=null, ?Character $mother=null, ?Character $partner=null): Character {
+	public function create(User $user, $name, $gender='m', $alive=true, ?Race $race=null, ?Character $father=null, ?Character $mother=null, ?Character $partner=null): Character {
 		$character = new Character();
 		$character->setGeneration(1);
 		$character->setAlive($alive)->setSlumbering(!$alive)->setNpc(false);
@@ -109,8 +109,10 @@ class CharacterManager {
 			$relation->setPartnerMayUseCrest(false);
 			$this->em->persist($relation);
 		}
-		$firstOneRace = $this->em->getRepository(Race::class)->findOneBy(['name'=>'first one']);
-		$character->setRace($firstOneRace);
+		if (!$race) {
+			$race = $this->em->getRepository(Race::class)->findOneBy(['name'=>'first one']);
+		}
+		$character->setRace($race);
 
 		$this->em->persist($character);
 		$this->em->flush($character); // because the below needs this flushed
