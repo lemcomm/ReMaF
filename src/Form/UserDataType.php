@@ -59,7 +59,7 @@ class UserDataType extends AbstractType {
 			],
 			'constraints' => [
 				new Regex([
-					'pattern' => '/^[a-zA-Z0-9 \-_]*$/',
+					'pattern' => '/^[a-zA-Z0-9 \-_\(\)]*$/',
 					'message' => 'displayname',
 				]),
 			],

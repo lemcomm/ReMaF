@@ -9,7 +9,7 @@ password:
  match:		New password and confirm password fields do not match
 
 username:   Username can only contain a-z, A-Z, 0-9, spaces, underscores, or dashes.
-displayname: Display name can only contain a-z, A-Z, 0-9, spaces, underscores, or dashes.
+displayname: Display name can only contain a-z, A-Z, 0-9, spaces, underscores, parentheses or dashes.
 email:  You must supply a valid email address.
 
 realm:

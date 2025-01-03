@@ -71,7 +71,7 @@ class AccountController extends AbstractController {
 		[$announcements, $notices] = $this->notifications($em, $pay);
 		$update = $em->createQuery('SELECT u from App\Entity\UpdateNote u ORDER BY u.id DESC')->setMaxResults(1)->getResult()[0];
 		if ($userMan->legacyPasswordCheck($user)) {
-			$this->addFlash('warning', $trans->trans('account.password.legacy', ['here'=>$this->generateUrl('maf_account_data')], 'messages'));
+			$this->addFlash('warning', $trans->trans('account.password.legacy', ['%link%'=>$this->generateUrl('maf_account_data')], 'messages'));
 		}
 
 
@@ -248,7 +248,7 @@ class AccountController extends AbstractController {
 		foreach ($user->getPatronizing() as $patron) {
 			if ($patron->getUpdateNeeded()) {
 				$encode = urlencode($patron->getCreator()->getReturnUri());
-				$this->addFlash('warning', 'It appears we need a new access token for your patreon account in order to ensure you get your rewards. To corrected this, please click <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id='.$patron->getCreator()->getClientId().'&redirect_uri='.$encode.'&scope=identity">here</a> and allow us to re-establish our connection to your patreon account.');
+				$this->addFlash('notice', 'It appears we need a new access token for your patreon account in order to ensure you get your rewards. To corrected this, please click <a href="https://www.patreon.com/oauth2/authorize?response_type=code&client_id='.$patron->getCreator()->getClientId().'&redirect_uri='.$encode.'&scope=identity">here</a> and allow us to re-establish our connection to your patreon account.');
 			}
 		}
 		if ($userMan->legacyPasswordCheck($user)) {
