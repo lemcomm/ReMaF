@@ -16,9 +16,16 @@ use Doctrine\Persistence\ObjectManager;
 class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 
 	private array $equipment = array(
+//		'improvised' => [
+//			'type' => 'weapon',
+//			'ranged' => 0, 'melee' => 5, 'defense' => 0,
+//			'train' => 5, 'resupply' => 0,
+//			'provider' => 'Training Ground', 'trainer' => 'TrainingGround',
+//			'icon' => null
+//		],
 		'club' => [
 			'type' => 'weapon',
-			'ranged' => 0, 'melee' => 5, 'defense' => 0,
+			'ranged' => 0, 'melee' => 10, 'defense' => 0,
 			'train' => 10, 'resupply' => 5,
 			'provider' => 'Carpenter', 'trainer' => 'Training Ground',
 			'icon'=> null, 'skill' => 'club'],

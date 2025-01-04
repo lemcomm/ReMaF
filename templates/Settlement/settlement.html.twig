@@ -67,9 +67,9 @@
 		{% if details.spot or isowner or issteward %}
 			<li class="tt_botleft" title="{{ ('settlement.security.tt')|trans }}">{{ ('settlement.security.'~security)|trans }}</li>
 		{% endif %}
-		{% if isowner %}
+		{# {% if isowner %}
 			<li class="tt_botleft" title="{{ ('settlement.corruption.tt')|trans }}">{{ ('settlement.corruption.name')|trans }}: {{ (corruption*100)|number_format(1) }} %</li>
-		{% endif %}
+		{% endif %} #}
 	</ul>
 
 	<h3>{{ 'settlement.political'|trans|title }}</h3>
@@ -213,7 +213,7 @@
 							<li class="bar_trade_in">{{ 'settlement.resources.trade.name'|trans|title }}<br /><small>{{ 'settlement.resources.trade.in'|trans }}</small></li>
 						{% endif %}
 						<li class="bar_dem_base">{{ 'settlement.resources.demand'|trans|title }}<br /><small>{{ 'settlement.resources.base'|trans }}</small></li>
-						<li class="bar_corruption">&nbsp;<br /><small>{{ 'settlement.resources.corruption'|trans }}</small></li>
+						{# <li class="bar_corruption">&nbsp;<br /><small>{{ 'settlement.resources.corruption'|trans }}</small></li> #}
 						<li class="bar_dem_build">{{ 'settlement.resources.demand'|trans|title }}<br /><small>{{ 'settlement.resources.buildings'|trans }}</small></li>
 						<li class="bar_dem_constr">{{ 'settlement.resources.demand'|trans|title }}<br /><small>{{ 'settlement.resources.construction'|trans }}</small></li>
 						{% if details.merchant or isowner or issteward %}
@@ -278,9 +278,9 @@
 							{% if eco.base_demand > 0 %}
 								<li class="data bar_dem_base" style="width:{{ (100*eco.base_demand/my_div)|number_format }}%">{{ eco.base_demand }}</li>
 							{% endif %}
-							{% if eco.corruption > 0 %}
+							{# {% if eco.corruption > 0 %}
 								<li class="data bar_corruption" style="width:{{ (100*eco.corruption/my_div)|number_format }}%">{{ eco.corruption }}</li>
-							{% endif %}
+							{% endif %} #}
 							{% if eco.building_demand > 0 %}
 								<li class="data bar_dem_build" style="width:{{ (100*eco.building_demand/my_div)|number_format }}%">{{ eco.building_demand }}</li>
 							{% endif %}

@@ -29,7 +29,7 @@ class ChatController extends AbstractController {
 			$here = $msg->findTarget();
 			$char = $this->app->getCharacter();
 			$decode = substr($target, 0, 1);
-			if (in_array($decode, ['s', 'p', 'd'])) {
+			if ($char instanceof Character && in_array($decode, ['s', 'p', 'd'])) {
 				if ($here->getChatMembers()->contains($char)) {
 					if ($decode === 's') {
 						$new = $this->em->createQuery('SELECT m, c FROM App\Entity\ChatMessage m JOIN m.sender c WHERE m.id > :id AND m.settlement = :here ORDER BY m.id DESC')

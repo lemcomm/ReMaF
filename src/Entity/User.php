@@ -1319,7 +1319,7 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		return $this;
 	}
 
-	public function isEnabled(): ?bool {
+	public function getEnabled(): ?bool {
 		return $this->enabled;
 	}
 

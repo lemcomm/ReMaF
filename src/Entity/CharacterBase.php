@@ -55,6 +55,11 @@ class CharacterBase {
 		return max(0.0, ($maxHp - $this->getWounded())) / $maxHp;
 	}
 
+	public function heal($value = 1): static {
+		$this->wounded = max(0, $this->wounded - $value);
+		return $this;
+	}
+
 	public function isAlive(): bool {
 		return $this->getAlive();
 	}
@@ -77,6 +82,31 @@ class CharacterBase {
 		$this->name = $name;
 
 		return $this;
+	}
+
+	public function HealOrDie(): int {
+		$current = $this->healthValue();
+		if ($current >= 1) {
+			return 1; #Why are you here?
+		}
+		$rand = rand(0, 100);
+		$raceHp = $this->race?->getHp()?:100;
+		if ($rand === 0 && $current < 0.25) {
+			# Critical failure at  low health = death.
+			$this->kill();
+			return 0;
+		} else {
+			if ($rand < 10) {
+				$this->wound(rand(1,round($raceHp/20)));
+				if ($this->healthValue() < 0) {
+					return 0;
+				}
+				return -1;
+			} else {
+				$this->heal(rand(1,round($raceHp/10)));
+				return 1;
+			}
+		}
 	}
 
 }

@@ -29,29 +29,12 @@ class NPC extends CharacterBase {
 		return ($this->wounded > 0);
 	}
 
-	public function HealOrDie(): bool {
-		$current = $this->healthValue();
-		if ($current >= 1) {
-			return 1; #Why are you here?
-		}
-		$rand = rand(0, 100);
-		if ($rand === 0 && $current < 0.25) {
-			# Critical failure at  low health = death.
+	public function HealOrDie(): int {
+		$result = parent::HealOrDie();
+		if ($result != 1) {
 			$this->kill();
-			return 0;
-		} else {
-			if ($rand < 10) {
-				$this->wound(rand(1,5));
-				if ($this->healthValue() < 0) {
-					$this->kill();
-					return 0;
-				}
-				return -1;
-			} else {
-				$this->heal(rand(1,10));
-				return 1;
-			}
 		}
+		return $result;
 	}
 
 	public function kill(): void {
@@ -109,16 +92,6 @@ class NPC extends CharacterBase {
 
 		return $this;
 	}
-
-	// compatability methods - override these if the child entity implements the related functionality
-
-	public function heal($value = 1): static {
-		$this->wounded = max(0, $this->wounded - $value);
-		return $this;
-	}
-
-
-	// Property methods.
 
 	public function hungerMod(): float|int {
 		$lvl = $this->hungry;

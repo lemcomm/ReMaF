@@ -25,7 +25,7 @@ class AppState {
 		private Security $security) {
 	}
 
-	public function getCharacter($required=true, $ok_if_dead=false, $ok_if_notstarted=false): mixed {
+	public function getCharacter($required=true, $ok_if_dead=false, $ok_if_notstarted=false): Character|string|null {
 		/* This used to throw exceptions rather than adding flashes and returning strings.
 		The change was done in order to ensure that when you're somewhere you shouldn't be,
 		that the game is smart enough to redirect you to the right spot.

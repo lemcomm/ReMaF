@@ -6,6 +6,7 @@ security:
   header: Account Details
   email:
    subject: "%sitename%: Confirm Your Email"
+   notconfirmed: "Access to this area requires you to confirm your email address."
    text: |
     <p>Hello! In order to confirm your email with your account at %sitename%, please click the link below:</p>
 

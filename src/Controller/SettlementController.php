@@ -97,11 +97,12 @@ class SettlementController extends AbstractController {
 			$popchange = 0;
 		}
 
-		$corruption = $this->econ->calculateCorruption($settlement);
-		if ($character != $settlement->getOwner()) {
-			// rounding this to full percents to fuzz it a bit, to prevent people from understanding which characters belong to the same player by corruption values
-			$corruption = round($corruption*100)/100;
-		}
+//		$corruption = $this->econ->calculateCorruption($settlement);
+//		if ($character != $settlement->getOwner()) {
+//			// rounding this to full percents to fuzz it a bit, to prevent people from understanding which characters belong to the same player by corruption values
+//			$corruption = round($corruption*100)/100;
+//		}
+		$corruption = 0;
 
 		$economy = array();
 		$all = $em->getRepository(ResourceType::class)->findAll();

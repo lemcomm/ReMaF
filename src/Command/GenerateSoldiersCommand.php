@@ -38,9 +38,9 @@ class GenerateSoldiersCommand extends Command {
 			->setName('maf:generate:soldiers')
 			->setDescription('Generator command for creating and assigning soldiers.')
 			->addArgument('quantity', InputArgument::REQUIRED, 'How many soldiers to create?')
-			->addArgument('weapon', InputArgument::REQUIRED, 'What weapon should they have? Use the weapon name.')
 			->addOption('character', 'c', InputArgument::OPTIONAL, 'What character should these be assigned to? (You must have at least a character OR a unit)', null)
 			->addOption('unit', 'u', InputArgument::OPTIONAL, 'Which unit should they be assigned to? (You must have at least a character OR a unit)', null)
+			->addOption('weapon', 'w', InputArgument::OPTIONAL, 'Optional: What weapon should they have? Use the weapon name.', null)
 			->addOption('armor', 'a', InputArgument::OPTIONAL, 'Optional: What armor should they have?', null)
 			->addOption('equipment', 't', InputArgument::OPTIONAL, 'Optional: What equipment should they be assigned?', null)
 			->addOption('mount', 'm', InputArgument::OPTIONAL, 'Optional: What mount should they be assigned?', null)
@@ -56,7 +56,7 @@ class GenerateSoldiersCommand extends Command {
 			$output->writeln('<error>Unable to locate unit or character from supplied inputs.</error>');
 			return Command::FAILURE;
 		}else {
-			$weapon = $this->findEquipment($input->getArgument('weapon'));
+			$weapon = $this->findEquipment($input->getOption('weapon'));
 			if (!$weapon) {
 				$output->writeln("<error>Invalid Weapon type $weapon provided.</error>");
 				return Command::FAILURE;

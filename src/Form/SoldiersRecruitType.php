@@ -63,7 +63,7 @@ class SoldiersRecruitType extends AbstractType {
 			$builder->add($field, EntityType::class, array(
 				'label'=>$field,
 				'placeholder'=>'item.none',
-				'required'=> ($field==='weapon'),
+				'required'=> false,
 				'choice_label'=>'nameTrans',
 				'class'=>EquipmentType::class,
 				'choice_translation_domain' => true,

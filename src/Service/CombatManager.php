@@ -38,7 +38,7 @@ class CombatManager {
 		$defense = $this->DefensePower($target, $battle)*0.75;
 
 		$eWep = $target->getWeapon();
-		if ($eWep->getSkill()?->getCategory()->getName() === 'polearms') {
+		if ($eWep && $eWep->getSkill()?->getCategory()->getName() === 'polearms') {
 			$counterType = 'antiCav';
 		} else {
 			$counterType = False;
@@ -122,7 +122,7 @@ class CombatManager {
 			if ($me->getMount()) {
 				$power += 48;
 			}
-			if ($eqpt && $eqpt->getName() != 'Pavise') {
+			if ($eqpt && $eqpt->getName() != 'pavise') {
 				$power += 32;
 			} elseif ($me->getMount()) {
 				$power += 7;
@@ -146,7 +146,7 @@ class CombatManager {
 			$power += $me->getArmour()->getDefense();
 		}
 		if ($me->getEquipment()) {
-			if ($me->getEquipment()->getName() != 'Pavise') {
+			if ($me->getEquipment()->getName() != 'pavise') {
 				$power += $me->getEquipment()->getDefense();
 			} elseif ($me->getMount()) {
 				$power += 0; #It's basically a portable wall. Not usable on horseback.
@@ -178,31 +178,29 @@ class CombatManager {
 	public function equipmentDamage($attacker, $target): array {
 		// small chance of armour or item damage - 10-30% per hit and then also depending on the item - 3%-14% - for total chances of ca. 1%-5% per hit
 		$logs = [];
-		if (rand(0,100)<15) {
-			if ($attacker->getWeapon()) {
-				$resilience = 30 - 3*sqrt($attacker->getWeapon()->getMelee() + $attacker->getWeapon()->getRanged());
-				if (rand(0,100)<$resilience) {
-					$attacker->dropWeapon();
-					$logs[] = "attacker weapon damaged\n";
-				}
+		if ($attacker->getImprovisedWeapon() && rand (0,100) < 20) {
+			$attacker->setImprovisedWeapon(false);
+			$logs[] = "attacker improvised weapon breaks\n";
+		}
+		if ($attacker->getHasWeapon() && rand(0, 100) < 15) {
+			$resilience = 30 - 3*sqrt($attacker->getWeapon()->getMelee() + $attacker->getWeapon()->getRanged());
+			if (rand(0,100)<$resilience) {
+				$attacker->dropWeapon();
+				$logs[] = "attacker weapon damaged\n";
 			}
 		}
-		if (rand(0,100)<10) {
-			if ($target->getWeapon()) {
-				$resilience = 30 - 3*sqrt($target->getWeapon()->getMelee() + $target->getWeapon()->getRanged());
-				if (rand(0,100)<$resilience) {
-					$target->dropWeapon();
-					$logs[] = "weapon damaged\n";
-				}
+		if ($target->getHasWeapon() && rand(0,100)<10) {
+			$resilience = 30 - 3*sqrt($target->getWeapon()->getMelee() + $target->getWeapon()->getRanged());
+			if (rand(0,100)<$resilience) {
+				$target->dropWeapon();
+				$logs[] = "weapon damaged\n";
 			}
 		}
-		if (rand(0,100)<30) {
-			if ($target->getArmour()) {
-				$resilience = 30 - 3*sqrt($target->getArmour()->getDefense());
-				if (rand(0,100)<$resilience) {
-					$target->dropArmour();
-					$logs[] = "armour damaged\n";
-				}
+		if ($target->getArmour() && rand(0,100)<30) {
+			$resilience = 30 - 3*sqrt($target->getArmour()->getDefense());
+			if (rand(0,100)<$resilience) {
+				$target->dropArmour();
+				$logs[] = "armour damaged\n";
 			}
 		}
 		if ($attacker->getWeapon()) {
@@ -325,7 +323,7 @@ class CombatManager {
 			$power += 5;
 		}
 		if ((!$act || !$act->getWeaponOnly()) && $me->getEquipment()) {
-			if ($me->getEquipment()->getName() != 'Lance') {
+			if ($me->getEquipment()->getName() != 'lance') {
 				$power += $me->getEquipment()->getMelee();
 				$hasE = true;
 			}
@@ -581,21 +579,21 @@ class CombatManager {
 		$random = rand(1,100);
 		$resolved = false;
 		$wound = $this->calculateWound($delta);
+		if ($phase == 'melee') {
+			$target->addAttack(4);
+		} elseif ($phase == 'ranged') {
+			$target->addAttack(2);
+		} elseif ($phase == 'charge') {
+			$target->addAttack(5);
+		}
 		if ($meAtt > $targetDef) {
 			if ($battle) {
 				$surrender = match ($phase) {
-					'charge' => 85,
-					'ranged' => 60,
+					'charge' => 50,
+					'ranged' => 0,
 					'hunt' => 95,
-					default => 90,
+					default => 75,
 				};
-				if ($phase == 'melee') {
-					$target->addAttack(4);
-				} elseif ($phase == 'ranged') {
-					$target->addAttack(1);
-				} elseif ($phase == 'charge') {
-					$target->addAttack(5);
-				}
 				$oldHp = $target->healthValue();
 				if ($target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
 					$logs[] = "killed mount & wounded for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
@@ -666,6 +664,7 @@ class CombatManager {
 	}
 
 	public function calculateWound($power): int {
-		return intval(round(rand(max(1, round($power/10)), $power)));
+		return $power + 20;
+		#return intval(round(rand(max(1, round($power/10)), $power))) + 10;
 	}
 }

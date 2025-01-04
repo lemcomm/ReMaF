@@ -143,9 +143,10 @@ class SecurityController extends AbstractController {
 	public function activate(EntityManagerInterface $em, TranslatorInterface $trans, string $id, string $token): RedirectResponse {
 		# Handles user activation after a user registers.
 		$user = $em->getRepository(User::class)->findOneBy(['id' => $id]);
-		if ($user && $user->getActive() === false && $token == $user->getToken()) {
+		/** @var User $user */
+		if ($user && !$user->getEnabled() && $token === $user->getToken()) {
 			$user->unsetToken();
-			$user->setConfirmed(true);
+			$user->setEnabled(true);
 			$em->flush();
 			$this->addFlash('notice', $trans->trans('security.activate.flash.success', [], 'core'));
 			return new RedirectResponse($this->generateUrl('maf_login'));
@@ -153,7 +154,6 @@ class SecurityController extends AbstractController {
 			$this->addFlash('notice', $trans->trans('security.activate.flash.already', [], 'core'));
 			return new RedirectResponse($this->generateUrl('maf_index'));
 		} else {
-			$link = $this->generateUrl('maf_token_new');
 			$this->addFlash('error', $trans->trans('security.activate.flash.failed', [], 'core'));
 			return new RedirectResponse($this->generateUrl('maf_token_new'));
 		}
@@ -213,6 +213,7 @@ class SecurityController extends AbstractController {
 					$user->setLastPassword(new DateTime('now'));
                                         $user->setResetToken(null);
                                         $user->setResetTime(null);
+					$user->setEnabled(true);
                                         $em->flush();
 
                                         $this->addFlash('notice', $trans->trans('security.reset.flash.completed', [], 'core'));
@@ -316,17 +317,13 @@ class SecurityController extends AbstractController {
 	#[Route ('/security/confirm/{token}/{email}', name:'maf_account_confirm')]
         public function confirm(EntityManagerInterface $em, TranslatorInterface $trans, string $token, string $email): RedirectResponse {
                 $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
-                if ($user && $user->getConfirmed() === false && $token == $user->getToken()) {
+                if ($user && $user->getEnabled() === false && $token == $user->getToken()) {
                         $user->unsetEmailToken();
-                        $user->setConfirmed(true);
-                        if (!$user->getActive()) {
-                                # Weird, but this accomplishes the same thing.
-                                $user->setActive(true);
-                        }
+                        $user->setEnabled(true);
                         $em->flush();
                         $this->addFlash('notice', $trans->trans('security.confirm.flash.success', [], 'core'));
                         return new RedirectResponse($this->generateUrl('maf_index'));
-                } elseif ($user && $user->getConfirmed() === true) {
+                } elseif ($user && $user->getEnabled() === true) {
                         $this->addFlash('notice', $trans->trans('security.confirm.flash.already', [], 'core'));
                         return new RedirectResponse($this->generateUrl('maf_index'));
                 } else {

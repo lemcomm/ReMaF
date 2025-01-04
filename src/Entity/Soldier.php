@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 
 class Soldier extends NPC {
 	protected int $morale = 0;
+	protected int $maxMorale = 0;
 	protected bool $is_fortified = false;
 	protected int $ranged = -1;
 	protected int $melee = -1;
@@ -31,6 +32,7 @@ class Soldier extends NPC {
 	private ?int $travel_days = null;
 	private ?string $destination = null;
 	private ?int $id = null;
+	private bool $improvisedWeapon = false;
 	private Collection $events;
 	private ?EquipmentType $weapon = null;
 	private ?EquipmentType $armour = null;
@@ -116,7 +118,7 @@ class Soldier extends NPC {
 
 	public function getType(): string {
 		if ($this->isNoble) return 'noble';
-		if (!$this->weapon && !$this->armour && !$this->equipment) return 'rabble';
+		if (!$this->weapon && !$this->armour) return 'rabble';
 
 		$def = 0;
 		if ($this->armour) {
@@ -168,22 +170,22 @@ class Soldier extends NPC {
 			# nobles have their own active check, but FOs withdraw sometimes, so if they're routed they aren't active.
 			return $this->getCharacter()->isActive(true);
 		}
-		// we can take a few wounds before we go inactive
-		$limit = 75;
+		// we can take a few hits before we go inactive
+		$limit = 40;
 
-		$xp = $this->getExperience();
-		if ($xp > 100) {
-			$limit -= 35; #Retreat below 40% HP
-		} elseif ($xp > 30) {
-			$limit -= 25; #Retreat below 50% HP
-		} elseif ($xp > 10) {
-			$limit -= 15; #Retreat below 60% HP
-		}
-		if ($militia) {
-			$limit -= 15; # Militia are willing to fight, even wounded. Works out to 25%/35%/45% HP.
-		}
-
-		if (parent::healthValue()*100 < $limit) return false;
+//		$xp = $this->getExperience();
+//		if ($xp > 100) {
+//			$limit -= 20; #Retreat below 30% HP
+//		} elseif ($xp > 30) {
+//			$limit -= 15; #Retreat below 35% HP
+//		} elseif ($xp > 10) {
+//			$limit -= 10; #Retreat below 40% HP
+//		}
+//		if ($militia) {
+//			$limit -= 10; # Militia are willing to fight, even wounded.
+//		}
+//
+//		if (parent::healthValue()*100 < $limit) return false;
 		if (!$include_routed && $this->isRouted()) return false;
 		return true;
 	}
@@ -280,22 +282,6 @@ class Soldier extends NPC {
 		return $this;
 	}
 
-	# Redeclared so we can ensure it reads noble vs soldier health correctly.
-	public function healthStatus(): string {
-		$h = $this->healthValue();
-		if ($h > 0.9) return 'perfect';
-		if ($h > 0.75) return 'lightly';
-		if ($h > 0.5) return 'moderately';
-		if ($h > 0.25) return 'seriously';
-		return 'mortally';
-	}
-
-	# Redeclared so we can ensure it reads noble vs soldier health correctly.
-	public function healthValue(): float|int {
-		$maxHp = $this->race->getHp();
-		return max(0.0, ($maxHp - $this->getWounded())) / $maxHp;
-	}
-
 	public function setFighting($value): static {
 		$this->isFighting = $value;
 		return $this;
@@ -350,7 +336,20 @@ class Soldier extends NPC {
 	}
 
 	public function setMorale($value): static {
-		$this->morale = floor($value);
+		if ($value > $this->maxMorale * $this->healthValue()) {
+			$this->morale = floor($this->maxMorale * $this->healthValue());
+		} else {
+			$this->morale = floor($value);
+		}
+		return $this;
+	}
+
+	public function getMaxMorale(): int {
+		return $this->maxMorale;
+	}
+
+	public function setMaxMorale($maxMorale): static {
+		$this->maxMorale = floor($maxMorale);
 		return $this;
 	}
 
@@ -514,7 +513,7 @@ class Soldier extends NPC {
 	}
 
 	public function isLancer(): bool {
-		if ($this->getMount() && $this->getEquipment() && $this->getEquipment()->getName() == 'Lance') {
+		if ($this->getMount() && $this->getEquipment()?->getName() === 'lance') {
 			return true;
 		} else {
 			return false;
@@ -704,10 +703,6 @@ class Soldier extends NPC {
 		return $this->has_weapon;
 	}
 
-	public function isHasWeapon(): ?bool {
-		return $this->has_weapon;
-	}
-
 	/**
 	 * Set has_weapon
 	 *
@@ -727,10 +722,6 @@ class Soldier extends NPC {
 	 * @return boolean
 	 */
 	public function getHasArmour(): bool {
-		return $this->has_armour;
-	}
-
-	public function isHasArmour(): ?bool {
 		return $this->has_armour;
 	}
 
@@ -982,6 +973,15 @@ class Soldier extends NPC {
 	public function setHasEquipment(bool $hasEquipment): static {
 		$this->has_equipment = $hasEquipment;
 
+		return $this;
+	}
+
+	public function getImprovisedWeapon(): bool {
+		return $this->improvisedWeapon;
+	}
+
+	public function setImprovisedWeapon(bool $improvisedWeapon): static {
+		$this->improvisedWeapon = $improvisedWeapon;
 		return $this;
 	}
 }

@@ -38,7 +38,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class AccountController extends AbstractController {
 
 	private function notifications(EntityManagerInterface $em, PaymentManager $pay): array {
-		$announcements = "Welcome to M&F Version 3 Alpha 1! We hope that this alpha version will only last a couple weeks, though it might be less depending on how many bugs are hidden away in the code. That said, there *should* be less bugs in this build than there were in the previous version, so we kindly ask for your patience as we squash them." ;
+		$announcements = "Welcome to M&F Version 3 Alpha 3! We hope that this alpha version will only last a couple weeks, though it might be less depending on how many bugs are hidden away in the code. That said, there *should* be less bugs in this build than there were in the previous version, so we kindly ask for your patience as we squash them." ;
 
 		$notices = array();
 		$codes = $em->getRepository(Code::class)->findBy(array('sent_to_email' => $this->getUser()->getEmail(), 'used' => false));
@@ -313,9 +313,13 @@ class AccountController extends AbstractController {
 
 	#[Route ('/account/newchar', name:'maf_char_new')]
 	public function newcharAction(Request $request, CharacterManager $charMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay, UserManager $userMan): Response {
+		/** @var User $user */
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
+		}
+		if (!$user->getEnabled()) {
+			$this->addFlash('warning', $trans->trans('security.account.email.notconfirmed', [], 'core'));
 		}
 		$form = $this->createForm(CharacterCreationType::class, null, ['user'=>$user, 'slotsavailable'=>$user->getNewCharsLimit()>0]);
 

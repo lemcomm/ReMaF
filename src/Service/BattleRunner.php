@@ -45,7 +45,8 @@ class BattleRunner {
 	private int $attMinContacts;
 	private int $attUsedContacts = 0;
 	private int $attCurrentContacts = 0;
-	private $attSlain;
+	private int $attSlain;
+	private int $rangedPhases = 3;
 
 	private ?BattleReport $report = null;
 	private ?string $tempLog = null;
@@ -474,7 +475,7 @@ class BattleRunner {
 
 			$types=array();
 			$groupCount = 0;
-			foreach ($group->getSoldiers() as $soldier) {
+			foreach ($group->getActiveSoldiers() as $soldier) {
 				$groupCount++;
 				if ($soldier->getExperience()<=5) {
 					$soldier->addXP(2);
@@ -493,14 +494,12 @@ class BattleRunner {
 			$combatworthy=false;
 			$troops = array();
 			$this->log(3, "Totals in this group:\n");
-			$some = false;
 			foreach ($types as $type=>$number) {
 				$this->log(3, $type.": $number \n");
-				$some = true;
 				$troops[$type] = $number;
 				$combatworthy=true;
 			}
-			if (!$some) {
+			if (!$combatworthy) {
 				$this->log(3, "(none) \n");
 			}
 			if ($combatworthy && !$group->getReinforcing()) {
@@ -586,7 +585,8 @@ class BattleRunner {
 				}
 				$this->log(10, "Base morale: $base_morale, mod = $mod\n");
 
-				foreach ($group->getSoldiers() as $soldier) {
+				/** @var Soldier $soldier */
+				foreach ($group->getActiveSoldiers() as $soldier) {
 					// starting morale: my power, defenses and relative sizes
 					$power = $this->combat->RangedPower($soldier, true) + $this->combat->MeleePower($soldier, true) + $this->combat->DefensePower($soldier, true);
 
@@ -606,7 +606,9 @@ class BattleRunner {
 					} else {
 						$distance_mod = 0;
 					}
-					$soldier->setMorale(($morale + $power) * $mod * $soldier->getRace()->getMoraleModifier() - $distance_mod);
+					$newMorale = round(($morale + $power) * $mod * $soldier->getRace()->getMoraleModifier() - $distance_mod);
+					$soldier->setMaxMorale($newMorale);
+					$soldier->setMorale($newMorale);
 
 					$soldier->resetCasualties();
 				}
@@ -703,7 +705,7 @@ class BattleRunner {
 			$this->prepareRound();
 			# Main combat loop, go!
 			# TODO: Expand this for multiple ranged phases.
-			if ($phase === 1 && $doRanged) {
+			if ($phase <= $this->rangedPhases && $doRanged) {
 				$this->log(20, "...Ranged, Phase #".$phase."...\n");
 				$combat = $this->runStage('ranged', $rangedPenalty, $phase, $doRanged);
 				$phase++;
@@ -925,6 +927,10 @@ class BattleRunner {
 			$crowded = 0;
 			$staredDeath = 0;
 			$noTargets = 0;
+			$noRangeTargets = 0;
+			$noCavTargets = 0;
+			$rangeNoTargets = false;
+			$cavNoTargets = false;
 			$damagingHits = 0;
 			#$attSlain = $this->attSlain; # For Sieges.
 			#$defSlain = $this->defSlain; # For Sieges.
@@ -981,13 +987,33 @@ class BattleRunner {
 				$soldierShuffle = $group->getFightingSoldiers()->toArray();
 				shuffle ($soldierShuffle);
 				foreach ($soldierShuffle as $soldier) {
-					if ($this->combat->RangedPower($soldier, true, null, $attackers) > 0) {
+					$counter = null;
+					$result=false;
+					if (!$cavNoTargets && $phase === $this->rangedPhases && $soldier->isLancer() && $this->battle->getType() == 'field') {
+						// Lancers will always perform a cavalry charge in the last ranged phase!
+						// A cavalry charge can only happen if there is a ranged phase (meaning, there is ground to fire/charge across)
+						$this->log(10, $soldier->getName()." (Lancer) charges ");
+						$target = $this->getRandomSoldier($enemyCollection);
+						$counter = 'charge';
+						if ($target) {
+							$strikes++;
+							$noCavTargets = 0;
+							[$result, $logs] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
+							foreach ($logs as $each) {
+								$this->log(10, $each);
+							}
+						} else {
+							// no more targets
+							$this->log(10, "but finds no target\n");
+							$noCavTargets++;
+						}
+					} elseif (!$rangeNoTargets && $this->combat->RangedPower($soldier, true, null, $attackers) > 0) {
 						// ranged soldier - fire!
-						$result=false;
 						$this->log(10, $soldier->getName()." (".$soldier->getType().") fires - ");
 						$target = $this->getRandomSoldier($enemyCollection);
 						if ($target) {
 							$shots++;
+							$noRangeTargets = 0;
 							$rPower = $this->combat->RangedPower($soldier, true, null, $attackers);
 							if ($this->combat->RangedRoll($defBonus, $rangedPenalty*$target->getRace()->getSize(), $bonus, 95)) {
 								// target hit
@@ -996,15 +1022,15 @@ class BattleRunner {
 								foreach ($logs as $each) {
 									$this->log(10, $each);
 								}
-								if ($result=='fail') {
+								if ($result==='fail') {
 									$fail++;
-								} elseif ($result=='wound') {
+								} elseif ($result==='wound') {
 									$wound++;
 									$damagingHits++;
-								} elseif ($result=='capture') {
+								} elseif ($result==='capture') {
 									$capture++;
 									$damagingHits++;
-								} elseif ($result=='kill') {
+								} elseif ($result==='kill') {
 									$kill++;
 									$damagingHits++;
 								}
@@ -1042,10 +1068,53 @@ class BattleRunner {
 							}
 						} else {
 							$this->log(10, "no more targets\n");
+							$noRangeTargets++;
 						}
 					}
+					if ($counter && strpos($result, ' ') !== false) {
+						$results = explode(' ', $result);
+						$result = $results[0];
+						$result2 = $counter . $results[1];
+					} else {
+						$result2 = false;
+					}
+					if ($result2) {
+						if($result2==='chargefail') {
+							$chargeFail++;
+						} elseif ($result2==='chargewound') {
+							$chargeWound++;
+						} elseif ($result2==='chargecapture') {
+							$chargeCapture++;
+						} elseif ($result2==='chargekill') {
+							$chargeKill++;
+						}
+					}
+					if (!$cavNoTargets && $noCavTargets > 4) {
+						$this->log(10, "Unable to locate viable charge targets\n");
+						$cavNoTargets = true;
+					}
+					if (!$rangeNoTargets && $noRangeTargets > 4) {
+						$this->log(10, "Unable to locate viable ranged targets\n");
+						$rangeNoTargets = true;
+					}
+					if ($cavNoTargets && $rangeNoTargets) {
+						$this->log(10, "No Target Found limits hit -- skipping further calculations\n");
+						break;
+					}
 				}
-				$stageResult = array('shots'=>$shots, 'rangedHits'=>$rangedHits, 'fail'=>$fail, 'wound'=>$wound, 'capture'=>$capture, 'kill'=>$kill);
+				$stageResult = [
+					'shots'=>$shots,
+					'rangedHits'=>$rangedHits,
+					'fail'=>$fail,
+					'strikes'=>$strikes,
+					'wound'=>$wound,
+					'capture'=>$capture,
+					'kill'=>$kill,
+					'chargefail' => $chargeFail,
+					'chargewound'=>$chargeWound,
+					'chargecapture'=>$chargeCapture,
+					'chargekill'=>$chargeKill,
+				];
 			}
 			/*
 
@@ -1063,9 +1132,8 @@ class BattleRunner {
 				shuffle ($soldierShuffle);
 				foreach ($soldierShuffle as $soldier) {
 					$result = false;
-					$target = false;
 					$counter = null;
-					if ($doRanged && $phase == 2 && $soldier->isLancer() && $this->battle->getType() == 'field') {
+					if (false && $doRanged && $phase == 2 && $soldier->isLancer() && $this->battle->getType() == 'field') {
 						// Lancers will always perform a cavalry charge in the opening melee phase!
 						// A cavalry charge can only happen if there is a ranged phase (meaning, there is ground to fire/charge across)
 						$this->log(10, $soldier->getName()." (Lancer) attacks ");
@@ -1083,7 +1151,7 @@ class BattleRunner {
 							$this->log(10, "but finds no target\n");
 							$noTargets++;
 						}
-					} else if ($soldier->isRanged() && $doRanged) {
+					} elseif ($soldier->isRanged() && $doRanged) {
 						// Continure firing with a reduced hit chance in regular battle. If we skipped the ranged phase due to this being the last battle in a siege, we forego ranged combat to pure melee instead.
 						// TODO: friendly fire !
 						$this->log(10, $soldier->getName()." (".$soldier->getType().") fires - ");
@@ -1192,15 +1260,7 @@ class BattleRunner {
 						*/
 					}
 					if ($result2) {
-						if($result2==='chargefail') {
-							$chargeFail++;
-						} elseif ($result2==='chargewound') {
-							$chargeWound++;
-						} elseif ($result2==='chargecapture') {
-							$chargeCapture++;
-						} elseif ($result2==='chargekill') {
-							$chargeKill++;
-						} elseif ($result2==='lightShieldfail') {
+						if ($result2==='lightShieldfail') {
 							$lightShieldFail++;
 						} elseif ($result2==='lightShieldwound') {
 							$lightShieldWound++;
@@ -1275,10 +1335,21 @@ class BattleRunner {
 				$this->log(10, "morale checks:\n");
 				$stageResult = $group->getActiveReport()->getCombatStages()->last(); #getCombatStages always returns these in round ascending order. Thus, the latest one will be last. :)
 
-				$countUs = $group->getActiveSoldiers()->count();
-				foreach ($group->getReinforcedBy() as $reinforcement) {
-					$countUs += $reinforcement->getActiveSoldiers()->count();
+				$allHP = 0;
+				$countUs = 0;
+				foreach ($group->getFightingSoldiers() as $soldier) {
+					$allHP += $soldier->healthValue();
+					$countUs += 1;
 				}
+				foreach ($group->getReinforcedBy() as $reinforcement) {
+					foreach ($reinforcement->getFightingSoldiers() as $soldier) {
+						$allHP += $soldier->healthValue();
+						$countUs += 1;
+					}
+				}
+				$HPAvg = $allHP / $countUs;
+
+				$countUs = $group->getActiveSoldiers()->count();
 				$countEnemy = 0;
 				$enemies = $group->getEnemies();
 				foreach ($enemies as $enemygroup) {
@@ -1313,11 +1384,10 @@ class BattleRunner {
 				foreach ($group->getActiveSoldiers() as $soldier) {
 					// Check for ability to do damage
 					/** @var Soldier $soldier */
-					if (!$soldier->getWeapon()) {
+					if (!$soldier->getWeapon() && !$soldier->getImprovisedWeapon()) {
 						$retreated++;
 						$this->log(10, $soldier->getName()." (".$soldier->getType().") - withdraws\n");
 						$soldier->setRouted(true);
-						$countUs--;
 						$this->history->addToSoldierLog($soldier, 'retreated.melee');
 						if ($soldier->isNoble()) {
 							$extra = [
@@ -1336,26 +1406,45 @@ class BattleRunner {
 						$mod = min(0.99, $mod+0.1);
 					}
 
-					$soldier->setMorale($soldier->getMorale() * $mod);
+					$soldier->setMorale($soldier->getMorale() + ($allHP * $countUs * $mod));
 					$total += $soldier->getMorale();
 					$health = $soldier->healthValue();
 					$rand = rand(0,100);
 					$hRand = rand(0,100);
 
 					# $moraleMod makes it harder to break during ranged phase.
-					if ($soldier->getMorale()*$moraleMod < $rand || ($health < 0.5 && $health*100 < $hRand)) {
-						if ($soldier->isNoble()) {
-							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." / HP: $health vs $rand / $hRand - has no fear\n");
+					$noble = $soldier->isNoble();
+					$myMorale = $soldier->getMorale()*$moraleMod;
+					$myHealth = $health * round($soldier->getRace()->getHp());
+					$healthMin = 0.35;
+					if ($soldier->getExperience() > 50) {
+						$healthMin -= 0.05;
+					}
+					if ($soldier->getExperience() > 100) {
+						$healthMin -= 0.05;
+					}
+					if ($myMorale < $rand) {
+						if ($noble) {
+							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($myMorale)." vs $rand - has no fear\n");
+							$staredDeath++;
+						} else{
+							$routed++;
+							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($myMorale)." vs $rand - panics\n");
+							$soldier->setRouted(true);
+							$this->history->addToSoldierLog($soldier, 'routed.melee');
+						}
+					} elseif ($health < $healthMin && $health*100 < $hRand) {
+						if ($noble) {
+							$this->log(10, $soldier->getName()." (".$soldier->getType()."): HP: $myHealth vs $hRand - won't live forever\n");
 							$staredDeath++;
 						} else {
 							$routed++;
-							$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." / HP: $health vs $rand / $hRand - panics\n");
+							$this->log(10, $soldier->getName()." (".$soldier->getType()."): HP: $health vs $hRand - fears death\n");
 							$soldier->setRouted(true);
-							$countUs--;
 							$this->history->addToSoldierLog($soldier, 'routed.melee');
 						}
 					} else {
-						$this->log(20, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." / HP: $health vs $rand / $hRand \n");
+						$this->log(20, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." vs $rand / HP: $myHealth vs $hRand \n");
 					}
 				}
 				$this->log(10, "==> avg. morale: ".round($total/max(1,$count))."\n\n");
