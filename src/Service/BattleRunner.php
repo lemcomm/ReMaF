@@ -94,14 +94,15 @@ class BattleRunner {
 
 	public function run(Battle $battle, $cycle): void {
 		$this->battle = $battle;
-		$this->log(1, "Battle ".$battle->getId()."\n");
-
-		$this->findXpMod($battle);
 
 		$this->report = new BattleReport;
 		$this->report->setAssault(FALSE);
 		$this->report->setSortie(FALSE);
 		$this->report->setUrban(FALSE);
+
+		$this->log(1, "Battle ".$battle->getId()."\n");
+
+		$this->findXpMod($battle);
 		$myStage = NULL;
 		$maxStage = NULL;
 		$place = $battle->getPlace();
@@ -111,6 +112,7 @@ class BattleRunner {
 			# Ideally, it shouldn't be possible to have a siege battle without a siege, but just in case...
 			$type = 'field';
 		}
+		$this->log(20, "Battle is of type: $type");
 		switch ($type) {
 			case 'siegesortie':
 				$this->report->setSortie(true);
@@ -695,7 +697,8 @@ class BattleRunner {
 			$rangedPenalty = 0.3;
 		}
 		$doRanged = TRUE;
-		if ($myStage > 1 && $myStage == $maxStage) {
+		$this->log(20,  "Current stage is $myStage out of $maxStage.\n");
+		if ($myStage && $myStage > 1 && $myStage === $maxStage) {
 			$doRanged = FALSE; #Final siege battle, no ranged phase!
 			$this->log(20, "...final siege battle detected, skipping ranged phase...\n\n");
 		} else {

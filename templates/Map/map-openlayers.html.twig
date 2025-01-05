@@ -174,21 +174,21 @@ function updateRoute(data) {
 			errorlayer.removeAllFeatures();
 		}
 		var html = "{{ 'map.newroute'|trans|e('js') }}";
-		html = html.replace("%duration%", Math.round(data.turns*10)/10);
+		html = html.replace("{duration}", Math.round(data.turns*10)/10);
 		if (Math.round(data.turns*10)/10*6/24 < 1) {
-			html = html.replace("%hours%", Math.ceil(Math.round(data.turns*10)/10*6));
-			html = html.replace("%days%", 0);
+			html = html.replace("{hours}", Math.ceil(Math.round(data.turns*10)/10*6));
+			html = html.replace("{days}", 0);
 		} else {
-			html = html.replace("%hours%", Math.ceil(Math.round(data.turns*10)/10*6)%24);
-			html = html.replace("%days%", Math.floor(Math.round(data.turns*10)/10*6/24));
+			html = html.replace("{hours}", Math.ceil(Math.round(data.turns*10)/10*6)%24);
+			html = html.replace("{days}", Math.floor(Math.round(data.turns*10)/10*6/24));
 		}
 		if (data.bridges.length>0) {
 			html = html+"<br /><h4>{{ 'map.crossings.title'|trans|title|e('js') }}</h4><ul>";
 			for (var i in data.bridges) {
 				var bridge = "{{ 'map.crossings.river'|trans|e('js') }}";
-				bridge = bridge.replace("%river%", data.bridges[i].river);
-				bridge = bridge.replace("%bridge%", data.bridges[i].bridgename);
-				bridge = bridge.replace("%nearby%", data.bridges[i].bridgelocation);
+				bridge = bridge.replace("{river}", data.bridges[i].river);
+				bridge = bridge.replace("{bridge}", data.bridges[i].bridgename);
+				bridge = bridge.replace("{nearby}", data.bridges[i].bridgelocation);
 				html = html + "<li>"+bridge+"</li>";
 			}
 			html = html+"</ul>";

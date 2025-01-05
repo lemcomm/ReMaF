@@ -164,7 +164,6 @@ class UnitController extends AbstractController {
 			$settlements->add($liege);
 		}
 		foreach ($this->pm->reverseSettlementLookup('units', $char) as $settlement) {
-			echo $settlement->getId()."  ";
 			if (!$settlements->contains($settlement)) {
 				$settlements->add($settlement);
 			}
@@ -251,7 +250,6 @@ class UnitController extends AbstractController {
 			$settlements->add($liege);
 		}
 		foreach ($this->pm->reverseSettlementLookup('units', $character) as $settlement) {
-			echo $settlement->getId()."  ";
 			if (!$settlements->contains($settlement)) {
 				$settlements->add($settlement);
 			}
