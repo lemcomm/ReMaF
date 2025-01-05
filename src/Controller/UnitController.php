@@ -25,6 +25,7 @@ use App\Service\MilitaryManager;
 
 use App\Service\PermissionManager;
 use App\Service\Dispatcher\UnitDispatcher;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -41,7 +42,8 @@ class UnitController extends AbstractController {
 		private MilitaryManager $mm,
 		private PermissionManager $pm,
 		private TranslatorInterface $trans,
-		private UnitDispatcher $ud) {
+		private UnitDispatcher $ud,
+		private GameRequestManager $gm,) {
 	}
 	
         private function findUnits(Character $character) {
@@ -60,6 +62,21 @@ class UnitController extends AbstractController {
                 }
                 return $query->getResult();
         }
+
+	private function findSupplySettlements(Character $character) {
+		$all = $this->gm->getAvailableFoodSuppliers($character);
+		$liege = $character->findAllegiance();
+		if ($liege instanceof Settlement && $liege->getFeedSoldiers() && !$all->contains($liege)) {
+			$all->add($liege);
+		}
+		foreach ($this->pm->reverseSettlementLookup('units', $character) as $settlement) {
+			if (!$all->contains($settlement)) {
+				$all->add($settlement);
+			}
+		}
+
+		return $all;
+	}
 
 	private function gateway($test, $secondary = null, $settlement = false) {
                 return $this->ud->gateway($test, $settlement, true, false, $secondary);
@@ -128,10 +145,15 @@ class UnitController extends AbstractController {
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-                $settlements = $gm->getAvailableFoodSuppliers($character);
+                $settlements = $this->findSupplySettlements($character);
+		$here = $character->getInsideSettlement();
+		if (!$settlements->contains($here)) {
+			$settlements->add($here);
+		}
+
 		$unit = new Unit();
 		$this->em->persist($unit);
-		$form = $this->createForm(UnitConfigType::class, $unit, ['lord'=>true, 'settlements'=>$settlements]);
+		$form = $this->createForm(UnitConfigType::class, $unit, ['lord'=>true, 'settlements'=>$settlements, 'here'=>$here]);
 
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
@@ -157,18 +179,15 @@ class UnitController extends AbstractController {
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
 		}
-		$units = $this->findUNits($char);
-		$settlements = $gm->getAvailableFoodSuppliers($char);
-		$liege = $char->findAllegiance();
-		if ($liege instanceof Settlement && $liege->getFeedSoldiers() && !$settlements->contains($liege)) {
-			$settlements->add($liege);
+		$units = $this->findUnits($char);
+		$settlements = $this->findSupplySettlements($char);
+		$inside = $char->getInsideSettlement();
+		if ($settlements->contains($inside)) {
+			$here = $inside;
+		} else {
+			$here = false;
 		}
-		foreach ($this->pm->reverseSettlementLookup('units', $char) as $settlement) {
-			if (!$settlements->contains($settlement)) {
-				$settlements->add($settlement);
-			}
-		}
-		$form = $this->createForm(UnitBulkType::class, null, ['units'=>$units, 'settlements'=>$settlements]);
+		$form = $this->createForm(UnitBulkType::class, null, ['units'=>$units, 'settlements'=>$settlements, 'here'=>$here]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
@@ -237,7 +256,8 @@ class UnitController extends AbstractController {
 			$lord = true;
 		}
 
-		$settlements = $gm->getAvailableFoodSuppliers($character);
+		$settlements = $this->findSupplySettlements($character);
+
 		$supplier = $unit->getSupplier();
 		if ($supplier && !$settlements->contains($supplier)) {
 			$settlements->add($supplier);
@@ -245,17 +265,13 @@ class UnitController extends AbstractController {
 		if ($hasPerm && !$settlements->contains($settlement)) {
 			$settlements->add($settlement);
 		}
-		$liege = $character->findAllegiance();
-		if ($liege instanceof Settlement && $liege->getFeedSoldiers() && !$settlements->contains($liege)) {
-			$settlements->add($liege);
-		}
-		foreach ($this->pm->reverseSettlementLookup('units', $character) as $settlement) {
-			if (!$settlements->contains($settlement)) {
-				$settlements->add($settlement);
-			}
+		if ($settlements->contains($inside)) {
+			$here = $inside;
+		} else {
+			$here = false;
 		}
 
-		$form = $this->createForm(UnitConfigType::class, $unit, ['lord'=>$lord, 'settlements'=>$settlements]);
+		$form = $this->createForm(UnitConfigType::class, $unit, ['lord'=>$lord, 'settlements'=>$settlements, 'here'=>$here]);
 
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {

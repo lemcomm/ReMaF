@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Settlement;
 use App\Entity\Unit;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -38,6 +39,7 @@ class UnitConfigType extends AbstractType {
 			'attr'			=> array('class'=>'wide'),
 			'settlements'		=> new ArrayCollection(),
 			'data_class'		=> Unit::class,
+			'here'			=> null,
 		));
 		$resolver->setRequired(['lord']);
 	}
@@ -46,6 +48,7 @@ class UnitConfigType extends AbstractType {
 		$lord = $options['lord'];
 		$unit = $builder->getData();
 		$settlements = $options['settlements'];
+		$preferred = [$options['here']];
 
 		$renamable = $unit->getRenamable();
 
@@ -55,8 +58,15 @@ class UnitConfigType extends AbstractType {
 			'expanded'=>false,
 			'class'=>Settlement::class,
 			'choice_label'=>'name',
-			'choices'=>$settlements,
+			'query_builder'=>function(EntityRepository $er) use ($settlements) {
+				$qb = $er->createQueryBuilder('s');
+				$qb->where('s IN (:settlements)')
+				->setParameters(array('settlements'=>$settlements));
+				$qb->orderBy('s.name');
+				return $qb;
+			},
 			'placeholder' => 'unit.supplier.empty',
+			'preferred_choices' => $preferred,
 			'mapped'=>true,
 		));
 
