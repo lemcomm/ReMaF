@@ -160,6 +160,9 @@ event:
   killgold:     You took {gold} gold from the body of {character}.
   killartifact: You took the {artifact} from the body of {character}.
   child:        Had a child, {character}.
+  health:
+   improved:    Has had their injuries improve.
+   worsened:    Witness their injuries worsen.
   inherit:
    place:       Inhereited the place of {place} from {character}.
    estate:      Inherited the settlement {settlement} from {character}.

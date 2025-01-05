@@ -43,9 +43,7 @@
 		</p>
 		{% endif %}
 	{% endif %}
-	{% if character.healthvalue < 0.9 %}
-		{{ ('character.health.'~character.healthstatus)|trans }}
-	{% endif %}
+	<p>{{ ('character.health.'~character.healthstatus)|trans }} ({{ character.healthValue * 100 }}%)</p>
 
 	<h3>{{ 'summary.events'|trans|title }}</h3>
 	{% set has_events = false %}

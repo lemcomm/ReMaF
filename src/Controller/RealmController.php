@@ -1169,6 +1169,9 @@ class RealmController extends AbstractController {
 				$opts->add($assoc);
 			}
 		}
+		if ($realm->getFaith() && !$opts->contains($realm->getFaith())) {
+			$opts->add($realm->getFaith());
+		}
 
 		$form = $this->createForm(AssocSelectType::class, null, ['assocs' => $opts, 'type' => 'faith', 'me' =>$character]);
 		$form->handleRequest($request);
@@ -1176,7 +1179,7 @@ class RealmController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$data['target'] = $form->get('target')->getData();
-			$character->setFaith($data['target']);
+			$realm->setFaith($data['target']);
 			$this->em->flush();
 			if ($data['target']) {
 				$this->addFlash('notice', $this->trans->trans('assoc.route.faith.settlement.success', array("%faith%"=>$data['target']->getFaithName()), 'orgs'));

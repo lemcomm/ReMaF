@@ -106,6 +106,15 @@ class NotificationManager {
 		return true;
 	}
 
+	public function spoolBattleReport(BattleReport $report): void {
+		$txt = "A new battle has taken place! https://mightandfealty.com/en/char/battlereport/".$report->getId();
+		try {
+			$this->discord->pushToOlympus($txt);
+		} catch (Exception $e) {
+			# Nothing.
+		}
+	}
+
 	public function spoolBattle(BattleReport $rep, $epic): void {
 		$em = $this->em;
 		$entity = false;

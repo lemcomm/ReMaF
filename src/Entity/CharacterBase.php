@@ -84,27 +84,29 @@ class CharacterBase {
 		return $this;
 	}
 
-	public function HealOrDie(): int {
+	public function HealOrDie(): int|bool {
 		$current = $this->healthValue();
 		if ($current >= 1) {
-			return 1; #Why are you here?
+			return true; #Why are you here?
 		}
 		$rand = rand(0, 100);
 		$raceHp = $this->race?->getHp()?:100;
 		if ($rand === 0 && $current < 0.25) {
 			# Critical failure at  low health = death.
 			$this->kill();
-			return 0;
+			return false;
 		} else {
 			if ($rand < 10) {
-				$this->wound(rand(1,round($raceHp/20)));
+				$result = 0 - rand(1,round($raceHp/20));
+				$this->wound($result);
 				if ($this->healthValue() < 0) {
 					return 0;
 				}
-				return -1;
+				return $result;
 			} else {
-				$this->heal(rand(1,round($raceHp/10)));
-				return 1;
+				$result = rand(1,round($raceHp/10));
+				$this->heal($result);
+				return $result;
 			}
 		}
 	}

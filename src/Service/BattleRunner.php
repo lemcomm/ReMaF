@@ -59,18 +59,19 @@ class BattleRunner {
 
 
 	public function __construct(
-		public EntityManagerInterface $em,
-		public LoggerInterface $logger,
-		public History $history,
-		public Geography $geo,
-		public CharacterManager $character_manager,
-		public CommonService $common,
-		public Interactions $interactions,
-		public Politics $politics,
-		public MilitaryManager $milman,
-		public HelperService $helper,
-		public CombatManager $combat,
-		public WarManager $warman) {
+		private EntityManagerInterface $em,
+		private LoggerInterface  $logger,
+		private History          $history,
+		private Geography        $geo,
+		private CharacterManager $character_manager,
+		private CommonService    $common,
+		private Interactions     $interactions,
+		private Politics         $politics,
+		private MilitaryManager  $milman,
+		private HelperService    $helper,
+		private CombatManager    $combat,
+		private WarManager       $warman,
+		private NotificationManager $notes) {
 	}
 
 	#TODO: Fine tune logging.
@@ -351,6 +352,7 @@ class BattleRunner {
 		$this->em->flush();
 		$this->em->remove($battle);
 		$this->history->evaluateBattle($this->report);
+		$this->notes->spoolBattleReport($this->report);
 	}
 
 	private function findXpMod($battle) {

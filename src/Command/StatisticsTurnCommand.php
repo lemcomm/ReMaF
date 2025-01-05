@@ -68,13 +68,13 @@ class StatisticsTurnCommand extends Command {
 
 		$query = $this->em->createQuery('SELECT count(u.id) FROM App:User u');
 		$global->setUsers($query->getSingleScalarResult());
-		$query = $this->em->createQuery('SELECT count(u.id) FROM App:User u WHERE u.account_level > 0 AND u.lastLogin >= :time');
+		$query = $this->em->createQuery('SELECT count(u.id) FROM App:User u WHERE u.account_level > 0 AND u.last_play >= :time');
 		$query->setParameters(['time'=>$oneWeek]);
 		$global->setActiveUsers($query->getSingleScalarResult());
-		$query = $this->em->createQuery('SELECT count(u.id) FROM App:User u WHERE u.account_level > 0 AND u.lastLogin >= :time');
+		$query = $this->em->createQuery('SELECT count(u.id) FROM App:User u WHERE u.account_level > 0 AND u.last_play >= :time');
 		$query->setParameters(['time'=>$twoDays]);
 		$global->setReallyActiveUsers($query->getSingleScalarResult());
-		$query = $this->em->createQuery('SELECT count(u.id) FROM App:User u WHERE u.account_level > 0 AND u.lastLogin >= :time');
+		$query = $this->em->createQuery('SELECT count(u.id) FROM App:User u WHERE u.account_level > 0 AND u.last_play >= :time');
 		$query->setParameters(['time'=>$today]);
 		$global->setTodayUsers($query->getSingleScalarResult());
 		// FIXME: this is hardcoded, but it could be made better by calling payment_manager and checking which levels have fees

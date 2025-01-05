@@ -39,7 +39,7 @@
 
 <div>
 	<ul class="simple">
-	<li>{{ ('character.health.'~character.healthstatus)|trans }}</li>
+	<li>{{ ('character.health.'~character.healthstatus)|trans }} ({{ character.healthValue * 100 }}%)</li>
 	<li>{{ 'character.gold'|trans({"%gold%":character.gold}) }}</li>
 	{% for parent in character.parents %}
 		<li>

@@ -71,7 +71,7 @@ is still required, but we'll leave it in the code just in case. --Andrew
 {% endif %}
 {% for position in character.positions %}
 	<li>
-		{% if position.ruler %}
+		{% if position.ruler and position.name == 'ruler' %}
 			{% if character.male %}
 				{% set posname = 'realm.title.male.'~position.realm.type %}
 			{% else %}

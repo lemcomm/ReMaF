@@ -352,6 +352,9 @@ class SettlementController extends AbstractController {
 				$opts->add($assoc);
 			}
 		}
+		if ($id->getFaith() && !$opts->contains($id->getFaith())) {
+			$opts->add($id->getFaith());
+		}
 
 		$form = $this->createForm(AssocSelectType::class, null, ['assocs' => $opts, 'type' => 'faith', 'me' =>$character]);
 		$form->handleRequest($request);
@@ -359,7 +362,7 @@ class SettlementController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			$data['target'] = $form->get('target')->getData();
-			$character->setFaith($data['target']);
+			$id->setFaith($data['target']);
 			$this->em->flush();
 			if ($data['target']) {
 				$this->addFlash('notice', $this->trans->trans('assoc.route.faith.settlement.success', array("%faith%"=>$data['target']->getFaithName()), 'orgs'));

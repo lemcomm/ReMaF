@@ -22,7 +22,6 @@ class LinksExtension extends AbstractExtension {
 	private LoggerInterface $logger;
 	private RequestStack $request_stack; // for debugging until I've fixed the bug below where it is used
 
-	// FIXME: type hinting for $translator removed because the addition of LoggingTranslator is breaking it
 	public function __construct(EntityManagerInterface $em, UrlGeneratorInterface $generator, TranslatorInterface $translator, LoggerInterface $logger, RequestStack $rs) {
 		$this->em = $em;
 		$this->generator = $generator;

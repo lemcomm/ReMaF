@@ -4,16 +4,70 @@ namespace App\Service;
 
 use App\Entity\Character;
 use App\Entity\Listing;
+use App\Entity\Permission;
 use App\Entity\Place;
+use App\Entity\PlacePermission;
 use App\Entity\Realm;
 use App\Entity\Settlement;
+use App\Entity\SettlementPermission;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PermissionManager {
 	private int $recursion_limit = 20; // prevent infinite recursion
 
 	public function __construct(
-		private Politics $politics) {
+		private Politics $politics,
+		private EntityManagerInterface $em,
+	) {
+	}
+
+	private function findPermissionType (string $class, string $type) {
+		return $this->em->getRepository(Permission::class)->findOneBy(['class' => $class, 'name' => $type]);
+	}
+
+	public function reverseSettlementLookup(string $permName, Character $character): ArrayCollection {
+		$all = new ArrayCollection();
+		$perm = $this->findPermissionType('settlement', $permName);
+		if ($perm) {
+			# select p.id from settlementpermission p join listing l on p.listing_id = l.id join listmember m on m.listing_id = l.id where m.target_character_id = 1600 and p.permission_id = (select id from types.permission where name ='units' and class='settlement');
+			$perms = $this->em->createQuery('SELECT p FROM App\Entity\SettlementPermission p JOIN App\Entity\Listing l WITH p.listing = l JOIN App\Entity\ListMember m WITH m.listing = l WHERE m.target_character = :char and p.permission = :perm')
+			->setParameters(['char' => $character, 'perm' => $perm])
+			->execute();
+			/** @var SettlementPermission $perm */
+			foreach ($perms as $perm) {
+				$occupied = $perm->getOccupiedSettlement();
+				$settlement = $perm->getSettlement();
+				if ($occupied && $occupied->isOccupied()) {
+					$all->add($occupied);
+				} elseif ($settlement && !$settlement->isOccupied()) {
+					$all->add($settlement);
+				}
+			}
+		}
+		return $all;
+	}
+
+	public function reversePlaceLookup(string $permName, Character $character): ArrayCollection {
+		$all = new ArrayCollection();
+		$perm = $this->findPermissionType('settlement', $permName);
+		if ($perm) {
+			# select p.id from settlementpermission p join listing l on p.listing_id = l.id join listmember m on m.listing_id = l.id where m.target_character_id = 1600 and p.permission_id = (select id from types.permission where name ='units' and class='settlement');
+			$perms = $this->em->createQuery('SELECT p FROM App\Entity\PlacePermission p JOIN App\Entity\Listing l WITH p.listing = l JOIN App\Entity\ListMember m WITH m.listing = l WHERE m.target_character = :char and p.permission = :perm')
+				->setParameters(['char' => $character, 'perm' => $perm])
+				->execute();
+			/** @var PlacePermission $perm */
+			foreach ($perms as $perm) {
+				$occupied = $perm->getOccupiedPlace();
+				$settlement = $perm->getPlace();
+				if ($occupied && $occupied->isOccupied()) {
+					$all->add($occupied);
+				} elseif ($settlement && !$settlement->isOccupied()) {
+					$all->add($settlement);
+				}
+			}
+		}
+		return $all;
 	}
 
 	public function checkRealmPermission(Realm $realm, Character $character, $permission, $return_details=false): false|array {

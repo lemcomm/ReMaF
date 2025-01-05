@@ -370,6 +370,43 @@ class GameRunner {
 			$this->output("  $keeponslumbercount positions kept on slumber!");
 		}
 		$this->output("  Counted $knownslumber known slumberers and $knowndead known dead.");
+		$this->output("  Checking on wounds...");
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Character c WHERE c.wounded > 0');
+		$iterableResult = $query->toIterable();
+		$i=1;
+		$deaths = 0;
+		$worse = 0;
+		$better = 0;
+		/** @var Character $char */
+		foreach ($iterableResult as $char) {
+			$result = $char->HealOrDie();
+			if (($i++ % $this->batchsize) == 0) {
+				$this->em->flush();
+				$this->em->clear();
+			}
+			if (is_int($result)) {
+				if ($result < 0) {
+					$worse++;
+					$this->history->logEvent(
+						$char,
+						'event.character.health.worsened',
+						array(),
+						History::MEDIUM, false, 30
+					);
+				} elseif ($result > 0) {
+					$better++;
+					$this->history->logEvent(
+						$char,
+						'event.character.health.improved',
+						array(),
+						History::MEDIUM, false, 30
+					);
+				}
+			} elseif ($result === false) {
+				$deaths++;
+			}
+		}
+		$this->output("  $better have had their condition improve, $worse saw it worsen, and $deaths died from their wounds.");
 		$this->common->setGlobal('cycle.characters', 'complete');
 		$this->em->flush();
 		$this->em->clear();

@@ -1259,6 +1259,13 @@ class Place implements ChatLocationInterface {
 		return $this;
 	}
 
+	public function isOccupied(): bool {
+		if ($this->occupier || $this->occupant) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Get occupant
 	 *
