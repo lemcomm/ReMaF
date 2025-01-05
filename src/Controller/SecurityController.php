@@ -145,7 +145,7 @@ class SecurityController extends AbstractController {
 		$user = $em->getRepository(User::class)->findOneBy(['id' => $id]);
 		/** @var User $user */
 		if ($user && !$user->getEnabled() && $token === $user->getToken()) {
-			$user->unsetToken();
+			$user->setToken(null);
 			$user->setEnabled(true);
 			$em->flush();
 			$this->addFlash('notice', $trans->trans('security.activate.flash.success', [], 'core'));
@@ -318,7 +318,7 @@ class SecurityController extends AbstractController {
         public function confirm(EntityManagerInterface $em, TranslatorInterface $trans, string $token, string $email): RedirectResponse {
                 $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
                 if ($user && $user->getEnabled() === false && $token == $user->getToken()) {
-                        $user->unsetEmailToken();
+                        $user->setEmailToken(null);
                         $user->setEnabled(true);
                         $em->flush();
                         $this->addFlash('notice', $trans->trans('security.confirm.flash.success', [], 'core'));

@@ -156,11 +156,11 @@ function updateRoute(data) {
 		var html = "{{ 'map.disembark'|trans|e('js') }}";
 		html = html.replace("%duration%", Math.round(data.turns*10)/10);
 		if (Math.round(data.turns*10)/10*6/24 < 1) {
-			html = html.replace("%hours%", Math.ceil(Math.round(data.turns*10)/10*6));
-			html = html.replace("%days%", 0);
+			html = html.replace("{hours}", Math.ceil(Math.round(data.turns*10)/10*6));
+			html = html.replace("{days}", 0);
 		} else {
-			html = html.replace("%hours%", Math.ceil(Math.round(data.turns*10)/10*6)%24);
-			html = html.replace("%days%", Math.floor(Math.round(data.turns*10)/10*6/24));
+			html = html.replace("{hours}", Math.ceil(Math.round(data.turns*10)/10*6)%24);
+			html = html.replace("{days}", Math.floor(Math.round(data.turns*10)/10*6/24));
 		}
 		$("#result").html(html);
 		if (errorlayer) {
