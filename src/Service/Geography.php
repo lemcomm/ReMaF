@@ -160,8 +160,8 @@ class Geography {
 		$now = new DateTime('now');
 		if ($this->em->createQuery('SELECT count(a.id) FROM App\Entity\Artifact a WHERE a.location IS NOT NULL and a.available_after <= :now AND a.world = :world')->setParameters(['now'=>$now, 'world'=>$char->getWorld()])->getSingleScalarResult() > 0) {
 			$distance = $this->calculateSpottingDistance($char);
-			$query = $this->em->createQuery('SELECT a FROM App\Entity\Artifact a WHERE a.location IS NOT NULL AND a.available_after <= :now AND ST_DWithin(a.location, :me, :maxdistance) = true');
-			$query->setParameters(['me'=>$char->getLocation(), 'maxdistance'=>$distance, 'now'=>$now]);
+			$query = $this->em->createQuery('SELECT a FROM App\Entity\Artifact a WHERE a.location IS NOT NULL AND a.available_after <= :now AND ST_DWithin(a.location, :me, :maxdistance) = true and a.world = :world');
+			$query->setParameters(['me'=>$char->getLocation(), 'maxdistance'=>$distance, 'now'=>$now, 'world'=>$char->getWorld()]);
 			$result = $query->getResult();
 			if ($result->count() > 0) {
 				return $result;
