@@ -275,7 +275,7 @@ class WarController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 			# Figure out which form is being submitted.
-			if ($request->request->has('siegestart')) {
+			if ($request->request->has('siege_start')) {
 				# For new sieges, this is easy, if not long. Mostly, we just need to make the siege, battle groups, and the events.
 				$siege = new Siege;
 				$em->persist($siege);

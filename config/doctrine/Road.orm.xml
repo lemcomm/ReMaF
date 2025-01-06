@@ -10,6 +10,7 @@
 		<field name="condition" type="integer"/>
 
 		<many-to-one field="geo_data" target-entity="GeoData" inversed-by="roads"/>
+		<many-to-one field="world" target-entity="World" inversed-by="roads"/>
 
 		<many-to-many field="waypoints" target-entity="GeoFeature">
 			<join-table name="roads_features">

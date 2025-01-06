@@ -371,7 +371,7 @@ class GameRunner {
 		}
 		$this->output("  Counted $knownslumber known slumberers and $knowndead known dead.");
 		$this->output("  Checking on wounds...");
-		$query = $this->em->createQuery('SELECT s FROM App\Entity\Character c WHERE c.wounded > 0');
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.wounded > 0');
 		$iterableResult = $query->toIterable();
 		$i=1;
 		$deaths = 0;

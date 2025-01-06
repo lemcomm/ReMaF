@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\World;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -25,7 +26,7 @@ class DungeonCreator {
 	}
 
 
-	public function createRandomDungeon(): bool {
+	public function createRandomDungeon(World $world): bool {
 		$this->logger->info("creating new dungeon");
 		$dungeon = new Dungeon;
 
@@ -40,6 +41,7 @@ class DungeonCreator {
 		$dungeon->setArea($this->RandomDungeonType($geodata->getBiome()->getName()));
 		$dungeon->setLocation(new Point($x,$y));
 		$dungeon->setGeoData($geodata);
+		$dungeon->setWorld($world);
 		$dungeon->setTick(0)->setExplorationCount(0);
 
 		$this->em->persist($dungeon);

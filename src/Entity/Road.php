@@ -13,6 +13,7 @@ class Road {
 	private int $condition;
 	private ?int $id = null;
 	private ?GeoData $geo_data = null;
+	private ?World $world = null;
 	private Collection $waypoints;
 
 	/**
@@ -170,5 +171,14 @@ class Road {
 	 */
 	public function getWaypoints(): ArrayCollection|Collection {
 		return $this->waypoints;
+	}
+
+	public function getWorld(): ?World {
+		return $this->world;
+	}
+
+	public function setWorld(?World $world): static {
+		$this->world = $world;
+		return $this;
 	}
 }

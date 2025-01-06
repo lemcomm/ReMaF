@@ -709,19 +709,18 @@ class BattleRunner {
 		while ($combat) {
 			$this->prepareRound();
 			# Main combat loop, go!
-			# TODO: Expand this for multiple ranged phases.
 			if ($phase <= $this->rangedPhases && $doRanged) {
 				$this->log(20, "...Ranged, Phase #".$phase."...\n");
-				$combat = $this->runStage('ranged', $rangedPenalty, $phase, $doRanged);
+				$combat = $this->runStage('ranged', $rangedPenalty, $phase);
 				$phase++;
 			} else {
 				$this->log(20, "...Melee, Phase #".$phase."...\n");
-				$combat = $this->runStage('normal', $rangedPenalty, $phase, $doRanged);
+				$combat = $this->runStage('normal', $rangedPenalty, $phase);
 				$phase++;
 			}
 		}
 		$this->log(20, "...hunt phase...\n");
-		$this->runStage('hunt', $rangedPenalty, $phase, $doRanged);
+		$this->runStage('hunt', $rangedPenalty, $phase);
 	}
 
 	public function prepareRound($first = false): void {
@@ -907,7 +906,7 @@ class BattleRunner {
 		# Do some math!
 	}
 
-	public function runStage($type, $rangedPenaltyStart, $phase, $doRanged): bool {
+	public function runStage($type, $rangedPenaltyStart, $phase): bool {
 		$groups = $this->battle->getGroups();
 		$battle = $this->battle;
 		foreach ($groups as $group) {
@@ -1135,28 +1134,11 @@ class BattleRunner {
 				$bonus = sqrt($enemies);
 				$soldierShuffle = $group->getFightingSoldiers()->toArray();
 				shuffle ($soldierShuffle);
+				/** @var Soldier $soldier */
 				foreach ($soldierShuffle as $soldier) {
 					$result = false;
 					$counter = null;
-					if (false && $doRanged && $phase == 2 && $soldier->isLancer() && $this->battle->getType() == 'field') {
-						// Lancers will always perform a cavalry charge in the opening melee phase!
-						// A cavalry charge can only happen if there is a ranged phase (meaning, there is ground to fire/charge across)
-						$this->log(10, $soldier->getName()." (Lancer) attacks ");
-						$target = $this->getRandomSoldier($enemyCollection);
-						$counter = 'charge';
-						if ($target) {
-							$strikes++;
-							$noTargets = 0;
-							[$result, $logs] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
-							foreach ($logs as $each) {
-								$this->log(10, $each);
-							}
-						} else {
-							// no more targets
-							$this->log(10, "but finds no target\n");
-							$noTargets++;
-						}
-					} elseif ($soldier->isRanged() && $doRanged) {
+					if ($soldier->isRanged()) {
 						// Continure firing with a reduced hit chance in regular battle. If we skipped the ranged phase due to this being the last battle in a siege, we forego ranged combat to pure melee instead.
 						// TODO: friendly fire !
 						$this->log(10, $soldier->getName()." (".$soldier->getType().") fires - ");

@@ -115,6 +115,7 @@ class ActivityManager {
 				}
 
 			}
+			$act->setWorld($char->getWorld());
 			$act->setMainEvent($mainAct);
 			$act->setCreated($now);
 			$act->setReady(false);

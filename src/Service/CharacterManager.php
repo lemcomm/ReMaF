@@ -327,6 +327,7 @@ class CharacterManager {
 				);
 				$artifact->setOwner(null);
 				$artifact->setLocation($character->getLocation());
+				$artifact->setWorld($character->getWorld());
 				$rand = (string) rand(1,91);
 				$when = new DateTime("+".$rand." days");
 				$artifact->setAvailableAfter($when);

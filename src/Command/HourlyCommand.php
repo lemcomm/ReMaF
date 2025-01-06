@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Dungeon;
+use App\Entity\World;
 use App\Service\DungeonCreator;
 use App\Service\DungeonMaster;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,7 +32,8 @@ class HourlyCommand extends Command {
 		$creator = $this->dc;
 		$master = $this->dm;
 
-		$query = $em->createQuery('SELECT count(d.id) FROM App\Entity\Dungeon d');
+		$world = $em->getRepository(World::class)->findOneBy(['name'=>'old world']);
+		$query = $em->createQuery('SELECT count(d.id) FROM App\Entity\Dungeon d WHERE d.world = :world')->setParameter('world', $world);
 		$dungeons = $query->getSingleScalarResult();
 
 		$query = $em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1);
@@ -46,7 +48,7 @@ class HourlyCommand extends Command {
 			$create = ceil(($want - $dungeons)/10);
 			$this->info("creating $create new dungeons:");
 			for ($i=0;$i<$create;$i++) {
-				$creator->createRandomDungeon();
+				$creator->createRandomDungeon($world);
 			}
 			$em->flush();
 		}

@@ -38,6 +38,7 @@ class WarManager {
 
 		$battle = new Battle;
 		$this->em->persist($battle);
+		$battle->setWorld($character->getWorld());
 		if ($siege) {
 			# Check for sieges first, because they'll always have settlements or places attached, but settlements and places won't always come with sieges.
 			if ($settlement) {

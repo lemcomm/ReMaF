@@ -160,6 +160,7 @@ class ConstructionController extends AbstractController {
 							$road->setGeoData($settlement->getGeoData());
 							$road->addWaypoint($new['from']);
 							$road->addWaypoint($new['to']);
+							$road->setWorld($settlement->getWorld());
 							$road->setPath($path);
 							// TODO: check for rivers, only go there if we go to a bridge (and never through, even if to a bridge!)
 							$em->persist($road);
@@ -282,6 +283,7 @@ class ConstructionController extends AbstractController {
 					$feature->setGeoData($settlement->getGeoData());
 					$feature->setWorkers($new['workers']);
 					$feature->setName($new['name']);
+					$feature->setWorld($settlement->getWorld());
 					$feature->setActive(false)->setCondition(-$new['type']->getBuildHours());
 					$em->persist($feature);
 					$settlement->getGeoData()->addFeature($feature);

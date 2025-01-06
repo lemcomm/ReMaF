@@ -151,7 +151,7 @@ class Geography {
 	public function findWatchTowers(Character $character) {
 		// FIXME: this and others like it should probably use ST_DWithin (http://postgis.net/docs/manual-2.0/ST_DWithin.html) which is probably faster
 		$distance = $this->calculateSpottingDistance($character);
-		$query = $this->em->createQuery('SELECT f as feature, ST_AsGeoJSON(f.location) as json, t.name as typename FROM App\Entity\GeoFeature f JOIN f.type t, App\Entity\Character c WHERE c = :me AND t.world = c.world AND t.name = :tower AND f.active = true AND ST_Distance(f.location, c.location) <= :maxdistance');
+		$query = $this->em->createQuery('SELECT f as feature, ST_AsGeoJSON(f.location) as json, t.name as typename FROM App\Entity\GeoFeature f JOIN f.type t, App\Entity\Character c WHERE c = :me AND f.world = c.world AND t.name = :tower AND f.active = true AND ST_Distance(f.location, c.location) <= :maxdistance');
 		$query->setParameters(['me'=>$character, 'tower'=>'tower', 'maxdistance'=>$distance*0.5]);
 		return $query->getResult();
 	}

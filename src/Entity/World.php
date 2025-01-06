@@ -18,6 +18,8 @@ class World {
 	private Collection $activities;
 	private Collection $geoMarkers;
 	private Collection $artifacts;
+	private Collection $roads;
+	private Collection $dungeons;
 
 	/**
 	 * Constructor
@@ -31,6 +33,8 @@ class World {
 		$this->activities = new ArrayCollection();
 		$this->geoMarkers = new ArrayCollection();
 		$this->artifacts = new ArrayCollection();
+		$this->roads = new ArrayCollection();
+		$this->dungeons = new ArrayCollection();
 	}
 
 	/**
@@ -207,6 +211,32 @@ class World {
 
 	public function getArtifacts(): ArrayCollection|Collection {
 		return $this->artifacts;
+	}
+
+	public function addRoad(Road $road): static {
+		$this->roads[] = $road;
+		return $this;
+	}
+
+	public function removeRoad(Road $road): void {
+		$this->roads->removeElement($road);
+	}
+
+	public function getRoads(): ArrayCollection|Collection {
+		return $this->roads;
+	}
+
+	public function addDungeon(Dungeon $dungeon): static {
+		$this->dungeons[] = $dungeon;
+		return $this;
+	}
+
+	public function removeDungeon(Dungeon $dungeon): void {
+		$this->dungeons->removeElement($dungeon);
+	}
+
+	public function getDungeons(): ArrayCollection|Collection {
+		return $this->dungeons;
 	}
 
 	public function getSubterranean(): ?bool {

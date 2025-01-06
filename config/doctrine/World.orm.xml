@@ -12,11 +12,13 @@
 		<one-to-many field="characters" target-entity="Character" mapped-by="world" fetch="EXTRA_LAZY"/>
 		<one-to-many field="geoData" target-entity="GeoData" mapped-by="world" fetch="EXTRA_LAZY"/>
 		<one-to-many field="geoMarkers" target-entity="GeoFeature" mapped-by="world" fetch="EXTRA_LAZY"/>
+		<one-to-many field="roads" target-entity="Road" mapped-by="world" fetch="EXTRA_LAZY"/>
 		<one-to-many field="mapRegions" target-entity="MapRegion" mapped-by="world" fetch="EXTRA_LAZY"/>
 		<one-to-many field="places" target-entity="Place" mapped-by="world" fetch="EXTRA_LAZY"/>
 		<one-to-many field="settlements" target-entity="Settlement" mapped-by="world" fetch="EXTRA_LAZY"/>
 		<one-to-many field="activities" target-entity="Activity" mapped-by="world" fetch="EXTRA_LAZY"/>
 		<one-to-many field="artifacts" target-entity="Artifact" mapped-by="world" fetch="EXTRA_LAZY"/>
+		<one-to-many field="dungeons" target-entity="Dungeon" mapped-by="world" fetch="EXTRA_LAZY"/>
 
 	</entity>
 </doctrine-mapping>

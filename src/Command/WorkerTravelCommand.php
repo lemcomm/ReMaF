@@ -98,6 +98,7 @@ class WorkerTravelCommand extends  Command {
 						$ship->setOwner($char);
 						$ship->setLocation($ship_location);
 						$ship->setCycle($cycle);
+						$ship->setWorld($char->getWorld());
 						$this->em->persist($ship);
 					} else {
 						$history->logEvent(

@@ -142,10 +142,11 @@ class MapController extends AbstractController {
 			case 'towers':			return $this->jsonData($this->dataTowers($mode));
 			case 'realms':			return $this->jsonData($this->dataRealms($mode));
 			case 'cultures':		return $this->jsonData($this->dataCultures($mode, $lowleft, $upright));
-			case 'trades':
-				if ($request->query->get('secret')=='91c72c604637ec525591efac687690660d67d974') {
-					return $this->jsonData($this->dataTrades($mode, $request->query->get('resource')));
-				}
+// TODO: Make this an actual secret and add it back in for admins.
+			//			case 'trades':
+//				if ($request->query->get('secret')=='91c72c604637ec525591efac687690660d67d974') {
+//					return $this->jsonData($this->dataTrades($mode, $request->query->get('resource')));
+//				}
 		}
 		return new Response("invalid request");
 	}
@@ -416,7 +417,7 @@ class MapController extends AbstractController {
 
 		if ($character && $character->getLocation()) {
 			$seen = array(0); // use 0 value to prevent empty arrays, which would break the query one below
-			$query = $em->createQuery('SELECT r.id, r.quality, ST_AsGeoJSON(r.path) as roadpath FROM App\Entity\Road r, App\Entity\Character me WHERE me = :me AND ST_Distance(r.path, me.location) < :maxdistance');
+			$query = $em->createQuery('SELECT r.id, r.quality, ST_AsGeoJSON(r.path) as roadpath FROM App\Entity\Road r, App\Entity\Character me WHERE me = :me AND ST_Distance(r.path, me.location) < :maxdistance and r.world = me.world');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>Geography::DISTANCE_FEATURE));
 			foreach ($query->getResult() as $r) {
 				$seen[]=$r['id'];
@@ -429,7 +430,7 @@ class MapController extends AbstractController {
 				);
 			}
 
-			$query = $em->createQuery('SELECT k.amount, r.id, r.quality, ST_AsGeoJSON(r.path) as roadpath FROM App\Entity\RegionFamiliarity k JOIN k.geo_data g JOIN g.roads r JOIN k.character me WHERE me = :me AND r.id NOT IN (:seen)');
+			$query = $em->createQuery('SELECT k.amount, r.id, r.quality, ST_AsGeoJSON(r.path) as roadpath FROM App\Entity\RegionFamiliarity k JOIN k.geo_data g JOIN g.roads r JOIN k.character me WHERE me = :me AND r.id NOT IN (:seen) and r.world = me.world');
 			$query->setParameters(array('me'=>$character, 'seen'=>$seen));
 			foreach ($query->getResult() as $r) {
 				$features[] = array(
@@ -452,7 +453,7 @@ class MapController extends AbstractController {
 
 		if ($character && $character->getLocation()) {
 			$seen = array(0); // use 0 value to prevent empty arrays, which would break the query one below
-			$query = $em->createQuery('SELECT f.id, f.name, t.name as type, f.active, ST_AsGeoJSON(f.location) as location FROM App\Entity\GeoFeature f JOIN f.type t, App\Entity\Character me WHERE me = :me AND t.hidden=false AND ST_Distance(f.location, me.location) < :maxdistance');
+			$query = $em->createQuery('SELECT f.id, f.name, t.name as type, f.active, ST_AsGeoJSON(f.location) as location FROM App\Entity\GeoFeature f JOIN f.type t, App\Entity\Character me WHERE me = :me AND t.hidden=false AND ST_Distance(f.location, me.location) < :maxdistance and f.world = me.world');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>Geography::DISTANCE_FEATURE));
 			foreach ($query->getResult() as $r) {
 				$seen[]=$r['id'];
@@ -484,7 +485,7 @@ class MapController extends AbstractController {
 			}
 
 			// mix in battles
-			$query = $em->createQuery('SELECT b.id, ST_AsGeoJSON(b.location) as location FROM App\Entity\Battle b, App\Entity\Character me WHERE me = :me AND ST_Distance(b.location, me.location) < :maxdistance');
+			$query = $em->createQuery('SELECT b.id, ST_AsGeoJSON(b.location) as location FROM App\Entity\Battle b, App\Entity\Character me WHERE me = :me AND ST_Distance(b.location, me.location) < :maxdistance and b.world = me.world');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>Geography::DISTANCE_BATTLE));
 			foreach ($query->getResult() as $b) {
 				$features[] = array(
@@ -501,12 +502,10 @@ class MapController extends AbstractController {
 			}
 
 			// mix in ships
-			$query = $em->createQuery('SELECT s.id, ST_AsGeoJSON(s.location) as location FROM App\Entity\Ship s, App\Entity\Character me WHERE me = :me AND (ST_Distance(s.location, me.location) < :maxdistance OR s.owner = :me)');
+			$query = $em->createQuery('SELECT s.id, ST_AsGeoJSON(s.location) as location FROM App\Entity\Ship s, App\Entity\Character me WHERE me = :me AND (ST_Distance(s.location, me.location) < :maxdistance OR s.owner = :me) and s.world = me.world');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>Geography::DISTANCE_FEATURE));
 			$iterableResult = $query->toIterable();
-			while (($row = $iterableResult->next()) != false) {
-				$s = array_shift($row);
-
+			foreach ($query->getResult() as $s) {
 				$features[] = array(
 					'type' => 'Feature',
 //					'id' => 'ship_'.$s['id'],
@@ -514,19 +513,17 @@ class MapController extends AbstractController {
 						'type' => 'ship',
 						'name' => 'ship',
 						'active' => true,
-						),
+					),
 					'geometry' => json_decode($s['location'])
 				);
 				$em->clear();
 			}
 
 			// mix in dungeons
-			$query = $em->createQuery('SELECT d.id, d.area as area, ST_AsGeoJSON(d.location) as location FROM App\Entity\Dungeon d, App\Entity\Character me WHERE me = :me AND ST_Distance(d.location, me.location) < :maxdistance');
+			$query = $em->createQuery('SELECT d.id, d.area as area, ST_AsGeoJSON(d.location) as location FROM App\Entity\Dungeon d, App\Entity\Character me WHERE (me = :me AND ST_Distance(d.location, me.location) < :maxdistance) and d.world = me.world');
 			$query->setParameters(array('me'=>$character, 'maxdistance'=>$this->geo->calculateSpottingDistance($character)));
 			$iterableResult = $query->toIterable();
-			while (($row = $iterableResult->next()) != false) {
-				$d = array_shift($row);
-
+			foreach ($query->getResult() as $d) {
 				$features[] = array(
 					'type' => 'Dungeon',
 //					'id' => 'dungeon_'.$d['id'],
