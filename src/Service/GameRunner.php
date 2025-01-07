@@ -710,6 +710,7 @@ class GameRunner {
 		foreach ($iterableResult as $resupply) {
 			$unit = $resupply->getUnit();
 			$encircled = false;
+			$found = false;
 			#TODO: Cache some of this stuff so we don't have to look it up every unit.
 			if ($unit->getCharacter()) {
 				$char = $unit->getCharacter();
@@ -727,7 +728,6 @@ class GameRunner {
 				}
 			}
 			if (!$encircled) {
-				$found = false;
 				if ($unit->getSupplies()) {
 					foreach ($unit->getSupplies() as $supply) {
 						if ($supply->getType() === $resupply->getType()) {
@@ -764,6 +764,8 @@ class GameRunner {
 				$this->em->clear();
 			}
 		}
+		$this->em->flush();
+		$this->em->clear();
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking if units have food to eat...");
 		$query = $this->em->createQuery('SELECT u FROM App\Entity\Unit u WHERE u.id > 0');

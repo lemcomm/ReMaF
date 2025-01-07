@@ -15,8 +15,8 @@ class ReportBase {
 	protected Point $location;
 	protected array $location_name;
 	protected bool $completed;
-	protected int $count = 0;
-	protected string $debug = '';
+	protected ?int $count = null;
+	protected ?string $debug = null;
 	protected Collection $observers;
 	protected Collection $journals;
 	protected ?Settlement $settlement = null;
@@ -144,20 +144,20 @@ class ReportBase {
 	/**
 	 * Get count
 	 *
-	 * @return int
+	 * @return int|null
 	 */
-	public function getCount(): int {
+	public function getCount(): ?int {
 		return $this->count;
 	}
 
 	/**
 	 * Set count
 	 *
-	 * @param int $count
+	 * @param int|null $count
 	 *
 	 * @return ReportBase
 	 */
-	public function setCount(int $count): static {
+	public function setCount(?int $count = null): static {
 		$this->count = $count;
 
 		return $this;
@@ -166,20 +166,20 @@ class ReportBase {
 	/**
 	 * Get debug
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getDebug(): string {
+	public function getDebug(): ?string {
 		return $this->debug;
 	}
 
 	/**
 	 * Set debug
 	 *
-	 * @param string $debug
+	 * @param null|string $debug
 	 *
 	 * @return ReportBase
 	 */
-	public function setDebug(string $debug): static {
+	public function setDebug(?string $debug = null): static {
 		$this->debug = $debug;
 
 		return $this;
