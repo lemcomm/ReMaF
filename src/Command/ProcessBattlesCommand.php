@@ -4,30 +4,28 @@ namespace App\Command;
 
 use App\Service\BattleRunner;
 use App\Service\CommonService;
+use App\Service\NotificationManager;
 use App\Service\WarManager;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
 class ProcessBattlesCommand extends Command {
-
-	private EntityManagerInterface $em;
-	private BattleRunner $br;
-	private WarManager $wm;
-	private CommonService $cs;
-
-	public function __construct(BattleRunner $br, CommonService $cs, EntityManagerInterface $em, WarManager $wm) {
-		$this->br = $br;
-		$this->cs = $cs;
-		$this->em = $em;
-		$this->wm = $wm;
+	public function __construct(
+		private BattleRunner $br,
+		private CommonService $cs,
+		private EntityManagerInterface $em,
+		private NotificationManager $nm,
+		private WarManager $wm) {
 		parent::__construct();
 	}
 
@@ -46,40 +44,48 @@ class ProcessBattlesCommand extends Command {
 		$arg_debug = $input->getArgument('debug level');
 
 		if ($this->cs->getGlobal('battling') == 0) {
-			$output->writeln("battles: starting...");
-			$this->cs->setGlobal('battling', 1);
-
-			$stopwatch = new Stopwatch();
-			$stopwatch->start('battles');
-
-			$now = new DateTime("now");
-
-			// recalculate battle timers for battles I'm about to resolve to fix various trickery
-			$query = $this->em->createQuery('SELECT b FROM App\Entity\Battle b WHERE b.complete < :now ORDER BY b.id ASC');
-			$query->setParameters(array('now'=>$now));
-			foreach ($query->getResult() as $battle) {
-				$this->wm->recalculateBattleTimer($battle);
+			try {
+				$output->writeln("battles: starting...");
+				$this->cs->setGlobal('battling', 1);
+				$stopwatch = new Stopwatch();
+				$stopwatch->start('battles');
+				$now = new DateTime("now");// recalculate battle timers for battles I'm about to resolve to fix various trickery
+				$query = $this->em->createQuery('SELECT b FROM App\Entity\Battle b WHERE b.complete < :now ORDER BY b.id ASC');
+				$query->setParameters(['now' => $now]);
+				foreach ($query->getResult() as $battle) {
+					$this->wm->recalculateBattleTimer($battle);
+				}
+				$this->em->flush();
+				$query = $this->em->createQuery('SELECT b FROM App\Entity\Battle b WHERE b.complete < :now ORDER BY b.id ASC');
+				$query->setParameters(['now' => $now]);
+				foreach ($query->getResult() as $battle) {
+					$this->br->enableLog($arg_debug);
+					$this->br->run($battle, $cycle);
+				}
+				if ($opt_time) {
+					$event = $stopwatch->lap('battles');
+					$output->writeln("battles: computation timing " . date("G:i:s") . ", " . ($event->getDuration() / 1000) . " s, " . (round($event->getMemory() / 1024) / 1024) . " MB");
+				}
+				$output->writeln("battles: ...flushing...");
+				$this->em->flush();
+				if ($opt_time) {
+					$event = $stopwatch->stop('battles');
+					$output->writeln("battles: flush data timing " . date("G:i:s") . ", " . ($event->getDuration() / 1000) . " s, " . (round($event->getMemory() / 1024) / 1024) . " MB");
+				}
+				$this->cs->setGlobal('battling', 0);
+				$output->writeln("battles: ...complete");
+			} catch (Exception $e) {
+				try {
+					$error = new FlattenException()::createFromThrowable($e);
+					$msg = $error->getMessage();
+					$code = $error->getCode();
+					$trace = $error->getTraceAsString();
+					$txt = "Status code: $code\nError: $msg\nTrace: $trace";
+					$this->nm->spoolError($txt);
+				} catch (Exception $f) {
+					// Do nothing. Error reporting has already failed.
+				}
 			}
-			$this->em->flush();
-
-			$query = $this->em->createQuery('SELECT b FROM App\Entity\Battle b WHERE b.complete < :now ORDER BY b.id ASC');
-			$query->setParameters(array('now'=>$now));
-			foreach ($query->getResult() as $battle) {
-				$this->br->enableLog($arg_debug);
-				$this->br->run($battle, $cycle);
-			}
-			if ($opt_time) {
-				$event = $stopwatch->lap('battles');
-				$output->writeln("battles: computation timing ".date("G:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
-			}
-			$output->writeln("battles: ...flushing...");
-			$this->em->flush();
-			if ($opt_time) {
-				$event = $stopwatch->stop('battles');
-				$output->writeln("battles: flush data timing ".date("G:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
-			}
-			$this->cs->setGlobal('battling', 0);
-			$output->writeln("battles: ...complete");
 		} else {
 			$output->writeln("battles: additional running prevented");
 		}
