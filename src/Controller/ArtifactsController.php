@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Artifact;
 use App\Entity\Character;
 use App\Entity\MapPOI;
+use App\Entity\User;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\Geography;
 use App\Service\History;
@@ -31,7 +32,8 @@ class ArtifactsController extends AbstractController {
 		private Dispatcher $disp,
 		private EntityManagerInterface $em,
 		private Geography $geo,
-		private History $history) {
+		private History $history,
+		private TranslatorInterface $trans,) {
 	}
 
 	#[Route ('/artifact/owned', name:'maf_artifact_owned')]
@@ -46,9 +48,10 @@ class ArtifactsController extends AbstractController {
 
 	#[Route ('/artifact/create', name:'maf_artifact_create')]
 	public function createAction(Request $request): RedirectResponse|Response {
+		/** @var User $user */
 		$user = $this->getUser();
 
-		if ($user->getArtifacts()->count() < $user->getFreeArtifacts()) {
+		if ($user->getFreeArtifacts() > 0) {
 			$form = $this->createFormBuilder()
 				->add('name', TextType::class, array(
 					'required'=>true,
@@ -106,9 +109,8 @@ class ArtifactsController extends AbstractController {
 				'form'=>$form->createView(),
 			]);
 		} else {
-			return $this->render('Artifacts/create.html.twig', [
-				'limit_reached' => false,
-			]);
+			$this->addFlash('error', $this->trans->trans('artifact.create.noaccess', ['amount'=>$user->getArtifacts()->count()]));
+			return $this->redirectToRoute('maf_artifact_owned');
 		}
 	}
 

@@ -30,19 +30,19 @@
 					{% else %}
 						{% if man.wounded %}
 							<img class="tt" src="{{ asset('images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" />
-							{% if man.wounded > 10 %}
+							{% if man.wounded > 25 %}
 								<img class="tt" src="{{ asset('images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" style="margin-left:-12px"/>
 							{% endif %}
-							{% if man.wounded > 25 %}
+							{% if man.wounded > 50 %}
 								<img class="tt" src="{{ asset('images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" style="margin-left:-12px"/>
 							{% endif %}
 						{% endif %}
 						{% if man.routed %}
 							<img class="tt" src="{{ asset('images/runner4.svg') }}" alt="{{ 'routed'|trans }}" title="{{ 'routed'|trans }}" height="16px" />
 						{% endif %}
-						{% if man.hungry > 90 %}
+						{% if man.hungry > 900 %}
 							<img class="tt" src="{{ asset('images/cutlery_red.svg') }}" alt="{{ 'veryhungry'|trans }}" title="{{ 'veryhungry'|trans }}" height="16px" />
-						{% elseif man.hungry > 50 %}
+						{% elseif man.hungry > 450 %}
 							<img class="tt" src="{{ asset('images/cutlery.svg') }}" alt="{{ 'hungry'|trans }}" title="{{ 'hungry'|trans }}" height="16px" />
 						{% endif %}
 					{% endif %}

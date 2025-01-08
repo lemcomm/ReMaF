@@ -1874,6 +1874,7 @@ artifact:
  create:
   title:    Create Artifact
   limit:    You can create a total of {amount} artifacts on this account.
+  noaccess: You have already created the {amount} artifact(s) your account can have.
   intro: >
     Here you can forge or create artifacts, unique items with a personal history.<br />
     Artifacts can be used for many purposes, from legendary weapons to hereditary crown jewels to items of
