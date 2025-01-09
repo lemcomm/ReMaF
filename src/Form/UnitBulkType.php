@@ -33,7 +33,8 @@ class UnitBulkType extends AbstractType {
 			'intention'       	=> 'bulkunitupdate_432432',
 			'translation_domain' 	=> 'settings',
 			'attr'			=> array('class'=>'wide'),
-			'settlements'		=> new ArrayCollection()
+			'settlements'		=> new ArrayCollection(),
+			'here'			=> null,
 		));
 		$resolver->setRequired(['units']);
 	}
@@ -41,6 +42,7 @@ class UnitBulkType extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$units = $options['units'];
 		$settlements = $options['settlements'];
+		$preferred = [$options['here']];
 		$builder->add('units', EntityType::class, [
 			'label'=>'unit.bulk.select',
 			'multiple'=>true,
@@ -59,6 +61,7 @@ class UnitBulkType extends AbstractType {
 			'choice_label'=>function (Settlement $s): string {
 				return $s->getName().' ('.$s->getId().')';
 			},
+			'preferred_choices' => $preferred,
 			'required'=>false,
 			'mapped'=>false,
 			'choice_value'=>'id'

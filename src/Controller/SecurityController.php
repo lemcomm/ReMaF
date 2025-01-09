@@ -142,15 +142,15 @@ class SecurityController extends AbstractController {
 	#[Route ('/security/activate/{id}/{token}', name:'maf_account_activate')]
 	public function activate(EntityManagerInterface $em, TranslatorInterface $trans, string $id, string $token): RedirectResponse {
 		# Handles user activation after a user registers.
-		$user = $em->getRepository(User::class)->findOneBy(['id' => $id]);
 		/** @var User $user */
+		$user = $em->getRepository(User::class)->findOneBy(['id' => $id]);
 		if ($user && !$user->getEnabled() && $token === $user->getToken()) {
 			$user->setToken(null);
 			$user->setEnabled(true);
 			$em->flush();
 			$this->addFlash('notice', $trans->trans('security.activate.flash.success', [], 'core'));
 			return new RedirectResponse($this->generateUrl('maf_login'));
-		} elseif ($user && $user->getActive() === true) {
+		} elseif ($user && $user->getEnabled() === true) {
 			$this->addFlash('notice', $trans->trans('security.activate.flash.already', [], 'core'));
 			return new RedirectResponse($this->generateUrl('maf_index'));
 		} else {

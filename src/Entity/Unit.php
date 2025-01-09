@@ -220,15 +220,15 @@ class Unit {
 	}
 
 	public function isOwner(Character $char) {
-		if ($this->settlement->getOccupant()) {
+		if ($this->settlement?->getOccupant()) {
 			if ($this->settlement->getOccupant() === $char) {
 				return true;
 			}
-		} elseif ($this->settlement->getOwner()) {
+		} elseif ($this->settlement?->getOwner()) {
 			if ($this->settlement->getOwner() === $char) {
 				return true;
 			}
-		} elseif ($this->settlement->getSteward()) {
+		} elseif ($this->settlement?->getSteward()) {
 			if ($this->settlement->getSteward() === $char) {
 				return true;
 			}
