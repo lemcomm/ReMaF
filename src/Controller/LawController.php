@@ -12,6 +12,7 @@ use App\Form\AreYouSureType;
 use App\Form\LawTypeSelectType;
 use App\Form\LawEditType;
 
+use App\Service\Dispatcher\AssociationDispatcher;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\LawManager;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -26,6 +27,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class LawController extends AbstractController {
 	public function __construct(
 		private Dispatcher $disp,
+		private AssociationDispatcher $assocDisp,
 		private EntityManagerInterface $em,
 		private LawManager $lawMan,
 		private TranslatorInterface $trans) {
@@ -33,6 +35,10 @@ class LawController extends AbstractController {
 
 	private function gateway($test, $secondary = null) {
 		return $this->disp->gateway($test, false, true, false, $secondary);
+	}
+
+	private function assocGateway($test, $secondary = null) {
+		return $this->assocDisp->gateway($test, false, true, false, $secondary);
 	}
 
 	#[Route ('/laws/r{realm}', name:'maf_realm_laws', requirements:['realm'=>'\d+'])]
@@ -47,7 +53,7 @@ class LawController extends AbstractController {
 		if ($request->get('_route') === 'maf_realm_laws') {
 			$char = $this->gateway('hierarchyRealmLawsTest', $realm);
 		} else {
-			$char = $this->gateway('assocLawsTest', $assoc);
+			$char = $this->assocGateway('assocLawsTest', $assoc);
 		}
 		if (!($char instanceof Character)) {
 			return $this->redirectToRoute($char);
@@ -99,7 +105,7 @@ class LawController extends AbstractController {
 			$rCheck = true;
 			$aCheck = false;
 		} else {
-			$char = $this->gateway('assocLawNewTest', $assoc);
+			$char = $this->assocGateway('assocLawNewTest', $assoc);
 			$rCheck = false;
 			$aCheck = true;
 		}
@@ -171,7 +177,7 @@ class LawController extends AbstractController {
 			$rCheck = true;
 			$aCheck = false;
 		} else {
-			$char = $this->gateway('assocLawNewTest', $assoc);
+			$char = $this->assocGateway('assocLawNewTest', $assoc);
 			$rCheck = false;
 			$aCheck = true;
 		}

@@ -24,7 +24,7 @@ use App\Form\AssocJoinType;
 use App\Service\AppState;
 use App\Service\AssociationManager;
 use App\Service\DescriptionManager;
-use App\Service\Dispatcher\Dispatcher;
+use App\Service\Dispatcher\AssociationDispatcher;
 use App\Service\GameRequestManager;
 use App\Service\History;
 
@@ -41,7 +41,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class AssociationController extends AbstractController {
 	public function __construct(
 		private AssociationManager $am,
-		private Dispatcher $disp,
+		private AssociationDispatcher $disp,
 		private EntityManagerInterface $em,
 		private TranslatorInterface $trans) {
 	}
