@@ -114,7 +114,7 @@ function mapinit(divname, showswitcher, mode, keepsquare){
 
 	var base_layer = new OpenLayers.Layer.WMS(mapstrings.map,
 		tilecache_url,  {
-
+			maxTilesLoading: 1,
 			layers: 'biomes,cliff,rivers,landmass,water,hills,blocked',
 			format: 'image/png',
 			version: '1.3',
