@@ -304,6 +304,8 @@ class ActionsController extends AbstractController {
 				$form->addError(new FormError($this->trans->trans('You cannot give more gold than you have.')));
 			} elseif ($data['amount'] < 0) {
 				$form->addError(new FormError($this->trans->trans('You cannot give negative gold.')));
+			} elseif (!$data['target']) {
+				$form->addError(new FormError($this->trans->trans('As much as you may not want it, you cannot give gold to no one... yet.')));
 			} else {
 				$character->setGold($character->getGold() - $data['amount']);
 				$data['target']->setGold($data['target']->getGold() + $data['amount']);

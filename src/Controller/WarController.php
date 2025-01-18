@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DataTransformer\CharacterTransformer;
 use App\Entity\Action;
 use App\Entity\BattleGroup;
 use App\Entity\Character;
@@ -1380,7 +1381,7 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/nobles/aid', name:'maf_war_nobles_aid')]
-	public function aidAction(Request $request): RedirectResponse|Response {
+	public function aidAction(Request $request, CharacterTransformer $morph): RedirectResponse|Response {
 		$character = $this->warDisp->gateway('militaryAidTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -1389,7 +1390,7 @@ class WarController extends AbstractController {
 		#TODO: This will need debugging. See differences from this form in 2.x.
 		$form = $this->createFormBuilder()
 			->add('target', HiddenType::class)
-			->add('duration', ChoiceType::class, ['choices'=> ['3'=>'three days', '12'=>'two weeks', '30'=>'five weeks']])
+			->add('duration', ChoiceType::class, ['choices'=> ['three days' => '3', 'two weeks' => '12', 'five weeks' => '30']])
 			->add('submit', SubmitType::class)
 			->getForm();
 
@@ -1403,7 +1404,7 @@ class WarController extends AbstractController {
 			$act = new Action;
 			$act->setType('military.aid')
 				->setCharacter($character)
-				->setTargetCharacter($data['target'])
+				->setTargetCharacter($morph->reverseTransform($data['target']))
 				->setComplete($complete)
 				->setCanCancel(true)
 				->setHourly(true)

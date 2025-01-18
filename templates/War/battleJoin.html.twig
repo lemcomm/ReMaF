@@ -36,7 +36,7 @@
 				{% for group in battle.groups %}
 					<td valign="top"><ul>
 					{% for type,amount in group.troopssummary %}
-						<li>{{ amount }} {{ ('soldier.'~type)|trans({'count':amount} }}</li>
+						<li>{{ amount }} {{ ('soldier.'~type)|trans({'count':amount}) }}</li>
 					{% endfor %}
 					</ul></td>
 				{% endfor %}

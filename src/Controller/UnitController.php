@@ -351,7 +351,7 @@ class UnitController extends AbstractController {
 
                 }
 
-                if (!$canReassign && count($units) > 0 && $units[0] !== $unit && $unit->getMarshal() === $character) {
+                if (!$canReassign && $units && count($units) > 0 && $units[0] !== $unit && $unit->getMarshal() === $character) {
                         $canReassign = true;
                 }
 		$form = $this->createForm(UnitSoldiersType::class, null, [
