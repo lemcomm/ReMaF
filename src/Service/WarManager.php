@@ -301,6 +301,7 @@ class WarManager {
 				$count++;
 			}
 			$location = new Point($x/$count, $y/$count);
+			$battle->setType('field');
 		}
 		$battle->setLocation($location);
 		$battle->setStarted(new \DateTime('now'));
