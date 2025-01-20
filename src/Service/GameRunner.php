@@ -195,13 +195,6 @@ class GameRunner {
 		$last = $this->common->getGlobal('cycle.characters', 0);
 		if ($last==='complete') return 1;
 		$this->output("Characters Cycle...");
-
-		// healing
-		$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.wounded=0 WHERE c.wounded <= 10');
-		$query->execute();
-		$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.wounded=c.wounded-10 WHERE c.wounded > 10');
-		$query->execute();
-
 		$this->output("  Checking for dead and slumbering characters that need sorting...");
 		// NOTE: We're going to want to change this from c.system is null to something else, or build additional logic down the line, when we have more thant 'procd_inactive' as the system flag.
 		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE (c.alive = false AND c.location IS NOT NULL AND (c.system IS NULL OR c.system <> :system)) OR (c.alive = true and c.slumbering = true AND (c.system IS NULL OR c.system <> :system))');
@@ -477,13 +470,27 @@ class GameRunner {
 		$query = $this->em->createQuery('SELECT s FROM App\Entity\Soldier s WHERE s.wounded > 0');
 		$iterableResult = $query->toIterable();
 		$i=1;
+		$heal = 0;
+		$worse = 0;
+		$dead = 0;
+		/** @var Soldier $soldier */
 		foreach ($iterableResult as $soldier) {
-			$soldier->HealOrDie();
+			$result = $soldier->HealOrDie();
+			if ($result === false) {
+				$dead++;
+			} elseif ($result < 0) {
+				$worse++;
+			} elseif ($result > 0) {
+				$heal++;
+			}
 			if (($i++ % $this->batchsize) == 0) {
 				$this->em->flush();
 				$this->em->clear();
 			}
 		}
+		$date = date("Y-m-d H:i:s");
+		$this->output("$date --   $heal healed, $worse worsened, $dead died");
+
 		$this->em->flush();
 		$this->em->clear();
 

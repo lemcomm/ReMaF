@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-class CharacterBase {
+abstract class AbstractCharacter {
 
 	protected ?Race $race = null;
 	protected int $wounded;
@@ -100,7 +100,8 @@ class CharacterBase {
 				$result = 0 - rand(1,round($raceHp/20));
 				$this->wound($result);
 				if ($this->healthValue() < 0) {
-					return 0;
+					$this->kill();
+					return false;
 				}
 				return $result;
 			} else {
@@ -110,5 +111,7 @@ class CharacterBase {
 			}
 		}
 	}
+
+	abstract public function kill(): void;
 
 }

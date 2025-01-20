@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
-class Character extends CharacterBase {
+class Character extends AbstractCharacter {
 	private ?int $id = null;
 	protected bool|Character $ultimate = false;
 	protected ?ArrayCollection $my_realms = null;
@@ -202,6 +202,22 @@ class Character extends CharacterBase {
 
 	public function getListName(): string {
 		return $this->getName() . ' (ID: ' . $this->id . ')';
+	}
+
+	public function HealOrDie(): int|bool {
+		$current = $this->healthValue();
+		if ($current >= 1) {
+			return true; #Why are you here?
+		}
+		# Player characters don't die "naturally" from wounds, so this only ever heals.
+		$raceHp = $this->race?->getHp()?:100;
+		$result = rand(1,round($raceHp/10));
+		$this->heal($result);
+		return $result;
+	}
+
+	public function kill(): void {
+		# Player characters are complex enough that this is handled separately by Service/CharacterManager::kill().
 	}
 
 	/**

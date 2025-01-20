@@ -293,7 +293,7 @@ class WarController extends AbstractController {
 					$place = FALSE;
 					$siege->setSettlement($settlement);
 					$settlement->setSiege($siege);
-					$encirclement = intval($settlement->getFullPopulation()/3); #1/3 of population returned as flat integer (no decimals)
+					$encirclement = floor($settlement->getFullPopulation()/3); #1/3 of population returned as flat integer (no decimals)
 					$count = 0;
 					foreach ($character->getUnits() as $unit) {
 						$count += $unit->getActiveSoldiers()->count();

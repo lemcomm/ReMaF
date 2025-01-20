@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-class NPC extends CharacterBase {
+class NPC extends AbstractCharacter {
 	private int $experience;
 	private bool $locked;
 	private int $hungry;
@@ -27,14 +27,6 @@ class NPC extends CharacterBase {
 
 	public function isWounded(): bool {
 		return ($this->wounded > 0);
-	}
-
-	public function HealOrDie(): int {
-		$result = parent::HealOrDie();
-		if ($result != 1) {
-			$this->kill();
-		}
-		return $result;
 	}
 
 	public function kill(): void {
