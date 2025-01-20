@@ -14,7 +14,7 @@ class Battle {
 	private DateTime $started;
 	private DateTime $complete;
 	private DateTime $initial_complete;
-	private string $type = 'field';
+	private ?string $type;
 	private ?int $id = null;
 	private Collection $groups;
 	private ?BattleGroup $primary_attacker = null;

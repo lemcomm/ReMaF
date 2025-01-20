@@ -63,7 +63,9 @@
 					</div>
 
 					<div class="cmsg_content_{{message.type}}">
-						{{ message.content|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
+						{% if message.content %}
+							{{ message.content|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
+						{% endif %}
 					</div>
 
 					{% if not preview %}
