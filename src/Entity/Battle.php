@@ -163,9 +163,9 @@ class Battle {
 	/**
 	 * Get type
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getType(): string {
+	public function getType(): ?string {
 		return $this->type;
 	}
 
