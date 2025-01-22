@@ -15,10 +15,34 @@ class CombatManager {
 	Things that should exist in multiple services but can't due to circlic loading should be here.
 	*/
 
+	# These are redefined by calling services as needed and affect what code is utilized.
+	# Basically, it allows previous combat versions to be run.
+	public int $version = 3;
+	public string $ruleset = 'maf';
+
+	# These are calculated from the version and ruleset by prepare().
+	public bool $useWounds = true;
+	public bool $useHunger = true;
+	public bool $useRace = true;
+
 	public function __construct(
 		private CommonService $common,
 		private CharacterManager $charMan,
 		private History $history) {
+	}
+
+	public function prepare(): void {
+		if ($this->ruleset === 'maf') {
+			if ($this->version === 2) {
+				$this->useRace = false;
+				$this->useWounds = false;
+			}
+			if ($this->version === 1) {
+				$this->useRace = false;
+				$this->useWounds = false;
+				$this->useHunger = false;
+			}
+		}
 	}
 
 	public function ChargeAttack($me, $target, $act=false, $battle=false, $xpMod = 1, $defBonus = null): array {
@@ -69,15 +93,15 @@ class CombatManager {
 	}
 
 	public function ChargePower($me, $sol = false): float|int {
+		$mod = 1;
 		if ($sol) {
 			if ($me->isNoble()) {
 				return 156;
-			} else {
+			} elseif ($this->useHunger) {
 				$mod = $me->hungerMod();
 			}
 		} elseif ($me instanceof ActivityParticipant) {
 			$me = $me->getCharacter();
-			$mod = 1;
 		}
 		$power = 0;
 		if (!$me->getMount()) {
@@ -96,6 +120,7 @@ class CombatManager {
 	public function DefensePower($me, $sol = false, $melee = true, $recalculate = false) {
 		$noble = false;
 		# $sol is just a bypass for "Is this a soldier instance" or not.
+		$mod = 1;
 		if ($sol) {
 			if (!$recalculate) {
 				if ($melee) {
@@ -106,8 +131,7 @@ class CombatManager {
 			}
 			if ($me->isNoble()) {
 				$noble = true;
-				$mod = 1;
-			} else {
+			} elseif ($this->useHunger) {
 				$mod = $me->hungerMod();
 			}
 		} elseif ($me instanceof ActivityParticipant) {
@@ -132,10 +156,14 @@ class CombatManager {
 				$power += 63;
 			}
 			if ($melee) {
-				$power = $power*$me->getRace()->getMeleeDefModifier();
+				if ($this->useRace) {
+					$power = $power*$me->getRace()->getMeleeDefModifier();
+				}
 				$me->updateDefensePower($power);
 			} else {
-				$power = $power*$me->getRace()->getRangedDefModifier();
+				if ($this->useRace) {
+					$power = $power*$me->getRace()->getRangedDefModifier();
+				}
 				$me->updateRDefensePower($power);
 			}
 			return $power;
@@ -163,9 +191,15 @@ class CombatManager {
 		if ($sol) {
 			$power += $me->ExperienceBonus($power);
 			if ($melee) {
-				$me->updateDefensePower($power*$me->getRace()->getMeleeDefModifier()); // defense does NOT scale down with number of men in the unit
+				if ($this->useRace) {
+					$power = $power*$me->getRace()->getMeleeDefModifier();
+				}
+				$me->updateDefensePower($power); // defense does NOT scale down with number of men in the unit
 			} else {
-				$me->updateRDefensePower($power*$me->getRace()->getRangedDefModifier());
+				if ($this->useRace) {
+					$power = $power*$me->getRace()->getRangedDefModifier();
+				}
+				$me->updateRDefensePower($power);
 			}
 		}
 		if ($melee) {
@@ -291,19 +325,18 @@ class CombatManager {
 	public function MeleePower(ActivityParticipant|Soldier $me, $sol = false, ?EquipmentType $weapon = null, $groupSize = 1, $recalculate = false) {
 		$noble = false;
 		$act = false;
+		$mod = 1;
 		# $sol is just a bypass for "Is this a soldier instance" or not.
 		if ($sol) {
 			if ($me->MeleePower() != -1 && !$recalculate) return $me->MeleePower();
 			if ($me->isNoble()) {
 				$noble = true;
-				$mod = 1;
-			} else {
+			} elseif ($this->useHunger) {
 				$mod = $me->hungerMod();
 			}
 		} elseif ($me instanceof ActivityParticipant) {
 			$act = $me->getActivity();
 			$me = $me->getCharacter();
-			$mod = 1;
 		}
 
 		$power = 0;
@@ -384,6 +417,9 @@ class CombatManager {
 	}
 
 	public function woundPenalty($target): float {
+		if (!$this->useWounds) {
+			return 1;
+		}
 		$maxHp = $target->getRace()->getHp();
 		$current = $maxHp - $target->getWounded(true);
 		return 1 - ($current / $maxHp / 2);
@@ -443,20 +479,19 @@ class CombatManager {
 
 	public function RangedPower(ActivityParticipant|Soldier $me, $sol = false, ?EquipmentType $weapon = null, $groupSize = 1, $recalculate = false) {
 		$noble = false;
+		$mod = 1;
 		# $sol is just a bypass for "Is this a soldier instance" or not.
 		if ($sol) {
 			if ($me->RangedPower() != -1 && !$recalculate) return $me->RangedPower();
 			if ($me->isNoble()) {
 				$noble = true;
-				$mod = 1;
-			} else {
+			} elseif ($this->useHunger) {
 				$mod = $me->hungerMod();
 			}
 			$act = false;
 		} elseif ($me instanceof ActivityParticipant) {
 			$act = $me->getActivity();
-			$me = $me->getCharacter(); #for stndardizing the getEquipment type calls.
-			$mod = 1;
+			$me = $me->getCharacter(); #for stndardizing the getEquipment type calls
 		}
 
 		$power = 0;
@@ -507,7 +542,10 @@ class CombatManager {
 			if ($recurve) {
 				$power += 50;
 			}
-			return $power * $me->getRace()->getRangedModifier();
+			if ($this->useRace) {
+				return $power * $me->getRace()->getRangedModifier();
+			}
+			return $power;
 		}
 		# If either above the above ifs compare as true we don't get here, so this is technically an else/if regardless.
 		$power += $me->ExperienceBonus($power);
@@ -541,7 +579,7 @@ class CombatManager {
 		}
 	}
 
-	public function findNobleFromSoldier(Soldier $soldier) {
+	public function findNobleFromSoldier(Soldier $soldier): false|Character|null {
 		$myNoble = false;
 		if ($soldier->getCharacter()) {
 			# We are our noble.
@@ -575,70 +613,155 @@ class CombatManager {
 		} else {
 			$battle = false;
 		}
-		$delta = abs($meAtt - $targetDef);
-		$random = rand(1,100);
-		$resolved = false;
-		$wound = $this->calculateWound($delta);
-		if ($phase == 'melee') {
-			$target->addAttack(4);
-		} elseif ($phase == 'ranged') {
-			$target->addAttack(2);
-		} elseif ($phase == 'charge') {
-			$target->addAttack(5);
+		if ($this->version >= 3) {
+			$delta = abs($meAtt - $targetDef);
+			$resolved = false;
+			$wound = $this->calculateWound($delta);
+			if ($phase == 'melee') {
+				$target->addAttack(4);
+			} elseif ($phase == 'ranged') {
+				$target->addAttack(2);
+			} elseif ($phase == 'charge') {
+				$target->addAttack(5);
+			}
+			$damaging = $meAtt > $targetDef;
+			$surrender = match ($phase) {
+				'charge' => 50,
+				'ranged' => 0,
+				'hunt' => 95,
+				default => 75,
+			};
+		} elseif ($this->version === 2) {
+			# Yes, these really did use wounds back then. See https://github.com/lemcomm/MaFCDR/blob/master/src/BM2/SiteBundle/Service/CombatManager.php#L557
+			$damaging = $meAtt > rand(0, max(1, $targetDef - $target->getWounded()));
+			$surrender = match ($phase) {
+				'charge' => 50,
+				'ranged' => 60,
+				'hunt' => 95,
+				default => 75,
+			};
+		} else {
+			$damaging = $meAtt > $targetDef;
+			$surrender = match ($phase) {
+				'ranged' => 60,
+				'hunt' => 85,
+				default => 75,
+			};
 		}
-		if ($meAtt > $targetDef) {
+
+		$random = rand(1,100);
+		if ($damaging) {
 			if ($battle) {
-				$surrender = match ($phase) {
-					'charge' => 50,
-					'ranged' => 0,
-					'hunt' => 95,
-					default => 75,
-				};
 				$oldHp = $target->healthValue();
-				if ($target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
-					$logs[] = "killed mount & wounded for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
-					$target->wound(intval($wound / 2));
+				if ($this->version >= 2 && $target->getMount() && (($me->getMount() && $random < 50) || (!$me->getMount() && $random < 70))) {
+					$wound = floor($wound/2);
+					$target->wound($wound);
 					$target->dropMount();
+					$logs[] = "killed mount & wounded for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
 					$this->history->addToSoldierLog($target, 'wounded.' . $phase);
 					$result = 'wound';
 					$resolved = true;
 					$target->addHitsTaken();
+					$me->addCasualty();
 				}
 				if (!$resolved) {
 					$myNoble = $this->findNobleFromSoldier($me);
 					$target->wound($wound);
-					if ($target->isNoble() && $myNoble && $target->healthValue() < 0.5 && $random < $surrender) {
-						$logs[] = "captured for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
-						$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
-						$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
-						$result = 'capture';
-						$this->common->addAchievement($myNoble, 'captures');
-					} elseif ($target->getHp() <= 0) {
-						if ($me->isNoble()) {
-							if ($target->isNoble()) {
-								$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
-							} else {
-								$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
+					if ($this->version >= 3) {
+						if ($target->isNoble() && $myNoble && $random < $surrender && ($target->healthValue() < 0.5)) {
+							$logs[] = "captured for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
+							$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
+							$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
+							$result = 'capture';
+							$this->common->addAchievement($myNoble, 'captures');
+							$me->addCasualty();
+						} elseif ($target->getHp() <= 0) {
+							if ($me->isNoble()) {
+								if ($target->isNoble()) {
+									$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
+								} else {
+									$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
+								}
 							}
+							$logs[] = "killed for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
+							$target->kill();
+							$this->history->addToSoldierLog($target, 'killed');
+							$result = 'kill';
+							$me->addKill();
+						} else {
+							$logs[] = "wounded for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
+							$result = 'wound';
+							$target->addHitsTaken();
+							$me->addCasualty();
 						}
-						$logs[] = "killed for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
-						$target->kill();
-						$this->history->addToSoldierLog($target, 'killed');
-						$result = 'kill';
-					} else {
-						$logs[] = "wounded for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
-						$result = 'wound';
-						$target->addHitsTaken();
+					} elseif ($this->version === 2) {
+						if ($target->isNoble() && $myNoble && $random < $surrender) {
+							$logs[] = "captured for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
+							$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
+							$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
+							$result = 'capture';
+							$this->common->addAchievement($myNoble, 'captures');
+							$me->addCasualty();
+						} else {
+							if ($me->isNoble()) {
+								if ($target->isNoble()) {
+									$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
+								} else {
+									$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
+								}
+							}
+							$logs[] = "killed for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
+							$target->kill();
+							$this->history->addToSoldierLog($target, 'killed');
+							$result = 'kill';
+							$me->addKill();
+						}
+					} elseif ($this->version === 1) {
+						if ($target->isNoble() && $random < $surrender && $myNoble) {
+							$logs[] = "captured for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
+							$this->charMan->imprison_prepare($target->getCharacter(), $myNoble);
+							$this->history->logEvent($target->getCharacter(), 'event.character.capture', array('%link-character%'=>$myNoble->getId()), History::HIGH, true);
+							$result='capture';
+							$this->common->addAchievement($myNoble, 'captures');
+						} else {
+							if ($me->isNoble()) {
+								if ($target->isNoble()) {
+									$this->common->addAchievement($me->getCharacter(), 'kills.nobles');
+								} else {
+									$this->common->addAchievement($me->getCharacter(), 'kills.soldiers');
+								}
+							}
+							$logs[] = "killed for ".$wound." (HP:".$oldHp."->".$target->healthValue().")\n";
+							$target->kill();
+							$this->history->addToSoldierLog($target, 'killed');
+							$result='kill';
+						}
 					}
+
 				}
 			} else {
-				$result = $wound;
+				if ($this->version >= 3) {
+					$result = $wound;
+				} elseif ($this->version === 2) {
+					$result = 'kill';
+				}
 			}
 		} else {
 			if ($battle) {
-				$logs[] = "no damage (HP:".$target->healthValue().")\n";
+				switch ($this->version) {
+					case 3:
+						$logs[] = "no damage (HP:".$target->healthValue().")\n";
+						$result = 'fail';
+						break;
+					case 1:
+					case 2:
+						$logs[] = "wounded\n";
+						$result='wound';
+						$target->wound($this->calculateWound($meAtt));
+						$this->history->addToSoldierLog($target, 'wounded.'.$phase);
+						$target->gainExperience(1*$xpMod); // it hurts, but it is a teaching experience...
+				}
 			}
-			$result = 'fail';
 		}
 		if ($battle) {
 			# Attacks of opportunity, to make some gear more interesting to use. :D
@@ -650,7 +773,6 @@ class CombatManager {
 				}
 				$result = $result . " " . $innerResult;
 			}
-			$me->addCasualty();
 
 			// FIXME: these need to take unit sizes into account!
 			// FIXME: maybe we can optimize this by counting morale damage per unit and looping over all soldiers only once?!?!
@@ -664,7 +786,10 @@ class CombatManager {
 	}
 
 	public function calculateWound($power): int {
-		return $power + 20;
-		#return intval(round(rand(max(1, round($power/10)), $power))) + 10;
+		if ($this->version >= 3) {
+			return $power + 20;
+		} else {
+			return round(rand(max(1, round($power/10)), $power)/3);
+		}
 	}
 }

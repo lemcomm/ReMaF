@@ -28,7 +28,7 @@ class RealmMembersCommand extends Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output): void {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$r = $input->getArgument('realm');
 
 		if (intval($r)) {
@@ -45,6 +45,7 @@ class RealmMembersCommand extends Command {
 		} else {
 			$output->writeln("cannot find realm $r"); 
 		}
+		return Command::SUCCESS;
 
 	}
 

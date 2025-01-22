@@ -19,6 +19,7 @@ class Soldier extends NPC {
 	protected int $attacks = 0;
 	protected int $hitsTaken = 0;
 	protected int $casualties = 0;
+	protected int $kills = 0;
 	protected int $xp_gained = 0;
 	private float $training;
 	private int $training_required = 0;
@@ -116,6 +117,18 @@ class Soldier extends NPC {
 		return $this;
 	}
 
+	public function getTranslatableType(): string {
+		if ($this->race) {
+			if ($this->race->getUseEquipment()) {
+				return $this->race->getName().".".$this->getType();
+			} else {
+				return "monster.".$this->race->getName();
+			}
+		} else {
+			return $this->getType();
+		}
+	}
+
 	public function getType(): string {
 		if ($this->isNoble) return 'noble';
 		if (!$this->weapon && !$this->armour) return 'rabble';
@@ -156,7 +169,7 @@ class Soldier extends NPC {
 		return 'light infantry';
 	}
 
-	public function isActive($include_routed = false, $militia = false): bool {
+	public function isActive($include_routed = false, $militia = false, $legacyMode = false, $ignoreWounds = false): bool {
 		if (!$this->isAlive() || $this->getTrainingRequired() > 0 || $this->getTravelDays() > 0) return false;
 		if ($this->getType() == 'noble') {
 			if ($include_routed) {
@@ -168,24 +181,21 @@ class Soldier extends NPC {
 		}
 		if ($this->getType() == 'noble' && $include_routed) {
 			# nobles have their own active check, but FOs withdraw sometimes, so if they're routed they aren't active.
-			return $this->getCharacter()->isActive(true);
+			return $this->getCharacter()->isActive(true, $legacyMode);
 		}
-		// we can take a few hits before we go inactive
-		$limit = 40;
+		if ($legacyMode > 0) {
+			$can_take = 1;
+			if ($this->getExperience() > 10) $can_take++;
+			if ($this->getExperience() > 30) $can_take++;
+			if ($this->getExperience() > 100) $can_take++;
+			if ($legacyMode === 2) {
+				if ($militia) {
+					$can_take *= 10;
+				}
+			}
+			if (parent::getWounded() > $can_take) return false;
+		}
 
-//		$xp = $this->getExperience();
-//		if ($xp > 100) {
-//			$limit -= 20; #Retreat below 30% HP
-//		} elseif ($xp > 30) {
-//			$limit -= 15; #Retreat below 35% HP
-//		} elseif ($xp > 10) {
-//			$limit -= 10; #Retreat below 40% HP
-//		}
-//		if ($militia) {
-//			$limit -= 10; # Militia are willing to fight, even wounded.
-//		}
-//
-//		if (parent::healthValue()*100 < $limit) return false;
 		if (!$include_routed && $this->isRouted()) return false;
 		return true;
 	}
@@ -983,5 +993,13 @@ class Soldier extends NPC {
 	public function setImprovisedWeapon(bool $improvisedWeapon): static {
 		$this->improvisedWeapon = $improvisedWeapon;
 		return $this;
+	}
+
+	public function getKills(): int {
+		return $this->kills;
+	}
+
+	public function addKill(): void {
+		$this->kills++;
 	}
 }

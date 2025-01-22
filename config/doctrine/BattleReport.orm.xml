@@ -5,7 +5,7 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<field name="cycle" type="integer"/>
-		<field name="location" type="point"/>
+		<field name="location" type="point" nullable="true"/>
 		<field name="location_name" type="array" nullable="true"/>
 		<field name="assault" type="boolean"/>
 		<field name="sortie" type="boolean"/>
@@ -21,9 +21,11 @@
 		<field name="epicness" type="smallint" nullable="true"/>
 
 		<field name="debug" type="text"/>
+		<field name="version" type="smallint" nullable="true"/>
 
 		<many-to-one field="settlement" target-entity="Settlement"/>
 		<many-to-one field="place" target-entity="Place"/>
+		<many-to-one field="world" target-entity="World"/>
 		<one-to-many field="participants" target-entity="BattleParticipant" mapped-by="battle_report"/>
 
 		<one-to-many field="groups" target-entity="BattleReportGroup" mapped-by="battle_report">

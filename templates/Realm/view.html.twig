@@ -107,30 +107,34 @@
 <h3>{{ 'realm.positions.name'|trans({},"politics")|title }}</h3>
 <dl>
 	{% for position in realm.positions %}
-		{% if not position.retired %}
-		<dt><b>
-			{% if position.ruler and position.name == 'ruler' %}
-				{{ ('realm.title.male.'~realm.type)|trans({},"politics")|title }} / {{ ('realm.title.female.'~realm.type)|trans({},"politics")|title }}
-			{% else %}
-				{{ position.name }} {% if position.fName %}/ {{ position.fName }}{% endif %}
+		{% for rank in realm.positionRanks %}
+			{% if position.rank is same as(rank) %}
+				{% if not position.retired %}
+				<dt><b>
+					{% if position.ruler and position.name == 'ruler' %}
+						{{ ('realm.title.male.'~realm.type)|trans({},"politics")|title }} / {{ ('realm.title.female.'~realm.type)|trans({},"politics")|title }}
+					{% else %}
+						{{ position.name }} {% if position.fName %}/ {{ position.fName }}{% endif %}
+					{% endif %}
+				</b></dt>
+				<dd>	<br />
+					{{ position.description|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
+					<br />
+					{% if position.ruler %}<i>{{ 'realm.positions.ruler'|trans({}, "politics") }}</i><br>{% endif %}
+					{{ 'realm.positions.holder'|trans({'count':position.holders.count},"politics") }}:
+					<ul class="shortlist" style="display:inline">
+						{% for holder in position.holders %}
+							<li>{{ link(holder) }}</li>
+						{% else %}
+							<li>{{ 'nobody'|trans }}</li>
+						{% endfor %}
+					</ul>
+					<br />
+					{% if position.type %}{{ 'position.type'|trans({},"politics") }}: {{ ('position.types.'~position.type.name)|trans({},"politics") }}{% endif %}
+				</dd>
+				{% endif %}
 			{% endif %}
-		</b></dt>
-		<dd>	<br />
-			{{ position.description|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><blockquote>')|wikilinks }}
-			<br />
-			{% if position.ruler %}<i>{{ 'realm.positions.ruler'|trans({}, "politics") }}</i><br>{% endif %}
-			{{ 'realm.positions.holder'|trans({'count':position.holders.count},"politics") }}:
-			<ul class="shortlist" style="display:inline">
-				{% for holder in position.holders %}
-					<li>{{ link(holder) }}</li>
-				{% else %}
-					<li>{{ 'nobody'|trans }}</li>
-				{% endfor %}
-			</ul>
-			<br />
-			{% if position.type %}{{ 'position.type'|trans({},"politics") }}: {{ ('position.types.'~position.type.name)|trans({},"politics") }}{% endif %}
-		</dd>
-		{% endif %}
+		{% endfor %}
 	{% endfor %}
 </dl>
 

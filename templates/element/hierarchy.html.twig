@@ -2,18 +2,6 @@
 
 {% macro realm_hierarchy(realm, gender_he) %}
 
-{#
-
-For reasons I literally do not understand, if this exists, it breaks pages. If it's commented out, the world keeps turning.
-More than likely, it's due to a change in the update from Twig 1.23 to Twig 2.0. So far, I've not seen anything indicating that this
-is still required, but we'll leave it in the code just in case. --Andrew
-
-{% spaceless %}
-
-{% endspaceless %}
-
-#}
-
 {% endmacro %}
 
 {% import _self as macros %}
@@ -55,34 +43,39 @@ is still required, but we'll leave it in the code just in case. --Andrew
 {% endif %}
 
 <ul>
-{% if character.faith %}
-	<li>
-		{{ ("status."~who~".faith")|trans({"%He%":gender_he, "%link%":path('maf_assoc', {id: character.faith.id}), "%name%":character.faith.faithName},"politics")|raw }}
-	</li>
-{% endif %}
-{% if character.house %}
-	<li>
-		{% if character.house.head == character %}
-			{{ ("status."~who~".househead")|trans({"%He%":gender_he, "%house%":link(character.house)},"politics")|raw }}
-		{% else %}
-			{{ ("status."~who~".housememb")|trans({"%He%":gender_he, "%house%":link(character.house)},"politics")|raw }}
-		{% endif %}
-	</li>
-{% endif %}
-{% for position in character.positions %}
-	<li>
-		{% if position.ruler and position.name == 'ruler' %}
-			{% if character.male %}
-				{% set posname = 'realm.title.male.'~position.realm.type %}
+	{% if character.faith %}
+		<li>
+			{{ ("status."~who~".faith")|trans({"%He%":gender_he, "%link%":path('maf_assoc', {id: character.faith.id}), "%name%":character.faith.faithName},"politics")|raw }}
+		</li>
+	{% endif %}
+	{% if character.house %}
+		<li>
+			{% if character.house.head == character %}
+				{{ ("status."~who~".househead")|trans({"%He%":gender_he, "%house%":link(character.house)},"politics")|raw }}
 			{% else %}
-				{% set posname = 'realm.title.female.'~position.realm.type %}
+				{{ ("status."~who~".housememb")|trans({"%He%":gender_he, "%house%":link(character.house)},"politics")|raw }}
 			{% endif %}
-			{{ ("status.self.position")|trans({"%position%":posname|trans({},"politics")|title, "%realm%":link(position.realm)},"politics")|raw }}
-		{% else %}
-			{{ ("status.self.position")|trans({"%position%":link(position, false, false, 1, character.getGender), "%realm%":link(position.realm)},"politics")|raw }}
-		{% endif %}
-	</li>
-{% endfor %}
+		</li>
+	{% endif %}
+	{% set tiers = [9,8,7,6,5,4,3,2,1] %}
+	{% for tier in tiers %}
+		{% for position in character.positions %}
+			{% if position.realm.type == tier %}
+				<li>
+					{% if position.ruler and position.name == 'ruler' %}
+						{% if character.male %}
+							{% set posname = 'realm.title.male.'~position.realm.type %}
+						{% else %}
+							{% set posname = 'realm.title.female.'~position.realm.type %}
+						{% endif %}
+						{{ ("status.self.position")|trans({"%position%":posname|trans({},"politics")|title, "%realm%":link(position.realm)},"politics")|raw }}
+					{% else %}
+						{{ ("status.self.position")|trans({"%position%":link(position, false, false, 1, character.getGender), "%realm%":link(position.realm)},"politics")|raw }}
+					{% endif %}
+				</li>
+			{% endif %}
+		{% endfor %}
+	{% endfor %}
 
 {% for realm in character.findrealms %}
 	<li>

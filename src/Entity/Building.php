@@ -116,12 +116,12 @@ class Building {
 		return $this;
 	}
 
-	public function getDefenseScore(): float|int {
+	public function getDefenseScore($ignoreUnfinished = false): float|int {
 		if ($this->getType()->getDefenses() <= 0) {
 			return 0;
 		} else {
 			$worth = $this->getType()->getBuildHours();
-			if ($this->getActive()) {
+			if ($this->getActive() || $ignoreUnfinished) {
 				$completed = 1;
 			} else {
 				$completed = abs($this->getCondition() / $worth);

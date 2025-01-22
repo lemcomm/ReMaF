@@ -33,7 +33,7 @@ class UserPaymentCommand extends  Command {
 		;
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output): void {
+	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$em = $this->em;
 		$pm = $this->pay;
 
@@ -48,15 +48,16 @@ class UserPaymentCommand extends  Command {
 		}
 
 		$type = $input->getArgument('type');
-		$amount = floatval($input->getArgument('amount'));
+		$amount = (float) $input->getArgument('amount');
 		$id = $input->getArgument('id');
 
 		$output->writeln("Manually processing a $type payment for ".$user->getUsername()." of $amount USD.");
 
-		$pm->account($user, $type, 'EUR', $amount, $id);
+		$pm->account($user, $type, $amount, $id);
 
 		$em->flush();
 		$output->writeln("Done. User account now hold ".$user->getCredits()." credits.");
+		return Command::SUCCESS;
 	}
 
 

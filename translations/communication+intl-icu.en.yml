@@ -508,7 +508,8 @@ soldier:
   ranged:       Wounded by archery fire.
   melee:        Wounded in melee.
   escape:       Wounded during retreat.
- casualties:    Caused {nr} casualties to the enemy.
+ casualties:    Caused {nr} wounds to the enemy.
+ kills:         Killed {nr} enemies.
  starved:       Starved to death.
 
 politics:

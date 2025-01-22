@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -15,6 +16,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
 
 class RealmPositionType extends AbstractType {
@@ -64,12 +67,15 @@ class RealmPositionType extends AbstractType {
 					return $er->createQueryBuilder('p')->where('p.id > 0')->orderBy('p.name');
 				}
 			));
-			/*$builder->add('rank', NumberType::class, array(
+			$builder->add('rank', IntegerType::class, array(
 				'label'=>'position.rank',
 				'required' => false,
-				'empty_data' => '1',
+				'empty_data' => 0,
 				'attr' => array('title'=>'position.help.rank'),
-			));*/
+				'constraints' => [
+					new PositiveOrZero(),
+				],
+			));
 			$builder->add('retired', CheckboxType::class, array(
 				'label'=>'position.retired',
 				'required' => false,

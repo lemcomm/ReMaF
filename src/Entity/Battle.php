@@ -224,9 +224,9 @@ class Battle {
 	/**
 	 * Get location
 	 *
-	 * @return point
+	 * @return Point|null
 	 */
-	public function getLocation(): Point {
+	public function getLocation(): ?Point {
 		return $this->location;
 	}
 

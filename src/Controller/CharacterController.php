@@ -1497,17 +1497,18 @@ class CharacterController extends AbstractController {
 		} else {
 			$check = true;
 		}
-
-		if ($loc = $report->getLocationName()) {
-			if ($report->getPlace()) {
-				$location = array('key' => $loc['key'], 'entity'=>$em->getRepository(Place::class)->find($loc['id']));
+		$locArr = $report->getLocationName();
+		if (array_key_exists('id', $locArr)) {
+			if ($report->getSettlement()) {
+				$location = array('key' => $locArr['key'], 'entity'=>$em->getRepository(Settlement::class)->find($locArr['id']));
+			} elseif ($report->getPlace()) {
+				$location = array('key' => $locArr['key'], 'entity'=>$em->getRepository(Place::class)->find($locArr['id']));
 			} else {
-				$location = array('key' => $loc['key'], 'entity'=>$em->getRepository(Settlement::class)->find($loc['id']));
+				$location = ['key'=>'battle.location.somewhere', 'entity'=>false];
 			}
 		} else {
-			$location = array('key'=>'battle.location.nowhere');
+			$location = array('key'=>'battle.location.nowhere', 'entity'=>false);
 		}
-
 
 		// get entity references
 		if ($report->getStart()) {
@@ -1552,7 +1553,7 @@ class CharacterController extends AbstractController {
 			}
 
 			return $this->render('Character/viewBattleReport.html.twig', [
-				'version'=>2, 'report'=>$report, 'location'=>$location, 'count'=>$count, 'roundcount'=>$totalRounds, 'access'=>$check, 'fighters'=>$fighters
+				'version'=>$report->getVersion()?:2, 'report'=>$report, 'location'=>$location, 'count'=>$count, 'roundcount'=>$totalRounds, 'access'=>$check, 'fighters'=>$fighters
 			]);
 		}
 	}

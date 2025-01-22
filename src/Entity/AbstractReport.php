@@ -9,10 +9,10 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 /**
  * ReportBase object, extended by ActivityReport & BattleReport
  */
-class ReportBase {
+abstract class AbstractReport {
 	protected ?int $id = null;
 	protected int $cycle;
-	protected Point $location;
+	protected ?Point $location = null;
 	protected array $location_name;
 	protected bool $completed;
 	protected ?int $count = null;
@@ -21,6 +21,7 @@ class ReportBase {
 	protected Collection $journals;
 	protected ?Settlement $settlement = null;
 	protected ?Place $place = null;
+	protected ?World $world = null;
 
 	/**
 	 * Constructor
@@ -63,7 +64,7 @@ class ReportBase {
 	 *
 	 * @param integer $cycle
 	 *
-	 * @return ReportBase
+	 * @return AbstractReport
 	 */
 	public function setCycle(int $cycle): static {
 		$this->cycle = $cycle;
@@ -74,20 +75,20 @@ class ReportBase {
 	/**
 	 * Get location
 	 *
-	 * @return point
+	 * @return Point|null
 	 */
-	public function getLocation(): Point {
+	public function getLocation(): ?Point {
 		return $this->location;
 	}
 
 	/**
 	 * Set location
 	 *
-	 * @param point $location
+	 * @param Point|null $location
 	 *
-	 * @return ReportBase
+	 * @return AbstractReport
 	 */
-	public function setLocation(Point $location): static {
+	public function setLocation(?Point $location): static {
 		$this->location = $location;
 
 		return $this;
@@ -107,7 +108,7 @@ class ReportBase {
 	 *
 	 * @param array|null $locationName
 	 *
-	 * @return ReportBase
+	 * @return AbstractReport
 	 */
 	public function setLocationName(?array $locationName = null): static {
 		$this->location_name = $locationName;
@@ -133,7 +134,7 @@ class ReportBase {
 	 *
 	 * @param boolean $completed
 	 *
-	 * @return ReportBase
+	 * @return AbstractReport
 	 */
 	public function setCompleted(bool $completed): static {
 		$this->completed = $completed;
@@ -155,7 +156,7 @@ class ReportBase {
 	 *
 	 * @param int|null $count
 	 *
-	 * @return ReportBase
+	 * @return AbstractReport
 	 */
 	public function setCount(?int $count = null): static {
 		$this->count = $count;
@@ -177,7 +178,7 @@ class ReportBase {
 	 *
 	 * @param null|string $debug
 	 *
-	 * @return ReportBase
+	 * @return AbstractReport
 	 */
 	public function setDebug(?string $debug = null): static {
 		$this->debug = $debug;
@@ -226,7 +227,7 @@ class ReportBase {
 	 *
 	 * @param Settlement|null $settlement
 	 *
-	 * @return ReportBase
+	 * @return AbstractReport
 	 */
 	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
@@ -245,6 +246,15 @@ class ReportBase {
 
 	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
+		return $this;
+	}
+
+	public function getWorld(): ?World {
+		return $this->world;
+	}
+
+	public function setWorld(?World $world): static {
+		$this->world = $world;
 		return $this;
 	}
 }

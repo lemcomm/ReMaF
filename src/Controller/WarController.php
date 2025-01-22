@@ -293,17 +293,8 @@ class WarController extends AbstractController {
 					$place = FALSE;
 					$siege->setSettlement($settlement);
 					$settlement->setSiege($siege);
-					$encirclement = floor($settlement->getFullPopulation()/3); #1/3 of population returned as flat integer (no decimals)
-					$count = 0;
-					foreach ($character->getUnits() as $unit) {
-						$count += $unit->getActiveSoldiers()->count();
-					}
-					if ($count >= $encirclement) {
-						$siege->setEncircled(TRUE);
-					} else {
-						$siege->setEncircled(FALSE);
-					}
-					$siege->setEncirclement($encirclement);
+					$siege->prepareEncirclement();
+					$siege->updateEncirclement();
 					$maxstages = 1; # No defense, no siege, thus if we have a siege, we always have atleast one stage. This means we have at least a Palisade.
 					if($settlement->hasBuildingNamed('Wood Wall')) {
 						$maxstages++; # It may be a wall of sticks for the most part, but it's still *something*.
@@ -321,7 +312,8 @@ class WarController extends AbstractController {
 				} elseif ($place) {
 					$settlement = FALSE;
 					$siege->setPlace($place);
-					$siege->setEncircled(TRUE); #For now, sieges always encircle places.
+					$siege->prepareEncirclement();
+					$siege->updateEncirclement();
 					$place->setSiege($siege);
 					$siege->setMaxStage(1);
 				}
@@ -646,6 +638,7 @@ class WarController extends AbstractController {
 						case 'joinsiege':
 							# Join an ongoing siege.
 							if ($data['side']) {
+								$side = false;
 								if($data['side'] == 'attackers') {
 									# User wants to join the attackers...
 									$side = $siege->getAttacker();

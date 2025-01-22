@@ -1198,6 +1198,10 @@ npc:
  intraining:   recruits in training
  units:        Your unit{count, plural, =1 {} other {s}}
 
+race:
+ first one:       First One
+ second one:      Second One
+
 soldier:
  type:             type
  home:             home
@@ -1233,6 +1237,7 @@ soldier:
  light cavalry:    Light Cavalry
  heavy cavalry:    Heavy Cavalry
  noble:            First One{count, plural, =1 {} other {s}}
+
 
 item:
  none:             (none)

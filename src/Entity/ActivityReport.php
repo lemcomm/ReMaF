@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 /**
  * ActivityReport
  */
-class ActivityReport extends ReportBase {
+class ActivityReport extends AbstractReport {
 	private DateTime $ts;
 	private ?Activity $activity = null;
 	private Collection $characters;
@@ -17,6 +17,7 @@ class ActivityReport extends ReportBase {
 	private ?ActivityType $type = null;
 	private ?ActivitySubType $subtype = null;
 	private ?GeoData $geo_data = null;
+	private ?MapRegion $map_region = null;
 
 	/**
 	 * Constructor
@@ -227,6 +228,15 @@ class ActivityReport extends ReportBase {
 	public function setGeoData(?GeoData $geoData = null): static {
 		$this->geo_data = $geoData;
 
+		return $this;
+	}
+
+	public function getMapRegion(): ?MapRegion {
+		return $this->map_region;
+	}
+
+	public function setMapRegion(?MapRegion $map_region): static {
+		$this->map_region = $map_region;
 		return $this;
 	}
 }

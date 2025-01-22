@@ -723,7 +723,7 @@ class GameRequestController extends AbstractController {
 			# newRequestFromCharactertoSettlement ($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, Character $fromChar = null, Settlement $toSettlement = null)
 			$target = $form->get('target')->getData();
 			$this->gm->newRequestFromCharacterToSettlement('soldier.food', $data['expires'], $data['limit'], null, $data['subject'], $data['text'], $character, $target);
-			$this->addFlash('notice', $this->trans->trans('request.soldierfood.sent', array('%settlement%'=>$data['target']->getName()), 'actions'));
+			$this->addFlash('notice', $this->trans->trans('request.soldierfood.sent', array('%settlement%'=>$target->getName()), 'actions'));
 			return $this->redirectToRoute('maf_actions');
 		}
 

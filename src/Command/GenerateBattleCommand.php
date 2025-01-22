@@ -39,6 +39,7 @@ class GenerateBattleCommand extends Command {
 			->addOption('siege', 's', InputArgument::OPTIONAL, 'Optionally: is this a siege? 0 = no. 1 = yes.', '0')
 			->addOption('type', 't', InputArgument::OPTIONAL, 'Battle type: sortie, assault, urban, field. Defaults to field.', 'field')
 			->addOption('defScore', 'b', InputArgument::OPTIONAL, 'Defense score to override the battle calculation with. Will be calculated based on battle location if not declared.', null)
+			->addOption('runnerVersion', 'r', InputArgument::OPTIONAL, 'Version of the BattleRunner to utilize. Defaults to the current version, but can be overridden to simulate older battles.', null)
 		;
 	}
 
@@ -61,6 +62,17 @@ class GenerateBattleCommand extends Command {
 			$output->writeln('<info>Score: '.$score.'</info>');
 		} else {
 			$output->writeln('<info>Score will be calculated based on settlement.</info>');
+		}
+		$version = $input->getOption('runnerVersion');
+		if ($version !== null) {
+			$version = (int) $version;
+			$output->writeln('<info>Version: '.$version.'</info>');
+			if (0 < $version && $version > $runner->version) {
+				$output->writeln('<error>Version is above BattleRunner->version, aborting!</error>');
+				return Command::FAILURE;
+			} else {
+				$runner->version = $version;
+			}
 		}
 		if ($attackers && $defenders) {
 			$output->writeln('<info>Inputs appear to be valid. Building out entities!</info>');
@@ -138,6 +150,11 @@ class GenerateBattleCommand extends Command {
 						/** @var Place $here */
 						$battle->setPlace($here);
 						$battle->setWorld($here->getWorld());
+						if ($here->getGeoData()) {
+							$battle->setLocation($here->getGeoData()->getCenter());
+						} else {
+							$battle->setMapRegion($here->getMapRegion());
+						}
 					}
 					$this->whereString = 'Place: '. $here->getId();
 					break;
@@ -148,6 +165,11 @@ class GenerateBattleCommand extends Command {
 						/** @var Settlement $here */
 						$battle->setSettlement($here);
 						$battle->setWorld($here->getWorld());
+						if ($here->getGeoData()) {
+							$battle->setLocation($here->getGeoData()->getCenter());
+						} else {
+							$battle->setMapRegion($here->getMapRegion());
+						}
 					}
 					$this->whereString = 'Settlement: '. $here->getId();
 					break;

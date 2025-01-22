@@ -10,59 +10,67 @@
 	{{ 'realm.positions.active.description'|trans({},"politics") }}<br />
 	<a href="{{ path('maf_realm_position', {'realm':realm.id, 'position':0}) }}">{{ 'realm.positions.new'|trans({},"politics") }}</a>
 	<dl class="long">
-		{% for position in positions %}
-			{% if not position.retired %}
-			<dt>
-				{% if position.ruler and position.name == 'ruler' %}
-					{{ ('realm.title.male.'~realm.type)|trans({},"politics")|title }} / {{ ('realm.title.female.'~realm.type)|trans({},"politics")|title }}
-				{% else %}
-					{{ position.name }} {% if position.fName %}/ {{ position.fName }}{% endif %}
+		{% for rank in realm.positionRanks %}
+			{% for position in positions %}
+				{% if position.rank is same as(rank) %}
+					{% if not position.retired %}
+					<dt>
+						{% if position.ruler and position.name == 'ruler' %}
+							{{ ('realm.title.male.'~realm.type)|trans({},"politics")|title }} / {{ ('realm.title.female.'~realm.type)|trans({},"politics")|title }}
+						{% else %}
+							{{ position.name }} {% if position.fName %}/ {{ position.fName }}{% endif %}
+						{% endif %}
+					</dt>
+					<dd>
+						{{ position.description|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
+						<hr />
+						{% if position.ruler %}<i>{{ 'realm.positions.ruler'|trans({}, "politics") }}</i><br>{% endif %}
+						{{ 'realm.positions.holder'|trans({'count':position.holders.count}, "politics") }}:
+						<ul class="shortlist" style="display:inline">
+							{% for holder in position.holders %}
+								<li>{{ link(holder) }}</li>
+							{% else %}
+								<li>{{ 'nobody'|trans }}</li>
+							{% endfor %}
+						</ul><br />
+						{# TODO: make this a list or something #}
+						<a href="{{ path('maf_realm_position', {'realm':realm.id, 'position':position.id}) }}">{{ 'realm.positions.manage'|trans({},"politics") }}</a>
+						-
+						<a href="{{ path('maf_realm_officials', {'realm':realm.id, 'position':position.id}) }}">{{ 'realm.positions.appoint'|trans({},"politics") }}</a>
+					</dd>
+					{% endif %}
 				{% endif %}
-			</dt>
-			<dd>
-				{{ position.description|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
-				<hr />
-				{% if position.ruler %}<i>{{ 'realm.positions.ruler'|trans({}, "politics") }}</i><br>{% endif %}
-				{{ 'realm.positions.holder'|trans({'count':position.holders.count}, "politics") }}:
-				<ul class="shortlist" style="display:inline">
-					{% for holder in position.holders %}
-						<li>{{ link(holder) }}</li>
-					{% else %}
-						<li>{{ 'nobody'|trans }}</li>
-					{% endfor %}
-				</ul><br />
-				{# TODO: make this a list or something #}
-				<a href="{{ path('maf_realm_position', {'realm':realm.id, 'position':position.id}) }}">{{ 'realm.positions.manage'|trans({},"politics") }}</a>
-				-
-				<a href="{{ path('maf_realm_officials', {'realm':realm.id, 'position':position.id}) }}">{{ 'realm.positions.appoint'|trans({},"politics") }}</a>
-			</dd>
-			{% endif %}
+			{% endfor %}
 		{% endfor %}
 <h2>{{ 'realm.positions.retired.title'|trans({},"politics")|title }}</h2>
 	{{ 'realm.positions.retired.description'|trans({},"politics") }}<br />
 	<a href="{{ path('maf_realm_position', {'realm':realm.id, 'position':0}) }}">{{ 'realm.positions.new'|trans({},"politics") }}</a>
-		{% for position in positions %}
-			{% if position.retired %}
-			<dt>
-				{{ position.name }}
-			</dt>
-			<dd>
-				{{ position.description }}
-				<hr />
-				{{ 'realm.positions.holder'|trans({'count':position.holders.count}, "politics") }}:
-				<ul class="shortlist" style="display:inline">
-					{% for holder in position.holders %}
-						<li>{{ link(holder) }}</li>
-					{% else %}
-						<li>{{ 'nobody'|trans }}</li>
-					{% endfor %}
-				</ul><br />
-				{# TODO: make this a list or something #}
-				<a href="{{ path('maf_realm_position', {'realm':realm.id, 'position':position.id}) }}">{{ 'realm.positions.manage'|trans({},"politics") }}</a>
-				-
-				<a href="{{ path('maf_realm_officials', {'realm':realm.id, 'position':position.id}) }}">{{ 'realm.positions.appoint'|trans({},"politics") }}</a>
-			</dd>
-			{% endif %}
+		{% for rank in realm.positionRanks %}
+			{% for position in positions %}
+				{% if position.rank is same as(rank) %}
+					{% if position.retired %}
+					<dt>
+						{{ position.name }}
+					</dt>
+					<dd>
+						{{ position.description }}
+						<hr />
+						{{ 'realm.positions.holder'|trans({'count':position.holders.count}, "politics") }}:
+						<ul class="shortlist" style="display:inline">
+							{% for holder in position.holders %}
+								<li>{{ link(holder) }}</li>
+							{% else %}
+								<li>{{ 'nobody'|trans }}</li>
+							{% endfor %}
+						</ul><br />
+						{# TODO: make this a list or something #}
+						<a href="{{ path('maf_realm_position', {'realm':realm.id, 'position':position.id}) }}">{{ 'realm.positions.manage'|trans({},"politics") }}</a>
+						-
+						<a href="{{ path('maf_realm_officials', {'realm':realm.id, 'position':position.id}) }}">{{ 'realm.positions.appoint'|trans({},"politics") }}</a>
+					</dd>
+					{% endif %}
+				{% endif %}
+			{% endfor %}
 		{% endfor %}
 	</dl>
 {% endif %}

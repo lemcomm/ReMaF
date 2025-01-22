@@ -514,10 +514,11 @@ class PaymentManager {
 	}
 
 
-	public function account(User $user, $type, $amount, $transaction=null, $src='paypal'): true {
+	public function account(User $user, string $type, $amount, $transaction=null, $src='paypal'): true {
 		if ($type === 'Stripe Payment') {
 			[$currency, $amount] = $this->stripeAmtFromPid($amount);
 		} else {
+			$amount = (float) $amount;
 			$currency = 'USD';
 		}
 		$credits = ceil($amount*100);

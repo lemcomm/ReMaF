@@ -77,7 +77,7 @@ class SoldierFoodType extends AbstractType {
 			'attr' => array('title'=>'request.generic.help.expires'),
 			'required' => false,
 			'placeholder' => array('year' => 'request.generic.year', 'month'=> 'request.generic.month', 'day'=>'request.generic.day', 'hour'=>'request.generic.hour', 'minute'=>'request.generic.minute'),
-			'years' => array(date("Y"), strval(intval(date("Y"))+1), strval(intval(date("Y"))+2))
+			'years' => array(date("Y"), strval((int) (date("Y"))+1), strval((int) (date("Y"))+2))
 		));
 
 		$builder->add('submit', SubmitType::class, array('label'=>'request.generic.submit'));

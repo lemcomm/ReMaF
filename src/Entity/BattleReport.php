@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class BattleReport extends ReportBase {
+class BattleReport extends AbstractReport {
 	private bool $assault;
 	private bool $sortie;
 	private bool $urban;
@@ -15,6 +15,7 @@ class BattleReport extends ReportBase {
 	private ?array $hunt = null;
 	private ?array $finish = null;
 	private ?int $epicness = null;
+	private ?int $version = null;
 	private ?BattleReportGroup $primary_attacker = null;
 	private ?BattleReportGroup $primary_defender = null;
 	private Collection $participants;
@@ -426,5 +427,14 @@ class BattleReport extends ReportBase {
 	}
 	public function removeObserver($observer): void {
 		$this->observers->removeElement($observer);
+	}
+
+	public function getVersion(): ?int {
+		return $this->version;
+	}
+
+	public function setVersion(?int $version): static {
+		$this->version = $version;
+		return $this;
 	}
 }

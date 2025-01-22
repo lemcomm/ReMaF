@@ -276,7 +276,11 @@ class LinksExtension extends AbstractExtension {
 			case 'BattleReport':
 				$id = $entity->getId();
 				$loc = $entity->getLocationName();
-				$name = $this->translator->trans($loc['key'], array('%location%'=>$loc['name']));
+				if (array_key_exists('name', $loc)) {
+					$name = $this->translator->trans($loc['key'], array('%location%'=>$loc['name']));
+				} else {
+					$name = $this->translator->trans($loc['key']);
+				}
 				break;
 			case 'ActivityReport':
 				$id = $entity->getId();

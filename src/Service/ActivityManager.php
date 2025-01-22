@@ -104,7 +104,6 @@ class ActivityManager {
 				} else {
 					$act->setMapRegion($settlement->getMapregion());
 				}
-
 			} else {
 				$act->setLocation($char->getLocation());
 				$reg = $this->geo->findMyRegion($char);
@@ -334,8 +333,8 @@ class ActivityManager {
 		}
 		$themMax = $themC->getRace()->getHp();
 		$meMax = $meC->getRace()->getHp();
-		$meLimit = intval($meMax * $limit);
-		$themLimit = intval($themMax * $limit);
+		$meLimit = floor($meMax * $limit);
+		$themLimit = floor($themMax * $limit);
 
 		#Create Report
 		if (!$act->getReport()) {
@@ -346,6 +345,8 @@ class ActivityManager {
 			$report->setSubType($act->getSubType());
 			$report->setLocation($act->getLocation());
 			$report->setGeoData($act->getGeoData());
+			$report->setWorld($act->getWorld());
+			$report->setMapRegion($act->getMapRegion());
 			$report->setTs(new DateTime("now"));
 			$report->setCycle($this->common->getCycle());
 			$em->persist($report);

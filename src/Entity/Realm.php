@@ -42,6 +42,7 @@ class Realm extends Faction {
 	private ?Place $capital_place = null;
 	private ?RealmDesignation $designation = null;
 	private ?Association $faith = null;
+	private ?array $positionRanks = null;
 
 	/**
 	 * Constructor
@@ -90,6 +91,21 @@ class Realm extends Faction {
 	 * @return ArrayCollection|Collection
 	 */
 	public function getPositions(): ArrayCollection|Collection {
+		if ($this->positionRanks === null) {
+			$arr = [];
+			/** @var RealmPosition $position */
+			foreach ($this->positions as $position) {
+				if ($position->getRank() && !in_array($position->getRank(), $arr)) {
+					$arr[] = $position->getRank();
+				} elseif ($position->getRuler()) {
+					$arr[] = -1;
+				}
+			}
+			sort($arr);
+			array_unshift($arr, null);
+			array_unshift($arr, -1);
+			$this->positionRanks = $arr;
+		}
 		return $this->positions;
 	}
 
@@ -1231,5 +1247,9 @@ class Realm extends Faction {
 		$this->faith = $faith;
 
 		return $this;
+	}
+
+	public function getPositionRanks(): ?array {
+		return $this->positionRanks;
 	}
 }

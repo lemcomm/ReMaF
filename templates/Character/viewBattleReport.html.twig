@@ -24,7 +24,11 @@
 {% block content %}
 <h2>{{ 'battle.title'|trans|title }}</h2>
 <p>
-	{{ location.key|trans({'%location%':link(location.entity)})|raw }}
+	{% if location.entity %}
+		{{ location.key|trans({'%location%':link(location.entity)})|raw }}
+	{% else %}
+		{{ location.key|trans|raw }}
+	{% endif %}
 	-
 	{{ report.cycle|gametime('long') }}
 </p>
@@ -190,7 +194,7 @@
 		</tr>
 
 
-	{% elseif version == 2 %}
+	{% elseif version >= 2 %}
 		<tr>
 			<th colspan="{{ count }}"><h3>{{ 'battle.participants'|trans|title }}</h3></th>
 		</tr>
@@ -218,9 +222,16 @@
 		<tr>
 			{% for group in report.groups %}
 				<td valign="top"><ul>
-				{% for soldiers, i in group.start %}
-						<li>{{ i }} {{ ('soldier.'~soldiers)|trans({'count':i}) }}</li>
-				{% endfor %}
+					{% if version >= 3 %}
+						{% for soldiers, i in group.start %}
+							{% set string = soldiers|split('.') %}
+							<li>{{ i }} {{ string.0|trans|title }} {{ (string.1)|trans({'count':i})|title }}</li>
+						{% endfor %}
+					{% else %}
+						{% for soldiers, i in group.start %}
+								<li>{{ i }} {{ ('soldier.'~soldiers)|trans({'count':i})|title }}</li>
+						{% endfor %}
+					{% endif %}
 				</ul></td>
 			{% endfor %}
 		</tr>

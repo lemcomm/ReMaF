@@ -60,18 +60,31 @@ class Siege {
 		return null;
 	}
 
+	public function prepareEncirclement(): static {
+		$need = 0;
+		if ($this->settlement) {
+			$need = floor($this->settlement->getFullPopulation()/3);
+			#1/3 of population returned as flat integer (no decimals)
+		}
+		$this->encirclement = $need;
+		return $this;
+	}
+
 	public function updateEncirclement(): static {
-		$chars = $this->attacker->getCharacters();
+		if ($this->encirclement <= 1) {
+			$this->prepareEncirclement();
+		}
+
 		$count = 0;
-		foreach ($chars as $char) {
+		foreach ($this->attacker->getCharacters() as $char) {
 			foreach ($char->getUnits() as $unit) {
 				$count += $unit->getActiveSoldiers()->count();
 			}
 		}
 		if ($count >= $this->encirclement) {
-			$this->setEncirclement(true);
+			$this->setEncircled(true);
 		} else {
-			$this->setEncirclement(false);
+			$this->setEncircled(false);
 		}
 		return $this;
 	}
@@ -127,28 +140,6 @@ class Siege {
 	 */
 	public function setMaxStage(int $maxStage): static {
 		$this->max_stage = $maxStage;
-
-		return $this;
-	}
-
-	/**
-	 * Get encirclement
-	 *
-	 * @return integer
-	 */
-	public function getEncirclement(): int {
-		return $this->encirclement;
-	}
-
-	/**
-	 * Set encirclement
-	 *
-	 * @param integer $encirclement
-	 *
-	 * @return Siege
-	 */
-	public function setEncirclement(int $encirclement): static {
-		$this->encirclement = $encirclement;
 
 		return $this;
 	}
