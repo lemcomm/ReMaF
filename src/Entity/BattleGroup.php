@@ -22,6 +22,7 @@ class BattleGroup {
 	private ?Siege $siege = null;
 	private ?BattleGroup $reinforcing = null;
 	private Collection $characters;
+	private ?int $visualSize = null;
 
 	/**
 	 * Constructor
@@ -124,10 +125,15 @@ class BattleGroup {
 	}
 
 	public function getVisualSize() {
+		if ($this->visualSize != null) {
+			return $this->visualSize;
+		}
 		$size = 0;
+		/** @var Soldier $soldier */
 		foreach ($this->soldiers as $soldier) {
 			$size += $soldier->getVisualSize();
 		}
+		$this->visualSize = $size;
 		return $size;
 	}
 
