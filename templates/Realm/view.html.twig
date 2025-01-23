@@ -106,8 +106,9 @@
 
 <h3>{{ 'realm.positions.name'|trans({},"politics")|title }}</h3>
 <dl>
-	{% for position in realm.positions %}
-		{% for rank in realm.positionRanks %}
+	{% set positions = realm.positions %}{# This initializes realm->getPositionRanks #}
+	{% for rank in realm.positionRanks %}
+		{% for position in realm.positions %}
 			{% if position.rank is same as(rank) %}
 				{% if not position.retired %}
 				<dt><b>

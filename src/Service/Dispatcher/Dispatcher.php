@@ -1163,14 +1163,15 @@ class Dispatcher {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.description.settlement.name", "description"=>"unavailable.$check");
 		}
-		if (!$settlement = $this->getCharacter()->getInsideSettlement()) {
+		$char = $this->getCharacter();
+		$settlement = $char->getInsideSettlement();
+		if (!$settlement) {
 			return array("name"=>"control.description.settlement.name", "description"=>"unavailable.nosettlement");
 		}
 		if ($settlement->getOccupier() || $settlement->getOccupant()) {
 			return array("name"=>"control.description.settlement.name", "description"=>"unavailable.occupied");
 		}
-		$char = $this->getCharacter();
-		if ($settlement->getOwner() == $char || $settlement->getSteward() == $char) {
+		if ($this->pm->checkSettlementPermission($settlement, $char, 'describe')) {
 			return $this->action("control.description.settlement", "maf_settlement_description", false, array('id'=>$settlement->getId()));
 		} else {
 			return array("name"=>"control.description.settlement.name", "description"=>"unavailable.notyours2");
