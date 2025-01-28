@@ -59,7 +59,7 @@ class WarController extends AbstractController {
 		private WarDispatcher $warDisp,
 		private WarManager $wm) {
 	}
-	
+
 	#[Route('/war/view/{id}', name:'maf_war_view', requirements:['id'=>'\d+'])]
 	public function viewAction(War $id): Response {
 
@@ -76,13 +76,13 @@ class WarController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 		$war = new War;
-/*
-		$me = array();
-		foreach ($realm->findAllInferiors(true) as $r) {
-			$me[] = $r->getId();
-		}
-		$form = $this->createForm(new WarType($me), $war);
-*/
+		/*
+				$me = array();
+				foreach ($realm->findAllInferiors(true) as $r) {
+					$me[] = $r->getId();
+				}
+				$form = $this->createForm(new WarType($me), $war);
+		*/
 		$me = array($realm->getId());
 
 		$form = $this->createForm(WarType::class, $war, ['me'=>$me]);
@@ -294,7 +294,6 @@ class WarController extends AbstractController {
 					$siege->setSettlement($settlement);
 					$settlement->setSiege($siege);
 					$siege->prepareEncirclement();
-					$siege->updateEncirclement();
 					$maxstages = 1; # No defense, no siege, thus if we have a siege, we always have atleast one stage. This means we have at least a Palisade.
 					if($settlement->hasBuildingNamed('Wood Wall')) {
 						$maxstages++; # It may be a wall of sticks for the most part, but it's still *something*.
@@ -391,6 +390,9 @@ class WarController extends AbstractController {
 				$siege->setAttacker($attackers);
 				$em->persist($attackers);
 
+				# This requires $siege->attacker to be set.
+				$siege->updateEncirclement();
+
 				# setup defenders
 				$defenders = new BattleGroup;
 				$defenders->setSiege($siege);
@@ -437,9 +439,9 @@ class WarController extends AbstractController {
 						$this->hist->logEvent(
 							$defender->getCharacter(),
 							'resolution.defend.success2', array(
-								"%link-settlement%"=>$settlement->getId(),
-								"%link-character%"=>$character->getId()
-							),
+							"%link-settlement%"=>$settlement->getId(),
+							"%link-character%"=>$character->getId()
+						),
 							History::HIGH, false, 25
 						);
 						$defender->getCharacter()->setTravelLocked(true);
@@ -462,9 +464,9 @@ class WarController extends AbstractController {
 						$this->hist->logEvent(
 							$defender->getCharacter(),
 							'resolution.defend.success3', array(
-								"%link-place%"=>$settlement->getId(),
-								"%link-character%"=>$character->getId()
-							),
+							"%link-place%"=>$settlement->getId(),
+							"%link-character%"=>$character->getId()
+						),
 							History::HIGH, false, 25
 						);
 						$defender->getCharacter()->setTravelLocked(true);
@@ -735,13 +737,13 @@ class WarController extends AbstractController {
 			// strange, we can't find a settlement. What's going on?
 			$logger->error('looting without settlement, character #'.$character->getId().' at position '.$character->getLocation()->getX().' / '.$character->getLocation()->getY());
 		}
-		
+
 		# TODO: Check if we can autowire services in transformers. This would mean no more passing the EM around.
 		$form = $this->createForm(LootType::class, null, ['settlement'=>$settlement, 'em'=>$em, 'inside'=>$inside]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 
-		// FIXME: shouldn't militia defend against looting?
+			// FIXME: shouldn't militia defend against looting?
 			$my_soldiers = 0;
 			foreach ($character->getUnits() as $unit) {
 				$my_soldiers += $unit->getActiveSoldiers()->count();
@@ -999,29 +1001,29 @@ class WarController extends AbstractController {
 							);
 						}
 						break;
- 					case 'wealth':
- 						if ($character === $settlement->getOwner() || $character === $settlement->getSteward()) {
- 							// forced tax collection - doesn't depend on soldiers so much
- 							if ($ratio >= 0.02) {
- 								$mod = 0.3;
- 							} else if ($ratio >= 0.01) {
- 								$mod = 0.2;
- 							} else if ($ratio >= 0.005) {
- 								$mod = 0.1;
- 							} else {
- 								$mod = 0.05;
- 							}
-	 						$steal = rand(ceil($settlement->getGold() * $ratio), ceil($settlement->getGold() * $mod));
+					case 'wealth':
+						if ($character === $settlement->getOwner() || $character === $settlement->getSteward()) {
+							// forced tax collection - doesn't depend on soldiers so much
+							if ($ratio >= 0.02) {
+								$mod = 0.3;
+							} else if ($ratio >= 0.01) {
+								$mod = 0.2;
+							} else if ($ratio >= 0.005) {
+								$mod = 0.1;
+							} else {
+								$mod = 0.05;
+							}
+							$steal = rand(ceil($settlement->getGold() * $ratio), ceil($settlement->getGold() * $mod));
 							$drop = $steal + ceil(rand(10,20) * $settlement->getGold() / 100);
- 						} else {
-	 						$steal = rand(0, ceil($settlement->getGold() * $ratio));
+						} else {
+							$steal = rand(0, ceil($settlement->getGold() * $ratio));
 							$drop = ceil(rand(40,60) * $settlement->getGold() / 100);
- 						}
+						}
 						$steal = ceil($steal * 0.75); // your soldiers will pocket some (and we just want to make it less effective)
- 						$result['gold'] = $steal; // send result to page for display
- 						$character->setGold($character->getGold() + $steal); //add gold to characters purse
- 						$settlement->setGold($settlement->getGold() - $drop); //remove gold from settlement ?Why do we remove a different amount of gold from the settlement?
- 						break;
+						$result['gold'] = $steal; // send result to page for display
+						$character->setGold($character->getGold() + $steal); //add gold to characters purse
+						$settlement->setGold($settlement->getGold() - $drop); //remove gold from settlement ?Why do we remove a different amount of gold from the settlement?
+						break;
 					case 'burn':
 						$targets = min(5, floor(sqrt($my_soldiers/5)));
 						$buildings = $settlement->getBuildings()->toArray();
