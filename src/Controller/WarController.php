@@ -294,7 +294,6 @@ class WarController extends AbstractController {
 					$siege->setSettlement($settlement);
 					$settlement->setSiege($siege);
 					$siege->prepareEncirclement();
-					$siege->updateEncirclement();
 					$maxstages = 1; # No defense, no siege, thus if we have a siege, we always have atleast one stage. This means we have at least a Palisade.
 					if($settlement->hasBuildingNamed('Wood Wall')) {
 						$maxstages++; # It may be a wall of sticks for the most part, but it's still *something*.
@@ -390,6 +389,9 @@ class WarController extends AbstractController {
 				$siege->addGroup($attackers);
 				$siege->setAttacker($attackers);
 				$em->persist($attackers);
+
+                # This requires $siege->attacker to be set.
+                $siege->updateEncirclement();
 
 				# setup defenders
 				$defenders = new BattleGroup;
