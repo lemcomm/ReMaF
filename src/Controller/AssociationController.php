@@ -46,7 +46,7 @@ class AssociationController extends AbstractController {
 		private TranslatorInterface $trans) {
 	}
 	
-	private function gateway($test, $secondary = null): RedirectResponse|Character {
+	private function gateway($test, $secondary = null): string|Character {
 		return $this->disp->gateway($test, false, true, false, $secondary);
 	}
 

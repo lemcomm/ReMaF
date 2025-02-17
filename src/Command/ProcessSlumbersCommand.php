@@ -58,7 +58,7 @@ class ProcessSlumbersCommand extends Command {
 			$limit = 25;
 			$date = $twomos->format('Y-m-d H:i:s');
 			$this->log->info("  Clearing slumberers from before $date");
-			$output->writeln("<info>  Clearing slumberers from before $date");
+			$output->writeln("<info>  Clearing slumberers from before ".$twomos->format('Y-m-d H:i:s'));
 			foreach ($allChars as $char) {
 				if ($current >= $limit) {
 					$this->log->info("  Proc limit hit.");
