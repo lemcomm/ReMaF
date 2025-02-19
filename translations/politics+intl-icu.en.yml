@@ -174,10 +174,10 @@ oath:
   approved:     You have accepted the oath of vassalage from {name}
   rejected:     You have rejected the oath of vassalage from {name}
  offer:
-  preamble:     "%link-character% has offered an oath of fealty to you, in your position as the lord of %link-settlement%, on {date} and has provided the following message:"
-  preamble2:     "%link-character% has offered an oath of fealty to you, in your position as the ruler of %link-realm%, on {date} and has provided the following message:"
-  preamble3:     "%link-character% has offered an oath of fealty to you, in your position as the owner of %link-place%, on {date} and has provided the following message:"
-  preamble4:     "%link-character% has offered an oath of fealty to you, in your position as the holder of %link-realmposition%, on {date} and has provided the following message:"
+  preamble:     "{character} has offered an oath of fealty to you, in your position as the lord of {settlement}, on {date} and has provided the following message:"
+  preamble2:    "{character} has offered an oath of fealty to you, in your position as the ruler of {realm}, on {date} and has provided the following message:"
+  preamble3:    "{character} has offered an oath of fealty to you, in your position as the owner of {place}, on {date} and has provided the following message:"
+  preamble4:    "{character} has offered an oath of fealty to you, in your position as the holder of {realmposition}, on {date} and has provided the following message:"
   approve:      Accept their fealty
   deny:         Reject their fealty
 
@@ -617,7 +617,7 @@ diplomacy:
   approved:     "{name} is now a subrealm of {name2}."
   deny:         Deny
   denied:       You have rejected the request of {name} to become a subrealm of {name2}.
-  preamble:     'You have received a request from %link-character%, a ruler of %link-realm%, to join their realm under %link-realm-2%, on {date}, as follows:'
+  preamble:     'You have received a request from {character}, a ruler of {realm}, to join their realm under {realm-2}, on {date}, as follows:'
 
 
  restore:
@@ -1046,13 +1046,13 @@ house:
      As a member of the defunct house of <b>{name}</b> it is within your abilities to re-establish the House under your control, regardless of what others may think about this.<br /><br />
      Please be aware though, that this puts you, specifically, in charge. If you want someone else to run the House, have them use this action instead.
   applicant:
-   preamble:    "You've received a request to join the House from %link-character%, on {date}, as follows:"
+   preamble:    "You've received a request to join the House from {character}, on {date}, as follows:"
    approve:     Approve
    approved:    The applcation from {character} has been approved.
    deny:        Deny
    denied:      The applcation from {character} has been denied.
   cadet:
-   preamble:    "You've received an offer of cadetship from %link-character% of %link-house%, on {date}, as follows:"
+   preamble:    "You've received an offer of cadetship from {character} of {house}, on {date}, as follows:"
    approve:     Approve
    approved:    The cadetship from {character} of {house} has been approved.
    deny:        Deny
@@ -1065,7 +1065,7 @@ house:
    subject: Offer Subject
    text:    Offer Text
   uncadet:
-   preamble:    "You've received an request for disassociation from %link-character% of the cadet %link-house%, on {date}, as follows:"
+   preamble:    "You've received an request for disassociation from {character} of the cadet {house}, on {date}, as follows:"
    approve:     Approve
    approved:    The disassociation request from {character} of {house} has been approved.
    deny:        Deny
