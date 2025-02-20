@@ -314,7 +314,6 @@ class WarController extends AbstractController {
 					$settlement = FALSE;
 					$siege->setPlace($place);
 					$siege->prepareEncirclement();
-					$siege->updateEncirclement();
 					$place->setSiege($siege);
 					$siege->setMaxStage(1);
 				}
@@ -392,8 +391,8 @@ class WarController extends AbstractController {
 				$siege->setAttacker($attackers);
 				$em->persist($attackers);
 
-                # This requires $siege->attacker to be set.
-                $siege->updateEncirclement();
+				# This requires $siege->attacker to be set.
+				$siege->updateEncirclement();
 
 				# setup defenders
 				$defenders = new BattleGroup;

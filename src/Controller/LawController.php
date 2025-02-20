@@ -97,8 +97,8 @@ class LawController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/laws/r{realm}', name:'maf_realm_laws_new', requirements:['realm'=>'\d+'])]
-	#[Route ('/laws/a{assoc}', name:'maf_assoc_laws_new', requirements:['assoc'=>'\d+'])]
+	#[Route ('/laws/r{realm}/new', name:'maf_realm_laws_new', requirements:['realm'=>'\d+'])]
+	#[Route ('/laws/a{assoc}/new', name:'maf_assoc_laws_new', requirements:['assoc'=>'\d+'])]
 	public function newLawAction(Request $request, ?Realm $realm=null, ?Association $assoc=null): RedirectResponse|Response {
 		if ($request->get('_route') === 'maf_realm_laws_new') {
 			$char = $this->gateway('hierarchyRealmLawNewTest', $realm);

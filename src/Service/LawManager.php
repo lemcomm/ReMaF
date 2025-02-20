@@ -13,61 +13,61 @@ use Doctrine\ORM\EntityManagerInterface;
 class LawManager {
 	public array $choices = [
 		'assocVisibility' => [
-			'assocVisibility.yes'=>'yes',
-			'assocVisibility.no'=>'no'
+			'yes' => 'assocVisibility.yes',
+			'no' => 'assocVisibility.no'
 		],
 		'rankVisibility' => [
-			'rankVisibility.all'=>'all',
-			'rankVisibility.direct'=>'direct'
+			'all' => 'rankVisibility.all',
+			'direct' => 'rankVisibility.direct'
 		],
 		'assocInheritance' => [
-			'assocInheritance.character'=>'character',
-			'assocInheritance.senior'=>'senior',
-			'assocInheritance.oldest'=>'oldest',
+			'character' => 'assocInheritance.character',
+			'senior' => 'assocInheritance.senior',
+			'oldest' => 'assocInheritance.oldest',
 		],
 		'slumberingAccess' => [
-			'slumberingAccess.none'=>'none',
-			'slumberingAccess.direct'=>'direct',
-			'slumberingAccess.realm'=>'internal',
-			'slumberingAccess.any'=>'any'
+			'none' => 'slumberingAccess.none',
+			'direct' => 'slumberingAccess.direct',
+			'internal' => 'slumberingAccess.internal',
+			'any' => 'slumberingAccess.any'
 		],
 		'settlementInheritance' => [
-			'settlementInheritance.none'=>'none',
-			'settlementInheritance.characterInternal'=>'characterInternal',
-			'settlementInheritance.characterInclusive'=>'characterInclusive',
-			'settlementInheritance.characterAny'=>'characterAny',
-			'settlementInheritance.ruler'=>'ruler',
-			'settlementInheritance.liege'=>'liege',
-			'settlementInheritance.steward'=>'steward'
+			'none' => 'settlementInheritance.none',
+			'characterInternal' => 'settlementInheritance.characterInternal',
+			'characterInclusive' => 'settlementInheritance.characterInclusive',
+			'characterAny' => 'settlementInheritance.characterAny',
+			'ruler' => 'settlementInheritance.ruler',
+			'liege' => 'settlementInheritance.liege',
+			'steward' => 'settlementInheritance.steward'
 		],
 		'placeInheritance' => [
-			'placeInheritance.none'=>'none',
-			'placeInheritance.characterInternal'=>'characterInternal',
-			'placeInheritance.characterInclusive'=>'characterInclusive',
-			'placeInheritance.characterAny'=>'characterAny',
-			'placeInheritance.ruler'=>'ruler',
-			'placeInheritance.liege'=>'liege',
-			'placeInheritance.lord'=>'lord'
+			'none' => 'placeInheritance.none',
+			'characterInternal' => 'placeInheritance.characterInternal',
+			'characterInclusive' => 'placeInheritance.characterInclusive',
+			'characterAny' => 'placeInheritance.characterAny',
+			'ruler' => 'placeInheritance.ruler',
+			'liege' => 'placeInheritance.liege',
+			'lord' => 'placeInheritance.lord'
 		],
 		'slumberingClaims' => [
-			'slumberingClaims.all'=>'all',
-			'slumberingClaims.internal'=>'internal',
-			'slumberingClaims.direct'=>'direct',
-			'slumberingClaims.none'=>'none'
+			'all' => 'slumberingClaims.all',
+			'internal' => 'slumberingClaims.internal',
+			'direct' => 'slumberingClaims.direct',
+			'none' => 'slumberingClaims.none'
 		],
 		'realmPlaceMembership' => [
-			'realmPlaceMembership.none'=>'none',
-			'realmPlaceMembership.owners'=>'owners',
-			'realmPlaceMembership.all'=>'all',
+			'none' => 'realmPlaceMembership.none',
+			'owners' => 'realmPlaceMembership.owners',
+			'all' => 'realmPlaceMembership.all',
 		],
 		'realmFaith' => [
-			'realmFaith.outlawed'=>'outlawed',
-			'realmFaith.accepted'=>'accepted',
-			'realmFaith.enforced'=>'enforced',
+			'outlawed' => 'realmFaith.outlawed',
+			'accepted' => 'realmFaith.accepted',
+			'enforced' => 'realmFaith.enforced',
 		],
 		'realmVotingAge' => [
-			'realmVotingAge.none'=>'none',
-			'realmVotingAge.days'=>'days'
+			'none' => 'realmVotingAge.none',
+			'days' => 'realmVotingAge.days'
 		],
 	];
 
@@ -79,6 +79,17 @@ class LawManager {
 	public function __construct(
 		private EntityManagerInterface $em,
 		private CommonService $common, private History $history) {
+	}
+
+	public function getLawKeyFromValue(string $type, string $needle): ?string {
+		if (array_key_exists($type, $this->choices)) {
+			foreach ($this->choices[$type] as $key => $value) {
+				if ($value === $needle) {
+					return $key;
+				}
+			}
+		}
+		return null;
 	}
 
 	public function updateLaw($org, LawType $type, $setting, $title, $desc, Character $character, $mandatory, $cascades, $sol, ?Settlement $settlement = null, ?Law $oldLaw=null, $flush=true, ?Association $faith = null): array|Law {
@@ -101,7 +112,8 @@ class LawManager {
 		# Validate that this is a type we can set.
 		if ($freeform || $taxes || $choices[$tName] !== null) {
 			# Validate the setting (value) is a valid one.
-			if ($freeform || $taxes || $stringLaw || ($choices[$tName] && $choices[$tName][$setting] !== null)) {
+			$lawSetting = $this->getLawKeyFromValue($tName, $setting);
+			if ($freeform || $taxes || $stringLaw || ($choices[$tName] && $lawSetting !== null)) {
 				#Looks valid. Process the change.
 				$law = new Law;
 				$this->em->persist($law);
@@ -116,14 +128,11 @@ class LawManager {
 				if ($sol) {
 					$law->setSolCycles($sol);
 				}
-				if (!$freeform && !$taxes) {
-					$setting = $choices[$tName][$setting];
-				}
 				if ($tName === 'freeform') {
 					$law->setTitle($title);
 					$law->setDescription($desc);
 				} else {
-					$law->setValue($setting);
+					$law->setValue($lawSetting);
 					$title = $law->getType()->getName();
 				}
 				$law->setEnacted(new DateTime("now"));
