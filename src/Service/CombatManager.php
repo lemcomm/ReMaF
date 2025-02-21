@@ -2,11 +2,10 @@
 
 namespace App\Service;
 
-use App\Entity\ActivityParticipant;
+use App\Entity\Activity;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Entity\Soldier;
-
 
 class CombatManager {
 
@@ -24,6 +23,8 @@ class CombatManager {
 	public bool $useWounds = true;
 	public bool $useHunger = true;
 	public bool $useRace = true;
+
+	public ?Activity $activity = null;
 
 	public function __construct(
 		private CommonService $common,
@@ -45,7 +46,7 @@ class CombatManager {
 		}
 	}
 
-	public function ChargeAttack($me, $target, $act=false, $battle=false, $xpMod = 1, $defBonus = null): array {
+	public function ChargeAttack(Soldier|Character $me, $target, $act=false, $battle=false, $xpMod = 1, $defBonus = null): array {
 		if ($battle) {
 			if ($me->isNoble() && $me->getWeapon()) {
 				$this->common->trainSkill($me->getCharacter(), $me->getEquipment()->getSkill(), $xpMod);
@@ -92,16 +93,14 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-	public function ChargePower($me, $sol = false): float|int {
+	public function ChargePower(Soldier|Character $me, $battle = false): float|int {
 		$mod = 1;
-		if ($sol) {
+		if ($battle) {
 			if ($me->isNoble()) {
 				return 156;
 			} elseif ($this->useHunger) {
 				$mod = $me->hungerMod();
 			}
-		} elseif ($me instanceof ActivityParticipant) {
-			$me = $me->getCharacter();
 		}
 		$power = 0;
 		if (!$me->getMount()) {
@@ -117,11 +116,11 @@ class CombatManager {
 		return $power*$mod*$me->getRace()->getMeleeModifier();
 	}
 
-	public function DefensePower($me, $sol = false, $melee = true, $recalculate = false) {
+	public function DefensePower(Soldier|Character $me, $battle = false, $melee = true, $recalculate = false) {
 		$noble = false;
-		# $sol is just a bypass for "Is this a soldier instance" or not.
+		# $battle is just a bypass for "Is this a soldier instance" or not.
 		$mod = 1;
-		if ($sol) {
+		if ($battle) {
 			if (!$recalculate) {
 				if ($melee) {
 					if ($me->DefensePower()!=-1) return $me->DefensePower();
@@ -134,9 +133,6 @@ class CombatManager {
 			} elseif ($this->useHunger) {
 				$mod = $me->hungerMod();
 			}
-		} elseif ($me instanceof ActivityParticipant) {
-			$me = $me->getCharacter();
-			$mod = 1;
 		}
 
 		$eqpt = $me->getEquipment();
@@ -188,7 +184,7 @@ class CombatManager {
 			$power += $me->getMount()->getDefense();
 		}
 
-		if ($sol) {
+		if ($battle) {
 			$power += $me->ExperienceBonus($power);
 			if ($melee) {
 				if ($this->useRace) {
@@ -209,7 +205,7 @@ class CombatManager {
 		}
 	}
 
-	public function equipmentDamage($attacker, $target): array {
+	public function equipmentDamage(Soldier|Character $attacker, Soldier|Character $target): array {
 		// small chance of armour or item damage - 10-30% per hit and then also depending on the item - 3%-14% - for total chances of ca. 1%-5% per hit
 		$logs = [];
 		if ($attacker->getImprovisedWeapon() && rand (0,100) < 20) {
@@ -322,21 +318,20 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-	public function MeleePower(ActivityParticipant|Soldier $me, $sol = false, ?EquipmentType $weapon = null, $groupSize = 1, $recalculate = false) {
+	public function MeleePower(Soldier|Character $me, $battle = false, ?EquipmentType $weapon = null, $groupSize = 1, $recalculate = false) {
 		$noble = false;
 		$act = false;
 		$mod = 1;
-		# $sol is just a bypass for "Is this a soldier instance" or not.
-		if ($sol) {
+		# $battle is just a bypass for "Is this a soldier instance" or not.
+		if ($battle) {
 			if ($me->MeleePower() != -1 && !$recalculate) return $me->MeleePower();
 			if ($me->isNoble()) {
 				$noble = true;
 			} elseif ($this->useHunger) {
 				$mod = $me->hungerMod();
 			}
-		} elseif ($me instanceof ActivityParticipant) {
-			$act = $me->getActivity();
-			$me = $me->getCharacter();
+		} else {
+			$act = $this->activity;
 		}
 
 		$power = 0;
@@ -394,7 +389,7 @@ class CombatManager {
 		}
 
 		// TODO: heavy armour should reduce this a little
-		if ($sol) {
+		if ($battle) {
 			if ($groupSize>1) {
 				$me->updateMeleePower($power * $me->getRace()->getMeleeModifier() * pow($groupSize, 0.96)/$groupSize);
 			} else {
@@ -477,11 +472,11 @@ class CombatManager {
 		return [$result, $logs];
 	}
 
-	public function RangedPower(ActivityParticipant|Soldier $me, $sol = false, ?EquipmentType $weapon = null, $groupSize = 1, $recalculate = false) {
+	public function RangedPower(Soldier|Character $me, $battle = false, ?EquipmentType $weapon = null, $groupSize = 1, $recalculate = false) {
 		$noble = false;
 		$mod = 1;
 		# $sol is just a bypass for "Is this a soldier instance" or not.
-		if ($sol) {
+		if ($battle) {
 			if ($me->RangedPower() != -1 && !$recalculate) return $me->RangedPower();
 			if ($me->isNoble()) {
 				$noble = true;
@@ -489,8 +484,8 @@ class CombatManager {
 				$mod = $me->hungerMod();
 			}
 			$act = false;
-		} elseif ($me instanceof ActivityParticipant) {
-			$act = $me->getActivity();
+		} else {
+			$act = $this->activity;
 			$me = $me->getCharacter(); #for stndardizing the getEquipment type calls
 		}
 
@@ -552,7 +547,7 @@ class CombatManager {
 
 		// TODO: heavy armour should reduce this quite a bit
 
-		if ($sol) {
+		if ($battle) {
 			if ($groupSize>1) {
 				$me->updateRangedPower($power * $me->getRace()->getRangedModifier() * pow($groupSize, 0.96)/$groupSize);
 			} else {
@@ -606,7 +601,7 @@ class CombatManager {
 		return $myNoble;
 	}
 
-	public function checkDamage(Character|Soldier $me, int $meAtt, Character|Soldier $target, int $targetDef, string $type, string $phase, string $counterType, float $xpMod = 1, ?float $defBonus = null): array {
+	public function checkDamage(Soldier|Character $me, int $meAtt, Soldier|Character $target, int $targetDef, string $type, string $phase, string $counterType, float $xpMod = 1, ?float $defBonus = null): array {
 		$logs = [];
 		if ($type === 'battle') {
 			$battle = true;
@@ -737,7 +732,6 @@ class CombatManager {
 							$result='kill';
 						}
 					}
-
 				}
 			} else {
 				if ($this->version >= 3) {
