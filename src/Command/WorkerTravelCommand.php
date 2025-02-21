@@ -38,8 +38,8 @@ class WorkerTravelCommand extends  Command {
 		$this
 			->setName('maf:worker:travel')
 			->setDescription('Update travel - worker component - do not call directly')
-			->addArgument('start', InputArgument::OPTIONAL, 'start character id')
-			->addArgument('end', InputArgument::OPTIONAL, 'end character id')
+			->addArgument('offset', InputArgument::OPTIONAL, 'start offset')
+			->addArgument('batch', InputArgument::OPTIONAL, 'batch limit')
 		;
 	}
 
@@ -48,14 +48,13 @@ class WorkerTravelCommand extends  Command {
 		$geography = $this->geo;
 		$history = $this->hist;
 		$cycle = $this->common->getCycle();
-		$start = $input->getArgument('start');
-		$end = $input->getArgument('end');
+		$batch = $input->getArgument('offset');
+		$offset = $input->getArgument('batch');
 		$speedmod = (float)$this->common->getGlobal('travel.speedmod', 0.15);
 		$artifactsNaN = false; #Artifact check short circuit flag.
 
 		// primary travel action - update our speed, check if we've arrived and update progress
-		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.id >= :start AND c.id <= :end AND c.travel IS NOT NULL AND c.travel_locked = false');
-		$query->setParameters(array('start'=>$start, 'end'=>$end));
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.id >= :start AND c.id <= :end AND c.travel IS NOT NULL AND c.travel_locked = false')->setMaxresults($batch)->setFirstResult($offset);
 		foreach ($query->getResult() as $char) {
 			if ($char->getInsidePlace()) {
 				if (!$interactions->characterLeavePlace($char)) {

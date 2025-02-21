@@ -33,14 +33,14 @@ class WorkerScoutSpottingCommand extends  Command {
 		$this
 			->setName('maf:worker:spot:scouts')
 			->setDescription('Generate scout spotting alarms - worker component - do not call directly')
-			->addArgument('start', InputArgument::OPTIONAL, 'start character id')
-			->addArgument('end', InputArgument::OPTIONAL, 'end character id')
+			->addArgument('offset', InputArgument::OPTIONAL, 'start offset')
+			->addArgument('batch', InputArgument::OPTIONAL, 'batch limit')
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-		$start = $input->getArgument('start');
-		$end = $input->getArgument('end');
+		$offset = $input->getArgument('offset');
+		$batch = $input->getArgument('batch');
 
 		$qb = $this->em->createQueryBuilder();
 		$qb->select(array(
@@ -60,8 +60,7 @@ class WorkerScoutSpottingCommand extends  Command {
 				))
 			->andWhere($qb->expr()->lt('ST_Distance(a.location, b.location)', 'a.spotting_distance'))
 			->andWhere($qb->expr()->lt('ST_Distance(a.location, b.location)', 'a.spotting_distance * (0.5 + (b.visibility/2000))'))
-			->andWhere($qb->expr()->gte('a.id', ':start'))->setParameter('start', $start)
-			->andWhere($qb->expr()->lte('a.id', ':end'))->setParameter('end', $end)
+			->setMaxresults($batch)->setFirstResult($offset)
 		;
 		$this->spotResults($qb->getQuery(), 'scouts');
 
@@ -94,8 +93,7 @@ class WorkerScoutSpottingCommand extends  Command {
 			->andWhere($qb->expr()->lt('ST_Distance(f.location, a.location)', 'a.spotting_distance * 0.5'))
 			->andWhere($qb->expr()->lt('ST_Distance(f.location, b.location)', ':towerrange'))
 			->setParameter('towerrange', $this->tower_range)
-			->andWhere($qb->expr()->gte('a.id', ':start'))->setParameter('start', $start)
-			->andWhere($qb->expr()->lte('a.id', ':end'))->setParameter('end', $end)
+			->setMaxresults($batch)->setFirstResult($offset)
 		;
 		$this->spotResults($qb->getQuery(), 'tower');
 
@@ -128,8 +126,7 @@ class WorkerScoutSpottingCommand extends  Command {
 			->andWhere($qb->expr()->eq('a.alive', $qb->expr()->literal(true)))
 			->andWhere($qb->expr()->eq('a.slumbering', $qb->expr()->literal(false)))
 			->setParameter('towerrange', $this->tower_range)
-			->andWhere($qb->expr()->gte('a.id', ':start'))->setParameter('start', $start)
-			->andWhere($qb->expr()->lte('a.id', ':end'))->setParameter('end', $end)
+			->setMaxresults($batch)->setFirstResult($offset)
 		;
 		$this->spotResults($qb->getQuery(), 'estate');
 
