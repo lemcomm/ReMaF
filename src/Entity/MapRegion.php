@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class MapRegion extends RegionBase {
+class MapRegion extends AbstractRegion {
 	private Collection $characters;
 	private ?array $modifiers = [];
 	private Collection $exits;
@@ -62,12 +62,12 @@ class MapRegion extends RegionBase {
 		return $this->characters;
 	}
 
-	public function addExit (Transit $transit): static {
+	public function addExit (MapTransit $transit): static {
 		$this->exits[] = $transit;
 		return $this;
 	}
 
-	public function removeExit (Transit $transit): void {
+	public function removeExit (MapTransit $transit): void {
 		$this->exits->removeElement($transit);
 	}
 
@@ -75,12 +75,12 @@ class MapRegion extends RegionBase {
 		return $this->exits;
 	}
 
-	public function addEntrance (Transit $transit): static {
+	public function addEntrance (MapTransit $transit): static {
 		$this->entrances[] = $transit;
 		return $this;
 	}
 
-	public function removeEntrance (Transit $transit): void {
+	public function removeEntrance (MapTransit $transit): void {
 		$this->entrances->removeElement($transit);
 	}
 

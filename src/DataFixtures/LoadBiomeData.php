@@ -19,6 +19,7 @@ class LoadBiomeData extends Fixture {
 		'forest'		=> array('spot' => 0.60, 'travel' => 0.80, 'roads' => 1.10, 'features' => 1.10),
 		'dense forest'		=> array('spot' => 0.40, 'travel' => 0.75, 'roads' => 1.25, 'features' => 1.20),
 		'rock'			=> array('spot' => 0.75, 'travel' => 0.60, 'roads' => 1.60, 'features' => 1.30),
+		'mountain'		=> array('spot' => 0.75, 'travel' => 0.60, 'roads' => 1.60, 'features' => 1.30),
 		'snow'			=> array('spot' => 0.75, 'travel' => 0.50, 'roads' => 2.00, 'features' => 1.50),
 		'water'			=> array('spot' => 1.20, 'travel' => 1.50, 'roads' => 1.00, 'features' => 1.00),
 		'ocean'			=> array('spot' => 1.20, 'travel' => 1.50, 'roads' => 1.00, 'features' => 1.00),
