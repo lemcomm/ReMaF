@@ -24,9 +24,9 @@ class StatisticGlobal {
 	private int $abandoned;
 	private int $features;
 	private int $roads;
-	private int $actions;
-	private int $new_messages;
-	private int $new_conversations;
+	private int $actions = 0;
+	private int $new_messages = 0;
+	private int $new_conversations = 0;
 	private int $trades;
 	private int $battles;
 	private int $soldiers;
