@@ -376,7 +376,7 @@ class HouseController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/house/spawntoggle', name:'maf_house_spawn_toggle', requirements:['house'=>'\d+'])]
+	#[Route ('/house/{house}/spawntoggle', name:'maf_house_spawn_toggle', requirements:['house'=>'\d+'])]
 	public function houseSpawnToggleAction(House $house): RedirectResponse {
 		$character = $this->dispatcher->gateway('houseSpawnToggleTest');
 		if (! $character instanceof Character) {
