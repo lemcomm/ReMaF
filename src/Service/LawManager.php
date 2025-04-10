@@ -81,7 +81,7 @@ class LawManager {
 		private CommonService $common, private History $history) {
 	}
 
-	public function getLawKeyFromValue(string $type, string $needle): ?string {
+	public function getLawKeyFromValue(string $type, ?string $needle): ?string {
 		if (array_key_exists($type, $this->choices)) {
 			foreach ($this->choices[$type] as $key => $value) {
 				if ($value === $needle) {
@@ -107,12 +107,16 @@ class LawManager {
 		$choices = $this->choices;
 		$tName = $type->getName();
 		$freeform = $tName==='freeform';
+		if (!$freeform) {
+			$lawSetting = $this->getLawKeyFromValue($tName, $setting);
+		} else {
+			$lawSetting = false;
+		}
 		$taxes = in_array($tName, $this->taxLaws);
 		$stringLaw = in_array($tName, $this->stringLaws);
 		# Validate that this is a type we can set.
 		if ($freeform || $taxes || $choices[$tName] !== null) {
 			# Validate the setting (value) is a valid one.
-			$lawSetting = $this->getLawKeyFromValue($tName, $setting);
 			if ($freeform || $taxes || $stringLaw || ($choices[$tName] && $lawSetting !== null)) {
 				#Looks valid. Process the change.
 				$law = new Law;

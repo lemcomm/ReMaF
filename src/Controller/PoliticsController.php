@@ -423,7 +423,8 @@ class PoliticsController extends AbstractController {
 
 		// FIXME: shouldn't this be in the dispatcher?
 		$others = $this->disp->getActionableCharacters();
-		$choices=array();
+		$choices = [];
+		$existingpartners = [];
 		if ($character->getPartnerships()) {
 			foreach ($character->getPartnerships() as $partnership) {
 				if (!$partnership->getEndDate()) {
@@ -433,19 +434,15 @@ class PoliticsController extends AbstractController {
 		}
 		foreach ($others as $other) {
 			$char = $other['character'];
-			if ($existingpartners) {
-				if ($character->getNonHeteroOptions()) {
-					if (!$char->isNPC() && $char->isActive() && !in_array($char, $existingpartners)) {
-						$choices[$char->getId()] = $char->getName();
-					}
-				} else {
-					if (!$char->isNPC() && $char->isActive() && !in_array($char, $existingpartners) && $char->getMale() != $character->getMale()) {
-						$choices[$char->getId()] = $char->getName();
-					}
+			if ($character->getNonHeteroOptions()) {
+				if (!$char->isNPC() && $char->isActive() && !in_array($char, $existingpartners)) {
+					$choices[] = $char;
 				}
-				// TODO: filter out existing partnerships
+			} else {
+				if (!$char->isNPC() && $char->isActive() && !in_array($char, $existingpartners) && $char->getMale() != $character->getMale()) {
+					$choices[] = $char;
+				}
 			}
-
 		}
 		$formNew = $this->createForm(PartnershipsNewType::class, null, ['others'=>$choices]);
 		$formNewView = $formNew->createView();
@@ -455,10 +452,8 @@ class PoliticsController extends AbstractController {
 
 		$formOld->handleRequest($request);
 		# TODO: Figure out why Symfony Form validation doesn't like this form, and make it work.
-		if ($formOld->isSubmitted()) {
+		if ($formOld->isSubmitted() && $formOld->isValid()) {
 			$data = $formOld->getData();
-			echo 'form old';
-
 			foreach ($data['partnership'] as $id=>$change) {
 				if (!$change) continue;
 				$valid = false;

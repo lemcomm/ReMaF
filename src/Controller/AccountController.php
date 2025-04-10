@@ -38,7 +38,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class AccountController extends AbstractController {
 
 	private function notifications(EntityManagerInterface $em, PaymentManager $pay): array {
-		$announcements = "Welcome to M&F Version 3 Alpha 3! We hope that this alpha version will only last a couple weeks, though it might be less depending on how many bugs are hidden away in the code. That said, there *should* be less bugs in this build than there were in the previous version, so we kindly ask for your patience as we squash them." ;
+		$announcements = "Welcome to the M&F Version 3.0.0 Alpha! Each alpha version will last a varying amount of time as we work on future content, with the information above this changing for each alpha version. An exact timeline for these will not be provided.";
 
 		$notices = array();
 		$codes = $em->getRepository(Code::class)->findBy(array('sent_to_email' => $this->getUser()->getEmail(), 'used' => false));

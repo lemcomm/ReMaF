@@ -224,7 +224,7 @@ class LawController extends AbstractController {
 			$data['faith'] = $form->get('faith')->getData();
 			$data['settlement'] = $form->get('settlement')->getData();
 			#updateLaw($org, $type, $setting, $title, $description = null, Character $character, $allowed, $mandatory, $cascades, $sol, $flush=true)
-			$result = $this->lawMan->updateLaw($org, $type, $data['value'], $data['title'], $data['description'], $char, $data['mandatory'], $data['cascades'], $data['sol'], $data['settlement'], $law);
+			$result = $this->lawMan->updateLaw($org, $type, $data['value'], $data['title'], $data['description'], $char, $data['mandatory'], $data['cascades'], $data['sol'], $data['settlement'], $law, true, $data['faith']);
 			if ($result instanceof Law) {
 				$this->addFlash('error', $this->trans->trans('law.form.edit.success', [], 'orgs'));
 				# These return a different redirect due to how the route is built. if you use the other ones ($this->redirectToRoute) Symfony complains that the controller isn't returning a response.
