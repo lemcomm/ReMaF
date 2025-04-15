@@ -1231,12 +1231,13 @@ soldier:
  medium infantry:  Medium Infantry
  heavy infantry:   Heavy Infantry
  archer:           Archer{count, plural, =1 {} other {s}}
- armoured archer:  Armored Archer{count, plural, =1 {} other {s}}
+ armoured archer:  "Armored Archer{count, plural, =1 {} other {s}}"
  mounted archer:   Mounted Archer{count, plural, =1 {} other {s}}
  cavalry:          Cavalry
  light cavalry:    Light Cavalry
  heavy cavalry:    Heavy Cavalry
- noble:            First One{count, plural, =1 {} other {s}}
+ noble:            Noble{count, plural, =1 {} other {s}}
+ none:             no one...
 
 
 item:

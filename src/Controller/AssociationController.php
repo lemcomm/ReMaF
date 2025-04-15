@@ -46,7 +46,7 @@ class AssociationController extends AbstractController {
 		private TranslatorInterface $trans) {
 	}
 	
-	private function gateway($test, $secondary = null): RedirectResponse|Character {
+	private function gateway($test, $secondary = null): string|Character {
 		return $this->disp->gateway($test, false, true, false, $secondary);
 	}
 
@@ -197,7 +197,7 @@ class AssociationController extends AbstractController {
 		]);
 	}
 
-	#[Route('/assoc/{id}/updateDeity/{deity}', name:'maf_assoc_update_deity', requirements: ['id'=>'\d+', 'deity'=>'\d+'])]
+	#[Route('/assoc/{id}/updateDeity/{deity}', name:'maf_assoc_deity_update', requirements: ['id'=>'\d+', 'deity'=>'\d+'])]
 	public function updateDeityAction(History $hist, Association $id, Deity $deity, Request $request): RedirectResponse|Response {
 		$assoc = $id;
 		$char = $this->gateway('assocUpdateDeityTest', [$assoc, $deity]);
@@ -237,7 +237,7 @@ class AssociationController extends AbstractController {
 		]);
 	}
 
-	#[Route('/assoc/{id}/wordsDeity/{deity}', name:'maf_assoc_words_deity', requirements: ['id'=>'\d+', 'deity'=>'\d+'])]
+	#[Route('/assoc/{id}/wordsDeity/{deity}', name:'maf_assoc_deity_words', requirements: ['id'=>'\d+', 'deity'=>'\d+'])]
 	public function wordsDeityAction(History $hist, Association $id, AssociationDeity $deity, Request $request): RedirectResponse|Response {
 		$assoc = $id;
 		$char = $this->gateway('assocWordsDeityTest', [$assoc, $deity]);
@@ -473,7 +473,7 @@ class AssociationController extends AbstractController {
 
 	#[Route('/assoc/manageRank/{rank}', name:'maf_assoc_managerank', requirements: ['rank'=>'\d+'])]
 	public function manageRankAction(DescriptionManager $dm, AssociationRank $rank, Request $request): RedirectResponse|Response {
-		$char = $this->gateway('this->amageRankTest', $rank);
+		$char = $this->gateway('assocManageRankTest', $rank);
 		if (!($char instanceof Character)) {
 			return $this->redirectToRoute($char);
 		}
@@ -514,7 +514,7 @@ class AssociationController extends AbstractController {
 
 	#[Route('/assoc/manageMember/{mbr}', name:'maf_assoc_managemember', requirements: ['mbr'=>'\d+'])]
 	public function manageMemberAction(AssociationMember $mbr, Request $request): RedirectResponse|Response {
-		$char = $this->gateway('this->amageMemberTest', $mbr);
+		$char = $this->gateway('assocManageMemberTest', $mbr);
 		if (!($char instanceof Character)) {
 			return $this->redirectToRoute($char);
 		}

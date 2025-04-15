@@ -40,19 +40,16 @@ class SettlementPermissionsSetType extends AbstractType {
 		$builder->add('allow_thralls', CheckboxType::class, array(
 			'label' => "control.permissions.thralls",
 			'required' => false,
-			'mapped' => false,
 			'data'=>$settlement->getAllowThralls(),
 		));
 		$builder->add('feed_soldiers', CheckboxType::class, array(
 			'label' => "control.permissions.feedsoldiers",
 			'required' => false,
-			'mapped' => false,
 			'data'=>$settlement->getFeedSoldiers(),
 		));
 		$builder->add('food_provision_limit', PercentType::class, [
 			'label'=>'control.permissions.foodlimit',
 			'required' => false,
-			'mapped' => false,
 			'data' => $settlement->getFoodProvisionLimit(),
 			'constraints'=>[
 				new Positive(['message'=>'number.positive']),

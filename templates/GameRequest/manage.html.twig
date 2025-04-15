@@ -9,7 +9,7 @@
 	{% for gamerequest in gamerequests %}
 		{% if gamerequest.type == 'soldier.food' %}
 			<hr>
-			{{ 'personal.request.soldierfood'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-settlement%":link(gamerequest.toSettlement)}, "actions")|raw }}
+			{{ 'personal.request.soldierfood'|trans({"%character%":link(gamerequest.fromCharacter), "%settlement%":link(gamerequest.toSettlement)}, "actions")|raw }}
 			{{ 'personal.request.created'|trans({"%date%":gamerequest.created|date("D, d M Y H:i:s")}, "actions")|raw }}
 			{% if gamerequest.expires %}
 				{{ 'personal.request.expires'|trans({"%date%":gamerequest.expires|date("D, d M Y H:i:s")}, "actions")|raw }}
@@ -23,7 +23,7 @@
 			</div>
 		{% elseif gamerequest.type == 'house.cadet' %}
 			<hr>
-			{{ 'house.manage.cadet.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-house%":link(gamerequest.fromHouse), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
+			{{ 'house.manage.cadet.preamble'|trans({"%character%":link(gamerequest.fromCharacter), "%house%":link(gamerequest.fromHouse), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
 			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks}}
@@ -31,7 +31,7 @@
 			</div>
 		{% elseif gamerequest.type == 'house.subcreate' %}
 			<hr>
-			{{ 'house.manage.subcreate.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
+			{{ 'house.manage.subcreate.preamble'|trans({"%character%":link(gamerequest.fromCharacter), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
 			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks}}
@@ -39,7 +39,7 @@
 			</div>
 		{% elseif gamerequest.type == 'house.join' %}
 			<hr>
-			{{ 'house.manage.applicant.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
+			{{ 'house.manage.applicant.preamble'|trans({"%character%":link(gamerequest.fromCharacter), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
 			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks}}
@@ -47,7 +47,7 @@
 			</div>
 		{% elseif gamerequest.type == 'house.uncadet' %}
 			<hr>
-			{{ 'house.manage.uncadet.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-house%":link(gamerequest.fromHouse), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
+			{{ 'house.manage.uncadet.preamble'|trans({"%character%":link(gamerequest.fromCharacter), "%house%":link(gamerequest.fromHouse), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
 			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks}}
@@ -56,13 +56,13 @@
 		{% elseif gamerequest.type == 'oath.offer' %}
 			<hr>
 			{% if gamerequest.toSettlement %}
-				{{ 'oath.offer.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-settlement%":link(gamerequest.toSettlement), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
+				{{ 'oath.offer.preamble'|trans({"%character%":link(gamerequest.fromCharacter), "%settlement%":link(gamerequest.toSettlement), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			{% elseif gamerequest.toRealm %}
-				{{ 'oath.offer.preamble2'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-realm%":link(gamerequest.toRealm), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
+				{{ 'oath.offer.preamble2'|trans({"%character%":link(gamerequest.fromCharacter), "%realm%":link(gamerequest.toRealm), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			{% elseif gamerequest.toPlace %}
-				{{ 'oath.offer.preamble3'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-place%":link(gamerequest.toPlace), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
+				{{ 'oath.offer.preamble3'|trans({"%character%":link(gamerequest.fromCharacter), "%place%":link(gamerequest.toPlace), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			{% else %}
-				{{ 'oath.offer.preamble4'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-realmposition%":link(gamerequest.toPosition), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
+				{{ 'oath.offer.preamble4'|trans({"%character%":link(gamerequest.fromCharacter), "%realmposition%":link(gamerequest.toPosition), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			{% endif %}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
@@ -71,7 +71,7 @@
 			</div>
 		{% elseif gamerequest.type == 'realm.join' %}
 			<hr>
-			{{ 'diplomacy.join.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-realm%":link(gamerequest.fromRealm), "%link-realm-2%":link(gamerequest.toRealm), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
+			{{ 'diplomacy.join.preamble'|trans({"%character%":link(gamerequest.fromCharacter), "%realm%":link(gamerequest.fromRealm), "%realm-2%":link(gamerequest.toRealm), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
 			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks}}
@@ -79,7 +79,7 @@
 			</div>
 		{% elseif gamerequest.type == 'assoc.join' %}
 			<hr>
-			{{ 'assoc.requests.join.preamble'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-assoc%":link(gamerequest.toAssociation), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "orgs")|raw }}
+			{{ 'assoc.requests.join.preamble'|trans({"%character%":link(gamerequest.fromCharacter), "%assoc%":link(gamerequest.toAssociation), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "orgs")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
 			{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks}}
@@ -97,7 +97,7 @@
 		{% for gamerequest in approved %}
 			{% if gamerequest.type == 'soldier.food' %}
 				<hr>
-				{{ 'personal.request.soldierfood'|trans({"%link-character%":link(gamerequest.fromCharacter), "%link-settlement%":link(gamerequest.toSettlement)}, "actions")|raw }}
+				{{ 'personal.request.soldierfood'|trans({"%character%":link(gamerequest.fromCharacter), "%settlement%":link(gamerequest.toSettlement)}, "actions")|raw }}
 				{{ 'personal.request.created'|trans({"%date%":gamerequest.created|date("D, d M Y H:i:s")}, "actions")|raw }}
 				{% if gamerequest.expires %}
 					{{ 'personal.request.expires'|trans({"%date%":gamerequest.expires|date("D, d M Y H:i:s")}, "actions")|raw }}

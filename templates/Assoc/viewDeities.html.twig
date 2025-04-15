@@ -30,11 +30,11 @@
 			{% endif %}
 			{% set check = associationDispatcher.assocUpdateDeityTest(null, [assoc, deity]) %}
 			{% if check.url is defined %}
-				<p><a href="{{ path('maf_assoc_update_deity', {'id':assoc.id, 'deity':deity.id}) }}">{{ 'assoc.route.updateDeity.name'|trans({}) }}</a></p>
+				<p><a href="{{ path('maf_assoc_deity_update', {'id':assoc.id, 'deity':deity.id}) }}">{{ 'assoc.route.updateDeity.name'|trans({}) }}</a></p>
 			{% endif %}
 			{% set check = associationDispatcher.assocWordsDeityTest(null, [assoc, each]) %}
 			{% if check.url is defined %}
-				<p><a href="{{ path('maf_assoc_words_deity', {'id':assoc.id, 'deity':each.id}) }}">{{ 'assoc.route.wordsDeity.name'|trans({}) }}</a></p>
+				<p><a href="{{ path('maf_assoc_deity_words', {'id':assoc.id, 'deity':each.id}) }}">{{ 'assoc.route.wordsDeity.name'|trans({}) }}</a></p>
 			{% endif %}
 			{% set check = associationDispatcher.assocRemoveDeityTest(null, [assoc, deity]) %}
 			{% if check.url is defined %}

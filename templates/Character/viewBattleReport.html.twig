@@ -225,7 +225,7 @@
 					{% if version >= 3 %}
 						{% for soldiers, i in group.start %}
 							{% set string = soldiers|split('.') %}
-							<li>{{ i }} {{ string.0|trans|title }} {{ (string.1)|trans({'count':i})|title }}</li>
+							<li>{{ i }} {{ ('soldier.'~string.1)|trans({'count':i})|title }} ({{ string.0|trans|title }}) </li>
 						{% endfor %}
 					{% else %}
 						{% for soldiers, i in group.start %}
@@ -293,11 +293,23 @@
 		{% for group in report.groups %}
 			<td valign="top">
 			<ul>
-			{% for type, amount in group.finish %}
+				{% if version >= 3 %}
+					{% for type, amount in group.finish %}
+						{% set string = type|split('.') %}
+						<li>{{ amount }} {{ ('soldier.'~string.1)|trans({'count':amount})|title }} ({{ string.0|trans|title }}) </li>
+					{% else %}
+						<i>{{ 'soldier.none'|trans }}</i>
+					{% endfor %}
+				{% else %}
+					{% for type, amount in group.finish %}
+						<li>{{ amount }} {{ ('soldier.'~soldiers)|trans({'count':amount})|title }}</li>
+					{% else %}
+						<i>{{ 'soldier.none'|trans }}</i>
+					{% endfor %}
+				{% endif %}
+				{#
 				<li>{{ amount }} {{ type }}</li>
-			{% else %}
-				(none)
-			{% endfor %}
+				#}
 			</ul>
 			</td>
 		{% endfor %}

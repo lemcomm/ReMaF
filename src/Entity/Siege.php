@@ -67,6 +67,7 @@ class Siege {
 			#1/3 of population returned as flat integer (no decimals)
 		}
 		$this->encirclement = $need;
+		$this->encircled = false; # Prepartore purely. $this->updateEncriclement is called after this function.
 		return $this;
 	}
 

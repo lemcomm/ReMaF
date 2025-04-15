@@ -6,6 +6,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class Soldier extends NPC {
+	protected int $mastery = 0;
+	protected int $toughness = 12;
+	protected int $willpower = 12;
+	protected int $baseSkill = 12;
+	protected int $penalty = 0;
 	protected int $morale = 0;
 	protected int $maxMorale = 0;
 	protected bool $is_fortified = false;

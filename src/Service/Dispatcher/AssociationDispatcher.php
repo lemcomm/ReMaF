@@ -323,7 +323,7 @@ class AssociationDispatcher extends Dispatcher {
 		if (!$rank || !$rank->getOwner()) {
 			return array("name"=>"assoc.deities.new.name", "description"=>"unavailable.notassocowner");
 		} else {
-			return $this->action("assoc.deities.new", "maf_assoc_new_deity", true,
+			return $this->action("assoc.deities.new", "maf_assoc_deity_new", true,
 				array('id'=>$assoc->getId()),
 				array("%name%"=>$assoc->getName())
 			);
@@ -352,7 +352,7 @@ class AssociationDispatcher extends Dispatcher {
 		if ($deity->getMainRecognizer() !== $assoc) {
 			return array("name"=>"assoc.deities.update.name", "description"=>"unavailable.notmainrecognizer");
 		} else {
-			return $this->action("assoc.deities.update", "maf_assoc_update_deity", true,
+			return $this->action("assoc.deities.update", "maf_assoc_deity_update", true,
 				array('id'=>$assoc->getId()),
 				array("%name%"=>$assoc->getName())
 			);
@@ -380,7 +380,7 @@ class AssociationDispatcher extends Dispatcher {
 		} if ($deity->getAssociation() !== $assoc) {
 			return array("name"=>"assoc.deities.remove.name", "description"=>"unavailable.deitynotofassoc");
 		} else {
-			return $this->action("assoc.deities.words", "maf_assoc_words_deity", true,
+			return $this->action("assoc.deities.words", "maf_assoc_deity_words", true,
 				array('id'=>$assoc->getId()),
 				array("%name%"=>$assoc->getName())
 			);

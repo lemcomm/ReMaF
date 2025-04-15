@@ -25,6 +25,7 @@ use App\Form\WarType;
 use App\Service\ActionManager;
 use App\Service\CharacterManager;
 use App\Service\CommonService;
+use App\Service\Dispatcher\PlaceDispatcher;
 use App\Service\Geography;
 use App\Service\History;
 use App\Service\Dispatcher\WarDispatcher;
@@ -57,6 +58,7 @@ class WarController extends AbstractController {
 		private History $hist,
 		private TranslatorInterface $trans,
 		private WarDispatcher $warDisp,
+		private PlaceDispatcher $placeDisp,
 		private WarManager $wm) {
 	}
 	
@@ -236,7 +238,7 @@ class WarController extends AbstractController {
 		} elseif (!$place) {
 			$character = $this->warDisp->gateway('militarySiegeSettlementTest');
 		} else {
-			$character = $this->warDisp->gateway('militarySiegePlaceTest', false, true, false, $place);
+			$character = $this->placeDisp->gateway('militarySiegePlaceTest', false, true, false, $place);
 		}
 
 		# Prepare other variables.
@@ -294,7 +296,6 @@ class WarController extends AbstractController {
 					$siege->setSettlement($settlement);
 					$settlement->setSiege($siege);
 					$siege->prepareEncirclement();
-					$siege->updateEncirclement();
 					$maxstages = 1; # No defense, no siege, thus if we have a siege, we always have atleast one stage. This means we have at least a Palisade.
 					if($settlement->hasBuildingNamed('Wood Wall')) {
 						$maxstages++; # It may be a wall of sticks for the most part, but it's still *something*.
@@ -313,7 +314,6 @@ class WarController extends AbstractController {
 					$settlement = FALSE;
 					$siege->setPlace($place);
 					$siege->prepareEncirclement();
-					$siege->updateEncirclement();
 					$place->setSiege($siege);
 					$siege->setMaxStage(1);
 				}
@@ -390,6 +390,9 @@ class WarController extends AbstractController {
 				$siege->addGroup($attackers);
 				$siege->setAttacker($attackers);
 				$em->persist($attackers);
+
+				# This requires $siege->attacker to be set.
+				$siege->updateEncirclement();
 
 				# setup defenders
 				$defenders = new BattleGroup;

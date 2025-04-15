@@ -148,6 +148,7 @@ class DescriptionManager {
 					$this->history->logEvent(
 						$entity,
 						'event.description.updated.house',
+						null,
 						History::LOW
 					);
 					break;

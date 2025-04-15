@@ -46,6 +46,145 @@ class CombatManager {
 		}
 	}
 
+	public function attackRoll($me, $target, $stumble = false) {
+		$attRoll = rand(1, 100);
+		$defRoll = rand(1, 100);
+		$attResult = $attRoll < $me->effMasteryLevel ? $attRoll %5 == 0? 'CS' : 'SS' : $attRoll %5 == 0? 'CF' : 'SF';
+		if ($stumble) {
+			$defRoll = 'Ignore';
+		}
+		else {
+			$defResult = $defRoll < $target->effMasteryLevel ? $defRoll %5 == 0? 'CS' : 'SS' : $defRoll %5 == 0? 'CF' : 'SF';
+		}
+
+		$resultArray = [
+			'CF' => ['CF' => 'Defended',	'SF' => 'DTA',			'SS' => 'DTA',			'CS' => 'DTA',		'Ignore' => 'DTA'],
+			'SF' => ['CF' => 'Stumble',		'SF' => 'Defended',		'SS' => 'Defended',		'CS' => 'DTA',		'Ignore' => 'D1'],
+			'SS' => ['CF' => 'D2',			'SF' => 'D1',			'SS' => 'Defended',		'CS' => 'Defended',	'Ignore' => 'D3'],
+			'CS' => ['CF' => 'D3', 			'SF' => 'D2',			'SS' => 'D1',			'CS' => 'Defended',	'Ignore' => 'D4']
+		];
+		return $resultArray[$attResult][$defResult];
+	}
+
+	public function resolveAttack($me, $target, $result, $dta = false) {
+		if ($result === 'DTA' && !$dta) {
+			$this->resolveAttack($target, $me, true);
+		}
+		elseif ($result === 'Stumble') {
+			$this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), false);
+		}
+		elseif ($result === 'Defended') {
+			return;
+		}
+		else {
+			$this->resolveDamage($me, $target, (int)$result[-1]);
+		}
+	}
+
+	public function resolveDamage($me, $target, $dice) {
+		$damage = 0;
+		$hitLoc = $this->getHitLoc();
+		$damTable = $this->bestAspect($me->getWeapon(), $target->getArmourHitLoc($hitLoc), $dice);
+		for ($i = 0; $i < $dice; $i++) {
+			$damage += rand(1, 6);
+		}
+		$effDamage = $damage + $damTable["damage"];
+		$result = $this->damageResult($effDamage, $damTable["table"]);
+
+		// Handle soldiers based on result.
+
+		if ($result === "protected") {
+			return; // Do something on armor protection?
+		}
+
+		$shockRoll = $target->penalty;
+		$damResult = $target->getRace()->hitLocs[$hitLoc][$result];
+		if (in_array("kill", $damResult) or in_array("amputate", $damResult)) {
+			// Target is killed.
+			$target->kill();
+		}
+		else {
+			// Target is wounded.
+			$target->wound();
+
+			// Shock roll
+
+			for ($i = 0; $i < $damResult[0]; $i++) {
+				$shockRoll += rand(1, 6);
+			}
+			if ($shockRoll > $target->toughness) {
+				// Technically, this is a KO, but we assume that we kill the soldiers until a better function replaces post-battle recovery
+				$target->kill();
+			}
+			$target->penalty += $damResult[0];
+		}
+
+		// Stumble attacks again.
+
+		if (in_array("stumble", $damResult)) {
+			$this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), false);
+		}
+	}
+
+	public function bestAspect($weapon, $armour, $dice) {
+		$aspects = ['cutting', 'bashing', 'piercing'];
+		$best =  [["aspect" => "nothing", "damage" => -100, "table" => []], -100];
+		// A note on the value -100. Maximum possible damage without magic is less than 40. Any armor value over this practically guarantees immunity.
+		$expDiceResult = $dice * 3;
+		foreach ($aspects as $aspect) {
+			$damTable = $this->getAspectIndex($aspect);
+			// Sim values for AI determination
+			$expSimResult = $weapon->getAspects[$aspect] - $armour->getProtection[$aspect] + $expDiceResult;
+			// Max() guarantees execution safety, making any armor value possible.
+			$simDiff = max($expSimResult - array_search("heavy", $damTable), -99);
+			// Real values used for calc
+			$diff = $weapon->getAspects[$aspect] - $armour->getProtection[$aspect];
+			$best = $simDiff > $best[1] ? [["aspect" => $aspect, "damage" => $diff, "table" => $damTable], $simDiff] : $best;
+		}
+		return $best[0];
+	}
+
+	public function getAspectIndex(string $aspect): array {
+		$damIndex = ["minor", "moderate", "serious", "heavy", "mortal"];
+		$bashIndex = [1,	7,	13,	19,	25];
+		$cutIndex =  [1,	5,	9,	13,	17];
+		$pierceIndex = [1,	6,	11,	16,	21];
+		$bashTable = array_combine($bashIndex, $damIndex);
+		$cutTable = array_combine($cutIndex, $damIndex);
+		$pierceTable = array_combine($pierceIndex, $damIndex);
+		if ($aspect === "bashing"){
+			return $bashTable;
+		}
+		elseif ($aspect === "cutting"){
+			return $cutTable;
+		}
+		else{
+			return $pierceTable;
+		}
+	}
+
+	public function getHitLoc() {
+		$roll = rand(1, 100);
+		// Move this to Entity/Race.
+		$locindex = [5, 10, 15, 27, 33, 35, 39, 43, 60, 70, 74, 80, 88, 90, 96, 99];
+		$locname = ["skull", "face", "neck", "shoulder", "upper arm", "elbow", "forearm", "hand", "torso", "abdomen", "groin", "hip", "thigh", "knee", "calf", "foot"];
+		$hitLoc = array_combine($locindex, $locname);
+		foreach($hitLoc as $index => $loc) {
+			if ($roll <= $index) {
+				return $loc;
+			}
+		}
+	}
+
+	public function damageResult($damage, $damTable) {
+		foreach(array_reverse($damTable, true) as $index => $damResult) {
+			if ($damage >= $index) {
+				return $damResult;
+			}
+		}
+		return "protected"; // no damage
+	}
+
 	public function ChargeAttack(Soldier|Character $me, $target, $act=false, $battle=false, $xpMod = 1, $defBonus = null): array {
 		if ($battle) {
 			if ($me->isNoble() && $me->getWeapon()) {

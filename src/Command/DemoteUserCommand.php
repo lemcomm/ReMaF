@@ -60,7 +60,7 @@ class DemoteUserCommand extends  Command {
 				}
 				return $role;
 			});
-			$input->setArgument('email', $helper->ask($input, $output, $need));
+			$input->setArgument('role', $helper->ask($input, $output, $need));
 		}
 	}
 }

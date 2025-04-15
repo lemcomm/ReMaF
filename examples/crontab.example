@@ -44,6 +44,6 @@
 
 
 # Run M&F Daily Command at 0220L, Payment Processor at 0115L, and Newsletter handler at 0045L.
-20 2 * * * php /var/www/maf/app/console --env=prod maf:process:daily 2>&1 >> /var/www/maf/var/log/daily.log
-15 1 * * * php /var/www/maf/app/console --env=prod maf:payment:cycle 2>&1 >> /var/www/maf/var/log/payment.log
-45 0 * * * php /var/www/maf/app/console --env=prod maf:newsletter
+20 2 * * * php /var/www/maf/bin/console --env=prod maf:process:daily 2>&1 >> /var/www/maf/var/log/daily.log
+15 1 * * * php /var/www/maf/bin/console --env=prod maf:payment:cycle 2>&1 >> /var/www/maf/var/log/payment.log
+# 45 0 * * * php /var/www/maf/bin/console --env=prod maf:newsletter

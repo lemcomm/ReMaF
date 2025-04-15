@@ -31,7 +31,7 @@ class Politics {
 		return false;
 	}
 
-	public function breakoath(Character $character, $alleg = null, $to = null, $thing = null): void {
+	public function breakoath(Character $character, $alleg = null, $to = null, ?string $thing = null): void {
 		if (!$alleg) {
 			$alleg = $character->findAllegiance();
 		}
@@ -42,6 +42,8 @@ class Politics {
 			} else {
 				$target = $to->getRealm();
 			}
+		}
+		if ($to && $target) {
 			if ($alleg instanceof Character) {
 				# Legacy oath.
 				$done = true;
@@ -57,7 +59,7 @@ class Politics {
 				$realm = $alleg;
 			}
 			if (!$done) {
-				if ($realm && $target && $realm === $target) {
+				if ($realm && $realm === $target) {
 					if (!($alleg instanceof RealmPosition)) {
 						$this->history->logEvent(
 							$alleg,
@@ -75,7 +77,7 @@ class Politics {
 							);
 						}
 					}
-				} elseif ($realm) {
+				} elseif ($realm && $target) {
 					$ultimate = $realm->findUltimate();
 					$hierarchy = $ultimate->findAllInferiors(true);
 					if ($hierarchy->contains($target)) {

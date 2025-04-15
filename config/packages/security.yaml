@@ -79,7 +79,7 @@ security:
         - { path: ^/(../)?security, roles: PUBLIC_ACCESS }
         - { path: ^/(../)?admin, roles: ROLE_ADMIN }
         - { path: ^/(../)?olympus, roles: ROLE_OLYMPUS }
-        - { path: ^/(../)?gamerequest, roles: ROLE_USER } # Without this, users will be locked out of the gamerequest path by the line below. --Andrew
+        - { path: ^/(../)?gamereq, roles: ROLE_USER } # Without this, users will be locked out of the gamerequest path by the line below. --Andrew
         - { path: ^/(../)?game, roles: ROLE_ADMIN }
         - { path: ^/(../)?world, roles: ROLE_ADMIN }
         - { path: ^/(../)?heraldry, roles: ROLE_USER }

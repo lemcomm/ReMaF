@@ -31,7 +31,7 @@ class RealmManageType extends AbstractType {
 		if ($max > 0) {
 			$max = $max-1;
 		} else {
-			$max = 7;
+			$max = 9;
 		}
 		$builder->add('name', TextType::class, [
 			'label'=>'realm.name',
