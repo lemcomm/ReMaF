@@ -10,14 +10,129 @@ use Doctrine\Persistence\ObjectManager;
 class LoadRaceData extends Fixture {
 
 	private array $races = [
-		'first one'		=> ['hp'=>200, 'avgPackSize'=>1, 'maxPackSize'=>1, 'melee'=>2, 'ranged'=>2, 'mDef'=>2, 'rDef'=>2, 'morale'=>5.00, 'eats'=>false, 'maxHunger'=>null, 'undeath'=>false, 'aging'=>false, 'equipment'=>true],
-		'second one'		=> ['roads' => 0.8, 'undeath'=>false, 'equipment'=>true],
-		'human'			=> ['equipment'=>true],
+		'first one'		=> ['hp'=>200, 'avgPackSize'=>1, 'maxPackSize'=>1, 'melee'=>2, 'ranged'=>2, 'mDef'=>2, 'rDef'=>2, 'morale'=>5.00, 'eats'=>false, 'maxHunger'=>null, 'undeath'=>false, 'aging'=>false, 'equipment'=>true, 'hitLoc' => $this->defautHitLoc],
+		'second one'	=> ['roads' => 0.8, 'undeath'=>false, 'equipment'=>true, 'hitLoc' => $this->defautHitLoc],
+		'human'			=> ['equipment'=>true, 'hitLocs' => $this->defautHitLoc],
 		'orc'			=> ['hp'=>150, 'avgPackSize'=>10, 'maxPackSize'=>100, 'travel'=>0.75, 'roads'=>0.75, 'size'=>1.25, 'melee'=>1.5, 'mDef'=>1.5, 'equipment'=>true],
 		'ogre'			=> ['hp'=>200, 'avgPackSize'=>5, 'maxPackSize'=>25, 'travel'=>0.5, 'roads'=>0.25, 'size'=>3, 'melee'=>5, 'mDef'=>2.5, 'ranged'=>0.25, 'rDef'=>2.5],
 		'dragon'		=> ['hp'=>10000, 'avgPackSize'=>1, 'maxPackSize'=>3, 'travel'=>5, 'roads'=>0, 'size'=>5, 'melee'=>10, 'ranged'=>5, 'mDef'=>5, 'rDef'=>5, 'morale'=>5, 'hungerRate'=>600, 'maxHunger'=>1800000, 'aging'=>false],
 		'wyvern'		=> ['hp'=>500, 'avgPackSize'=>5, 'maxPackSize'=>10, 'travel'=>3, 'roads'=>0, 'size'=>3, 'melee'=>5, 'ranged'=>2.5, 'mDef'=>2.5, 'rDef'=>2.5, 'hungerRate'=>4800, 'maxHunger'=>600000],
 		'slime'			=> ['hp'=>50, 'avgPackSize'=>50, 'travel'=>0.5, 'roads'=>0, 'size'=>0.3, 'melee'=>0.25, 'ranged'=>0, 'mDef'=>5, 'rDef'=>10, 'morale'=>10, 'eats'=>false, 'maxHunger'=>null, 'aging'=>false, 'undeath'=>false],
+	];
+
+	private array $defaultHitLoc = [
+		"skull"=> [
+			"mortal"=> [5],
+			"heavy"=> [4],
+			"serious"=> [3],
+			"moderate"=> [2],
+			"minor"=> [1]
+		],
+		"face"=> [
+			"mortal"=> [5, "kill"],
+			"heavy"=> [4],
+			"serious"=> [3],
+			"moderate"=> [2],
+			"minor"=> [1]
+		],
+		"neck"=> [
+			"mortal"=> [5, "amputate", "kill"],
+			"heavy"=> [4, "kill"],
+			"serious"=> [3],
+			"moderate"=> [2],
+			"minor"=> [1]
+		],
+		"shoulder"=> [
+			"mortal"=> [4, "stumble", "kill"],
+			"heavy"=> [4, "stumble"],
+			"serious"=> [3, "stumble"],
+			"moderate"=> [2, "stumble"],
+			"minor"=> [1]
+		],
+		"upper Arm"=> [
+			"mortal"=> [4, "stumble", "amputate"],
+			"heavy"=> [3, "stumble"],
+			"serious"=> [2, "stumble"],
+			"moderate"=> [1, "stumble"],
+			"minor"=> [1]
+		],
+		"elbow"=> [
+			"mortal"=> [5, "stumble", "amputate"],
+			"heavy"=> [4, "stumble"],
+			"serious"=> [3, "stumble"],
+			"moderate"=> [2, "stumble"],
+			"minor"=> [1, "stumble"]
+		],
+		"forearm"=> [
+			"mortal"=> [4, "stumble", "amputate"],
+			"heavy"=> [3, "stumble"],
+			"serious"=> [2, "stumble"],
+			"moderate"=> [1, "stumble"],
+			"minor"=> [1]
+		],
+		"hand"=> [
+			"mortal"=> [5, "stumble", "amputate"],
+			"heavy"=> [4, "stumble"],
+			"serious"=> [3, "stumble"],
+			"moderate"=> [2, "stumble"],
+			"minor"=> [1, "stumble"]
+		],
+		"torso"=> [
+			"mortal"=> [5, "kill"],
+			"heavy"=> [4],
+			"serious"=> [3],
+			"moderate"=> [2],
+			"minor"=> [1]
+		],
+		"abdomen"=> [
+			"mortal"=> [5, "kill"],
+			"heavy"=> [4, "kill"],
+			"serious"=> [3],
+			"moderate"=> [2],
+			"minor"=> [1]
+			],
+		"groin"=> [
+			"mortal"=> [5, "amputate"],
+			"heavy"=> [4],
+			"serious"=> [3],
+			"moderate"=> [2],
+			"minor"=> [1]
+			],
+		"hip"=> [
+			"mortal"=> [4, "stumble", "kill"],
+			"heavy"=> [4, "stumble"],
+			"serious"=> [3, "stumble"],
+			"moderate"=> [2, "stumble"],
+			"minor"=> [1]
+		],
+		"thigh"=> [
+			"mortal"=> [4, "stumble", "kill", "amputate"],
+			"heavy"=> [4, "stumble"],
+			"serious"=> [3, "stumble"],
+			"moderate"=> [2, "stumble"],
+			"minor"=> [1]
+		],
+		"knee"=> [
+			"mortal"=> [5, "stumble", "amputate"],
+			"heavy"=> [4, "stumble"],
+			"serious"=> [3, "stumble"],
+			"moderate"=> [2, "stumble"],
+			"minor"=> [1, "stumble"]
+		],
+		"calf"=> [
+			"mortal"=> [4, "stumble", "amputate"],
+			"heavy"=> [3, "stumble"],
+			"serious"=> [2, "stumble"],
+			"moderate"=> [1, "stumble"],
+			"minor"=> [1]
+		],
+		"foot"=> [
+			"mortal"=> [5, "stumble", "amputate"],
+			"heavy"=> [4, "stumble"],
+			"serious"=> [3, "stumble"],
+			"moderate"=> [2, "stumble"],
+			"minor"=> [1, "stumble"]
+		]
 	];
 
 	private array $defaults = [
