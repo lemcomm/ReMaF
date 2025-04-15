@@ -351,13 +351,14 @@ class HouseController extends AbstractController {
 		]);
 	}
 	
-	#[Route ('/house/newplayer', name:'maf_house_newplayer', requirements:['house'=>'\d+'])]
-	public function newplayerAction(House $house, Request $request): RedirectResponse|Response {
+	#[Route ('/house/newplayer', name:'maf_house_newplayer')]
+	public function newplayerAction(Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('houseNewPlayerInfoTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
+		$house = $character->getHouse();
 		$desc = $house->getSpawnDescription();
 		$text = $desc?->getText();
 		$form = $this->createForm(DescriptionNewType::class, null, ['text' => $text]);
