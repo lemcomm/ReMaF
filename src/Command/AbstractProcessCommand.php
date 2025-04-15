@@ -56,23 +56,20 @@ class AbstractProcessCommand extends Command {
 		 * That is also why M&F requires multi-cores as trying to run the entire game on a single thread might actually take a whole hour.
 		 * If you have a smaller world (M&F has 1817 settlements, for reference) you could lower this all down as needed.
 		 */
-		/*
-		 * TODO: Rework this to grab an ID count of the entity, and then divide that by the number of threads.
-		 * And of course rework the individual work commands to also process them using $query->setMaxResults() starting from the $id of the next batch ordering by ID.
-		 */
-		$min = $this->em->createQuery('SELECT MIN(e.id) FROM App\Entity\\'.$entity.' e')->getSingleScalarResult();
-		$max = $this->em->createQuery('SELECT MAX(e.id) FROM App\Entity\\'.$entity.' e')->getSingleScalarResult();
+		$total = $this->em->createQuery('SELECT COUNT(e.id) FROM App\Entity\\'.$entity.' e')->getSingleScalarResult();
+		$batch_size = ceil($total / $this->parallel);
 
-		$batch_size = ceil((($max-$min)+1)/$this->parallel);
 		$pool = array();
 		$consoleDir = $_ENV['ROOT_DIR'].'/bin/console';
 		$php = $_ENV['PHP_CMD'];
-		$this->output->writeln("Starting ID of $min, ending ID of $max, batches of $batch_size...");
-		for ($i=$min; $i<=$max; $i+=$batch_size) {
-			$process = new Process([$php, $consoleDir, 'maf:worker:'.$worker, $i, $i+$batch_size], null, null, null, $timeout);
+		$this->output->writeln("Starting $worker worker for $total with batches of $batch_size");
+		$start = 0;
+		for ($i=1; $i<=$this->parallel; $i++) {
+			$this->output->writeln("Start of $start with batch of $batch_size");
+			$process = new Process([$php, $consoleDir, 'maf:worker:'.$worker, $start, $batch_size], null, null, null, $timeout);
 			$process->start();
 			$pool[] = $process;
-			$i++;
+			$start += $batch_size;
 		}
 		$this->output->writeln($worker.": started ".count($pool)." jobs");
 

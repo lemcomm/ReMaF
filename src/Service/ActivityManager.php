@@ -271,6 +271,7 @@ class ActivityManager {
 
 	private function runDuel(Activity $act): true {
 		$em = $this->em;
+		$this->combat->activity = $act;
 		$me = $act->findChallenger();
 		$them = $act->findChallenged();
 		if (!$me || !$them) {
@@ -282,8 +283,8 @@ class ActivityManager {
 		$meC = $me->getCharacter();
 		/** @var Character $themC */
 		$themC = $them->getCharacter();
-		$meRanged = $this->combat->RangedPower($me, false, $me->getWeapon());
-		$meMelee = $this->combat->MeleePower($me, false, $me->getWeapon());
+		$meRanged = $this->combat->RangedPower($meC, false, $me->getWeapon());
+		$meMelee = $this->combat->MeleePower($meC, false, $me->getWeapon());
 		$meSkill = $meC->findSkill($me->getWeapon()->getSkill());
 		if ($meSkill) {
 			$meScore = $meSkill->getScore();
@@ -292,8 +293,8 @@ class ActivityManager {
 			$meScore = 0;
 			echo 'no meScore - ';
 		}
-		$themRanged = $this->combat->RangedPower($them, false, $them->getWeapon());
-		$themMelee = $this->combat->MeleePower($them, false, $them->getWeapon());
+		$themRanged = $this->combat->RangedPower($themC, false, $them->getWeapon());
+		$themMelee = $this->combat->MeleePower($themC, false, $them->getWeapon());
 		$themSkill = $themC->findSkill($them->getWeapon()->getSkill());
 		if ($themSkill) {
 			$themScore = $themSkill->getScore();
@@ -514,7 +515,7 @@ class ActivityManager {
 		return true;
 	}
 
-	private function duelAttack($me, $meChar, $meRanged, $meMelee, $meScore, $themChar, $themScore, $act, $ranged=false) {
+	private function duelAttack(ActivityParticipant $me, Character $meChar, $meRanged, $meMelee, $meScore, Character $themChar, $themScore, $act, $ranged=false) {
 		if ($ranged) {
 			if ($meScore < 25) {
 				$meScore = 25; # Basic to-hit chance.
@@ -523,7 +524,7 @@ class ActivityManager {
 			$this->common->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." fires - ");
 			if ($this->combat->RangedRoll(0, 1*$themChar->getRace()->getSize(), 0, $meScore)) {
-				[$result, $sublogs] = $this->combat->rangedHit($me, $themChar, $meRanged, $act, false, 1, $themScore);
+				[$result, $sublogs] = $this->combat->rangedHit($meChar, $themChar, $meRanged, $act, false, 1, $themScore);
 			} else {
 				$result = 'miss';
 				$this->log(10, $result);
@@ -536,7 +537,7 @@ class ActivityManager {
 			$this->common->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." attacks - ");
 			if ($this->combat->MeleeRoll(0, $this->combat->toHitSizeModifier($meChar, $themChar), $meScore)) {
-				[$result, $sublogs] = $this->combat->MeleeAttack($me, $themChar, $meMelee, $act, false, 1, $themScore);
+				[$result, $sublogs] = $this->combat->MeleeAttack($meChar, $themChar, $meMelee, $act, false, 1, $themScore);
 			} else {
 				$result = 'miss';
 				$this->log(10, $result);

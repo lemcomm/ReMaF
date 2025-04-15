@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class RegionBase {
+abstract class AbstractRegion {
 	protected ?int $id = null;
 	protected ?Settlement $settlement = null;
 	protected Collection $places;
@@ -13,6 +13,11 @@ class RegionBase {
 	protected Collection $resources;
 	protected ?Biome $biome = null;
 	protected ?World $world = null;
+	protected bool $hills;
+	protected bool $coast;
+	protected bool $lake;
+	protected bool $river;
+	protected bool $passable;
 
 	/**
 	 * Constructor
@@ -46,7 +51,7 @@ class RegionBase {
 	 *
 	 * @param Settlement|null $settlement
 	 *
-	 * @return RegionBase
+	 * @return AbstractRegion
 	 */
 	public function setSettlement(?Settlement $settlement = null): static {
 		$this->settlement = $settlement;
@@ -59,7 +64,7 @@ class RegionBase {
 	 *
 	 * @param Place $places
 	 *
-	 * @return RegionBase
+	 * @return AbstractRegion
 	 */
 	public function addPlace(Place $places): static {
 		$this->places[] = $places;
@@ -90,7 +95,7 @@ class RegionBase {
 	 *
 	 * @param Activity $activities
 	 *
-	 * @return RegionBase
+	 * @return AbstractRegion
 	 */
 	public function addActivity(Activity $activities): static {
 		$this->activities[] = $activities;
@@ -121,7 +126,7 @@ class RegionBase {
 	 *
 	 * @param GeoResource $resources
 	 *
-	 * @return RegionBase
+	 * @return AbstractRegion
 	 */
 	public function addResource(GeoResource $resources): static {
 		$this->resources[] = $resources;
@@ -161,7 +166,7 @@ class RegionBase {
 	 *
 	 * @param Biome|null $biome
 	 *
-	 * @return RegionBase
+	 * @return AbstractRegion
 	 */
 	public function setBiome(?Biome $biome = null): static {
 		$this->biome = $biome;
@@ -176,5 +181,93 @@ class RegionBase {
 
 	public function getWorld(): ?World {
 		return $this->world;
+	}
+
+	/**
+	 * Get hills
+	 *
+	 * @return boolean
+	 */
+	public function getHills(): bool {
+		return $this->hills;
+	}
+
+	/**
+	 * Set hills
+	 *
+	 * @param boolean $hills
+	 *
+	 * @return GeoData
+	 */
+	public function setHills(bool $hills): static {
+		$this->hills = $hills;
+
+		return $this;
+	}
+
+	/**
+	 * Get coast
+	 *
+	 * @return boolean
+	 */
+	public function getCoast(): bool {
+		return $this->coast;
+	}
+
+	/**
+	 * Set coast
+	 *
+	 * @param boolean $coast
+	 *
+	 * @return GeoData
+	 */
+	public function setCoast(bool $coast): static {
+		$this->coast = $coast;
+
+		return $this;
+	}
+
+	/**
+	 * Get lake
+	 *
+	 * @return boolean
+	 */
+	public function getLake(): bool {
+		return $this->lake;
+	}
+
+	/**
+	 * Set lake
+	 *
+	 * @param boolean $lake
+	 *
+	 * @return GeoData
+	 */
+	public function setLake(bool $lake): static {
+		$this->lake = $lake;
+
+		return $this;
+	}
+
+	/**
+	 * Get river
+	 *
+	 * @return boolean
+	 */
+	public function getRiver(): bool {
+		return $this->river;
+	}
+
+	/**
+	 * Set river
+	 *
+	 * @param boolean $river
+	 *
+	 * @return GeoData
+	 */
+	public function setRiver(bool $river): static {
+		$this->river = $river;
+
+		return $this;
 	}
 }

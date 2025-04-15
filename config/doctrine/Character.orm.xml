@@ -42,9 +42,11 @@
 		<field name="wounded" type="smallint"/>
 		<field name="withdrawLevel" type="float" scale="2" nullable="true"/>
 		<field name="gold" type="integer"/>
-		<field name="npc" type="boolean"/>
 		<field name="spotting_distance" type="integer"/>
 		<field name="visibility" type="integer"/>
+
+		<field name="npc" type="boolean"/>
+		<many-to-one field="from_dungeon" target-entity="Dungeon" inversed-by="spawns"/>
 
 		<field name="auto_read_realms" type="boolean" nullable="true"/>
 		<field name="auto_read_assocs" type="boolean" nullable="true"/>

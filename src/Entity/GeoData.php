@@ -7,16 +7,11 @@ use Doctrine\Common\Collections\Collection;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Polygon;
 
-class GeoData extends RegionBase {
+class GeoData extends AbstractRegion {
 	private ?point $center = null;
 	private Polygon $poly;
 	private int $altitude;
-	private bool $hills;
-	private bool $coast;
-	private bool $lake;
-	private bool $river;
 	private float $humidity;
-	private bool $passable;
 	private Collection $roads;
 	private Collection $features;
 
@@ -91,94 +86,6 @@ class GeoData extends RegionBase {
 	 */
 	public function setAltitude(int $altitude): static {
 		$this->altitude = $altitude;
-
-		return $this;
-	}
-
-	/**
-	 * Get hills
-	 *
-	 * @return boolean
-	 */
-	public function getHills(): bool {
-		return $this->hills;
-	}
-
-	/**
-	 * Set hills
-	 *
-	 * @param boolean $hills
-	 *
-	 * @return GeoData
-	 */
-	public function setHills(bool $hills): static {
-		$this->hills = $hills;
-
-		return $this;
-	}
-
-	/**
-	 * Get coast
-	 *
-	 * @return boolean
-	 */
-	public function getCoast(): bool {
-		return $this->coast;
-	}
-
-	/**
-	 * Set coast
-	 *
-	 * @param boolean $coast
-	 *
-	 * @return GeoData
-	 */
-	public function setCoast(bool $coast): static {
-		$this->coast = $coast;
-
-		return $this;
-	}
-
-	/**
-	 * Get lake
-	 *
-	 * @return boolean
-	 */
-	public function getLake(): bool {
-		return $this->lake;
-	}
-
-	/**
-	 * Set lake
-	 *
-	 * @param boolean $lake
-	 *
-	 * @return GeoData
-	 */
-	public function setLake(bool $lake): static {
-		$this->lake = $lake;
-
-		return $this;
-	}
-
-	/**
-	 * Get river
-	 *
-	 * @return boolean
-	 */
-	public function getRiver(): bool {
-		return $this->river;
-	}
-
-	/**
-	 * Set river
-	 *
-	 * @param boolean $river
-	 *
-	 * @return GeoData
-	 */
-	public function setRiver(bool $river): static {
-		$this->river = $river;
 
 		return $this;
 	}

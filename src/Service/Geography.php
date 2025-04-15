@@ -10,7 +10,7 @@ use App\Entity\GeoData;
 use App\Entity\MapPOI;
 use App\Entity\Place;
 use App\Entity\Realm;
-use App\Entity\RegionBase;
+use App\Entity\AbstractRegion;
 use App\Entity\RegionFamiliarity;
 use App\Entity\Setting;
 use App\Entity\Ship;
@@ -107,7 +107,7 @@ class Geography {
 		return $data['poly'];
 	}
 
-	public function findMyRegion(Character $character): ?RegionBase {
+	public function findMyRegion(Character $character): ?AbstractRegion {
 		if ($character->getInsideRegion()) {
 			return $character->getInsideRegion();
 		}
