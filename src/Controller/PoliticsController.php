@@ -172,10 +172,8 @@ class PoliticsController extends AbstractController {
 			$this->pol->disown($vassal);
 			$em = $this->em;
 			$em->flush();
-			return $this->render('Politics/disown.html.twig', [
-				'vassal'=>$vassal,
-				'success'=>true
-			]);
+			$this->addFlash('notice', $this->trans->trans('vassals.disown.success', ['name'=>$vassal->getName()], 'politics'));
+			return $this->redirectToRoute('maf_politics_vassals');
 		}
 
 		return $this->render('Politics/disown.html.twig', [

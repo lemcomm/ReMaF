@@ -41,6 +41,18 @@ class LawController extends AbstractController {
 		return $this->assocDisp->gateway($test, false, true, false, $secondary);
 	}
 
+	#[Route ('/law/{law}', name:'maf_law', requirements:['law'=>'\d+'])]
+	public function lawAction(Law $law) {
+		if ($law->getRealm()) {
+			return $this->redirectToRoute('maf_realm_laws', ['realm'=>$law->getRealm()->getId()]);
+		} elseif ($law->getAssociation()) {
+			return $this->redirectToRoute('maf_association_laws', ['association'=>$law->getAssociation()->getId()]);
+		}
+		#How?
+		$this->addFlash('warning', "Hey, this is the developer, can you please explain how you got here?");
+		return $this->redirecttoRoute('maf_politics_realms');
+	}
+
 	#[Route ('/laws/r{realm}', name:'maf_realm_laws', requirements:['realm'=>'\d+'])]
 	#[Route ('/laws/r{realm}/', requirements:['realm'=>'\d+'])]
 	#[Route ('/laws/a{assoc}', name:'maf_assoc_laws', requirements:['assoc'=>'\d+'])]
@@ -96,6 +108,7 @@ class LawController extends AbstractController {
 			'new' => $new
 		]);
 	}
+
 
 	#[Route ('/laws/r{realm}/new', name:'maf_realm_laws_new', requirements:['realm'=>'\d+'])]
 	#[Route ('/laws/a{assoc}/new', name:'maf_assoc_laws_new', requirements:['assoc'=>'\d+'])]

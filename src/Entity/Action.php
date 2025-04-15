@@ -15,7 +15,7 @@ class Action {
 	private bool $hourly = false;
 	private bool $can_cancel = true;
 	private bool $block_travel;
-	private int $priority;
+	private ?int $priority = null;
 	private ?float $number_value = null;
 	private ?string $string_value = null;
 	private Collection $assigned_entourage;
@@ -122,7 +122,7 @@ class Action {
 		return $this;
 	}
 
-	public function getPriority(): int {
+	public function getPriority(): ?int {
 		return $this->priority;
 	}
 

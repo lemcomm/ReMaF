@@ -531,6 +531,7 @@ class RealmController extends AbstractController {
 			$position = new RealmPosition;
 			$position->setRealm($realm);
 			$position->setRuler(false);
+			$position->setName('');
 		} else {
 			$is_new = false;
 			if ($position->getRealm() !== $realm) {

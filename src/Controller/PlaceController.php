@@ -772,6 +772,7 @@ class PlaceController extends AbstractController {
                         $place->setDestroyed(true);
 			if ($spawn = $place->getSpawn()) {
 				$em->remove($spawn);
+				$place->setSpawn(null);
 			}
 			$em->flush();
 			if ($siege = $place->getSiege()) {
