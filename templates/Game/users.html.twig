@@ -33,8 +33,8 @@
 			<td align="right">{{ u.level }}</td>
 			<td>{{ u.credits }}</td>
 			<td>{{ u.created|date }}</td>
-			<td>{{ u.last_login|date }}</td>
-			<td>{{ u.last_play|date }}</td>
+			<td>{% if u.last_login %}{{ u.last_login|date }}{% endif %}</td>
+			<td>{% if u.last_play %}{{ u.last_play|date }}{% endif %}</td>
 			<td align="right">{{ u.characters }}</td>
 			<td align="right">{{ u.active }}</td>
 			<td align="right">{{ u.retired }}</td>
