@@ -38,7 +38,8 @@ class PaymentCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-		$output->writeln('maintenance and payment cycle:');
+		$now = new DateTime("now")->format("Y-m-d H:i:s");
+		$output->writeln("maintenance and payment cycle ($now):");
 
 		$inactives = 0;
 		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c LEFT JOIN App:User u WITH c.user = u WHERE c.slumbering = false AND c.alive = true AND (DATE_PART(\'day\', :now - u.last_play) > :inactivity OR (u.last_play IS NULL AND DATE_PART(\'day\', :now - c.last_access) > :inactivity))');
@@ -111,7 +112,7 @@ class PaymentCommand extends Command {
 		$output->writeln("$inactives characters set to inactive");
 		$this->em->flush();
 
-		[$free, $patron, $active, $credits, $expired, $storage, $banned] = $this->pay->paymentCycle();
+		[$free, $patron, $active, $credits, $expired, $storage, $banned] = $this->pay->paymentCycle($output);
 		$output->writeln("$free free accounts");
 		$output->writeln("$patron patron accounts");
 		$output->writeln("$storage accounts moved into storage");

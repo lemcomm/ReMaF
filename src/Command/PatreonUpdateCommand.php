@@ -25,7 +25,7 @@ class PatreonUpdateCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-		[$free, $patron, $active, $credits, $expired, $storage, $banned] = $this->pay->paymentCycle(true);
+		[$free, $patron, $active, $credits, $expired, $storage, $banned] = $this->pay->paymentCycle($output);
 		$output->writeln("$free free accounts");
 		$output->writeln("$patron patron accounts");
 		$output->writeln("$storage accounts moved into storage");

@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Place;
 use App\Entity\Realm;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -24,6 +25,7 @@ class PlaceManageType extends AbstractType {
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
+		/** @var Place $me */
 		$me = $options['me'];
 		$char = $options['char'];
 		$type = $me->getType()->getName();
@@ -66,9 +68,6 @@ class PlaceManageType extends AbstractType {
 			'required'=>true,
 		));
 		if ($type == 'embassy') {
-			$builder->add('for_realm', HiddenType::class, [
-				'data'=>false
-			]);
 			if ($me->getOwner() === $char) {
 				$builder->add('realm', EntityType::class, [
 					'required'=>false,
@@ -78,6 +77,10 @@ class PlaceManageType extends AbstractType {
 					'placeholder'=>'realm.empty',
 					'label'=>'realm.label',
 					'data'=>$me->getRealm()
+				]);
+			} else {
+				$builder->add('realm', HiddenType::class, [
+					'data'=>$me->getRealm(),
 				]);
 			}
 			if (!$me->getHostingRealm()) {
@@ -91,10 +94,10 @@ class PlaceManageType extends AbstractType {
 					'data'=>$me->getHostingRealm()
 				]);
 				$builder->add('owning_realm', HiddenType::class, [
-					'data'=>null
+					'data'=>$me->getOwningRealm(),
 				]);
 				$builder->add('ambassador', HiddenType::class, [
-					'data'=>null
+					'data'=>$me->getAmbassador(),
 				]);
 			} elseif (!$me->getOwningRealm()) {
 				$builder->add('hosting_realm', EntityType::class, [
@@ -159,6 +162,15 @@ class PlaceManageType extends AbstractType {
 					'data'=>$me->getRealm()
 				]);
 			}
+			$builder->add('hosting_realm', HiddenType::class, [
+				'data'=>$me->getHostingRealm()
+			]);
+			$builder->add('owning_realm', HiddenType::class, [
+				'data'=>$me->getOwningRealm()
+			]);
+			$builder->add('ambassador', HiddenType::class, [
+				'data'=>$me->getAmbassador()
+			]);
 		}
 	}
 }

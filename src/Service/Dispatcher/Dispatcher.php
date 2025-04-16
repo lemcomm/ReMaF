@@ -432,7 +432,7 @@ class Dispatcher {
 		if ($character->getUser()->getLimits() === null) {
 			return array("name"=>"place.new.name", "description"=>"unavailable.nolimitscreated");
 		}
-		if ($character->getUser()->getFreePlaces() < 1) {
+		if ($character->getUser()->getLimits()->getPlaces() < 1) {
 			return array("name"=>"place.new.name", "description"=>"unavailable.nofreeplaces");
 		}
 		# If not inside a settlement, check that we've enough separation (500m)
