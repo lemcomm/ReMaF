@@ -41,6 +41,7 @@ class Soldier extends NPC {
 	private ?int $id = null;
 	private bool $improvisedWeapon = false;
 	private Collection $events;
+	private ?EquipmentType $shield = null;
 	private ?EquipmentType $weapon = null;
 	private ?EquipmentType $armour = null;
 	private ?EquipmentType $equipment = null;
@@ -70,6 +71,50 @@ class Soldier extends NPC {
 		return "soldier #$this->id ({$this->getName()}, {$this->getType()}, base $base, char $char)";
 	}
 
+	public function isShield(){
+		if ($this->shield === null){
+			return false;
+		}
+		else{
+			return true;
+		}
+	}
+
+	public function getShield(){
+		return $this->shield;
+	}
+
+	public function getShieldDefenseClass()
+	{
+		if ($this->isShield()){
+			return $this->getShield()->getClass()[1];
+		}
+		else{
+			return 0;
+		}
+	}
+	public function getWeaponAspect($aspect){
+		return $this->getWeapon()->getAspects()[$aspect];
+	}
+	
+	public function getWeaponAttackClass(){
+		return $this->getWeapon()->getClass()[0];
+	}
+	public function getWeaponDefenseClass(){
+		return max($this->getWeapon()->getClass()[1], $this->getShieldDefenseClass());
+	}
+
+	public function getArmourHitLoc($hitLoc, $aspect)
+	{
+		$armor = $this->armour;
+		$covered = 0;
+		foreach($armor->getArmor() as $piece){
+			if (in_array($hitLoc, $piece['form']['coverage'])){
+				$covered += $piece['layer']['protection'][$aspect];
+			}
+		}
+		return $covered;
+	}
 	/**
 	 * Get base
 	 *
@@ -1027,7 +1072,10 @@ class Soldier extends NPC {
 		return $this;
 	}
 
-	public function getEffMastery(): int {
+	public function getEffMastery(bool $attacking): int {
+		$EML = $this->getRace()->getBaseCombatSkill() * ($this->getWeapon()->getMastery() + $this->getMastery());
+		$attacking ? $EML += $this->getWeaponAttackClass() : $EML += $this->getWeaponDefenseClass();
+		$EML -= ($this->penalty + $this->attacks) * 5;
 		return $this->effMastery;
 	}
 

@@ -50,7 +50,7 @@ class CombatManager {
 	public function attackRoll(Soldier|Character $me, Soldier|Character $target, $stumble = false): string {
 		$attRoll = rand(1, 100);
 		$defRoll = rand(1, 100);
-		if ($attRoll < $me->getEffMastery()) {
+		if ($attRoll < $me->getEffMastery(true)) {
 			if ($attRoll % 5 == 0) {
 				$attResult = 'CS';
 			} else {
@@ -64,7 +64,7 @@ class CombatManager {
 		if ($stumble) {
 			$defResult = 'Ignore';
 		} else {
-			if ($defRoll < $target->getEffMastery()) {
+			if ($defRoll < $target->getEffMastery(false)) {
 				if ($defRoll % 5 == 0) {
 					$defResult = 'CS';
 				} else {
@@ -108,7 +108,7 @@ class CombatManager {
 	public function resolveDamage(Character|Soldier $me, Character|Soldier $target, $dice, $logs = [], $preResult = '') {
 		$damage = 0;
 		$hitLoc = $this->getHitLoc();
-		$damTable = $this->bestAspect($me->getWeapon(), $target->getArmourHitLoc($hitLoc), $dice);
+		$damTable = $this->bestAspect($me, $target, $hitLoc, $dice);
 		for ($i = 0; $i < $dice; $i++) {
 			$damage += rand(1, 6);
 		}
@@ -169,7 +169,7 @@ class CombatManager {
 		return [$retResult, $logs];
 	}
 
-	public function bestAspect($weapon, $armour, $dice) {
+	public function bestAspect(Character|Soldier $me, Character|Soldier $target, $hitloc, $dice) {
 		$aspects = ['cutting', 'bashing', 'piercing'];
 		$best =  [["aspect" => "nothing", "damage" => -100, "table" => []], -100];
 		// A note on the value -100. Maximum possible damage without magic is less than 40. Any armor value over this practically guarantees immunity.
@@ -177,11 +177,11 @@ class CombatManager {
 		foreach ($aspects as $aspect) {
 			$damTable = $this->getAspectIndex($aspect);
 			// Sim values for AI determination
-			$expSimResult = $weapon->getAspects[$aspect] - $armour->getProtection[$aspect] + $expDiceResult;
+			$expSimResult = $me->getWeaponAspect($aspect) - $target->getArmourHitLoc($hitloc, $aspect) + $expDiceResult;
 			// Max() guarantees execution safety, making any armor value possible.
 			$simDiff = max($expSimResult - array_search("heavy", $damTable), -99);
 			// Real values used for calc
-			$diff = $weapon->getAspects[$aspect] - $armour->getProtection[$aspect];
+			$diff = $me->getWeaponAspect($aspect) - $target->getArmourHitLoc($hitloc, $aspect);
 			$best = $simDiff > $best[1] ? [["aspect" => $aspect, "damage" => $diff, "table" => $damTable], $simDiff] : $best;
 		}
 		return $best[0];
