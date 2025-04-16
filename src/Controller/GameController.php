@@ -81,6 +81,7 @@ class GameController extends AbstractController {
 					'credits' => $user->getCredits(),
 					'created' => $user->getCreated(),
 					'last_login' => $user->getLastLogin(),
+					'last_play' => $user->getLastPlay(),
 					'characters' => $user->getLivingCharacters()->count(),
 					'active' => $user->getActiveCharacters()->count(),
 					'retired' => $user->getRetiredCharacters()->count(),
