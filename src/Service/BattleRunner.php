@@ -63,6 +63,8 @@ class BattleRunner {
 	public int $version = 3;
 	public int $combatVersion = 3;
 	public string $combatRules = 'maf';
+	public bool $mafRuleset = true;
+	public bool $masteryRuleset = false;
 
 	# Specific override flags.
 	public bool $legacyMorale = false;
@@ -161,7 +163,11 @@ class BattleRunner {
 				$this->legacySieges = true;
 				$this->legacyHitRolls = true;
 			}
+		} elseif ($this->combatRules === 'mastery') {
+			$this->masteryRuleset = true;
+			$this->mafRuleset = false;
 		}
+		# 'mastery' ruleset doesn't have toggles yet.
 
 		$this->report = new BattleReport;
 		$this->report->setAssault(FALSE);
@@ -741,81 +747,110 @@ class BattleRunner {
 		foreach ($soldiers as $soldier) {
 			$counter = null;
 			$result=false;
-			if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer() && $this->battle->getType() == 'field') {
-				// Lancers will always perform a cavalry charge in the last ranged phase!
-				// A cavalry charge can only happen if there is a ranged phase (meaning, there is ground to fire/charge across)
-				$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") charges ");
-				$target = $this->getRandomSoldier($enemyCollection);
-				$counter = 'charge';
-				if ($target) {
-					$this->strikes++;
-					$noCavTargets = 0;
-					[$result, $logs] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
-					foreach ($logs as $each) {
-						$this->log(10, $each);
-					}
-				} else {
-					// no more targets
-					$this->log(10, "but finds no target\n");
-					$noCavTargets++;
-				}
-			} elseif (!$rangeNoTargets && $this->combat->RangedPower($soldier, true, null, $attackers) > 0) {
-				// ranged soldier - fire!
-				$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") fires - ");
-				$target = $this->getRandomSoldier($enemyCollection);
-				if ($target) {
-					$this->shots++;
-					$noRangeTargets = 0;
-					$rPower = $this->combat->RangedPower($soldier, true, null, $attackers);
-					if (!$this->legacyHitRolls) {
-						$hit = $this->combat->RangedRoll($defBonus, $rangedPenalty*$target->getRace()->getSize(), $bonus, 95);
-					} else {
-						$hit = rand(0,100)<min(95,$rPower+$bonus);
-					}
-					if ($hit) {
-						// target hit
-						$this->rangedHits++;
-						[$result, $logs] = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
+			if ($this->mafRuleset) {
+				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer() && $this->battle->getType() == 'field') {
+					// Lancers will always perform a cavalry charge in the last ranged phase!
+					// A cavalry charge can only happen if there is a ranged phase (meaning, there is ground to fire/charge across)
+					$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") charges ");
+					$target = $this->getRandomSoldier($enemyCollection);
+					$counter = 'charge';
+					if ($target) {
+						$this->strikes++;
+						$noCavTargets = 0;
+						[$result, $logs] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
 						foreach ($logs as $each) {
 							$this->log(10, $each);
 						}
-						$this->addResult($result);
-						if ($result=='kill'||$result=='capture') {
-							$enemies--;
-							$enemyCollection->removeElement($target);
-							// special results for nobles
-							if ($target->isNoble()) {
-								$noble = $this->combat->findNobleFromSoldier($soldier);
-								if ($result=='capture') {
-									$extra = array(
-										'what' => 'ranged.'.$result,
-										'by' => $noble->getId()
-									);
-								} else {
-									$extra = array('what'=>'ranged.'.$result);
+					} else {
+						// no more targets
+						$this->log(10, "but finds no target\n");
+						$noCavTargets++;
+					}
+				} elseif (!$rangeNoTargets && $this->combat->RangedPower($soldier, true, null, $attackers) > 0) {
+					// ranged soldier - fire!
+					$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") fires - ");
+					$target = $this->getRandomSoldier($enemyCollection);
+					if ($target) {
+						$this->shots++;
+						$noRangeTargets = 0;
+						$rPower = $this->combat->RangedPower($soldier, true, null, $attackers);
+						if (!$this->legacyHitRolls) {
+							$hit = $this->combat->RangedRoll($defBonus, $rangedPenalty*$target->getRace()->getSize(), $bonus, 95);
+						} else {
+							$hit = rand(0,100)<min(95,$rPower+$bonus);
+						}
+						if ($hit) {
+							// target hit
+							$this->rangedHits++;
+							[$result, $logs] = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
+							foreach ($logs as $each) {
+								$this->log(10, $each);
+							}
+							$this->addResult($result);
+							if ($result=='kill'||$result=='capture') {
+								$enemies--;
+								$enemyCollection->removeElement($target);
+								// special results for nobles
+								if ($target->isNoble()) {
+									$noble = $this->combat->findNobleFromSoldier($soldier);
+									if ($result=='capture') {
+										$extra = array(
+											'what' => 'ranged.'.$result,
+											'by' => $noble->getId()
+										);
+									} else {
+										$extra = array('what'=>'ranged.'.$result);
+									}
+									$extra['who'] = $target->getCharacter()->getId();
+									$extras[] = $extra;
 								}
-								$extra['who'] = $target->getCharacter()->getId();
-								$extras[] = $extra;
+							}
+						} else {
+							// missed
+							$this->log(10, "missed\n");
+							$this->missed++;
+						}
+						# Remove this check after the Battle 2.0 update and 2D maps are added.
+						if ($soldier->getEquipment() && $soldier->getEquipment()->getName() == 'javelin') {
+							if ($soldier->getWeapon() && !$soldier->getWeapon()->getName() == 'longbow') {
+								// one-shot weapon, that only longbowmen will use by default in this phase
+								// TODO: Better logic that determines this, for when we add new weapons.
+								$soldier->dropEquipment();
 							}
 						}
 					} else {
-						// missed
-						$this->log(10, "missed\n");
-						$this->missed++;
+						$this->log(10, "no more targets\n");
+						$noRangeTargets++;
 					}
-					# Remove this check after the Battle 2.0 update and 2D maps are added.
-					if ($soldier->getEquipment() && $soldier->getEquipment()->getName() == 'javelin') {
-						if ($soldier->getWeapon() && !$soldier->getWeapon()->getName() == 'longbow') {
-							// one-shot weapon, that only longbowmen will use by default in this phase
-							// TODO: Better logic that determines this, for when we add new weapons.
-							$soldier->dropEquipment();
+				}
+			} elseif ($this->masteryRuleset) {
+				if ($soldier->isRanged()) {
+					$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") fires - ");
+					$target = $this->getRandomSoldier($enemyCollection);
+					if ($target) {
+						$this->shots++;
+						$noRangeTargets = 0;
+						$hit = $this->combat->attackRoll($soldier, $target);
+						if ($hit !== 'Defended') {
+							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+							foreach ($logs as $each) {
+								$this->log(10, $each);
+							}
+							if (str_contains($results, ' ')) {
+								foreach (explode(' ', $results) as $each) {
+									$this->addResult($each);
+								}
+							}
+						} else {
+							$result = $hit;
 						}
+					} else {
+						$this->log(10, "no more targets\n");
+						$noRangeTargets++;
 					}
-				} else {
-					$this->log(10, "no more targets\n");
-					$noRangeTargets++;
 				}
 			}
+
 			if ($counter && str_contains($result, ' ')) {
 				$results = explode(' ', $result);
 				$result2 = $counter . $results[1];
@@ -1707,6 +1742,7 @@ class BattleRunner {
 
 	private function addResult($result): void {
 		switch ($result) {
+			case 'Defended':
 			case 'fail':
 				$this->fail++;
 				break;

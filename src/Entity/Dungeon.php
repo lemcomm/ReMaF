@@ -12,6 +12,13 @@ class Dungeon {
 	private int $tick;
 	private int $exploration_count;
 	private ?int $id = null;
+
+	private ?bool $breakable = null;
+	private ?bool $broken = null;
+	private ?int $breakLimit = null;
+	private ?int $breakCounter = null;
+	private Collection $spawns;
+
 	private ?DungeonParty $party = null;
 	private Collection $levels;
 	private ?GeoData $geo_data = null;
@@ -23,6 +30,7 @@ class Dungeon {
 	 */
 	public function __construct() {
 		$this->levels = new ArrayCollection();
+		$this->spawns = new ArrayCollection();
 	}
 
 	public function getCurrentLevel(): ?DungeonLevel {
@@ -227,5 +235,72 @@ class Dungeon {
 	public function setWorld(?World $world): static {
 		$this->world = $world;
 		return $this;
+	}
+
+	public function getBreakable(): ?bool {
+		return $this->breakable;
+	}
+
+	public function setBreakable(?bool $breakable): static {
+		$this->breakable = $breakable;
+		return $this;
+	}
+
+	public function getBroken(): ?bool {
+		return $this->broken;
+	}
+
+	public function setBroken(?bool $broken): static {
+		$this->broken = $broken;
+		return $this;
+	}
+
+	public function getBreakLimit(): ?int {
+		return $this->breakLimit;
+	}
+
+	public function setBreakLimit(?int $breakLimit): static {
+		$this->breakLimit = $breakLimit;
+		return $this;
+	}
+
+	public function getBreakCounter(): ?int {
+		return $this->breakCounter;
+	}
+
+	public function setBreakCounter(?int $breakCounter): static {
+		$this->breakCounter = $breakCounter;
+		return $this;
+	}
+
+	/**
+	 * Add levels
+	 *
+	 * @param Character $spawns
+	 *
+	 * @return Dungeon
+	 */
+	public function addSpawn(Character $spawn): static {
+		$this->spawns[] = $spawn;
+
+		return $this;
+	}
+
+	/**
+	 * Remove levels
+	 *
+	 * @param DungeonLevel $levels
+	 */
+	public function removeSpawn(Character $spawn): void {
+		$this->spawns->removeElement($spawn);
+	}
+
+	/**
+	 * Get levels
+	 *
+	 * @return ArrayCollection|Collection
+	 */
+	public function getSpawns(): ArrayCollection|Collection {
+		return $this->spawns;
 	}
 }

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 
 class Soldier extends NPC {
 	protected int $mastery = 0;
+	protected int $effMastery = 0;
 	protected int $toughness = 12;
 	protected int $willpower = 12;
 	protected int $baseSkill = 12;
@@ -1006,5 +1007,32 @@ class Soldier extends NPC {
 
 	public function addKill(): void {
 		$this->kills++;
+	}
+
+	public function getMastery(): int {
+		return $this->mastery;
+	}
+
+	public function setMastery(int $mastery): static {
+		$this->mastery = $mastery;
+		return $this;
+	}
+
+	public function getPenalty(): int {
+		return $this->penalty;
+	}
+
+	public function setPenalty(int $penalty): static {
+		$this->penalty = $penalty;
+		return $this;
+	}
+
+	public function getEffMastery(): int {
+		return $this->effMastery;
+	}
+
+	public function setEffMastery(int $effMastery): static {
+		$this->effMastery = $effMastery;
+		return $this;
 	}
 }

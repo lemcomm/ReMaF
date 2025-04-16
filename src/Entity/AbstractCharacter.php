@@ -112,6 +112,18 @@ abstract class AbstractCharacter {
 		}
 	}
 
+	public function getToughness(): ?int {
+		return $this->race->getToughness();
+	}
+
+	public function getWillpower(): ?int {
+		return $this->race->getWillpower();
+	}
+
+	public function getBaseCombatSkill(): ?int {
+		return $this->race->getBaseCombatSkill();
+	}
+
 	abstract public function kill(): void;
 
 }

@@ -44,44 +44,68 @@ class CombatManager {
 				$this->useHunger = false;
 			}
 		}
+		# 'mastery' ruleset doesn't have toggles yet.
 	}
 
-	public function attackRoll($me, $target, $stumble = false) {
+	public function attackRoll(Soldier|Character $me, Soldier|Character $target, $stumble = false): string {
 		$attRoll = rand(1, 100);
 		$defRoll = rand(1, 100);
-		$attResult = $attRoll < $me->effMasteryLevel ? $attRoll %5 == 0? 'CS' : 'SS' : $attRoll %5 == 0? 'CF' : 'SF';
-		if ($stumble) {
-			$defRoll = 'Ignore';
+		if ($attRoll < $me->getEffMastery()) {
+			if ($attRoll % 5 == 0) {
+				$attResult = 'CS';
+			} else {
+				$attResult = 'SS';
+			}
+		} elseif ($attRoll % 5 == 0) {
+			$attResult = 'CF';
+		} else {
+			$attResult = 'SF';
 		}
-		else {
-			$defResult = $defRoll < $target->effMasteryLevel ? $defRoll %5 == 0? 'CS' : 'SS' : $defRoll %5 == 0? 'CF' : 'SF';
+		if ($stumble) {
+			$defResult = 'Ignore';
+		} else {
+			if ($defRoll < $target->getEffMastery()) {
+				if ($defRoll % 5 == 0) {
+					$defResult = 'CS';
+				} else {
+					$defResult = 'SS';
+				}
+			} elseif ($defRoll % 5 == 0) {
+				$defResult = 'CF';
+			} else {
+				$defResult = 'SF';
+			}
 		}
 
+		/*
+		 * DTA - Defender Tactical Advantage (counter)
+		 * CF - Critical Failure
+		 * SF - Standard Failure
+		 * SS - Standard Success
+		 * CS - Critical Success
+		 * Defended - Basically, a miss. A hit that does no damage is "Protected" which you'll see elsewhere.
+		 */
 		$resultArray = [
-			'CF' => ['CF' => 'Defended',	'SF' => 'DTA',			'SS' => 'DTA',			'CS' => 'DTA',		'Ignore' => 'DTA'],
-			'SF' => ['CF' => 'Stumble',		'SF' => 'Defended',		'SS' => 'Defended',		'CS' => 'DTA',		'Ignore' => 'D1'],
-			'SS' => ['CF' => 'D2',			'SF' => 'D1',			'SS' => 'Defended',		'CS' => 'Defended',	'Ignore' => 'D3'],
-			'CS' => ['CF' => 'D3', 			'SF' => 'D2',			'SS' => 'D1',			'CS' => 'Defended',	'Ignore' => 'D4']
+			'CF' => ['CF' => 'Defended',	'SF' => 'DTA',		'SS' => 'DTA',		'CS' => 'DTA',		'Ignore' => 'DTA'],
+			'SF' => ['CF' => 'Stumble',	'SF' => 'Defended',	'SS' => 'Defended',	'CS' => 'DTA',		'Ignore' => 'A1'],
+			'SS' => ['CF' => 'A2',		'SF' => 'A1',		'SS' => 'Defended',	'CS' => 'Defended',	'Ignore' => 'A3'],
+			'CS' => ['CF' => 'A3', 		'SF' => 'A2',		'SS' => 'A1',		'CS' => 'Defended',	'Ignore' => 'A4']
 		];
 		return $resultArray[$attResult][$defResult];
 	}
 
-	public function resolveAttack($me, $target, $result, $dta = false) {
-		if ($result === 'DTA' && !$dta) {
-			$this->resolveAttack($target, $me, true);
+	public function resolveAttack($me, $target, $result, $dta = false, $logs = [], $preResult = '') {
+		if (str_starts_with($result, 'A')) {
+			return [$result, $logs] = $this->resolveDamage($me, $target, (int)$result[-1], $logs, $preResult);
+		} elseif ($result === 'DTA' && !$dta) {
+			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true);
+		} elseif ($result === 'Stumble') {
+			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true));
 		}
-		elseif ($result === 'Stumble') {
-			$this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), false);
-		}
-		elseif ($result === 'Defended') {
-			return;
-		}
-		else {
-			$this->resolveDamage($me, $target, (int)$result[-1]);
-		}
+		return;
 	}
 
-	public function resolveDamage($me, $target, $dice) {
+	public function resolveDamage(Character|Soldier $me, Character|Soldier $target, $dice, $logs = [], $preResult = '') {
 		$damage = 0;
 		$hitLoc = $this->getHitLoc();
 		$damTable = $this->bestAspect($me->getWeapon(), $target->getArmourHitLoc($hitLoc), $dice);
@@ -97,33 +121,52 @@ class CombatManager {
 			return; // Do something on armor protection?
 		}
 
-		$shockRoll = $target->penalty;
-		$damResult = $target->getRace()->hitLocs[$hitLoc][$result];
+		$shockRoll = $target->getPenalty();
+		$damResult = $target->getRace()->getDamageLocations()[$hitLoc][$result];
+
 		if (in_array("kill", $damResult) or in_array("amputate", $damResult)) {
 			// Target is killed.
 			$target->kill();
-		}
-		else {
+			$me->addKill();
+			$logs[] = "killed by $result damage ($effDamage) with result of".$damResult[0]."/".$damResult[-1]."/".$damResult[-2];
+			$retResult = 'kill';
+		} else {
 			// Target is wounded.
-			$target->wound();
+			$target->addHitsTaken();
+			$me->addCasualty();
 
 			// Shock roll
-
 			for ($i = 0; $i < $damResult[0]; $i++) {
 				$shockRoll += rand(1, 6);
 			}
-			if ($shockRoll > $target->toughness) {
+			if ($shockRoll > $target->getToughness()) {
 				// Technically, this is a KO, but we assume that we kill the soldiers until a better function replaces post-battle recovery
-				$target->kill();
+				if ($target->isNoble()) {
+					$logs[] = "captured by $result damage ($effDamage) with result of".$damResult[0]."/".$damResult[-1]."/".$damResult[-2];
+					$retResult = 'capture';
+				} else {
+					$logs[] = "killed by $result damage ($effDamage) with result of".$damResult[0]."/".$damResult[-1]."/".$damResult[-2];
+					$retResult = 'kill';
+					$target->kill();
+				}
+			} else {
+				$retResult = 'wound';
+				$logs[] = "killed by $result damage ($effDamage) with result of".$damResult[0]."/".$damResult[-1]."/".$damResult[-2];
 			}
-			$target->penalty += $damResult[0];
+			$target->setPenalty($target->getPenalty() + $damResult[0]);
 		}
 
 		// Stumble attacks again.
-
+		$sublog = false;
+		$subresult = false;
 		if (in_array("stumble", $damResult)) {
-			$this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), false);
+			[$sublog, $subresult] = $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), false, $logs, $retResult);
+			foreach ($sublog as $each) {
+				$logs[] = $each;
+			}
+			$retResult = $retResult.' '.$subresult;
 		}
+		return [$retResult, $logs];
 	}
 
 	public function bestAspect($weapon, $armour, $dice) {

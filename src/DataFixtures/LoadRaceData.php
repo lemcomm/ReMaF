@@ -10,17 +10,17 @@ use Doctrine\Persistence\ObjectManager;
 class LoadRaceData extends Fixture {
 
 	private array $races = [
-		'first one'		=> ['hp'=>200, 'avgPackSize'=>1, 'maxPackSize'=>1, 'melee'=>2, 'ranged'=>2, 'mDef'=>2, 'rDef'=>2, 'morale'=>5.00, 'eats'=>false, 'maxHunger'=>null, 'undeath'=>false, 'aging'=>false, 'equipment'=>true, 'hitLoc' => $this->defautHitLoc],
-		'second one'	=> ['roads' => 0.8, 'undeath'=>false, 'equipment'=>true, 'hitLoc' => $this->defautHitLoc],
-		'human'			=> ['equipment'=>true, 'hitLocs' => $this->defautHitLoc],
-		'orc'			=> ['hp'=>150, 'avgPackSize'=>10, 'maxPackSize'=>100, 'travel'=>0.75, 'roads'=>0.75, 'size'=>1.25, 'melee'=>1.5, 'mDef'=>1.5, 'equipment'=>true],
-		'ogre'			=> ['hp'=>200, 'avgPackSize'=>5, 'maxPackSize'=>25, 'travel'=>0.5, 'roads'=>0.25, 'size'=>3, 'melee'=>5, 'mDef'=>2.5, 'ranged'=>0.25, 'rDef'=>2.5],
-		'dragon'		=> ['hp'=>10000, 'avgPackSize'=>1, 'maxPackSize'=>3, 'travel'=>5, 'roads'=>0, 'size'=>5, 'melee'=>10, 'ranged'=>5, 'mDef'=>5, 'rDef'=>5, 'morale'=>5, 'hungerRate'=>600, 'maxHunger'=>1800000, 'aging'=>false],
-		'wyvern'		=> ['hp'=>500, 'avgPackSize'=>5, 'maxPackSize'=>10, 'travel'=>3, 'roads'=>0, 'size'=>3, 'melee'=>5, 'ranged'=>2.5, 'mDef'=>2.5, 'rDef'=>2.5, 'hungerRate'=>4800, 'maxHunger'=>600000],
-		'slime'			=> ['hp'=>50, 'avgPackSize'=>50, 'travel'=>0.5, 'roads'=>0, 'size'=>0.3, 'melee'=>0.25, 'ranged'=>0, 'mDef'=>5, 'rDef'=>10, 'morale'=>10, 'eats'=>false, 'maxHunger'=>null, 'aging'=>false, 'undeath'=>false],
+		'first one'		=> ['hp'=>200, 'avgPackSize'=>1, 'maxPackSize'=>1, 'melee'=>2, 'ranged'=>2, 'mDef'=>2, 'rDef'=>2, 'morale'=>5.00, 'eats'=>false, 'maxHunger'=>null, 'undeath'=>false, 'aging'=>false, 'equipment'=>true, 'toughness'=>18, 'baseCombatSkill'=>16],
+		'second one'		=> ['roads' => 0.8, 'undeath'=>false, 'equipment'=>true],
+		'human'			=> ['equipment'=>true],
+		'orc'			=> ['hp'=>150, 'avgPackSize'=>10, 'maxPackSize'=>100, 'travel'=>0.75, 'roads'=>0.75, 'size'=>1.25, 'melee'=>1.5, 'mDef'=>1.5, 'equipment'=>true, 'baseCombatSkill'=>14],
+		'ogre'			=> ['hp'=>200, 'avgPackSize'=>5, 'maxPackSize'=>25, 'travel'=>0.5, 'roads'=>0.25, 'size'=>3, 'melee'=>5, 'mDef'=>2.5, 'ranged'=>0.25, 'rDef'=>2.5, 'toughness'=>22, 'baseCombatSkill'=>10],
+		'dragon'		=> ['hp'=>10000, 'avgPackSize'=>1, 'maxPackSize'=>3, 'travel'=>5, 'roads'=>0, 'size'=>5, 'melee'=>10, 'ranged'=>5, 'mDef'=>5, 'rDef'=>5, 'morale'=>5, 'hungerRate'=>600, 'maxHunger'=>1800000, 'aging'=>false, 'toughness'=>32, 'baseCombatSkill'=>16],
+		'wyvern'		=> ['hp'=>500, 'avgPackSize'=>5, 'maxPackSize'=>10, 'travel'=>3, 'roads'=>0, 'size'=>3, 'melee'=>5, 'ranged'=>2.5, 'mDef'=>2.5, 'rDef'=>2.5, 'hungerRate'=>4800, 'maxHunger'=>600000, 'toughness'=>25, 'baseCombatSkill'=>15],
+		'slime'			=> ['hp'=>50, 'avgPackSize'=>50, 'travel'=>0.5, 'roads'=>0, 'size'=>0.3, 'melee'=>0.25, 'ranged'=>0, 'mDef'=>5, 'rDef'=>10, 'morale'=>10, 'eats'=>false, 'maxHunger'=>null, 'aging'=>false, 'undeath'=>false, 'toughness'=>8, 'baseCombatSkill'=>8],
 	];
 
-	private array $defaultHitLoc = [
+	private array $defaultDmgLoc = [
 		"skull"=> [
 			"mortal"=> [5],
 			"heavy"=> [4],
@@ -146,9 +146,12 @@ class LoadRaceData extends Fixture {
 		'features' => 1.00,
 		'melee'=>1.00,
 		'ranged'=>1.00,
+		'baseCombatSkill'=>12,
 		'mDef'=>1.00,
 		'rDef'=>1.00,
+		'toughness'=>12,
 		'morale'=>1.00,
+		'willpower'=>12,
 		'eats'=>true,
 		'hungerRate'=>60,
 		'maxHunger'=>1800,
@@ -194,6 +197,10 @@ class LoadRaceData extends Fixture {
 				}
 			}
 
+			if (!array_key_exists('hitLoc', $data)) {
+				$data['hitLoc'] = $this->defaultDmgLoc;
+			}
+
 			# Set values for race.
 			$type->setSpotModifier($data['spot']);
 			$type->setSize($data['size']);
@@ -214,6 +221,10 @@ class LoadRaceData extends Fixture {
 			$type->setUndeath($data['undeath']);
 			$type->setAging($data['aging']);
 			$type->setUseEquipment($data['equipment']);
+			$type->setDamageLocations($data['hitLoc']);
+			$type->setWillpower($data['willpower']);
+			$type->setToughness($data['toughness']);
+			$type->setBaseCombatSkill($data['baseCombatSkill']);
 		}
 		$manager->flush();
 	}

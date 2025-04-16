@@ -24,5 +24,6 @@
 		<field name="hungerRate" type="integer" nullable="true"/>
 		<field name="maxHunger" type="integer" nullable="true"/>
 		<field name="useEquipment" type="boolean" nullable="true"/>
+		<field name="damageLocations" type="json" nullable="true"/>
 	</entity>
 </doctrine-mapping>

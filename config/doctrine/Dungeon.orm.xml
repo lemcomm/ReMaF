@@ -11,9 +11,9 @@
 
 		<field name="breakable" type="boolean" nullable="true"/>
 		<field name="broken" type="boolean" nullable="true"/>
-		<field name="break_limit" type="int" nullable="true"/>
-		<field name="break_counter" type="int" nullable="true"/>
-		<one-to-many field="spawns" target-entity="Character" mapped-by="from_dungeon"/>
+		<field name="breakLimit" type="integer" nullable="true"/>
+		<field name="breakCounter" type="integer" nullable="true"/>
+		<one-to-many field="spawns" target-entity="Character" mapped-by="fromDungeon"/>
 
 		<one-to-many field="levels" target-entity="DungeonLevel" mapped-by="dungeon"/>
 		<one-to-one field="party" target-entity="DungeonParty" mapped-by="dungeon"/>
