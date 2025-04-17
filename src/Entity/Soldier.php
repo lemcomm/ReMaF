@@ -1073,8 +1073,21 @@ class Soldier extends NPC {
 	}
 
 	public function getEffMastery(bool $attacking): int {
-		$EML = $this->getRace()->getBaseCombatSkill() * ($this->getWeapon()->getMastery() + $this->getMastery());
-		$attacking ? $EML += $this->getWeaponAttackClass() : $EML += $this->getWeaponDefenseClass();
+		if ($attacking){
+			$EML = $this->getRace()->getBaseCombatSkill() * ($this->getWeapon()->getMastery() + $this->getMastery());
+			$EML += $this->getWeaponAttackClass();
+		}
+		else{
+			if($this->isShield()){
+				$EML = $this->getRace()->getBaseCombatSkill() * ($this->getShield()->getMastery() + $this->getMastery());
+				$EML += $this->getShieldDefenseClass();
+			}
+			else{
+				$EML = $this->getRace()->getBaseCombatSkill() * ($this->getWeapon()->getMastery() + $this->getMastery());
+				$EML += $this->getWeaponDefenseClass();
+			}
+		}
+		
 		$EML -= ($this->penalty + $this->attacks) * 5;
 		return $this->effMastery;
 	}

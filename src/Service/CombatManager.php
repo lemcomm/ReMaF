@@ -79,6 +79,7 @@ class CombatManager {
 
 		/*
 		 * DTA - Defender Tactical Advantage (counter)
+		 * Stumble - Attacker Tactical Advantage (critical hit)
 		 * CF - Critical Failure
 		 * SF - Standard Failure
 		 * SS - Standard Success
