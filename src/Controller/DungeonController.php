@@ -277,7 +277,7 @@ class DungeonController extends AbstractController {
 					if ($data['target']==0) {
 						$dungeoneer->setTargetMonster();
 					} else {
-						$monster = $this->em->getRepository('DungeonBundle:DungeonMonster')->find($data['target']);
+						$monster = $this->em->getRepository(DungeonMonster::class)->find($data['target']);
 						if (!$monster) {
 							throw $this->createNotFoundException("monster #".$data['target']." not found");
 						}
@@ -291,7 +291,7 @@ class DungeonController extends AbstractController {
 					if ($data['target']==0) {
 						$dungeoneer->setTargetTreasure();
 					} else {
-						$treasure = $this->em->getRepository('DungeonBundle:DungeonTreasure')->find($data['target']);
+						$treasure = $this->em->getRepository(DungeonTreasure::class)->find($data['target']);
 						if (!$treasure) {
 							throw $this->createNotFoundException("treasure #".$data['target']." not found");
 						}
@@ -305,7 +305,7 @@ class DungeonController extends AbstractController {
 					if ($data['target']==0) {
 						$dungeoneer->setTargetDungeoneer();
 					} else {
-						$dungeoneer = $this->em->getRepository('DungeonBundle:Dungeoneer')->find($data['target']);
+						$dungeoneer = $this->em->getRepository(Dungeoneer::class)->find($data['target']);
 						if (!$dungeoneer) {
 							throw $this->createNotFoundException("dungeoneer #".$data['target']." not found");
 						}

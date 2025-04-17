@@ -2,6 +2,8 @@
 
 namespace App\Twig;
 
+use App\Entity\DungeonCardType;
+use App\Entity\Dungeoneer;
 use App\Entity\DungeonEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -43,7 +45,7 @@ class DungeonEventFilterExtension extends AbstractExtension {
 			switch ($key) {
 				case 'd':
 				case 'target':
-					$dungeoneer = $this->em->getRepository('DungeonBundle:Dungeoneer')->find($value);
+					$dungeoneer = $this->em->getRepository(Dungeoneer::class)->find($value);
 					if ($dungeoneer) {
 						$data['%'.$key.'%'] = $this->links->ObjectLink($dungeoneer->getCharacter());
 					} else {
@@ -57,7 +59,7 @@ class DungeonEventFilterExtension extends AbstractExtension {
 					$data['%'.$key.'%'] = $this->translator->trans("$key.$value", array(), "dungeons");
 					break;
 				case 'card':
-					$card = $this->em->getRepository('DungeonBundle:DungeonCardType')->find($value);
+					$card = $this->em->getRepository(DungeonCardType::class)->find($value);
 					if ($card) {
 						$data['%'.$key.'%'] = '<em>'.$this->translator->trans('card.'.$card->getName().'.title', array(), "dungeons").'</em>';
 					} else {
