@@ -44,11 +44,13 @@ class DungeonController extends AbstractController {
 	 * @return Dungeoneer
 	 * @throws Exception
 	 */
-	private function gateway(bool $check_in_dungeon = true): Dungeoneer {
+	private function gateway(bool $check_in_dungeon = true): Dungeoneer|string {
 		$character = $this->app->getCharacter();
+		if (is_string($character)) return $character;
 		$dungeoneer = $this->dm->getcreateDungeoneer($character);
 		if ($check_in_dungeon && !$dungeoneer->isInDungeon()) {
-			throw $this->createNotFoundException("dungeons::error.notin");
+			$this->addFlash('error', $this->trans->trans('error.notin', [], 'dungeons'));
+			return 'maf_actions';
 		}
 		return $dungeoneer;
 	}
@@ -60,6 +62,9 @@ class DungeonController extends AbstractController {
 	#[Route ('/dungeon/', name:'maf_dungeon')]
 	public function indexAction(): Response {
 		$dungeoneer = $this->gateway();
+		if (! $dungeoneer instanceof Dungeoneer ) {
+			return $this->redirectToRoute($dungeoneer);
+		}
 
 		$dungeon = $dungeoneer->getCurrentDungeon();
 		[$party, $missing, $wait] = $this->dm->calculateTurnTime($dungeon);
@@ -114,8 +119,12 @@ class DungeonController extends AbstractController {
 	#[Route ('/dungeon/enter/{dungeon}', name:'maf_dungeon_enter', requirements: ['dungeon'=>'\d+'])]
 	public function enterAction(ActionManager $am, Geography $geo, Dungeon $dungeon): RedirectResponse|Response {
 		$dungeoneer = $this->gateway(false);
+		if (! $dungeoneer instanceof Dungeoneer ) {
+			return $this->redirectToRoute($dungeoneer);
+		}
 		if ($dungeoneer->isInDungeon()) {
-			throw new AccessDeniedHttpException("dungeons::error.already");
+			$this->addFlash('error', $this->trans->trans('error.already', [], 'dungeons'));
+			return $this->redirectToRoute('maf_dungeon');
 		}
 
 		$dungeons = $geo->findDungeonsInActionRange($dungeoneer->getCharacter());
@@ -146,6 +155,9 @@ class DungeonController extends AbstractController {
 	#[Route ('/dungeon/events', name:'maf_dungeon_events')]
 	public function eventsAction(): Response {
 		$dungeoneer = $this->gateway();
+		if (! $dungeoneer instanceof Dungeoneer ) {
+			return $this->redirectToRoute($dungeoneer);
+		}
 
 		return $this->render('Dungeon/events.html.twig', [
 			'dungeon' => $dungeoneer->getCurrentDungeon(),
@@ -173,6 +185,9 @@ class DungeonController extends AbstractController {
 	#[Route ('/dungeon/cardselect', name:'maf_dungeon_cardselect')]
 	public function cardselectAction(LoggerInterface $logger, Request $request): RedirectResponse {
 		$dungeoneer = $this->gateway();
+		if (! $dungeoneer instanceof Dungeoneer ) {
+			return $this->redirectToRoute($dungeoneer);
+		}
 		$dungeon = $dungeoneer->getCurrentDungeon();
 
 		$cardselect = $this->createForm(CardSelectType::class);
@@ -224,6 +239,9 @@ class DungeonController extends AbstractController {
 	#[Route ('/dungeon/party', name:'maf_dungeon_party')]
 	public function partyAction(): Response {
 		$dungeoneer = $this->gateway();
+		if (! $dungeoneer instanceof Dungeoneer ) {
+			return $this->redirectToRoute($dungeoneer);
+		}
 
 		return $this->render('Dungeon/party.html.twig', [
 			'dungeoneer'=>$dungeoneer, 'party'=>$dungeoneer->getParty()
@@ -237,11 +255,16 @@ class DungeonController extends AbstractController {
 	#[Route ('/dungeon/leave', name:'maf_dungeon_leave')]
 	public function leaveAction(): Response {
 		$dungeoneer = $this->gateway();
+		if (! $dungeoneer instanceof Dungeoneer ) {
+			return $this->redirectToRoute($dungeoneer);
+		}
 		if (!$dungeoneer->getParty()) {
-			throw new AccessDeniedHttpException("dungeons::error.noparty");
+			$this->addFlash('error', $this->trans->trans('error.noparty', [], 'dungeons'));
+			return $this->redirectToRoute('maf_actions');
 		}
 		if ($dungeoneer->isInDungeon()) {
-			throw new AccessDeniedHttpException("dungeons::error.inside");
+			$this->addFlash('error', $this->trans->trans('error.inside', [], 'dungeons'));
+			return $this->redirectToRoute('maf_actions');
 		}
 
 		$this->dm->leaveParty($dungeoneer);
@@ -260,6 +283,9 @@ class DungeonController extends AbstractController {
 	#[Route ('/dungeon/target/{type}', name:'maf_dungeon_target', requirements:['type'=>'[a-z]'])]
 	public function targetAction(Request $request, string $type): RedirectResponse {
 		$dungeoneer = $this->gateway();
+		if (! $dungeoneer instanceof Dungeoneer ) {
+			return $this->redirectToRoute($dungeoneer);
+		}
 		$dungeon = $dungeoneer->getCurrentDungeon();
 
 		$target = match ($type) {

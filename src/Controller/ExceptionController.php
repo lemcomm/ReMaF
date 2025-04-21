@@ -46,13 +46,10 @@ class ExceptionController extends AbstractController {
 			if (str_contains($error, 'RFC 2822')) {
 				# Filter out junk bot email addresses.
 				$forward = false;
-			} elseif (array_key_exists(1, $bits)) {
-				# Filter out Dispathcer generated errors--those are the game working as intended. No need to forward.
-				if (str_starts_with($bits[1], 'unavailable.intro')) {
+			} elseif (str_starts_with($error, 'unavailable.intro')) {
 					$forward = false;
-				} elseif (str_starts_with($bits[1], 'error.')) {
-					$forward = false;
-				}
+			} elseif (str_starts_with($error, 'error.noaccess')) {
+				$forward = false;
 			}
 			if ($forward) {
 				try {

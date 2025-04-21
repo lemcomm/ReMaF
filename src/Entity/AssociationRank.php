@@ -13,16 +13,16 @@ class AssociationRank {
 	private string $name;
 	private ?string $fName = null;
 	private ?string $trans = null;
-	private int $level;
-	private bool $view_all;
-	private int $view_up;
-	private int $view_down;
-	private bool $view_self;
-	private bool $owner;
-	private bool $manager;
-	private bool $build;
-	private bool $subcreate;
-	private bool $createAssocs;
+	private ?int $level = null;
+	private ?bool $view_all = null;
+	private ?int $view_up = null;
+	private ?int $view_down = null;
+	private ?bool $view_self = null;
+	private ?bool $owner = null;
+	private ?bool $manager = null;
+	private ?bool $build = null;
+	private ?bool $subcreate = null;
+	private ?bool $createAssocs = null;
 	private ?Description $description = null;
 	private Collection $subordinates;
 	private Collection $members;
@@ -322,7 +322,7 @@ class AssociationRank {
 		return $this;
 	}
 
-	public function getFName(): string {
+	public function getFName(): ?string {
 		return $this->fName;
 	}
 
@@ -331,7 +331,7 @@ class AssociationRank {
 		return $this;
 	}
 
-	public function getTrans(): string {
+	public function getTrans(): ?string {
 		return $this->trans;
 	}
 
@@ -341,10 +341,10 @@ class AssociationRank {
 	}
 
 	public function findName(string $gender): string {
-		return match ($gender) {
-			'male' => $this->name,
-			'female' => $this->fName?:$this->name,
-		};
+		if ($this->fName) {
+			return $this->fName;
+		}
+		return $this->name;
 	}
 
 	/**

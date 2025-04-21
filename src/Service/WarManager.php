@@ -10,6 +10,7 @@ use App\Entity\Place;
 use App\Entity\Settlement;
 use App\Entity\Siege;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Twig\GameTimeExtension;
 use Psr\Log\LoggerInterface;
@@ -31,10 +32,13 @@ class WarManager {
 		private LoggerInterface $logger) {
 	}
 
-	public function createBattle(Character $character, ?Settlement $settlement=null, ?Place $place=null, $targets=array(), ?Siege $siege=null, ?BattleGroup $attackers=null, ?BattleGroup $defenders=null): array {
+	public function createBattle(Character $character, ?Settlement $settlement=null, ?Place $place=null, array|ArrayCollection $targets=array(), ?Siege $siege=null, ?BattleGroup $attackers=null, ?BattleGroup $defenders=null): array {
 		/* for future reference, $outside is used to determine whether or not attackers need to leave the settlement in order to attack someone.
 		It's used by attackOthersAction of WarCon. --Andrew */
 		$type = 'field';
+		if ($targets instanceof ArrayCollection) {
+			$targets = $targets->toArray();
+		}
 
 		$battle = new Battle;
 		$this->em->persist($battle);
