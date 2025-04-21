@@ -95,14 +95,16 @@ class Realm extends Faction {
 			$arr = [];
 			/** @var RealmPosition $position */
 			foreach ($this->positions as $position) {
-				if ($position->getRank() && !in_array($position->getRank(), $arr)) {
+				if ($position->getRank() && (!in_array($position->getRank(), $arr))) {
+					$arr[] = $position->getRank();
+				} elseif ($position->getRank() === 0) {
 					$arr[] = $position->getRank();
 				} elseif ($position->getRuler()) {
 					$arr[] = -1;
 				}
 			}
-			sort($arr);
 			array_unshift($arr, null);
+			sort($arr);
 			array_unshift($arr, -1);
 			$this->positionRanks = $arr;
 		}
