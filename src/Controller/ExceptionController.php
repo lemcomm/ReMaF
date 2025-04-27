@@ -43,12 +43,12 @@ class ExceptionController extends AbstractController {
 		$bits = explode("::", $error);
 		if ($code !== 404) {
 			$forward = true;
+			$errBits = explode("::", $error);
 			if (str_contains($error, 'RFC 2822')) {
 				# Filter out junk bot email addresses.
 				$forward = false;
-			} elseif (str_starts_with($error, 'unavailable.intro')) {
-					$forward = false;
-			} elseif (str_starts_with($error, 'error.noaccess')) {
+			} elseif (count($errBits) > 0 && $errBits[0] === 'messages') {
+				# These are errors the players get by accessing pages they shouldn't be able to, and are thus, intentional game design, not errors in the sense of this file.
 				$forward = false;
 			}
 			if ($forward) {
