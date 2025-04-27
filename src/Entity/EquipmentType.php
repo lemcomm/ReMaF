@@ -9,6 +9,11 @@ class EquipmentType {
 	private int $ranged;
 	private int $melee;
 	private int $defense;
+	private int $mastery;
+	private array $armor;
+	private array $aspect;
+	private array $class;
+	private int $weight;
 	private int $training_required;
 	private int $resupply_cost;
 	private ?int $id = null;
@@ -16,6 +21,20 @@ class EquipmentType {
 	private ?BuildingType $trainer = null;
 	private ?SkillType $skill = null;
 
+	public function getMastery(){
+		return $this->mastery;
+	}
+
+	public function getAspects(){
+		return $this->aspect;
+	}
+	public function getArmor(){
+		return $this->armor;
+	}
+	public function getClass()
+	{
+		return $this->class;
+	}
 	public function getNametrans(): string {
 		return 'item.' . $this->getName();
 	}
