@@ -558,7 +558,9 @@ class BattleRunner {
 			$this->em->flush();
 		}
 		$this->log(20, "...hunt phase...\n");
-		$this->runStage('hunt', $rangedPenalty, $phase);
+		if ($this->mafRuleset) {
+			$this->runStage('hunt', $rangedPenalty, $phase);
+		}
 	}
 
 	public function prepareRound($first = false): void {
@@ -824,7 +826,31 @@ class BattleRunner {
 					}
 				}
 			} elseif ($this->masteryRuleset) {
-				if ($soldier->isRanged()) {
+				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer(true) && $this->battle->getType() == 'field') {
+					$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") charges ");
+					$target = $this->getRandomSoldier($enemyCollection);
+					if ($target) {
+						$this->strikes++;
+						$noCavTargets = 0;
+						$hit = $this->combat->attackRoll($soldier, $target);
+						if ($hit !== 'Defended') {
+							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+							foreach ($logs as $each) {
+								$this->log(10, $each);
+							}
+							if (str_contains($results, ' ')) {
+								foreach (explode(' ', $results) as $each) {
+									$this->addResult($each);
+								}
+							}
+						} else {
+							$result = $hit;
+						}
+					} else {
+						$this->log(10, "no more targets\n");
+						$noCavTargets++;
+					}
+				} elseif ($soldier->isRanged()) {
 					$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") fires - ");
 					$target = $this->getRandomSoldier($enemyCollection);
 					if ($target) {
@@ -891,89 +917,174 @@ class BattleRunner {
 		foreach ($soldiers as $soldier) {
 			$result = false;
 			$counter = null;
-			if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer() && $this->battle->getType() == 'field') {
-				// Lancers will always perform a cavalry charge in the last ranged phase!
-				// A cavalry charge can only happen if there is a ranged phase (meaning, there is ground to fire/charge across)
-				$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") charges ");
-				$target = $this->getRandomSoldier($enemyCollection);
-				$counter = 'charge';
-				if ($target) {
-					$this->strikes++;
-					$noCavTargets = 0;
-					[$result, $logs] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
-					foreach ($logs as $each) {
-						$this->log(10, $each);
+			if ($this->mafRuleset) {
+				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer() && $this->battle->getType() == 'field') {
+					// Lancers will always perform a cavalry charge in the last ranged phase!
+					// A cavalry charge can only happen if there is a ranged phase (meaning, there is ground to fire/charge across)
+					$this->log(10, $soldier->getName() . " (" . $soldier->getTranslatableType() . ") charges ");
+					$target = $this->getRandomSoldier($enemyCollection);
+					$counter = 'charge';
+					if ($target) {
+						$this->strikes++;
+						$noCavTargets = 0;
+						[
+							$result,
+							$logs
+						] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
+						foreach ($logs as $each) {
+							$this->log(10, $each);
+						}
+					} else {
+						// no more targets
+						$this->log(10, "but finds no target\n");
+						$noCavTargets++;
 					}
-				} else {
-					// no more targets
-					$this->log(10, "but finds no target\n");
-					$noCavTargets++;
-				}
-			} elseif ($soldier->isRanged()) {
-				// Continure firing with a reduced hit chance in regular battle. If we skipped the ranged phase due to this being the last battle in a siege, we forego ranged combat to pure melee instead.
-				// TODO: friendly fire !
-				$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") fires - ");
+				} elseif ($soldier->isRanged()) {
+					// Continure firing with a reduced hit chance in regular battle. If we skipped the ranged phase due to this being the last battle in a siege, we forego ranged combat to pure melee instead.
+					// TODO: friendly fire !
+					$this->log(10, $soldier->getName() . " (" . $soldier->getTranslatableType() . ") fires - ");
 
-				$target = $this->getRandomSoldier($enemyCollection);
-				if ($target) {
-					$this->shots++;
-					$noMeleeTargets = 0;
-					$rPower = $this->combat->RangedPower($soldier, true, null, $attackers);
-					if (!$this->legacyHitRolls) {
-						$hit = $this->combat->RangedRoll($defBonus, $rangedPenalty*$target->getRace()->getSize(), $bonus);
-					} else {
-						$hit = rand(0,100)<(min(75,$rPower+$bonus)*0.5);
-					}
-					if ($hit) {
-						$this->rangedHits++;
-						[$result, $logs] = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
-						foreach ($logs as $each) {
-							$this->log(10, $each);
+					$target = $this->getRandomSoldier($enemyCollection);
+					if ($target) {
+						$this->shots++;
+						$noMeleeTargets = 0;
+						$rPower = $this->combat->RangedPower($soldier, true, null, $attackers);
+						if (!$this->legacyHitRolls) {
+							$hit = $this->combat->RangedRoll($defBonus, $rangedPenalty * $target->getRace()->getSize(), $bonus);
+						} else {
+							$hit = rand(0, 100) < (min(75, $rPower + $bonus) * 0.5);
+						}
+						if ($hit) {
+							$this->rangedHits++;
+							[
+								$result,
+								$logs
+							] = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
+							foreach ($logs as $each) {
+								$this->log(10, $each);
+							}
+						} else {
+							$this->missed++;
+							$this->log(10, "missed\n");
 						}
 					} else {
-						$this->missed++;
-						$this->log(10, "missed\n");
+						// no more targets
+						$this->log(10, "but finds no target\n");
+						$noMeleeTargets++;
 					}
 				} else {
-					// no more targets
-					$this->log(10, "but finds no target\n");
-					$noMeleeTargets++;
-				}
-			} else {
-				// We are either in a siege assault and we have contact points left, OR we are not in a siege assault. We are a melee unit or ranged unit with melee capabilities in final siege battle.
-				$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") attacks ");
-				$target = $this->getRandomSoldier($enemyCollection);
-				$counter = 'melee';
-				if ($target) {
-					$this->strikes++;
-					$noMeleeTargets = 0;
-					$mPower = $this->combat->MeleePower($soldier, true, null, $attackers);
-					# Yes, melee soldiers used to always hit if they had a target.
-					if ($this->legacyHitRolls || $this->combat->MeleeRoll($defBonus, $this->combat->toHitSizeModifier($soldier, $target))) {
-						[$result, $logs] = $this->combat->MeleeAttack($soldier, $target, $mPower, false, true, $this->xpMod, $this->defenseBonus); // Basically, an attack of opportunity.
-						foreach ($logs as $each) {
-							$this->log(10, $each);
+					// We are either in a siege assault and we have contact points left, OR we are not in a siege assault. We are a melee unit or ranged unit with melee capabilities in final siege battle.
+					$this->log(10, $soldier->getName() . " (" . $soldier->getTranslatableType() . ") attacks ");
+					$target = $this->getRandomSoldier($enemyCollection);
+					$counter = 'melee';
+					if ($target) {
+						$this->strikes++;
+						$noMeleeTargets = 0;
+						$mPower = $this->combat->MeleePower($soldier, true, null, $attackers);
+						# Yes, melee soldiers used to always hit if they had a target.
+						if ($this->legacyHitRolls || $this->combat->MeleeRoll($defBonus, $this->combat->toHitSizeModifier($soldier, $target))) {
+							[
+								$result,
+								$logs
+							] = $this->combat->MeleeAttack($soldier, $target, $mPower, false, true, $this->xpMod, $this->defenseBonus); // Basically, an attack of opportunity.
+							foreach ($logs as $each) {
+								$this->log(10, $each);
+							}
+						} else {
+							$this->mMissed++;
+							$this->log(10, "missed in melee\n");
 						}
-					} else {
-						$this->mMissed++;
-						$this->log(10, "missed in melee\n");
-					}
-					/*
-					if ($battle->getType() == 'siegeassault') {
-						$usedContacts++;
-						if ($result=='kill'||$result=='capture') {
-							if (!$siegeAttacker) {
-								$attSlain++;
-							} else {
-								$defSlain++;
+						/*
+						if ($battle->getType() == 'siegeassault') {
+							$usedContacts++;
+							if ($result=='kill'||$result=='capture') {
+								if (!$siegeAttacker) {
+									$attSlain++;
+								} else {
+									$defSlain++;
+								}
 							}
 						}
+						*/
+					} else {
+						// no more targets
+						$this->log(10, "but finds no target\n");
+						$noMeleeTargets++;
 					}
-					*/
+				}
+			} elseif ($this->masteryRuleset) {
+				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer(true) && $this->battle->getType() == 'field') {
+					$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") charges ");
+					$target = $this->getRandomSoldier($enemyCollection);
+					if ($target) {
+						$this->strikes++;
+						$noCavTargets = 0;
+						$hit = $this->combat->attackRoll($soldier, $target);
+						if ($hit !== 'Defended') {
+							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+							foreach ($logs as $each) {
+								$this->log(10, $each);
+							}
+							if (str_contains($results, ' ')) {
+								foreach (explode(' ', $results) as $each) {
+									$this->addResult($each);
+								}
+							}
+						} else {
+							$result = $hit;
+						}
+					} else {
+						$this->log(10, "no more targets\n");
+						$noCavTargets++;
+					}
+				} elseif ($soldier->isRanged(true)) {
+					$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") fires - ");
+					$target = $this->getRandomSoldier($enemyCollection);
+					if ($target) {
+						$this->shots++;
+						$noMeleeTargets = 0;
+						$hit = $this->combat->attackRoll($soldier, $target);
+						if ($hit !== 'Defended') {
+							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+							foreach ($logs as $each) {
+								$this->log(10, $each);
+							}
+							if (str_contains($results, ' ')) {
+								foreach (explode(' ', $results) as $each) {
+									$this->addResult($each);
+								}
+							}
+						} else {
+							$result = $hit;
+						}
+					} else {
+						$this->log(10, "no more targets\n");
+						$noMeleeTargets++;
+					}
 				} else {
-					// no more targets
-					$this->log(10, "but finds no target\n");
-					$noMeleeTargets++;
+					$this->log(10, $soldier->getName() . " (" . $soldier->getTranslatableType() . ") attacks ");
+					$target = $this->getRandomSoldier($enemyCollection);
+					if ($target) {
+						$this->strikes++;
+						$noMeleeTargets = 0;
+						$hit = $this->combat->attackRoll($soldier, $target);
+						if ($hit !== 'Defended') {
+							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+							foreach ($logs as $each) {
+								$this->log(10, $each);
+							}
+							if (str_contains($results, ' ')) {
+								foreach (explode(' ', $results) as $each) {
+									$this->addResult($each);
+								}
+							}
+						} else {
+							$result = $hit;
+						}
+					} else {
+						$this->log(10, "no more targets\n");
+						$noMeleeTargets++;
+					}
 				}
 			}
 			if ($counter && strpos($result, ' ') !== false) {
@@ -1313,7 +1424,6 @@ class BattleRunner {
 						$this->log(20, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())."\n");
 					}
 				}
-
 			}
 			if (!$this->ignoreMorale) {
 				$this->log(10, "==> avg. morale: ".round($total/max(1,$count))."\n\n");

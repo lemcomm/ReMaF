@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\EquipmentType;
 use App\Entity\Permission;
 use App\Entity\Race;
 use App\Entity\RealmDesignation;
@@ -152,6 +153,35 @@ class UpdateDatabaseCommand extends  Command {
 				$world->setName("old world");
 				$em->flush();
 			}
+		}
+		if (in_array('A7', $versions)) {
+			$output->writeln('Loading New Race Data');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => 'LoadRaceData',
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading New Skill Data');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => 'LoadSkillData',
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Replacing legacy shield name');
+			$em->createQuery("UPDATE App\Entity\EquipmentType e SET e.name = 'round shield' WHERE e.name ='shield'")->execute();
+			$output->writeln('Replacing legacy broadsword name');
+			$em->createQuery("UPDATE App\Entity\EquipmentType e SET e.name = 'battlesword' WHERE e.name ='broadsword'")->execute();
+			$output->writeln('Replacing legacy shield name');
+			$em->createQuery("UPDATE App\Entity\EquipmentType e SET e.name = 'broadsword' WHERE e.name ='sword'")->execute();
+			$output->writeln('Loading New Equipment Data');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => 'LoadEquipmentData',
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
 		}
 
 		return Command::SUCCESS;

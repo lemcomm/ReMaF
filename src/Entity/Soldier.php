@@ -12,6 +12,7 @@ class Soldier extends NPC {
 	protected int $willpower = 12;
 	protected int $baseSkill = 12;
 	protected int $penalty = 0;
+	protected int $fatigue = 0;
 	protected int $morale = 0;
 	protected int $maxMorale = 0;
 	protected bool $is_fortified = false;
@@ -41,7 +42,7 @@ class Soldier extends NPC {
 	private ?int $id = null;
 	private bool $improvisedWeapon = false;
 	private Collection $events;
-	private ?EquipmentType $shield = null;
+	private null|false|EquipmentType $shield = null;
 	private ?EquipmentType $weapon = null;
 	private ?EquipmentType $armour = null;
 	private ?EquipmentType $equipment = null;
@@ -71,37 +72,12 @@ class Soldier extends NPC {
 		return "soldier #$this->id ({$this->getName()}, {$this->getType()}, base $base, char $char)";
 	}
 
-	public function isShield(){
-		if ($this->shield === null){
-			return false;
-		}
-		else{
-			return true;
-		}
-	}
-
-	public function getShield(){
-		return $this->shield;
-	}
-
-	public function getShieldDefenseClass()
-	{
-		if ($this->isShield()){
-			return $this->getShield()->getClass()[1];
-		}
-		else{
-			return 0;
-		}
-	}
 	public function getWeaponAspect($aspect){
-		return $this->getWeapon()->getAspects()[$aspect];
+		return $this->getWeapon()->getAspect()[$aspect];
 	}
 	
 	public function getWeaponAttackClass(){
 		return $this->getWeapon()->getClass()[0];
-	}
-	public function getWeaponDefenseClass(){
-		return max($this->getWeapon()->getClass()[1], $this->getShieldDefenseClass());
 	}
 
 	public function getArmourHitLoc($hitLoc, $aspect)
@@ -551,6 +527,8 @@ class Soldier extends NPC {
 	}
 
 	public function isRanged(): bool {
+		if ($this->getEquipment()?->getName() === 'javelin') return true;
+		if ($this->getEquipment()?->getReach() === 3) return true;
 		if ($this->getWeapon() && $this->getWeapon()->getRanged() > $this->getWeapon()->getMelee()) {
 			return true;
 		} else {
@@ -573,12 +551,15 @@ class Soldier extends NPC {
 		return $this;
 	}
 
-	public function isLancer(): bool {
-		if ($this->getMount() && $this->getEquipment()?->getName() === 'lance') {
-			return true;
-		} else {
-			return false;
+	public function isLancer($checkChivalric = false): bool {
+		if ($this->getMount()) {
+			if ($this->getEquipment()?->getName() === 'lance') {
+				return true;
+			} elseif ($checkChivalric && $this->getWeapon() && $this->getWeapon()->getMelee() && str_contains($this->getWeapon()->getCategory(), 'chivalric')) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 	public function getMount(): ?EquipmentType {
@@ -1073,27 +1054,20 @@ class Soldier extends NPC {
 	}
 
 	public function getEffMastery(bool $attacking): int {
-		if ($attacking){
+		if ($attacking) {
 			$EML = $this->getRace()->getBaseCombatSkill() * ($this->getWeapon()->getMastery() + $this->getMastery());
-			$EML += $this->getWeaponAttackClass();
-		}
-		else{
-			if($this->isShield()){
-				$EML = $this->getRace()->getBaseCombatSkill() * ($this->getShield()->getMastery() + $this->getMastery());
-				$EML += $this->getShieldDefenseClass();
-			}
-			else{
+			$EML += $this->getWeapon()->getAttackClass();
+		} else {
+			if ($this->getEquipment() && str_contains($this->getEquipment()->getName(), 'shield')) {
+				$EML = $this->getRace()->getBaseCombatSkill() * ($this->getEquipment()->getMastery() + $this->getMastery());
+				$EML += $this->getEquipment()->getDefenseClass();
+			} else {
 				$EML = $this->getRace()->getBaseCombatSkill() * ($this->getWeapon()->getMastery() + $this->getMastery());
-				$EML += $this->getWeaponDefenseClass();
+				$EML += $this->getWeapon()->getDefenseClass();
 			}
 		}
-		
-		$EML -= ($this->penalty + $this->attacks) * 5;
-		return $this->effMastery;
-	}
 
-	public function setEffMastery(int $effMastery): static {
-		$this->effMastery = $effMastery;
-		return $this;
+		$EML -= ($this->penalty + $this->attacks) * 5;
+		return $EML;
 	}
 }
