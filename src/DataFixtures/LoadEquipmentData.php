@@ -8,6 +8,7 @@ use App\Entity\Entourage;
 use App\Entity\EquipmentType;
 use App\Entity\SkillType;
 use App\Entity\Soldier;
+use App\Service\ArmorCalculator;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -37,541 +38,558 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 		*/
 
 		'broadsword' => [
-			'reach' => 'melee', 'category' => 'medium chivalric', 'mode' => 'main hand',
-			'weight' => 3, 'quality' => 12,
+			# Universal fields
+			'train' => 55, 'resupply' =>90,
+			'provider' => 'Bladesmith', 'trainer' => 'Barracks',
+			'icon' => 'items/schwert2.png', 'skill'=> 'short sword',
+
+			# Mastery fields
+			'reach' => 'melee',
+			'category' => 'medium chivalric',
+			'mode' => 'mainhand',
+			'weight' => 3,
+			'quality' => 12,
 			'class' => [15, 10],
 			'aspect' => ["bashing" => 3, "cutting" => 5, "piercing" => 3],
-			'mastery' => 3, 'skill' => 'sword'],
-		'falchion' => [
-			'reach' => 'melee', 'category' => 'medium infantry', 'mode' => 'main hand',
+			'mastery' => 3,
+
+			# Legacy fields
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  60, 'defense' =>   0,
+		],
+		'short sword' => [
+			# Universal fields
+			'train' => 40, 'resupply' =>50,
+			'provider' => 'Bladesmith', 'trainer' => 'Barracks',
+			'icon' => 'items/kurzschwert2.png', 'skill'=> 'short sword',
+
+			# Mastery fields
+			'reach' => 'melee',
+			'category' => 'medium chivalric',
+			'mode' => 'mainhand',
+			'weight' => 1,
+			'quality' => 10,
+			'class' => [15, 10],
+			'aspect' => ["bashing" => 0, "cutting" => 3, "piercing" => 3],
+			'mastery' => 3,
+
+			# Legacy fields
+			'type' => 'equipment',
+			'ranged' =>  0, 'melee' =>  10, 'defense' =>   10,
+		],
+		'falchion' => [ # Legacy Sword-ish
+			# Universal fields
+			'train' => 55, 'resupply' =>90,
+			'provider' => 'Bladesmith', 'trainer' => 'Barracks',
+			'icon' => null, 'skill'=> 'falchion',
+
+			'reach' => 'melee', 'category' => 'medium infantry', 'mode' => 'mainhand',
 			'weight' => 4, 'quality' => 10,
 			'class' => [15, 5],
 			'aspect' => ["bashing" => 4, "cutting" => 6, "piercing" => 1],
-			'mastery' => 3, 'skill' => 'sword'],
-		'battlesword' => [
+			'mastery' => 3,
+
+			# Legacy fields
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  60, 'defense' =>   0,
+		],
+		'battlesword' => [ # Legacy Broadsword
+			'train' => 75, 'resupply' =>120,
+			'provider' => 'Bladesmith', 'trainer' => 'Garrison',
+			'icon' => 'items/claymore2.png', 'skill'=> 'long sword',
+
 			'reach' => 'melee', 'category' => 'heavy chivalric', 'mode' => 'twohanded',
 			'weight' => 8, 'quality' => 13,
 			'class' => [25, 10],
 			'aspect' => ["bashing" => 5, "cutting" => 8, "piercing" => 4],
-			'mastery' => 3, 'skill' => 'sword'],
+			'mastery' => 3,
 
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  90, 'defense' =>   0,
+		],
 		'mace' => [
-			'reach' => 'melee', 'category' => 'medium chivalric', 'mode' => 'main hand',
+			'train' => 60, 'resupply' =>100,
+			'provider' => 'Weaponsmith',  'trainer' => 'Barracks',
+			'icon' => null,	'skill'=> 'mace',
+
+			'reach' => 'melee', 'category' => 'medium chivalric', 'mode' => 'mainhand',
 			'weight' => 4, 'quality' => 11,
 			'class' => [15, 5],
 			'aspect' => ["bashing" => 6, "cutting" => 0, "piercing" => 0],
-			'mastery' => 4, 'skill' => 'club'],
-		'morningstar' => [
+			'mastery' => 4,
+
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  65, 'defense' =>   0,
+		],
+
+		'morning star' => [
+			'train' => 60, 'resupply' =>100,
+			'provider' => 'Weaponsmith',  'trainer' => 'Barracks',
+			'icon' => null, 'skill'=> 'morning star',
+
 			'reach' => 'melee', 'category' => 'medium infantry', 'mode' => 'twohanded',
 			'weight' => 5, 'quality' => 11,
 			'class' => [15, 5],
 			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 5],
-			'mastery' => 4, 'skill' => 'club'],
+			'mastery' => 4,
+
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  75, 'defense' =>   0,
+		],
 		'warhammer' => [
+			'train' => 70, 'resupply' =>80,
+			'provider' => 'Weaponsmith',  'trainer' => 'Garrison',
+			'icon' => null, 'skill' => 'war hammer',
+
 			'reach' => 'melee', 'category' => 'heavy chivalric', 'mode' => 'twohanded',
 			'weight' => 5, 'quality' => 11,
 			'class' => [15, 5],
 			'aspect' => ["bashing" => 6, "cutting" => 0, "piercing" => 5],
-			'mastery' => 3, 'skill' => 'club'],
-		
-		'ball and chain' => [
-			'reach' => 'melee', 'category' => 'heavy chivalric', 'mode' => 'main hand',
+			'mastery' => 3,
+
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  60, 'defense' =>   0,
+		],
+		'chain mace' => [
+			'train' => 90, 'resupply' =>110,
+			'provider' => 'Weaponsmith',  'trainer' => 'Barracks',
+			'icon' => null, 'skill' => 'chain mace',
+
+			'reach' => 'melee', 'category' => 'heavy chivalric', 'mode' => 'mainhand',
 			'weight' => 4, 'quality' => 12,
 			'class' => [20, 10],
 			'aspect' => ["bashing" => 8, "cutting" => 0, "piercing" => 6],
-			'mastery' => 1, 'skill' => 'flail'],
+			'mastery' => 1,
+
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  80, 'defense' =>   0,
+		],
 		'warflail' => [
+			'train' => 90, 'resupply' =>110,
+			'provider' => 'Weaponsmith',  'trainer' => 'Garrison',
+			'icon' => null, 'skill'=> 'flail',
+
 			'reach' => 'melee', 'category' => 'heavy infantry', 'mode' => 'twohanded',
 			'weight' => 5, 'quality' => 11,
 			'class' => [25, 10],
 			'aspect' => ["bashing" => 9, "cutting" => 0, "piercing" => 6],
-			'mastery' => 1, 'skill' => 'flail'],
+			'mastery' => 1,
+
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  90, 'defense' =>   0,
+		],
 
 		'spear' => [
+			'train' => 20, 'resupply' => 15,
+			'provider' => 'Carpenter', 'trainer' => 'Training Ground',
+			'icon'=> null, 'skill' => 'spear',
+
 			'reach' => 'melee', 'category' => 'light infantry', 'mode' => 'twohanded',
 			'weight' => 5, 'quality' => 11,
 			'class' => [20, 10],
 			'aspect' => ["bashing" => 4, "cutting" => 0, "piercing" => 7],
-			'mastery' => 3, 'skill' => 'spear'],
+			'mastery' => 3,
+
+			'type' => 'weapon',
+			'ranged' => 0, 'melee' => 20, 'defense' => 0,],
 		'pike' => [
+			'train' => 50, 'resupply' => 60,
+			'provider' => 'Weaponsmith',  'trainer' => 'Guardhouse',
+			'icon' => 'items/hellebarde2.png', 'skill'=> 'pike',
+
 			'reach' => 'long', 'category' => 'heavy infantry', 'mode' => 'twohanded',
 			'weight' => 12, 'quality' => 12,
 			'class' => [25, 5],
 			'aspect' => ["bashing" => 4, "cutting" => 0, "piercing" => 8],
-			'mastery' => 2, 'skill' => 'spear'],
+			'mastery' => 2,
+
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  50, 'defense' =>   0,
+		],
 		
 		'glaive' => [
+			'train' => 30, 'resupply' => 35,
+			'provider' => 'Weaponsmith',  'trainer' => 'Guardhouse',
+			'icon' => null, 'skill'=> 'glaive',
+
 			'reach' => 'long', 'category' => 'heavy infantry', 'mode' => 'twohanded',
 			'weight' => 8, 'quality' => 11,
 			'class' => [25, 10],
 			'aspect' => ["bashing" => 6, "cutting" => 7, "piercing" => 6],
-			'mastery' => 2, 'skill' => 'polearm'],
-		'poleaxe' => [
+			'mastery' => 2,
+
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  35, 'defense' =>   0,
+		],
+		'halberd' => [
+			'train' => 40, 'resupply' => 50,
+			'provider' => 'Bladesmith',  'trainer' => 'Garrison',
+			'icon' => 'items/spear2.png', 'skill'=> 'halberd',
+
 			'reach' => 'long', 'category' => 'heavy infantry', 'mode' => 'twohanded',
 			'weight' => 8, 'quality' => 11,
 			'class' => [25, 5],
 			'aspect' => ["bashing" => 6, "cutting" => 9, "piercing" => 5],
-			'mastery' => 2, 'skill' => 'polearm'],
+			'mastery' => 2,
 
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  40, 'defense' =>   0,],
 		'axe' => [
-			'reach' => 'melee', 'category' => 'light infantry', 'mode' => 'main hand',
+			'train' => 20, 'resupply' => 30,
+			'provider' => 'Blacksmith',  'trainer' => 'Training Ground',
+			'icon' => 'items/streitaxt2.png', 'skill'=> 'battle axe',
+
+			'reach' => 'melee', 'category' => 'light infantry', 'mode' => 'mainhand',
 			'weight' => 3, 'quality' => 11,
 			'class' => [10, 5],
 			'aspect' => ["bashing" => 4, "cutting" => 6, "piercing" => 0],
-			'mastery' => 3, 'skill' => 'axe'],
-		'battleaxe' => [
+			'mastery' => 3,
+
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  30, 'defense' =>   0,
+		],
+		'great axe' => [ # AKA battleaxe
+			'train' => 75, 'resupply' =>120,
+			'provider' => 'Bladesmith', 'trainer' => 'Garrison',
+			'icon'=> null, 'skill'=> 'great axe',
+
 			'reach' => 'melee', 'category' => 'heavy infantry', 'mode' => 'twohanded',
 			'weight' => 6, 'quality' => 12,
 			'class' => [20, 10],
 			'aspect' => ["bashing" => 6, "cutting" => 9, "piercing" => 0],
-			'mastery' => 3, 'skill' => 'axe'],
+			'mastery' => 3,
+
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  90, 'defense' =>   0,],
 
 		// Missile
 
 		'shortbow' => [
+			'train' => 50, 'resupply' => 50,
+			'provider' => 'Bowyer', 'trainer' => 'Archery Range',
+			'icon' => 'items/shortbow2.png', 'skill'=> 'shortbow',
+
 			'reach' => 'ranged', 'category' => 'light archer', 'mode' => 'twohanded',
 			'weight' => 2, 'quality' => 10,
 			'class' => [5, 5],
 			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 6],
-			'mastery' => 5, 'skill' => 'bow'],
+			'mastery' => 5,
+
+			'type' => 'weapon',
+			'ranged' => 40, 'melee' =>   0, 'defense' =>   0,],
 		'longbow' => [
+			'train' =>100, 'resupply' => 80,
+			'provider' => 'Bowyer', 'trainer' => 'Archery School',
+			'icon' => 'items/longbow2.png', 'skill'=> 'longbow',
+
 			'reach' => 'ranged', 'category' => 'medium archer', 'mode' => 'twohanded',
 			'weight' => 4, 'quality' => 11,
 			'class' => [5, 5],
 			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 7],
-			'mastery' => 3, 'skill' => 'bow'],
+			'mastery' => 3,
+
+			'type' => 'weapon',
+			'ranged' => 80, 'melee' =>   0, 'defense' =>   0,],
 		'crossbow' => [
+			'train' => 60, 'resupply' => 75,
+			'provider' => 'Bowyer', 'trainer' => 'Archery Range',
+			'icon' => 'items/armbrust2.png', 'skill'=> 'crossbow',
+
 			'reach' => 'ranged', 'category' => 'medium chivalric', 'mode' => 'twohanded',
 			'weight' => 5, 'quality' => 10,
 			'class' => [15, 5],
 			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 7],
-			'mastery' => 2, 'skill' => 'crossbow'],
+			'mastery' => 2,
+
+			'type' => 'weapon',
+			'ranged' => 60, 'melee' =>   0, 'defense' =>   0,],
 		'javelin' => [
+			'train' => 40, 'resupply' => 35,
+			'provider' => 'Weaponsmith', 'trainer' => 'Guardhouse',
+			'icon' => 'items/javelin2.png', 'skill'=> 'javelin',
+
 			'reach' => 'ranged', 'category' => 'medium infantry', 'mode' => 'twohanded',
 			'weight' => 4, 'quality' => 10,
 			'class' => [10, 5],
 			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 6],
-			'mastery' => 3, 'skill' => 'thrown'],
+			'mastery' => 3,
+
+			'type' => 'equipment',
+			'ranged' => 65, 'melee' =>  10, 'defense' =>   0,
+		],
 
 		// Shield
 
 		'round shield' => [
+			'train' => 40, 'resupply' => 40,
+			'provider' => 'Carpenter', 'trainer' => 'Training Ground',
+			'icon' => null, 'skill' => 'shield',
+
 			'reach' => 'melee', 'category' => 'medium infantry', 'mode' => 'offhand',
 			'weight' => 6, 'quality' => 13,
 			'class' => [5, 20],
 			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 0],
-			'mastery' => 3, 'skill' => 'shield'],
+			'mastery' => 3,
+
+			'type' => 'equipment',
+			'ranged' =>  0, 'melee' =>   0, 'defense' =>  35,
+		],
 		'kite shield' => [
+			'train' => 40, 'resupply' => 40,
+			'provider' => 'Blacksmith', 'trainer' => 'Guardhouse',
+			'icon' => null, 'skill' => 'shield',
+
 			'reach' => 'melee', 'category' => 'heavy chivalric', 'mode' => 'offhand',
 			'weight' => 7, 'quality' => 15,
 			'class' => [5, 25],
 			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 0],
-			'mastery' => 3, 'skill' => 'shield'],
+			'mastery' => 3,
+
+			'type' => 'equipment',
+			'ranged' =>  0, 'melee' =>   0, 'defense' =>  35,
+		],
 		'knight shield' => [
+			'train' => 40, 'resupply' => 40,
+			'provider' => 'Carpenter', 'trainer' => 'Stables',
+			'icon' => 'items/shield2.png', 'skill' => 'shield',
+
 			'reach' => 'melee', 'category' => 'medium chivalric', 'mode' => 'offhand',
 			'weight' => 5, 'quality' => 14,
 			'class' => [5, 20],
 			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 0],
-			'mastery' => 3, 'skill' => 'shield'],
+			'mastery' => 3,
+
+			'type' => 'equipment',
+			'ranged' =>  0, 'melee' =>   0, 'defense' =>  35,
+		],
 
 		'club' => [
-			'type' => 'weapon',
-			'ranged' => 0, 'melee' => 10, 'defense' => 0,
 			'train' => 10, 'resupply' => 5,
 			'provider' => 'Carpenter', 'trainer' => 'Training Ground',
-			'icon'=> null, 'skill' => 'club'],
-		'staff' => [
+			'icon'=> null, 'skill' => 'club',
+
+			'reach' => 'melee', 'category' => 'light infantry', 'mode' => 'mainhand',
+			'weight' => 1, 'quality' => 6,
+			'class' => [20, 0],
+			'aspect' => ["bashing" => 2, "cutting" => 0, "piercing" => 0],
+			'mastery' => 2,
+
 			'type' => 'weapon',
-			'ranged' => 0, 'melee' => 15, 'defense' => 0,
+			'ranged' => 0, 'melee' => 10, 'defense' => 0,
+		],
+		'staff' => [
 			'train' => 15, 'resupply' => 10,
 			'provider' => 'Carpenter', 'trainer' => 'Training Ground',
-			'icon'=> null, 'skill' => 'staff'],
-		'spear' => [
-			'type' => 'weapon',
-			'ranged' => 0, 'melee' => 20, 'defense' => 0,
-			'train' => 20, 'resupply' => 15,
-			'provider' => 'Carpenter', 'trainer' => 'Training Ground',
-			'icon'=> null, 'skill' => 'spear'],
-		'axe' => array(
-			'type' => 'weapon',
-			'ranged' =>  0, 'melee' =>  30, 'defense' =>   0,
-			'train' => 20, 'resupply' => 30,
-			'provider' => 'Blacksmith',  'trainer' => 'Training Ground',
-			'icon' => 'items/streitaxt2.png', 'skill'=> 'battle axe'),
-		'machete' => array(
-			'type' => 'weapon',
-			'ranged' =>  0, 'melee' =>  30, 'defense' =>   0,
-			'train' => 20, 'resupply' => 30,
-			'provider' => 'Blacksmith',  'trainer' => 'Training Ground',
-			'icon'=> null, 'skill'=> 'machete'),
-		'glaive' => array(
-			'type' => 'weapon',
-			'ranged' =>  0, 'melee' =>  35, 'defense' =>   0,
-			'train' => 30, 'resupply' => 35,
-			'provider' => 'Weaponsmith',  'trainer' => 'Guardhouse',
-			'icon' => null, 'skill'=> 'glaive'),
-		'halberd' => array(
-			'type' => 'weapon',
-			'ranged' =>  0, 'melee' =>  40, 'defense' =>   0,
-			'train' => 40, 'resupply' => 50,
-			'provider' => 'Blacksmith',  'trainer' => 'Guardhouse',
-			'icon' => 'items/spear2.png', 'skill'=> 'halberd'),
-		'pike' => array(
-			'type' => 'weapon',
-			'ranged' =>  0, 'melee' =>  50, 'defense' =>   0,
-			'train' => 50, 'resupply' => 60,
-			'provider' => 'Weaponsmith',  'trainer' => 'Guardhouse',
-			'icon' => 'items/hellebarde2.png', 'skill'=> 'pike'),
-		'sword' => array(
-			'type' => 'weapon',
-			'ranged' =>  0, 'melee' =>  60, 'defense' =>   0,
-			'train' => 55, 'resupply' =>90,
-			'provider' => 'Bladesmith', 'trainer' => 'Barracks',
-			'icon' => 'items/schwert2.png', 'skill'=> 'short sword'),
-		'mace'  => array(
-			'type' => 'weapon',
-			'ranged' =>  0, 'melee' =>  65, 'defense' =>   0,
-			'train' => 60, 'resupply' =>100,
-			'provider' => 'Weaponsmith',  'trainer' => 'Barracks',
-			'icon' => null, 'skill'=> 'mace'),
-		'morning star'  => array(
-			'type' => 'weapon',
-			'ranged' =>  0, 'melee' =>  75, 'defense' =>   0,
-			'train' => 90, 'resupply' =>110,
-			'provider' => 'Weaponsmith',  'trainer' => 'Garrison',
-			'icon' => null, 'skill'=> 'mace'),
-		'broadsword' => array(
-			'type' => 'weapon',
-			'ranged' =>  0, 'melee' =>  90, 'defense' =>   0,
-			'train' => 75, 'resupply' =>120,
-			'provider' => 'Bladesmith', 'trainer' => 'Garrison',
-			'icon' => 'items/claymore2.png', 'skill'=> 'long sword'),
-		'great axe' => array(
-			'type' => 'weapon',
-			'ranged' =>  0, 'melee' =>  90, 'defense' =>   0,
-			'train' => 75, 'resupply' =>120,
-			'provider' => 'Bladesmith', 'trainer' => 'Garrison',
-			'icon'=> null, 'skill'=> 'great axe'),
+			'icon'=> null, 'skill' => 'staff',
 
-		'sling' => array(
+			'reach' => 'melee', 'category' => 'light infantry', 'mode' => 'mainhand',
+			'weight' => 2, 'quality' => 8,
+			'class' => [20, 10],
+			'aspect' => ["bashing" => 3, "cutting" => 0, "piercing" => 0],
+			'mastery' => 2,
+
 			'type' => 'weapon',
-			'ranged' => 20, 'melee' =>   0, 'defense' =>   0,
+			'ranged' => 0, 'melee' => 15, 'defense' => 0,
+		],
+
+		'machete' => [
+			'train' => 20, 'resupply' => 30,
+			'provider' => 'Blacksmith',  'trainer' => 'Training Ground',
+			'icon'=> null, 'skill'=> 'machete',
+
+			'reach' => 'melee', 'category' => 'medium infantry', 'mode' => 'mainhand',
+			'weight' => 2, 'quality' => 10,
+			'class' => [15, 5],
+			'aspect' => ["bashing" => 3, "cutting" => 5, "piercing" => 0],
+			'mastery' => 3,
+
+			'type' => 'weapon',
+			'ranged' =>  0, 'melee' =>  30, 'defense' =>   0,
+		],
+
+		'sling' => [
 			'train' => 20, 'resupply' => 5,
 			'provider' => 'Bowyer', 'trainer' => 'Training Ground',
-			'icon'=> null, 'skill'=> 'sling'),
-		'staff sling' => array(
+			'icon'=> null, 'skill'=> 'sling',
+
+			'reach' => 'ranged', 'category' => 'light archer', 'mode' => 'twohanded',
+			'weight' => 1, 'quality' => 10,
+			'class' => [5, 5],
+			'aspect' => ["bashing" => 6, "cutting" => 0, "piercing" => 0],
+			'mastery' => 4,
+
 			'type' => 'weapon',
-			'ranged' => 60, 'melee' =>   0, 'defense' =>   0,
+			'ranged' => 20, 'melee' =>   0, 'defense' =>   0,
+		],
+		'staff sling' => [
 			'train' => 60, 'resupply' => 75,
 			'provider' => 'Bowyer', 'trainer' => 'Training Ground',
-			'icon'=> null, 'skill'=> 'staff sling'),
-		'shortbow' => array(
-			'type' => 'weapon',
-			'ranged' => 40, 'melee' =>   0, 'defense' =>   0,
-			'train' => 50, 'resupply' => 50,
-			'provider' => 'Bowyer', 'trainer' => 'Archery Range',
-			'icon' => 'items/shortbow2.png', 'skill'=> 'shortbow'),
-		'recurve bow' => array(
-			'type' => 'weapon',
-			'ranged' => 50, 'melee' =>   0, 'defense' =>   0,
-			'train' => 150, 'resupply' => 150,
-			'provider' => 'Bowyer', 'trainer' => 'Archery Range',
-			'icon' => null, 'skill'=> 'recurve'),
-		'crossbow' => array(
+			'icon'=> null, 'skill'=> 'staff sling',
+
+			'reach' => 'ranged', 'category' => 'medium archer', 'mode' => 'twohanded',
+			'weight' => 3, 'quality' => 11,
+			'class' => [5, 5],
+			'aspect' => ["bashing" => 7, "cutting" => 0, "piercing" => 0],
+			'mastery' => 3,
+
 			'type' => 'weapon',
 			'ranged' => 60, 'melee' =>   0, 'defense' =>   0,
-			'train' => 60, 'resupply' => 75,
+		],
+		'recurve bow' => [
+			'train' => 150, 'resupply' => 150,
 			'provider' => 'Bowyer', 'trainer' => 'Archery Range',
-			'icon' => 'items/armbrust2.png', 'skill'=> 'crossbow'),
-		'longbow' => array(
+			'icon' => null, 'skill'=> 'recurve',
+
+			'reach' => 'ranged', 'category' => 'medium archer', 'mode' => 'twohanded',
+			'weight' => 4, 'quality' => 11,
+			'class' => [5, 5],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 7],
+			'mastery' => 4,
+
 			'type' => 'weapon',
-			'ranged' => 80, 'melee' =>   0, 'defense' =>   0,
-			'train' =>100, 'resupply' => 80,
-			'provider' => 'Bowyer', 'trainer' => 'Archery School',
-			'icon' => 'items/longbow2.png', 'skill'=> 'longbow'),
+			'ranged' => 50, 'melee' =>   0, 'defense' =>   0,
+		],
 
 		// New armor
 
 		'cloth armour' => [
-			'type' => 'armour', 'train' => 10,
+			'type' => 'armour', 'train' => 10, 'resupply' => 30,
+			'provider' => 'Tailor', 'trainer' => 'Training Ground',
+			'icon' => 'items/clotharmour2.png',
+
 			'armor' => [
-				['form' => $this->armorForm['tunic'], 'layer' => $this->armorLayer['cloth']],
-				['form' => $this->armorForm['leggings'], 'layer' => $this->armorLayer['cloth']],
-				['form' => $this->armorForm['boots'], 'layer' => $this->armorLayer['cloth']],
+				['form' => 'tunic', 'layer' => 'cloth'],
+				['form' => 'leggings', 'layer' => 'cloth'],
+				['form' => 'boots', 'layer' => 'cloth'],
 			],
-			'weight' => $this->calcWeight($this->equipment['cloth armour'])
+
+			'ranged' =>  0, 'melee' =>   0, 'defense' =>  10,
 		],
 		'quilt armour' => [
-			'type' => 'armour', 'train' => 15,
+			'type' => 'armour', 'train' => 15, 'resupply' => 40,
+			'provider' => 'Tailor', 'trainer' => 'Training Ground',
+
 			'armor' => [
-				['form' => $this->armorForm['gambeson'], 'layer' => $this->armorLayer['quilt']],
-				['form' => $this->armorForm['leggings'], 'layer' => $this->armorLayer['quilt']],
-				['form' => $this->armorForm['boots'], 'layer' => $this->armorLayer['cloth']],
+				['form' => 'gambeson', 'layer' => 'quilt'],
+				['form' => 'leggings', 'layer' => 'quilt'],
+				['form' => 'boots', 'layer' => 'cloth'],
 			],
-			'weight' => $this->calcWeight($this->equipment['quilt armour'])
+
+			'ranged' => 0, 'melee' =>  0, 'defense' =>  15,
 		],
 		'leather armour' => [
-			'type' => 'armour', 'train' => 25,
+			'type' => 'armour', 'train' => 25, 'resupply' => 50,
+			'provider' => 'Leather Tanner', 'trainer' => 'Guardhouse',
+			'icon' => 'items/leatherarmour2.png',
+
 			'armor' => [
-				['form' => $this->armorForm['cap'], 'layer' => $this->armorLayer['leather']],
-				['form' => $this->armorForm['surcoat'], 'layer' => $this->armorLayer['leather']],
-				['form' => $this->armorForm['leggings'], 'layer' => $this->armorLayer['leather']],
-				['form' => $this->armorForm['boots'], 'layer' => $this->armorLayer['leather']],
+				['form' => 'cap', 'layer' => 'leather'],
+				['form' => 'surcoat', 'layer' => 'leather'],
+				['form' => 'leggings', 'layer' => 'leather'],
+				['form' => 'boots', 'layer' => 'leather'],
 			],
-			'weight' => $this->calcWeight($this->equipment['leather armour'])
+
+			'ranged' =>  0, 'melee' =>   0, 'defense' =>  20,
 		],
-		'leather plate armour' => [
-			'type' => 'armour', 'train' => 30,
+		'lamellar armour' => [
+			'type' => 'armour', 'train' => 30, 'resupply' =>170,
+			'provider' => 'Armourer', 'trainer' => 'Barracks',
+			'icon' => null,
+
 			'armor' => [
-				['form' => $this->armorForm['helm'], 'layer' => $this->armorLayer['hard leather']],
-				['form' => $this->armorForm['breastplate'], 'layer' => $this->armorLayer['hard leather']],
-				['form' => $this->armorForm['rerebraces'], 'layer' => $this->armorLayer['hard leather']],
-				['form' => $this->armorForm['vambraces'], 'layer' => $this->armorLayer['hard leather']],
-				['form' => $this->armorForm['skirt'], 'layer' => $this->armorLayer['hard leather']],
-				['form' => $this->armorForm['boots'], 'layer' => $this->armorLayer['cloth']],
+				['form' => 'helm', 'layer' => 'hard leather'],
+				['form' => 'breastplate', 'layer' => 'hard leather'],
+				['form' => 'rerebraces', 'layer' => 'hard leather'],
+				['form' => 'vambraces', 'layer' => 'hard leather'],
+				['form' => 'skirt', 'layer' => 'hard leather'],
+				['form' => 'boots', 'layer' => 'cloth'],
 			],
-			'weight' => $this->calcWeight($this->equipment['leather plate armour'])
+
+			'ranged' =>  0, 'melee' =>   0, 'defense' =>  55,
 		],
-		'ring armour' => [
-			'type' => 'armour', 'train' => 35,
+		'ringmail' => [
+			'type' => 'armour', 'train' => 35, 'resupply' => 200,
+			'provider' => 'Armourer', 'trainer' => 'Barracks',
+			'icon' => null,
+
 			'armor' => [
-				['form' => $this->armorForm['cap'], 'layer' => $this->armorLayer['plate']],
-				['form' => $this->armorForm['byrnie'], 'layer' => $this->armorLayer['ring']],
-				['form' => $this->armorForm['leggings'], 'layer' => $this->armorLayer['ring']],
-				['form' => $this->armorForm['gauntlets'], 'layer' => $this->armorLayer['ring']],
-				['form' => $this->armorForm['boots'], 'layer' => $this->armorLayer['cloth']],
+				['form' => 'cap', 'layer' => 'plate'],
+				['form' => 'byrnie', 'layer' => 'ring'],
+				['form' => 'leggings', 'layer' => 'ring'],
+				['form' => 'gauntlets', 'layer' => 'ring'],
+				['form' => 'boots', 'layer' => 'cloth'],
 			],
-			'weight' => $this->calcWeight($this->equipment['ring armour'])
+
+			'ranged'=>0, 'melee'=>0, 'defense'=>60,
 		],
-		'chainmail armour' => [
-			'type' => 'armour', 'train' => 45,
+		'chainmail' => [
+			'type' => 'armour', 'train' => 50, 'resupply' =>300,
+			'provider' => 'Heavy Armourer', 'trainer' => 'Garrison',
+			'icon' => 'items/kettenpanzer2.png',
+
 			'armor' => [
-				['form' => $this->armorForm['cowl'], 'layer' => $this->armorLayer['chain']],
-				['form' => $this->armorForm['hauberk'], 'layer' => $this->armorLayer['chain']],
-				['form' => $this->armorForm['gauntlets'], 'layer' => $this->armorLayer['chain']],
-				['form' => $this->armorForm['boots'], 'layer' => $this->armorLayer['leather']],
+				['form' => 'cowl', 'layer' => 'chain'],
+				['form' => 'hauberk', 'layer' => 'chain'],
+				['form' => 'gauntlets', 'layer' => 'chain'],
+				['form' => 'boots', 'layer' => 'leather'],
 			],
-			'weight' => $this->calcWeight($this->equipment['chainmail armour'])
+
+			'ranged' =>  0, 'melee' =>   0, 'defense' =>  70,
 		],
 		'scale armour' => [
-			'type' => 'armour', 'train' => 60,
+			'type' => 'armour', 'train' => 60,'resupply' =>100,
+			'provider' => 'Armourer', 'trainer' => 'Barracks',
+			'icon' => 'items/schuppenpanzer2.png',
+
 			'armor' => [
-				['form' => $this->armorForm['helm'], 'layer' => $this->armorLayer['plate']],
-				['form' => $this->armorForm['hauberk'], 'layer' => $this->armorLayer['scale']],
-				['form' => $this->armorForm['gauntlets'], 'layer' => $this->armorLayer['scale']],
-				['form' => $this->armorForm['boots'], 'layer' => $this->armorLayer['leather']],
+				['form' => 'helm', 'layer' => 'plate'],
+				['form' => 'hauberk', 'layer' => 'scale'],
+				['form' => 'gauntlets', 'layer' => 'scale'],
+				['form' => 'boots', 'layer' => 'leather'],
 			],
-			'weight' => $this->calcWeight($this->equipment['scale armour'])
+
+			'ranged' =>  0, 'melee' =>   0, 'defense' =>  40,
 		],
 		'plate armour' => [
-			'type' => 'armour', 'train' => 80,
+			'type' => 'armour', 'train' => 80, 'resupply'=>500,
+			'provider' => 'Heavy Armourer',	'trainer' => 'Wood Castle',
+			'icon' => 'items/plattenpanzer2.png',
+
 			'armor' => [
-				['form' => $this->armorForm['helm'], 'layer' => $this->armorLayer['plate']],
-				['form' => $this->armorForm['breastplate'], 'layer' => $this->armorLayer['plate']],
-				['form' => $this->armorForm['ailettes'], 'layer' => $this->armorLayer['plate']],
-				['form' => $this->armorForm['skirt'], 'layer' => $this->armorLayer['scale']],
-				['form' => $this->armorForm['rerebraces'], 'layer' => $this->armorLayer['plate']],
-				['form' => $this->armorForm['vambraces'], 'layer' => $this->armorLayer['mail']],
-				['form' => $this->armorForm['greaves'], 'layer' => $this->armorLayer['plate']],
-				['form' => $this->armorForm['gauntlets'], 'layer' => $this->armorLayer['scale']],
-				['form' => $this->armorForm['boots'], 'layer' => $this->armorLayer['leather']],
+				['form' => 'helm', 'layer' => 'plate'],
+				['form' => 'breastplate', 'layer' => 'plate'],
+				['form' => 'ailettes', 'layer' => 'plate'],
+				['form' => 'skirt', 'layer' => 'scale'],
+				['form' => 'rerebraces', 'layer' => 'plate'],
+				['form' => 'vambraces', 'layer' => 'mail'],
+				['form' => 'greaves', 'layer' => 'plate'],
+				['form' => 'gauntlets', 'layer' => 'scale'],
+				['form' => 'boots', 'layer' => 'leather'],
 			],
-			'weight' => $this->calcWeight($this->equipment['plate armour'])
+
+			'ranged' =>  0, 'melee' =>   0, 'defense' => 85,
 		],
 
+		'lance' => [
+			'train' => 50, 'resupply' => 50,
+			'provider' => 'Weaponsmith', 'trainer' => 'List Field',
+			'icon' => null, 'skill'=> 'lance',
 
-		'cloth armour'      => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' =>  10, 'train' => 10, 'resupply' => 30,	'provider' => 'Tailor',	'trainer' => 'Training Ground',	'icon' => 'items/clotharmour2.png'),
-		'leather armour'    => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' =>  20, 'train' => 20, 'resupply' => 50,	'provider' => 'Leather Tanner',	'trainer' => 'Guardhouse',	'icon' => 'items/leatherarmour2.png'),
-		'scale armour'      => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' =>  40, 'train' => 30, 'resupply' =>100,	'provider' => 'Armourer', 'trainer' => 'Barracks',		'icon' => 'items/schuppenpanzer2.png'),
-		'lamellar armour'   => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' =>  55, 'train' => 40, 'resupply' =>170,	'provider' => 'Armourer', 'trainer' => 'Barracks',		'icon' => null),
-		'chainmail'         => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' =>  70, 'train' => 50, 'resupply' =>300,	'provider' => 'Heavy Armourer', 'trainer' => 'Garrison',		'icon' => 'items/kettenpanzer2.png'),
-		'plate armour'      => array('type' => 'armour',    'ranged' =>  0, 'melee' =>   0, 'defense' => 85, 'train' => 80, 'resupply' =>500,	'provider' => 'Heavy Armourer',	'trainer' => 'Wood Castle',		'icon' => 'items/plattenpanzer2.png'),
+			'reach' => 'long', 'category' => 'heavy chivalric', 'mode' => 'mainhand',
+			'weight' => 12, 'quality' => 12,
+			'class' => [25, 5],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 10],
+			'mastery' => 3,
 
-		'horse'             => array('type' => 'mount', 'ranged' =>  0, 'melee' =>  5, 'defense' =>  10, 'train' => 60, 'resupply' =>300,	'provider' => 'Stables', 'trainer' => 'Barracks',		'icon' => 'items/packpferd2.png'),
-		'war horse'         => array('type' => 'mount', 'ranged' =>  0, 'melee' =>  10, 'defense' =>  20, 'train' =>100, 'resupply' =>800,	'provider' => 'Royal Mews', 'trainer' => 'Wood Castle',		'icon' => 'items/warhorse2.png'),
+			'type' => 'equipment',
+			'ranged' =>  0, 'melee' => 120, 'defense' =>   0,
+		],
 
-		'shield'            => array('type' => 'equipment', 'ranged' =>  0, 'melee' =>   0, 'defense' =>  35, 'train' => 40, 'resupply' => 40,	'provider' => 'Carpenter', 'trainer' => 'Guardhouse',	'icon' => 'items/shield2.png'),
-		'javelin'           => array('type' => 'equipment', 'ranged' => 65, 'melee' =>  10, 'defense' =>   0, 'train' => 40, 'resupply' => 35,	'provider' => 'Weaponsmith', 'trainer' => 'Guardhouse',	'icon' => 'items/javelin2.png', 'skill'=> 'javelin'),
-		'short sword'       => array('type' => 'equipment', 'ranged' =>  0, 'melee' =>  10, 'defense' =>   5, 'train' => 40, 'resupply' => 50,	'provider' => 'Bladesmith', 'trainer' => 'Barracks',		'icon' => 'items/kurzschwert2.png'),
-		'lance'    	    => array('type' => 'equipment', 'ranged' =>  0, 'melee' => 120, 'defense' =>   0, 'train' => 50, 'resupply' => 50,	'provider' => 'Weaponsmith', 'trainer' => 'List Field', 		'icon' => null, 'skill'=> 'lance'),
-		'pavise'    	    => array('type' => 'equipment', 'ranged' =>  0, 'melee' =>   0, 'defense' =>  75, 'train' => 40, 'resupply' => 60,	'provider' => 'Carpenter', 'trainer' => 'Archery Range', 		'icon' => null),
+		# The below only have universal and legacy values. Mastery handles them separately.
+		'pavise' => ['type' => 'equipment', 'ranged' =>  0, 'melee' =>   0, 'defense' =>  75, 'train' => 40, 'resupply' => 60,	'provider' => 'Carpenter', 'trainer' => 'Archery Range', 		'icon' => null],
+		'horse' => ['type' => 'mount', 'ranged' =>  0, 'melee' =>  5, 'defense' =>  10, 'train' => 60, 'resupply' =>300,	'provider' => 'Stables', 'trainer' => 'Barracks',		'icon' => 'items/packpferd2.png'],
+		'war horse' => ['type' => 'mount', 'ranged' =>  0, 'melee' =>  10, 'defense' =>  20, 'train' =>100, 'resupply' =>800,	'provider' => 'Royal Mews', 'trainer' => 'Wood Castle',		'icon' => 'items/warhorse2.png'],
 	);
-
-	/* Armor data
-	*
-	* Form determines coverage.
-	* Layer determines layer materials.
-	*
-	*/
-
-	private array $armorForm = array (
-		'tunic' => [
-			'coverage' => ['upper arm', 'shoulder', 'torso', 'abdomen', 'hip', 'groin'],
-			'type' => 'flexible'
-		],
-		'surcoat' => [
-			'coverage' => ['shoulder', 'torso', 'abdomen', 'hip', 'groin', 'thigh'],
-			'type' => 'flexible mail'
-		],
-		'gambeson' => [
-			'coverage' => ['forearm', 'elbow', 'upper arm', 'shoulder', 'torso', 'abdomen', 'hip', 'groin', 'thigh'],
-			'type' => 'flexible'
-		],
-		'boots' => [
-			'coverage' => ['calf', 'foot'],
-			'type' => 'flexible mail'
-		],
-		'shoes' => [
-			'coverage' => ['foot'],
-			'type' => 'flexible mail'
-		],
-
-		'gauntlets' => [
-			'coverage' => ['hand'],
-			'type' => 'flexible mail'
-		],
-
-		'cowl' => [
-			'coverage' => ['skull', 'neck'],
-			'type' => 'flexible mail'
-		],
-		'leggings' => [
-			'coverage' => ['hip', 'groin', 'thigh', 'knee', 'calf'],
-			'type' => 'flexible mail'
-		],
-		'hauberk' => [
-			'coverage' => ['forearm', 'elbow', 'upper arm', 'shoulder', 'torso', 'abdomen', 'hip', 'groin', 'thigh'],
-			'type' => 'mail'
-		],
-		'byrnie' => [
-			'coverage' => ['upper arm', 'shoulder', 'torso', 'abdomen', 'hip', 'groin'],
-			'type' => 'mail'
-		],
-		'vest' => [
-			'coverage' => ['shoulder', 'torso', 'abdomen'],
-			'type' => 'flexible mail'
-		],
-		'skirt' => [
-			'coverage' => ['hip', 'groin', 'thigh'],
-			'type' => 'plate mail'
-		],
-
-
-		'cap' => [
-			'coverage' => ['skull'],
-			'type' => 'flexible plate'
-		],
-		'helm' => [
-			'coverage' => ['skull', 'face'],
-			'type' => 'plate'
-		],
-		'breastplate' => [
-			'coverage' => ['torso', 'abdomen'],
-			'type' => 'plate'
-		],
-		'greaves' => [
-			'coverage' => ['calf'],
-			'type' => 'plate'
-		],
-		'ailettes' => [
-			'coverage' => ['shoulder'],
-			'type' => 'plate'
-		],
-		'rerebraces' => [
-			'coverage' => ['upper arm'],
-			'type' => 'plate'
-		],
-		'vambraces' => [
-			'coverage' => ['forearm'],
-			'type' => 'plate'
-		]
-	);
-	
-	private array $armorLayer = array(
-		'plate' => [
-			'protection' => [
-				'bashing' => 6,
-				'cutting' => 10,
-				'piercing' => 6,
-			],
-			'type' => 'plate',
-			'weight' => 7.7
-		],
-		'scale' => [
-			'protection' => [
-				'bashing' => 5,
-				'cutting' => 9,
-				'piercing' => 4,
-			],
-			'type' => 'mail',
-			'weight' => 6.1
-		],
-		'mail' => [
-			'protection' => [
-				'bashing' => 2,
-				'cutting' => 8,
-				'piercing' => 5,
-			],
-			'type' => 'mail',
-			'weight' => 4.9
-		],
-		'ring' => [
-			'protection' => [
-				'bashing' => 3,
-				'cutting' => 6,
-				'piercing' => 4,
-			],
-			'type' => 'mail',
-			'weight' => 3.4
-		],
-		'hard leather' => [
-			'protection' => [
-				'bashing' => 4,
-				'cutting' => 5,
-				'piercing' => 4,
-			],
-			'type' => 'plate',
-			'weight' => 2.1
-		],
-		'leather' => [
-			'protection' => [
-				'bashing' => 2,
-				'cutting' => 4,
-				'piercing' => 3,
-			],
-			'type' => 'flexible',
-			'weight' => 1.1
-		],
-		'quilt' => [
-			'protection' => [
-				'bashing' => 5,
-				'cutting' => 3,
-				'piercing' => 2,
-			],
-			'type' => 'flexible',
-			'weight' => 0.8
-		],
-		'cloth' => [
-			'protection' => [
-				'bashing' => 1,
-				'cutting' => 1,
-				'piercing' => 1,
-			],
-			'type' => 'flexible',
-			'weight' => 0.4
-		],
-		
-	);
-
-	public function calcWeight($armor): int {
-		$weight = 0;
-		foreach ($armor['form'] as $piece) {
-			foreach ($piece[0]['coverage'] as $loc) {
-				$weight += $piece[1]['weight'];
-			}
-		}
-		return $weight;
-	}
 
 	public function getDependencies(): array {
 		return [
@@ -587,12 +605,14 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 				$type = new EquipmentType();
 				$manager->persist($type);
 			}
+			/** @var EquipmentType $type */
 			$type->setName($name);
+
+			# Universal Fields
 			$type->setType($data['type']);
 			if ($data['icon']) {
 				$type->setIcon($data['icon']);
 			}
-			$type->setRanged($data['ranged'])->setMelee($data['melee'])->setDefense($data['defense']);
 			$type->setTrainingRequired($data['train']);
 			$type->setResupplyCost($data['resupply']);
 			if ($data['provider']) {
@@ -619,6 +639,27 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 					echo "can't find ".$data['skill']." needed by $name.\n";
 				}
 			}
+
+			# Master Fields
+			if ($data['type'] === 'armour') {
+				$type->setArmor($data['armor']);
+				$type->setWeight((new ArmorCalculator)->calculateWeight($name, $data['armor']));
+			} else {
+				$reach = $data['reach'] === 'melee' ? 1 : 2;
+				$type->setReach($reach);
+				$type->setMode($data['mode']);
+				$type->setQuality($data['quality']);
+				$type->setClass($data['class']);
+				$type->setCategory($data['category']);
+				$type->setAspect($data['aspect']);
+				$type->setMastery($data['mastery']);
+				$type->setWeight($data['weight']);
+			}
+
+			# Legacy Fields
+			$type->setRanged($data['ranged'])->setMelee($data['melee'])->setDefense($data['defense']);
+
+
 			$this->addReference('equipmenttype: '.strtolower($name), $type);
 		}
 		$manager->flush();

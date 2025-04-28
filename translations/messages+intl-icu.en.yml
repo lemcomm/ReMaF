@@ -1247,16 +1247,21 @@ item:
  club:             club
  current:          (current)
  axe:              axe
+ battlesword:      battlesword
  broadsword:       broadsword
  chainmail:        chainmail
+ chain mace:       ball and chain
  cloth armour:     cloth armor
  crossbow:         crossbow
+ falchion:         falchion
  glaive:           glaive
  great axe:        great axe
  halberd:          halberd
  horse:            horse
  improvised:       improvised
  javelin:          javelin
+ kite shield:      kite shield
+ knight shield:    knight shield
  lamellar armour:  lamellar armor
  lance:            lance
  leather armour:   leather armor
@@ -1267,9 +1272,11 @@ item:
  pavise:           pavise
  pike:             pike
  plate armour:     plate armor
+ quilt armour:     quilt armor
  recurve bow:      recruve bow
+ ringmail:         ringmail
+ round shield:     shield
  scale armour:     scale armor
- shield:           shield
  shortbow:         shortbow
  short sword:      short sword
  sling:            sling
@@ -1278,6 +1285,8 @@ item:
  spear:            spear
  sword:            sword
  war horse:        war horse
+ warflail:         war flail
+ warhammer:        warhammer
 
 events:
  title:     Event Journals
