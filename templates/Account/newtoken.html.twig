@@ -1,0 +1,17 @@
+{% extends 'layout.html.twig' %}
+
+{% trans_default_domain 'core' %}
+
+{% block title %}{%trans with {'%name%': site_short, '%local%': 'security.newtoken.title'} %}security.newtoken.title{% endtrans %}{% endblock %}
+
+{% block recaptcha %}<script type="text/javascript" src="https://www.google.com/recaptcha/api.js" async defer></script>{% endblock %}
+
+{% block content %}
+    <h1>{% trans %}security.newtoken.header{% endtrans %}</h1>
+    {{ form_start(form) }}
+    {{ form_row(form.username) }}
+    {{ form_row(form.email) }}
+    <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

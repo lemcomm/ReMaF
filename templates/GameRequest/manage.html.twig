@@ -71,7 +71,7 @@
 			</div>
 		{% elseif gamerequest.type == 'realm.join' %}
 			<hr>
-			{{ 'diplomacy.join.preamble'|trans({"%character%":link(gamerequest.fromCharacter), "%realm%":link(gamerequest.fromRealm), "%realm-2%":link(gamerequest.toRealm), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
+			{{ 'diplomacy.join.preamble'|trans({"%character%":link(gamerequest.fromCharacter), "%realm%":link(gamerequest.fromRealm), "%realm_2%":link(gamerequest.toRealm), "%date%":gamerequest.created|date("D, d M Y H:i:s")}, "politics")|raw }}
 			<div class="subcontent inline_announcements" style="color:#460702">
 			<h4>{{ gamerequest.subject|title }}</h4>
 			{% if gamerequest.text %}{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks}}{% endif %}

@@ -327,7 +327,6 @@ class SecurityController extends AbstractController {
                         $this->addFlash('notice', $trans->trans('security.confirm.flash.already', [], 'core'));
                         return new RedirectResponse($this->generateUrl('maf_index'));
                 } else {
-                        $link = $this->generateUrl('maf_token_new');
                         $this->addFlash('error', $trans->trans('security.confirm.flash.failed', [], 'core'));
                         return new RedirectResponse($this->generateUrl('maf_token_new'));
                 }

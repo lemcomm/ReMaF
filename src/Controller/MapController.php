@@ -17,6 +17,7 @@ use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -85,18 +86,21 @@ class MapController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid() && !$limit) {
 			$data = $form->getData();
-
-			$marker = new MapMarker;
-			$marker->setName($data['name']);
-			$marker->setType($data['type']);
-			$marker->setLocation(new Point($data['new_location_x'], $data['new_location_y']));
-			$marker->setPlaced(intval($this->common->getGlobal('cycle')));
-			$marker->setOwner($character);
-			$marker->setRealm($data['realm']);
-			$em->persist($marker);
-			$em->flush();
-			$my_markers->add($marker);
-			if (count($my_markers) >= 10) { $limit = true; }
+			if (!$data['new_location_x'] || !$data['new_location_y']) {
+				$form->addError(new FormError($this->trans->trans('No new coordinates have been supplied.')));
+			} else {
+				$marker = new MapMarker;
+				$marker->setName($data['name']);
+				$marker->setType($data['type']);
+				$marker->setLocation(new Point($data['new_location_x'], $data['new_location_y']));
+				$marker->setPlaced(intval($this->common->getGlobal('cycle')));
+				$marker->setOwner($character);
+				$marker->setRealm($data['realm']);
+				$em->persist($marker);
+				$em->flush();
+				$my_markers->add($marker);
+				if (count($my_markers) >= 10) { $limit = true; }
+			}
 		}
 
 		return $this->render('Map/marker.html.twig', array('mymarkers'=>$my_markers, 'limit'=>$limit, 'form'=>$form->createView()));

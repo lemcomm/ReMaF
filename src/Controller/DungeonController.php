@@ -171,9 +171,15 @@ class DungeonController extends AbstractController {
 	 */
 	#[Route ('/dungeon/cards', name:'maf_dungeon_cards')]
 	public function cardsAction(): Response {
-		return $this->render('Dungeon/cards.html.twig', [
-			'cards' => $this->gateway()->getCards()
-		]);
+		$dungeoneer = $this->gateway();
+		if (! $dungeoneer instanceof Dungeoneer ) {
+			return $this->redirectToRoute($dungeoneer);
+		} else {
+			return $this->render('Dungeon/cards.html.twig', [
+				'cards' => $dungeoneer->getCards()
+			]);
+		}
+
 	}
 
 	/**

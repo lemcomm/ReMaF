@@ -635,6 +635,13 @@ class ActionsController extends AbstractController {
 						array('%link-character%'=>$data['target']->getId()),
 						History::MEDIUM, true, 20
 					);
+					$this->hist->logEvent(
+						$data['target'],
+						'event.character.steward',
+						array('%link-settlement%'=>$settlement->getId()),
+						History::MEDIUM, true, 20
+					);
+					$this->addFlash('notice', $this->trans->trans('control.steward.success', ["%name%"=>$data['target']->getName()], 'actions'));
 				} else {
 					$this->hist->logEvent(
 						$settlement,
@@ -642,14 +649,8 @@ class ActionsController extends AbstractController {
 						array(),
 						History::MEDIUM, true, 20
 					);
+					$this->addFlash('notice', $this->trans->trans('control.steward.success', ["%name%"=>'(no one)'], 'actions'));
 				}
-				$this->hist->logEvent(
-					$data['target'],
-					'event.character.steward',
-					array('%link-settlement%'=>$settlement->getId()),
-					History::MEDIUM, true, 20
-				);
-				$this->addFlash('notice', $this->trans->trans('control.steward.success', ["%name%"=>$data['target']->getName()], 'actions'));
 				$this->em->flush();
 				return $this->redirectToRoute('maf_actions');
 			}
