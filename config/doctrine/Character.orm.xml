@@ -13,6 +13,7 @@
 		<field name="abandoned_by" type="integer" nullable="true"/>
 		<field name="retired" type="boolean" nullable="true"/>
 		<field name="retired_on" type="datetime" nullable="true"/>
+		<field name="returned_on" type="datetime" nullable="true"/>
 		<field name="generation" type="smallint"/>
 		<field name="genome" type="string" length="2" nullable="true">
 			<options>

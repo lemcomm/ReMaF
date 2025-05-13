@@ -524,6 +524,7 @@ class CharacterController extends AbstractController {
 			}
 			if ($character->getRetired()) {
 				$character->setRetired(false);
+				$character->setReturnedOn(new DateTime("now"));
 			}
 			$character->setInsidePlace($place);
 			$character->setWorld($place->getWorld());

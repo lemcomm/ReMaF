@@ -21,6 +21,7 @@ use App\Service\CommonService;
 use App\Service\Geography;
 use App\Service\Interactions;
 use App\Service\PermissionManager;
+use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -2115,6 +2116,13 @@ class Dispatcher {
 
 	public function metaRetireTest(): array {
 		$char = $this->getCharacter();
+		$oneWeek = new DateTime("-7 days");
+		if ($char->getCreated() > $oneWeek) {
+			return ["name"=>"meta.retire.name", "description"=>"unavailable.toonew"];
+		}
+		if ($char->getRetiredOn() && $char->getRetiredOn() > $oneWeek) {
+			return ["name"=>"meta.retire.name", "description"=>"unavailable.toorecentreturn"];
+		}
 		if ($char->isNPC()) {
 			// FIXME: respawn template doesn't exist.
 			return array("name"=>"meta.retire.name", "description"=>"unavailable.npc");
