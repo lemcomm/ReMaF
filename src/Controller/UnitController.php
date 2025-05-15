@@ -562,19 +562,22 @@ class UnitController extends AbstractController {
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
+			$target = $form->get('target')->getData();
 			$data['target'] = $form->get('target')->getData();
                         $em = $this->em;
-                        if ($unit->getMarshal() && $unit->getMarshal() !== $data['target']) {
+                        if ($unit->getMarshal() && $unit->getMarshal() !== $target) {
                                 $this->hist->closeLog($unit, $unit->getMarshal());
                         }
-                        $unit->setMarshal($data['target']);
-                        $this->hist->openLog($unit, $data['target']);
-                        $this->hist->logEvent(
-				$data['target'],
-				'event.unit.appointed',
-				array('%unit%'=>$unit->getName(), '%link-character%'=>$character->getId()),
-				History::MEDIUM, false, 30
-			);
+                        $unit->setMarshal($target);
+			if ($target) {
+				$this->hist->openLog($unit, $target);
+				$this->hist->logEvent(
+					$target,
+					'event.unit.appointed',
+					array('%unit%'=>$unit->getName(), '%link-character%'=>$character->getId()),
+					History::MEDIUM, false, 30
+				);
+			}
                         $em->flush();
                         $this->addFlash('notice', $this->trans->trans('unit.appoint.success', array(), 'actions'));
                         return $this->redirectToRoute('maf_units');

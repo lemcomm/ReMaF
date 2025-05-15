@@ -26,6 +26,7 @@ class EntourageManageType extends AbstractType {
 
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$builder->add('npcs', FormType::class);
+		$others = $options['others'];
 
 		foreach ($options['entourage'] as $npc) {
 			$idstring = (string)$npc->getId();
@@ -35,7 +36,7 @@ class EntourageManageType extends AbstractType {
 			if (!$npc->isLocked()) {
 				if ($npc->getAlive()) {
 					$actions = array('recruit.manage.disband' => 'disband2');
-					if (!empty($this->others)) {
+					if (!empty($others)) {
 						$actions['recruit.manage.assign'] = 'assign2';
 					}
 					if ($npc->getCharacter() && $npc->getCharacter()->isNPC()) {
@@ -67,18 +68,16 @@ class EntourageManageType extends AbstractType {
 			}
 		}
 
-		if (!empty($options['others'])) {
-			$others = $options['others'];
+		if (!empty($others)) {
 			$builder->add('assignto', EntityType::class, array(
 				'placeholder' => 'form.choose',
 				'label' => 'recruit.manage.assignto2',
 				'required' => false,
-				'class'=>Character::class, 'choice_label'=>'name', 'query_builder'=>function(EntityRepository $er) use ($others) {
-					$qb = $er->createQueryBuilder('c');
-					$qb->where('c IN (:others)');
-					$qb->setParameter('others', $others);
-					return $qb;
-				},
+				'class'=>Character::class,
+				'choice_label'=>'name',
+				'query_builder'=>function(EntityRepository $er) use ($others) {
+					return $er->createQueryBuilder('c')->where('c in (:all)')->setParameter('all', $others)->orderBy('c.name', 'ASC');
+				}
 			));
 		}
 
