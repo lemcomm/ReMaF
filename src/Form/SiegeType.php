@@ -143,7 +143,7 @@ class SiegeType extends AbstractType {
 					$builder->add('newleader', EntityType::class, array(
 						'label'=>'military.siege.actions.leadership.form',
 						'required'=>true,
-						'placeholder'=>'siege.character.none',
+						'placeholder'=>'siege.actions.leadership.none',
 						'attr'=>array('title'=>'siege.help.newleader'),
 						'class'=>Character::class,
 						'choice_label'=>'name',

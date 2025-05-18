@@ -811,6 +811,7 @@ military:
     name:               Change Leadership
     description:        As commander of your force, you can always pass it off to another.
     form:               Who Shall Command?
+    none:               (select)
    assume:
     name:               Assume Leadership
     description:        Sometimes, things get attacked when you're not actively on the defense. This lets you assume control.

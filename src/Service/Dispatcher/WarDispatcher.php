@@ -312,24 +312,9 @@ class WarDispatcher extends Dispatcher {
 		}
 		$inSiege = FALSE;
 		$isLeader = FALSE;
-		$isAttacker = FALSE;
-		$isDefender = FALSE;
-		$attLeader = FALSE;
-		$defLeader = FALSE;
 		foreach ($siege->getGroups() as $group) {
 			if ($group->getCharacters()->contains($this->getCharacter())) {
 				$inSiege = TRUE;
-				if ($group->isAttacker()) {
-					$isAttacker = TRUE;
-					if ($group->getLeader() && $group->getLeader()->isActive()) {
-						$attLeader = TRUE;
-					}
-				} else {
-					$isDefender = TRUE;
-					if ($group->getLeader() && $group->getLeader()->isActive()) {
-						$defLeader = TRUE;
-					}
-				}
 				if ($group->getLeader() == $this->getCharacter()) {
 					$isLeader = TRUE;
 				}
@@ -339,8 +324,8 @@ class WarDispatcher extends Dispatcher {
 			# Is not in the siege.
 			return array("name"=>"military.siege.leadership.name", "description"=>"unavailable.notinsiege");
 		}
-		if (($isDefender && $defLeader) || ($isAttacker && $attLeader)) {
-			return array("name"=>"military.siege.leadership.name", "description"=>"unavailable.alreadylead");
+		if (!$isLeader) {
+			return array("name"=>"military.siege.leadership.name", "description"=>"unavailable.notcommander");
 		}
 		if ($this->getCharacter()->hasNoSoldiers()) {
 			# The guards laugh at your "siege".
@@ -355,9 +340,9 @@ class WarDispatcher extends Dispatcher {
 			return array("name"=>"military.siege.leadership.name", "description"=>"unavailable.fresh");
 		}
 		if ($siege->getPlace()) {
-			return $this->action("military.siege.assault", "maf_war_siege_place", false, array('action'=>'leadership', 'place'=>$siege->getPlace()->getId()));
+			return $this->action("military.siege.leadership", "maf_war_siege_place", false, array('action'=>'leadership', 'place'=>$siege->getPlace()->getId()));
 		} else {
-			return $this->action("military.siege.assault", "maf_war_siege", false, array('action'=>'leadership'));
+			return $this->action("military.siege.leadership", "maf_war_siege", false, array('action'=>'leadership'));
 		}
 	}
 
