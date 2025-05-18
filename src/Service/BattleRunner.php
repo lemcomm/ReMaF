@@ -830,6 +830,7 @@ class BattleRunner {
 		// store who is active, because this changes with hits and would give the first group to resolve the initiative while we want things to be resolved simultaneously
 		foreach ($this->battle->getGroups() as $group) {
 			/** @var Soldier $soldier */
+			/** @var BattleGroup $group */
 			foreach ($group->getSoldiers() as $soldier) {
 				$soldier->setFighting($soldier->isActive(false, false, $this->legacyActivity, $this->ignoreWounds));
 				$soldier->resetAttacks();
