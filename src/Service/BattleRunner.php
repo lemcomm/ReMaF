@@ -107,10 +107,6 @@ class BattleRunner {
 		$this->debug=0;
 	}
 
-	public function getLastReport() {
-		return $this->report;
-	}
-
 	public function run(Battle $battle, $cycle): void {
 		$this->battle = $battle;
 		$this->prepareCombatManager();
@@ -1019,6 +1015,11 @@ class BattleRunner {
 	public function runStage($type, $rangedPenaltyStart, $phase): bool {
 		$groups = $this->battle->getGroups();
 		$battle = $this->battle;
+		$disableCharge = false;
+		if ($phase !== $this->chargePhase) {
+			# Short circuit this check, so we don't accidentally end up looping through every soldier to see if they're cav or not.
+			$disableCharge = true;
+		}
 		foreach ($groups as $group) {
 			$shots = 0; # Ranged attack attempts
 			$strikes = 0; # Melee attack attempts
@@ -1045,6 +1046,10 @@ class BattleRunner {
 			$noCavTargets = 0;
 			$rangeNoTargets = false;
 			$cavNoTargets = false;
+			if ($disableCharge) {
+				# Set this true, to short circuit the cavalry charge check entirely.
+				$cavNoTargets = true;
+			}
 			$meleeNoTargets = false;
 			$damagingHits = 0;
 			#$attSlain = $this->attSlain; # For Sieges.
@@ -1302,7 +1307,7 @@ class BattleRunner {
 							$this->log(10, "but finds no target\n");
 							$noCavTargets++;
 						}
-					} elseif ($soldier->isRanged()) {
+					} elseif (!$meleeNoTargets && $soldier->isRanged()) {
 						// Continure firing with a reduced hit chance in regular battle. If we skipped the ranged phase due to this being the last battle in a siege, we forego ranged combat to pure melee instead.
 						// TODO: friendly fire !
 						$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") fires - ");
@@ -1332,7 +1337,7 @@ class BattleRunner {
 							$this->log(10, "but finds no target\n");
 							$noMeleeTargets++;
 						}
-					} else {
+					} elseif (!$meleeNoTargets) {
 						// We are either in a siege assault and we have contact points left, OR we are not in a siege assault. We are a melee unit or ranged unit with melee capabilities in final siege battle.
 						$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType().") attacks ");
 						$target = $this->getRandomSoldier($enemyCollection);
@@ -1551,6 +1556,8 @@ class BattleRunner {
 				}
 				$total = 0;
 				$count = 0;
+				$rand = rand(0,100);
+				$hRand = rand(0,100);
 				foreach ($group->getActiveSoldiers() as $soldier) {
 					// Check for ability to do damage
 					/** @var Soldier $soldier */
@@ -1580,8 +1587,6 @@ class BattleRunner {
 						$soldier->setMorale($soldier->getMorale() + ($allHP * $countUs * $mod));
 						$total += $soldier->getMorale();
 						$health = $soldier->healthValue();
-						$rand = rand(0,100);
-						$hRand = rand(0,100);
 
 						# $moraleMod makes it harder to break during ranged phase.
 						$noble = $soldier->isNoble();
@@ -1619,19 +1624,19 @@ class BattleRunner {
 						}
 					} elseif (!$this->ignoreMorale) {
 						$soldier->setMorale($soldier->getMorale() * $mod);
-						if ($soldier->getMorale() < rand(0,100)) {
+						if ($soldier->getMorale() < $rand) {
 							if ($soldier->isNoble()) {
-								$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." - has no fear\n");
+								$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($soldier->getMorale())." - has no fear\n");
 								$staredDeath++;
 							} else {
 								$routed++;
-								$this->log(10, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())." - panics\n");
+								$this->log(10, $soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($soldier->getMorale())." - panics\n");
 								$soldier->setRouted(true);
 								$countUs--;
 								$this->history->addToSoldierLog($soldier, 'routed.melee');
 							}
 						} else {
-							$this->log(20, $soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())."\n");
+							$this->log(20, $soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($soldier->getMorale())."\n");
 						}
 					}
 
@@ -1819,6 +1824,8 @@ class BattleRunner {
 		$battle = $this->battle;
 		$this->log(3, "survivors:\n");
 		$this->prepareRound(); // to update the isFighting setting correctly
+		# Okay, so this section is kind of extra on the em->flush, in order to prevent foreign key errors.
+		$this->em->flush();
 		foreach ($battle->getGroups() as $group) {
 			$this->log(5, "Evaluating ".$group->getActiveReport()->getId()." (".($group->getAttacker()?"attacker":"defender").") for survivors...\n");
 			foreach ($group->getSoldiers() as $soldier) {
@@ -1829,6 +1836,7 @@ class BattleRunner {
 					$this->history->addToSoldierLog($soldier, 'kills', array("%nr%"=>$soldier->getKills()));
 				}
 			}
+			$this->em->flush();
 
 			$types=array();
 			/** @var Soldier $soldier */
@@ -1864,6 +1872,7 @@ class BattleRunner {
 				$troops[$type] = $number;
 			}
 			$group->getActiveReport()->setFinish($troops);
+			$this->em->flush();
 		}
 
 		$allNobles=array();
