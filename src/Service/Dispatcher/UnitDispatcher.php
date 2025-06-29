@@ -253,6 +253,9 @@ class UnitDispatcher extends Dispatcher {
 		if ($character->isInBattle()) {
 			return array("name"=>"unit.return.all", "description"=>"unavailable.inbattle2");
 		}
+		if ($unit->getDefendingSettlement() && $unit->getDefendingSettlement()->getSiege()?->getEncircled()) {
+			return array("name"=>"unit.return.all", "description"=>"unavailable.insiege");
+		}
 		return $this->action("unit.return.name", "maf_unit_return");
 	}
 
@@ -280,10 +283,12 @@ class UnitDispatcher extends Dispatcher {
 		if (!$this->pm->checkSettlementPermission($settlement, $character, 'units') && $unit->getMarshal() != $character) {
 			return array("name"=>"unit.recall.name", "description"=>"unavailable.notyours");
 		}
-		if ($unit->getCharacter()->isInBattle()) {
+		if ($unit->getCharacter() && $unit->getCharacter()->isInBattle()) {
 			return array("name"=>"unit.return.all", "description"=>"unavailable.inbattle2");
 		}
-
+		if ($unit->getDefendingSettlement()?->getSiege()?->getEncircled()) {
+			return array("name"=>"unit.return.all", "description"=>"unavailable.insiege");
+		}
 		if ($unit->getTravelDays() > 0) {
 			return array("name"=>"unit.recall.name", "description"=>"unavailable.rebasing");
 		}

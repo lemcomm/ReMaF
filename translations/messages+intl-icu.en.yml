@@ -1763,6 +1763,7 @@ unavailable:
  nospies:       You don't have any spies in your employ.
  inbattle:      You are already involved in a battle.
  inbattle2:     This unit is currently involved in a battle.
+ insiege:       This unit is currently involved in a siege.
  nobattle:      You are not involved in any battle.
  nobattle2:     You are not being forced into any battle, but have committed yourself.
  fresh:         You are freshly arrived and are currently establishing yourself.

@@ -491,48 +491,53 @@ class ActionResolution {
 
 		// higher chance to evade if we are in multiple battles?
 
-		$chance = 40;
-		// the larger my army, the less chance I have to evade (with 500 people, -50 %)
-		$soldiercount = 0;
-		foreach ($char->getUnits() as $unit) {
-			$soldiercount += $unit->getSoldiers()->count();
-		}
-		$chance -= sqrt( ($soldiercount + $char->getEntourage()->count()) * 5);
 
-		// biome - we re-use spotting here
-		$biome = $this->geography->getLocalBiome($char);
-		$chance *= 1/$biome->getSpot();
-
-		// avoid the abusive "catch with small army to engage, while large army moves in for the kill" abuse for extreme scenarios
-		$eGrps = $action->getTargetBattlegroup()->getEnemies();
-		$enemies = 0;
-		$eChars = new ArrayCollection();
-		foreach ($eGrps as $eGrp) {
-			$enemies = $eGrp->getActiveSoldiers()->count();
-			foreach ($eGrp->getCharacters as $gChar) {
-				if (!$eChars->contains($gChar)) {
-					$eChars->add($gChar);
-				}
-			}
-		}
-		if ($enemies < 5) {
-			$chance += 30;
-		} elseif ($enemies < 10) {
-			$chance += 20;
-		} elseif ($enemies < 25) {
-			$chance += 10;
-		}
-
-		// cap between 5% and 80%
-		$chance = min(80, max(5,$chance));
-
-		if ($char->isDoingAction('military.block')
+		if ($char->getBattling()) {
+			# Short circuit. How can we disenage if we're already fighting?
+			$chance = 0;
+		} elseif ($char->isDoingAction('military.block')
 			|| $char->isDoingAction('military.damage')
 			|| $char->isDoingAction('military.loot')
 			|| $char->isDoingAction('settlement.attack')
 			|| $char->isDoingAction('settlement.defend') ) {
 			// these actions are incompatible with evasion - fail
 			$chance = 0;
+		} else {
+
+			$chance = 40;
+			// the larger my army, the less chance I have to evade (with 500 people, -50 %)
+			$soldiercount = 0;
+			foreach ($char->getUnits() as $unit) {
+				$soldiercount += $unit->getSoldiers()->count();
+			}
+			$chance -= sqrt(($soldiercount + $char->getEntourage()->count()) * 5);
+
+			// biome - we re-use spotting here
+			$biome = $this->geography->getLocalBiome($char);
+			$chance *= 1 / $biome->getSpot();
+
+			// avoid the abusive "catch with small army to engage, while large army moves in for the kill" abuse for extreme scenarios
+			$eGrps = $action->getTargetBattlegroup()->getEnemies();
+			$enemies = 0;
+			$eChars = new ArrayCollection();
+			foreach ($eGrps as $eGrp) {
+				$enemies = $eGrp->getActiveSoldiers()->count();
+				foreach ($eGrp->getCharacters as $gChar) {
+					if (!$eChars->contains($gChar)) {
+						$eChars->add($gChar);
+					}
+				}
+			}
+			if ($enemies < 5) {
+				$chance += 30;
+			} elseif ($enemies < 10) {
+				$chance += 20;
+			} elseif ($enemies < 25) {
+				$chance += 10;
+			}
+
+			// cap between 5% and 80%
+			$chance = min(80, max(5,$chance));
 		}
 
 		if (rand(0,100) < $chance) {

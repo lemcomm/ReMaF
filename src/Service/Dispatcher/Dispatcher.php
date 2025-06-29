@@ -2258,13 +2258,13 @@ class Dispatcher {
 	}
 
 	public function conversationAddTest($ignored, Conversation $conv): array {
-		if ($conv->findCharPermissions($this->getCharacter())->isEmpty()) {
-			return ["name"=>"conv.add.name", "description"=>"unavailable.conv.nopermission"];
-		}
 		if ($conv->getRealm()) {
 			return ["name"=>"conv.add.name", "description"=>"unavailable.conv.ismanaged"];
 		}
 		$perm = $conv->findActiveCharPermission($this->getCharacter());
+		if (!$perm) {
+			return ["name"=>"conv.add.name", "description"=>"unavailable.conv.nopermission"];
+		}
 		if (!$perm->getManager() AND !$perm->getOwner()) {
 			return ["name"=>"conv.add.name", "description"=>"unavailable.conv.notmanager"];
 		}

@@ -611,8 +611,13 @@ class UnitController extends AbstractController {
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-                $options = $character->findControlledSettlements();
                 $inside = $character->getInsideSettlement();
+		if ($inside && (!$inside->getSiege() || ($inside->getSiege() && !$inside->getSiege()->getEncircled()))) {
+			# If we're inside and we're not sieged or if we are sieged we're not encricled.
+			$options = $character->findControlledSettlements();
+		} else {
+			$options = new ArrayCollection();
+		}
                 if ($inside && $this->pm->checkSettlementPermission($inside, $character, 'units') && !$options->contains($inside)) {
                         $options->add($inside);
                 }
