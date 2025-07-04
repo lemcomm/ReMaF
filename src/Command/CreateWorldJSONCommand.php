@@ -14,24 +14,29 @@ class CreateWorldJSONCommand extends Command {
 
 	/*
 	 * Format is:
+	 *      worldId (integer/string) => ID or name of the world to import to or create.
+	 * 	subterranean (boolean) => true|false -- Only required for new worlds.
+	 * 	travelType (string) => 'hourly' or 'turn' -- Only required for new worlds.
 	 * 	regions (array) =>
 	 * 		unkeyed (array) =>
 	 * 			systemName - string - Internal system name
+	 *      		regionType string - 'mapRegion' or 'geoData'
 	 * 			world - integer/string - ID or system name of world to add it to.
-	 * 			biome - string - name of biome type for region
+	 * 			biome - string - name of biome type for region, defaults to grassland
 	 * 			modifiers - array - array of modifiers (TODO)
-	 * 			coastal - boolean - Is the region considered coastal?
-	 * 			river - boolean - Does the region have a river in it?
-	 * 			lake - boolean - Does the region border a lake?
-	 * 			passable - boolean - Can you actually enter the region? Used for "distant location" views, like seeing a mountain range to the SW. To do that the linkType between them should be 'distant'.
+	 * 			hills - boolean - Does the region have hills? Defaults to false.
+	 * 			coastal - boolean - Is the region considered coastal? Defaults to false.
+	 * 			river - boolean - Does the region have a river in it? Defaults to false.
+	 * 			lake - boolean - Does the region border a lake? Defaults to false.
+	 * 			passable - boolean - Can you actually enter the region? Used for "distant location" views, like seeing a mountain range to the SW. To do that the linkType between them should be 'distant'. Defaults to true.
 	 *
-	 * 	transit links =>
+	 * 	links => Only required if regionType is NOT geoData.
 	 * 		unkeyed (array) =>
 	 * 			fromRegion - string/array - Either a single region ID'd by system name or multiple regions in an array ID'd by system name
 	 * 			fromWorld - integer/string - ID or system name of world the region is in.
 	 * 			toRegion - string - see two lines above this.
 	 * 			toWorld - see two lines above this.
-	 * 			bidirectional - true/false - Makes link in both directions rather than just from-to.
+	 * 			bidirectional - true/false - Makes link in both directions rather than just from-to. Defaults to false.
 	 * 			linkType - string - Should match a link type found in src/DataFixtures/LoadTransitTypes.php
 	 * 			timeCost - integer - How many hours needed to traverse (base cost)
 	 * 			distance - integer - How many miles it is away
@@ -41,11 +46,16 @@ class CreateWorldJSONCommand extends Command {
 	 * 			... ---- Repeat above array for each link.
 	 */
 	private $input = [
+		'worldId' => 'demoland',
+		'subterranean' => false,
+		'travelType' => 'turn',
 		'regions' => [
 			[
 				'systemName' => 'aurem',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'grass',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -53,8 +63,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'ilandrithcypzo',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'forest',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -62,8 +74,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'pevenotaarren',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'forest',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => true,
@@ -71,8 +85,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'alaghcypno',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'grass',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -80,8 +96,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'khaloss',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'grass',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -89,8 +107,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'kislaadargen',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'forest',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -98,8 +118,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'baleagasmenora',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'forest',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -107,8 +129,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'firklastor',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'grass',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -116,8 +140,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'smerla',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'grass',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -125,8 +151,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'wastiircojhry',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'forest',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -134,8 +162,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'rathorvimorgo',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'forest',
+				'hills' => false,
 				'coastal' => true,
 				'river' => true,
 				'lake' => false,
@@ -143,8 +173,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'uintyr',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'thin scrub',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -152,8 +184,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'thaugretis',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'scrub',
+				'hills' => false,
 				'coastal' => false,
 				'river' => false,
 				'lake' => false,
@@ -161,8 +195,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'fenpherarar',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'scrub',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -170,8 +206,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'bagasxarvor',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'mountain',
+				'hills' => false,
 				'coastal' => true,
 				'river' => false,
 				'lake' => false,
@@ -179,8 +217,10 @@ class CreateWorldJSONCommand extends Command {
 			],
 			[
 				'systemName' => 'demolandocean',
+				'regionType' => 'mapRegion',
 				'world' => 'demoland',
 				'biome' => 'ocean',
+				'hills' => false,
 				'coastal' => false,
 				'river' => false,
 				'lake' => false,
@@ -463,7 +503,7 @@ class CreateWorldJSONCommand extends Command {
 			->setName('maf:generate:world:json')
 			->setDescription('Command to create an importable world JSON file.')
 			->addArgument('output', InputArgument::OPTIONAL, 'Filename to output to. Defaults to world.json.')
-			->setHidden(true)
+			->setHidden()
 		;
 	}
 

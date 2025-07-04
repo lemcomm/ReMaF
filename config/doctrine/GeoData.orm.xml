@@ -13,6 +13,7 @@
 		<field name="river" type="boolean"/>
 		<field name="humidity" type="float"/>
 		<field name="passable" type="boolean"/>
+		<field name="name" type="string" nullable="true"/>
 
 		<many-to-one field="biome" target-entity="Biome" inversed-by="geo_data"/>
 		<many-to-one field="world" target-entity="World" inversed-by="geoData"/>

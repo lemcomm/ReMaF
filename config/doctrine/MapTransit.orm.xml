@@ -4,13 +4,15 @@
 		<id name="id" type="integer">
 			<generator strategy="IDENTITY"/>
 		</id>
-		<many-to-one field="world" target-entity="World"/>
+		<many-to-one field="fromWorld" target-entity="World"/>
+		<many-to-one field="toWorld" target-entity="World"/>
 		<many-to-one field="type" target-entity="TransitType"/>
 		<many-to-one field="fromRegion" target-entity="MapRegion" inversed-by="exits"/>
 		<many-to-one field="toRegion" target-entity="MapRegion" inversed-by="entrances"/>
 		<one-to-many field="characters" target-entity="Character" mapped-by="usingMapTransit"/>
 
 		<field name="travelTime" type="float"/>
+		<field name="distance" type="float"/>
 		<field name="direction" type="string" length="16"/>
 
 	</entity>
