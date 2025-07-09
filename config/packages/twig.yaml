@@ -3,6 +3,10 @@ twig:
     globals:
             site_name: '%env(SITE_NAME)%'
             site_short: '%env(SITE_SHORT)%'
+            captcha: '%env(CAPTCHA_SYSTEM)%'
+            recaptcha_key: '%env(RECAPTCHA_SITE_KEY)%'
+            turnstile_key: '%env(TURNSTILE_SITE_KEY)%'
+            hcaptcha_key: '%env(HCAPTCHA_SITE_KEY)%'
             activityDispatcher: '@App\Service\Dispatcher\ActivityDispatcher'
             associationDispatcher: '@App\Service\Dispatcher\AssociationDispatcher'
             appstate: '@App\Service\AppState'

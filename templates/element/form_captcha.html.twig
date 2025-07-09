@@ -1,0 +1,9 @@
+{% if captcha == 'default' or captcha == 'turnstile' %}
+    <div style="display: block; flex-flow: row;">
+        <div class="cf-turnstile" data-sitekey="{{ turnstile_key }}" data-size="compact"></div>
+    </div>
+{% elseif captcha == 'hcaptcha' %}
+    <div class="h-captcha" data-sitekey="{{ hcaptcha_key }}"></div>
+{% elseif captcha == 'recaptcha' %}
+    <div class="g-recaptcha" data-sitekey="{{ recaptcha_key }}"></div>
+{% endif %}<br>
