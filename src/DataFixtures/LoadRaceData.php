@@ -45,37 +45,37 @@ class LoadRaceData extends Fixture {
 		"shoulder"=> [
 			"mortal"=> [4, "stumble", "kill"],
 			"heavy"=> [4, "stumble"],
-			"serious"=> [3, "stumble"],
-			"moderate"=> [2, "stumble"],
+			"serious"=> [3],
+			"moderate"=> [2],
 			"minor"=> [1]
 		],
 		"upper arm"=> [
 			"mortal"=> [4, "stumble", "amputate"],
-			"heavy"=> [3, "stumble"],
-			"serious"=> [2, "stumble"],
-			"moderate"=> [1, "stumble"],
+			"heavy"=> [3],
+			"serious"=> [2],
+			"moderate"=> [1],
 			"minor"=> [1]
 		],
 		"elbow"=> [
 			"mortal"=> [5, "stumble", "amputate"],
 			"heavy"=> [4, "stumble"],
-			"serious"=> [3, "stumble"],
-			"moderate"=> [2, "stumble"],
-			"minor"=> [1, "stumble"]
+			"serious"=> [3],
+			"moderate"=> [2],
+			"minor"=> [1]
 		],
 		"forearm"=> [
 			"mortal"=> [4, "stumble", "amputate"],
-			"heavy"=> [3, "stumble"],
-			"serious"=> [2, "stumble"],
-			"moderate"=> [1, "stumble"],
+			"heavy"=> [3],
+			"serious"=> [2],
+			"moderate"=> [1],
 			"minor"=> [1]
 		],
 		"hand"=> [
 			"mortal"=> [5, "stumble", "amputate"],
 			"heavy"=> [4, "stumble"],
 			"serious"=> [3, "stumble"],
-			"moderate"=> [2, "stumble"],
-			"minor"=> [1, "stumble"]
+			"moderate"=> [2],
+			"minor"=> [1]
 		],
 		"torso"=> [
 			"mortal"=> [5, "kill"],
@@ -93,8 +93,8 @@ class LoadRaceData extends Fixture {
 			],
 		"groin"=> [
 			"mortal"=> [5, "amputate"],
-			"heavy"=> [4],
-			"serious"=> [3],
+			"heavy"=> [4, "stumble"],
+			"serious"=> [3, "stumble"],
 			"moderate"=> [2],
 			"minor"=> [1]
 			],
@@ -102,14 +102,14 @@ class LoadRaceData extends Fixture {
 			"mortal"=> [4, "stumble", "kill"],
 			"heavy"=> [4, "stumble"],
 			"serious"=> [3, "stumble"],
-			"moderate"=> [2, "stumble"],
+			"moderate"=> [2],
 			"minor"=> [1]
 		],
 		"thigh"=> [
 			"mortal"=> [4, "stumble", "kill", "amputate"],
 			"heavy"=> [4, "stumble"],
 			"serious"=> [3, "stumble"],
-			"moderate"=> [2, "stumble"],
+			"moderate"=> [2],
 			"minor"=> [1]
 		],
 		"knee"=> [
@@ -117,21 +117,21 @@ class LoadRaceData extends Fixture {
 			"heavy"=> [4, "stumble"],
 			"serious"=> [3, "stumble"],
 			"moderate"=> [2, "stumble"],
-			"minor"=> [1, "stumble"]
+			"minor"=> [1]
 		],
 		"calf"=> [
 			"mortal"=> [4, "stumble", "amputate"],
 			"heavy"=> [3, "stumble"],
 			"serious"=> [2, "stumble"],
-			"moderate"=> [1, "stumble"],
+			"moderate"=> [1],
 			"minor"=> [1]
 		],
 		"foot"=> [
 			"mortal"=> [5, "stumble", "amputate"],
 			"heavy"=> [4, "stumble"],
 			"serious"=> [3, "stumble"],
-			"moderate"=> [2, "stumble"],
-			"minor"=> [1, "stumble"]
+			"moderate"=> [2],
+			"minor"=> [1]
 		]
 	];
 
