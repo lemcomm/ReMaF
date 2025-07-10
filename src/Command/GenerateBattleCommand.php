@@ -39,7 +39,8 @@ class GenerateBattleCommand extends Command {
 			->addOption('siege', 's', InputArgument::OPTIONAL, 'Optionally: is this a siege? 0 = no. 1 = yes.', '0')
 			->addOption('type', 't', InputArgument::OPTIONAL, 'Battle type: sortie, assault, urban, field. Defaults to field.', 'field')
 			->addOption('defScore', 'b', InputArgument::OPTIONAL, 'Defense score to override the battle calculation with. Will be calculated based on battle location if not declared.', null)
-			->addOption('runnerVersion', 'r', InputArgument::OPTIONAL, 'Version of the BattleRunner to utilize. Defaults to the current version, but can be overridden to simulate older battles.', null)
+			->addOption('ruleset', 'w', InputArgument::OPTIONAL, 'Battle Ruleset to utilize.', 'legacy')
+			->addOption('runnerVersion', 'r', InputArgument::OPTIONAL, 'Version of the BattleRunner to utilize. Defaults to the current version, but can be overridden to simulate older battles. Not supported by all rulesets.', null)
 		;
 	}
 
@@ -62,6 +63,16 @@ class GenerateBattleCommand extends Command {
 			$output->writeln('<info>Score: '.$score.'</info>');
 		} else {
 			$output->writeln('<info>Score will be calculated based on settlement.</info>');
+		}
+		$ruleset = $input->getOption('ruleset');
+		if ($ruleset !== null) {
+			if ($runner->validateRuleset($ruleset)) {
+				$output->writeln('<info>Ruleset: '.$ruleset.'</info>');
+			} else {
+				$output->writeln('<error>Ruleset: '.$ruleset.'; not accepted as valid by BattleRunner, aborting!</error>');
+				return Command::FAILURE;
+			}
+
 		}
 		$version = $input->getOption('runnerVersion');
 		if ($version !== null) {
@@ -106,6 +117,7 @@ class GenerateBattleCommand extends Command {
 			$output->writeln('<info>Battle ready for processing!</info>');
 			$output->writeln('<info>Running!</info>');
 			$cycle = $this->common->getCycle();
+			$runner->combatRules = $ruleset;
 			$runner->run($battle, $cycle);
 			return Command::SUCCESS;
 		} else {

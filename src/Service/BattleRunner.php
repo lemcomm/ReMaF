@@ -32,6 +32,8 @@ class BattleRunner {
 	In the case of defenders this is also the positive value for where the "walls" are.
 	*/
 
+	const array rulesets = ['legacy', 'mastery'];
+
 	# The following variables are used all over this class, in multiple functions, sometimes as far as 4 or 5 functions deep.
 	private Battle $battle;
 	private bool|string $regionType = false;
@@ -62,8 +64,8 @@ class BattleRunner {
 	# Leave version, combatVersion, and combatRules default to do specific overrides.
 	public int $version = 3;
 	public int $combatVersion = 3;
-	public string $combatRules = 'maf';
-	public bool $mafRuleset = true;
+	public string $combatRules = 'legacy';
+	public bool $legacyRuleset = true;
 	public bool $masteryRuleset = false;
 
 	# Specific override flags.
@@ -114,6 +116,8 @@ class BattleRunner {
 		private NotificationManager $notes) {
 	}
 
+
+
 	#TODO: Fine tune logging.
 
 	/*
@@ -136,6 +140,13 @@ class BattleRunner {
 		$this->combat->prepare();
 	}
 
+	public function validateRuleset($ruleset): bool {
+		if (in_array($ruleset, self::rulesets)) {
+			return true;
+		}
+		return false;
+	}
+
 
 	/*
 	 * #####################
@@ -145,7 +156,7 @@ class BattleRunner {
 	public function run(Battle $battle, $cycle): void {
 		$this->battle = $battle;
 		$this->prepareCombatManager();
-		if ($this->combatRules === 'maf') {
+		if ($this->combatRules === 'legacy') {
 			if ($this->version < 3) {
 				$this->legacyMorale = true;
 				$this->legacyActivity = $this->version;
@@ -165,7 +176,7 @@ class BattleRunner {
 			}
 		} elseif ($this->combatRules === 'mastery') {
 			$this->masteryRuleset = true;
-			$this->mafRuleset = false;
+			$this->legacyRuleset = false;
 		}
 		# 'mastery' ruleset doesn't have toggles yet.
 
@@ -558,7 +569,7 @@ class BattleRunner {
 			$this->em->flush();
 		}
 		$this->log(20, "...hunt phase...\n");
-		if ($this->mafRuleset) {
+		if ($this->legacyRuleset) {
 			$this->runStage('hunt', $rangedPenalty, $phase);
 		}
 	}
@@ -670,10 +681,12 @@ class BattleRunner {
 				}
 				[$stageResult, $extras, $enemyCollection, $enemies] = $this->runRangedPhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies);
 
-				$shots = $stageResult['shots'];
-				$rangedHits = $stageResult['rangedHits'];
-				if ($this->legacyMorale && !$this->ignoreMorale && $enemies > 0 && $rangedHits > 0) {
-					$stageResult = $this->legacyUpdateRangedMorale($group, $enemies, $shots, $rangedHits, $stageResult);
+				if ($this->legacyRuleset) {
+					$shots = $stageResult['shots'];
+					$rangedHits = $stageResult['rangedHits'];
+					if ($this->legacyMorale && !$this->ignoreMorale && $enemies > 0 && $rangedHits > 0) {
+						$stageResult = $this->legacyUpdateRangedMorale($group, $enemies, $shots, $rangedHits, $stageResult);
+					}
 				}
 				$stageReport->setData($stageResult); # Commit this stage's results to the combat report.
 				$stageReport->setExtra($extras);
@@ -749,7 +762,7 @@ class BattleRunner {
 		foreach ($soldiers as $soldier) {
 			$counter = null;
 			$result=false;
-			if ($this->mafRuleset) {
+			if ($this->legacyRuleset) {
 				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer() && $this->battle->getType() == 'field') {
 					// Lancers will always perform a cavalry charge in the last ranged phase!
 					// A cavalry charge can only happen if there is a ranged phase (meaning, there is ground to fire/charge across)
@@ -760,9 +773,7 @@ class BattleRunner {
 						$this->strikes++;
 						$noCavTargets = 0;
 						[$result, $logs] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
-						foreach ($logs as $each) {
-							$this->log(10, $each);
-						}
+						$this->logAttack($result, $logs);
 					} else {
 						// no more targets
 						$this->log(10, "but finds no target\n");
@@ -835,15 +846,9 @@ class BattleRunner {
 						$hit = $this->combat->attackRoll($soldier, $target);
 						if ($hit !== 'Defended') {
 							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
-							foreach ($logs as $each) {
-								$this->log(10, $each);
-							}
-							if (str_contains($results, ' ')) {
-								foreach (explode(' ', $results) as $each) {
-									$this->addResult($each);
-								}
-							}
+							$this->logAttack($results, $logs);
 						} else {
+							$this->log(10, " ".$target->getName()." (".$target->getTranslatableType().") defended\n");
 							$result = $hit;
 						}
 					} else {
@@ -859,15 +864,9 @@ class BattleRunner {
 						$hit = $this->combat->attackRoll($soldier, $target);
 						if ($hit !== 'Defended') {
 							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
-							foreach ($logs as $each) {
-								$this->log(10, $each);
-							}
-							if (str_contains($results, ' ')) {
-								foreach (explode(' ', $results) as $each) {
-									$this->addResult($each);
-								}
-							}
+							$this->logAttack($results, $logs);
 						} else {
+							$this->log(10, " ".$target->getName()." (".$target->getTranslatableType().") defended\n");
 							$result = $hit;
 						}
 					} else {
@@ -917,7 +916,7 @@ class BattleRunner {
 		foreach ($soldiers as $soldier) {
 			$result = false;
 			$counter = null;
-			if ($this->mafRuleset) {
+			if ($this->legacyRuleset) {
 				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer() && $this->battle->getType() == 'field') {
 					// Lancers will always perform a cavalry charge in the last ranged phase!
 					// A cavalry charge can only happen if there is a ranged phase (meaning, there is ground to fire/charge across)
@@ -927,13 +926,8 @@ class BattleRunner {
 					if ($target) {
 						$this->strikes++;
 						$noCavTargets = 0;
-						[
-							$result,
-							$logs
-						] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
-						foreach ($logs as $each) {
-							$this->log(10, $each);
-						}
+						[$result, $logs] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
+						$this->logAttack($result, $logs);
 					} else {
 						// no more targets
 						$this->log(10, "but finds no target\n");
@@ -956,13 +950,8 @@ class BattleRunner {
 						}
 						if ($hit) {
 							$this->rangedHits++;
-							[
-								$result,
-								$logs
-							] = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
-							foreach ($logs as $each) {
-								$this->log(10, $each);
-							}
+							[$result, $logs] = $this->combat->RangedHit($soldier, $target, $rPower, false, true, $this->xpMod, $defBonus);
+							$this->logAttack($result, $logs);
 						} else {
 							$this->missed++;
 							$this->log(10, "missed\n");
@@ -983,13 +972,8 @@ class BattleRunner {
 						$mPower = $this->combat->MeleePower($soldier, true, null, $attackers);
 						# Yes, melee soldiers used to always hit if they had a target.
 						if ($this->legacyHitRolls || $this->combat->MeleeRoll($defBonus, $this->combat->toHitSizeModifier($soldier, $target))) {
-							[
-								$result,
-								$logs
-							] = $this->combat->MeleeAttack($soldier, $target, $mPower, false, true, $this->xpMod, $this->defenseBonus); // Basically, an attack of opportunity.
-							foreach ($logs as $each) {
-								$this->log(10, $each);
-							}
+							[$result, $logs] = $this->combat->MeleeAttack($soldier, $target, $mPower, false, true, $this->xpMod, $this->defenseBonus); // Basically, an attack of opportunity.
+							$this->logAttack($result, $logs);
 						} else {
 							$this->mMissed++;
 							$this->log(10, "missed in melee\n");
@@ -1022,15 +1006,9 @@ class BattleRunner {
 						$hit = $this->combat->attackRoll($soldier, $target);
 						if ($hit !== 'Defended') {
 							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
-							foreach ($logs as $each) {
-								$this->log(10, $each);
-							}
-							if (str_contains($results, ' ')) {
-								foreach (explode(' ', $results) as $each) {
-									$this->addResult($each);
-								}
-							}
+							$this->logAttack($results, $logs);
 						} else {
+							$this->log(10, " ".$target->getName()." (".$target->getTranslatableType().") defended\n");
 							$result = $hit;
 						}
 					} else {
@@ -1046,15 +1024,9 @@ class BattleRunner {
 						$hit = $this->combat->attackRoll($soldier, $target);
 						if ($hit !== 'Defended') {
 							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
-							foreach ($logs as $each) {
-								$this->log(10, $each);
-							}
-							if (str_contains($results, ' ')) {
-								foreach (explode(' ', $results) as $each) {
-									$this->addResult($each);
-								}
-							}
+							$this->logAttack($results, $logs);
 						} else {
+							$this->log(10, " ".$target->getName()." (".$target->getTranslatableType().") defended\n");
 							$result = $hit;
 						}
 					} else {
@@ -1062,7 +1034,7 @@ class BattleRunner {
 						$noMeleeTargets++;
 					}
 				} else {
-					$this->log(10, $soldier->getName() . " (" . $soldier->getTranslatableType() . ") attacks ");
+					$this->log(10, $soldier->getName() . " (" . $soldier->getTranslatableType() . ") attacks - ");
 					$target = $this->getRandomSoldier($enemyCollection);
 					if ($target) {
 						$this->strikes++;
@@ -1070,15 +1042,9 @@ class BattleRunner {
 						$hit = $this->combat->attackRoll($soldier, $target);
 						if ($hit !== 'Defended') {
 							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
-							foreach ($logs as $each) {
-								$this->log(10, $each);
-							}
-							if (str_contains($results, ' ')) {
-								foreach (explode(' ', $results) as $each) {
-									$this->addResult($each);
-								}
-							}
+							$this->logAttack($results, $logs);
 						} else {
+							$this->log(10, " ".$target->getName()." (".$target->getTranslatableType().") defended\n");
 							$result = $hit;
 						}
 					} else {
@@ -1813,6 +1779,17 @@ class BattleRunner {
 	 * Secondary Battle Functions (very common)
 	 * ########################################
 	 */
+
+	public function logAttack($results, $logs): void {
+		foreach ($logs as $each) {
+			$this->log(10, $each);
+		}
+		if (str_contains($results, ' ')) {
+			foreach (explode(' ', $results) as $each) {
+				$this->addResult($each);
+			}
+		}
+	}
 
 	public function log($level, $text): void {
 		if ($this->report) {

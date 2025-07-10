@@ -95,18 +95,23 @@ class CombatManager {
 		return $resultArray[$attResult][$defResult];
 	}
 
-	public function resolveAttack($me, $target, $result, $dta = false, $logs = [], $preResult = '') {
+	public function resolveAttack($me, $target, $result, $dta = false, $logs = [], $preResult = ''): array {
 		if (str_starts_with($result, 'A')) {
-			return [$result, $logs] = $this->resolveDamage($me, $target, (int)$result[-1], $logs, $preResult);
+			return $this->resolveDamage($me, $target, (int)substr($result, -1), $logs, $preResult);
 		} elseif ($result === 'DTA' && !$dta) {
-			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true);
-		} elseif ($result === 'Stumble') {
-			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true));
-		}
-		return;
+			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true, $logs, $preResult);
+		}# elseif ($result === 'Stumble') {
+		#	return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true));
+		#}
+		return ['missed', ["missed\n"]];
 	}
 
-	public function resolveDamage(Character|Soldier $me, Character|Soldier $target, $dice, $logs = [], $preResult = '') {
+	public function resolveDamage(Character|Soldier $me, Character|Soldier $target, $dice, $logs = [], $preResult = ''): array {
+		if ($preResult !== '') {
+			$preLog = $me->getName()." (".$me->getTranslatableType().") reattacked - ";
+		} else {
+			$preLog = '';
+		}
 		$damage = 0;
 		$hitLoc = $this->getHitLoc();
 		$damTable = $this->bestAspect($me, $target, $hitLoc, $dice);
@@ -119,7 +124,8 @@ class CombatManager {
 		// Handle soldiers based on result.
 
 		if ($result === "protected") {
-			return; // Do something on armor protection?
+			return ['protected', ["$preLog did no damage to ".$target->getName()." (".$target->getTranslatableType().") on $hitLoc\n"]];
+			// Do something on armor protection?
 		}
 
 		$shockRoll = $target->getPenalty();
@@ -129,7 +135,7 @@ class CombatManager {
 			// Target is killed.
 			$target->kill();
 			$me->addKill();
-			$logs[] = "killed by $result damage ($effDamage) with result of".$damResult[0]."/".$damResult[-1]."/".$damResult[-2];
+			$logs[] = "$preLog killed ".$target->getName()." (".$target->getTranslatableType().") by $result damage ($effDamage) on $hitLoc with result of ".implode('/', $damResult)."\n";
 			$retResult = 'kill';
 		} else {
 			// Target is wounded.
@@ -143,30 +149,33 @@ class CombatManager {
 			if ($shockRoll > $target->getToughness()) {
 				// Technically, this is a KO, but we assume that we kill the soldiers until a better function replaces post-battle recovery
 				if ($target->isNoble()) {
-					$logs[] = "captured by $result damage ($effDamage) with result of".$damResult[0]."/".$damResult[-1]."/".$damResult[-2];
+					$logs[] = "$preLog captured ".$target->getName()." (".$target->getTranslatableType().") by $result damage ($effDamage) on $hitLoc with result of ".implode('/', $damResult)."\n";
 					$retResult = 'capture';
 				} else {
-					$logs[] = "killed by $result damage ($effDamage) with result of".$damResult[0]."/".$damResult[-1]."/".$damResult[-2];
+					$logs[] = "$preLog killed ".$target->getName()." (".$target->getTranslatableType().") by $result damage ($effDamage) on $hitLoc with result of ".implode('/', $damResult)."\n";
 					$retResult = 'kill';
 					$target->kill();
 				}
 			} else {
 				$retResult = 'wound';
-				$logs[] = "killed by $result damage ($effDamage) with result of".$damResult[0]."/".$damResult[-1]."/".$damResult[-2];
+				$logs[] = "$preLog wounded ".$target->getName()." (".$target->getTranslatableType().") by $result damage ($effDamage) on $hitLoc with result of ".implode('/', $damResult)."\n";
 			}
 			$target->setPenalty($target->getPenalty() + $damResult[0]);
 		}
 
-		// Stumble attacks again.
-		$sublog = false;
-		$subresult = false;
-		if (in_array("stumble", $damResult)) {
-			[$sublog, $subresult] = $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), false, $logs, $retResult);
-			foreach ($sublog as $each) {
-				$logs[] = $each;
+		if ($target->getAlive()) {
+			// Stumble attacks again.
+			$sublog = false;
+			$subresult = false;
+			if (in_array("stumble", $damResult)) {
+				[$subresult, $sublog] = $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), false, $logs, $retResult);
+				foreach ($sublog as $each) {
+					$logs[] = $each;
+				}
+				$retResult = $retResult.' '.$subresult;
 			}
-			$retResult = $retResult.' '.$subresult;
 		}
+
 		return [$retResult, $logs];
 	}
 
@@ -207,7 +216,7 @@ class CombatManager {
 		}
 	}
 
-	public function getHitLoc() {
+	public function getHitLoc(): string {
 		$roll = rand(1, 100);
 		// Move this to Entity/Race.
 		$locindex = [5, 10, 15, 27, 33, 35, 39, 43, 60, 70, 74, 80, 88, 90, 96, 99];
@@ -218,6 +227,7 @@ class CombatManager {
 				return $loc;
 			}
 		}
+		return $hitLoc[array_key_last($hitLoc)];
 	}
 
 	public function damageResult($damage, $damTable) {

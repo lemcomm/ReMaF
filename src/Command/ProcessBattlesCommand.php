@@ -62,15 +62,15 @@ class ProcessBattlesCommand extends Command {
 					if ($battle->getRules()) {
 						$this->br->combatRules = $battle->getRules();
 						if ($battle->getRules() === 'maf') {
-							$this->br->mafRuleset = true;
+							$this->br->legacyRuleset = true;
 							$this->br->masteryRuleset = false;
 						} else {
 							$this->br->masteryRuleset = true;
-							$this->br->mafRuleset = false;
+							$this->br->legacyRuleset = false;
 						}
 					} else {
 						$this->br->combatRules = 'maf';
-						$this->br->mafRuleset = true;
+						$this->br->legacyRuleset = true;
 						$this->br->masteryRuleset = false;
 					}
 					$this->br->enableLog($arg_debug);

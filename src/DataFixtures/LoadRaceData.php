@@ -49,7 +49,7 @@ class LoadRaceData extends Fixture {
 			"moderate"=> [2, "stumble"],
 			"minor"=> [1]
 		],
-		"upper Arm"=> [
+		"upper arm"=> [
 			"mortal"=> [4, "stumble", "amputate"],
 			"heavy"=> [3, "stumble"],
 			"serious"=> [2, "stumble"],
