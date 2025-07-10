@@ -14,7 +14,7 @@ class ArmorCalculator {
 	* Layer determines layer materials.
 	*/
 
-	public static array $layers = [
+	const array layers = [
 		'plate' => [
 			'protection' => [
 				'bashing' => 6,
@@ -89,7 +89,7 @@ class ArmorCalculator {
 		],
 	];
 
-	public static array $forms = [
+	const array forms = [
 		'tunic' => [
 			'coverage' => ['upper arm', 'shoulder', 'torso', 'abdomen', 'hip', 'groin'],
 			'type' => 'flexible'
@@ -180,13 +180,14 @@ class ArmorCalculator {
 		foreach ($armorData as $each) {
 			# ArmorData is stored as follows
 			# [form => formName, layer => layerName], [...],
-			# This indexes into forms to get coverages, then foreach coverage calculates the weights from the layers.
-			foreach (self::$forms[$each['form']][0]['coverage'] as $loc) {
-				$weight += self::$layers[$each['layer']['weight']];
+			# This indexes into forms the formName of the armor to get the value from coverages, then foreach coverage calculates the weights from the layers in a similar indexing.
+			foreach (self::forms[$each['form']]['coverage'] as $ignored) {
+				$weight += self::layers[$each['layer']]['weight'];
 			}
 		}
 		# Add it to the quick lookup to save time in battles.
 		$this->index[$armorName] = $weight;
+		echo "$armorName weighs $weight\n";
 		return $weight;
 	}
 }

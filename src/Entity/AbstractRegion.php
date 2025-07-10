@@ -18,6 +18,7 @@ abstract class AbstractRegion {
 	protected bool $lake;
 	protected bool $river;
 	protected bool $passable;
+	protected ?string $name;
 
 	/**
 	 * Constructor
@@ -268,6 +269,15 @@ abstract class AbstractRegion {
 	public function setRiver(bool $river): static {
 		$this->river = $river;
 
+		return $this;
+	}
+
+	public function getName(): ?string {
+		return $this->name;
+	}
+
+	public function setName(?string $name): static {
+		$this->name = $name;
 		return $this;
 	}
 }

@@ -158,14 +158,14 @@ class UpdateDatabaseCommand extends  Command {
 			$output->writeln('Loading New Race Data');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
-				'--group' => 'LoadRaceData',
+				'--group' => ['LoadRaceData'],
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
 			$output->writeln('Loading New Skill Data');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
-				'--group' => 'LoadSkillData',
+				'--group' => ['LoadSkillData'],
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
@@ -178,7 +178,7 @@ class UpdateDatabaseCommand extends  Command {
 			$output->writeln('Loading New Equipment Data');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
-				'--group' => 'LoadEquipmentData',
+				'--group' => ['LoadEquipmentData'],
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);

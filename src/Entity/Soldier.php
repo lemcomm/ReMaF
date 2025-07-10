@@ -2,16 +2,17 @@
 
 namespace App\Entity;
 
+use App\Service\ArmorCalculator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 class Soldier extends NPC {
-	protected int $mastery = 0;
+	protected ?int $mastery = 0;
 	protected int $effMastery = 0;
 	protected int $toughness = 12;
 	protected int $willpower = 12;
 	protected int $baseSkill = 12;
-	protected int $penalty = 0;
+	protected ?int $penalty = 0;
 	protected int $fatigue = 0;
 	protected int $morale = 0;
 	protected int $maxMorale = 0;
@@ -85,8 +86,8 @@ class Soldier extends NPC {
 		$armor = $this->armour;
 		$covered = 0;
 		foreach($armor->getArmor() as $piece){
-			if (in_array($hitLoc, $piece['form']['coverage'])){
-				$covered += $piece['layer']['protection'][$aspect];
+			if (in_array($hitLoc, ArmorCalculator::forms[$piece['form']]['coverage'])) {
+				$covered += ArmorCalculator::layers[$piece['layer']]['protection'][$aspect];
 			}
 		}
 		return $covered;

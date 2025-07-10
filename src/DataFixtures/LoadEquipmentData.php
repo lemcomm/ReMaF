@@ -468,6 +468,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 		'quilt armour' => [
 			'type' => 'armour', 'train' => 15, 'resupply' => 40,
 			'provider' => 'Tailor', 'trainer' => 'Training Ground',
+			'icon' => null,
 
 			'armor' => [
 				['form' => 'gambeson', 'layer' => 'quilt'],
@@ -528,9 +529,9 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'icon' => 'items/kettenpanzer2.png',
 
 			'armor' => [
-				['form' => 'cowl', 'layer' => 'chain'],
-				['form' => 'hauberk', 'layer' => 'chain'],
-				['form' => 'gauntlets', 'layer' => 'chain'],
+				['form' => 'cowl', 'layer' => 'mail'],
+				['form' => 'hauberk', 'layer' => 'mail'],
+				['form' => 'gauntlets', 'layer' => 'mail'],
 				['form' => 'boots', 'layer' => 'leather'],
 			],
 
@@ -640,13 +641,18 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 				}
 			}
 
-			# Master Fields
+			# Mastery Fields
 			if ($data['type'] === 'armour') {
 				$type->setArmor($data['armor']);
 				$type->setWeight((new ArmorCalculator)->calculateWeight($name, $data['armor']));
-			} else {
-				$reach = $data['reach'] === 'melee' ? 1 : 2;
-				$type->setReach($reach);
+			} elseif ($data['type'] === 'weapon' || $name === 'javelin') {
+				if ($data['reach'] === 'melee') {
+					$type->setReach(1);
+				} elseif ($data['reach'] === 'long') {
+					$type->setReach(2);
+				} else {
+					$type->setReach(3);
+				}
 				$type->setMode($data['mode']);
 				$type->setQuality($data['quality']);
 				$type->setClass($data['class']);
