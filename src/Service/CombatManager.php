@@ -95,20 +95,39 @@ class CombatManager {
 		return $resultArray[$attResult][$defResult];
 	}
 
-	public function resolveAttack($me, $target, $result, $dta = false, $logs = [], $preResult = ''): array {
+	public function resolveAttack($me, $target, $result, $reattack = false, $logs = [], $preResult = ''): array {
+		// Reattack is used as a flag to control multiple attacks per round. Eventually should be a stat check.
+		// Attacker hit
 		if (str_starts_with($result, 'A')) {
 			return $this->resolveDamage($me, $target, (int)substr($result, -1), $logs, $preResult);
-		} elseif ($result === 'DTA' && !$dta) {
+		// Defender counterattack
+		} elseif ($result === 'DTA' && !$reattack) {
+			$preResult = 'DTA';
 			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true, $logs, $preResult);
-		}# elseif ($result === 'Stumble') {
-		#	return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true));
-		#}
-		return ['missed', ["missed\n"]];
+		// Defender fumbles his defense and is vulnerable to attack
+		} elseif ($result === 'Stumble') {
+			$preResult = 'ATA';
+			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), $logs, $preResult);
+		}
+		return ['missed', [$me->getName()." (".$me->getTranslatableType().") missed against ".$target->getName(). "(".$target->getTranslatableType().")."]];
 	}
 
 	public function resolveDamage(Character|Soldier $me, Character|Soldier $target, $dice, $logs = [], $preResult = ''): array {
-		if ($preResult !== '') {
-			$preLog = $me->getName()." (".$me->getTranslatableType().") reattacked - ";
+		
+		/* List of PreResults:
+		* DTA = Defender Tactical Advantage (Counterattack)
+		* ATA = Attacker Tactical Advantage (Unforced critical hit)
+		* DST = Defender Stumble (Attacker forces a crit)
+		* DFM = Defender Fumble (Doesn't do anything yet, but target will lose an attack next round)
+		*/
+		
+
+		if ($preResult === 'DTA') {
+			$preLog = $target->getName()." (".$target->getTranslatableType().") counterattacks ".$me->getName()." (".$me->getTranslatableType().") - ";
+		} elseif ($preResult === 'ATA') {
+			$preLog = $me->getName()." (".$me->getTranslatableType().") exploits a weakness in ".$target->getName()." (".$target->getTranslatableType().") - ";
+		} elseif ($preResult === 'DST') {
+			$preLog = $me->getName()." (".$me->getTranslatableType().") attacks again on a stumbling opponent - ";
 		} else {
 			$preLog = '';
 		}
@@ -131,16 +150,32 @@ class CombatManager {
 		$shockRoll = $target->getPenalty();
 		$damResult = $target->getRace()->getDamageLocations()[$hitLoc][$result];
 
-		if (in_array("kill", $damResult) or in_array("amputate", $damResult)) {
+		// Amputation check.
+		if (in_array("amputate", $damResult)) {
+			$ampRoll = $target->getPenalty();
+			for ($i = 0; $i < $damResult[0]; $i++) {
+				$ampRoll += rand(1, 6);
+		}
+
+		if (in_array("kill", $damResult)) {
 			// Target is killed.
 			$target->kill();
 			$me->addKill();
-			$logs[] = "$preLog killed ".$target->getName()." (".$target->getTranslatableType().") by $result damage ($effDamage) on $hitLoc with result of ".implode('/', $damResult)."\n";
+			$logs[] = "$preLog killed ".$target->getName()." (".$target->getTranslatableType().") with $result damage ($effDamage) on $hitLoc with result of A".implode('/', $damResult)."\n";
 			$retResult = 'kill';
+		} elseif (in_array("amputate", $damResult) && $ampRoll > $target->getToughness()) {
+			$target->kill();
+			$me->addKill();
+			$logs[] = "$preLog killed (amputation) ".$target->getName()." (".$target->getTranslatableType().") with $result damage ($effDamage) on $hitLoc with result of A".implode('/', $damResult)."\n";
+			$retResult = 'kill';
+			// When we implement proper post battle, we can do something else with the soldier.
+		}
+
 		} else {
 			// Target is wounded.
 			$target->addHitsTaken();
 			$me->addCasualty();
+
 
 			// Shock roll
 			for ($i = 0; $i < $damResult[0]; $i++) {
@@ -152,7 +187,7 @@ class CombatManager {
 					$logs[] = "$preLog captured ".$target->getName()." (".$target->getTranslatableType().") by $result damage ($effDamage) on $hitLoc with result of ".implode('/', $damResult)."\n";
 					$retResult = 'capture';
 				} else {
-					$logs[] = "$preLog killed ".$target->getName()." (".$target->getTranslatableType().") by $result damage ($effDamage) on $hitLoc with result of ".implode('/', $damResult)."\n";
+					$logs[] = "$preLog ".$target->getName()." (".$target->getTranslatableType().") succumbed to shock after suffering $result damage ($effDamage) on $hitLoc with result of ".implode('/', $damResult)."\n";
 					$retResult = 'kill';
 					$target->kill();
 				}
@@ -160,7 +195,12 @@ class CombatManager {
 				$retResult = 'wound';
 				$logs[] = "$preLog wounded ".$target->getName()." (".$target->getTranslatableType().") by $result damage ($effDamage) on $hitLoc with result of ".implode('/', $damResult)."\n";
 			}
-			$target->setPenalty($target->getPenalty() + $damResult[0]);
+			$target->setPenalty($target->getPenalty() + $damResult[0] && $target->IsActive());
+			if ($target->getPenalty() >= $target->getToughness()) {
+				$retResult = 'kill';
+				$target->kill();
+				$logs[] = $target->getName()." (".$target->getTranslatableType().") bled out from ".$target->getPenalty()." wounds.\n";
+			}
 		}
 
 		if ($target->getAlive()) {
@@ -168,7 +208,7 @@ class CombatManager {
 			$sublog = false;
 			$subresult = false;
 			if (in_array("stumble", $damResult)) {
-				[$subresult, $sublog] = $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), false, $logs, $retResult);
+				[$subresult, $sublog] = $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), true, $logs, $retResult);
 				foreach ($sublog as $each) {
 					$logs[] = $each;
 				}

@@ -1107,6 +1107,17 @@ class BattleRunner {
 				$this->log(10, "No Target Found limits hit -- skipping further calculations\n");
 				break;
 			}
+		
+			if ($this->masteryRuleset) {
+				// Fatigue - roll 1d6 + phase + penalty vs toughness, and increment fatigue. After 12 phases, this is guaranteed to increment penalty.
+				$fatigueRoll = $soldier->getPenalty();
+				$fatigueRoll += rand(1, 6);
+				if ($fatigueRoll > $soldier->getToughness()){
+					$soldier->setPenalty($soldier->getPenalty()+1);
+					// Should be a check here to 'pass out' and become a non-killed inactive soldier.
+				}
+			}
+
 		}
 		$stageResult = $this->buildStageResult();
 		return [$stageResult, $extras, $enemyCollection, $enemies];
