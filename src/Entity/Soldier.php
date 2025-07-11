@@ -58,6 +58,7 @@ class Soldier extends NPC {
 	private ?Unit $unit = null;
 	private ?SiegeEquipment $manning_equipment = null;
 	private Collection $part_of_requests;
+	private int $pendingPenalty = 0;
 
 	/**
 	 * Constructor
@@ -1053,6 +1054,22 @@ class Soldier extends NPC {
 		$this->penalty = $penalty;
 		return $this;
 	}
+
+	public function prepPenalty(int $penalty): static {
+		$this->pendingPenalty += $penalty;
+		return $this;
+	}
+
+	public function getPendingPenalty(): ?int {
+		return $this->pendingPenalty;
+	}
+
+	public function applyPenalty(): static {
+		$this->penalty += $this->pendingPenalty;
+		$this->pendingPenalty = 0;
+		return $this;
+	}
+
 
 	public function getEffMastery(bool $attacking): int {
 		if ($attacking) {

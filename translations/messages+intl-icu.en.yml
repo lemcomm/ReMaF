@@ -1416,6 +1416,7 @@ battle:
   routed:       "{i} soldier{count, plural, =1 { was} other {s were}} routed"
   retreated:    "{i} soldier{count, plural, =1 {} other {s}} retreated"
   strikes:      "{i} melee hit{count, plural, =1 {} other {s}}"
+  attacks:      "{i} attack{count, plural, =1 {} other {s}}"
   notarget:     "{i} {count, plural, =1 {was} other {were}} unable to find a target"
   chargefail:   "{i} {count, plural, =1 {was} other {were}} counter-attacked in the charge, but took no damage"
   chargewound:  "{i} {count, plural, =1 {was} other {were}} wounded by the enemy in the charge"
