@@ -100,11 +100,12 @@ class CombatManager {
 		$this->groupAttackResolves++;
 		// Reattack is used as a flag to control multiple attacks per round. Eventually should be a stat check.
 		// Attacker hit
+		$moraleLog = [];
 		$attMastery = $me->getEffMastery(true);
 		$defMastery = $target->getEffMastery(false);
 
-		$strAttacker = $me->getName()."(".$me->getTranslatableType().")";
-		$strDefender = $target->getName()." (".$target->getTranslatableType().")";
+		$strAttacker = $me->getName()."(".$me->getTranslatableType().") [".$me->getMoraleState()."]";
+		$strDefender = $target->getName()." (".$target->getTranslatableType().") [".$target->getMoraleState()."]";
 
 		// Example:
 		// ML: 58, Broadsword(SB3): 1, WC: 10, Pen: 0
@@ -127,17 +128,20 @@ class CombatManager {
 		// Defender counterattack
 		} elseif ($result['result'] === 'DTA' && !$reattack) {
 			$log[0] = $log[0].'countered ';
-			$me->moraleCheck(-2, 0, false, false);
+			$moraleLog = $me->moraleCheck(-1, 1, true, false);
+			$log[1][] = $this->parseMoraleResult($me, $moraleLog);
 			$target->moraleCheck(1, 0, false, false);
 			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true, $log);
 		// Defender fumbles his defense and is vulnerable to attack
 		} elseif ($result['result'] === 'Stumble') {
 			$log[0] = $log[0].'stumble ';
-			$target->moraleCheck(-2, 0, false, false);
+			$moraleLog = $target->moraleCheck(-1, 1, true, false);
+			$log[1][] = $this->parseMoraleResult($target, $moraleLog);
 			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), $reattack, $log);
 		}
 		$log[0] = $log[0].'missed';
-		$me->moraleCheck(0, -1, false, false);
+		$moraleLog = $me->moraleCheck(-1, 1, true, false);
+		$log[1][] = $this->parseMoraleResult($me, $moraleLog);
 		return $log;
 	}
 
@@ -158,6 +162,9 @@ class CombatManager {
 		} else {
 			$preLog = '';
 		}*/
+
+		$myLog = [];
+		$moraleLog = [];
 		$damage = 0;
 		$hitLoc = $this->getHitLoc();
 		$hitData = $this->resolveHit($me, $target, $hitLoc, $dice);
@@ -168,6 +175,7 @@ class CombatManager {
 		}
 		$effDamage = $damage + $hitData["damage"];
 		$result = $this->damageResult($effDamage, $hitData["table"]);
+		$damResult = [];
 
 		$shockRoll = $target->getModifierSum();
 		if ($result !== "protected") {
@@ -214,8 +222,11 @@ class CombatManager {
 
 		// Handle soldiers based on result.
 		if ($result === "protected") {
-			$me->moraleCheck(-1, -2, true, true);
-			return ['protected', ["Protected: $strAttackerWeapon did no damage on $hitLoc against $strDefenderArmor.\n"]];
+			$logs[0] = $logs[0].'protected';
+			$moraleLog = $me->moraleCheck(-1, -2, true, true);
+			$logs[1][] = $this->parseMoraleResult($me, $moraleLog);
+			$logs[1][] = "Protected: $strAttackerWeapon did no damage on $hitLoc against $strDefenderArmor.\n";
+			return $logs;
 			// Do something on armor protection?
 		}
 
@@ -235,7 +246,6 @@ class CombatManager {
 			}
 		}
 
-		$mylog = [];
 		$random = rand(1,100);
 		$myNoble = $this->findNobleFromSoldier($me);
 		$surrender = 75; # TODO: Account for phase?
@@ -250,10 +260,11 @@ class CombatManager {
 			} else {
 				$target->kill();
 				$me->addKill();
-				$strResult = "Kill (Fatal Blow):";
+				$strResult = "Kill (Fatal Blow)";
 				$retResult = 'kill';
 			}
-			$me->moraleCheck(3, 0, false, false);
+			$moraleLog = $me->moraleCheck(3, $damResult[0] / 2 * -1, false, true);
+			$myLog[] = $this->parseMoraleResult($me, $moraleLog);
 		} elseif (in_array("amputate", $damResult) && $ampRoll > $target->getToughness()) {
 			if ($target->isNoble() && $myNoble && $random < $surrender) {
 				$this->captureInCombat($myNoble, $target->getCharacter());
@@ -263,17 +274,20 @@ class CombatManager {
 			} else {
 				$target->kill();
 				$me->addKill();
-				$strResult = "Kill (Amputation):";
+				$strResult = "Kill (Amputation)";
 				$retResult = 'kill';
 			}
-			$me->moraleCheck(3, -4, false, false);
+			$moraleLog = $me->moraleCheck(3, -4, false, true);
+			$myLog[] = $this->parseMoraleResult($me, $moraleLog);
 			// When we implement proper post battle, we can do something else with the soldier.
 		} else {
 			// Target is wounded.
 			$target->addHitsTaken();
 			$me->addCasualty();
-			$me->moraleCheck($damResult[0], $damResult[0] * -1, true, true);
-			$target->moraleCheck($damResult[0] * -1, $damResult[0] / 2 * -1, true, true);
+			$moraleLog = $me->moraleCheck($damResult[0], $damResult[0] * -1, false, true);
+			$myLog[] = $this->parseMoraleResult($me, $moraleLog);
+			$moraleLog = $target->moraleCheck($damResult[0] * -1, $damResult[0] / 2, true, true);
+			$myLog[] = $this->parseMoraleResult($target, $moraleLog);
 			// Shock roll
 			for ($i = 0; $i < $damResult[0]; $i++) {
 				$shockRoll += rand(1, 6);
@@ -281,19 +295,20 @@ class CombatManager {
 			if ($shockRoll > $target->getToughness()) {
 				// Technically, this is a KO, but we assume that we kill the soldiers until a better function replaces post-battle recovery
 				if ($target->isNoble()) {
-					$strResult = "Capture (Shock):";
+					$strResult = "Capture (Shock)";
 					$retResult = 'capture';
 					$this->captureInCombat($myNoble, $target->getCharacter());
 					$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
 				} else {
-					$strResult = "Kill (Shock):";
+					$strResult = "Kill (Shock)";
 					$retResult = 'kill';
 					$target->kill();
-					$me->moraleCheck(2, -1, true, true);
+					$moraleLog = $me->moraleCheck(2, -1, false, false);
+					$myLog[] = $this->parseMoraleResult($me, $moraleLog);
 				}
 			} else {
 				$retResult = 'wound';
-				$strResult = "Wound: ";
+				$strResult = "Wound";
 			}
 
 			$target->prepModifier('Physical', $damResult[0]);
@@ -310,13 +325,13 @@ class CombatManager {
 		// Final log string constructor
 		// Example
 		// Kill (Injury): Broadsword (15/10) [6/8/6] vs mail hauberk (torso, abdomen, hips) [2/8/6]: heavy cutting injury [19] on thigh - injury penalty 4, stumble
-		$strLog = "$strResult $strAttackerWeapon vs $strDefenderArmor: $strDamage - $strDamResult\n";
+		$strLog = "      $strAttackerWeapon vs $strDefenderArmor: $strDamage - $strDamResult [$strResult].\n";
 		
-		$mylog[] = $strLog;
+		$myLog[] = $strLog;
 
 
 		$logs[0] = $logs[0].$retResult;
-		foreach ($mylog as $each) {
+		foreach ($myLog as $each) {
 			$logs[1][] = $each;
 		}
 
@@ -388,6 +403,24 @@ class CombatManager {
 			}
 		}
 		return "protected"; // no damage
+	}
+
+	public function parseMoraleResult(Soldier|Character $me, $log): string {
+		$strActor = $me->getName()."(".$me->getTranslatableType().") [".$me->getMoraleState()."]";
+		foreach ($log as $stringArr) {
+			if(array_key_exists('check', $stringArr)) {
+				// Xing (second one.light infantry) checks for $type: -4 (base vs roll) [Resistance: 5, Adjustment: 5]
+				$str = $stringArr['check'];
+				$strParse = "$strActor checks for ".$str['type'].": ".$str['result']." (".$str['base']." vs ".$str['roll'].") [Resistance :".$str['resistance'].", Adjustment: ".$str['adjustment']."]\n";
+			} elseif(array_key_exists('resist', $stringArr)) {
+				// Resistance rolled: EML [base: 35] vs roll - result
+				$str = $stringArr['resist'];
+				$strParse2 = "Resistance rolled: ".$str['resistEML']." [base: ".$str['resistBase']."] vs ".$str['roll']." - ".$str['strResult']."\n";
+				$strParse .= $strParse2;
+			}
+		}
+		
+		return $strParse;
 	}
 
 	public function ChargeAttack(Soldier|Character $me, $target, $act=false, $battle=false, $xpMod = 1, $defBonus = null): array {
