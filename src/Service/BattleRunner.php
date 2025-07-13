@@ -856,15 +856,18 @@ class BattleRunner {
 					if ($target) {
 						$this->attacks++;
 						$noCavTargets = 0;
-						$hit = $this->combat->attackRoll($soldier, $target);
-						if ($hit !== 'Defended') {
+						$hit = $this->combat->attackRoll($soldier, $target)['result'];
+						/*if ($hit !== 'Defended') {
 							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
 							$this->logAttack($results, $logs);
 						} else {
 							$this->log(10, $soldier->getName()."(".$soldier->getTranslatableType()." attacks but ".$target->getName()." (".$target->getTranslatableType().") defended\n");
 							$result = $hit;
-						}
-						$this->fatigueRoll($soldier);
+						}*/
+
+						[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+						$this->logAttack($results, $logs);
+						$this->fatigueRoll($soldier, $phase);
 					} else {
 						$this->log(10, "no more targets\n");
 						$noCavTargets++;
@@ -874,14 +877,19 @@ class BattleRunner {
 					if ($target) {
 						$this->shots++;
 						$noRangeTargets = 0;
-						$hit = $this->combat->attackRoll($soldier, $target);
-						if ($hit !== 'Defended') {
+						$hit = $this->combat->attackRoll($soldier, $target)['result'];
+						/*if ($hit !== 'Defended') {
 							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
 							$this->logAttack($results, $logs);
 						} else {
-							$this->log(10, $soldier->getName() . "(" . $soldier->getTranslatableType() . " attacks but " . $target->getName() . " (" . $target->getTranslatableType() . ") defended\n");
+							$this->log(10, $soldier->getName()."(".$soldier->getTranslatableType()." attacks but ".$target->getName()." (".$target->getTranslatableType().") defended\n");
 							$result = $hit;
-						}
+						}*/
+						
+						[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+						$this->logAttack($results, $logs);
+						$this->fatigueRoll($soldier, $phase);
+						
 					} else {
 						$this->log(10, "no more targets\n");
 						$noRangeTargets++;
@@ -941,7 +949,7 @@ class BattleRunner {
 						$noCavTargets = 0;
 						[$result, $logs] = $this->combat->ChargeAttack($soldier, $target, false, true, $this->xpMod, $this->defenseBonus);
 						$this->logAttack($result, $logs);
-						$this->fatigueRoll($soldier);
+						$this->fatigueRoll($soldier, $phase);
 					} else {
 						// no more targets
 						$this->log(10, "but finds no target\n");
@@ -970,7 +978,7 @@ class BattleRunner {
 							$this->missed++;
 							$this->log(10, "missed\n");
 						}
-						$this->fatigueRoll($soldier);
+						$this->fatigueRoll($soldier, $phase);
 					} else {
 						// no more targets
 						$this->log(10, "but finds no target\n");
@@ -1005,7 +1013,7 @@ class BattleRunner {
 							}
 						}
 						*/
-						$this->fatigueRoll($soldier);
+						$this->fatigueRoll($soldier, $phase);
 					} else {
 						// no more targets
 						$this->log(10, "but finds no target\n");
@@ -1017,15 +1025,18 @@ class BattleRunner {
 				if ($target) {
 					$this->attacks++;
 					$noMeleeTargets = 0;
-					$hit = $this->combat->attackRoll($soldier, $target);
-					if ($hit !== 'Defended') {
+					$hit = $this->combat->attackRoll($soldier, $target)['result'];
+						/*if ($hit !== 'Defended') {
+							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+							$this->logAttack($results, $logs);
+						} else {
+							$this->log(10, $soldier->getName()."(".$soldier->getTranslatableType()." attacks but ".$target->getName()." (".$target->getTranslatableType().") defended\n");
+							$result = $hit;
+						}*/
+						
 						[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
 						$this->logAttack($results, $logs);
-					} else {
-						$this->log(10, $soldier->getName()."(".$soldier->getTranslatableType()." attacks but ".$target->getName()." (".$target->getTranslatableType().") defended\n");
-						$result = $hit;
-					}
-					$this->fatigueRoll($soldier);
+						$this->fatigueRoll($soldier, $phase);
 				} else {
 					$this->log(10, "no more targets\n");
 					$noMeleeTargets++;
@@ -1387,21 +1398,26 @@ class BattleRunner {
 				/** @var Soldier $soldier */
 				foreach ($group->getFightingSoldiers() as $soldier) {
 					# Since isFighting is only updated in the preparation phase, this includes soldiers that will go inactive from this round.
-					$soldier->applyPenalty();
-					$solPenalty = $soldier->getPenalty();
-					$solToughness = $soldier->getToughness();
-					if ($solPenalty > $solToughness) {
+					$soldier->applyModifier();
+					$solBonus = $soldier->getStateTraits();
+					$solPenalty = $soldier->getModifierSum() * $solBonus['Recklessness'];
+					$solWillpower = $soldier->getWillpower() - $solBonus['Fear'];
+					if ($solBonus['Unbreakable']) {
+						$staredDeath++;
+						$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): is unbreakable due to [".$soldier->getMoraleState()."] mental state - has no fear\n");
+
+					} elseif ($solPenalty > $solWillpower) {
 						$moraleRoll = rand($solPenalty/2, $solPenalty*3 );
-						if ($moraleRoll > $solToughness) {
+						if ($moraleRoll > $solWillpower) {
 							$soldier->setRouted(true);
 							$routed++;
-							$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): morale $solToughness vs $moraleRoll - fears death\n");
+							$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): morale $solWillpower vs $moraleRoll - fears death\n");
 						} else {
 							$staredDeath++;
-							$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): morale $solToughness vs $moraleRoll - has no fear\n");
+							$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): morale $solWillpower vs $moraleRoll - has no fear\n");
 						}
 					} else {
-						$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): toughness $solToughness vs $solPenalty\n");
+						$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): toughness $solWillpower vs $solPenalty\n");
 					}
 				}
 				$combatResults['routed'] = $routed; # Append routed info.
@@ -1831,12 +1847,12 @@ class BattleRunner {
 		return $target;
 	}
 
-	private function fatigueRoll($soldier) {
+	private function fatigueRoll($soldier, $phase) {
 		// Fatigue - roll 1d6 + phase + penalty vs toughness, and increment fatigue. After 12 phases, this is guaranteed to increment penalty.
-		$fatigueRoll = $soldier->getPenalty();
+		$fatigueRoll = $soldier->getPenalty() + $phase - $this->rangedPhases - 1;
 		$fatigueRoll += rand(1, 6);
 		if ($fatigueRoll > $soldier->getToughness()) {
-			$soldier->prepPenalty(1);
+			$soldier->prepModifier('Fatigue', 1);
 			// Should be a check here to 'pass out' and become a non-killed inactive soldier.
 		}
 	}
