@@ -96,12 +96,12 @@ class CombatManager {
 		return ['result' => $resultArray[$attResult][$defResult], 'attRoll' => $attRoll, 'attResult' => $attResult, 'defRoll' => $defRoll, 'defResult' => $defResult];
 	}
 
-	public function resolveAttack($me, $target, $result, bool $reattack = false, $log = ['',[]]): array {
+	public function resolveAttack(Character|Soldier $me, Character|Soldier $target, $result, bool $reattack = false, $log = ['',[]]): array {
 		$this->groupAttackResolves++;
 		// Reattack is used as a flag to control multiple attacks per round. Eventually should be a stat check.
 		// Attacker hit
-		$attMastery = $me->getEffMastery();
-		$defMastery = $target->getEffMastery();
+		$attMastery = $me->getEffMastery(true);
+		$defMastery = $target->getEffMastery(false);
 
 		$strAttacker = $me->getName()."(".$me->getTranslatableType().")";
 		$strDefender = $target->getName()." (".$target->getTranslatableType().")";
@@ -127,13 +127,17 @@ class CombatManager {
 		// Defender counterattack
 		} elseif ($result['result'] === 'DTA' && !$reattack) {
 			$log[0] = $log[0].'countered ';
+			$me->moraleCheck(-2, 0, false, false);
+			$target->moraleCheck(1, 0, false, false);
 			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true, $log);
 		// Defender fumbles his defense and is vulnerable to attack
 		} elseif ($result['result'] === 'Stumble') {
 			$log[0] = $log[0].'stumble ';
+			$target->moraleCheck(-2, 0, false, false);
 			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), $reattack, $log);
 		}
 		$log[0] = $log[0].'missed';
+		$me->moraleCheck(0, -1, false, false);
 		return $log;
 	}
 
@@ -220,6 +224,7 @@ class CombatManager {
 		// Handle soldiers based on result.
 
 		if ($result === "protected") {
+			$me->moraleCheck(-1, -2, true, true);
 			return ['protected', ["Protected: $strAttackerWeapon did no damage on $hitLoc against $strDefenderArmor.\n"]];
 			// Do something on armor protection?
 		}
@@ -240,16 +245,20 @@ class CombatManager {
 			$me->addKill();
 			$strResult = "Kill (Fatal Blow):";
 			$retResult = 'kill';
+			$me->moraleCheck(3, 0, false, false);
 		} elseif (in_array("amputate", $damResult) && $ampRoll > $target->getToughness()) {
 			$target->kill();
 			$me->addKill();
 			$strResult = "Kill (Amputation):";
 			$retResult = 'kill';
+			$me->moraleCheck(3, -4, false, false);
 			// When we implement proper post battle, we can do something else with the soldier.
 		} else {
 			// Target is wounded.
 			$target->addHitsTaken();
 			$me->addCasualty();
+			$me->moraleCheck($damResult[0], $damResult[0] * -1, true, true);
+			$target->moraleCheck($damResult[0] * -1, $damResult[0] / 2 * -1, true, true);
 			// Shock roll
 			for ($i = 0; $i < $damResult[0]; $i++) {
 				$shockRoll += rand(1, 6);
@@ -263,13 +272,14 @@ class CombatManager {
 					$strResult = "Kill (Shock):";
 					$retResult = 'kill';
 					$target->kill();
+					$me->moraleCheck(2, -1, true, true);
 				}
 			} else {
 				$retResult = 'wound';
 				$strResult = "Wound: ";
 			}
 
-			$target->prepModifier($damResult[0]);
+			$target->prepModifier('Physical', $damResult[0]);
 			/* As we update penalty after the round, it is currently not possible to 'bleed out' from additional damage.
 			
 			if ($target->getPenalty() >= $target->getToughness()) {

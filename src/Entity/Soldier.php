@@ -1392,36 +1392,36 @@ class Soldier extends NPC {
 			case 'Standard':
 				return;
 			case 'Megalomania':
-				$stateBonus['Recklessness'] = 0; 	// Multiplier to penalties during rout check						DONE
-				$stateBonus['Ignorance'] = 4; 		// Divides fatigue by 2 and ignores up to this many points 			DONE
-				$stateBonus['Mania'] = 3;			// Negative morale and sanity resistance, but also large positive adjustment 		DONE
-				$stateBonus['Unstoppable'] = true;	// Always resists on morale checks				DONE
+				$stateBonus['Recklessness'] = 0; 	// Multiplier to penalties during rout check
+				$stateBonus['Ignorance'] = 4; 		// Divides fatigue by 2 and ignores up to this many points
+				$stateBonus['Mania'] = 3;			// Negative morale and sanity resistance, but also large positive adjustment
+				$stateBonus['Unstoppable'] = true;	// Always resists on morale checks
 			case 'Professionalism':
-				$stateBonus['Calmness'] = 1; 		// Positive sanity adjustment 					DONE
-				$stateBonus['Uncertainty'] = 3;		// Negative morale resistance 					DONE
+				$stateBonus['Calmness'] = 1; 		// Positive sanity adjustment
+				$stateBonus['Uncertainty'] = 3;		// Negative morale resistance
 			case 'Cowardice':
 				$stateBonus['Fear'] = 4;			// Rout check malus
-				$stateBonus['Desperation'] = 3;		// Sanity resistance 							DONE
+				$stateBonus['Desperation'] = 3;		// Sanity resistance
 			case 'Inspiration':
-				$stateBonus['Grit'] = 3;			// Ignore 3 points of physical penalty			DONE
-				$stateBonus['Bloodlust'] = 1;		// Temporary mastery increase					DONE
+				$stateBonus['Grit'] = 3;			// Ignore 3 points of physical penalty
+				$stateBonus['Bloodlust'] = 1;		// Temporary mastery increase
 			case 'Shaken':
-				$stateBonus['Perseverence'] = 2;	// Positive morale adjustment					DONE
-				$stateBonus['Hope'] = 2;			// Negative sanity resistance					DONE
+				$stateBonus['Perseverence'] = 2;	// Positive morale adjustment
+				$stateBonus['Hope'] = 2;			// Negative sanity resistance
 			case 'Heroism':
-				$stateBonus['Fury'] = 2;			// Divisor for physical and fatigue penalties	DONE
-				$stateBonus['Vainglory'] = 10;		// Bonus to attack and defense rolls			DONE
-				$stateBonus['Confidence'] = 6;		// Morale resistance							DONE
-				$stateBonus['Unstoppable'] = true;	// Always resists on morale checks				DONE
-				$stateBonus['Unbreakable'] = true;	// Will not rout								DONE
+				$stateBonus['Fury'] = 2;			// Divisor for physical and fatigue penalties
+				$stateBonus['Vainglory'] = 10;		// Bonus to attack and defense rolls
+				$stateBonus['Confidence'] = 6;		// Morale resistance
+				$stateBonus['Unstoppable'] = true;	// Always resists on morale checks
+				$stateBonus['Unbreakable'] = true;	// Will not rout
 			case 'Delusional':
-				$stateBonus['Imagination'] = 3;		// Negative morale resistance					DONE
+				$stateBonus['Imagination'] = 3;		// Negative morale resistance
 			case 'Berserk':
-				$stateBonus['Frenzy'] = 1.5;		// Base weapon damage multiplier.								DONE
-				$stateBonus['Deathwish'] = 15;		// Large bonus to attack roll and malus to defense roll.		DONE
-				$stateBonus['Sunset'] = 0;			// Multiplier to ALL penalties									DONE
-				$stateBonus['Rage'] = 6;			// morale and sanity resistance									DONE
-				$stateBonus['Unbreakable'] = true;	// Will not rout												DONE
+				$stateBonus['Frenzy'] = 1.5;		// Base weapon damage multiplier
+				$stateBonus['Deathwish'] = 15;		// Large bonus to attack roll and malus to defense roll
+				$stateBonus['Sunset'] = 0;			// Multiplier to ALL penalties
+				$stateBonus['Rage'] = 6;			// morale and sanity resistance
+				$stateBonus['Unbreakable'] = true;	// Will not rout
 		}
 	
 	$this->setStateTraits($stateBonus);
