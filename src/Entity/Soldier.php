@@ -13,7 +13,6 @@ class Soldier extends NPC {
 	protected int $willpower = 12;
 	protected int $baseSkill = 12;
 	protected ?int $modifier = 0;
-	protected array $modifiers = ["physical" => 0, "fatigue" => 0, "morale" => 0];
 	protected int $fatigue = 0;
 	protected int $morale = 0;
 	protected int $maxMorale = 0;
@@ -24,8 +23,6 @@ class Soldier extends NPC {
 	protected int $sanityResistance = 0;
 	protected int $moraleAdjustment = 0;
 	protected int $sanityAdjustment = 0;
-	protected string $moraleState = "";
-	protected array $stateTraits = [];
 	protected bool $is_fortified = false;
 	protected int $ranged = -1;
 	protected int $melee = -1;
@@ -68,7 +65,23 @@ class Soldier extends NPC {
 	private ?Unit $unit = null;
 	private ?SiegeEquipment $manning_equipment = null;
 	private Collection $part_of_requests;
-	private array $pendingModifiers = ["physical" => 0, "fatigue" => 0, "morale" => 0];
+	protected array $modifiers = ["Physical" => 0, "Fatigue" => 0, "Morale" => 0];
+	private array $pendingModifiers = ["Physical" => 0, "Fatigue" => 0, "Morale" => 0];
+	protected string $moraleState = "";
+	protected ?array $stateTraits = null;
+	private static array $defaultModifiers = ["Physical" => 0, "Fatigue" => 0, "Morale" => 0];
+	private static array $defaultState = [
+		'Recklessness' => 1, 'Ignorance' => 0, 'Mania' => 0,					// Megalomania
+		'Calmness' => 0, 'Uncertainty' => 0, 							// Professionalism
+		'Fear' => 0, 'Desperation' => 0, 							// Cowardice
+		'Grit' => 0, 'Bloodlust' => 0, 								// Inspiration
+		'Perseverence' => 0, 'Hope' => 0, 							// Shaken
+		'Fury' => 1, 'Vainglory' => 0, 'Confidence' => 0,	 				// Heroism
+		'Imagination' => 0, 									// Delusional
+		'Frenzy' => 1, 'Deathwish' => 0, 'Sunset' => 1, 'Rage' => 0,				// Berserk
+		'Unstoppable' => false,									// Megalomania & Heroism
+		'Unbreakable' => false									// Berserk & Heroism
+	];
 
 	/**
 	 * Constructor
@@ -76,6 +89,7 @@ class Soldier extends NPC {
 	public function __construct() {
 		$this->events = new ArrayCollection();
 		$this->part_of_requests = new ArrayCollection();
+		$this->stateTraits = self::$defaultState;
 	}
 
 	public function __toString() {
@@ -93,8 +107,7 @@ class Soldier extends NPC {
 		return $this->getWeapon()->getClass()[0];
 	}
 
-	public function getArmourHitLoc($hitLoc, $aspect)
-	{
+	public function getArmourHitLoc($hitLoc, $aspect): array {
 		$armor = $this->armour;
 		$covered = 0;
 		$armorHit = [];
@@ -1096,7 +1109,7 @@ class Soldier extends NPC {
 		foreach ($this->pendingModifiers as $k => $v) {
 			$this->modifiers[$k] = $this->modifiers[$k] + $v;
 		}
-		$this->pendingModifiers = [];
+		$this->pendingModifiers = self::$defaultModifiers;
 		return $this;
 	}
 
@@ -1165,19 +1178,8 @@ class Soldier extends NPC {
 	}
 
 	public function getStateTraits(): array {
-		if (count($this->stateTraits) == 0){
-			return [
-			'Recklessness' => 1, 'Ignorance' => 0, 							// Megalomania
-			'Calmness' => 0, 'Uncertainty' => 0, 							// Professionalism
-			'Fear' => 0, 'Desperation' => 0, 								// Cowardice
-			'Grit' => 0, 'Bloodlust' => 0, 									// Inspiration
-			'Perseverence' => 0, 'Hope' => 0, 								// Shaken
-			'Fury' => 1, 'Vainglory' => 0, 'Confidence' => 0, 				// Heroism
-			'Imagination' => 0, 											// Delusional
-			'Frenzy' => 1, 'Deathwish' => 0, 'Sunset' => 1, 				// Berserk
-			'Unstoppable' => false,											// Megalomania & Heroism
-			'Unbreakable' => false											// Berserk & Heroism
-		];
+		if ($this->stateTraits === null) {
+			$this->stateTraits = self::$defaultState;
 		}
 		return $this->stateTraits;
 	}
@@ -1341,6 +1343,7 @@ class Soldier extends NPC {
 	}
 
 	public function updateState(): void {
+		$this->moraleStateCheck();
 		$state = $this->getMoraleState();
 
 		/*
@@ -1375,18 +1378,7 @@ class Soldier extends NPC {
 		];
 		*/
 
-		$stateBonus = [
-			'Recklessness' => 1, 'Ignorance' => 0, 							// Megalomania
-			'Calmness' => 0, 'Uncertainty' => 0, 							// Professionalism
-			'Fear' => 0, 'Desperation' => 0, 								// Cowardice
-			'Grit' => 0, 'Bloodlust' => 0, 									// Inspiration
-			'Perseverence' => 0, 'Hope' => 0, 								// Shaken
-			'Fury' => 1, 'Vainglory' => 0, 'Confidence' => 0, 				// Heroism
-			'Imagination' => 0, 											// Delusional
-			'Frenzy' => 1, 'Deathwish' => 0, 'Sunset' => 1, 				// Berserk
-			'Unstoppable' => false,											// Megalomania & Heroism
-			'Unbreakable' => false											// Berserk & Heroism
-		];
+		$stateBonus = self::$defaultState;
 
 		switch($state){
 			case 'Standard':
@@ -1396,32 +1388,40 @@ class Soldier extends NPC {
 				$stateBonus['Ignorance'] = 4; 		// Divides fatigue by 2 and ignores up to this many points
 				$stateBonus['Mania'] = 3;			// Negative morale and sanity resistance, but also large positive adjustment
 				$stateBonus['Unstoppable'] = true;	// Always resists on morale checks
+				break;
 			case 'Professionalism':
 				$stateBonus['Calmness'] = 1; 		// Positive sanity adjustment
 				$stateBonus['Uncertainty'] = 3;		// Negative morale resistance
+				break;
 			case 'Cowardice':
 				$stateBonus['Fear'] = 4;			// Rout check malus
 				$stateBonus['Desperation'] = 3;		// Sanity resistance
+				break;
 			case 'Inspiration':
 				$stateBonus['Grit'] = 3;			// Ignore 3 points of physical penalty
 				$stateBonus['Bloodlust'] = 1;		// Temporary mastery increase
+				break;
 			case 'Shaken':
 				$stateBonus['Perseverence'] = 2;	// Positive morale adjustment
 				$stateBonus['Hope'] = 2;			// Negative sanity resistance
+				break;
 			case 'Heroism':
 				$stateBonus['Fury'] = 2;			// Divisor for physical and fatigue penalties
 				$stateBonus['Vainglory'] = 10;		// Bonus to attack and defense rolls
 				$stateBonus['Confidence'] = 6;		// Morale resistance
 				$stateBonus['Unstoppable'] = true;	// Always resists on morale checks
 				$stateBonus['Unbreakable'] = true;	// Will not rout
+				break;
 			case 'Delusional':
 				$stateBonus['Imagination'] = 3;		// Negative morale resistance
+				break;
 			case 'Berserk':
 				$stateBonus['Frenzy'] = 1.5;		// Base weapon damage multiplier
 				$stateBonus['Deathwish'] = 15;		// Large bonus to attack roll and malus to defense roll
 				$stateBonus['Sunset'] = 0;			// Multiplier to ALL penalties
 				$stateBonus['Rage'] = 6;			// morale and sanity resistance
 				$stateBonus['Unbreakable'] = true;	// Will not rout
+				break;
 		}
 	
 	$this->setStateTraits($stateBonus);

@@ -10,7 +10,6 @@
 		<field name="routed" type="boolean"/>
 		<field name="assigned_since" type="integer" nullable="true"/>
 		<field name="mastery" type="integer" nullable="true"/>
-		<field name="penalty" type="integer" nullable="true"/>
 
 		<many-to-one field="weapon" target-entity="EquipmentType"/>
 		<many-to-one field="armour" target-entity="EquipmentType"/>

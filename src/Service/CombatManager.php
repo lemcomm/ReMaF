@@ -141,7 +141,7 @@ class CombatManager {
 		return $log;
 	}
 
-	public function resolveDamage(Character|Soldier $me, Character|Soldier $target, $dice, $reattack = false, $logs): array {
+	public function resolveDamage(Character|Soldier $me, Character|Soldier $target, $dice, $reattack, $logs): array {
 		
 		/* List of PreResults:
 		* DTA = Defender Tactical Advantage (Counterattack)
@@ -191,7 +191,6 @@ class CombatManager {
 
 
 		$armorHit = $hitData['armor']['armorHit'];
-		$armorProtection = $armorHit['armor']['armorProtection'];
 		
 		// Construct strings for modular log output.
 
@@ -208,8 +207,16 @@ class CombatManager {
 		if (count($armorHit) > 0) { $strDefenderArmor = "";}
 
 		// Temporary solution as it will look odd if there is overlapping armor.
-		for ($i = 1; $i <= count($armorHit); $i++) {
-			$strDefenderArmor += $armorHit['armorPiece']." (".implode(', ', $armorHit['coverage']).") [".implode('/', $armorHit['protection'])."]";
+		foreach ($armorHit as $each) {
+			$strDefenderArmor .= $each['armorPiece']." (".implode(', ', $each['coverage']).") [".implode('/', $each['protection'])."]";
+		}
+
+
+		// Handle soldiers based on result.
+		if ($result === "protected") {
+			$me->moraleCheck(-1, -2, true, true);
+			return ['protected', ["Protected: $strAttackerWeapon did no damage on $hitLoc against $strDefenderArmor.\n"]];
+			// Do something on armor protection?
 		}
 
 		// Example
@@ -220,15 +227,6 @@ class CombatManager {
 		// injury penalty 4, stumble, amputate
 		$strDamResult = "injury penalty ".implode(', ', $damResult);
 
-
-		// Handle soldiers based on result.
-
-		if ($result === "protected") {
-			$me->moraleCheck(-1, -2, true, true);
-			return ['protected', ["Protected: $strAttackerWeapon did no damage on $hitLoc against $strDefenderArmor.\n"]];
-			// Do something on armor protection?
-		}
-
 		// Amputation check.
 		if (in_array("amputate", $damResult)) {
 			$ampRoll = $target->getModifierSum();
@@ -238,19 +236,36 @@ class CombatManager {
 		}
 
 		$mylog = [];
+		$random = rand(1,100);
+		$myNoble = $this->findNobleFromSoldier($me);
+		$surrender = 75; # TODO: Account for phase?
 
 		if (in_array("kill", $damResult)) {
-			// Target is killed.
-			$target->kill();
-			$me->addKill();
-			$strResult = "Kill (Fatal Blow):";
-			$retResult = 'kill';
+			// Target is killed. Check for noble capture.
+			if ($target->isNoble() && $myNoble && $random < $surrender) {
+				$me->addCasualty();
+				$this->captureInCombat($myNoble, $target->getCharacter());
+				$retResult = 'capture';
+				$strResult = 'Capture (Killing Blow)';
+			} else {
+				$target->kill();
+				$me->addKill();
+				$strResult = "Kill (Fatal Blow):";
+				$retResult = 'kill';
+			}
 			$me->moraleCheck(3, 0, false, false);
 		} elseif (in_array("amputate", $damResult) && $ampRoll > $target->getToughness()) {
-			$target->kill();
-			$me->addKill();
-			$strResult = "Kill (Amputation):";
-			$retResult = 'kill';
+			if ($target->isNoble() && $myNoble && $random < $surrender) {
+				$this->captureInCombat($myNoble, $target->getCharacter());
+				$me->addCasualty();
+				$retResult = 'capture';
+				$strResult = 'Capture (Amputation)';
+			} else {
+				$target->kill();
+				$me->addKill();
+				$strResult = "Kill (Amputation):";
+				$retResult = 'kill';
+			}
 			$me->moraleCheck(3, -4, false, false);
 			// When we implement proper post battle, we can do something else with the soldier.
 		} else {
@@ -268,6 +283,8 @@ class CombatManager {
 				if ($target->isNoble()) {
 					$strResult = "Capture (Shock):";
 					$retResult = 'capture';
+					$this->captureInCombat($myNoble, $target->getCharacter());
+					$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
 				} else {
 					$strResult = "Kill (Shock):";
 					$retResult = 'kill';
@@ -1112,5 +1129,11 @@ class CombatManager {
 		} else {
 			return round(rand(max(1, round($power/10)), $power)/3);
 		}
+	}
+
+	public function captureInCombat($myNoble, $targetNoble) {
+		$this->charMan->imprison_prepare($targetNoble, $myNoble);
+		$this->common->addAchievement($myNoble, 'captures');
+		$this->history->logEvent($targetNoble, 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
 	}
 }

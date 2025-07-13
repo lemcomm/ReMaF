@@ -856,7 +856,7 @@ class BattleRunner {
 					if ($target) {
 						$this->attacks++;
 						$noCavTargets = 0;
-						$hit = $this->combat->attackRoll($soldier, $target)['result'];
+						$hit = $this->combat->attackRoll($soldier, $target);
 						/*if ($hit !== 'Defended') {
 							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
 							$this->logAttack($results, $logs);
@@ -877,7 +877,7 @@ class BattleRunner {
 					if ($target) {
 						$this->shots++;
 						$noRangeTargets = 0;
-						$hit = $this->combat->attackRoll($soldier, $target)['result'];
+						$hit = $this->combat->attackRoll($soldier, $target);
 						/*if ($hit !== 'Defended') {
 							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
 							$this->logAttack($results, $logs);
@@ -1025,7 +1025,7 @@ class BattleRunner {
 				if ($target) {
 					$this->attacks++;
 					$noMeleeTargets = 0;
-					$hit = $this->combat->attackRoll($soldier, $target)['result'];
+					$hit = $this->combat->attackRoll($soldier, $target);
 						/*if ($hit !== 'Defended') {
 							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
 							$this->logAttack($results, $logs);
@@ -1398,6 +1398,7 @@ class BattleRunner {
 				/** @var Soldier $soldier */
 				foreach ($group->getFightingSoldiers() as $soldier) {
 					# Since isFighting is only updated in the preparation phase, this includes soldiers that will go inactive from this round.
+					$soldier->updateState();
 					$soldier->applyModifier();
 					$solBonus = $soldier->getStateTraits();
 					$solPenalty = $soldier->getModifierSum() * $solBonus['Recklessness'];
@@ -1847,9 +1848,9 @@ class BattleRunner {
 		return $target;
 	}
 
-	private function fatigueRoll($soldier, $phase) {
+	private function fatigueRoll(Soldier $soldier, $phase) {
 		// Fatigue - roll 1d6 + phase + penalty vs toughness, and increment fatigue. After 12 phases, this is guaranteed to increment penalty.
-		$fatigueRoll = $soldier->getPenalty() + $phase - $this->rangedPhases - 1;
+		$fatigueRoll = $soldier->getModifierSum() + $phase - $this->rangedPhases - 1;
 		$fatigueRoll += rand(1, 6);
 		if ($fatigueRoll > $soldier->getToughness()) {
 			$soldier->prepModifier('Fatigue', 1);
