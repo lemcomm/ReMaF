@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Service\ArmorCalculator;
+use App\Service\CombatManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -1068,7 +1069,14 @@ class Soldier extends NPC {
 	}
 
 	public function getMastery(): int {
-		return $this->mastery;
+		$mastery = 0;
+		$masteryLevels = [10, 50, 200, 500];
+		foreach ($masteryLevels as $xp){
+			if($this->getExperience() > $xp) {
+				$mastery++;
+			}
+		}
+		return $mastery;
 	}
 
 	public function setMastery(int $mastery): static {
@@ -1077,16 +1085,16 @@ class Soldier extends NPC {
 	}
 
 	public function getModifierSum(): int {
-		return array_sum($this->modifiers);
+		return $this->getModifier('Physical') + $this->getModifier('Fatigue');
 	}
 
 	public function getModifier(string $type): int {
 		$bonus = $this->getStateTraits();
 		if ($type == 'Physical') {
-			return min(floor($this->getModifier('Physical') - $bonus['Grit'] / $bonus['Fury']), 0) * $bonus['Sunset'];
+			return min(floor($this->modifiers['Physical'] - $bonus['Grit'] / $bonus['Fury']), 0) * $bonus['Sunset'];
 		}
 		if ($type == 'Fatigue') {
-			return $this->getModifier('Fatigue') / $bonus['Fury'] / max(floor($bonus['Ignorance'] / 2), 1) - min(floor($this->getModifier('Fatigue') / 2), $bonus['Ignorance']) * $bonus['Sunset'];
+			return $this->modifiers['Fatigue'] / $bonus['Fury'] / max(floor($bonus['Ignorance'] / 2), 1) - min(floor($this->modifiers['Fatigue'] / 2), $bonus['Ignorance']) * $bonus['Sunset'];
 		}
 		return $this->modifiers[$type];
 	}	
@@ -1217,7 +1225,7 @@ class Soldier extends NPC {
 		return ['EML' => $EML, 'ML' => $ML, 'WC' => $WC, 'weaponBaseSkill' => $weaponBaseSkill, 'mastery' => $mastery, 'penalty' => $pen, 'using' => $using];
 	}
 
-	public function moraleRoll(int $mod, int $resistance, int $adjustment, bool $canResist) {
+	public function moraleRoll(string $type, int $mod, int $resistance, int $adjustment, bool $canResist) {
 		/* Morale system:
 		If absolute value > 1/2 willpower: High/Low Morale/Sanity.
 		
@@ -1239,18 +1247,21 @@ class Soldier extends NPC {
 		*/
 
 		$result = 0;
+		$resistance = $resistance + round($this->getWillpower() / 5);
 
 		$base = $this->getWillpower() + floor($this->getMorale() / 2) + $adjustment;
 		$roll = rand($mod, $mod*6) - floor($this->getSanity() / 2);
 
-		if (abs($roll) > $base) {
+		if (abs($roll) > $base * 2) {
 			$result = $mod * 2;
 		} else {
 			$result = $mod;
 		}
 
 		if (abs($roll) % $this->getWillpower() === 0) {
-			$result += $this->moraleRoll($mod, $resistance, $adjustment, $canResist);
+			[$result2, $log2] = $this->moraleRoll($type, $mod, $resistance, $adjustment, $canResist);
+			$result += $result2;
+			$myLog = $log2;
 		}
 
 		if ($resistance > abs($result)){
@@ -1263,6 +1274,8 @@ class Soldier extends NPC {
 
 		}
 
+		$myLog[] = ['check' => ['type' => $type, 'result' => $result, 'resistance' => $resistance, 'adjustment' => $adjustment, 'base' => $base, 'roll' => $roll]];
+
 		// Megalomania and Heroism always resist.
 		if (($canResist || $this->getStateTraits()['Unstoppable']) && $result !== 0){
 			$resistBase = $this->getWillpower()*3 + ($this->getWillpower() * $this->getMastery()) + ($adjustment * 5);
@@ -1274,38 +1287,43 @@ class Soldier extends NPC {
 			$resResult = (int)($roll < $resistEML) + (int)(($roll % 5 === 0)*2);
 			switch ($resResult % 3) {
 				case 0: // fail
+					$strResult = "SF";
 					break;
 				case 1: // success
+					$strResult = "SS";
 					$result = floor($result / 2);
 					break;
 				case 2: // crit fail
+					$strResult = "CF";
 					$result = $result * 2;
 					break;
 				case 3: // crit success
+					$strResult = "CS";
 					$result = 0;
 					break;
 			}
+			$myLog[] = ['resist' => ['resistBase' => $resistBase, 'resistEML' => $resistEML, 'roll' => $roll, 'result' => $strResult]];
 		}
 
-		return $result;
+		return [$result, $myLog];
 	}
 
-	public function moraleCheck(int $moraleMod, int $sanityMod, bool $canMoraleResist, bool $canSanityResist): void {
+	public function moraleCheck(int $moraleMod, int $sanityMod, bool $canMoraleResist, bool $canSanityResist): array {
 		// For now, it is fine for these things to happen mid-round, and for it to affect subsequent rolls to simulate a bandwidth capacity, and order of events.
 		// For example, if the soldier gets hurt, it will be much easier to get a larger morale bonus if he immediately inflicts a wound later in the same round.
 		
 		if ($moraleMod !== 0) {
-			$moraleAdjust = $this->moraleRoll($moraleMod, $this->getMoraleResistance(), $this->getMoraleAdjustment(), $canMoraleResist);
+			[$moraleAdjust, $log] = $this->moraleRoll('morale', $moraleMod, $this->getMoraleResistance(), $this->getMoraleAdjustment(), $canMoraleResist);
 			$morale = $this->getMorale() + $moraleAdjust;
 			$this->setMorale($morale);
 		}
 		if ($sanityMod !== 0) {
-			$sanityAdjust = $this->moraleRoll($sanityMod, $this->getSanityResistance(), $this->getSanityAdjustment(), $canSanityResist);
+			[$sanityAdjust, $log] = $this->moraleRoll('sanity', $sanityMod, $this->getSanityResistance(), $this->getSanityAdjustment(), $canSanityResist);
 			$sanity = $this->getSanity() + $sanityAdjust;
 			$this->setSanity($sanity);
 		}
 
-		// Logging?
+		return $log;
 
 	}
 
