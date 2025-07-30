@@ -22,7 +22,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateBattleCommand extends Command {
+class BattleGenerateCommand extends Command {
 
 	private $whereString = '';
 	public function __construct(private EntityManagerInterface $em, private BattleRunner $runner, private CommonService $common) {
@@ -31,7 +31,7 @@ class GenerateBattleCommand extends Command {
 
 	protected function configure(): void {
 		$this
-			->setName('maf:generate:battle')
+			->setName('maf:battle:generate')
 			->setDescription('Generator command for creating a battle. To be used with other generator commands to make a battle for the game to process.')
 			->addArgument('where', InputArgument::REQUIRED, 'Where is the battle? Should be in the format of Location:ID, i.e.: GeoData:8, MapRegion:15, Settlement:16, Place:9.')
 			->addArgument('attackers', InputArgument::REQUIRED, 'Comma separated list of attacking character IDs')

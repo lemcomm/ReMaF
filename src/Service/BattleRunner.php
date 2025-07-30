@@ -100,6 +100,8 @@ class BattleRunner {
 	private int $lightShieldWound = 0;
 	private int $lightShieldCapture = 0;
 	private int $lightShieldKill = 0;
+	private int $countered = 0;
+	private int $stumble = 0;
 
 	public function __construct(
 		private EntityManagerInterface $em,
@@ -659,8 +661,8 @@ class BattleRunner {
 					#$currentContacts = $this->defCurrentContacts;
 				}
 			}
-			if ($type !== 'hunt') {
-				$stageReport = new BattleReportStage; # Generate new stage report.
+			if ($type === 'ranged' || $type === 'normal') {
+				$stageReport = new BattleReportStage; # Generate new stage report. Hunts do this separately.
 				$this->em->persist($stageReport);
 				$stageReport->setRound($phase);
 				$stageReport->setGroupReport($group->getActiveReport());
@@ -701,8 +703,6 @@ class BattleRunner {
 						$stageResult = $this->legacyUpdateRangedMorale($group, $enemies, $shots, $rangedHits, $stageResult);
 					}
 				}
-				$stageReport->setData($stageResult); # Commit this stage's results to the combat report.
-				$stageReport->setExtra($extras);
 			} elseif ($type === 'normal') {
 				$soldierShuffle = $group->getFightingSoldiers()->toArray();
 				if (($this->legacyRuleset && $this->version >= 3) || $this->masteryRuleset)  {
@@ -710,6 +710,9 @@ class BattleRunner {
 				}
 				[$stageResult, $extras, $enemyCollection, $enemies] = $this->runMeleePhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies);
 
+			}
+			if ($type === 'ranged' || $type === 'normal') {
+				$stageResult = ['alive'=>$attackers, 'enemies'=>$enemies] + $stageResult;
 				$stageReport->setData($stageResult); # Commit this stage's results to the combat report.
 				$stageReport->setExtra($extras);
 			}
@@ -1026,17 +1029,17 @@ class BattleRunner {
 					$this->attacks++;
 					$noMeleeTargets = 0;
 					$hit = $this->combat->attackRoll($soldier, $target);
-						/*if ($hit !== 'Defended') {
-							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
-							$this->logAttack($results, $logs);
-						} else {
-							$this->log(10, $soldier->getName()."(".$soldier->getTranslatableType()." attacks but ".$target->getName()." (".$target->getTranslatableType().") defended\n");
-							$result = $hit;
-						}*/
-						
+					/*if ($hit !== 'Defended') {
 						[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
 						$this->logAttack($results, $logs);
-						$this->fatigueRoll($soldier, $phase);
+					} else {
+						$this->log(10, $soldier->getName()."(".$soldier->getTranslatableType()." attacks but ".$target->getName()." (".$target->getTranslatableType().") defended\n");
+						$result = $hit;
+					}*/
+
+					[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+					$this->logAttack($results, $logs);
+					$this->fatigueRoll($soldier, $phase);
 				} else {
 					$this->log(10, "no more targets\n");
 					$noMeleeTargets++;
@@ -1860,6 +1863,14 @@ class BattleRunner {
 
 	private function addResult($result): void {
 		switch ($result) {
+			case 'stumble':
+				$this->stumble++;
+				break;
+			case 'missed':
+				# This is an edge case for Mastery, as Legacy will do this itself.
+				$this->mMissed++;
+				break;
+			case 'protected':
 			case 'Defended':
 			case 'fail':
 				$this->fail++;
@@ -1872,6 +1883,9 @@ class BattleRunner {
 				break;
 			case 'kill':
 				$this->kill++;
+				break;
+			case 'countered':
+				$this->countered++;
 				break;
 			case 'chargefail':
 				$this->chargeFail++;
@@ -1897,6 +1911,8 @@ class BattleRunner {
 			case 'lightShieldkill':
 				$this->lightShieldKill++;
 				break;
+			default:
+				$this->log(10, "ERROR: Missing addResult case for: $result!");
 		}
 	}
 
@@ -1905,12 +1921,14 @@ class BattleRunner {
 		if ($this->attacks) $stageResult['attacks'] = $this->attacks;
 		if ($this->shots) $stageResult['shots'] = $this->shots;
 		if ($this->rangedHits) $stageResult['rangedHits'] = $this->rangedHits;
+		if ($this->stumble) $stageResult['stumbles'] = $this->stumble;
 		if ($this->missed) $stageResult['misses'] = $this->missed;
 		if ($this->strikes) $stageResult['strikes'] = $this->strikes;
 		if ($this->mMissed) $stageResult['meleeMisses'] = $this->mMissed;
 		if ($this->kill) $stageResult['kill'] = $this->kill;
 		if ($this->capture) $stageResult['capture'] = $this->capture;
 		if ($this->wound) $stageResult['wound'] = $this->wound;
+		if ($this->countered) $stageResult['cntattack'] = $this->countered; # Stupid translation mistrans bypass.
 		if ($this->crowded) $stageResult['crowded'] = $this->crowded;
 		if ($this->fail) $stageResult['fail'] = $this->fail;
 		if ($this->chargeFail) $stageResult['chargeFail'] = $this->chargeFail;
@@ -1927,6 +1945,7 @@ class BattleRunner {
 	private function resetStageResult(): void {
 		$this->attacks = 0;
 		$this->shots = 0;
+		$this->stumble = 0;
 		$this->rangedHits = 0;
 		$this->missed = 0;
 		$this->strikes = 0;
@@ -1944,6 +1963,7 @@ class BattleRunner {
 		$this->lightShieldWound = 0;
 		$this->lightShieldCapture = 0;
 		$this->lightShieldKill = 0;
+		$this->countered = 0;
 	}
 
 	private function legacyUpdateRangedMorale($group, $enemies, $shots, $rangedHits, $stageResult) {

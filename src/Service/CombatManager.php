@@ -415,7 +415,7 @@ class CombatManager {
 			} elseif(array_key_exists('resist', $stringArr)) {
 				// Resistance rolled: EML [base: 35] vs roll - result
 				$str = $stringArr['resist'];
-				$strParse2 = "Resistance rolled: ".$str['resistEML']." [base: ".$str['resistBase']."] vs ".$str['roll']." - ".$str['strResult']."\n";
+				$strParse2 = "Resistance rolled: ".$str['resistEML']." [base: ".$str['resistBase']."] vs ".$str['roll']." - ".$str['result']."\n";
 				$strParse .= $strParse2;
 			}
 		}

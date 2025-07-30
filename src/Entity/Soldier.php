@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Service\ArmorCalculator;
-use App\Service\CombatManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 

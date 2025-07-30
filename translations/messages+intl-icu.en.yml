@@ -1403,12 +1403,15 @@ battle:
  round:
   title:        Combat Phase {i}
   alive:        "{i} soldier{count, plural, =1 {} other {s}} fighting"
+  enemies:      "{i} enem{count, plural, =1 {y} other {ies}}"
   shots:        "{i} shot{count, plural, =1 {} other {s}} fired"
   rangedHits:   "{i} ranged hit{count, plural, =1 {} other {s}}"
   kill:         "{i} enem{count, plural, =1 {y} other {ies}} killed"
   wound:        "{i} enem{count, plural, =1 {y} other {ies}} wounded"
   panic:        "{i} enem{count, plural, =1 {y} other {ies}} routed"
   capture:      "{i} enemy First One{count, plural, =1 {} other {s}} captured"
+  cntattack:     "{i} counterattack{count, plural, =1 {} other {s}} taken"
+  stumbles:     "{i} soldier{count, plural, =1 {} other {s}} stumbled"
   fail:         "{i} {count, plural, =1 {was} other {were}} unable to do any damage"
   misses:       "{i} missed their target{count, plural, =1 {} other {s}}"
   meleeMisses:  "{i} missed their attack{count, plural, =1 {} other {s}}"
