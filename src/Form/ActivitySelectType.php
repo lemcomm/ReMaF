@@ -19,13 +19,13 @@ class ActivitySelectType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
-			'intention'       => 'interaction_12331',
+			'intention'       => 'activitySelect_12331',
 			'translation_domain' 	=> 'activity',
 		));
-		$resolver->setRequired(['action', 'maxdistance', 'me', 'subselect']);
+		$resolver->setRequired(['activityType', 'maxdistance', 'me', 'subselect']);
 	}
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
-		$action = $options['action'];
+		$action = $options['activityType'];
 		$builder->add('name', TextType::class, array(
 			'label'=>$action.'.form.name',
 			'required'=>false

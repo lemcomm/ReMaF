@@ -46,7 +46,7 @@ class ActivityController extends AbstractController {
 		}
 		$opts = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon']);
 
-		$form = $this->createForm(ActivitySelectType::class, null, ['action'=>'duel', 'maxdistance'=>$geo->calculateInteractionDistance($char), 'me'=>$char, 'subselect'=>$opts]);
+		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'duel', 'maxdistance'=>$geo->calculateInteractionDistance($char), 'me'=>$char, 'subselect'=>$opts]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();

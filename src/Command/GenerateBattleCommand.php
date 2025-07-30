@@ -107,6 +107,7 @@ class GenerateBattleCommand extends Command {
 			$output->writeln('<info>Running!</info>');
 			$cycle = $this->common->getCycle();
 			$runner->run($battle, $cycle);
+			$this->em->flush();
 			return Command::SUCCESS;
 		} else {
 			$output->writeln('<warning>Not enough attackers and defenders.</warning>');
