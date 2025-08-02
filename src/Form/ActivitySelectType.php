@@ -72,14 +72,14 @@ class ActivitySelectType extends AbstractType {
 				$qb->orderBy('c.name', 'ASC');
 				return $qb;
 		}]);
-		$builder->add('context', ChoiceType::class, array(
+		$builder->add('context', ChoiceType::class, options: array(
 			'label'=>'duel.form.context',
 			'required'=>false,
 			'choices'=>array(
-				'first blood' => 'duel.form.firstblood',
-				'wound' => 'duel.form.wound',
-				'surrender' => 'duel.form.surrender',
-				'death' => 'duel.form.death',
+				'duel.form.first blood' => 'first blood',
+				'duel.form.wound' => 'wound',
+				'duel.form.surrender' => 'surrender',
+				'duel.form.death' => 'death',
 			),
 			'placeholder'=> 'duel.form.choose'
 		));

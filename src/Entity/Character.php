@@ -3843,4 +3843,8 @@ class Character extends AbstractCharacter {
 		$this->returned_on = $returned_on;
 		return $this;
 	}
+
+	public function addAttack($ignored): void {
+		# Deliberately empty.
+	}
 }
