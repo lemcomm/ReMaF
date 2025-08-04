@@ -78,7 +78,7 @@ class ActivityManager {
 		return $valid;
 	}
 
-        public function create(ActivityType $type, ?ActivitySubType $subType, Character $char, ?Activity $mainAct = null): Activity|false {
+        public function create(ActivityType $type, ActivitySubType|string|null $subType, Character $char, ?Activity $mainAct = null): Activity|false {
 		if (!$type->getEnabled()) {
 			return False;
 		}
@@ -87,7 +87,12 @@ class ActivityManager {
 			$act = new Activity();
 			$this->em->persist($act);
 			$act->setType($type);
-			$act->setSubType($subType);
+			if (is_string($subType)) {
+				$subType = $this->em->getRepository(ActivitySubType::class)->findOneBy(['name'=>$subType]);
+			}
+			if ($subType) {
+				$act->setSubType($subType);
+			}
 			if ($place = $char->getInsidePlace()) {
 				$act->setLocation($char->getLocation());
 				$act->setPlace($place);
@@ -188,8 +193,7 @@ class ActivityManager {
 
 	public function createDuel(Character $me, Character $them, $name, $level, $same, EquipmentType $weapon, $weaponOnly, ?Style $meStyle = null, ?Style $themStyle = null): Activity|string {
 		$type = $this->em->getRepository('App\Entity\ActivityType')->findOneBy(['name'=>'duel']);
-		# TODO: Verify there isn't alreayd a duel between these individuals!
-		if ($act = $this->create($type, null, $me)) {
+		if ($act = $this->create($type, $level, $me)) {
 			if (!$name) {
 				$act->setName('Duel between '.$me->getName().' and '.$them->getName());
 			} else {
@@ -197,10 +201,9 @@ class ActivityManager {
 			}
 			$act->setSame($same);
 			$act->setWeaponOnly($weaponOnly);
-			$act->setSubType($this->em->getRepository('App\Entity\ActivitySubType')->findOneBy(['name'=>$level]));
 
 			$mePart = $this->createParticipant($act, $me, $meStyle, $weapon, $same, true);
-			$themPart = $this->createParticipant($act, $them, $themStyle, $same?$weapon:null, false);
+			$themPart = $this->createParticipant($act, $them, $themStyle, $same?$weapon:null);
 
 			$this->em->flush();
 			return $act;

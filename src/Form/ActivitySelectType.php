@@ -74,7 +74,7 @@ class ActivitySelectType extends AbstractType {
 		}]);
 		$builder->add('context', ChoiceType::class, options: array(
 			'label'=>'duel.form.context',
-			'required'=>false,
+			'required'=>true,
 			'choices'=>array(
 				'duel.form.first blood' => 'first blood',
 				'duel.form.wound' => 'wound',
