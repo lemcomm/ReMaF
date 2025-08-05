@@ -344,7 +344,7 @@ class CombatManager {
 	}
 
 	public function resolveHit(Character|Soldier $me, Character|Soldier $target, $hitloc, $dice) {
-		$aspects = ['cutting', 'bashing', 'piercing'];
+		$aspects = ['cutting', 'bashing', 'piercing', 'magefire'];
 		$best =  [["aspect" => "nothing", "damage" => -100, "table" => []], -100];
 		// A note on the value -100. Maximum possible damage without magic is less than 40. Any armor value over this practically guarantees immunity.
 		$expDiceResult = $dice * 3;

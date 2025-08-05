@@ -87,9 +87,22 @@ class ArmorCalculator {
 			'type' => 'flexible',
 			'weight' => 0.4
 		],
+		'magestone' => [
+			'protection' => [
+				'bashing' => 6,
+				'cutting' => 9,
+				'piercing' => 9,
+			],
+			'type' => 'plate',
+			'weight' => 8
+		]
 	];
 
 	const array forms = [
+		'golem' => [
+			'coverage' => ['upper arm', 'shoulder', 'torso', 'abdomen', 'hip', 'groin', 'thigh', 'calf', 'foot', 'skull'],
+			'type' => 'plate'
+		],
 		'tunic' => [
 			'coverage' => ['upper arm', 'shoulder', 'torso', 'abdomen', 'hip', 'groin'],
 			'type' => 'flexible'

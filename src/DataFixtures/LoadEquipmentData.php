@@ -42,6 +42,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 55, 'resupply' =>90,
 			'provider' => 'Bladesmith', 'trainer' => 'Barracks',
 			'icon' => 'items/schwert2.png', 'skill'=> 'short sword',
+			'restricted' => false,
 
 			# Mastery fields
 			'reach' => 'melee',
@@ -50,7 +51,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'weight' => 3,
 			'quality' => 12,
 			'class' => [15, 10],
-			'aspect' => ["bashing" => 3, "cutting" => 5, "piercing" => 3],
+			'aspect' => ["bashing" => 3, "cutting" => 5, "piercing" => 3, 'magefire' => 0],
 			'mastery' => 3,
 
 			# Legacy fields
@@ -62,6 +63,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 40, 'resupply' =>50,
 			'provider' => 'Bladesmith', 'trainer' => 'Barracks',
 			'icon' => 'items/kurzschwert2.png', 'skill'=> 'short sword',
+			'restricted' => false,
 
 			# Mastery fields
 			'reach' => 'melee',
@@ -70,7 +72,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'weight' => 1,
 			'quality' => 10,
 			'class' => [15, 10],
-			'aspect' => ["bashing" => 0, "cutting" => 3, "piercing" => 3],
+			'aspect' => ["bashing" => 0, "cutting" => 3, "piercing" => 3, 'magefire' => 0],
 			'mastery' => 3,
 
 			# Legacy fields
@@ -82,11 +84,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 55, 'resupply' =>90,
 			'provider' => 'Bladesmith', 'trainer' => 'Barracks',
 			'icon' => null, 'skill'=> 'falchion',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'medium infantry', 'mode' => 'mainhand',
 			'weight' => 4, 'quality' => 10,
 			'class' => [15, 5],
-			'aspect' => ["bashing" => 4, "cutting" => 6, "piercing" => 1],
+			'aspect' => ["bashing" => 4, "cutting" => 6, "piercing" => 1, 'magefire' => 0],
 			'mastery' => 3,
 
 			# Legacy fields
@@ -97,11 +100,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 75, 'resupply' =>120,
 			'provider' => 'Bladesmith', 'trainer' => 'Garrison',
 			'icon' => 'items/claymore2.png', 'skill'=> 'long sword',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'heavy chivalric', 'mode' => 'twohanded',
 			'weight' => 8, 'quality' => 13,
 			'class' => [25, 10],
-			'aspect' => ["bashing" => 5, "cutting" => 8, "piercing" => 4],
+			'aspect' => ["bashing" => 5, "cutting" => 8, "piercing" => 4, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'weapon',
@@ -111,11 +115,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 60, 'resupply' =>100,
 			'provider' => 'Weaponsmith',  'trainer' => 'Barracks',
 			'icon' => null,	'skill'=> 'mace',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'medium chivalric', 'mode' => 'mainhand',
 			'weight' => 4, 'quality' => 11,
 			'class' => [15, 5],
-			'aspect' => ["bashing" => 6, "cutting" => 0, "piercing" => 0],
+			'aspect' => ["bashing" => 6, "cutting" => 0, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 4,
 
 			'type' => 'weapon',
@@ -126,11 +131,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 60, 'resupply' =>100,
 			'provider' => 'Weaponsmith',  'trainer' => 'Barracks',
 			'icon' => null, 'skill'=> 'morning star',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'medium infantry', 'mode' => 'twohanded',
 			'weight' => 5, 'quality' => 11,
 			'class' => [15, 5],
-			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 5],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 5, 'magefire' => 0],
 			'mastery' => 4,
 
 			'type' => 'weapon',
@@ -140,11 +146,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 70, 'resupply' =>80,
 			'provider' => 'Weaponsmith',  'trainer' => 'Garrison',
 			'icon' => null, 'skill' => 'war hammer',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'heavy chivalric', 'mode' => 'twohanded',
 			'weight' => 5, 'quality' => 11,
 			'class' => [15, 5],
-			'aspect' => ["bashing" => 6, "cutting" => 0, "piercing" => 5],
+			'aspect' => ["bashing" => 6, "cutting" => 0, "piercing" => 5, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'weapon',
@@ -154,11 +161,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 90, 'resupply' =>110,
 			'provider' => 'Weaponsmith',  'trainer' => 'Barracks',
 			'icon' => null, 'skill' => 'chain mace',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'heavy chivalric', 'mode' => 'mainhand',
 			'weight' => 4, 'quality' => 12,
 			'class' => [20, 10],
-			'aspect' => ["bashing" => 8, "cutting" => 0, "piercing" => 6],
+			'aspect' => ["bashing" => 8, "cutting" => 0, "piercing" => 6, 'magefire' => 0],
 			'mastery' => 1,
 
 			'type' => 'weapon',
@@ -168,11 +176,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 90, 'resupply' =>110,
 			'provider' => 'Weaponsmith',  'trainer' => 'Garrison',
 			'icon' => null, 'skill'=> 'flail',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'heavy infantry', 'mode' => 'twohanded',
 			'weight' => 5, 'quality' => 11,
 			'class' => [25, 10],
-			'aspect' => ["bashing" => 9, "cutting" => 0, "piercing" => 6],
+			'aspect' => ["bashing" => 9, "cutting" => 0, "piercing" => 6, 'magefire' => 0],
 			'mastery' => 1,
 
 			'type' => 'weapon',
@@ -183,11 +192,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 20, 'resupply' => 15,
 			'provider' => 'Carpenter', 'trainer' => 'Training Ground',
 			'icon'=> null, 'skill' => 'spear',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'light infantry', 'mode' => 'twohanded',
 			'weight' => 5, 'quality' => 11,
 			'class' => [20, 10],
-			'aspect' => ["bashing" => 4, "cutting" => 0, "piercing" => 7],
+			'aspect' => ["bashing" => 4, "cutting" => 0, "piercing" => 7, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'weapon',
@@ -196,11 +206,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 50, 'resupply' => 60,
 			'provider' => 'Weaponsmith',  'trainer' => 'Guardhouse',
 			'icon' => 'items/hellebarde2.png', 'skill'=> 'pike',
+			'restricted' => false,
 
 			'reach' => 'long', 'category' => 'heavy infantry', 'mode' => 'twohanded',
 			'weight' => 12, 'quality' => 12,
 			'class' => [25, 5],
-			'aspect' => ["bashing" => 4, "cutting" => 0, "piercing" => 8],
+			'aspect' => ["bashing" => 4, "cutting" => 0, "piercing" => 8, 'magefire' => 0],
 			'mastery' => 2,
 
 			'type' => 'weapon',
@@ -211,11 +222,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 30, 'resupply' => 35,
 			'provider' => 'Weaponsmith',  'trainer' => 'Guardhouse',
 			'icon' => null, 'skill'=> 'glaive',
+			'restricted' => false,
 
 			'reach' => 'long', 'category' => 'heavy infantry', 'mode' => 'twohanded',
 			'weight' => 8, 'quality' => 11,
 			'class' => [25, 10],
-			'aspect' => ["bashing" => 6, "cutting" => 7, "piercing" => 6],
+			'aspect' => ["bashing" => 6, "cutting" => 7, "piercing" => 6, 'magefire' => 0],
 			'mastery' => 2,
 
 			'type' => 'weapon',
@@ -225,11 +237,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 40, 'resupply' => 50,
 			'provider' => 'Bladesmith',  'trainer' => 'Garrison',
 			'icon' => 'items/spear2.png', 'skill'=> 'halberd',
+			'restricted' => false,
 
 			'reach' => 'long', 'category' => 'heavy infantry', 'mode' => 'twohanded',
 			'weight' => 8, 'quality' => 11,
 			'class' => [25, 5],
-			'aspect' => ["bashing" => 6, "cutting" => 9, "piercing" => 5],
+			'aspect' => ["bashing" => 6, "cutting" => 9, "piercing" => 5, 'magefire' => 0],
 			'mastery' => 2,
 
 			'type' => 'weapon',
@@ -238,11 +251,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 20, 'resupply' => 30,
 			'provider' => 'Blacksmith',  'trainer' => 'Training Ground',
 			'icon' => 'items/streitaxt2.png', 'skill'=> 'battle axe',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'light infantry', 'mode' => 'mainhand',
 			'weight' => 3, 'quality' => 11,
 			'class' => [10, 5],
-			'aspect' => ["bashing" => 4, "cutting" => 6, "piercing" => 0],
+			'aspect' => ["bashing" => 4, "cutting" => 6, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'weapon',
@@ -252,11 +266,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 75, 'resupply' =>120,
 			'provider' => 'Bladesmith', 'trainer' => 'Garrison',
 			'icon'=> null, 'skill'=> 'great axe',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'heavy infantry', 'mode' => 'twohanded',
 			'weight' => 6, 'quality' => 12,
 			'class' => [20, 10],
-			'aspect' => ["bashing" => 6, "cutting" => 9, "piercing" => 0],
+			'aspect' => ["bashing" => 6, "cutting" => 9, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'weapon',
@@ -268,11 +283,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 50, 'resupply' => 50,
 			'provider' => 'Bowyer', 'trainer' => 'Archery Range',
 			'icon' => 'items/shortbow2.png', 'skill'=> 'shortbow',
+			'restricted' => false,
 
 			'reach' => 'ranged', 'category' => 'light archer', 'mode' => 'twohanded',
 			'weight' => 2, 'quality' => 10,
 			'class' => [5, 5],
-			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 6],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 6, 'magefire' => 0],
 			'mastery' => 5,
 
 			'type' => 'weapon',
@@ -281,11 +297,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' =>100, 'resupply' => 80,
 			'provider' => 'Bowyer', 'trainer' => 'Archery School',
 			'icon' => 'items/longbow2.png', 'skill'=> 'longbow',
+			'restricted' => false,
 
 			'reach' => 'ranged', 'category' => 'medium archer', 'mode' => 'twohanded',
 			'weight' => 4, 'quality' => 11,
 			'class' => [5, 5],
-			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 7],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 7, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'weapon',
@@ -294,11 +311,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 60, 'resupply' => 75,
 			'provider' => 'Bowyer', 'trainer' => 'Archery Range',
 			'icon' => 'items/armbrust2.png', 'skill'=> 'crossbow',
+			'restricted' => false,
 
 			'reach' => 'ranged', 'category' => 'medium chivalric', 'mode' => 'twohanded',
 			'weight' => 5, 'quality' => 10,
 			'class' => [15, 5],
-			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 7],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 7, 'magefire' => 0],
 			'mastery' => 2,
 
 			'type' => 'weapon',
@@ -307,11 +325,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 40, 'resupply' => 35,
 			'provider' => 'Weaponsmith', 'trainer' => 'Guardhouse',
 			'icon' => 'items/javelin2.png', 'skill'=> 'javelin',
+			'restricted' => false,
 
 			'reach' => 'ranged', 'category' => 'medium infantry', 'mode' => 'twohanded',
 			'weight' => 4, 'quality' => 10,
 			'class' => [10, 5],
-			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 6],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 6, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'equipment',
@@ -324,11 +343,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 40, 'resupply' => 40,
 			'provider' => 'Carpenter', 'trainer' => 'Training Ground',
 			'icon' => null, 'skill' => 'shield',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'medium infantry', 'mode' => 'offhand',
 			'weight' => 6, 'quality' => 13,
 			'class' => [5, 20],
-			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 0],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'equipment',
@@ -338,11 +358,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 40, 'resupply' => 40,
 			'provider' => 'Blacksmith', 'trainer' => 'Guardhouse',
 			'icon' => null, 'skill' => 'shield',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'heavy chivalric', 'mode' => 'offhand',
 			'weight' => 7, 'quality' => 15,
 			'class' => [5, 25],
-			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 0],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'equipment',
@@ -352,11 +373,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 40, 'resupply' => 40,
 			'provider' => 'Carpenter', 'trainer' => 'Stables',
 			'icon' => 'items/shield2.png', 'skill' => 'shield',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'medium chivalric', 'mode' => 'offhand',
 			'weight' => 5, 'quality' => 14,
 			'class' => [5, 20],
-			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 0],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'equipment',
@@ -367,11 +389,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 10, 'resupply' => 5,
 			'provider' => 'Carpenter', 'trainer' => 'Training Ground',
 			'icon'=> null, 'skill' => 'club',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'light infantry', 'mode' => 'mainhand',
 			'weight' => 1, 'quality' => 6,
 			'class' => [20, 0],
-			'aspect' => ["bashing" => 2, "cutting" => 0, "piercing" => 0],
+			'aspect' => ["bashing" => 2, "cutting" => 0, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 2,
 
 			'type' => 'weapon',
@@ -381,11 +404,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 15, 'resupply' => 10,
 			'provider' => 'Carpenter', 'trainer' => 'Training Ground',
 			'icon'=> null, 'skill' => 'staff',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'light infantry', 'mode' => 'mainhand',
 			'weight' => 2, 'quality' => 8,
 			'class' => [20, 10],
-			'aspect' => ["bashing" => 3, "cutting" => 0, "piercing" => 0],
+			'aspect' => ["bashing" => 3, "cutting" => 0, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 2,
 
 			'type' => 'weapon',
@@ -396,11 +420,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 20, 'resupply' => 30,
 			'provider' => 'Blacksmith',  'trainer' => 'Training Ground',
 			'icon'=> null, 'skill'=> 'machete',
+			'restricted' => false,
 
 			'reach' => 'melee', 'category' => 'medium infantry', 'mode' => 'mainhand',
 			'weight' => 2, 'quality' => 10,
 			'class' => [15, 5],
-			'aspect' => ["bashing" => 3, "cutting" => 5, "piercing" => 0],
+			'aspect' => ["bashing" => 3, "cutting" => 5, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'weapon',
@@ -411,11 +436,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 20, 'resupply' => 5,
 			'provider' => 'Bowyer', 'trainer' => 'Training Ground',
 			'icon'=> null, 'skill'=> 'sling',
+			'restricted' => false,
 
 			'reach' => 'ranged', 'category' => 'light archer', 'mode' => 'twohanded',
 			'weight' => 1, 'quality' => 10,
 			'class' => [5, 5],
-			'aspect' => ["bashing" => 6, "cutting" => 0, "piercing" => 0],
+			'aspect' => ["bashing" => 6, "cutting" => 0, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 4,
 
 			'type' => 'weapon',
@@ -425,11 +451,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 60, 'resupply' => 75,
 			'provider' => 'Bowyer', 'trainer' => 'Training Ground',
 			'icon'=> null, 'skill'=> 'staff sling',
+			'restricted' => false,
 
 			'reach' => 'ranged', 'category' => 'medium archer', 'mode' => 'twohanded',
 			'weight' => 3, 'quality' => 11,
 			'class' => [5, 5],
-			'aspect' => ["bashing" => 7, "cutting" => 0, "piercing" => 0],
+			'aspect' => ["bashing" => 7, "cutting" => 0, "piercing" => 0, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'weapon',
@@ -439,11 +466,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 150, 'resupply' => 150,
 			'provider' => 'Bowyer', 'trainer' => 'Archery Range',
 			'icon' => null, 'skill'=> 'recurve',
+			'restricted' => false,
 
 			'reach' => 'ranged', 'category' => 'medium archer', 'mode' => 'twohanded',
 			'weight' => 4, 'quality' => 11,
 			'class' => [5, 5],
-			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 7],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 7, 'magefire' => 0],
 			'mastery' => 4,
 
 			'type' => 'weapon',
@@ -456,6 +484,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'type' => 'armour', 'train' => 10, 'resupply' => 30,
 			'provider' => 'Tailor', 'trainer' => 'Training Ground',
 			'icon' => 'items/clotharmour2.png',
+			'restricted' => false,
 
 			'armor' => [
 				['form' => 'tunic', 'layer' => 'cloth'],
@@ -469,6 +498,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'type' => 'armour', 'train' => 15, 'resupply' => 40,
 			'provider' => 'Tailor', 'trainer' => 'Training Ground',
 			'icon' => null,
+			'restricted' => false,
 
 			'armor' => [
 				['form' => 'gambeson', 'layer' => 'quilt'],
@@ -482,6 +512,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'type' => 'armour', 'train' => 25, 'resupply' => 50,
 			'provider' => 'Leather Tanner', 'trainer' => 'Guardhouse',
 			'icon' => 'items/leatherarmour2.png',
+			'restricted' => false,
 
 			'armor' => [
 				['form' => 'cap', 'layer' => 'leather'],
@@ -496,6 +527,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'type' => 'armour', 'train' => 30, 'resupply' =>170,
 			'provider' => 'Armourer', 'trainer' => 'Barracks',
 			'icon' => null,
+			'restricted' => false,
 
 			'armor' => [
 				['form' => 'helm', 'layer' => 'hard leather'],
@@ -512,6 +544,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'type' => 'armour', 'train' => 35, 'resupply' => 200,
 			'provider' => 'Armourer', 'trainer' => 'Barracks',
 			'icon' => null,
+			'restricted' => false,
 
 			'armor' => [
 				['form' => 'cap', 'layer' => 'plate'],
@@ -527,6 +560,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'type' => 'armour', 'train' => 50, 'resupply' =>300,
 			'provider' => 'Heavy Armourer', 'trainer' => 'Garrison',
 			'icon' => 'items/kettenpanzer2.png',
+			'restricted' => false,
 
 			'armor' => [
 				['form' => 'cowl', 'layer' => 'mail'],
@@ -541,6 +575,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'type' => 'armour', 'train' => 60,'resupply' =>100,
 			'provider' => 'Armourer', 'trainer' => 'Barracks',
 			'icon' => 'items/schuppenpanzer2.png',
+			'restricted' => false,
 
 			'armor' => [
 				['form' => 'helm', 'layer' => 'plate'],
@@ -555,6 +590,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'type' => 'armour', 'train' => 80, 'resupply'=>500,
 			'provider' => 'Heavy Armourer',	'trainer' => 'Wood Castle',
 			'icon' => 'items/plattenpanzer2.png',
+			'restricted' => false,
 
 			'armor' => [
 				['form' => 'helm', 'layer' => 'plate'],
@@ -575,11 +611,12 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'train' => 50, 'resupply' => 50,
 			'provider' => 'Weaponsmith', 'trainer' => 'List Field',
 			'icon' => null, 'skill'=> 'lance',
+			'restricted' => false,
 
 			'reach' => 'long', 'category' => 'heavy chivalric', 'mode' => 'mainhand',
 			'weight' => 12, 'quality' => 12,
 			'class' => [25, 5],
-			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 10],
+			'aspect' => ["bashing" => 0, "cutting" => 0, "piercing" => 10, 'magefire' => 0],
 			'mastery' => 3,
 
 			'type' => 'equipment',
@@ -587,9 +624,47 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 		],
 
 		# The below only have universal and legacy values. Mastery handles them separately.
-		'pavise' => ['type' => 'equipment', 'ranged' =>  0, 'melee' =>   0, 'defense' =>  75, 'train' => 40, 'resupply' => 60,	'provider' => 'Carpenter', 'trainer' => 'Archery Range', 		'icon' => null],
-		'horse' => ['type' => 'mount', 'ranged' =>  0, 'melee' =>  5, 'defense' =>  10, 'train' => 60, 'resupply' =>300,	'provider' => 'Stables', 'trainer' => 'Barracks',		'icon' => 'items/packpferd2.png'],
-		'war horse' => ['type' => 'mount', 'ranged' =>  0, 'melee' =>  10, 'defense' =>  20, 'train' =>100, 'resupply' =>800,	'provider' => 'Royal Mews', 'trainer' => 'Wood Castle',		'icon' => 'items/warhorse2.png'],
+		'pavise' => ['type' => 'equipment', 'ranged' =>  0, 'melee' =>   0, 'defense' =>  75, 'train' => 40, 'resupply' => 60,	'provider' => 'Carpenter', 'trainer' => 'Archery Range', 	'icon' => null, 'restricted'=>false],
+		'horse' => ['type' => 'mount', 'ranged' =>  0, 'melee' =>  5, 'defense' =>  10, 'train' => 60, 'resupply' =>300,	'provider' => 'Stables', 'trainer' => 'Barracks',		'icon' => 'items/packpferd2.png', 'restricted'=>false],
+		'war horse' => ['type' => 'mount', 'ranged' =>  0, 'melee' =>  10, 'defense' =>  20, 'train' =>100, 'resupply' =>800,	'provider' => 'Royal Mews', 'trainer' => 'Wood Castle',		'icon' => 'items/warhorse2.png', 'restricted'=>false],
+
+		# Race specific special NPC stuffs.
+		# Ancient Golems
+		'golem gauntlets' => [
+			'train' => 0, 'resupply' => 0,
+			'provider' => null, 'trainer' => null,
+			'icon' => null, 'skill' => null,
+			'restricted' => true,
+			'reach' => 'melee', 'category' => 'heavy magitek', 'mode' => 'twohanded',
+			'weight' => 16, 'quality' => 14,
+			'class' => [30, 20],
+			'aspect' => ['bashing' => 9, 'cutting' => 0, 'piercing' => 0, 'magefire' => 1],
+			'mastery' => 1,
+			'type' => 'weapon',
+			'ranged' => 0, 'melee' => 100, 'defense' => 10,
+		],
+		'golemn cannons' => [
+			'train' => 0, 'resupply' => 0,
+			'provider' => null, 'trainer' => null,
+			'icon' => null, 'skill' => null,
+			'restricted' => true,
+			'reach' => 'ranged', 'category' => 'heavy magitek', 'mode' => 'twohanded',
+			'weight' => 16, 'quality' => 14,
+			'class' => [30, 20],
+			'aspect' => ['bashing' => 2, 'cutting' => 0, 'piercing' => 0, 'magefire' => 9],
+		],
+		'golem body' => [
+			'type' => 'armour', 'train' => 0, 'resupply' => 0,
+			'provider' => null, 'trainer' => null,
+			'icon' => null,
+			'restricted' => true,
+
+			'armor' => [
+				'form' => 'golem', 'layer' => 'magestone'
+			],
+
+			'ranged' => 0, 'melee' => 0, 'defense' => 100,
+		],
 	);
 
 	public function getDependencies(): array {
@@ -608,6 +683,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			}
 			/** @var EquipmentType $type */
 			$type->setName($name);
+			$type->setRestricted($data['restricted']);
 
 			# Universal Fields
 			$type->setType($data['type']);

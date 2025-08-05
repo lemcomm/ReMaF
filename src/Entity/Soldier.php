@@ -190,6 +190,12 @@ class Soldier extends NPC {
 
 	public function getType(): string {
 		if ($this->isNoble) return 'noble';
+		if ($this->race->getName() === 'magitek') {
+			if ($this->weapon && $this->weapon->getRanged() > 0) {
+				return 'watcher';
+			}
+			return 'mauler';
+		}
 		if (!$this->weapon && !$this->armour) return 'rabble';
 
 		$def = 0;
@@ -464,6 +470,7 @@ class Soldier extends NPC {
 	public function getVisualSize(): int {
 		switch ($this->getType()) {
 			case 'noble':
+			case 'magitek':
 				return 5;
 			case 'cavalry':
 			case 'heavy cavalry':
