@@ -216,13 +216,13 @@ class AssociationController extends AbstractController {
 			foreach ($deity->getAssociations() as $bassoc) {
 				if ($bassoc !== $assoc) {
 					$hist->logEvent(
-						$bassoc,
+						$bassoc->getAssociation(),
 						'event.assoc.deity.changeother',
 						array('%link-deity%'=>$deity->getId(), '%link-assoc%'=>$assoc->getId())
 					);
 				} else {
 					$hist->logEvent(
-						$bassoc,
+						$bassoc->getAssociation(),
 						'event.assoc.deity.changeself',
 						array('%link-deity%'=>$deity->getId())
 					);

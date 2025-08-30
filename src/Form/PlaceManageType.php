@@ -161,6 +161,10 @@ class PlaceManageType extends AbstractType {
 					'label'=>'realm.label',
 					'data'=>$me->getRealm()
 				]);
+			} else {
+				$builder->add('realm', HiddenType::class, [
+					'data'=>$me->getRealm(),
+				]);
 			}
 			$builder->add('hosting_realm', HiddenType::class, [
 				'data'=>$me->getHostingRealm()
