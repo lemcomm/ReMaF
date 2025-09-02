@@ -21,6 +21,7 @@
 		<field name="mode" type="string" nullable="true"/>
 		<field name="quality" type="smallint" nullable="true"/>
 		<field name="weight" type="float" nullable="true"/>
+		<field name="restricted" type="boolean" nullable="true"/>
 
 		<many-to-one field="provider" target-entity="BuildingType" inversed-by="provides_equipment" />
 		<many-to-one field="trainer" target-entity="BuildingType" inversed-by="provides_training" />

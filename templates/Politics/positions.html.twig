@@ -1,0 +1,37 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+
+<h2>{{ 'positions.name'|trans({"%name%":realm.name},"politics")|title }}</h2>
+{% if positions is empty %}
+	{{ 'positions.empty'|trans({},"politics") }}
+{% else %}
+	{{ 'positions.description'|trans({},"politics") }}<br />
+	<a href="{{ path('maf_realm_position', {'realm':realm.id, 'position':0}) }}">{{ 'realm.positions.new'|trans({},"politics") }}</a>
+	<dl class="long">
+		{% for rank in realm.positionRanks %}
+			{% for position in positions %}
+				{% if position.rank is same as(rank) %}
+					<dt>
+						{% if position.ruler and position.name == 'ruler' %}
+							{{ ('realm.title.male.'~realm.type)|trans({},"politics")|title }} / {{ ('realm.title.female.'~realm.type)|trans({},"politics")|title }}
+						{% else %}
+							{{ position.name }} {% if position.fName %}/ {{ position.fName }}{% endif %}
+						{% endif %} ({{ position.realm.name }})
+					</dt>
+					<dd>
+						{{ position.description|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
+						<hr />
+						{% if position.ruler %}<i>{{ 'realm.positions.ruler'|trans({}, "politics") }}</i><br>{% endif %}
+						<a href="{{ path('maf_politics_abdicate', {'position':position.id}) }}">{{ 'positions.abdicate'|trans({},"politics") }}</a>
+					</dd>
+				{% endif %}
+			{% endfor %}
+		{% endfor %}
+	</dl>
+{% endif %}
+
+<br />
+
+
+{% endblock %}

@@ -63,6 +63,13 @@ politics:
  intro: >
    Manage your realm(s) and political relations here.
 
+positions:
+ name:        Your Held Positions
+ description: This list includes positions you hold across all realms you are a member of, allowing you to view them and, if you so choose, abdicate them.
+ abdicate:    Abdicate Position
+ abdicated:    "You've successfully given up the position of {position}."
+ abdicateDesc: If you've decided that holding the title of {position} is no longer to your liking, you can confirm your abdication by checking the box and clicking the button below.
+
 inheritance:  Inheritance
 
 elections:

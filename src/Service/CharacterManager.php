@@ -1391,6 +1391,28 @@ class CharacterManager {
 		}
 	}
 
+	public function abdicatePosition(Character $char, RealmPosition $pos, ?string $why = null) {
+		$char->removePosition($pos);
+		$pos->removeHolder($char);
+		if ($pos->getRuler()) {
+			$importance = History::HIGH;
+		} else {
+			$importance = History::MEDIUM;
+		}
+		$this->history->logEvent(
+			$pos->getRealm(),
+			'event.position.abdicate',
+			['%link-character%'=>$char->getId(), '%link-realmposition%'=>$pos->getId()],
+			$importance, true
+		);
+		$this->history->logEvent(
+			$char,
+			'event.character.abdicate.position',
+			array('%link-realm%'=>$pos->getRealm()->getId(), '%link-realmposition%'=>$pos->getId()),
+			$importance, true
+		);
+	}
+
 	public function findEvents(Character $character) {
 		$query = $this->em->createQuery('SELECT e, l, m FROM App\Entity\Event e JOIN e.log l JOIN l.metadatas m WHERE m.reader = :me AND e.ts > m.last_access AND (m.access_until IS NULL OR e.cycle <= m.access_until) AND (m.access_from IS NULL OR e.cycle >= m.access_from) ORDER BY e.ts DESC');
 		$query->setParameter('me', $character);

@@ -21,6 +21,7 @@ class EquipmentType {
 	private ?float $weight = null;
 	private int $training_required;
 	private int $resupply_cost;
+	private ?bool $restricted = null;
 	private ?BuildingType $provider = null;
 	private ?BuildingType $trainer = null;
 	private ?SkillType $skill = null;
@@ -370,5 +371,14 @@ class EquipmentType {
 	public function getDefenseClass(): int {
 		if ($this->getClass()) return $this->getClass()[1];
 		return 0;
+	}
+
+	public function getRestricted(): ?bool {
+		return $this->restricted;
+	}
+
+	public function setRestricted(?bool $restricted): static {
+		$this->restricted = $restricted;
+		return $this;
 	}
 }

@@ -1,0 +1,10 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+	<h2>{{ "positions.abdicate"|trans({},"politics")|title }}</h2>
+
+	<p>{{ "positions.abdicateDesc"|trans({"%position%":link(position)},"politics")|raw}}</p>
+
+	{{ form(form) }}
+
+{% endblock %}
