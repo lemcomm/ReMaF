@@ -257,9 +257,12 @@ class MilitaryManager {
 
 	public function resupply(Soldier $soldier, ?Settlement $settlement=null): bool {
 		if ($settlement==null) {
-			$equipment_followers = $soldier->getCharacter()->getEntourage()->filter(function($entry) {
-				return ($entry->getType()->getName()=='follower' && $entry->isAlive() && $entry->getEquipment() && $entry->getSupply()>0);
-			})->toArray();
+			$char = $soldier?->getUnit()?->getCharacter();
+			if ($char) {
+				$equipment_followers = $char->getEntourage()->filter(function ($entry) {
+					return ($entry->getType()->getName() == 'follower' && $entry->isAlive() && $entry->getEquipment() && $entry->getSupply() > 0);
+				})->toArray();
+			}
 		}
 		$success = true;
 
