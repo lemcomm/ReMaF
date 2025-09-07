@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Character;
 use App\Entity\Code;
+use App\Entity\EventMetadata;
 use App\Entity\Race;
 use App\Entity\User;
 
@@ -584,7 +585,7 @@ class AccountController extends AbstractController {
 
 
 	#[Route ('/account/play/{id}', name:'maf_play', requirements: ['id'=>'\d+'])]
-	public function playAction(Character $id, Request $request, AppState $app, CharacterManager $charMan, ActionResolution $ar, EntityManagerInterface $em, PaymentManager $pay, UserManager $userMan): RedirectResponse {
+	public function playAction(Character $id, Request $request, AppState $app, EntityManagerInterface $em, PaymentManager $pay, UserManager $userMan): RedirectResponse {
 		$user = $this->getUser();
 		$character = $id;
 		if ($user->isBanned()) {
@@ -629,6 +630,31 @@ class AccountController extends AbstractController {
 					// special menu active - check for reasons
 					if ($character->getDungeoneer() && $character->getDungeoneer()->isInDungeon()) {
 						return $this->redirectToRoute('maf_dungeon');
+					}
+				}
+				$metas = new ArrayCollection($em->getRepository(EventMetadata::class)->findBy(['log'=>$character->getLog(), 'reader'=>$character], ['id' => 'ASC']));
+				# This should always have a result. If it doesn't something is very broke.
+				$last = $metas->last();
+				if ($last->getAccessUntil() !== null) {
+					$last->setAccessUntil(null);
+					$em->flush();
+				}
+				if ($metas->count() > 1) {
+					# There should only ever be 1 log for a character about themself.
+					$oldest = null;
+					foreach ($metas as $meta) {
+						if (!$oldest || $oldest->getAccessFrom() < $meta->getAccessFrom()) {
+							$oldest = $meta;
+						}
+					}
+					if ($oldest) {
+						$oldest->setAccessUntil(null);
+						foreach ($metas as $meta) {
+							if ($meta !== $oldest) {
+								$em->remove($meta);
+							}
+						}
+						$em->flush();
 					}
 				}
 				return $this->redirectToRoute('maf_char_recent');
