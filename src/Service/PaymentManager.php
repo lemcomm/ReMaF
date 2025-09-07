@@ -9,12 +9,12 @@ use App\Entity\UserLimits;
 use App\Entity\UserPayment;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Patreon\API as PAPI;
 use Patreon\OAuth as POA;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Stripe;
 use Stripe\StripeClient;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 
@@ -27,12 +27,11 @@ class PaymentManager {
 
 	public function __construct(
 		private EntityManagerInterface $em,
-		private TranslatorInterface $translator,
-		private LoggerInterface $logger,
-		private MailManager $mailer,
-		private UserManager $usermanager,
-		private AppState $app
-	) {
+		private TranslatorInterface    $translator,
+		private MailManager            $mailer,
+		private UserManager            $usermanager,
+		private AppState               $app,
+		private NotificationManager    $noteman) {
 		$this->ruleset = $_ENV['RULESET'];
 		$this->stripeSecret = $_ENV['STRIPE_SECRET'];
 		$this->stripeVersion = $_ENV['STRIPE_VERSION'];
@@ -124,8 +123,8 @@ class PaymentManager {
 		return $fees[$user->getAccountLevel()]['characters'];
 	}
 
-	public function paymentCycle($patronsOnly = false): array {
-		$this->logger->info("Payment Cycle...");
+	public function paymentCycle(OutputInterface $output): array {
+		$output->writeln("Payment Cycle...");
 		$free = 0;
 		$patronCount = 0;
 		$active = 0;
@@ -140,10 +139,10 @@ class PaymentManager {
 			$banned->setNotifications(FALSE);
 			$banned->setNewsletter(FALSE);
 			$bannedusername = $banned->getUsername();
-			$this->logger->info("$bannedusername has been banned, and email notifications have been disabled.");
+			$output->writeln("$bannedusername has been banned, and email notifications have been disabled.");
 			$this->em->flush();
 		}
-		$this->logger->info("Refreshing patreon pledges for users with connected accounts.");
+		$output->writeln("Refreshing patreon pledges for users with connected accounts.");
 		$uCount = 0;
 		$pledges = 0;
 		$skip = false;
@@ -165,18 +164,17 @@ class PaymentManager {
 						$expires = $patron->getExpires();
 						if ($expires > $old) {
 							if ($expires < $now) {
-								$this->logger->info($patron->getId());
 								$updated = $this->refreshPatreonTokens($patron);
 							}
 							if ($updated) {
 								[$status, $entitlement] = $this->refreshPatreonPledge($patron);
 								if ($status === false) {
 									# API failure. Only wayt staus would be false.
-									$this->logger->info("Patreon API failed to return expected format. Expected JSON, got: ".$entitlement);
+									$output->writeln("Patreon API failed to return expected format. Expected JSON, got: ".$entitlement);
 									if (is_array($entitlement)) {
-										$this->logger->info("Array detected: ".implode(" || ", $entitlement));
+										$this->noteman->spoolError("Patreon API -- Array detected: ".implode(" || ", $entitlement));
 									}
-									$this->logger->info("Errored on User ".$user->getUsername()." (".$user->getId().")");
+									$output->writeln("Errored on User ".$user->getUsername()." (".$user->getId().")");
 									$patron->setUpdateNeeded(true);
 
 									$skip = true;
@@ -199,25 +197,27 @@ class PaymentManager {
 			}
 		}
 		$this->em->flush();
-		$this->logger->info("Refreshed ".$pledges." pledges for ".$uCount." users.");
+		$output->writeln("Refreshed ".$pledges." pledges for ".$uCount." users.");
 
 		$now = new \DateTime("now");
 		$query = $this->em->createQuery('SELECT u FROM App\Entity\User u WHERE u.account_level > 0 AND u.paid_until < :now');
 		$query->setParameters(array('now'=>$now));
 
-		$this->logger->info("  User Subscription Processing...");
+		$output->writeln("  User Subscription Processing...");
+		# Note: If the game explodes, we may need to make this iterative.
+		/** @var User $user */
 		foreach ($query->getResult() as $user) {
-			#$this->logger->info("  --Calculating ".$user->getUsername()." (".$user->getId().")...");
+			#$output->writeln("  --Calculating ".$user->getUsername()." (".$user->getId().")...");
 			$myfee = $this->calculateUserFee($user);
 			$levels = $this->getPaymentLevels();
 			if ($myfee > 0) {
-				$this->logger->info("  --Calculating fee for ".$user->getUsername()." (".$user->getId().")...");
+				$output->writeln("  --Calculating fee for ".$user->getUsername()." (".$user->getId().")...");
 				if ($this->spend($user, 'subscription', $myfee, true)) {
-					$this->logger->info("    --Credit spend successful...");
+					$output->writeln("    --Credit spend successful...");
 					$active++;
 					$credits += $myfee;
 				} else {
-					$this->logger->info("    --Credit spend failed. Reducing account...");
+					$output->writeln("    --Credit spend failed. Reducing account...");
 					// not enough credits left! - change to trial
 					$user->setAccountLevel(10);
 					$this->ChangeNotification($user, 'expired', 'expired2');
@@ -225,25 +225,24 @@ class PaymentManager {
 					$expired++;
 				}
 			} elseif ($levels[$user->getAccountLevel()]['patreon'] != false) {
-				$this->logger->info("  --Patron ".$user->getUsername()." (".$user->getId().")...");
+				$output->writeln("  --Patron ".$user->getUsername()." (".$user->getId().")...");
 				$patreonLevel = $levels[$user->getAccountLevel()]['patreon'];
 				$sufficient = false;
 				#TODO: We'll need to expand this to support other creators, if we add any.
 				foreach ($user->getPatronizing() as $patron) {
-					$this->logger->info("    --Supporter of creator ".$patron->getCreator()->getCreator()."...");
+					$output->writeln("    --Supporter of creator ".$patron->getCreator()->getCreator()."...");
 					$status = $patron->getStatus();
 					$entitlement = $patron->getCurrentAmount();
 
-					$this->logger->info("    --Status of '".$status."'; entitlement of ".$entitlement."; versus need of ".$patreonLevel." for sub level ...");
+					$output->writeln("    --Status of '".$status."'; entitlement of ".$entitlement."; versus need of ".$patreonLevel." for sub level ...");
 
 					if ($patreonLevel <= $entitlement) {
-						#$this->logger->info("    --Pledge is sufficient...");
+						#$output->writeln("    --Pledge is sufficient...");
 						$sufficient = true;
 					}
 				}
 				if (!$sufficient) {
-					$this->logger->info("    --Pledge insufficient, reducing subscription...");
-					$this->logger->info($patron->getId());
+					$output->writeln("    --".$patron->getId()."'s pledge is insufficient, reducing subscription...");
 					# insufficient pledge level
 					if (in_array($user->getAccountLevel(), ['22', '42', '51'])) {
 						$user->setOldAccountLevel($user->getAccountLevel());
@@ -252,50 +251,60 @@ class PaymentManager {
 					$this->ChangeNotification($user, 'insufficient', 'insufficient2');
 					$expired++;
 				} else {
-					$this->logger->info("    --Pledge sufficent, running spend routine...");
+					$output->writeln("    --".$patron->getId()."'s pledge sufficent, running spend routine...");
 					$this->spend($user, 'subscription', $myfee, true);
 					$active++;
 					$patronCount++;
 					# TODO: Give overpledge back as credits?
 				}
 			} else {
-				#$this->logger->info("    --Non-payer detected, either trial or dev account...");
-				if ($user->getLastLogin()) {
+				#$output->writeln("    --Non-payer detected, either trial or dev account...");
+				if ($user->getLastPlay()) {
 					$inactive_days = $user->getLastLogin()->diff(new \DateTime("now"), true)->days;
 				} else {
 					$inactive_days = $user->getCreated()->diff(new \DateTime("now"), true)->days;
 				}
 				if ($inactive_days > 60) {
-					#$this->logger->info("    --Account inactive, storing account...");
+					#$output->writeln("    --Account inactive, storing account...");
 					// after 2 months, we put you into storage
 					$user->setAccountLevel(0);
 					$storage++;
 				} else {
-					#$this->logger->info("    --Accont active, logging as free...");
+					#$output->writeln("    --Account active, logging as free...");
 					$free++;
 				}
 			}
 		}
-		$this->logger->info("  Updating Limits...");
-		$query = $this->em->createQuery('SELECT u FROM App\Entity\User u');
+		# Note: If the game explodes, we may need to make this iterative.
+		$output->writeln("  Updating Limits...");
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\User u WHERE u.last_play IS NOT NULL OR u.last_play >= :ago');
+		$ago = new \DateTime("-1 month");
 		$now = new \DateTime("now");
+		$query->setParameters(array('ago'=>$ago));
 		foreach ($query->getResult() as $user) {
 			/** @var UserLimits $limits */
 			$limits = $user->getLimits();
 			if (!$limits) {
+				$output->writeln("  --No limits for ".$user->getUsername()." (".$user->getId().")...");
 				$this->usermanager->createLimits($user);
+				if ($user->isNewPlayer()) {
+					$limits->setPlaces(0);
+					$output->writeln("  --Is still new, places limit zeroed");
+				}
 			} else {
-				if ($limits->getPlacesDate() <= $now) {
+				if ($limits->getPlacesDate() < $now) {
 					if (!$user->isNewPlayer()) {
 						$limits->setPlaces(4);
+						$output->writeln("  --Limits reset for ".$user->getUsername()." (".$user->getId().")...");
 					} else {
 						$limits->setPlaces(0);
+						$output->writeln("  --User ".$user->getUsername()." (".$user->getId().") is still new, places limit zeroed");
 					}
-					$limits->setPlacesDate(new \DateTime("+1 day"));
+					$limits->setPlacesDate($now);
 				}
 			}
 		}
-		$this->logger->info("  Cycle ended. Flushing...");
+		$output->writeln("  Cycle ended. Flushing...");
 		$this->em->flush();
 		return array($free, $patronCount, $active, $credits, $expired, $storage, $bannedcount);
 	}
@@ -376,8 +385,7 @@ class PaymentManager {
 	public function checkPatreonFetch($member): bool {
 		# Validate that results are waht we expect them to be.
 		if (!is_numeric($member['data']['id'])) {
-			$this->logger->info($member);
-			return false; #This shoudl ALWAYS return an integer.
+			return false; #This should ALWAYS return an integer.
 		}
 		if (!in_array($member['included'][0]['attributes']['patron_status'], ['active_patron', 'declined_patron', 'former_patron'])) {
 			return false; #This should always be active_patron, declined_patron, or former_patron.
@@ -507,7 +515,7 @@ class PaymentManager {
 				return true;
 			} else {
 				// this should never happen - alert me
-				$this->logger->alert('error in change subscription for user '.$user->getId().", change from $oldlevel to $newlevel");
+				$this->noteman->spoolError('error in change subscription for user '.$user->getId().", change from $oldlevel to $newlevel");
 				return false;
 			}
 		}
@@ -609,7 +617,6 @@ class PaymentManager {
 
 					$text = $this->translator->trans('account.invite.mail2.body', array("%mail%"=>$user->getEmail(), "%credits%"=>$value));
 					$this->mailer->sendEmail($sender->getEmail(), $this->translator->trans('account.invite.mail2.subject'), $text);
-					$this->logger->info('sent friend subscriber email: '.$text);
 				}
 			}
 		}
@@ -630,12 +637,13 @@ class PaymentManager {
 
 	public function redeemCode(User $user, Code $code): true|string {
 		if ($code->getUsed()) {
-			$this->logger->alert("user #{$user->getId()} tried to redeem already-used code {$code->getId()}");
+
+			$this->noteman->spoolPayment("user #{$user->getId()} tried to redeem already-used code {$code->getId()}");
 			return "error.payment.already";
 		}
 
 		if ($code->getSentToEmail() && $code->getLimitToEmail() && $code->getSentToEmail() != $user->getEmail()) {
-			$this->logger->alert("user #{$user->getId()} tried to redeem code not for him - code #{$code->getId()}");
+			$this->noteman->spoolPayment("user #{$user->getId()} tried to redeem code not for him - code #{$code->getId()}");
 			return "error.payment.notforyou";
 		}
 
@@ -719,17 +727,6 @@ class PaymentManager {
 			$user->setPaidUntil($paid);
 		}
 		$this->em->flush();
-		$this->logger->info("Payment: User ".$user->getId().", $type, $credits credits");
 		return true;
 	}
-
-
-	public function log_info($text): void {
-		$this->logger->info($text);
-	}
-
-	public function log_error($text): void {
-		$this->logger->error($text);
-	}
-
 }

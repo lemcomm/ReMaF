@@ -119,8 +119,6 @@ class BattleRunner {
 		private NotificationManager $notes) {
 	}
 
-
-
 	#TODO: Fine tune logging.
 
 	/*
@@ -512,8 +510,6 @@ class BattleRunner {
 						}
 					}
 				}
-
-
 			}
 			$this->em->flush(); # Save all active reports for characters, and all character reports to their group reports.
 			return ['success', true];
@@ -592,6 +588,7 @@ class BattleRunner {
 		// store who is active, because this changes with hits and would give the first group to resolve the initiative while we want things to be resolved simultaneously
 		foreach ($this->battle->getGroups() as $group) {
 			/** @var Soldier $soldier */
+			/** @var BattleGroup $group */
 			foreach ($group->getSoldiers() as $soldier) {
 				$soldier->setFighting($soldier->isActive(false, false, $this->legacyActivity, $this->ignoreWounds));
 				$soldier->resetAttacks();
@@ -888,11 +885,11 @@ class BattleRunner {
 							$this->log(10, $soldier->getName()."(".$soldier->getTranslatableType()." attacks but ".$target->getName()." (".$target->getTranslatableType().") defended\n");
 							$result = $hit;
 						}*/
-						
+
 						[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
 						$this->logAttack($results, $logs);
 						$this->fatigueRoll($soldier, $phase);
-						
+
 					} else {
 						$this->log(10, "no more targets\n");
 						$noRangeTargets++;
@@ -1269,7 +1266,9 @@ class BattleRunner {
 						$allHP += $soldier->healthValue();
 						$countUs += 1;
 					}
-				}$countEnemy = 0;
+				}
+
+				$countEnemy = 0;
 				$enemies = $group->getEnemies();
 				foreach ($enemies as $enemygroup) {
 					$countEnemy += $enemygroup->getActiveSoldiers()->count();
@@ -1383,6 +1382,7 @@ class BattleRunner {
 							$this->log(20, "  ".$soldier->getName()." (".$soldier->getType()."): ($mod) morale ".round($soldier->getMorale())."\n");
 						}
 					}
+
 				}
 				if (!$this->ignoreMorale) {
 					$this->log(10, "==> avg. morale: ".round($total/max(1,$count))."\n\n");

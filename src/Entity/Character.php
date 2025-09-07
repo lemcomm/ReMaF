@@ -22,6 +22,7 @@ class Character extends AbstractCharacter {
 	private ?bool $retired = null;
 	private ?int $abandoned_by = null;
 	private ?DateTime $retired_on = null;
+	private ?DateTime $returned_on = null;
 	private ?int $generation = null;
 	private string $genome;
 	private ?int $magic = null;
@@ -3833,6 +3834,19 @@ class Character extends AbstractCharacter {
 	public function setLeadingUnit(?Unit $leading_unit): static {
 		$this->leading_unit = $leading_unit;
 		return $this;
+	}
+
+	public function getReturnedOn(): ?DateTime {
+		return $this->returned_on;
+	}
+
+	public function setReturnedOn(?DateTime $returned_on): static {
+		$this->returned_on = $returned_on;
+		return $this;
+	}
+
+	public function addAttack($ignored): void {
+		# Deliberately empty.
 	}
 
 	public function getFromDungeon(): ?Dungeon {

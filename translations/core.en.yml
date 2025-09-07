@@ -118,7 +118,7 @@ security:
   flash: If a matching username and email has been located in our system, an email has been dispatched with new a new activation link. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
  confirm:
   flash:
-   failed: Unable to confirm email with a registered user. Bad combination passed.
+   failed: Unable to confirm email with a registered user.
    already: No confirmation needed. Disregarding request.
    success: Email successfully confirmed!
  delete:

@@ -585,6 +585,7 @@ newcharacter:
  limit:     You can create {limit} more living character{count, plural, =1 {} other {s}} today.
  limited:   You cannot create new living characters anymore today. You will get more available character slots every real-life day.
  spawnlimit:  You currently have several unspawned characters. Please start playing them first, before you create more characters.
+ spawnnotactive: The location you're trying to spawn is not currently active.
  burst:     Please wait at least one minute between creating characters.
  homosexual:  "The chosen partner doesn't consent to homosexual relations (you can change this in that character's settings)."
  illegaltext:  Character names may only contain letters, spaces, and apostrophes.
@@ -647,7 +648,7 @@ first:
   sovrealm: >
     That can be done <a href="{conv}">here</a>, where the local bureaucrats have already announced your arrival.
   house: >
-    With the formal affair of joining {house} out of the way, the first thing you will probably want to do is introduce yourself to your new comrades in arms. That can be done <a href="{conv-2}">here</a>.<br /><br />As you are starting in a House rather than a Realm, you may wish to ask for recommendations for which realm you should seek to join. It's quite likely that your fellows will have suggestions.
+    With the formal affair of joining {house} out of the way, the first thing you will probably want to do is introduce yourself to your new comrades in arms. That can be done <a href="{conv_2}">here</a>.<br /><br />As you are starting in a House rather than a Realm, you may wish to ask for recommendations for which realm you should seek to join. It's quite likely that your fellows will have suggestions.
   nodesc: The staff wish you well on your travels and glory in your life. May your actions bring you and those they server renown.
   final: It is important to note that Might & Fealty tends to be a slow game, so don't expect much action in your first days. That said, it can be quite complex, as it tries to emulate the possibilities of real life as well as it can given the setting, so we do recommend reading the <a href="{manual}">the game manual</a> if you haven't already. Alternatively, <a href="{discord}">the community discord</a> can also be a great help.
 
@@ -1775,9 +1776,12 @@ unavailable:
  nospies:       You don't have any spies in your employ.
  inbattle:      You are already involved in a battle.
  inbattle2:     This unit is currently involved in a battle.
+ insiege:       This unit is currently involved in a siege.
  nobattle:      You are not involved in any battle.
  nobattle2:     You are not being forced into any battle, but have committed yourself.
  fresh:         You are freshly arrived and are currently establishing yourself.
+ toonew:        You just arrived and are already retiring? For gameplay reasons, this action isn't allowed so soon.
+ toorecentreturn: Returning just to retire so soon? For gameplay reasons, this action isn't allowed so soon.
  resolving:     You already decided to resolve this battle, and are committed now.
  disengaging:   You already decided to disengage from this battle.
  intercepted:   You already tried to disengage from this battle, and failed.

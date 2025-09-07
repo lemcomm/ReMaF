@@ -620,12 +620,13 @@ diplomacy:
    type:        Does not have a higher designation than your realm.
    current:     Is your current superior realm.
   done:         You have successfully submitted to the superior power of {target} and made your {realm} a part of it.
+  nomsg:        Your request requires a message to be included. And the developers are quite confused how you triggered this error.
   sent:         Your request has been sent to {target}.
   approve:      Approve
   approved:     "{name} is now a subrealm of {name2}."
   deny:         Deny
   denied:       You have rejected the request of {name} to become a subrealm of {name2}.
-  preamble:     'You have received a request from {character}, a ruler of {realm}, to join their realm under {realm-2}, on {date}, as follows:'
+  preamble:     'You have received a request from {character}, a ruler of {realm}, to join their realm under {realm_2}, on {date}, as follows:'
 
 
  restore:
@@ -987,7 +988,7 @@ house:
   description:  Ask your superior house for your house's freedom.
   longdesc:     It is always possible to request an end to the cadetship of your house, but your superior house has no obligation to agree.
   intro: >
-    As the head of %house-2%, it is within your capabilities to request freedom for your House from %house-1%.
+    As the head of %house_2%, it is within your capabilities to request freedom for your House from %house-1%.
     That said, the do not have to accept your request. If they do not, and if you find this particularly problematic, perhaps it might be best to arrange for a change of leadership.<br /><br />
     If you wish to go through with this, you can send a request asking for your freedom with the form below.
   subject:

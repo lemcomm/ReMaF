@@ -34,6 +34,9 @@ class NewsController extends AbstractController {
 	#[Route ('/news/', name:'maf_news')]
 	public function indexAction(): Response {
 		$character = $this->app->getCharacter();
+		if (! $character instanceof Character) {
+			return $this->redirectToRoute($character);
+		}
 
 		return $this->render('News/current.html.twig', [
 			"editor_list"=>$character->getNewspapersEditor(),

@@ -1132,6 +1132,9 @@ class CombatManager {
 						$this->history->addToSoldierLog($target, 'wounded.'.$phase);
 						$target->gainExperience(1*$xpMod); // it hurts, but it is a teaching experience...
 				}
+			} else {
+				$logs[] = "no damage (HP:".$target->healthValue().")\n";
+				$result = 'fail';
 			}
 		}
 		if ($battle) {

@@ -23,6 +23,8 @@
 	<link rel="apple-touch-icon" type="image/png" sizes="72x72" href="{{ asset('apple-touch-icon-72.png') }}">
 	<link rel="apple-touch-icon" type="image/png" sizes="57x57" href="{{ asset('apple-touch-icon-57.png') }}">
 	<link rel="apple-touch-icon" type="image/png" href="{{ asset('apple-touch-icon.png') }}">
+	{% block captcha %}{% endblock %}
+	<script src="https://app.termly.io/resource-blocker/66ba5197-b2e3-42ba-b41b-01f85ed493cf?autoBlock=off"></script>
 	{% block includes %}
 		<link rel="stylesheet" href="{{ asset('/css/'~theme~'.css') }}" title="Office Style"/>
 		{% block jqueryuitheme %}
@@ -35,7 +37,6 @@
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 		<script src="{{ asset('js/jquery.hoverintent.js') }}"></script>
-		<script type="text/javascript" src="https://app.termly.io/embed.min.js" data-auto-block="on" data-website-uuid="66ba5197-b2e3-42ba-b41b-01f85ed493cf"></script>
 	{% endblock %}
 	{% if character %}
 		<link rel="alternate" type="application/rss+xml" title="New Events" href="http:{{ url('maf_rss', {'appkey':app.user.appkey, 'user':app.user.id, 'char':character.id}, true) }}">
@@ -45,7 +46,6 @@
 </head>
 <body>
 
-{% block recaptcha %}{% endblock %}
 {% if biglogo is defined %}
 	<h1 id="title">
 		<a href="{{ path('maf_homepage') }}">

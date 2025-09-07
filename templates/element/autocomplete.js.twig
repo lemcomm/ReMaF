@@ -20,8 +20,8 @@ function charselect(obj, callback) {
 			});
 		},
 		select: function(event, ui) {
-			obj.val(ui.item.value);
-			obj.data('id', ui.item.id);
+			$(document.activeElement).val(ui.item.value);
+			$(document.activeElement).data('id', ui.item.id);
 			if (callback) {
 				callback(ui.item.id, ui.item.value);
 			}
@@ -55,8 +55,8 @@ function settlementselect(obj, callback) {
 			});
 		},
 		select: function(event, ui) {
-			obj.val(ui.item.value);
-			obj.data('id', ui.item.id);
+			$(document.activeElement).val(ui.item.value);
+			$(document.activeElement).data('id', ui.item.id);
 			if (callback) {
 				callback(ui.item.id, ui.item.value);
 			}
@@ -95,8 +95,8 @@ function realmselect(obj, callback) {
 			});
 		},
 		select: function(event, ui) {
-			obj.val(ui.item.value);
-			obj.data('id', ui.item.id);
+			$(document.activeElement).val(ui.item.value);
+			$(document.activeElement).data('id', ui.item.id);
 			if (callback) {
 				callback(ui.item.id, ui.item.value);
 			}
@@ -130,8 +130,8 @@ function placeselect(obj, callback) {
 			});
 		},
 		select: function(event, ui) {
-			obj.val(ui.item.value);
-			obj.data('id', ui.item.id);
+			$(document.activeElement).val(ui.item.value);
+			$(document.activeElement).data('id', ui.item.id);
 			if (callback) {
 				callback(ui.item.id, ui.item.value);
 			}
@@ -165,8 +165,8 @@ function guildselect(obj, callback) {
 			});
 		},
 		select: function(event, ui) {
-			obj.val(ui.item.value);
-			obj.data('id', ui.item.id);
+			$(document.activeElement).val(ui.item.value);
+			$(document.activeElement).data('id', ui.item.id);
 			if (callback) {
 				callback(ui.item.id, ui.item.value);
 			}
@@ -200,8 +200,8 @@ function houseselect(obj, callback) {
 			});
 		},
 		select: function(event, ui) {
-			obj.val(ui.item.value);
-			obj.data('id', ui.item.id);
+			$(document.activeElement).val(ui.item.value);
+			$(document.activeElement).data('id', ui.item.id);
 			if (callback) {
 				callback(ui.item.id, ui.item.value);
 			}

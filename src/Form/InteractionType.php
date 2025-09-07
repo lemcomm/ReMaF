@@ -51,7 +51,7 @@ class InteractionType extends AbstractType {
 			'placeholder'=>$options['multiple']?'character.none':null,
 			'multiple'=>$options['multiple'],
 			'expanded'=>true,
-			'required'=>$options['multiple'],
+			'required'=>$options['required'],
 			'class'=>Character::class,
 			'choice_label'=>'name',
 			'query_builder'=>function(EntityRepository $er) use ($me, $maxdistance, $settlementcheck) {

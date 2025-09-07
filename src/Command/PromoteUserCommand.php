@@ -35,7 +35,7 @@ class PromoteUserCommand extends  Command {
 		$em = $this->em;
 		$user = $em->getRepository(User::class)->findOneBy(['username'=>$username]);
 		if (!$user) {
-			$output->writeln("Username of '$username' is already in use.");
+			$output->writeln("Username of '$username' cannot be located.");
 			return Command::FAILURE;
 		}
 		$user->addRole($role);

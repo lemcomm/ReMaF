@@ -119,6 +119,7 @@ class BattleGenerateCommand extends Command {
 			$cycle = $this->common->getCycle();
 			$runner->combatRules = $ruleset;
 			$runner->run($battle, $cycle);
+			$this->em->flush();
 			return Command::SUCCESS;
 		} else {
 			$output->writeln('<warning>Not enough attackers and defenders.</warning>');

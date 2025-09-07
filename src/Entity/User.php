@@ -181,19 +181,6 @@ class User implements UserInterface, LegacyPasswordAuthenticatedUserInterface {
 		}
 	}
 
-	public function getFreePlaces(): int {
-		$limit = $this->getLimits()->getPlaces();
-		$count = 0;
-		foreach ($this->getCharacters() as $character) {
-			foreach ($character->getCreatedPlaces() as $place) {
-				if (!$place->getDestroyed()) {
-					$count++;
-				}
-			}
-		}
-		return $limit - $count;
-	}
-
 	/**
 	 * Get limits
 	 *

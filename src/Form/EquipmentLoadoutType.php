@@ -22,9 +22,9 @@ class EquipmentLoadoutType extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$domain = $options['domain'];
 		$opts = $options['opts'];
-		$label = $options['label'];
+		$labels = $options['labels'];
                 $builder->add('equipment', EntityType::class, array(
-                        'label'=>$label,
+                        'label'=>$labels,
                         'placeholder'=>'loadout.none',
                         'required'=>true,
 			'translation_domain'=>$domain,

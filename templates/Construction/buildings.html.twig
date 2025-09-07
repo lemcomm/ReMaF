@@ -118,7 +118,6 @@
 			{% endif %}
 			</table>
 		{% endif %}
-		</form>
 		<h3>{{ 'economy.build.canbuild'|trans({}, "actions")|title }}</h3>
 		<p>{{ settlement.AvailableWorkforce }} {{ 'build.workers'|trans }} ({{ (settlement.AvailableWorkforcePercent*100)|number_format }} %)</p>
 		{% if available is not empty %}

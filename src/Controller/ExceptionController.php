@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Character;
+use App\Service\AppState;
 use App\Service\DiscordIntegrator;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
@@ -14,7 +17,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class ExceptionController extends AbstractController {
 	public function __construct(
-		private DiscordIntegrator $discord) {
+		private DiscordIntegrator $discord,
+		private AppState $app,
+		private EntityManagerInterface $em) {
 	}
 
 	/**
@@ -43,21 +48,35 @@ class ExceptionController extends AbstractController {
 		$bits = explode("::", $error);
 		if ($code !== 404) {
 			$forward = true;
+			$forward2 = false;
+			$errBits = explode("::", $error);
 			if (str_contains($error, 'RFC 2822')) {
 				# Filter out junk bot email addresses.
 				$forward = false;
-			} elseif (array_key_exists(1, $bits)) {
-				# Filter out Dispathcer generated errors--those are the game working as intended. No need to forward.
-				if (str_starts_with($bits[1], 'unavailable.intro')) {
+			} elseif (count($errBits) > 0) {
+				if ($errBits[0] === 'messages') {
+					# These are errors the players get by accessing pages they shouldn't be able to, and are thus, intentional game design, not errors in the sense of this file.
 					$forward = false;
-				} elseif (str_starts_with($bits[1], 'error.')) {
-					$forward = false;
+				} elseif ($errBits[0] === 'error.noaccess.character') {
+					if ($user !== '(none)') {
+						# This is literally just catching people trying to access the wrong character.
+						# We still show them the error, but we also record it in the database.
+						$charId = $request->attributes->get('_route_params')['id'];
+						$logic = $request->query->get('logic');
+						$this->app->logUser($user, $request->attributes->get('_route').'_'.$charId.'_'.$logic, true);
+						$forward2 = true;
+					}
 				}
 			}
 			if ($forward) {
 				try {
 					$text = "Status Code: $code \nError: $error\nRequestUri:$uri\nReferer:$ref\nUser: $user\nAgent: $agent\nTrace:\n$trace";
 					$this->discord->pushToErrors($text);
+					if ($forward2) {
+						$owner = $this->em->getRepository(Character::class)->findOneBy(['id'=>$charId]);
+						$text = "User #".$user->getId()." attempted to access Character #".$charId." owned by ".$owner?->getUser()->getId();
+						$this->discord->pushToOlympus($text);
+					}
 				} catch (Exception $e) {
 					// Do nothing.
 				}

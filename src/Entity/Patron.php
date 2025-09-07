@@ -174,9 +174,9 @@ class Patron {
 	/**
 	 * Get update_needed
 	 *
-	 * @return boolean
+	 * @return bool|null
 	 */
-	public function getUpdateNeeded(): bool {
+	public function getUpdateNeeded(): ?bool {
 		return $this->update_needed;
 	}
 

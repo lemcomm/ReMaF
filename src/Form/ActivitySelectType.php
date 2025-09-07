@@ -19,13 +19,13 @@ class ActivitySelectType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults(array(
-			'intention'       => 'interaction_12331',
+			'intention'       => 'activitySelect_12331',
 			'translation_domain' 	=> 'activity',
 		));
-		$resolver->setRequired(['action', 'maxdistance', 'me', 'subselect']);
+		$resolver->setRequired(['activityType', 'maxdistance', 'me', 'subselect']);
 	}
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
-		$action = $options['action'];
+		$action = $options['activityType'];
 		$builder->add('name', TextType::class, array(
 			'label'=>$action.'.form.name',
 			'required'=>false
@@ -72,14 +72,14 @@ class ActivitySelectType extends AbstractType {
 				$qb->orderBy('c.name', 'ASC');
 				return $qb;
 		}]);
-		$builder->add('context', ChoiceType::class, array(
+		$builder->add('context', ChoiceType::class, options: array(
 			'label'=>'duel.form.context',
-			'required'=>false,
+			'required'=>true,
 			'choices'=>array(
-				'first blood' => 'duel.form.firstblood',
-				'wound' => 'duel.form.wound',
-				'surrender' => 'duel.form.surrender',
-				'death' => 'duel.form.death',
+				'duel.form.first blood' => 'first blood',
+				'duel.form.wound' => 'wound',
+				'duel.form.surrender' => 'surrender',
+				'duel.form.death' => 'death',
 			),
 			'placeholder'=> 'duel.form.choose'
 		));

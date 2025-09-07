@@ -21,6 +21,7 @@ use App\Service\CommonService;
 use App\Service\Geography;
 use App\Service\Interactions;
 use App\Service\PermissionManager;
+use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -432,7 +433,7 @@ class Dispatcher {
 		if ($character->getUser()->getLimits() === null) {
 			return array("name"=>"place.new.name", "description"=>"unavailable.nolimitscreated");
 		}
-		if ($character->getUser()->getFreePlaces() < 1) {
+		if ($character->getUser()->getLimits()->getPlaces() < 1) {
 			return array("name"=>"place.new.name", "description"=>"unavailable.nofreeplaces");
 		}
 		# If not inside a settlement, check that we've enough separation (500m)
@@ -2115,6 +2116,13 @@ class Dispatcher {
 
 	public function metaRetireTest(): array {
 		$char = $this->getCharacter();
+		$oneWeek = new DateTime("-7 days");
+		if ($char->getCreated() > $oneWeek) {
+			return ["name"=>"meta.retire.name", "description"=>"unavailable.toonew"];
+		}
+		if ($char->getRetiredOn() && $char->getRetiredOn() > $oneWeek) {
+			return ["name"=>"meta.retire.name", "description"=>"unavailable.toorecentreturn"];
+		}
 		if ($char->isNPC()) {
 			// FIXME: respawn template doesn't exist.
 			return array("name"=>"meta.retire.name", "description"=>"unavailable.npc");
@@ -2250,13 +2258,13 @@ class Dispatcher {
 	}
 
 	public function conversationAddTest($ignored, Conversation $conv): array {
-		if ($conv->findCharPermissions($this->getCharacter())->isEmpty()) {
-			return ["name"=>"conv.add.name", "description"=>"unavailable.conv.nopermission"];
-		}
 		if ($conv->getRealm()) {
 			return ["name"=>"conv.add.name", "description"=>"unavailable.conv.ismanaged"];
 		}
 		$perm = $conv->findActiveCharPermission($this->getCharacter());
+		if (!$perm) {
+			return ["name"=>"conv.add.name", "description"=>"unavailable.conv.nopermission"];
+		}
 		if (!$perm->getManager() AND !$perm->getOwner()) {
 			return ["name"=>"conv.add.name", "description"=>"unavailable.conv.notmanager"];
 		}

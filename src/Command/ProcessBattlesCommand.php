@@ -9,7 +9,6 @@ use App\Service\WarManager;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -95,9 +94,11 @@ class ProcessBattlesCommand extends Command {
 					$code = $error->getCode();
 					$trace = $error->getTraceAsString();
 					$txt = "Status code: $code\nError: $msg\nTrace: $trace";
+					$output->writeln($txt);
 					$this->nm->spoolError($txt);
 				} catch (Exception $f) {
-					// Do nothing. Error reporting has already failed.
+					$output->writeln($f->getMessage());
+					$output->writeln($f->getTraceAsString());
 				}
 			}
 		} else {
