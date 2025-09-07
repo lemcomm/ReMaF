@@ -5,6 +5,7 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<field name="center" type="point" nullable="true"/>
+		<field name="modifiers" type="array" nullable="true"/>
 		<field name="poly" type="polygon"/>
 		<field name="altitude" type="integer"/>
 		<field name="hills" type="boolean"/>

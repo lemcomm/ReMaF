@@ -226,14 +226,22 @@ class ImportWorldJSONCommand extends Command {
 					return Command::FAILURE;
 				}
 				if ($mapRegion) {
-					$new = new MapRegion();
+					$new = $this->em->getRepository(MapRegion::class)->findOneBy(['world'=>$world, 'name'=>$each['systemName']]);
+					if (!$new) {
+						$new = new MapRegion();
+						$new->setWorld($world);
+						$new->setName($each['systemName']);
+					}
 				} elseif ($geoData) {
-					$new = new GeoData();
+					$new = $this->em->getRepository(GeoData::class)->findOneBy(['world'=>$world, 'name'=>$each['systemName']]);
+					if (!$new) {
+						$new = new GeoData();
+						$new->setWorld($world);
+						$new->setName($each['systemName']);
+					}
+
 				}
-				$world = null;
 				/** @var GeoData|MapRegion $new */
-				$new->setWorld($world);
-				$new->setName($each['name']);
 				$new->setBiome($biome);
 				$new->setCoast($each['coastal']);
 				$new->setRiver($each['river']);
@@ -243,6 +251,9 @@ class ImportWorldJSONCommand extends Command {
 				if ($geoData) {
 					$new->setAltitude($each['altitude']);
 					$new->setPoly($each['poly']);
+				}
+				if (!empty($data['modifiers'])) {
+					$new->setModifiers($each['modifiers']);
 				}
 				$em->persist($new);
 			}

@@ -13,6 +13,7 @@ abstract class AbstractRegion {
 	protected Collection $resources;
 	protected ?Biome $biome = null;
 	protected ?World $world = null;
+	protected ?array $modifiers = [];
 	protected bool $hills;
 	protected bool $coast;
 	protected bool $lake;
@@ -36,6 +37,35 @@ abstract class AbstractRegion {
 	 */
 	public function getId(): ?int {
 		return $this->id;
+	}
+
+	public function getModifiers(): array {
+		$mods = $this->modifiers;
+		return array_unique($mods);
+	}
+
+	public function setModifiers(array $mods): self {
+		$this->modifiers = $mods;
+
+		return $this;
+	}
+
+	public function addModifier(string $mod): self {
+		if (!in_array($mod, $this->modifiers)) {
+			$this->modifiers[] = $mod;
+		}
+		return $this;
+	}
+
+	public function changeModifier(string $key, string $val): self {
+		$this->modifiers[$key] = $val;
+		return $this;
+	}
+
+	public function removeModifier(string $mod): void {
+		if (in_array($mod, $this->modifiers)) {
+			unset($this->modifiers[array_search($mod, $this->modifiers)]);
+		}
 	}
 
 	/**

@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\Collection;
 
 class MapRegion extends AbstractRegion {
 	private Collection $characters;
-	private ?array $modifiers = [];
 	private Collection $exits;
 	private Collection $entrances;
 	private Collection $artifacts;
@@ -23,30 +22,6 @@ class MapRegion extends AbstractRegion {
 		$this->entrances = new ArrayCollection();
 		$this->battles = new ArrayCollection();
 		$this->artifacts = new ArrayCollection();
-	}
-
-	public function getModifiers(): array {
-		$mods = $this->modifiers;
-		return array_unique($mods);
-	}
-
-	public function setModifiers(array $mods): self {
-		$this->modifiers = $mods;
-
-		return $this;
-	}
-
-	public function addModifier(string $mod): self {
-		if (!in_array($mod, $this->modifiers)) {
-			$this->modifiers[] = $mod;
-		}
-		return $this;
-	}
-
-	public function removeModifier(string $mod): void {
-		if (in_array($mod, $this->modifiers)) {
-			unset($this->modifiers[array_search($mod, $this->modifiers)]);
-		}
 	}
 
 	public function addCharacter (Character $char): static {
