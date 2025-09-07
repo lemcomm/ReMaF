@@ -4,7 +4,7 @@
 
 <h2>{{ 'positions.name'|trans({"%name%":realm.name},"politics")|title }}</h2>
 {% if positions is empty %}
-	{{ 'positions.empty'|trans({},"politics") }}
+	{{ 'positions.empty'|trans({},"politics")|raw }}
 {% else %}
 	{{ 'positions.description'|trans({},"politics") }}<br />
 	<a href="{{ path('maf_realm_position', {'realm':realm.id, 'position':0}) }}">{{ 'realm.positions.new'|trans({},"politics") }}</a>
