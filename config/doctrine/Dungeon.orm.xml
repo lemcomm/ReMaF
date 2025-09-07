@@ -19,7 +19,7 @@
 		<one-to-one field="party" target-entity="DungeonParty" mapped-by="dungeon"/>
 		<many-to-one field="geo_data" target-entity="GeoData"/>
 		<many-to-one field="mapRegion" target-entity="MapRegion"/>
-		<many-to-one field="world" target-entity="World" mapped-by="dungeons"/>
+		<many-to-one field="world" target-entity="World" inversed-by="dungeons"/>
 
 	</entity>
 </doctrine-mapping>
