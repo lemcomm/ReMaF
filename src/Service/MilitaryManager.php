@@ -585,6 +585,31 @@ class MilitaryManager {
 		return $unit;
 	}
 
+	/**
+	 * @param Unit $unit
+	 *
+	 * @return Unit
+	 */
+	public function splitUnit(Unit $unit): Unit {
+		$new = new Unit();
+		$this->em->persist($new);
+		$new->setSettlement($unit->getSettlement());
+		$new->setSupplier($unit->getSupplier());
+		$new->setCharacter($unit->getCharacter());
+		$new->setName($unit->getName());
+		$new->setStrategy($unit->getStrategy());
+		$new->setTactic($unit->getTactic());
+		$new->setRespectFort($unit->getRespectFort());
+		$new->setLine($unit->getLine());
+		$new->setSiegeOrders($unit->getSiegeOrders());
+		$new->setRenamable($unit->getRenamable());
+		$new->setRetreatThreshold($unit->getRetreatThreshold());
+		$new->setReinforcements($unit->getReinforcements());
+		$new->setProvision($unit->getProvision());
+		$new->setConsumption($unit->getConsumption());
+		return $new;
+	}
+
 	public function prepareUnit(Character $char, Unit $unit, Settlement $here) {
 		$unit->setSettlement($here);
 		$unit->setSupplier($here);

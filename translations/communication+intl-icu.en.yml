@@ -326,6 +326,7 @@ event:
    medium:      Suffers from moderate starvation.
    high:        Suffers from significant starvation.
    death:       Due to starvation, {i} soldiers have died.
+  split:        The gods have {unit_1} unit in two, with part of it becoming {unit_2}.
  quest:
   created:      Quest created.
   started:      "{character} has begun the quest."
