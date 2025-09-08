@@ -10,8 +10,10 @@
 
 {% block content %}
     <h1>{% trans %}security.remind.header{% endtrans %}</h1>
+    <p>{% trans %}security.reset.intro{% endtrans %}</p>
+
     {{ form_start(form) }}
-    {{ form_row(form.email) }}
+    {{ form_row(form.email) }}<br>
     {% include 'element/form_captcha.html.twig' %}
     {{ form_row(form.submit) }}
     {{ form_end(form) }}

@@ -10,6 +10,7 @@
 
 {% block content %}
     <h1>{% trans %}security.reset.header{% endtrans %}</h1>
+    <p>{% trans %}security.reset.intro{% endtrans %}</p>
 
     {% if request_form %}
         {{ form_start(request_form) }}

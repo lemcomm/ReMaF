@@ -28,7 +28,8 @@
         Sign in
         </button><br /><br />
 
-        Forgot your password? <a href="{{ url("maf_account_reset") }}">Request a reset!</a>
+        <a href="{{ url("maf_account_reset") }}">{{ 'security.reset.short'|trans({}, 'core')}}</a><br>
+        <a href="{{ url("maf_account_remind") }}">{{ 'security.remind.short'|trans({}, 'core')}}</a>
 </form>
 </div>
 {% endblock %}
