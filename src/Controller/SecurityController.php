@@ -230,7 +230,7 @@ class SecurityController extends AbstractController {
                 }
         }
 
-	#[Route ('/security/remind', name:'maf_remind')]
+	#[Route ('/security/remind', name:'maf_account_remind')]
         public function remind(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request): RedirectResponse|Response {
                 $form = $this->createForm(ForgotUsernameType::class);
                 $form->handleRequest($request);
@@ -287,8 +287,7 @@ class SecurityController extends AbstractController {
 					$em->flush();
 
 					$link = $this->generateUrl('maf_account_activate', [
-						'username' => $user->getUsername(),
-						'email' => $user->getEmail(),
+						'id' => $user->getId(),
 						'token' => $user->getToken()
 					], UrlGeneratorInterface::ABSOLUTE_URL);
 					$text = $trans->trans('security.register.email.text2', [
@@ -315,7 +314,7 @@ class SecurityController extends AbstractController {
 	#[Route ('/security/confirm/{token}/{email}', name:'maf_account_confirm')]
         public function confirm(EntityManagerInterface $em, TranslatorInterface $trans, string $token, string $email): RedirectResponse {
                 $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
-                if ($user && $user->getEnabled() === false && $token == $user->getToken()) {
+                if ($user && $user->getEnabled() === false && $token === $user->getEmailToken()) {
                         $user->setEmailToken(null);
                         $user->setEnabled(true);
                         $em->flush();

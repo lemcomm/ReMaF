@@ -22,6 +22,7 @@ class UserDataType extends AbstractType {
 
 	public function configureOptions(OptionsResolver $resolver): void {
 		$resolver->setDefaults([
+			'attr'		=> array('class'=>'wide'),
 			'translation_domain' => 'core',
 			'display' => null,
 			'public' => null,
