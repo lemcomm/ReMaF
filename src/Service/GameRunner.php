@@ -886,26 +886,56 @@ class GameRunner {
 						}
 					}
 					if ($severity < 20) {
-						$this->history->logEvent(
-							$unit,
-							'event.unit.starvation.light',
-							array(),
-							History::MEDIUM, false, 30
-						);
+						if ($unit->getSupplier()) {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.light1',
+								array("%link-settlement%"=>$unit->getSupplier()->getId()),
+								History::MEDIUM, false, 30
+							);
+						} else {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.light2',
+								array(),
+								History::MEDIUM, false, 30
+							);
+						}
+
 					} elseif ($severity < 40) {
-						$this->history->logEvent(
-							$unit,
-							'event.unit.starvation.medium',
-							array(),
-							History::MEDIUM, false, 30
-						);
+						if ($unit->getSupplier()) {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.medium1',
+								array("%link-settlement%"=>$unit->getSupplier()->getId()),
+								History::MEDIUM, false, 30
+							);
+						} else {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.medium2',
+								array(),
+								History::MEDIUM, false, 30
+							);
+						}
+
 					} else {
-						$this->history->logEvent(
-							$unit,
-							'event.unit.starvation.high',
-							array(),
-							History::MEDIUM, false, 30
-						);
+						if ($unit->getSupplier()) {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.high1',
+								array("%link-settlement%"=>$unit->getSupplier()->getId()),
+								History::MEDIUM, false, 30
+							);
+						} else {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.high2',
+								array(),
+								History::MEDIUM, false, 30
+							);
+						}
+
 					}
 					foreach ($living as $soldier) {
 						$soldier->makeHungry($severity);
