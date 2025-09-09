@@ -643,7 +643,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'type' => 'weapon',
 			'ranged' => 0, 'melee' => 100, 'defense' => 10,
 		],
-		'golemn cannons' => [
+		'golem cannons' => [
 			'train' => 0, 'resupply' => 0,
 			'provider' => null, 'trainer' => null,
 			'icon' => null, 'skill' => null,
@@ -652,6 +652,9 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'weight' => 16, 'quality' => 14,
 			'class' => [30, 20],
 			'aspect' => ['bashing' => 2, 'cutting' => 0, 'piercing' => 0, 'magefire' => 9],
+			'mastery' => 1,
+			'type' => 'weapon',
+			'ranged' => 100, 'melee' => 0, 'defense' => 10,
 		],
 		'golem body' => [
 			'type' => 'armour', 'train' => 0, 'resupply' => 0,
@@ -660,7 +663,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 			'restricted' => true,
 
 			'armor' => [
-				'form' => 'golem', 'layer' => 'magestone'
+				['form' => 'golem', 'layer' => 'magestone']
 			],
 
 			'ranged' => 0, 'melee' => 0, 'defense' => 100,
@@ -676,6 +679,7 @@ class LoadEquipmentData extends Fixture implements DependentFixtureInterface {
 	
 	public function load(ObjectManager $manager): void {
 		foreach ($this->equipment as $name=>$data) {
+			echo $name;
 			$type = $manager->getRepository(EquipmentType::class)->findOneBy(['name'=>$name, 'type'=>$data['type']]);
 			if (!$type) {
 				$type = new EquipmentType();

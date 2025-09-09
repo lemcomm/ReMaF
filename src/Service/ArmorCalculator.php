@@ -20,6 +20,7 @@ class ArmorCalculator {
 				'bashing' => 6,
 				'cutting' => 10,
 				'piercing' => 6,
+				'magefire' => 1,
 			],
 			'type' => 'plate',
 			'weight' => 7.7
@@ -29,6 +30,7 @@ class ArmorCalculator {
 				'bashing' => 5,
 				'cutting' => 9,
 				'piercing' => 4,
+				'magefire' => 1,
 			],
 			'type' => 'mail',
 			'weight' => 6.1
@@ -38,6 +40,7 @@ class ArmorCalculator {
 				'bashing' => 2,
 				'cutting' => 8,
 				'piercing' => 5,
+				'magefire' => 1,
 			],
 			'type' => 'mail',
 			'weight' => 4.9
@@ -47,6 +50,7 @@ class ArmorCalculator {
 				'bashing' => 3,
 				'cutting' => 6,
 				'piercing' => 4,
+				'magefire' => 1,
 			],
 			'type' => 'mail',
 			'weight' => 3.4
@@ -56,6 +60,7 @@ class ArmorCalculator {
 				'bashing' => 4,
 				'cutting' => 5,
 				'piercing' => 4,
+				'magefire' => 1,
 			],
 			'type' => 'plate',
 			'weight' => 2.1
@@ -65,6 +70,7 @@ class ArmorCalculator {
 				'bashing' => 2,
 				'cutting' => 4,
 				'piercing' => 3,
+				'magefire' => 1,
 			],
 			'type' => 'flexible',
 			'weight' => 1.1
@@ -74,6 +80,7 @@ class ArmorCalculator {
 				'bashing' => 5,
 				'cutting' => 3,
 				'piercing' => 2,
+				'magefire' => 1,
 			],
 			'type' => 'flexible',
 			'weight' => 0.8
@@ -83,6 +90,7 @@ class ArmorCalculator {
 				'bashing' => 1,
 				'cutting' => 1,
 				'piercing' => 1,
+				'magefire' => 1,
 			],
 			'type' => 'flexible',
 			'weight' => 0.4
@@ -92,6 +100,7 @@ class ArmorCalculator {
 				'bashing' => 6,
 				'cutting' => 9,
 				'piercing' => 9,
+				'magefire' => 7,
 			],
 			'type' => 'plate',
 			'weight' => 8
@@ -194,6 +203,7 @@ class ArmorCalculator {
 			# ArmorData is stored as follows
 			# [form => formName, layer => layerName], [...],
 			# This indexes into forms the formName of the armor to get the value from coverages, then foreach coverage calculates the weights from the layers in a similar indexing.
+			print_r($each);
 			foreach (self::forms[$each['form']]['coverage'] as $ignored) {
 				$weight += self::layers[$each['layer']]['weight'];
 			}

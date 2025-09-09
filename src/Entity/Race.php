@@ -25,6 +25,7 @@ class Race {
 	private ?int $maxHunger = null;
 	private ?bool $useEquipment = null;
 	private ?array $damageLocations = null;
+	private ?array $hitLocations = null;
 	private ?int $toughness = null;
 	private ?int $willpower = null;
 	private ?int $baseCombatSkill = null;
@@ -257,6 +258,15 @@ class Race {
 
 	public function setBaseCombatSkill(?int $baseCombatSkill = null): static {
 		$this->baseCombatSkill = $baseCombatSkill;
+		return $this;
+	}
+
+	public function getHitLocations(): ?array {
+		return $this->hitLocations;
+	}
+
+	public function setHitLocations(?array $hitLocations): static {
+		$this->hitLocations = $hitLocations;
 		return $this;
 	}
 }

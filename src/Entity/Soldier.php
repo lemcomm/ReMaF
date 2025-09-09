@@ -1253,7 +1253,7 @@ class Soldier extends NPC {
 		*/
 
 		$result = 0;
-		$resistance = $resistance + round($this->getWillpower() / 5);
+		#$resistance = $resistance + round($this->getWillpower() / 5);
 
 		$base = $this->getWillpower() + floor($this->getMorale() / 2) + $adjustment;
 		$roll = rand($mod, $mod*6) - floor($this->getSanity() / 2);

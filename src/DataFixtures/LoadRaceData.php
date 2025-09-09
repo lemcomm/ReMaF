@@ -13,7 +13,7 @@ class LoadRaceData extends Fixture {
 		'first one'		=> ['hp'=>200, 'avgPackSize'=>1, 'maxPackSize'=>1, 'melee'=>2, 'ranged'=>2, 'mDef'=>2, 'rDef'=>2, 'morale'=>5.00, 'eats'=>false, 'maxHunger'=>null, 'undeath'=>false, 'aging'=>false, 'equipment'=>true, 'toughness'=>18, 'baseCombatSkill'=>16],
 		'second one'		=> ['roads' => 0.8, 'undeath'=>false, 'equipment'=>true],
 		'human'			=> ['equipment'=>true],
-		'magitek'		=> ['spot' => 2, 'size' => 2, 'avgPackSize' => 10, 'hp'=>400, 'travel' => 1.25, 'roads' => 0, 'features'=>0, 'melee'=>2, 'ranged'=>2, 'baseCombatSkill'=>14, 'mDef' => 2, 'rDef' => 4, 'toughness' => 22, 'fearless' => true, 'undeath' => false, 'aging' => false, 'equipment' => true, 'hitLoc' => 'magitek'],
+		'magitek'		=> ['spot' => 2, 'size' => 2, 'avgPackSize' => 10, 'hp'=>400, 'travel' => 1.25, 'roads' => 0, 'features'=>0, 'melee'=>2, 'ranged'=>2, 'baseCombatSkill'=>14, 'mDef' => 2, 'rDef' => 4, 'toughness' => 22, 'fearless' => true, 'undeath' => false, 'aging' => false, 'equipment' => true, 'dmgLoc' => true, 'hitLoc' => true],
 		'orc'			=> ['hp'=>150, 'avgPackSize'=>10, 'maxPackSize'=>100, 'travel'=>0.75, 'roads'=>0.75, 'size'=>1.25, 'melee'=>1.5, 'mDef'=>1.5, 'equipment'=>true, 'baseCombatSkill'=>14],
 		'ogre'			=> ['hp'=>200, 'avgPackSize'=>5, 'maxPackSize'=>25, 'travel'=>0.5, 'roads'=>0.25, 'size'=>3, 'melee'=>5, 'mDef'=>2.5, 'ranged'=>0.25, 'rDef'=>2.5, 'toughness'=>22, 'baseCombatSkill'=>10],
 		'dragon'		=> ['hp'=>10000, 'avgPackSize'=>1, 'maxPackSize'=>3, 'travel'=>5, 'roads'=>0, 'size'=>5, 'melee'=>10, 'ranged'=>5, 'mDef'=>5, 'rDef'=>5, 'morale'=>5, 'hungerRate'=>600, 'maxHunger'=>1800000, 'aging'=>false, 'toughness'=>32, 'baseCombatSkill'=>16],
@@ -45,6 +45,9 @@ class LoadRaceData extends Fixture {
 		'aging'=>true, # Ages
 		'equipment'=>false, # Uses equipment.
 	];
+
+	private array $defaultLocIndex = [5, 10, 15, 27, 33, 35, 39, 43, 60, 70, 74, 80, 88, 90, 96, 99];
+	private array $defaultHitLocs = ["skull", "face", "neck", "shoulder", "upper arm", "elbow", "forearm", "hand", "torso", "abdomen", "groin", "hip", "thigh", "knee", "calf", "foot"];
 
 	private array $defaultDmgLoc = [
 		"skull"=> [
@@ -179,14 +182,24 @@ class LoadRaceData extends Fixture {
 				}
 			}
 
-			if (!array_key_exists('hitLoc', $data)) {
-				$data['hitLoc'] = $this->defaultDmgLoc;
+			if (!array_key_exists('dmgLoc', $data)) {
+				$data['dmgLoc'] = $this->defaultDmgLoc;
 			} else {
-				if (method_exists($this, $data['hitLoc'].'HitLoc')) {
-					# For magitek this works out to $data['hitLoc'] = $this->magitekHitLoc();
-					$data['hitLoc'] = $this->{$data['hitLoc'].'HitLoc'}();
+				if (method_exists($this, $name.'DmgLoc')) {
+					# For magitek this works out to $data['dmgLoc'] = $this->magitekdmgLoc();
+					$data['dmgLoc'] = $this->{$name.'DmgLoc'}();
 				} else {
-					throw new \Exception('Bad or missing hitLocation entry for '.$name);
+					throw new \Exception('Bad or missing dmgLocation entry for '.$name);
+				}
+			}
+			if (!array_key_exists('hitLoc', $data)) {
+				$data['hitLoc'] = array_combine($this->defaultLocIndex, $this->defaultHitLocs);
+			} else {
+				if (method_exists($this, $name.'HitLoc')) {
+					$data['hitLoc'] = $this->{$name.'HitLoc'}();
+					echo 'wut';
+				} else {
+					throw new \Exception('Bad or missing hitLoc entry for '.$name);
 				}
 			}
 
@@ -210,7 +223,8 @@ class LoadRaceData extends Fixture {
 			$type->setUndeath($data['undeath']);
 			$type->setAging($data['aging']);
 			$type->setUseEquipment($data['equipment']);
-			$type->setDamageLocations($data['hitLoc']);
+			$type->setDamageLocations($data['dmgLoc']);
+			$type->setHitLocations($data['hitLoc']);
 			$type->setWillpower($data['willpower']);
 			$type->setToughness($data['toughness']);
 			$type->setBaseCombatSkill($data['baseCombatSkill']);
@@ -219,6 +233,12 @@ class LoadRaceData extends Fixture {
 	}
 
 	private function magitekHitLoc(): array {
+		$locIndex = [5, 27, 33, 39, 43, 60, 70, 74, 80, 88, 90, 96, 99];
+		$locNames = ['skull', 'shoulder', 'upper arm', 'forearm', "hand", "torso", "abdomen", "groin", "hip", "thigh", "knee", "calf", "foot"];
+		return array_combine($locIndex, $locNames);
+	}
+
+	private function magitekDmgLoc(): array {
 		$arr = $this->defaultDmgLoc;
 		unset($arr['face']);
 		unset($arr['neck']);

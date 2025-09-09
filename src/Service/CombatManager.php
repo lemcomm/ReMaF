@@ -166,7 +166,7 @@ class CombatManager {
 		$myLog = [];
 		$moraleLog = [];
 		$damage = 0;
-		$hitLoc = $this->getHitLoc();
+		$hitLoc = $this->getHitLoc($target);
 		$hitData = $this->resolveHit($me, $target, $hitLoc, $dice);
 		
 
@@ -344,21 +344,23 @@ class CombatManager {
 	}
 
 	public function resolveHit(Character|Soldier $me, Character|Soldier $target, $hitloc, $dice) {
-		$aspects = ['cutting', 'bashing', 'piercing', 'magefire'];
+		$aspects = $me->getWeapon()->getAspect();
 		$best =  [["aspect" => "nothing", "damage" => -100, "table" => []], -100];
 		// A note on the value -100. Maximum possible damage without magic is less than 40. Any armor value over this practically guarantees immunity.
 		$expDiceResult = $dice * 3;
-		foreach ($aspects as $aspect) {
-			$damTable = $this->getAspectIndex($aspect);
-			$armor = $target->getArmourHitLoc($hitloc, $aspect);
-			$armorProtection = $armor['armorProtection'];
-			// Sim values for AI determination
-			$expSimResult = $me->getWeaponAspect($aspect) - $armorProtection + $expDiceResult;
-			// Max() guarantees execution safety, making any armor value possible.
-			$simDiff = max($expSimResult - array_search("heavy", $damTable), -99);
-			// Real values used for calc
-			$diff = $me->getWeaponAspect($aspect) - $armorProtection;
-			$best = $simDiff > $best[1] ? [["aspect" => $aspect, "damage" => $diff, "table" => $damTable, "armor" => $armor], $simDiff] : $best;
+		foreach ($aspects as $aspect=>$value) {
+			if ($value > 0) {
+				$damTable = $this->getAspectIndex($aspect);
+				$armor = $target->getArmourHitLoc($hitloc, $aspect);
+				$armorProtection = $armor['armorProtection'];
+				// Sim values for AI determination
+				$expSimResult = $me->getWeaponAspect($aspect) - $armorProtection + $expDiceResult;
+				// Max() guarantees execution safety, making any armor value possible.
+				$simDiff = max($expSimResult - array_search("heavy", $damTable), -99);
+				// Real values used for calc
+				$diff = $me->getWeaponAspect($aspect) - $armorProtection;
+				$best = $simDiff > $best[1] ? [["aspect" => $aspect, "damage" => $diff, "table" => $damTable, "armor" => $armor], $simDiff] : $best;
+			}
 		}
 		return $best[0];
 	}
@@ -368,26 +370,25 @@ class CombatManager {
 		$bashIndex =   [1,	7,	13,	19,	25];
 		$cutIndex =    [1,	5,	9,	13,	17];
 		$pierceIndex = [1,	6,	11,	16,	21];
+		$magefireIndex = [1, 	4,	8,	12,	16];
 		$bashTable = array_combine($bashIndex, $damIndex);
 		$cutTable = array_combine($cutIndex, $damIndex);
 		$pierceTable = array_combine($pierceIndex, $damIndex);
+		$magefireTable = array_combine($magefireIndex, $damIndex);
 		if ($aspect === "bashing"){
 			return $bashTable;
-		}
-		elseif ($aspect === "cutting"){
+		} elseif ($aspect === "cutting"){
 			return $cutTable;
-		}
-		else{
+		} elseif ($aspect === "piercing"){
 			return $pierceTable;
+		} else {
+			return $magefireTable;
 		}
 	}
 
-	public function getHitLoc(): string {
+	public function getHitLoc(Character|Soldier $target): string {
 		$roll = rand(1, 100);
-		// Move this to Entity/Race.
-		$locindex = [5, 10, 15, 27, 33, 35, 39, 43, 60, 70, 74, 80, 88, 90, 96, 99];
-		$locname = ["skull", "face", "neck", "shoulder", "upper arm", "elbow", "forearm", "hand", "torso", "abdomen", "groin", "hip", "thigh", "knee", "calf", "foot"];
-		$hitLoc = array_combine($locindex, $locname);
+		$hitLoc = $target->getRace()->getHitLocations();
 		foreach($hitLoc as $index => $loc) {
 			if ($roll <= $index) {
 				return $loc;

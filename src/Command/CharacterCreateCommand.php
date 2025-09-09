@@ -83,7 +83,7 @@ class CharacterCreateCommand extends Command {
 				$output->writeln('<error>Unable to locate raceType for Character.</error>');
 				return Command::FAILURE;
 			}
-			$char = $this->cm->create($user, $name, $gender, true, $father, $mother);
+			$char = $this->cm->create($user, $name, $gender, true, $race, $father, $mother);
 			#TODO Combine all this placement stuff with the logic in CharacterController::firstAction
 			if ($where instanceof Place) {
 				if ($where->getLocation()) {

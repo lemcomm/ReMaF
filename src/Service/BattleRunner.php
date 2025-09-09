@@ -217,7 +217,11 @@ class BattleRunner {
 			$this->resolveBattle($myStage, $maxStage);
 			$this->log(15, "Post Battle Cleanup...\n");
 			$victor = $this->concludeBattle();
-			$victorReport = $victor->getActiveReport();
+			if ($victor) {
+				$victorReport = $victor->getActiveReport();
+			} else {
+				$victorReport = false;
+			}
 		} else {
 			// if there are no soldiers in the battle
 			$this->log(1, "failed battle\n");
@@ -694,8 +698,16 @@ class BattleRunner {
 				[$stageResult, $extras, $enemyCollection, $enemies] = $this->runRangedPhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies);
 
 				if ($this->legacyRuleset) {
-					$shots = $stageResult['shots'];
-					$rangedHits = $stageResult['rangedHits'];
+					if (array_key_exists('shots', $stageResult)) {
+						$shots = $stageResult['shots'];
+					} else {
+						$shots = 0;
+					}
+					if (array_key_exists('rangedHits', $stageResult)) {
+						$rangedHits = $stageResult['rangedHits'];
+					} else {
+						$rangedHits = 0;
+					}
 					if ($this->legacyMorale && !$this->ignoreMorale && $enemies > 0 && $rangedHits > 0) {
 						$stageResult = $this->legacyUpdateRangedMorale($group, $enemies, $shots, $rangedHits, $stageResult);
 					}
@@ -1431,7 +1443,7 @@ class BattleRunner {
 		}
 	}
 
-	public function concludeBattle() {
+	public function concludeBattle(): false|BattleGroup {
 		$battle = $this->battle;
 		$this->log(3, "survivors:\n");
 		$this->prepareRound(); // to update the isFighting setting correctly
@@ -1486,7 +1498,7 @@ class BattleRunner {
 
 		$allGroups = $this->battle->getGroups();
 		$this->log(2, "Fate of First Ones:\n");
-		$primaryVictor = null;
+		$primaryVictor = false;
 		foreach ($allGroups as $group) {
 			$nobleGroup=array();
 			$my_survivors = $group->getActiveSoldiers()->count();
@@ -1508,6 +1520,7 @@ class BattleRunner {
 						$this->log(5, $group->getActiveReport()->getId()." (".($group->getAttacker()?"attacker":"defender").") ID'd as primary victor but is reninforcing group #".$primaryVictor()->getActiveReport()->getId()." (".($primaryVictor->getAttacker()?"attacker":"defender").").\n");
 					} else {
 						# I have so many questions about how you ended up here...
+						# Probably double retreat or double capture at the very end.
 					}
 				}
 			} else {
@@ -1586,7 +1599,11 @@ class BattleRunner {
 		$this->em->flush();
 		$this->log(1, "unlocked...\n");
 		unset($allNobles);
-		$this->log(5, "concludeBattle returning ".$primaryVictor->getId()." (".($primaryVictor->getAttacker()?"attacker":"defender").") as primary victor.\n");
+		if ($primaryVictor) {
+			$this->log(5, "concludeBattle returning ".$primaryVictor->getId()." (".($primaryVictor->getAttacker()?"attacker":"defender").") as primary victor.\n");
+		} else {
+			$this->log(5, "concludeBattle returned an inconclusive result.");
+		}
 		return $primaryVictor;
 	}
 
