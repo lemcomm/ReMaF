@@ -1238,6 +1238,8 @@ soldier:
  light cavalry:    Light Cavalry
  heavy cavalry:    Heavy Cavalry
  noble:            Noble{count, plural, =1 {} other {s}}
+ watcher:          Watcher{count, plural, =1 {} other {s}}
+ mauler:           Mauler{count, plural, =1 {} other {s}}
  none:             no one...
 
 
