@@ -100,7 +100,6 @@ class CombatManager {
 		$this->groupAttackResolves++;
 		// Reattack is used as a flag to control multiple attacks per round. Eventually should be a stat check.
 		// Attacker hit
-		$moraleLog = [];
 		$attMastery = $me->getEffMastery(true);
 		$defMastery = $target->getEffMastery(false);
 
@@ -412,7 +411,6 @@ class CombatManager {
 				$strParse .= $strParse2;
 			}
 		}
-		
 		return $strParse;
 	}
 

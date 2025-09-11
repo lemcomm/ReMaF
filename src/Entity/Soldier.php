@@ -1231,7 +1231,7 @@ class Soldier extends NPC {
 		return ['EML' => $EML, 'ML' => $ML, 'WC' => $WC, 'weaponBaseSkill' => $weaponBaseSkill, 'mastery' => $mastery, 'penalty' => $pen, 'using' => $using];
 	}
 
-	public function moraleRoll(string $type, int $mod, int $resistance, int $adjustment, bool $canResist) {
+	public function moraleRoll(string $type, int $mod, int $resistance, int $adjustment, bool $canResist, array $myLog = []) {
 		/* Morale system:
 		If absolute value > 1/2 willpower: High/Low Morale/Sanity.
 		
@@ -1265,9 +1265,8 @@ class Soldier extends NPC {
 		}
 
 		if (abs($roll) % $this->getWillpower() === 0) {
-			[$result2, $log2] = $this->moraleRoll($type, $mod, $resistance, $adjustment, $canResist);
+			[$result2, $myLog] = $this->moraleRoll($type, $mod, $resistance, $adjustment, $canResist, $myLog);
 			$result += $result2;
-			$myLog = $log2;
 		}
 
 		if ($resistance > abs($result)){
@@ -1319,18 +1318,16 @@ class Soldier extends NPC {
 		// For example, if the soldier gets hurt, it will be much easier to get a larger morale bonus if he immediately inflicts a wound later in the same round.
 		$log = [];
 		if ($moraleMod !== 0) {
-			[$moraleAdjust, $log[]] = $this->moraleRoll('morale', $moraleMod, $this->getMoraleResistance(), $this->getMoraleAdjustment(), $canMoraleResist);
+			[$moraleAdjust, $log] = $this->moraleRoll('morale', $moraleMod, $this->getMoraleResistance(), $this->getMoraleAdjustment(), $canMoraleResist, $log);
 			$morale = $this->getMorale() + $moraleAdjust;
 			$this->setMorale($morale);
 		}
 		if ($sanityMod !== 0) {
-			[$sanityAdjust, $log[]] = $this->moraleRoll('sanity', $sanityMod, $this->getSanityResistance(), $this->getSanityAdjustment(), $canSanityResist);
+			[$sanityAdjust, $log] = $this->moraleRoll('sanity', $sanityMod, $this->getSanityResistance(), $this->getSanityAdjustment(), $canSanityResist, $log);
 			$sanity = $this->getSanity() + $sanityAdjust;
 			$this->setSanity($sanity);
 		}
-
 		return $log;
-
 	}
 
 	public function moraleStateCheck(): void {
