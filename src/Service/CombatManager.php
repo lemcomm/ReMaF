@@ -127,7 +127,6 @@ class CombatManager {
 		// Defender counterattack
 		} elseif ($result['result'] === 'DTA' && !$reattack) {
 			$log[0] = $log[0].'countered ';
-			$log[1][] = $this->parseMoraleResult($me, $me->moraleCheck(1, 0, true, false));
 			$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(0, 1, false, false));
 			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true, $log);
 		// Defender fumbles his defense and is vulnerable to attack
@@ -403,7 +402,7 @@ class CombatManager {
 			if(array_key_exists('check', $stringArr)) {
 				// Xing (second one.light infantry) checks for $type: -4 (base vs roll) [Resistance: 5, Adjustment: 5]
 				$str = $stringArr['check'];
-				$strParse = "$strActor checks for ".$str['type'].": ".$str['result']." (".$str['base']." vs ".$str['roll'].") [Resistance :".$str['resistance'].", Adjustment: ".$str['adjustment']."]\n";
+				$strParse = "$strActor checks for ".$str['type'].": ".$str['result']." (".$str['base']." vs ".$str['roll'].") [Res: ".$str['resistance'].", Adj: ".$str['adjustment']."]\n";
 			} elseif(array_key_exists('resist', $stringArr)) {
 				// Resistance rolled: EML [base: 35] vs roll - result
 				$str = $stringArr['resist'];

@@ -74,7 +74,7 @@ class TestBattleCommand extends  Command {
 						'-c' => $char->getId(),
 						'-w' => 'broadsword',
 						'-a' => 'chainmail',
-						'-x' => 25
+						'-x' => 100
 					]);
 					$this->getApplication()->doRun($solGen, $output);
 				}
