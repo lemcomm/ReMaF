@@ -70,7 +70,7 @@ class TestBattleCommand extends  Command {
 				foreach ($charArr as $char) {
 					$solGen = new ArrayInput([
 						'command' => 'maf:soldiers:add',
-						'quantity' => 10,
+						'quantity' => 20,
 						'-c' => $char->getId(),
 						'-w' => 'broadsword',
 						'-a' => 'chainmail',
@@ -96,7 +96,6 @@ class TestBattleCommand extends  Command {
 					'defenders' => $defenders,
 					'--ruleset' => $ruleset,
 				]);
-				print_r($battleGen);
 				$this->getApplication()->doRun($battleGen, $output);
 				$report = $this->em->createQuery('SELECT r FROM App\Entity\BattleReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();
 				$output->writeln("Report available at: ".$this->url->generate('maf_battlereport', ['id' => $report[0]->getId()]));
@@ -208,22 +207,20 @@ class TestBattleCommand extends  Command {
 					'defenders' => $defenders,
 					'--ruleset' => $ruleset,
 				]);
-				print_r($battleGen);
 				$this->getApplication()->doRun($battleGen, $output);
 				$report = $this->em->createQuery('SELECT r FROM App\Entity\BattleReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();
 				$output->writeln("Report available at: ".$this->url->generate('maf_battlereport', ['id' => $report[0]->getId()]));
 				break;
 		}
 		$this->em->clear();
+		sleep(5);
 		if ($input->getOption('cleanup') === '1') {
 			foreach ($charArr as $char) {
-				/** @var Character $char */
-				foreach ($char->getUnits() as $unit) {
-					$this->mil->disbandUnit($unit, true);
-				}
-				$this->em->flush();
-				$char->setUser();
-				$this->cm->kill($char);
+				$charKill = new ArrayInput([
+					'command' => 'maf:char:kill',
+					'c' => $char->getId(),
+				]);
+				$this->getApplication()->doRun($charKill, $output);
 			}
 		}
 		return Command::SUCCESS;

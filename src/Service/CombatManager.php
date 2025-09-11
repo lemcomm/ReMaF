@@ -128,20 +128,17 @@ class CombatManager {
 		// Defender counterattack
 		} elseif ($result['result'] === 'DTA' && !$reattack) {
 			$log[0] = $log[0].'countered ';
-			$moraleLog = $me->moraleCheck(-1, 1, true, false);
-			$log[1][] = $this->parseMoraleResult($me, $moraleLog);
-			$target->moraleCheck(1, 0, false, false);
+			$log[1][] = $this->parseMoraleResult($me, $me->moraleCheck(-1, 1, true, false));
+			$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(1, 0, false, false));
 			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true, $log);
 		// Defender fumbles his defense and is vulnerable to attack
 		} elseif ($result['result'] === 'Stumble') {
 			$log[0] = $log[0].'stumble ';
-			$moraleLog = $target->moraleCheck(-1, 1, true, false);
-			$log[1][] = $this->parseMoraleResult($target, $moraleLog);
+			$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(-1, 1, true, false));
 			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), $reattack, $log);
 		}
 		$log[0] = $log[0].'missed';
-		$moraleLog = $me->moraleCheck(-1, 1, true, false);
-		$log[1][] = $this->parseMoraleResult($me, $moraleLog);
+		$log[1][] = $this->parseMoraleResult($me, $me->moraleCheck(-1, 1, true, false));
 		return $log;
 	}
 
@@ -223,8 +220,7 @@ class CombatManager {
 		// Handle soldiers based on result.
 		if ($result === "protected") {
 			$logs[0] = $logs[0].'protected';
-			$moraleLog = $me->moraleCheck(-1, -2, true, true);
-			$logs[1][] = $this->parseMoraleResult($me, $moraleLog);
+			$logs[1][] = $this->parseMoraleResult($me, $me->moraleCheck(-1, -2, true, true));
 			$logs[1][] = "Protected: $strAttackerWeapon did no damage on $hitLoc against $strDefenderArmor.\n";
 			return $logs;
 			// Do something on armor protection?
@@ -263,8 +259,7 @@ class CombatManager {
 				$strResult = "Kill (Fatal Blow)";
 				$retResult = 'kill';
 			}
-			$moraleLog = $me->moraleCheck(3, $damResult[0] / 2 * -1, false, true);
-			$myLog[] = $this->parseMoraleResult($me, $moraleLog);
+			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(3, $damResult[0] / 2 * -1, false, true));
 		} elseif (in_array("amputate", $damResult) && $ampRoll > $target->getToughness()) {
 			if ($target->isNoble() && $myNoble && $random < $surrender) {
 				$this->captureInCombat($myNoble, $target->getCharacter());
@@ -277,17 +272,14 @@ class CombatManager {
 				$strResult = "Kill (Amputation)";
 				$retResult = 'kill';
 			}
-			$moraleLog = $me->moraleCheck(3, -4, false, true);
-			$myLog[] = $this->parseMoraleResult($me, $moraleLog);
+			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(3, -4, false, true));
 			// When we implement proper post battle, we can do something else with the soldier.
 		} else {
 			// Target is wounded.
 			$target->addHitsTaken();
 			$me->addCasualty();
-			$moraleLog = $me->moraleCheck($damResult[0], $damResult[0] * -1, false, true);
-			$myLog[] = $this->parseMoraleResult($me, $moraleLog);
-			$moraleLog = $target->moraleCheck($damResult[0] * -1, $damResult[0] / 2, true, true);
-			$myLog[] = $this->parseMoraleResult($target, $moraleLog);
+			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck($damResult[0], $damResult[0] * -1, false, true));
+			$myLog[] = $this->parseMoraleResult($target, $target->moraleCheck($damResult[0] * -1, $damResult[0] / 2, true, true));
 			// Shock roll
 			for ($i = 0; $i < $damResult[0]; $i++) {
 				$shockRoll += rand(1, 6);
@@ -303,8 +295,7 @@ class CombatManager {
 					$strResult = "Kill (Shock)";
 					$retResult = 'kill';
 					$target->kill();
-					$moraleLog = $me->moraleCheck(2, -1, false, false);
-					$myLog[] = $this->parseMoraleResult($me, $moraleLog);
+					$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(2, -1, false, false));
 				}
 			} else {
 				$retResult = 'wound';
@@ -408,6 +399,7 @@ class CombatManager {
 
 	public function parseMoraleResult(Soldier|Character $me, $log): string {
 		$strActor = $me->getName()."(".$me->getTranslatableType().") [".$me->getMoraleState()."]";
+		$strParse = '';
 		foreach ($log as $stringArr) {
 			if(array_key_exists('check', $stringArr)) {
 				// Xing (second one.light infantry) checks for $type: -4 (base vs roll) [Resistance: 5, Adjustment: 5]

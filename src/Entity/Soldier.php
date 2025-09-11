@@ -1256,7 +1256,7 @@ class Soldier extends NPC {
 		#$resistance = $resistance + round($this->getWillpower() / 5);
 
 		$base = $this->getWillpower() + floor($this->getMorale() / 2) + $adjustment;
-		$roll = rand($mod, $mod*6) - floor($this->getSanity() / 2);
+		$roll = abs(rand($mod, $mod*6)) - floor($this->getSanity() / 2);
 
 		if (abs($roll) > $base * 2) {
 			$result = $mod * 2;
@@ -1317,14 +1317,14 @@ class Soldier extends NPC {
 	public function moraleCheck(int $moraleMod, int $sanityMod, bool $canMoraleResist, bool $canSanityResist): array {
 		// For now, it is fine for these things to happen mid-round, and for it to affect subsequent rolls to simulate a bandwidth capacity, and order of events.
 		// For example, if the soldier gets hurt, it will be much easier to get a larger morale bonus if he immediately inflicts a wound later in the same round.
-		
+		$log = [];
 		if ($moraleMod !== 0) {
-			[$moraleAdjust, $log] = $this->moraleRoll('morale', $moraleMod, $this->getMoraleResistance(), $this->getMoraleAdjustment(), $canMoraleResist);
+			[$moraleAdjust, $log[]] = $this->moraleRoll('morale', $moraleMod, $this->getMoraleResistance(), $this->getMoraleAdjustment(), $canMoraleResist);
 			$morale = $this->getMorale() + $moraleAdjust;
 			$this->setMorale($morale);
 		}
 		if ($sanityMod !== 0) {
-			[$sanityAdjust, $log] = $this->moraleRoll('sanity', $sanityMod, $this->getSanityResistance(), $this->getSanityAdjustment(), $canSanityResist);
+			[$sanityAdjust, $log[]] = $this->moraleRoll('sanity', $sanityMod, $this->getSanityResistance(), $this->getSanityAdjustment(), $canSanityResist);
 			$sanity = $this->getSanity() + $sanityAdjust;
 			$this->setSanity($sanity);
 		}
@@ -1333,7 +1333,7 @@ class Soldier extends NPC {
 
 	}
 
-	public function moraleStateCheck() {
+	public function moraleStateCheck(): void {
 		$baseThreshold = $this->getWillpower() / 2;
 		$morale = $this->getMorale();
 		$sanity = $this->getSanity();
