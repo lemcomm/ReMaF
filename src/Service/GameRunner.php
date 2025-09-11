@@ -667,18 +667,18 @@ class GameRunner {
 					}
 					$this->milman->disbandUnit($unit, true);
 				}
-
+			} else {
+				if ($here->getSiege() && $here->getSiege()->getEncircled()) {
+					$unit->setTravelDays(1);
+					continue;
+				}
+				$count++;
+				$unit->setTravelDays(null);
+				if ($unit->getDestination()=='base') {
+					$units[] = $unit;
+				}
+				$unit->setDestination(null);
 			}
-			if ($here->getSiege() && $here->getSiege()->getEncircled()) {
-				$unit->setTravelDays(1);
-				continue;
-			}
-			$count++;
-			$unit->setTravelDays(null);
-			if ($unit->getDestination()=='base') {
-				$units[] = $unit;
-			}
-			$unit->setDestination(null);
 		}
 		if ($count) {
 			foreach ($units as $unit) {
