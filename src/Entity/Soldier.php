@@ -1144,7 +1144,7 @@ class Soldier extends NPC {
 
 	public function getSanityResistance(): int {
 		$bonus = $this->getStateTraits();
-		$res = $this->sanityResistance + $bonus['Desperation'] - $bonus['Hope'] - $bonus['Mania'] + $bonus['Rage'];
+		$res = $this->sanityResistance + $bonus['Desperation'] + $bonus['Hope'] - $bonus['Mania'] + $bonus['Rage'];
 		return $res;
 	}
 
