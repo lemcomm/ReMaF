@@ -44,6 +44,7 @@ class LoadRaceData extends Fixture {
 		'undeath'=>true, # Can be undead.
 		'aging'=>true, # Ages
 		'equipment'=>false, # Uses equipment.
+		'fearless'=>false, # Unaffected by morale/sanity.
 	];
 
 	private array $defaultLocIndex = [5, 10, 15, 27, 33, 35, 39, 43, 60, 70, 74, 80, 88, 90, 96, 99];
@@ -228,6 +229,7 @@ class LoadRaceData extends Fixture {
 			$type->setWillpower($data['willpower']);
 			$type->setToughness($data['toughness']);
 			$type->setBaseCombatSkill($data['baseCombatSkill']);
+			$type->setFearless($data['fearless']);
 		}
 		$manager->flush();
 	}

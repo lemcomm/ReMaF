@@ -1317,15 +1317,17 @@ class Soldier extends NPC {
 		// For now, it is fine for these things to happen mid-round, and for it to affect subsequent rolls to simulate a bandwidth capacity, and order of events.
 		// For example, if the soldier gets hurt, it will be much easier to get a larger morale bonus if he immediately inflicts a wound later in the same round.
 		$log = [];
-		if ($moraleMod !== 0) {
-			[$moraleAdjust, $log] = $this->moraleRoll('morale', $moraleMod, $this->getMoraleResistance(), $this->getMoraleAdjustment(), $canMoraleResist, $log);
-			$morale = $this->getMorale() + $moraleAdjust;
-			$this->setMorale($morale);
-		}
-		if ($sanityMod !== 0) {
-			[$sanityAdjust, $log] = $this->moraleRoll('sanity', $sanityMod, $this->getSanityResistance(), $this->getSanityAdjustment(), $canSanityResist, $log);
-			$sanity = $this->getSanity() + $sanityAdjust;
-			$this->setSanity($sanity);
+		if (!$this->getRace()->getFearless()) {
+			if ($moraleMod !== 0) {
+				[$moraleAdjust, $log] = $this->moraleRoll('morale', $moraleMod, $this->getMoraleResistance(), $this->getMoraleAdjustment(), $canMoraleResist, $log);
+				$morale = $this->getMorale() + $moraleAdjust;
+				$this->setMorale($morale);
+			}
+			if ($sanityMod !== 0) {
+				[$sanityAdjust, $log] = $this->moraleRoll('sanity', $sanityMod, $this->getSanityResistance(), $this->getSanityAdjustment(), $canSanityResist, $log);
+				$sanity = $this->getSanity() + $sanityAdjust;
+				$this->setSanity($sanity);
+			}
 		}
 		return $log;
 	}

@@ -29,6 +29,7 @@ class Race {
 	private ?int $toughness = null;
 	private ?int $willpower = null;
 	private ?int $baseCombatSkill = null;
+	private ?bool $fearless = null;
 
 	public function getId(): ?int {
 		return $this->id;
@@ -267,6 +268,15 @@ class Race {
 
 	public function setHitLocations(?array $hitLocations): static {
 		$this->hitLocations = $hitLocations;
+		return $this;
+	}
+
+	public function getFearless(): ?bool {
+		return $this->fearless;
+	}
+
+	public function setFearless(?bool $fearless): static {
+		$this->fearless = $fearless;
 		return $this;
 	}
 }

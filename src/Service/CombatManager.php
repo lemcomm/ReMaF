@@ -127,17 +127,17 @@ class CombatManager {
 		// Defender counterattack
 		} elseif ($result['result'] === 'DTA' && !$reattack) {
 			$log[0] = $log[0].'countered ';
-			$log[1][] = $this->parseMoraleResult($me, $me->moraleCheck(-1, 1, true, false));
-			$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(1, 0, false, false));
+			$log[1][] = $this->parseMoraleResult($me, $me->moraleCheck(1, 0, true, false));
+			$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(0, 1, false, false));
 			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true, $log);
 		// Defender fumbles his defense and is vulnerable to attack
 		} elseif ($result['result'] === 'Stumble') {
 			$log[0] = $log[0].'stumble ';
-			$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(-1, 1, true, false));
+			$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(0, 1, true, false));
 			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), $reattack, $log);
 		}
 		$log[0] = $log[0].'missed';
-		$log[1][] = $this->parseMoraleResult($me, $me->moraleCheck(-1, 1, true, false));
+		$log[1][] = $this->parseMoraleResult($me, $me->moraleCheck(0, 1, true, false));
 		return $log;
 	}
 

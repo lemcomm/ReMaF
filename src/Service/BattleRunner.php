@@ -744,7 +744,7 @@ class BattleRunner {
 
 		# Ranged phase used to have its own morale logic.
 		# v3 combat combined it, hence this if this or these both--the legacy morale for melee is built into this.
-		if ($type === 'normal' || ($type === 'ranged' && !$this->legacyMorale)) {
+		if ($this->legacyRuleset && ($type === 'normal' || ($type === 'ranged' && !$this->legacyMorale))) {
 			$this->runPostPhase($type, $groups);
 		}
 
@@ -1409,36 +1409,6 @@ class BattleRunner {
 					$stageExtra[] = $extra;
 				}
 				$stageResult->setExtra($stageExtra);
-			} elseif ($this->masteryRuleset) {
-				/** @var Soldier $soldier */
-				foreach ($group->getFightingSoldiers() as $soldier) {
-					# Since isFighting is only updated in the preparation phase, this includes soldiers that will go inactive from this round.
-					$soldier->updateState();
-					$soldier->applyModifier();
-					$solBonus = $soldier->getStateTraits();
-					$solPenalty = $soldier->getModifierSum() * $solBonus['Recklessness'];
-					$solWillpower = $soldier->getWillpower() - $solBonus['Fear'];
-					if ($solBonus['Unbreakable']) {
-						$staredDeath++;
-						$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): is unbreakable due to [".$soldier->getMoraleState()."] mental state - has no fear\n");
-
-					} elseif ($solPenalty > $solWillpower) {
-						$moraleRoll = rand($solPenalty/2, $solPenalty*3 );
-						if ($moraleRoll > $solWillpower) {
-							$soldier->setRouted(true);
-							$routed++;
-							$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): morale $solWillpower vs $moraleRoll - fears death\n");
-						} else {
-							$staredDeath++;
-							$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): morale $solWillpower vs $moraleRoll - has no fear\n");
-						}
-					} else {
-						$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): toughness $solWillpower vs $solPenalty\n");
-					}
-				}
-				$combatResults['routed'] = $routed; # Append routed info.
-				$combatResults['stared'] = $staredDeath;
-				$combatResults['retreated'] = $retreated;
 			}
 		}
 	}
