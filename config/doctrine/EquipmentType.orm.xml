@@ -12,6 +12,16 @@
 		<field name="defense" type="smallint"/>
 		<field name="training_required" type="smallint"/>
 		<field name="resupply_cost" type="smallint"/>
+		<field name="mastery" type="smallint" nullable="true"/>
+		<field name="armor" type="array" nullable="true"/>
+		<field name="aspect" type="array" nullable="true"/>
+		<field name="class" type="array" nullable="true"/>
+		<field name="reach" type="smallint" nullable="true"/>
+		<field name="category" type="string" nullable="true"/>
+		<field name="mode" type="string" nullable="true"/>
+		<field name="quality" type="smallint" nullable="true"/>
+		<field name="weight" type="float" nullable="true"/>
+		<field name="restricted" type="boolean" nullable="true"/>
 
 		<many-to-one field="provider" target-entity="BuildingType" inversed-by="provides_equipment" />
 		<many-to-one field="trainer" target-entity="BuildingType" inversed-by="provides_training" />

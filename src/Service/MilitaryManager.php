@@ -89,8 +89,9 @@ class MilitaryManager {
 		switch($this->common->getClassName($entity)) {
 			case 'Settlement':
 				if ($with_trainers) {
-					$query = $this->em->createQuery('SELECT e as item, ba.resupply FROM App\Entity\EquipmentType e LEFT JOIN e.provider p LEFT JOIN p.buildings ba LEFT JOIN ba.settlement sa LEFT JOIN e.trainer t LEFT JOIN t.buildings bb LEFT JOIN bb.settlement sb WHERE sa = :location AND ba.active = true AND sb = :location AND bb.active = true ORDER BY p.name ASC, e.name ASC');				} else {
-					$query = $this->em->createQuery('SELECT e as item, b.resupply FROM App\Entity\EquipmentType e LEFT JOIN e.provider p LEFT JOIN p.buildings b LEFT JOIN b.settlement s WHERE s = :location AND b.active = true ORDER BY p.name ASC, e.name ASC');
+					$query = $this->em->createQuery('SELECT e as item, ba.resupply FROM App\Entity\EquipmentType e LEFT JOIN e.provider p LEFT JOIN p.buildings ba LEFT JOIN ba.settlement sa LEFT JOIN e.trainer t LEFT JOIN t.buildings bb LEFT JOIN bb.settlement sb WHERE e.restricted = false AND sa = :location AND ba.active = true AND sb = :location AND bb.active = true ORDER BY p.name ASC, e.name ASC');
+				} else {
+					$query = $this->em->createQuery('SELECT e as item, b.resupply FROM App\Entity\EquipmentType e LEFT JOIN e.provider p LEFT JOIN p.buildings b LEFT JOIN b.settlement s WHERE e.restricted = false AND s = :location AND b.active = true ORDER BY p.name ASC, e.name ASC');
 				}
 				$query->setParameter('location', $entity);
 				return $query->getResult();
@@ -582,6 +583,31 @@ class MilitaryManager {
 		}
 		$this->em->flush();
 		return $unit;
+	}
+
+	/**
+	 * @param Unit $unit
+	 *
+	 * @return Unit
+	 */
+	public function splitUnit(Unit $unit): Unit {
+		$new = new Unit();
+		$this->em->persist($new);
+		$new->setSettlement($unit->getSettlement());
+		$new->setSupplier($unit->getSupplier());
+		$new->setCharacter($unit->getCharacter());
+		$new->setName($unit->getName());
+		$new->setStrategy($unit->getStrategy());
+		$new->setTactic($unit->getTactic());
+		$new->setRespectFort($unit->getRespectFort());
+		$new->setLine($unit->getLine());
+		$new->setSiegeOrders($unit->getSiegeOrders());
+		$new->setRenamable($unit->getRenamable());
+		$new->setRetreatThreshold($unit->getRetreatThreshold());
+		$new->setReinforcements($unit->getReinforcements());
+		$new->setProvision($unit->getProvision());
+		$new->setConsumption($unit->getConsumption());
+		return $new;
 	}
 
 	public function prepareUnit(Character $char, Unit $unit, Settlement $here) {

@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Character;
 use App\Entity\Election;
 use App\Entity\RealmPosition;
+use App\Entity\Resupply;
 use App\Entity\Siege;
 use App\Entity\Soldier;
 use App\Entity\Supply;
@@ -885,26 +886,56 @@ class GameRunner {
 						}
 					}
 					if ($severity < 20) {
-						$this->history->logEvent(
-							$unit,
-							'event.unit.starvation.light',
-							array(),
-							History::MEDIUM, false, 30
-						);
+						if ($unit->getSupplier()) {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.light1',
+								array("%link-settlement%"=>$unit->getSupplier()->getId()),
+								History::MEDIUM, false, 30
+							);
+						} else {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.light2',
+								array(),
+								History::MEDIUM, false, 30
+							);
+						}
+
 					} elseif ($severity < 40) {
-						$this->history->logEvent(
-							$unit,
-							'event.unit.starvation.medium',
-							array(),
-							History::MEDIUM, false, 30
-						);
+						if ($unit->getSupplier()) {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.medium1',
+								array("%link-settlement%"=>$unit->getSupplier()->getId()),
+								History::MEDIUM, false, 30
+							);
+						} else {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.medium2',
+								array(),
+								History::MEDIUM, false, 30
+							);
+						}
+
 					} else {
-						$this->history->logEvent(
-							$unit,
-							'event.unit.starvation.high',
-							array(),
-							History::MEDIUM, false, 30
-						);
+						if ($unit->getSupplier()) {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.high1',
+								array("%link-settlement%"=>$unit->getSupplier()->getId()),
+								History::MEDIUM, false, 30
+							);
+						} else {
+							$this->history->logEvent(
+								$unit,
+								'event.unit.starvation.high2',
+								array(),
+								History::MEDIUM, false, 30
+							);
+						}
+
 					}
 					foreach ($living as $soldier) {
 						$soldier->makeHungry($severity);
@@ -973,6 +1004,88 @@ class GameRunner {
 		$this->output("$date --   Deducting a day from unit resupply times...");
 		$query = $this->em->createQuery('UPDATE App\Entity\Resupply r SET r.travel_days = (r.travel_days - 1) WHERE r.travel_days IS NOT NULL');
 		$query->execute();
+		$this->em->flush();
+		$this->em->clear();
+
+		// Split units that are too large for players to actually manage.
+		$date = date("Y-m-d H:i:s");
+		$this->output("$date --   Checking for excessively large units...");
+		$units = 0;
+		$query = $this->em->getConnection()->executeQuery('SELECT u.id FROM unit u WHERE (SELECT count(s.id) FROM soldier s WHERE s.unit_id=u.id) > 300');
+		foreach ($query->fetchAllAssociative() as $UID) {
+			$unit = $this->em->getRepository(Unit::class)->find($UID);
+			if ($unit) {
+				$count = $unit->getSoldiers()->count();
+				$limit = floor($count/2);
+				$new = $this->milman->splitUnit($unit);
+				$i = 0;
+				$this->em->flush();
+				foreach ($unit->getSoldiers() as $sol) {
+					$sol->setUnit($new);
+					$i++;
+					if ($i >= $limit) {
+						break;
+					}
+				}
+				$this->em->flush();
+				foreach ($unit->getSupplies() as $supp) {
+					$newSupp = new Supply();
+					$this->em->persist($newSupp);
+					$newSupp->setUnit($new);
+					$split = floor($supp->getQuantity()/2);
+					$newSupp->setQuantity($split);
+					$supp->setQuantity($supp->getQuantity() - $split);
+					$newSupp->setType($supp->getType());
+				}
+				$this->em->flush();
+				foreach ($unit->getIncomingSupplies() as $in) {
+					$newIn = new Resupply();
+					$this->em->persist($newIn);
+					$newIn->setUnit($new);
+					$newIn->setOrigin($in->getOrigin());
+					$newIn->setType($in->getType());
+					$split = floor($in->getQuantity()/2);
+					$newIn->setQuantity($split);
+					$in->setQuantity($in->getQuantity() - $split);
+					$newIn->setTravelDays($in->getTravelDays());
+				}
+				$this->em->flush();
+				if ($unit->getCharacter()) {
+					$this->history->logEvent(
+						$unit->getCharacter(),
+						'event.unit.split',
+						array("%link-unit-1"=>$unit->getId(), "%link-unit-2%"=>$new->getId()),
+						History::HIGH, false, 30
+					);
+				}
+				if ($unit->getSettlement()) {
+					$this->history->logEvent(
+						$unit->getCharacter(),
+						'event.unit.split',
+						array("%link-unit-1"=>$unit->getId(), "%link-unit-2%"=>$new->getId()),
+						History::HIGH, false, 30
+					);
+				}
+				$this->history->logEvent(
+					$unit,
+					'event.unit.split',
+					array("%link-unit-1"=>$unit->getId(), "%link-unit-2%"=>$new->getId()),
+					History::HIGH, false, 30
+				);
+				$this->history->logEvent(
+					$new,
+					'event.unit.split',
+					array("%link-unit-1"=>$unit->getId(), "%link-unit-2%"=>$new->getId()),
+					History::HIGH, false, 30
+				);
+				$date = date("Y-m-d H:i:s");
+				$this->output("$date --     Split Unit ".$new->getId()." from Unit ".$unit->getId());
+				$units++;
+			}
+			$this->em->clear();
+		}
+		$date = date("Y-m-d H:i:s");
+		$this->output("$date --   $units Units have been split.");
 
 		$this->common->setGlobal('cycle.soldiers', 'complete');
 		$this->em->flush();

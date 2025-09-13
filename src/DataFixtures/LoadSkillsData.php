@@ -44,6 +44,7 @@ class LoadSkillsData extends Fixture {
         private array $skills = array(
                 "short sword" => array('cat' => 'swords'),
                 "long sword" => array('cat' => 'swords'),
+		"falchion" => array('cat' => 'swords'),
                 "machete" => array('cat' => 'swords'),
 
                 "knife" => array('cat' => 'daggers'),
@@ -91,6 +92,8 @@ class LoadSkillsData extends Fixture {
                 "throwing knife" => array('cat' => 'thrown'),
                 "throwing axe" => array('cat' => 'thrown'),
                 "javelin" => array('cat' => 'thrown'),
+
+		"shield" => array('cat' => 'equipment'),
         );
 
 	public function load(ObjectManager $manager): void {

@@ -135,6 +135,7 @@ class Character extends AbstractCharacter {
 	private Collection $battlegroups;
 	private Collection $chat_messages;
 	private ?Unit $leading_unit = null;
+	private ?Dungeon $fromDungeon = null;
 
 	public function __construct() {
 		$this->achievements = new ArrayCollection();
@@ -3846,5 +3847,14 @@ class Character extends AbstractCharacter {
 
 	public function addAttack($ignored): void {
 		# Deliberately empty.
+	}
+
+	public function getFromDungeon(): ?Dungeon {
+		return $this->fromDungeon;
+	}
+
+	public function setFromDungeon(?Dungeon $fromDungeon): static {
+		$this->fromDungeon = $fromDungeon;
+		return $this;
 	}
 }

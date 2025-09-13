@@ -12,14 +12,14 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DebugBattleCommand extends Command {
+class BattleMoveupCommand extends Command {
 	public function __construct(private EntityManagerInterface $em, private WarManager $war) {
 		parent::__construct();
 	}
 
 	protected function configure(): void {
 		$this
-			->setName('maf:debug:battletimer')
+			->setName('maf:battle:moveup')
 			->setDescription('Debug command for forcing a battle to run at the next runner.')
 			->addArgument('c', InputArgument::REQUIRED, 'Which battle? Battle::id.')
 		;

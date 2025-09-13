@@ -29,8 +29,8 @@ class WorkerFeatureconstructionCommand extends  Command {
 		$this
 			->setName('maf:worker:construction:features')
 			->setDescription('Featureconstruction - worker component - do not call directly')
-			->addArgument('start', InputArgument::OPTIONAL, 'start character id')
-			->addArgument('end', InputArgument::OPTIONAL, 'end character id')
+			->addArgument('offset', InputArgument::OPTIONAL, 'start offset')
+			->addArgument('batch', InputArgument::OPTIONAL, 'batch limit')
 		;
 	}
 
@@ -38,11 +38,10 @@ class WorkerFeatureconstructionCommand extends  Command {
 		$em = $this->em;
 		$economy = $this->econ;
 		$history = $this->hist;
-		$start = $input->getArgument('start');
-		$end = $input->getArgument('end');
+		$offset = $input->getArgument('offset');
+		$batch = $input->getArgument('batch');
 
-		$query = $em->createQuery('SELECT f FROM App\Entity\GeoFeature f JOIN f.type t JOIN f.geo_data g WHERE g.id >= :start and g.id <= :end AND f.workers > 0 OR (f.workers = 0 AND f.condition < 0 AND f.condition > -t.build_hours)');
-		$query->setParameters(array('start'=>$start, 'end'=>$end));
+		$query = $em->createQuery('SELECT f FROM App\Entity\GeoFeature f JOIN f.type t JOIN f.geo_data g WHERE f.workers > 0 OR (f.workers = 0 AND f.condition < 0 AND f.condition > -t.build_hours)')->setMaxresults($batch)->setFirstResult($offset);
 		foreach ($query->getResult() as $feature) {
 			if ($feature->getWorkers() > 0) {
 				// construction

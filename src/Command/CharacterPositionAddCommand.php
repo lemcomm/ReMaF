@@ -11,14 +11,16 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DebugRealmPosCommand extends Command {
-	public function __construct(private EntityManagerInterface $em, private RealmManager $rm) {
+class CharacterPositionAddCommand extends Command {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private RealmManager $rm) {
 		parent::__construct();
 	}
 
 	protected function configure(): void {
 		$this
-			->setName('maf:debug:realmpos')
+			->setName('maf:char:position:add')
 			->setDescription('Debug command for giving a character a realm position')
 			->addArgument('c', InputArgument::REQUIRED, 'Which character are we appointing? Character::id.')
 			->addArgument('r', InputArgument::REQUIRED, 'Which position are they getting appointed to? RealmPosition::id.')

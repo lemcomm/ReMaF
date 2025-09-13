@@ -9,6 +9,7 @@
 		<field name="complete" type="datetime"/>
 		<field name="initial_complete" type="datetime"/>
 		<field name="type" type="string" nullable="true"/>
+		<field name="ruleset" type="string" nullable="true"/>
 		<many-to-one field="primary_attacker" target-entity="BattleGroup" inversed-by="attacking_in_battles"/>
 		<many-to-one field="primary_defender" target-entity="BattleGroup" inversed-by="defending_in_battles"/>
 

@@ -26,20 +26,19 @@ class WorkerEconomyCommand extends Command {
 		$this
 			->setName('maf:worker:economy')
 			->setDescription('Economy - worker component - do not call directly')
-			->addArgument('start', InputArgument::OPTIONAL, 'start settlement id')
-			->addArgument('end', InputArgument::OPTIONAL, 'end settlement id')
+			->addArgument('offset', InputArgument::OPTIONAL, 'start offset')
+			->addArgument('batch', InputArgument::OPTIONAL, 'batch limit')
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-		$start = $input->getArgument('start');
-		$end = $input->getArgument('end');
+		$offset = $input->getArgument('offset');
+		$batch = $input->getArgument('batch');
 
 		$memory_limit = $this->return_bytes(ini_get('memory_limit'));
-		$output->writeln("Working economy for settlements from $start to $end.");
+		$output->writeln("Working economy for settlements with offset of $offset and a total batch of $batch.");
 
-		$query = $this->em->createQuery('SELECT s FROM App\Entity\Settlement s WHERE s.id >= :start AND s.id <= :end');
-		$query->setParameters(array('start'=>$start, 'end'=>$end));
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Settlement s')->setMaxresults($batch)->setFirstResult($offset);
 		$iterableResult = $query->toIterable();
 		$count = 0;
 		foreach ($iterableResult as $settlement) {

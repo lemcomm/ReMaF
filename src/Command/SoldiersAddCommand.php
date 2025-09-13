@@ -26,7 +26,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateSoldiersCommand extends Command {
+class SoldiersAddCommand extends Command {
 
 	private $whereString = '';
 	public function __construct(private EntityManagerInterface $em, private Generator $generator, private MilitaryManager $military) {
@@ -35,7 +35,7 @@ class GenerateSoldiersCommand extends Command {
 
 	protected function configure(): void {
 		$this
-			->setName('maf:generate:soldiers')
+			->setName('maf:soldiers:add')
 			->setDescription('Generator command for creating and assigning soldiers.')
 			->addArgument('quantity', InputArgument::REQUIRED, 'How many soldiers to create?')
 			->addOption('character', 'c', InputArgument::OPTIONAL, 'What character should these be assigned to? (You must have at least a character OR a unit)', null)

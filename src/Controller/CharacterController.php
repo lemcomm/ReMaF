@@ -446,7 +446,7 @@ class CharacterController extends AbstractController {
 		]);
 	}
 
-	#TODO Combine all this placement stuff with the logic in GenerateCharacterCommand::execute
+	#TODO Combine all this placement stuff with the logic in CharacterCreateCommand::execute
       	#[Route ('/char/spawnin/home', name:'maf_spawn_home')]
     	#[Route ('/char/spawnin/s{spawn}', name:'maf_spawn_in', requirements: ['spawn'=>'\d+'])]
 	public function firstAction(?Spawn $spawn = null): RedirectResponse|Response {

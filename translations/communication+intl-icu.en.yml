@@ -323,9 +323,16 @@ event:
   recalled:     "{character} has recalled {unit} from your command."
   starvation:
    light:       Suffers from light starvation.
+   light1:      Suffers from light starvation, possibly due to not receiving enough food from {settlement}.
+   light2:      Suffers from light starvation and has no supply source.
    medium:      Suffers from moderate starvation.
+   medium1:     Suffers from moderate starvation, possibly due to not receiving enough food from {settlement}.
+   medium2:     Suffers from moderate starvation and has no supply source.
    high:        Suffers from significant starvation.
-   death:       Due to starvation, {i} soldiers have died.
+   high1:       Suffers from significant starvation, possibly due to not receiving enough food from {settlement}.
+   high2:       Suffers from significant starvation and has no supply source.
+   death:       Due to starvation, {i} soldier have died.
+  split:        The gods have {unit_1} unit in two, with part of it becoming {unit_2}.
  quest:
   created:      Quest created.
   started:      "{character} has begun the quest."

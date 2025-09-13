@@ -3,18 +3,29 @@
 namespace App\Entity;
 
 class EquipmentType {
+	private ?int $id = null;
 	private string $name;
 	private ?string $icon = null;
 	private string $type;
 	private int $ranged;
 	private int $melee;
 	private int $defense;
+	private ?int $mastery = null;
+	private ?array $armor = null;
+	private ?array $aspect = null;
+	private ?array $class = null;
+	private ?int $reach = null;
+	private ?string $category = null;
+	private ?string $mode = null;
+	private ?int $quality = null;
+	private ?float $weight = null;
 	private int $training_required;
 	private int $resupply_cost;
-	private ?int $id = null;
+	private ?bool $restricted = null;
 	private ?BuildingType $provider = null;
 	private ?BuildingType $trainer = null;
 	private ?SkillType $skill = null;
+
 
 	public function getNametrans(): string {
 		return 'item.' . $this->getName();
@@ -268,6 +279,106 @@ class EquipmentType {
 	public function setSkill(?SkillType $skill = null): static {
 		$this->skill = $skill;
 
+		return $this;
+	}
+
+	public function getMastery(): ?int {
+		return $this->mastery;
+	}
+
+	public function setMastery(?int $mastery): static {
+		$this->mastery = $mastery;
+		return $this;
+	}
+
+	public function getArmor(): ?array {
+		return $this->armor;
+	}
+
+	public function setArmor(?array $armor): static {
+		$this->armor = $armor;
+		return $this;
+	}
+
+	public function getAspect(): ?array {
+		return $this->aspect;
+	}
+
+	public function setAspect(?array $aspect): static {
+		$this->aspect = $aspect;
+		return $this;
+	}
+
+	public function getClass(): ?array {
+		return $this->class;
+	}
+
+	public function setClass(?array $class): static {
+		$this->class = $class;
+		return $this;
+	}
+
+	public function getReach(): ?int {
+		return $this->reach;
+	}
+
+	public function setReach(?int $reach): static {
+		$this->reach = $reach;
+		return $this;
+	}
+
+	public function getCategory(): ?string {
+		return $this->category;
+	}
+
+	public function setCategory(?string $category): static {
+		$this->category = $category;
+		return $this;
+	}
+
+	public function getMode(): ?string {
+		return $this->mode;
+	}
+
+	public function setMode(?string $mode): static {
+		$this->mode = $mode;
+		return $this;
+	}
+
+	public function getQuality(): ?int {
+		return $this->quality;
+	}
+
+	public function setQuality(?int $quality): static {
+		$this->quality = $quality;
+		return $this;
+	}
+
+	public function getWeight(): ?float {
+		return $this->weight;
+	}
+
+	public function setWeight(?float $weight): static {
+		$this->weight = $weight;
+		return $this;
+	}
+
+	public function getAttackClass(): int {
+		if ($this->getClass()) return $this->getClass()[0];
+		return 0;
+	}
+
+	public function getDefenseClass(): int {
+		if ($this->getClass()) return $this->getClass()[1];
+		return 0;
+	}
+
+	public function getRestricted(): ?bool {
+		return $this->restricted;
+	}
+
+	public function setRestricted(?bool $restricted): static {
+		$this->restricted = $restricted;
 		return $this;
 	}
 }

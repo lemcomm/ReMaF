@@ -1238,6 +1238,8 @@ soldier:
  light cavalry:    Light Cavalry
  heavy cavalry:    Heavy Cavalry
  noble:            Noble{count, plural, =1 {} other {s}}
+ watcher:          Watcher{count, plural, =1 {} other {s}}
+ mauler:           Mauler{count, plural, =1 {} other {s}}
  none:             no one...
 
 
@@ -1248,16 +1250,21 @@ item:
  club:             club
  current:          (current)
  axe:              axe
+ battlesword:      battlesword
  broadsword:       broadsword
  chainmail:        chainmail
+ chain mace:       ball and chain
  cloth armour:     cloth armor
  crossbow:         crossbow
+ falchion:         falchion
  glaive:           glaive
  great axe:        great axe
  halberd:          halberd
  horse:            horse
  improvised:       improvised
  javelin:          javelin
+ kite shield:      kite shield
+ knight shield:    knight shield
  lamellar armour:  lamellar armor
  lance:            lance
  leather armour:   leather armor
@@ -1268,9 +1275,11 @@ item:
  pavise:           pavise
  pike:             pike
  plate armour:     plate armor
+ quilt armour:     quilt armor
  recurve bow:      recruve bow
+ ringmail:         ringmail
+ round shield:     shield
  scale armour:     scale armor
- shield:           shield
  shortbow:         shortbow
  short sword:      short sword
  sling:            sling
@@ -1279,6 +1288,8 @@ item:
  spear:            spear
  sword:            sword
  war horse:        war horse
+ warflail:         war flail
+ warhammer:        warhammer
 
 events:
  title:     Event Journals
@@ -1317,6 +1328,7 @@ interaction:
   name:     Target(s)
   message:  Message to target(s)
   submit:   Initiate attack
+  mastery:  Use Mastery System?
  grant:
   name:         Grant control
   submit:       Grant
@@ -1395,12 +1407,15 @@ battle:
  round:
   title:        Combat Phase {i}
   alive:        "{i} soldier{count, plural, =1 {} other {s}} fighting"
+  enemies:      "{i} enem{count, plural, =1 {y} other {ies}}"
   shots:        "{i} shot{count, plural, =1 {} other {s}} fired"
   rangedHits:   "{i} ranged hit{count, plural, =1 {} other {s}}"
   kill:         "{i} enem{count, plural, =1 {y} other {ies}} killed"
   wound:        "{i} enem{count, plural, =1 {y} other {ies}} wounded"
   panic:        "{i} enem{count, plural, =1 {y} other {ies}} routed"
   capture:      "{i} enemy First One{count, plural, =1 {} other {s}} captured"
+  cntattack:     "{i} counterattack{count, plural, =1 {} other {s}} taken"
+  stumbles:     "{i} soldier{count, plural, =1 {} other {s}} stumbled"
   fail:         "{i} {count, plural, =1 {was} other {were}} unable to do any damage"
   misses:       "{i} missed their target{count, plural, =1 {} other {s}}"
   meleeMisses:  "{i} missed their attack{count, plural, =1 {} other {s}}"
@@ -1408,6 +1423,7 @@ battle:
   routed:       "{i} soldier{count, plural, =1 { was} other {s were}} routed"
   retreated:    "{i} soldier{count, plural, =1 {} other {s}} retreated"
   strikes:      "{i} melee hit{count, plural, =1 {} other {s}}"
+  attacks:      "{i} attack{count, plural, =1 {} other {s}}"
   notarget:     "{i} {count, plural, =1 {was} other {were}} unable to find a target"
   chargefail:   "{i} {count, plural, =1 {was} other {were}} counter-attacked in the charge, but took no damage"
   chargewound:  "{i} {count, plural, =1 {was} other {were}} wounded by the enemy in the charge"

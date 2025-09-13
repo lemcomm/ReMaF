@@ -123,7 +123,7 @@
 	<i><a href="{{ path("maf_journal_character", {'id':char.id}) }}">{{ 'character.journals'|trans|title }}</a></i>
 {% endif %}
 
-{% if char.background.appearance and char.background.appearance is defined %}
+{% if char.background and char.background.appearance and char.background.appearance is defined %}
 	{{ char.background.appearance|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 {% endif %}
 {% if relationship %}

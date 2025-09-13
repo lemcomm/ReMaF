@@ -10,14 +10,14 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DebugRemoveBattleCommand extends Command {
+class BattleReportRemoveCommand extends Command {
 	public function __construct(private readonly EntityManagerInterface $em) {
 		parent::__construct();
 	}
 
 	protected function configure(): void {
 		$this
-			->setName('maf:debug:remove:battlereport')
+			->setName('maf:battlereport:remove')
 			->setDescription('Debug command for removing excessive (or broken) battle reports')
 			->addArgument('battleReportId', InputArgument::REQUIRED, 'Which battle report are we removing? BattleReport::id.')
 		;

@@ -1,3 +1,5 @@
+This manual page specifically details the "Legacy" Might & Fealty combat system. [Click here to view the "Mastery" combat system.](battles3)
+
 When [diplomacy] or [messages] cannot solve a dispute any longer, swords will. Battle is armed conflict between military forces, a single encounter on the battlefield.
 
 
@@ -26,7 +28,7 @@ Within these phases, all actions are resolved simultaneously.
 
 
 ### Ranged Phase ###
-As the armies approach each other, archers and other ranged troops are first to open fire. They will get one volley off before melee is joined, and thus cause casualties that have no chance to ever see melee. Losses suffered to archer fire will also impact morale of the fighting troops, and if the archer fire is especially deadly, might even cause some troops to flee combat before ever entering it properly.
+As the armies approach each other, archers and other ranged troops are first to open fire. They will get three volleys off before melee is joined, and thus cause casualties that have no chance to ever see melee. Losses suffered to archer fire will also impact morale of the fighting troops, and if the archer fire is especially deadly, might even cause some troops to flee combat before ever entering it properly.
 
 In the final stage of some sieges (those that involve a castle of some sort) this phase will be skipped entirely.
 
@@ -67,6 +69,7 @@ No, the game leaves it to you to declare yourself victorious.
 The game **does**, however, apply battle results for First Ones and individual soldiers on both sides. Your troops can come out of a battle routed, wounded and with lost or damaged equipment, forcing a resupply. They can, of course, also not come out of the battle alive at all.
 
 The same is true for First Ones, except for equipment - First Ones are assumed to have spare equipment and possibilities to replace killed horses, etc. But nobles can be victorious, defeated, wounded, killed or captured (see [prison]). They are considered victorious if their side is in control of the battlefield at the end of the battle, and defeated if all troops on their side were wiped out.
+
 As a result of battles over settlements, victorious attackers will enter a settlement. Defeated troops that had previously forced their way into the settlement (i.e. who do not have permission to enter) will be forced outside.
 
 Wounds on both soldiers and First Ones do not affect their actions in the game, but additional wounds make death more likely. Going into battle while still wounded can be very dangerous.

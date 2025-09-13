@@ -32,7 +32,7 @@ class WarManager {
 		private LoggerInterface $logger) {
 	}
 
-	public function createBattle(Character $character, ?Settlement $settlement=null, ?Place $place=null, null|array|ArrayCollection $targets=array(), ?Siege $siege=null, ?BattleGroup $attackers=null, ?BattleGroup $defenders=null): array {
+	public function createBattle(Character $character, ?Settlement $settlement=null, ?Place $place=null, null|array|ArrayCollection $targets=array(), ?Siege $siege=null, ?BattleGroup $attackers=null, ?BattleGroup $defenders=null, $ruleset='legacy'): array {
 		/* for future reference, $outside is used to determine whether or not attackers need to leave the settlement in order to attack someone.
 		It's used by attackOthersAction of WarCon. --Andrew */
 		$type = 'field';
@@ -43,6 +43,7 @@ class WarManager {
 		$battle = new Battle;
 		$this->em->persist($battle);
 		$battle->setWorld($character->getWorld());
+		$battle->setRuleset($ruleset);
 		if ($siege) {
 			# Check for sieges first, because they'll always have settlements or places attached, but settlements and places won't always come with sieges.
 			if ($settlement) {

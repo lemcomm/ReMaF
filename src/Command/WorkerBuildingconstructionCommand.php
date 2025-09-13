@@ -32,19 +32,18 @@ class WorkerBuildingconstructionCommand extends  Command {
 		$this
 			->setName('maf:worker:construction:buildings')
 			->setDescription('Buildingconstruction - worker component - do not call directly')
-			->addArgument('start', InputArgument::OPTIONAL, 'start character id')
-			->addArgument('end', InputArgument::OPTIONAL, 'end character id')
+			->addArgument('offset', InputArgument::OPTIONAL, 'start offset')
+			->addArgument('batch', InputArgument::OPTIONAL, 'batch limit')
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$economy = $this->econ;
 		$history = $this->hist;
-		$start = $input->getArgument('start');
-		$end = $input->getArgument('end');
+		$batch = $input->getArgument('batch');
+		$offset = $input->getArgument('offset');
 
-		$query = $this->em->createQuery('SELECT s FROM App\Entity\Settlement s WHERE s.id >= :start AND s.id <= :end');
-		$query->setParameters(array('start'=>$start, 'end'=>$end));
+		$query = $this->em->createQuery('SELECT s FROM App\Entity\Settlement s')->setMaxresults($batch)->setFirstResult($offset);
 		foreach ($query->getResult() as $settlement) {
 			$supply = $economy->getSupply($settlement);
 			foreach ($settlement->getBuildings() as $building) {

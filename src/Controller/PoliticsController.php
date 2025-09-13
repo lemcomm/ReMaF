@@ -11,6 +11,7 @@ use App\Entity\PlacePermission;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\SettlementPermission;
+use App\Form\AreYouSureType;
 use App\Form\CharacterSelectType;
 use App\Form\ListingType;
 use App\Form\PartnershipsNewType;
@@ -22,6 +23,7 @@ use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
 use App\Service\History;
 use App\Service\Politics;
+use App\Twig\LinksExtension;
 use DateInterval;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -889,6 +891,40 @@ class PoliticsController extends AbstractController {
 		}
 
 		return $this->redirectToRoute('maf_settlement', array('id'=>$settlement->getId()));
+	}
+
+	#[Route ('/politics/positions', name: 'maf_politics_positions')]
+	public function positionsAction(Request $request): Response {
+		$char = $this->disp->gateway();
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+
+		return $this->render('Politics/positions.html.twig', [
+			'char'=>$char,
+			'positions'=>$char->getPositions()
+		]);
+	}
+
+	#[Route ('/politics/abdicate/{position}', name: 'maf_politics_abdicate', requirements:['position'=>'\d+'])]
+	public function abdicateAction(RealmPosition $position, CharacterManager $cm, LinksExtension $links, Request $request): Response {
+		$char = $this->disp->gateway();
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+
+		$form = $this->createForm(AreYouSureType::class);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$cm->abdicatePosition($char, $position);
+			$this->em->flush();
+			$this->addFlash('notice', $this->trans->trans('positions.abdicated', ['position'=>$links->ObjectLink($position)], 'politics'));
+			return $this->redirectToRoute('maf_politics_positions');
+		}
+		return $this->render('Politics/abdicate.html.twig', [
+			'form'=>$form,
+			'position'=>$position,
+		]);
 	}
 
 }

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Exception;
 
 class World {
 	private ?int $id = null;
@@ -252,7 +253,13 @@ class World {
 		return $this->name;
 	}
 
+	/**
+	 * @throws Exception
+	 */
 	public function setName(?string $name): static {
+		if (strtoLower($name) === 'new') {
+			throw new Exception("World name can not be set to any variation of only the word 'new' for simplicity of import.");
+		}
 		$this->name = $name;
 		return $this;
 	}
