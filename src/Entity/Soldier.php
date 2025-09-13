@@ -1138,14 +1138,12 @@ class Soldier extends NPC {
 
 	public function getMoraleResistance(): int {
 		$bonus = $this->getStateTraits();
-		$res = $this->moraleResistance + $bonus['Confidence'] - $bonus['Imagination'] - $bonus['Mania'] - $bonus['Rage'];
-		return $res;
+		return $this->moraleResistance + $bonus['Confidence'] + $bonus['Imagination'] + $bonus['Mania'] + $bonus['Rage'];
 	}
 
 	public function getSanityResistance(): int {
 		$bonus = $this->getStateTraits();
-		$res = $this->sanityResistance + $bonus['Desperation'] + $bonus['Hope'] - $bonus['Mania'] + $bonus['Rage'];
-		return $res;
+		return $this->sanityResistance + $bonus['Desperation'] + $bonus['Hope'] + $bonus['Mania'] + $bonus['Rage'];
 	}
 
 	public function setMoraleAdjustment(int $val): static {
@@ -1255,10 +1253,10 @@ class Soldier extends NPC {
 		$result = 0;
 		#$resistance = $resistance + round($this->getWillpower() / 5);
 
-		$base = $this->getWillpower() + floor($this->getMorale() / 2) + $adjustment;
-		$roll = abs(rand($mod, $mod*6)) - floor($this->getSanity() / 2);
+		$base = $this->getWillpower() + floor($this->getMorale() / 2) - floor($this->getSanity() / 2);
+		$roll = abs(rand($mod, $mod*6)) + $adjustment;
 
-		if (abs($roll) > $base * 2) {
+		if (abs($roll) > $base) {
 			$result = $mod * 2;
 		} else {
 			$result = $mod;

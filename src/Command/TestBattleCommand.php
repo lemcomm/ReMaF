@@ -46,6 +46,7 @@ class TestBattleCommand extends  Command {
 				$set = 1;
 				break;
 			case 3:
+			case 4:
 				$ruleset = 'mastery';
 				break;
 			default:
@@ -98,8 +99,6 @@ class TestBattleCommand extends  Command {
 					'--ruleset' => $ruleset,
 				]);
 				$this->getApplication()->doRun($battleGen, $output);
-				$report = $this->em->createQuery('SELECT r FROM App\Entity\BattleReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();
-				$output->writeln("Report available at: ".$this->url->generate('maf_battlereport', ['id' => $report[0]->getId()]));
 				break;
 			case 3:
 				$i = 0;
@@ -209,10 +208,59 @@ class TestBattleCommand extends  Command {
 					'--ruleset' => $ruleset,
 				]);
 				$this->getApplication()->doRun($battleGen, $output);
-				$report = $this->em->createQuery('SELECT r FROM App\Entity\BattleReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();
-				$output->writeln("Report available at: ".$this->url->generate('maf_battlereport', ['id' => $report[0]->getId()]));
+				break;
+			case 4:
+				$i = 0;
+				while ($i < 2) {
+					$i++;
+					$charGen = new ArrayInput([
+						'command' => 'maf:char:create',
+						'name' => 'Tester '.$i,
+						'where' => 'Settlement:1249',
+						'user' => 56
+					]);
+					$this->getApplication()->doRun($charGen, $output);
+					$last = $this->em->createQuery('SELECT c FROM App\Entity\Character c ORDER BY c.id DESC')->setMaxResults(1)->getResult();
+					$charArr[] = $last[0];
+				}
+				$this->em->clear(); # While I've not seen it forget the character the unit is attached to, this is just a precaution. --Andrew
+				$first = true;
+				foreach ($charArr as $char) {
+					$solGen = new ArrayInput([
+						'command' => 'maf:soldiers:add',
+						'quantity' => 20,
+						'-c' => $char->getId(),
+						'-w' => 'broadsword',
+						'-a' => $first?'chainmail':'leather armour',
+						'-x' => $first?100:0,
+					]);
+					$this->getApplication()->doRun($solGen, $output);
+					$first = false;
+				}
+				$this->em->clear();
+				$i = 0;
+				foreach ($charArr as $char) {
+					if ($i % 2) {
+						$attackers .= $char->getId().',';
+					} else {
+						$defenders .= $char->getId().',';
+					}
+					$i++;
+				}
+				$attackers = rtrim($attackers, ",");
+				$defenders = rtrim($defenders, ",");
+				$battleGen = new ArrayInput([
+					'command' => 'maf:battle:generate',
+					'where' => 'Settlement:1249',
+					'attackers' => $attackers,
+					'defenders' => $defenders,
+					'--ruleset' => $ruleset,
+				]);
+				$this->getApplication()->doRun($battleGen, $output);
 				break;
 		}
+		$report = $this->em->createQuery('SELECT r FROM App\Entity\BattleReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();
+		$output->writeln("Report available at: ".$this->url->generate('maf_battlereport', ['id' => $report[0]->getId()]));
 		$this->em->clear();
 		sleep(5);
 		if ($input->getOption('cleanup') === '1') {

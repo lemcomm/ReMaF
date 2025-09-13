@@ -85,11 +85,12 @@ class BattleGenerateCommand extends Command {
 				$runner->version = $version;
 			}
 		}
-		if ($attackers && $defenders) {
+		if ($attackers->count() > 0 && $defenders->count() > 0) {
 			$output->writeln('<info>Inputs appear to be valid. Building out entities!</info>');
 			$battle->setStarted(new DateTime("-30 Days"));
 			$battle->setComplete(new DateTime("now"));
 			$battle->setInitialComplete(new DateTime("now"));
+			$battle->setRuleset($ruleset);
 			$attGrp = new BattleGroup();
 			foreach ($attackers as $att) {
 				$attGrp->addCharacter($att);
@@ -117,7 +118,6 @@ class BattleGenerateCommand extends Command {
 			$output->writeln('<info>Battle ready for processing!</info>');
 			$output->writeln('<info>Running!</info>');
 			$cycle = $this->common->getCycle();
-			$runner->combatRules = $ruleset;
 			$runner->run($battle, $cycle);
 			$this->em->flush();
 			return Command::SUCCESS;
@@ -191,7 +191,7 @@ class BattleGenerateCommand extends Command {
 		return $battle;
 	}
 
-	private function findCharacters($string): false|ArrayCollection {
+	private function findCharacters($string): ArrayCollection {
 		$all = new ArrayCollection();
 		$string = explode(',', $string);
 		foreach ($string as $char) {
@@ -200,7 +200,7 @@ class BattleGenerateCommand extends Command {
 				$all->add($char);
 			}
 		}
-		return $all->count()?$all:false;
+		return $all;
 	}
 
 	private function findType(string $string, Battle $battle): Battle {

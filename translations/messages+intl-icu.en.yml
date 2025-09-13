@@ -1328,6 +1328,7 @@ interaction:
   name:     Target(s)
   message:  Message to target(s)
   submit:   Initiate attack
+  mastery:  Use Mastery System?
  grant:
   name:         Grant control
   submit:       Grant

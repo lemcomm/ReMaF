@@ -132,7 +132,7 @@ class CombatManager {
 		// Defender fumbles his defense and is vulnerable to attack
 		} elseif ($result['result'] === 'Stumble') {
 			$log[0] = $log[0].'stumble ';
-			$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(0, 1, true, false));
+			#$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(0, 1, true, false));
 			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), $reattack, $log);
 		}
 		$log[0] = $log[0].'missed';
@@ -218,7 +218,7 @@ class CombatManager {
 		// Handle soldiers based on result.
 		if ($result === "protected") {
 			$logs[0] = $logs[0].'protected';
-			$logs[1][] = $this->parseMoraleResult($me, $me->moraleCheck(-1, -2, true, true));
+			$logs[1][] = $this->parseMoraleResult($me, $me->moraleCheck(-1, 0, true, true));
 			$logs[1][] = "Protected: $strAttackerWeapon did no damage on $hitLoc against $strDefenderArmor.\n";
 			return $logs;
 			// Do something on armor protection?
@@ -276,8 +276,8 @@ class CombatManager {
 			// Target is wounded.
 			$target->addHitsTaken();
 			$me->addCasualty();
-			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck($damResult[0], $damResult[0] * -1, false, true));
-			$myLog[] = $this->parseMoraleResult($target, $target->moraleCheck($damResult[0] * -1, $damResult[0] / 2, true, true));
+			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(2, -1, false, true));
+			$myLog[] = $this->parseMoraleResult($target, $target->moraleCheck(-1, 2, true, false));
 			// Shock roll
 			for ($i = 0; $i < $damResult[0]; $i++) {
 				$shockRoll += rand(1, 6);

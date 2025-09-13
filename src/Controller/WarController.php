@@ -1330,7 +1330,7 @@ class WarController extends AbstractController {
 			'maxdistance'=> $this->geo->calculateInteractionDistance($character),
 			'me'=>$character,
 			'multiple'=>true,
-			'settlementcheck'=>true
+			'settlementcheck'=>true,
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -1359,7 +1359,7 @@ class WarController extends AbstractController {
 					$this->hist->logEvent($target, 'event.character.overwhelmed', ['%link-character%' => $character->getId()], History::HIGH, true);
 					$this->addFlash("warning", $this->trans->trans("military.battles.initiate.backfire", ["%link-character%" => $target->getId()], "actions"));
 				} else {
-					$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target']);
+					$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target'], null, null, null, $data['mastery']);
 					if ($result['outside'] && $character->getInsideSettlement()) {
 						// leave settlement if we attack targets outside
 						$character->setInsideSettlement(null);

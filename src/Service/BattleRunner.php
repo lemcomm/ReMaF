@@ -136,6 +136,7 @@ class BattleRunner {
 	}
 
 	private function prepareCombatManager(): void {
+		$this->combatRules = $this->battle->getRuleset();
 		$this->combat->version = $this->combatVersion;
 		$this->combat->ruleset = $this->combatRules;
 		$this->combat->prepare();
@@ -186,7 +187,7 @@ class BattleRunner {
 		$this->report->setSortie(FALSE);
 		$this->report->setUrban(FALSE);
 
-		$this->log(1, "Battle ".$battle->getId()."\n");
+		$this->log(1, "Battle ".$battle->getId().", ".$battle->getRuleset()."\n");
 
 		$this->findXpMod($battle);
 
@@ -1356,11 +1357,11 @@ class BattleRunner {
 						}
 						if (!$this->ignoreMorale && $myMorale < $rand) {
 							if ($noble) {
-								$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($myMorale)." vs $rand - has no fear\n");
+								$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($myMorale, 2)." vs $rand - has no fear\n");
 								$staredDeath++;
 							} else{
 								$routed++;
-								$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($myMorale)." vs $rand - panics\n");
+								$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($myMorale, 2)." vs $rand - panics\n");
 								$soldier->setRouted(true);
 								$this->history->addToSoldierLog($soldier, 'routed.melee');
 							}
