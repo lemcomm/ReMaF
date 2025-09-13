@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class ExceptionController extends AbstractController {
 	public function __construct(
@@ -43,7 +44,8 @@ class ExceptionController extends AbstractController {
 		$uri = $request->getRequestUri();
 		$type = $request->headers->get('accept');
 		$ref = $request->server->get('HTTP_REFERER');
-		$user = $this->getUser()?->getId()?:'(none)';
+		$userId = $this->getUser()?->getId()?:'(none)';
+		$user = $this->getUser()?:'(none)';
 		$agent = $request->headers->get('User-Agent');
 		$bits = explode("::", $error);
 		if ($code !== 404) {
@@ -70,11 +72,11 @@ class ExceptionController extends AbstractController {
 			}
 			if ($forward) {
 				try {
-					$text = "Status Code: $code \nError: $error\nRequestUri:$uri\nReferer:$ref\nUser: $user\nAgent: $agent\nTrace:\n$trace";
+					$text = "Status Code: $code \nError: $error\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n$trace";
 					$this->discord->pushToErrors($text);
 					if ($forward2) {
 						$owner = $this->em->getRepository(Character::class)->findOneBy(['id'=>$charId]);
-						$text = "User #".$user->getId()." attempted to access Character #".$charId." owned by ".$owner?->getUser()->getId();
+						$text = "User #".$userId." attempted to access Character #".$charId." owned by ".$owner?->getUser()->getId();
 						$this->discord->pushToOlympus($text);
 					}
 				} catch (Exception $e) {
