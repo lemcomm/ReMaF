@@ -58,20 +58,6 @@ class ProcessBattlesCommand extends Command {
 				$query = $this->em->createQuery('SELECT b FROM App\Entity\Battle b WHERE b.complete < :now ORDER BY b.id ASC');
 				$query->setParameters(['now' => $now]);
 				foreach ($query->getResult() as $battle) {
-					if ($battle->getRules()) {
-						$this->br->combatRules = $battle->getRules();
-						if ($battle->getRules() === 'maf') {
-							$this->br->legacyRuleset = true;
-							$this->br->masteryRuleset = false;
-						} else {
-							$this->br->masteryRuleset = true;
-							$this->br->legacyRuleset = false;
-						}
-					} else {
-						$this->br->combatRules = 'maf';
-						$this->br->legacyRuleset = true;
-						$this->br->masteryRuleset = false;
-					}
 					$this->br->enableLog($arg_debug);
 					$this->br->run($battle, $cycle);
 				}

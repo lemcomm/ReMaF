@@ -55,8 +55,6 @@ class WorkerUpdateSpottingCommand extends  Command {
 			->andWhere($qb->expr()->eq('c.alive', $qb->expr()->literal(true))) // we see nothing if we are dead,
 			->andWhere($qb->expr()->eq('c.slumbering', $qb->expr()->literal(false))) // ...slumbering
 			->andWhere($qb->expr()->isNull('c.prisoner_of')) // ...or a prisoner
-			->andWhere($qb->expr()->gte('c.id', ':start'))
-			->andWhere($qb->expr()->lte('c.id', ':end'))
 			->groupBy('c')
 			->addGroupBy('b.spot')
 			->addGroupBy('f.amount')
