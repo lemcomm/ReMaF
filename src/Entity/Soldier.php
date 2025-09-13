@@ -1142,12 +1142,12 @@ class Soldier extends NPC {
 
 	public function getMoraleResistance(): int {
 		$bonus = $this->getStateTraits();
-		return $this->moraleResistance + $bonus['Confidence'] + $bonus['Imagination'] + $bonus['Mania'] + $bonus['Rage'];
+		return $this->moraleResistance + $bonus['Confidence'] + $bonus['Imagination'] + $bonus['Mania'] + $bonus['Rage'] + $bonus['Calmness'];
 	}
 
 	public function getSanityResistance(): int {
 		$bonus = $this->getStateTraits();
-		return $this->sanityResistance + $bonus['Desperation'] + $bonus['Hope'] + $bonus['Mania'] + $bonus['Rage'];
+		return $this->sanityResistance + $bonus['Desperation'] + $bonus['Hope'] + $bonus['Mania'] + $bonus['Rage'] + $bonus['Calmness'];
 	}
 
 	public function setMoraleAdjustment(int $val): static {

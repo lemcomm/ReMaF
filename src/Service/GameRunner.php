@@ -1011,7 +1011,7 @@ class GameRunner {
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking for excessively large units...");
 		$units = 0;
-		$query = $this->em->getConnection()->executeQuery('SELECT u.id FROM unit WHERE (SELECT count(s.id) FROM soldier s WHERE s.unit_id=u.id) > 300');
+		$query = $this->em->getConnection()->executeQuery('SELECT u.id FROM unit u WHERE (SELECT count(s.id) FROM soldier s WHERE s.unit_id=u.id) > 300');
 		foreach ($query->fetchAllAssociative() as $UID) {
 			$unit = $this->em->getRepository(Unit::class)->find($UID);
 			if ($unit) {
