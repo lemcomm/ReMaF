@@ -410,7 +410,11 @@ class Soldier extends NPC {
 		return $this->morale;
 	}
 
-	public function setMorale($value): static {
+	public function setMorale($value, $mastery = false): static {
+		if ($mastery) {
+			$this->morale = $value;
+			return $this;
+		}
 		if ($value > $this->maxMorale * $this->healthValue()) {
 			$this->morale = floor($this->maxMorale * $this->healthValue());
 		} else {
@@ -1319,7 +1323,7 @@ class Soldier extends NPC {
 			if ($moraleMod !== 0) {
 				[$moraleAdjust, $log] = $this->moraleRoll('morale', $moraleMod, $this->getMoraleResistance(), $this->getMoraleAdjustment(), $canMoraleResist, $log);
 				$morale = $this->getMorale() + $moraleAdjust;
-				$this->setMorale($morale);
+				$this->setMorale($morale, true);
 			}
 			if ($sanityMod !== 0) {
 				[$sanityAdjust, $log] = $this->moraleRoll('sanity', $sanityMod, $this->getSanityResistance(), $this->getSanityAdjustment(), $canSanityResist, $log);

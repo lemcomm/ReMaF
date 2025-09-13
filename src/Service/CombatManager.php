@@ -124,13 +124,13 @@ class CombatManager {
 		
 		if (str_starts_with($result['result'], 'A')) {
 			return $this->resolveDamage($me, $target, (int)substr($result['result'], -1), $reattack, $log);
-		// Defender counterattack
 		} elseif ($result['result'] === 'DTA' && !$reattack) {
+			// Defender counterattack
 			$log[0] = $log[0].'countered ';
 			$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(0, 1, false, false));
 			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true, $log);
-		// Defender fumbles his defense and is vulnerable to attack
 		} elseif ($result['result'] === 'Stumble') {
+			// Defender fumbles his defense and is vulnerable to attack
 			$log[0] = $log[0].'stumble ';
 			#$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(0, 1, true, false));
 			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), $reattack, $log);
@@ -276,7 +276,7 @@ class CombatManager {
 			// Target is wounded.
 			$target->addHitsTaken();
 			$me->addCasualty();
-			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(2, -1, false, true));
+			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(1, -1, false, true));
 			$myLog[] = $this->parseMoraleResult($target, $target->moraleCheck(-1, 2, true, false));
 			// Shock roll
 			for ($i = 0; $i < $damResult[0]; $i++) {

@@ -479,7 +479,7 @@ class BattleRunner {
 
 				/** @var Soldier $soldier */
 				$soldiers = $group->getActiveSoldiers();
-				if ($this->legacyMorale) {
+				if ($this->legacyRuleset) {
 					foreach ($soldiers as $soldier) {
 						// starting morale: my power, defenses and relative sizes
 						$power = $this->combat->RangedPower($soldier, true) + $this->combat->MeleePower($soldier, true) + $this->combat->DefensePower($soldier, true);
@@ -870,15 +870,7 @@ class BattleRunner {
 						$this->attacks++;
 						$noCavTargets = 0;
 						$hit = $this->combat->attackRoll($soldier, $target);
-						/*if ($hit !== 'Defended') {
-							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
-							$this->logAttack($results, $logs);
-						} else {
-							$this->log(10, $soldier->getName()."(".$soldier->getTranslatableType()." attacks but ".$target->getName()." (".$target->getTranslatableType().") defended\n");
-							$result = $hit;
-						}*/
-
-						[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+						[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit, true); #Prevent counters during ranged phase
 						$this->logAttack($results, $logs);
 						$this->fatigueRoll($soldier, $phase);
 					} else {
@@ -891,15 +883,7 @@ class BattleRunner {
 						$this->shots++;
 						$noRangeTargets = 0;
 						$hit = $this->combat->attackRoll($soldier, $target);
-						/*if ($hit !== 'Defended') {
-							[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
-							$this->logAttack($results, $logs);
-						} else {
-							$this->log(10, $soldier->getName()."(".$soldier->getTranslatableType()." attacks but ".$target->getName()." (".$target->getTranslatableType().") defended\n");
-							$result = $hit;
-						}*/
-
-						[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit);
+						[$results, $logs] = $this->combat->resolveAttack($soldier, $target, $hit, true); #Prevent counters during cav charge
 						$this->logAttack($results, $logs);
 						$this->fatigueRoll($soldier, $phase);
 
@@ -1357,11 +1341,11 @@ class BattleRunner {
 						}
 						if (!$this->ignoreMorale && $myMorale < $rand) {
 							if ($noble) {
-								$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($myMorale, 2)." vs $rand - has no fear\n");
+								$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($myMorale, 2)."/".$soldier->getMaxMorale()." vs $rand - has no fear\n");
 								$staredDeath++;
 							} else{
 								$routed++;
-								$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($myMorale, 2)." vs $rand - panics\n");
+								$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($myMorale, 2)."/".$soldier->getMaxMorale()." vs $rand - panics\n");
 								$soldier->setRouted(true);
 								$this->history->addToSoldierLog($soldier, 'routed.melee');
 							}
@@ -1376,7 +1360,7 @@ class BattleRunner {
 								$this->history->addToSoldierLog($soldier, 'routed.melee');
 							}
 						} else {
-							$this->log(20, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($soldier->getMorale())." vs $rand / HP: $myHealth vs $hRand \n");
+							$this->log(20, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): ($mod) morale ".round($soldier->getMorale())."/".$soldier->getMaxMorale()." vs $rand / HP: $myHealth vs $hRand \n");
 						}
 					} elseif (!$this->ignoreMorale) {
 						$soldier->setMorale($soldier->getMorale() * $mod);
@@ -2032,19 +2016,14 @@ class BattleRunner {
 			/** @var Character $char */
 			if ($this->version >= 2) {
 				$weapon = $char->getWeapon();
-				if (!$weapon) {
-					$weapon = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'broadsword']);
-				}
 				$armour = $char->getArmour();
-				if (!$armour) {
-					$armour = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'plate armour']);
-				}
 				$equipment = $char->getEquipment();
-				if (!$equipment) {
-					$equipment = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'shield']);
-				}
 				$mount = $char->getMount();
-				if (!$mount) {
+				if (!$weapon && !$armour && !$equipment && !$mount) {
+					# Better detection on if this was deliberate or not.
+					$weapon = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'broadsword']);
+					$armour = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'plate armour']);
+					$equipment = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'shield']);
 					$mount = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'war horse']);
 				}
 			} else {

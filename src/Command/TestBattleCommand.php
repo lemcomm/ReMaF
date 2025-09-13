@@ -228,9 +228,9 @@ class TestBattleCommand extends  Command {
 				foreach ($charArr as $char) {
 					$solGen = new ArrayInput([
 						'command' => 'maf:soldiers:add',
-						'quantity' => 20,
+						'quantity' => $first?50:25,
 						'-c' => $char->getId(),
-						'-w' => 'broadsword',
+						'-w' => $first?'pike':'broadsword',
 						'-a' => $first?'chainmail':'leather armour',
 						'-x' => $first?100:0,
 					]);
