@@ -136,7 +136,7 @@ class BattleRunner {
 	}
 
 	private function prepareCombatManager(): void {
-		$this->combatRules = $this->battle->getRuleset();
+		$this->combatRules = $this->battle->getRuleset()?:'legacy';
 		$this->combat->version = $this->combatVersion;
 		$this->combat->ruleset = $this->combatRules;
 		$this->combat->prepare();
