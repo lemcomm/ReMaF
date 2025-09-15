@@ -9,7 +9,7 @@ class ActivityReportStage {
 	private ?int $id = null;
 	private int $round;
 	private array $data;
-	private array $extra;
+	private ?array $extra = null;
 	private ?ActivityReportGroup $group = null;
 	private ?ActivityReportCharacter $character = null;
 

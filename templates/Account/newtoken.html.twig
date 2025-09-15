@@ -1,0 +1,19 @@
+{% extends 'layout.html.twig' %}
+
+{% trans_default_domain 'core' %}
+
+{% block title %}{%trans with {'%name%': site_short, '%local%': 'security.newtoken.title'} %}security.newtoken.title{% endtrans %}{% endblock %}
+
+{% block captcha %}
+    {% include 'element/captcha_header.html.twig' %}
+{% endblock %}
+
+{% block content %}
+    <h1>{% trans %}security.newtoken.header{% endtrans %}</h1>
+    {{ form_start(form) }}
+    {{ form_row(form.username) }}
+    {{ form_row(form.email) }}
+    {% include 'element/form_captcha.html.twig' %}
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+{% endblock %}

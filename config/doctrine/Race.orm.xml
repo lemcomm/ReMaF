@@ -24,5 +24,11 @@
 		<field name="hungerRate" type="integer" nullable="true"/>
 		<field name="maxHunger" type="integer" nullable="true"/>
 		<field name="useEquipment" type="boolean" nullable="true"/>
+		<field name="damageLocations" type="json" nullable="true"/>
+		<field name="hitLocations" type="json" nullable="true"/>
+		<field name="willpower" type="integer" nullable="true"/>
+		<field name="toughness" type="integer" nullable="true"/>
+		<field name="baseCombatSkill" type="integer" nullable="true"/>
+		<field name="fearless" type="boolean" nullable="true"/>
 	</entity>
 </doctrine-mapping>

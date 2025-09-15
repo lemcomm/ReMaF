@@ -16,7 +16,7 @@ class GlobalsSetCommand extends Command {
 	protected function configure(): void {
 		$this
 			->setName('maf:globals:set')
-			->setDescription('Sets a specific global to a specific value. Some, like actions, may reset other values in order to maintain game setting consistency. Common choices are "battles" and "actions.running".')
+			->setDescription('Sets a specific global to a specific value. Some, like actions, may reset other values in order to maintain game setting consistency. Common choices are "battling" and "actions.running".')
 			->addArgument('which', InputArgument::REQUIRED, 'Which global to set?')
 			->addArgument('value', InputArgument::REQUIRED, 'What value to set it to?')
 		;

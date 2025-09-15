@@ -51,7 +51,7 @@ class InteractionType extends AbstractType {
 			'placeholder'=>$options['multiple']?'character.none':null,
 			'multiple'=>$options['multiple'],
 			'expanded'=>true,
-			'required'=>$options['multiple'],
+			'required'=>$options['required'],
 			'class'=>Character::class,
 			'choice_label'=>'name',
 			'query_builder'=>function(EntityRepository $er) use ($me, $maxdistance, $settlementcheck) {
@@ -127,6 +127,13 @@ class InteractionType extends AbstractType {
 				return $er->createQueryBuilder('a')->where('a.owner = :me')->setParameter('me', $me);
 			}
 		));
+	}
+
+	private function attackFields(FormBuilderInterface $builder, array $options): void {
+		$builder->add('mastery', CheckboxType::class, [
+			'empty_data' => false,
+			'label' => 'interaction.attack.mastery',
+		]);
 	}
 
 }

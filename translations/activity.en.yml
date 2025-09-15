@@ -43,7 +43,7 @@ duel:
   choose: "(choose)"
   context: "To What Extent?"
   death: "To the Death"
-  firstblood: "To First Blood"
+  first blood: "To First Blood"
   name: "Duel Name"
   sameWeapon: "Use the Same Weapon?"
   submit: "Send Challenge"
@@ -67,7 +67,8 @@ report:
   finish:    Duel Finish
  combat:
   miss:      "%name% attacks with their %weapon% but misses."
-  fail:      "%name% manages a glancing blow with their %weapon%."
+  fail:      "%name% fails to do damage with their %weapon%."
+  light:     "%name% deals some damage with their %weapon%."
   wound:     "%name% does signifcant damage with their %weapon%."
   kill:      "%name% delivers a major blow with their %weapon%."
   victory:   Is Declared Victorious

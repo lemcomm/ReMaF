@@ -811,6 +811,7 @@ military:
     name:               Change Leadership
     description:        As commander of your force, you can always pass it off to another.
     form:               Who Shall Command?
+    none:               (select)
    assume:
     name:               Assume Leadership
     description:        Sometimes, things get attacked when you're not actively on the defense. This lets you assume control.
@@ -1246,15 +1247,15 @@ personal:
    pending:    "There are currently pending:"
    some:       "{i} request{count, plural, =1 {} other {s}}"
  request:
-  premable:    "You've received a request from {link-character}, on {date}, as follows:"
+  preamble:    "{character} You've received a request from {character}, on {date}, as follows:"
   created:     Request received at {date}.
   approve:     Approve
-  approved:    The request from {link-character} has been approved.
+  approved:    The request from {character} has been approved.
   deny:        Deny
-  denied:      The request from {link-character} has been denied.
+  denied:      The request from {character} has been denied.
   cancel:      Revoke
-  cancelled:   The request from {link-character} has been revoked.
-  soldierfood: "{link-character} has requested that they be allowed to use the food stores of {link-settlement} to feed their mobilized forces, and has provided the following message explaining their request."
+  cancelled:   The request from {character} has been revoked.
+  soldierfood: A request from {character} has arrioved, asking they be allowed to use the food stores of {settlement} to feed their mobilized forces.
   expires:     This request allows this until {date}.
   noexpire:    This request is good forever, or until circumstances change (see the manual).
  soldierfood:

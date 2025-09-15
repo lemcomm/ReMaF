@@ -11,6 +11,7 @@ use App\Entity\PlacePermission;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\SettlementPermission;
+use App\Form\AreYouSureType;
 use App\Form\CharacterSelectType;
 use App\Form\ListingType;
 use App\Form\PartnershipsNewType;
@@ -22,6 +23,7 @@ use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
 use App\Service\History;
 use App\Service\Politics;
+use App\Twig\LinksExtension;
 use DateInterval;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -172,10 +174,8 @@ class PoliticsController extends AbstractController {
 			$this->pol->disown($vassal);
 			$em = $this->em;
 			$em->flush();
-			return $this->render('Politics/disown.html.twig', [
-				'vassal'=>$vassal,
-				'success'=>true
-			]);
+			$this->addFlash('notice', $this->trans->trans('vassals.disown.success', ['name'=>$vassal->getName()], 'politics'));
+			return $this->redirectToRoute('maf_politics_vassals');
 		}
 
 		return $this->render('Politics/disown.html.twig', [
@@ -423,7 +423,8 @@ class PoliticsController extends AbstractController {
 
 		// FIXME: shouldn't this be in the dispatcher?
 		$others = $this->disp->getActionableCharacters();
-		$choices=array();
+		$choices = [];
+		$existingpartners = [];
 		if ($character->getPartnerships()) {
 			foreach ($character->getPartnerships() as $partnership) {
 				if (!$partnership->getEndDate()) {
@@ -433,19 +434,15 @@ class PoliticsController extends AbstractController {
 		}
 		foreach ($others as $other) {
 			$char = $other['character'];
-			if ($existingpartners) {
-				if ($character->getNonHeteroOptions()) {
-					if (!$char->isNPC() && $char->isActive() && !in_array($char, $existingpartners)) {
-						$choices[$char->getId()] = $char->getName();
-					}
-				} else {
-					if (!$char->isNPC() && $char->isActive() && !in_array($char, $existingpartners) && $char->getMale() != $character->getMale()) {
-						$choices[$char->getId()] = $char->getName();
-					}
+			if ($character->getNonHeteroOptions()) {
+				if (!$char->isNPC() && $char->isActive() && !in_array($char, $existingpartners)) {
+					$choices[] = $char;
 				}
-				// TODO: filter out existing partnerships
+			} else {
+				if (!$char->isNPC() && $char->isActive() && !in_array($char, $existingpartners) && $char->getMale() != $character->getMale()) {
+					$choices[] = $char;
+				}
 			}
-
 		}
 		$formNew = $this->createForm(PartnershipsNewType::class, null, ['others'=>$choices]);
 		$formNewView = $formNew->createView();
@@ -455,10 +452,8 @@ class PoliticsController extends AbstractController {
 
 		$formOld->handleRequest($request);
 		# TODO: Figure out why Symfony Form validation doesn't like this form, and make it work.
-		if ($formOld->isSubmitted()) {
+		if ($formOld->isSubmitted() && $formOld->isValid()) {
 			$data = $formOld->getData();
-			echo 'form old';
-
 			foreach ($data['partnership'] as $id=>$change) {
 				if (!$change) continue;
 				$valid = false;
@@ -896,6 +891,40 @@ class PoliticsController extends AbstractController {
 		}
 
 		return $this->redirectToRoute('maf_settlement', array('id'=>$settlement->getId()));
+	}
+
+	#[Route ('/politics/positions', name: 'maf_politics_positions')]
+	public function positionsAction(Request $request): Response {
+		$char = $this->disp->gateway();
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+
+		return $this->render('Politics/positions.html.twig', [
+			'char'=>$char,
+			'positions'=>$char->getPositions()
+		]);
+	}
+
+	#[Route ('/politics/abdicate/{position}', name: 'maf_politics_abdicate', requirements:['position'=>'\d+'])]
+	public function abdicateAction(RealmPosition $position, CharacterManager $cm, LinksExtension $links, Request $request): Response {
+		$char = $this->disp->gateway();
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+
+		$form = $this->createForm(AreYouSureType::class);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$cm->abdicatePosition($char, $position);
+			$this->em->flush();
+			$this->addFlash('notice', $this->trans->trans('positions.abdicated', ['position'=>$links->ObjectLink($position)], 'politics'));
+			return $this->redirectToRoute('maf_politics_positions');
+		}
+		return $this->render('Politics/abdicate.html.twig', [
+			'form'=>$form,
+			'position'=>$position,
+		]);
 	}
 
 }

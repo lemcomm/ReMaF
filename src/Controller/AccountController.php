@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Character;
 use App\Entity\Code;
+use App\Entity\EventMetadata;
 use App\Entity\Race;
 use App\Entity\User;
 
@@ -38,7 +39,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class AccountController extends AbstractController {
 
 	private function notifications(EntityManagerInterface $em, PaymentManager $pay): array {
-		$announcements = "Welcome to M&F Version 3 Alpha 3! We hope that this alpha version will only last a couple weeks, though it might be less depending on how many bugs are hidden away in the code. That said, there *should* be less bugs in this build than there were in the previous version, so we kindly ask for your patience as we squash them." ;
+		$announcements = "Welcome to the M&F Version 3.0.0 Alpha! Each alpha version will last a varying amount of time as we work on future content, with the information above this changing for each alpha version. An exact timeline for these will not be provided.";
 
 		$notices = array();
 		$codes = $em->getRepository(Code::class)->findBy(array('sent_to_email' => $this->getUser()->getEmail(), 'used' => false));
@@ -584,7 +585,7 @@ class AccountController extends AbstractController {
 
 
 	#[Route ('/account/play/{id}', name:'maf_play', requirements: ['id'=>'\d+'])]
-	public function playAction(Character $id, Request $request, AppState $app, CharacterManager $charMan, ActionResolution $ar, EntityManagerInterface $em, PaymentManager $pay, UserManager $userMan): RedirectResponse {
+	public function playAction(Character $id, Request $request, AppState $app, EntityManagerInterface $em, PaymentManager $pay, UserManager $userMan): RedirectResponse {
 		$user = $this->getUser();
 		$character = $id;
 		if ($user->isBanned()) {
@@ -629,6 +630,31 @@ class AccountController extends AbstractController {
 					// special menu active - check for reasons
 					if ($character->getDungeoneer() && $character->getDungeoneer()->isInDungeon()) {
 						return $this->redirectToRoute('maf_dungeon');
+					}
+				}
+				$metas = new ArrayCollection($em->getRepository(EventMetadata::class)->findBy(['log'=>$character->getLog(), 'reader'=>$character], ['id' => 'ASC']));
+				# This should always have a result. If it doesn't something is very broke.
+				$last = $metas->last();
+				if ($last->getAccessUntil() !== null) {
+					$last->setAccessUntil(null);
+					$em->flush();
+				}
+				if ($metas->count() > 1) {
+					# There should only ever be 1 log for a character about themself.
+					$oldest = null;
+					foreach ($metas as $meta) {
+						if (!$oldest || $oldest->getAccessFrom() < $meta->getAccessFrom()) {
+							$oldest = $meta;
+						}
+					}
+					if ($oldest) {
+						$oldest->setAccessUntil(null);
+						foreach ($metas as $meta) {
+							if ($meta !== $oldest) {
+								$em->remove($meta);
+							}
+						}
+						$em->flush();
 					}
 				}
 				return $this->redirectToRoute('maf_char_recent');

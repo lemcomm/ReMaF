@@ -59,7 +59,7 @@ class GameController extends AbstractController {
 
 	#[Route ('/game/bestiary', name:'maf_game_bestiary')]
 	public function bestiaryAction(): Response {
-		$query = $this->em->createQuery('SELECT t FROM DungeonBundle:DungeonMonsterType t ORDER BY t.name ASC');
+		$query = $this->em->createQuery('SELECT t FROM App:DungeonMonsterType t ORDER BY t.name ASC');
 		$types = $query->getResult();
 
 		return $this->render('Game/bestiary.html.twig', [
@@ -81,6 +81,7 @@ class GameController extends AbstractController {
 					'credits' => $user->getCredits(),
 					'created' => $user->getCreated(),
 					'last_login' => $user->getLastLogin(),
+					'last_play' => $user->getLastPlay(),
 					'characters' => $user->getLivingCharacters()->count(),
 					'active' => $user->getActiveCharacters()->count(),
 					'retired' => $user->getRetiredCharacters()->count(),

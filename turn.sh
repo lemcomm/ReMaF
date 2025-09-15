@@ -25,7 +25,7 @@ echo "----- turn done -----" >> $LOGDIR/turn-$DAY.log
 # mail you@hostname.stuff -s 'MaF Turn' < $LOGDIR/turn-$DAY.log
 
 
-#php7.2 $APP maf:stats:turn --env=prod -d 2>&1 > $LOGDIR/stats.log
+php $APP maf:stats:turn -d 2>&1 > $LOGDIR/stats.log
 
 # map generation and legacy map storage
 # cp /var/www/qgis/maps/allrealms.png /var/www/qgis/maps/history/allrealms-$DATE.png

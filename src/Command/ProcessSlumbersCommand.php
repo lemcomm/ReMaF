@@ -2,8 +2,10 @@
 
 namespace App\Command;
 
+use App\Entity\User;
 use App\Service\CharacterManager;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -37,17 +39,27 @@ class ProcessSlumbersCommand extends Command {
 
 		$now = new DateTime('now');
 		$twomos = $now->modify('-60 days');
-		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.last_access <= :date AND c.alive = true AND c.location IS NOT NULL AND (c.retired = false OR c.retired IS NULL)');
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\User u WHERE u.last_play <= :date');
 		$query->setParameters(['date'=>$twomos]);
-		$result = $query->getResult();
-		if (count($result) < 1) {
+		$allChars = new ArrayCollection();
+		/** @var User $user */
+		foreach ($query->getResult() as $user) {
+			foreach ($user->getActiveCharacters() as $char) {
+				if ($char->getLocation()) {
+					$allChars->add($char);
+				}
+			}
+		}
+
+		if ($allChars->count() < 1) {
 			$output->writeln("  No long term slumbering found.");
 		} else {
 			$current = 0;
 			$limit = 25;
-			$this->log->info("  Clearing slumberers from before ".$twomos->format('Y-m-d H:i:s'));
-			$output->writeln("<info>  Clearing slumberers from before ".$twomos->format('Y-m-d H:i:s'));
-			foreach ($result as $char) {
+			$date = $twomos->format('Y-m-d H:i:s');
+			$this->log->info("  Clearing slumberers from before $date");
+			$output->writeln("<info>  Clearing slumberers from before $date");
+			foreach ($allChars as $char) {
 				if ($current >= $limit) {
 					$this->log->info("  Proc limit hit.");
 					$output->writeln("<info>Proc limit hit.</info>");

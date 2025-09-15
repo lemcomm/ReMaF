@@ -161,6 +161,9 @@ class LawEditType extends AbstractType {
 			$builder->add('settlement', HiddenType::class, array(
 				'data'=>null
 			));
+			$builder->add('faith', HiddenType::class, array(
+				'data'=>null
+			));
 		}
 		# For later when we add this in fully.
 		$builder->add('sol', HiddenType::class, array(

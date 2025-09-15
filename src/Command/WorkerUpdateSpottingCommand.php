@@ -26,15 +26,15 @@ class WorkerUpdateSpottingCommand extends  Command {
 		$this
 			->setName('maf:worker:spot:update')
 			->setDescription('Update spotting distance and visibility - worker component - do not call directly')
-			->addArgument('start', InputArgument::OPTIONAL, 'start character id')
-			->addArgument('end', InputArgument::OPTIONAL, 'end character id')
+			->addArgument('offset', InputArgument::OPTIONAL, 'start offset')
+			->addArgument('batch', InputArgument::OPTIONAL, 'batch limit')
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$em = $this->em;
-		$start = $input->getArgument('start');
-		$end = $input->getArgument('end');
+		$offset = $input->getArgument('offset');
+		$batch = $input->getArgument('batch');
 
 		$spotBase = $this->common->getGlobal('spot.basedistance');
 		$spotScout = $this->common->getGlobal('spot.scoutmod');
@@ -55,16 +55,14 @@ class WorkerUpdateSpottingCommand extends  Command {
 			->andWhere($qb->expr()->eq('c.alive', $qb->expr()->literal(true))) // we see nothing if we are dead,
 			->andWhere($qb->expr()->eq('c.slumbering', $qb->expr()->literal(false))) // ...slumbering
 			->andWhere($qb->expr()->isNull('c.prisoner_of')) // ...or a prisoner
-			->andWhere($qb->expr()->gte('c.id', ':start'))
-			->andWhere($qb->expr()->lte('c.id', ':end'))
 			->groupBy('c')
 			->addGroupBy('b.spot')
 			->addGroupBy('f.amount')
 			->setParameter('base', $spotBase)
 			->setParameter('mod', $spotScout)
 			->setParameter('scout', $scout)
-			->setParameter('start', $start)
-			->setParameter('end', $end)
+			->setMaxresults($batch)
+			->setFirstResult($offset)
 		;
 		$query = $qb->getQuery();
 		foreach ($query->getResult() as $row) {

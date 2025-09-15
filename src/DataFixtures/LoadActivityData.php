@@ -88,11 +88,12 @@ class LoadActivityData extends Fixture implements DependentFixtureInterface {
 			}
 			if (isset($data['subtypes'])) {
 				foreach ($data['subtypes'] as $sub) {
-					$subType = $manager->getRepository(ActivitySubType::class)->findOneBy(['name'=>$sub]);
+					$subType = $manager->getRepository(ActivitySubType::class)->findOneBy(['name'=>$sub, 'type'=>$type]);
 					if (!$subType) {
 						$subType = new ActivitySubType;
 						$manager->persist($subType);
 						$subType->setName($sub);
+						$subType->setType($type);
 					}
 				}
 			}

@@ -39,26 +39,33 @@ class DiscordIntegrator {
 
 	public function pushToGeneral($text): void {
 		if ($this->generalHook) {
-			$this->curlToDiscord(json_encode(['content' => $text]), $this->generalHook);
+			$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($text)]), $this->generalHook);
 		}
 	}
 
 	public function pushToOlympus($text): void {
 		if ($this->olympusHook) {
-			$this->curlToDiscord(json_encode(['content' => $text]), $this->olympusHook);
+			$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($text)]), $this->olympusHook);
 		}
 	}
 
 	public function pushToPayments($text): void {
 		if ($this->paymentsHook) {
-			$this->curlToDiscord(json_encode(['content' => $text]), $this->paymentsHook);
+			$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($text)]), $this->paymentsHook);
 		}
 	}
 
 	public function pushToErrors($text): void {
 		if ($this->errorsHook) {
-			$this->curlToDiscord(json_encode(['content' => $text]), $this->errorsHook);
+			$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($text)]), $this->errorsHook);
 		}
+	}
+
+	private function convertToMarkdown($text): string {
+		$text = str_replace(["<i>", "</i>"], "*", $text); # Replace <i> and </i>
+		$text = str_replace(["<b>", "</b>"], "**", $text); # Replace <b> and </b>
+		$text = str_replace(["<u>", "</u>"], "", $text); # Remove <u> and </u>, not that I think we use it anywhere.
+		return $text;
 	}
 
 }

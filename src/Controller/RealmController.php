@@ -531,6 +531,7 @@ class RealmController extends AbstractController {
 			$position = new RealmPosition;
 			$position->setRealm($realm);
 			$position->setRuler(false);
+			$position->setName('');
 		} else {
 			$is_new = false;
 			if ($position->getRealm() !== $realm) {
@@ -815,7 +816,9 @@ class RealmController extends AbstractController {
 			$data = $form->getData();
 			$target = $form->get('target')->getData();
 			$msg = $data['message'];
-			if ($target->getType() > $realm->getType()) {
+			if (!$msg) {
+				$form->addError(new FormError($this->trans->trans('diplomacy.join.nomsg', [], 'politics')));
+			} elseif ($target->getType() > $realm->getType()) {
 				$timeout = new DateTime("now");
 				$timeout->add(new DateInterval("P7D"));
 				# newRequestFromRealmToRealm($type, $expires = null, $numberValue = null, $stringValue = null, $subject = null, $text = null, Character $fromChar = null, Realm $fromRealm = null, Realm $toRealm = null, Character $includeChar = null, Settlement $includeSettlement = null, Realm $includeRealm = null, Place $includePlace, RealmPosition $includePos = null)

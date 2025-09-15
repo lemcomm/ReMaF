@@ -8,7 +8,7 @@ use DateTime;
  * AssociationDeity
  */
 class AssociationDeity {
-	private string $words;
+	private ?string $words;
 	private DateTime $words_timestamp;
 	private ?int $id = null;
 	private ?Association $association = null;

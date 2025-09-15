@@ -16,7 +16,6 @@ use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Patreon\OAuth as POA;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -35,10 +34,10 @@ class PaymentController extends AbstractController {
 
 	public function __construct(
 		private EntityManagerInterface $em,
-		private LoggerInterface $logger,
 		private MailManager $mail,
 		private PaymentManager $pay,
-		private TranslatorInterface $trans) {
+		private TranslatorInterface $trans,
+		private NotificationManager $noteman,) {
 	}
 
 	private function fetchPatreon($creator = null) {
@@ -108,7 +107,7 @@ class PaymentController extends AbstractController {
 	}
 
 	#Route Annotation deliberately omitted in order to bypass auto-localization. Route defined in config/routes.yaml.
-	public function stripeSuccessAction(NotificationManager $noteman, Request $request): RedirectResponse {
+	public function stripeSuccessAction(Request $request): RedirectResponse {
 		$user = $this->getUser();
 		$user_id = $user->getId();
 		try {
@@ -126,9 +125,8 @@ class PaymentController extends AbstractController {
 
 		if ($status === 'paid' || $status == 'no_payment_required') {
 			$txt = "Stripe Payment calback: $total $currency // for user ID $user_id // tx id $txid";
-			$this->pay->log_info($txt);
 			$this->pay->account($user, 'Stripe Payment', $pid, $txid);
-			$noteman->spoolPayment('M&F '.$txt);
+			$this->noteman->spoolPayment('M&F '.$txt);
 			$this->addFlash('notice', 'Payment Successful! Thank you!');
 			return $this->redirectToRoute('maf_payment');
 		} else {
@@ -411,7 +409,7 @@ class PaymentController extends AbstractController {
 					$text,
 					$user->getEmail()
 				);
-				$this->logger->info("sent gift from ".$user->getId()." to ".$data['email']." for $value credits");
+				$this->noteman->spoolPayment("Sent gift from ".$user->getId()." to ".$target->getId()." for $value credits");
 
 				return $this->render('Payment/gift.html.twig', [
 					'success'=>true, 'credits'=>$value
@@ -453,7 +451,7 @@ class PaymentController extends AbstractController {
 				$text,
 				$user->getEmail()
 			);
-			$this->logger->info("sent friend invite from ".$user->getId()." to ".$data['email']." for $value credits");
+			$this->noteman->spoolPayment("Sent friend invite from ".$user->getId()." for $value credits");
 
 			return $this->render('Payment/invite.html.twig', [
 				'success'=>true, 'credits'=>$value

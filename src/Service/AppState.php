@@ -8,10 +8,14 @@ use App\Entity\NetExit;
 use App\Entity\SecurityLog;
 use App\Entity\User;
 use App\Entity\UserLog;
+use CAPTCHAUtils\hCaptcha;
+use CAPTCHAUtils\Turnstile;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use ReCaptcha\ReCaptcha;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -176,6 +180,40 @@ class AppState {
 			$ip = $_SERVER['REMOTE_ADDR'];
 		}
 		return $ip;
+	}
+
+	public function CAPTCHA(Request $request, $which = null): bool {
+		if (!$which) {
+			$captchaSystem = $_ENV['CAPTCHA_SYSTEM'];
+		} else {
+			$captchaSystem = $which;
+		}
+		if ($captchaSystem === 'default' || $captchaSystem === 'turnstile') {
+			$turnstile = new Turnstile($_ENV['TURNSTILE_SECRET_KEY']);
+			$verified = $turnstile->verify($request->request->get('cf-turnstile-response'), $request->getClientIp());
+			if ($verified[0]) {
+				return true;
+			} else {
+				return false;
+			}
+		} elseif ($captchaSystem === 'hcaptcha') {
+			$hCaptcha = new hCaptcha($_ENV['HCAPTCHA_SECRET_KEY']);
+			$verified = $hCaptcha->verify($request->request->get('h-captcha-response'), $request->getClientIp());
+			if ($verified[0]) {
+				return true;
+			} else {
+				return false;
+			}
+		} elseif ($captchaSystem === 'recaptcha') {
+			$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
+			$resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
+			if ($resp->isSuccess()) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
 	}
 
 	/**

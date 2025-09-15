@@ -13,6 +13,7 @@
 		<field name="abandoned_by" type="integer" nullable="true"/>
 		<field name="retired" type="boolean" nullable="true"/>
 		<field name="retired_on" type="datetime" nullable="true"/>
+		<field name="returned_on" type="datetime" nullable="true"/>
 		<field name="generation" type="smallint"/>
 		<field name="genome" type="string" length="2" nullable="true">
 			<options>
@@ -39,12 +40,14 @@
 		<field name="travel_disembark" type="boolean"/>
 		<field name="progress" type="float" nullable="true"/>
 		<field name="speed" type="float" nullable="true"/>
-		<field name="wounded" type="smallint"/>
+		<field name="wounded" type="integer"/>
 		<field name="withdrawLevel" type="float" scale="2" nullable="true"/>
 		<field name="gold" type="integer"/>
-		<field name="npc" type="boolean"/>
 		<field name="spotting_distance" type="integer"/>
 		<field name="visibility" type="integer"/>
+
+		<field name="npc" type="boolean"/>
+		<many-to-one field="fromDungeon" target-entity="Dungeon" inversed-by="spawns"/>
 
 		<field name="auto_read_realms" type="boolean" nullable="true"/>
 		<field name="auto_read_assocs" type="boolean" nullable="true"/>

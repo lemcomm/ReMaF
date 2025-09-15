@@ -4,7 +4,9 @@
 
 {% block title %}{%trans with {'%name%': site_short} %}security.register.title{% endtrans %}{% endblock %}
 
-{% block recaptcha %}<script type="text/javascript" src="https://www.google.com/recaptcha/api.js" async defer></script>{% endblock %}
+{% block captcha %}
+{% include 'element/captcha_header.html.twig' %}
+{% endblock %}
 
 {% block content %}
     <h1>{% trans %}security.register.header{% endtrans %}</h1>
@@ -16,7 +18,7 @@
         {{ form_row(form.plainPassword) }}
         {{ form_row(form.display_name) }}
         {{ form_row(form.email) }}<br>
-        <center><div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div></center><br>
+        <center>{% include 'element/form_captcha.html.twig' %}</center>
         <a href="{{ url("maf_terms") }}">{{ 'form.register.toslink'|trans({}, 'core') }}</a>
         {{ form_row(form.agreeTerms) }}
         {{ form_end(form) }}

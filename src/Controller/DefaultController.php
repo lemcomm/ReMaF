@@ -35,7 +35,6 @@ class DefaultController extends AbstractController {
 			"simple"=>true,
 			"journals"=>$journals,
 			'form'=>$form,
-			'recaptcha_site_key' => $_ENV['RECAPTCHA_SITE_KEY'],
 		]);
 	}
 

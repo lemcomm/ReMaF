@@ -22,7 +22,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateCharacterCommand extends Command {
+class CharacterCreateCommand extends Command {
 
 	private $whereString = '';
 	public function __construct(
@@ -35,8 +35,8 @@ class GenerateCharacterCommand extends Command {
 
 	protected function configure(): void {
 		$this
-			->setName('maf:generate:character')
-			->setDescription('Generator command for creating and assigning soldiers.')
+			->setName('maf:char:create')
+			->setDescription('Generator command for creating a character.')
 			->addArgument('name', InputArgument::REQUIRED, 'What is their name?')
 			->addArgument('where', InputArgument::REQUIRED, 'Where should they spawn? Should be in the format of Location:ID, i.e.: GeoData:8, MapRegion:15, Settlement:16, Place:9.')
 			->addArgument('user', InputArgument::REQUIRED, 'User ID to own the character?')
@@ -83,7 +83,7 @@ class GenerateCharacterCommand extends Command {
 				$output->writeln('<error>Unable to locate raceType for Character.</error>');
 				return Command::FAILURE;
 			}
-			$char = $this->cm->create($user, $name, $gender, true, $father, $mother);
+			$char = $this->cm->create($user, $name, $gender, true, $race, $father, $mother);
 			#TODO Combine all this placement stuff with the logic in CharacterController::firstAction
 			if ($where instanceof Place) {
 				if ($where->getLocation()) {

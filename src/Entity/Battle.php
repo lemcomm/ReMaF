@@ -27,6 +27,7 @@ class Battle {
 	private ?int $soldiers = null;
 	private ?int $attackers = null;
 	private ?int $defenders = null;
+	private ?string $ruleset = 'legacy';
 	private ?BattleReport $report = null;
 	private ?MapRegion $mapRegion = null;
 	private ?World $world = null;
@@ -474,6 +475,15 @@ class Battle {
 
 	public function setWorld(?World $world): static {
 		$this->world = $world;
+		return $this;
+	}
+
+	public function getRuleset(): ?string {
+		return $this->ruleset;
+	}
+
+	public function setRuleset(?string $ruleset): static {
+		$this->ruleset = $ruleset;
 		return $this;
 	}
 }

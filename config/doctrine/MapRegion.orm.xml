@@ -5,6 +5,11 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<field name="modifiers" type="array" nullable="true"/>
+		<field name="hills" type="boolean"/>
+		<field name="coast" type="boolean"/>
+		<field name="lake" type="boolean"/>
+		<field name="river" type="boolean"/>
+		<field name="name" type="string"/>
 
 		<one-to-many field="characters" target-entity="Character" mapped-by="insideRegion"/>
 		<many-to-one field="biome" target-entity="Biome" inversed-by="mapRegions"/>

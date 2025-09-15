@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\DungeonCardType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Psr\Log\LoggerInterface;
@@ -59,7 +60,7 @@ class DungeonMaster {
 
 		// basic cards set
 		foreach ($this->basicset as $name=>$amount) {
-			$card = $this->em->getRepository('DungeonBundle:DungeonCardType')->findOneBy(['name'=>$name]);
+			$card = $this->em->getRepository(DungeonCardType::class)->findOneBy(['name'=>$name]);
 			if (!$card) throw new \Exception("required card $name not found!");
 			$cardset = new DungeonCard;
 			$cardset->setAmount($amount);
@@ -837,7 +838,7 @@ In short before a dungeon starts you get a bit longer, but when it's running you
 					// TODO: This is a short-term fix until I have the dungeon types coding implemented and all of this is dependent on the dungeon type. --Andrew
 					if ($max_depth > 0 && rand(21,141) < $dungeon->getExplorationCount()*10) {
 						$this->logger->info("...closing dungeon #".$dungeon->getId()." (exploration ".$dungeon->getExplorationCount().")");
-						$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c, DungeonBundle:Dungeon d WHERE c.slumbering = false AND c.alive = true and c.travel_at_sea = false AND ST_Distance(c.location, d.location) < :maxdistance');
+						$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c, App\Entity\Dungeon d WHERE c.slumbering = false AND c.alive = true and c.travel_at_sea = false AND ST_Distance(c.location, d.location) < :maxdistance');
 						$query->setParameters(array('maxdistance'=>Geography::DISTANCE_DUNGEON));
 						$others = $query->getResult();
 						$this->logger->info("notifying ".count($others)." characters");
@@ -961,7 +962,7 @@ In short before a dungeon starts you get a bit longer, but when it's running you
 
 	private function RandomCard() {
 		// find a random card from among all the cards we have
-		$all_cards = $this->em->getRepository('DungeonBundle:DungeonCardType')->findAll();
+		$all_cards = $this->em->getRepository(DungeonCardType::class)->findAll();
 		if ($this->total_cards == 0) {
 			foreach ($all_cards as $card) {
 				$this->total_cards += $card->getRarity();

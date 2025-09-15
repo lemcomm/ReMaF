@@ -46,7 +46,7 @@ class ActivityController extends AbstractController {
 		}
 		$opts = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon']);
 
-		$form = $this->createForm(ActivitySelectType::class, null, ['action'=>'duel', 'maxdistance'=>$geo->calculateInteractionDistance($char), 'me'=>$char, 'subselect'=>$opts]);
+		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'duel', 'maxdistance'=>$geo->calculateInteractionDistance($char), 'me'=>$char, 'subselect'=>$opts]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
@@ -67,7 +67,7 @@ class ActivityController extends AbstractController {
 	}
 
 	#[Route ('/activity/duel/answer', name:'maf_activity_duel_answer')]
-	public function duelAnswerAction(Request $request): RedirectResponse|Response {
+	public function duelAnswerAction(): RedirectResponse|Response {
 		$char = $this->gateway('activityDuelAnswerTest');
 		if (! $char instanceof Character) {
                         return $this->redirectToRoute($char);
@@ -107,7 +107,7 @@ class ActivityController extends AbstractController {
 			} else {
 				# Different weapons, we select ours, then they accept duel. No Act->setReady here.
 				$opts = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon']);
-				$form = $this->createForm(EquipmentLoadoutType::class, null, ['opts'=>$opts, 'domain'=>'settings', 'label'=>'loadout.weapon']);
+				$form = $this->createForm(EquipmentLoadoutType::class, null, ['opts'=>$opts, 'domain'=>'settings', 'labels'=>'loadout.weapon']);
 				$form->handleRequest($request);
 				if ($form->isSubmitted() && $form->isValid()) {
 					$me->setWeapon($form->get('equipment')->getData());

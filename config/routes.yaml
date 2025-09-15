@@ -1,4 +1,10 @@
-# Declare overrides for routes that should NOT be localized.
+# This file is highly order dependent.
+# This checks if something has a specific route handler, then if the default controller handler will take it,
+# then if a specific controller handler will override it.
+# Finally, we wildcard anything not handled through the localizer.
+# Basically, this only works in this order, because Symfony.
+
+# Declare overrides for specific routes that should NOT be localized.
 maf_patreon:
     path: /payment/patreon/{creator}
     controller: App\Controller\PaymentController::patreonAction
@@ -9,16 +15,16 @@ maf_end_emails:
     path: /account/endemails/{user}/{token}
     controller: App\Controller\AccountController::endEmailsAction
 
-maf_stripe_success:
-    path: /payment/stripe_success
-    controller: App\Controller\PaymentController::stripeSuccessAction
-
 maf_chat_check:
     path: /chat/check/{msg}/{target}
     controller: App\Controller\ChatController::chatCheckAction
     requirements:
         msg: '\d+'
         target: '[a-z0-9]*'
+
+maf_stripe_success:
+    path: /payment/stripe_success
+    controller: App\Controller\PaymentController::stripeSuccessAction
 
 # Default routes, name must be "controllers"
 controllers:
@@ -32,10 +38,15 @@ controllers:
     defaults:
         _locale: '%locale%'
 
+# Override the prefix for DataController (the API)
+api_controller:
+    resource: '../src/Controller/DataController.php'
+    type: attribute
+    prefix: ''
+
 # Auto-redirect for non-localized inputs
 _catcher:
     path:	/{url}
     requirements:
         url: .*
     controller: App\Controller\DefaultController::localeRedirectAction
-

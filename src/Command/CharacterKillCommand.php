@@ -10,14 +10,14 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DebugKillCommand extends Command {
+class CharacterKillCommand extends Command {
 	public function __construct(private CharacterManager $cm, private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 
 	protected function configure(): void {
 		$this
-			->setName('maf:debug:kill')
+			->setName('maf:char:kill')
 			->setDescription('Debug command for fixing failed deaths (by rerunning them)')
 			->addArgument('c', InputArgument::REQUIRED, 'Which character are we killing? Character::id.')
 			->addArgument('k', InputArgument::OPTIONAL, 'Who killed them? Character::id. Can be null.')

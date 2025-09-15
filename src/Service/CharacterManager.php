@@ -773,16 +773,23 @@ class CharacterManager {
 	}
 
 	public function imprison_prepare(Character $character, Character $captor): void {
-		$character->setPrisonerOf($captor);
-		$captor->addPrisoner($character);
+		if ($character->getPrisoners()->contains($captor)) {
+			# Fun edge case that can happen in battles.
+			$character->setPrisonerOf(null);
+			$captor->removePrisoner($character);
+		} else {
+			$character->setPrisonerOf($captor);
+			$captor->addPrisoner($character);
 
-		// transfer prisoners of my prisoner to me
-		foreach ($character->getPrisoners() as $prisoner) {
-			$prisoner->setPrisonerOf($captor);
-			$captor->addPrisoner($prisoner);
-			$character->removePrisoner($prisoner);
-			// TODO: history log / event notification
+			// transfer prisoners of my prisoner to me
+			foreach ($character->getPrisoners() as $prisoner) {
+				$prisoner->setPrisonerOf($captor);
+				$captor->addPrisoner($prisoner);
+				$character->removePrisoner($prisoner);
+				// TODO: history log / event notification
+			}
 		}
+
 
 		// clear travel
 		$character->setTravel(null)->setProgress(null)->setSpeed(null);
@@ -1389,6 +1396,28 @@ class CharacterManager {
 				History::LOW, true
 			);
 		}
+	}
+
+	public function abdicatePosition(Character $char, RealmPosition $pos, ?string $why = null) {
+		$char->removePosition($pos);
+		$pos->removeHolder($char);
+		if ($pos->getRuler()) {
+			$importance = History::HIGH;
+		} else {
+			$importance = History::MEDIUM;
+		}
+		$this->history->logEvent(
+			$pos->getRealm(),
+			'event.position.abdicate',
+			['%link-character%'=>$char->getId(), '%link-realmposition%'=>$pos->getId()],
+			$importance, true
+		);
+		$this->history->logEvent(
+			$char,
+			'event.character.abdicate.position',
+			array('%link-realm%'=>$pos->getRealm()->getId(), '%link-realmposition%'=>$pos->getId()),
+			$importance, true
+		);
 	}
 
 	public function findEvents(Character $character) {

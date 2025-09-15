@@ -1,0 +1,8 @@
+
+    {% if captcha == 'default' or captcha == 'turnstile' %}
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    {% elseif captcha == 'hcaptcha' %}
+        <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+    {% elseif captcha == 'recaptcha' %}
+        <script type="text/javascript" src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {% endif %}

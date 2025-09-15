@@ -77,6 +77,7 @@ security:
   flash: Thank you for registering! If you haven't already, please check your email for your activation link. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
  remind:
   header: Forgot Username
+  short: Forgot your username?
   intro: If you can't remember your username, we can email it to you if you provide us with your email address.
   email:
    subject: "%sitename%: Your Username"
@@ -118,11 +119,12 @@ security:
   flash: If a matching username and email has been located in our system, an email has been dispatched with new a new activation link. Please be advised that due to matters outside our control, it could take a few minutes to reach your inbox.
  confirm:
   flash:
-   failed: Unable to confirm email with a registered user. Bad combination passed.
+   failed: Unable to confirm email with a registered user.
    already: No confirmation needed. Disregarding request.
    success: Email successfully confirmed!
  delete:
   title: Delete Your Account
+  link: Delete Account
   info: |
    <p>You can request deletion of your account at any time, but this is a permanent action on your part that cannot be recovered from. To have an account again you would be required to make a brand new account.</p>
    <p>The details of your account, such as username, email, etc., will be removed permanently. Credits you own will be voided and removed. Things you've created in game such as characters, artifacts, places of interest, will remain but may pass into an unowned status.</p>
@@ -130,7 +132,7 @@ security:
 
 form:
  email:
-  email: Email
+  email: "Email: "
   help: You must supply a valid email address.
  password:
   password: Password
@@ -153,9 +155,9 @@ form:
  reset:
   password: Password
   repeat: Confirm Password
- usernameoremail: "Username or Email:"
+ usernameoremail: "Username or Email: "
  delete:
-  sure: Confirm Deletetion
+  confirm: Confirm Deletetion
   email: Account Email
   submit: Delete My Account
  submit: Submit

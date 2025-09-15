@@ -41,6 +41,18 @@ class LawController extends AbstractController {
 		return $this->assocDisp->gateway($test, false, true, false, $secondary);
 	}
 
+	#[Route ('/law/{law}', name:'maf_law', requirements:['law'=>'\d+'])]
+	public function lawAction(Law $law) {
+		if ($law->getRealm()) {
+			return $this->redirectToRoute('maf_realm_laws', ['realm'=>$law->getRealm()->getId()]);
+		} elseif ($law->getAssociation()) {
+			return $this->redirectToRoute('maf_association_laws', ['association'=>$law->getAssociation()->getId()]);
+		}
+		#How?
+		$this->addFlash('warning', "Hey, this is the developer, can you please explain how you got here?");
+		return $this->redirecttoRoute('maf_politics_realms');
+	}
+
 	#[Route ('/laws/r{realm}', name:'maf_realm_laws', requirements:['realm'=>'\d+'])]
 	#[Route ('/laws/r{realm}/', requirements:['realm'=>'\d+'])]
 	#[Route ('/laws/a{assoc}', name:'maf_assoc_laws', requirements:['assoc'=>'\d+'])]
@@ -97,8 +109,9 @@ class LawController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/laws/r{realm}', name:'maf_realm_laws_new', requirements:['realm'=>'\d+'])]
-	#[Route ('/laws/a{assoc}', name:'maf_assoc_laws_new', requirements:['assoc'=>'\d+'])]
+
+	#[Route ('/laws/r{realm}/new', name:'maf_realm_laws_new', requirements:['realm'=>'\d+'])]
+	#[Route ('/laws/a{assoc}/new', name:'maf_assoc_laws_new', requirements:['assoc'=>'\d+'])]
 	public function newLawAction(Request $request, ?Realm $realm=null, ?Association $assoc=null): RedirectResponse|Response {
 		if ($request->get('_route') === 'maf_realm_laws_new') {
 			$char = $this->gateway('hierarchyRealmLawNewTest', $realm);
@@ -224,7 +237,7 @@ class LawController extends AbstractController {
 			$data['faith'] = $form->get('faith')->getData();
 			$data['settlement'] = $form->get('settlement')->getData();
 			#updateLaw($org, $type, $setting, $title, $description = null, Character $character, $allowed, $mandatory, $cascades, $sol, $flush=true)
-			$result = $this->lawMan->updateLaw($org, $type, $data['value'], $data['title'], $data['description'], $char, $data['mandatory'], $data['cascades'], $data['sol'], $data['settlement'], $law);
+			$result = $this->lawMan->updateLaw($org, $type, $data['value'], $data['title'], $data['description'], $char, $data['mandatory'], $data['cascades'], $data['sol'], $data['settlement'], $law, true, $data['faith']);
 			if ($result instanceof Law) {
 				$this->addFlash('error', $this->trans->trans('law.form.edit.success', [], 'orgs'));
 				# These return a different redirect due to how the route is built. if you use the other ones ($this->redirectToRoute) Symfony complains that the controller isn't returning a response.

@@ -31,7 +31,7 @@ class Politics {
 		return false;
 	}
 
-	public function breakoath(Character $character, $alleg = null, $to = null, $thing = null): void {
+	public function breakoath(Character $character, $alleg = null, $to = null, ?string $thing = null): void {
 		if (!$alleg) {
 			$alleg = $character->findAllegiance();
 		}
@@ -42,6 +42,8 @@ class Politics {
 			} else {
 				$target = $to->getRealm();
 			}
+		}
+		if ($to && $target) {
 			if ($alleg instanceof Character) {
 				# Legacy oath.
 				$done = true;
@@ -51,13 +53,14 @@ class Politics {
 					array('%link-character%'=>$character->getId(), '%link-realm%'=>$target->getId()),
 					History::MEDIUM, true
 				);
-			} elseif (!($alleg instanceof Realm)) {
+			}
+			if (!($alleg instanceof Realm)) {
 				$realm = $alleg->getRealm();
 			} else {
 				$realm = $alleg;
 			}
 			if (!$done) {
-				if ($realm && $target && $realm === $target) {
+				if ($realm && $realm === $target) {
 					if (!($alleg instanceof RealmPosition)) {
 						$this->history->logEvent(
 							$alleg,
@@ -75,7 +78,7 @@ class Politics {
 							);
 						}
 					}
-				} elseif ($realm) {
+				} elseif ($realm && $target) {
 					$ultimate = $realm->findUltimate();
 					$hierarchy = $ultimate->findAllInferiors(true);
 					if ($hierarchy->contains($target)) {
@@ -325,11 +328,11 @@ class Politics {
 				if ($oldowner && $oldowner->isAlive() && !$oldowner->getSlumbering()) {
 					$this->addClaim($oldowner, $settlement, true);
 				}
+				$realm = $settlement->getRealm();
 				foreach ($settlement->getVassals() as $vassal) {
 					$vassal->setLiegeLand(null);
 					$vassal->setOathCurrent(false);
 					$vassal->setOathTime(null);
-					$realm = $settlement->getRealm();
 					$vassal->setRealm($settlement->getRealm());
 					if ($realm) {
 						$this->history->logEvent(
@@ -917,7 +920,7 @@ class Politics {
 	}
 
 
-	public function changePlaceOccupier(?Character $char, Place $place, ?Realm $realm = null) {
+	public function changePlaceOccupier(?Character $char, Place $place, ?Realm $realm = null): void {
 		$new = false;
 		$old = null;
 		if (!$place->getOccupier()) {
@@ -974,7 +977,7 @@ class Politics {
 			$type = 'Settlement';
 			$event = 'settlement';
 			$warTargets = $target->getWarTargets();
-			if ($warTargets && !$occupantTakeOver) {
+			if ($warTargets->count() > 0 && !$occupantTakeOver) {
 				foreach ($warTargets as $warTarget) {
 					if ($warTarget->getTakenCurrently()) {
 						$warTarget->setTakenCurrently(false);

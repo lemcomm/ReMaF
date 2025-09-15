@@ -39,6 +39,7 @@ class PartnershipsNewType extends AbstractType {
 		$builder->add('partner', ChoiceType::class, array(
 			'choices' => $options['others'],
 			'label' => 'relation.choice.partner',
+			'choice_label' => 'name',
 			'placeholder' => 'relation.choice.choose',
 		));
 		$builder->add('public', CheckboxType::class, array(

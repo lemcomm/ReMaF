@@ -351,13 +351,14 @@ class HouseController extends AbstractController {
 		]);
 	}
 	
-	#[Route ('/house/newplayer', name:'maf_house_newplayer', requirements:['house'=>'\d+'])]
-	public function newplayerAction(House $house, Request $request): RedirectResponse|Response {
+	#[Route ('/house/newplayer', name:'maf_house_newplayer')]
+	public function newplayerAction(Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('houseNewPlayerInfoTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
 
+		$house = $character->getHouse();
 		$desc = $house->getSpawnDescription();
 		$text = $desc?->getText();
 		$form = $this->createForm(DescriptionNewType::class, null, ['text' => $text]);
@@ -376,7 +377,7 @@ class HouseController extends AbstractController {
 		]);
 	}
 
-	#[Route ('/house/spawntoggle', name:'maf_house_spawn_toggle', requirements:['house'=>'\d+'])]
+	#[Route ('/house/{house}/spawntoggle', name:'maf_house_spawn_toggle', requirements:['house'=>'\d+'])]
 	public function houseSpawnToggleAction(House $house): RedirectResponse {
 		$character = $this->dispatcher->gateway('houseSpawnToggleTest');
 		if (! $character instanceof Character) {

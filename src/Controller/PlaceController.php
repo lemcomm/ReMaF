@@ -772,6 +772,7 @@ class PlaceController extends AbstractController {
                         $place->setDestroyed(true);
 			if ($spawn = $place->getSpawn()) {
 				$em->remove($spawn);
+				$place->setSpawn(null);
 			}
 			$em->flush();
 			if ($siege = $place->getSiege()) {
@@ -785,7 +786,12 @@ class PlaceController extends AbstractController {
 			);
 
 			$em->flush();
-                        return $this->redirectToRoute('maf_place_actionable');
+			if (array_key_exists('url', $this->dispatcher->placeListTest())) {
+				return $this->redirectToRoute('maf_place_actionable');
+			} else {
+				return $this->redirectToRoute('maf_actions');
+			}
+
                 }
 		return $this->render('Place/destroy.html.twig', [
 			'form'=>$form->createView()

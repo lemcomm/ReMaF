@@ -14,9 +14,10 @@ use App\Form\UserDeleteType;
 use App\Service\AppState;
 use App\Service\DescriptionManager;
 use App\Service\MailManager;
-
 use App\Service\NotificationManager;
 use App\Service\UserManager;
+use CAPTCHAUtils\hCaptcha;
+use CAPTCHAUtils\Turnstile;
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,6 +36,8 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController {
+	public function __construct(private readonly AppState $appState) {
+	}
 
 	#[Route ('/login', name:'maf_login')]
 	public function login(AuthenticationUtils $authenticationUtils, EntityManagerInterface $em): Response {
@@ -71,10 +74,9 @@ class SecurityController extends AbstractController {
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted()) {
-			$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-			$resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
-			if (!$resp->isSuccess()) {
-				$form->addError(new FormError("reCAPTCHA failed to validate. Are you a bot?"));
+			$captchaValid = $this->appState->CAPTCHA($request);
+			if (!$captchaValid) {
+				$form->addError(new FormError("CAPTCHA failed to validate. Are you a bot?"));
 			} elseif ($form->isValid()) {
 				$check = $em->getRepository(User::class)->findOneBy(['username' => $form->get('_username')->getData()]);
 				if ($check) {
@@ -135,7 +137,6 @@ class SecurityController extends AbstractController {
 
 		return $this->render('Account/register.html.twig', [
 			'form' => $form->createView(),
-			'recaptcha_site_key' => $_ENV['RECAPTCHA_SITE_KEY'],
 		]);
 	}
 
@@ -165,11 +166,10 @@ class SecurityController extends AbstractController {
                 if (!$token) {
                         $form = $this->createForm(RequestResetFormType::class);
                         $form->handleRequest($request);
-                        if ($form->isSubmitted() && $form->isValid()) {
-				$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-				$resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
-				if (!$resp->isSuccess()) {
-					$form->addError(new FormError("reCAPTCHA failed to validate. Are you a bot?"));
+                        if ($form->isSubmitted()) {
+				$captchaValid = $this->appState->CAPTCHA($request);
+				if (!$captchaValid) {
+					$form->addError(new FormError("CAPTCHA failed to validate. Are you a bot?"));
 				} elseif ($form->isValid()) {
 					$data = $form->getData();
 					$user = $em->getRepository(User::class)->findOneBy(['email'=>$data['text']]);
@@ -230,15 +230,14 @@ class SecurityController extends AbstractController {
                 }
         }
 
-	#[Route ('/security/remind', name:'maf_remind')]
+	#[Route ('/security/remind', name:'maf_account_remind')]
         public function remind(AppState $app, EntityManagerInterface $em, MailManager $mail, TranslatorInterface $trans, Request $request): RedirectResponse|Response {
                 $form = $this->createForm(ForgotUsernameType::class);
                 $form->handleRequest($request);
                 if ($form->isSubmitted()) {
-			$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-			$resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
-			if (!$resp->isSuccess()) {
-				$form->addError(new FormError("reCAPTCHA failed to validate. Are you a bot?"));
+			$captchaValid = $this->appState->CAPTCHA($request);
+			if (!$captchaValid) {
+				$form->addError(new FormError("CAPTCHA failed to validate. Are you a bot?"));
 			} elseif ($form->isValid()) {
 				$data = $form->getData();
 				$user = $em->getRepository(User::class)->findOneBy(['email' => $data['email']]);
@@ -274,10 +273,9 @@ class SecurityController extends AbstractController {
                 $form->handleRequest($request);
 
                 if ($form->isSubmitted()) {
-			$recaptcha = new ReCaptcha($_ENV['RECAPTCHA_SECRET_KEY']);
-			$resp = $recaptcha->verify($request->request->get('g-recaptcha-response'), $request->getClientIp());
-			if (!$resp->isSuccess()) {
-				$form->addError(new FormError("reCAPTCHA failed to validate. Are you a bot?"));
+			$captchaValid = $this->appState->CAPTCHA($request);
+			if (!$captchaValid) {
+				$form->addError(new FormError("CAPTCHA failed to validate. Are you a bot?"));
 			} elseif ($form->isValid()) {
 				$data = $form->getData();
 				$user = $em->getRepository(User::class)->findOneBy([
@@ -289,8 +287,7 @@ class SecurityController extends AbstractController {
 					$em->flush();
 
 					$link = $this->generateUrl('maf_account_activate', [
-						'username' => $user->getUsername(),
-						'email' => $user->getEmail(),
+						'id' => $user->getId(),
 						'token' => $user->getToken()
 					], UrlGeneratorInterface::ABSOLUTE_URL);
 					$text = $trans->trans('security.register.email.text2', [
@@ -317,7 +314,7 @@ class SecurityController extends AbstractController {
 	#[Route ('/security/confirm/{token}/{email}', name:'maf_account_confirm')]
         public function confirm(EntityManagerInterface $em, TranslatorInterface $trans, string $token, string $email): RedirectResponse {
                 $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
-                if ($user && $user->getEnabled() === false && $token == $user->getToken()) {
+                if ($user && $user->getEnabled() === false && $token === $user->getEmailToken()) {
                         $user->setEmailToken(null);
                         $user->setEnabled(true);
                         $em->flush();
@@ -327,7 +324,6 @@ class SecurityController extends AbstractController {
                         $this->addFlash('notice', $trans->trans('security.confirm.flash.already', [], 'core'));
                         return new RedirectResponse($this->generateUrl('maf_index'));
                 } else {
-                        $link = $this->generateUrl('maf_token_new');
                         $this->addFlash('error', $trans->trans('security.confirm.flash.failed', [], 'core'));
                         return new RedirectResponse($this->generateUrl('maf_token_new'));
                 }

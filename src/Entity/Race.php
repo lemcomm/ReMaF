@@ -24,6 +24,12 @@ class Race {
 	private ?int $hungerRate = null;
 	private ?int $maxHunger = null;
 	private ?bool $useEquipment = null;
+	private ?array $damageLocations = null;
+	private ?array $hitLocations = null;
+	private ?int $toughness = null;
+	private ?int $willpower = null;
+	private ?int $baseCombatSkill = null;
+	private ?bool $fearless = null;
 
 	public function getId(): ?int {
 		return $this->id;
@@ -217,6 +223,60 @@ class Race {
 
 	public function setUseEquipment(?bool $equip = null): static {
 		$this->useEquipment = $equip;
+		return $this;
+	}
+
+	public function getDamageLocations(): ?array {
+		return $this->damageLocations;
+	}
+
+	public function setDamageLocations(?array $damageLocations): static {
+		$this->damageLocations = $damageLocations;
+		return $this;
+	}
+
+	public function getToughness(): int {
+		return $this->toughness;
+	}
+
+	public function setToughness(?int $toughness = null): static {
+		$this->toughness = $toughness;
+		return $this;
+	}
+
+	public function getWillpower(): int {
+		return $this->willpower;
+	}
+
+	public function setWillpower(?int $willpower = null): static {
+		$this->willpower = $willpower;
+		return $this;
+	}
+
+	public function getBaseCombatSkill(): int {
+		return $this->baseCombatSkill;
+	}
+
+	public function setBaseCombatSkill(?int $baseCombatSkill = null): static {
+		$this->baseCombatSkill = $baseCombatSkill;
+		return $this;
+	}
+
+	public function getHitLocations(): ?array {
+		return $this->hitLocations;
+	}
+
+	public function setHitLocations(?array $hitLocations): static {
+		$this->hitLocations = $hitLocations;
+		return $this;
+	}
+
+	public function getFearless(): ?bool {
+		return $this->fearless;
+	}
+
+	public function setFearless(?bool $fearless): static {
+		$this->fearless = $fearless;
 		return $this;
 	}
 }
