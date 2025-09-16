@@ -1292,7 +1292,7 @@ class Soldier extends NPC {
 			// Psycho math to avoid gigantic if loops.
 			// True evaluates to 1 for some God-forsaken reason, and I am embracing the devil arts.
 			$resResult = (int)($roll < $resistEML) + (int)(($roll % 5 === 0)*2);
-			switch ($resResult % 3) {
+			switch ($resResult) {
 				case 0: // fail
 					$strResult = "SF";
 					break;
