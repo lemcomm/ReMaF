@@ -752,7 +752,7 @@ class Economy {
 					}
 					foreach ($settlement->getResources() as $geoRes) {
 						if ($geoRes->getType() === $resource) {
-							$suppliedNPCs = $geoRes->setUnitDemand($suppliedNPCs);
+							$geoRes->setUnitDemand($suppliedNPCs);
 							break;
 						}
 					}
