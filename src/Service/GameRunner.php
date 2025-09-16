@@ -564,9 +564,17 @@ class GameRunner {
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Checking on recruits...");
 		$query = $this->em->createQuery('SELECT s FROM App\Entity\Settlement s WHERE s.id > 0');
-		foreach ($query->getResult() as $settlement) {
+		$i = 0;
+		foreach ($query->toIterable() as $settlement) {
 			if (!$settlement->getSiege() || !$settlement->getSiege()->getEncircled()) {
 				$this->milman->TrainingCycle($settlement);
+				$this->em->flush();
+			}
+			if ($i < 25) {
+				$i++;
+			} else {
+				$i = 0;
+				$this->em->clear();
 			}
 		}
 		$this->em->flush();
