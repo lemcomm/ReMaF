@@ -728,7 +728,7 @@ class Economy {
 		return $units;
 	}
 
-	public function ResourceDemand(Settlement $settlement, ResourceType $resource, $split_results=false) {
+	public function ResourceDemand(Settlement $settlement, ResourceType $resource, $split_results=false, $regenerate=false) {
 		// this is the population used for all resources except food, which has its own calculation
 		$militia = $settlement->countDefenders();
 		$population = $settlement->getPopulation() + $settlement->getThralls()/2;
@@ -741,15 +741,30 @@ class Economy {
 				$foodLimit = $settlement->getFoodProvisionLimit();
 				$suppliedNPCs = 0;
 				$units = $this->FindFeedableUnits($settlement);
-				/** @var Unit $unit */
-				foreach ($units as $unit) {
-					if ($unit->getProvision() <= $foodLimit) {
-						$suppliedNPCs += ($unit->getLivingSoldiers()->count()*$unit->getProvision());
-					} else {
-						$suppliedNPCs += ($unit->getLivingSoldiers()->count()*$foodLimit);
+				if ($regenerate) {
+					/** @var Unit $unit */
+					foreach ($units as $unit) {
+						if ($unit->getProvision() <= $foodLimit) {
+							$suppliedNPCs += ($unit->getLivingSoldiers()->count()*$unit->getProvision());
+						} else {
+							$suppliedNPCs += ($unit->getLivingSoldiers()->count()*$foodLimit);
+						}
 					}
-
+					foreach ($settlement->getResources() as $geoRes) {
+						if ($geoRes->getType() === $resource) {
+							$suppliedNPCs = $geoRes->setUnitDemand($suppliedNPCs);
+							break;
+						}
+					}
+				} else {
+					foreach ($settlement->getResources() as $geoRes) {
+						if ($geoRes->getType() === $resource) {
+							$suppliedNPCs = $geoRes->getUnitDemand();
+							break;
+						}
+					}
 				}
+
 				#$suppliedNPCs += $unit->getLivingEntourage()->count(); // TODO: Determine if we want to feed entourage or just pay them.
 				$need = $settlement->getPopulation() + $settlement->getThralls()*0.75 + $suppliedNPCs*0.8;
 				break;

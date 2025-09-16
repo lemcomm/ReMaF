@@ -14,6 +14,7 @@ class GeoResource {
 	private ?GeoData $geo_data = null;
 	private ?MapRegion $mapRegion = null;
 	private ?ResourceType $type = null;
+	private ?int $unit_demand = 0;
 
 	/**
 	 * Get amount
@@ -237,6 +238,17 @@ class GeoResource {
 	public function setType(?ResourceType $type = null): static {
 		$this->type = $type;
 
+		return $this;
+	}
+
+	public function getUnitDemand(): ?int
+	{
+		return $this->unit_demand;
+	}
+
+	public function setUnitDemand(?int $unit_demand): static
+	{
+		$this->unit_demand = $unit_demand;
 		return $this;
 	}
 }

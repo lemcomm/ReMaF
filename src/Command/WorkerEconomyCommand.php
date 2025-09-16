@@ -63,7 +63,7 @@ class WorkerEconomyCommand extends Command {
 					$WealthProduction += ($production + abs($tradebalance)*0.1) * $resource->getGoldValue();
 
 					// calculate supply and update storage
-					$demand = $this->economy->ResourceDemand($settlement, $resource);
+					$demand = $this->economy->ResourceDemand($settlement, $resource, false, true);
 					$available = $production + $tradebalance;
 					$available = $this->economy->updateSupplyAndStorage($settlement, $resource, $demand, $available);
 

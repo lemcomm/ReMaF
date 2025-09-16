@@ -449,6 +449,7 @@ class GameRunner {
 		// routed militia - for now, just return them
 		$query = $this->em->createQuery('UPDATE App\Entity\Soldier s SET s.routed = false WHERE s.routed = true AND s.character IS NULL');
 		$query->execute();
+		$this->em->clear();
 
 		// militia auto-resupply
 		$query = $this->em->createQuery('SELECT s FROM App\Entity\Soldier s WHERE s.base IS NOT NULL AND s.alive=true AND s.wounded=0 AND s.routed=false AND
@@ -641,6 +642,7 @@ class GameRunner {
 		$this->output("  Deducting a day from unit travel times...");
 		$query = $this->em->createQuery('UPDATE App\Entity\Unit u SET u.travel_days = (u.travel_days - 1) WHERE u.travel_days IS NOT NULL');
 		$query->execute();
+		$this->em->clear();
 
 		// Update Unit arrivals based on travel times being at or below zero.
 		$date = date("Y-m-d H:i:s");

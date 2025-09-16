@@ -898,7 +898,6 @@ class ActionsController extends AbstractController {
 
 		$settlementsdata = array();
 		foreach ($manageable as $other) {
-			$tradecost = $this->econ->TradeCostBetween($settlement, $other, $merchants->count()>0);
 			$settlement_resources = array();
 			foreach ($resources as $resource) {
 				$production = $this->econ->ResourceProduction($other, $resource);
@@ -911,7 +910,7 @@ class ActionsController extends AbstractController {
 						'production' => $production,
 						'demand' => $demand,
 						'trade' => $trade,
-						'cost' => $tradecost
+						'cost' => 0
 					);
 				}
 			}
@@ -935,7 +934,7 @@ class ActionsController extends AbstractController {
 						'production' => $production,
 						'demand' => $demand,
 						'trade' => $trade,
-						'cost' => $tradecost
+						'cost' => 0
 					);
 				}
 			}

@@ -21,7 +21,7 @@
 			</options>
 		</field>
 
-		<one-to-many field="descriptions" target-entity="Description" mapped-by="settlement"/>
+		<one-to-many field="descriptions" target-entity="Description" mapped-by="settlement" fetch="EXTRA_LAZY"/>
 		<one-to-one field="description" target-entity="Description" mapped-by="active_settlement"/>
 
 		<many-to-one field="culture" target-entity="Culture"/>
@@ -69,10 +69,10 @@
 		<one-to-many field="related_requests" target-entity="GameRequest" mapped-by="to_settlement"/>
 		<one-to-many field="part_of_requests" target-entity="GameRequest" mapped-by="include_settlement"/>
 
-		<one-to-many field="supplied_units" target-entity="Unit" mapped-by="supplier"/>
-		<one-to-many field="sent_supplies" target-entity="Supply" mapped-by="origin"/>
-		<one-to-many field="units" target-entity="Unit" mapped-by="settlement"/>
-		<one-to-many field="defending_units" target-entity="Unit" mapped-by="defending_settlement"/>
+		<one-to-many field="supplied_units" target-entity="Unit" mapped-by="supplier" fetch="EXTRA_LAZY"/>
+		<one-to-many field="sent_supplies" target-entity="Supply" mapped-by="origin" fetch="EXTRA_LAZY"/>
+		<one-to-many field="units" target-entity="Unit" mapped-by="settlement" fetch="EXTRA_LAZY"/>
+		<one-to-many field="defending_units" target-entity="Unit" mapped-by="defending_settlement" fetch="EXTRA_LAZY"/>
 
 		<one-to-one field="siege" target-entity="Siege" mapped-by="settlement"/>
 
