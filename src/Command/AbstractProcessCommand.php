@@ -67,6 +67,7 @@ class AbstractProcessCommand extends Command {
 		for ($i=1; $i<=$this->parallel; $i++) {
 			$this->output->writeln("Start of $start with batch of $batch_size");
 			$process = new Process([$php, $consoleDir, 'maf:worker:'.$worker, $start, $batch_size], null, null, null, $timeout);
+			$this->output->writeln($process->getCommandLine());
 			$process->start();
 			$pool[] = $process;
 			$start += $batch_size;

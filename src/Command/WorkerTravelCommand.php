@@ -48,14 +48,15 @@ class WorkerTravelCommand extends  Command {
 		$geography = $this->geo;
 		$history = $this->hist;
 		$cycle = $this->common->getCycle();
-		$batch = $input->getArgument('offset');
-		$offset = $input->getArgument('batch');
+		$batch = $input->getArgument('batch');
+		$offset = $input->getArgument('offset');
 		$speedmod = (float)$this->common->getGlobal('travel.speedmod', 0.15);
 		$artifactsNaN = false; #Artifact check short circuit flag.
 
 		// primary travel action - update our speed, check if we've arrived and update progress
 		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.travel IS NOT NULL AND c.travel_locked = false')->setMaxresults($batch)->setFirstResult($offset);
-		foreach ($query->getResult() as $char) {
+		$i = 0;
+		foreach ($query->toIterable() as $char) {
 			if ($char->getInsidePlace()) {
 				if (!$interactions->characterLeavePlace($char)) {
 					continue; #If you can't leave, you can't travel.
@@ -156,9 +157,17 @@ class WorkerTravelCommand extends  Command {
 				}
 			}
 
-		}
+			if ($i < 25) {
+				$i++;
+			} else {
+				$i = 0;
+				$this->em->flush();
+				$this->em->clear();
+			}
 
+		}
 		$this->em->flush();
+		$this->em->clear();
 		return Command::SUCCESS;
 	}
 
