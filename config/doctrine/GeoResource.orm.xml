@@ -10,7 +10,7 @@
 		<field name="storage" type="integer"/>
 		<field name="buildings_base" type="smallint"/>
 		<field name="buildings_bonus" type="smallint"/>
-		<field name="unit_demand" type="float"/>
+		<field name="unit_demand" type="float" nullable="true"/>
 
 		<many-to-one field="settlement" target-entity="Settlement" inversed-by="resources"/>
 		<many-to-one field="geo_data" target-entity="GeoData" inversed-by="resources"/>
