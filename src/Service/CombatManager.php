@@ -600,7 +600,7 @@ class CombatManager {
 				$logs[] = "armour damaged\n";
 			}
 		}
-		if ($attacker->getWeapon()) {
+		if ($attacker->getWeapon() && $attacker->getWeapon()->getSkill()) {
 			$wpnSkill = $attacker->getWeapon()->getSkill()->getCategory()->getName();
 		} else {
 			$wpnSkill = false;
