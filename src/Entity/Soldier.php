@@ -640,7 +640,7 @@ class Soldier extends NPC {
 	}
 
 	public function updateMeleePower($val): int {
-		$this->melee = $val;
+		$this->melee = (int) $val;
 		return $this->melee;
 	}
 
@@ -649,7 +649,7 @@ class Soldier extends NPC {
 	}
 
 	public function updateDefensePower($val): int {
-		$this->defense = $val;
+		$this->defense = (int) $val;
 		return $this->defense;
 	}
 
@@ -658,7 +658,7 @@ class Soldier extends NPC {
 	}
 
 	public function updateRDefensePower($val): int {
-		$this->rDefense = $val;
+		$this->rDefense = (int) $val;
 		return $this->rDefense;
 	}
 
@@ -667,7 +667,7 @@ class Soldier extends NPC {
 	}
 
 	public function updateRangedPower($val): int {
-		$this->ranged = $val;
+		$this->ranged = (int) $val;
 		return $this->ranged;
 	}
 

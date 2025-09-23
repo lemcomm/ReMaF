@@ -26,10 +26,10 @@ class PartnershipsNewType extends AbstractType {
 
 	public function buildFormNew(FormBuilderInterface $builder, array $options): void {
 		$types = array(
-			'liason' => 'relation.choice.liason',
-			'engagement' => 'relation.choice.engagement',
-			'paramour' => 'relation.choice.paramour',
-			'marriage' => 'relation.choice.marriage'
+			'relation.choice.liason' => 'liason',
+			'relation.choice.engagement' => 'engagement',
+			'relation.choice.paramour' => 'paramour',
+			'relation.choice.marriage' => 'marriage'
 		);
 		$builder->add('type', ChoiceType::class, array(
 			'choices' => $types,

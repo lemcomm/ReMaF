@@ -517,7 +517,6 @@ class PoliticsController extends AbstractController {
 		}
 		$formNew->handleRequest($request);
 		if ($formNew->isSubmitted() && $formNew->isValid()) {
-			echo 'form new';
 			$data = $formNew->getData();
 
 			$partner = $em->getRepository(Character::class)->find($data['partner']);
