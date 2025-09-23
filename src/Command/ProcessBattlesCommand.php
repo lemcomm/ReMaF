@@ -74,18 +74,10 @@ class ProcessBattlesCommand extends Command {
 				$this->cs->setGlobal('battling', 0);
 				$output->writeln("battles: ...complete");
 			} catch (Exception $e) {
-				try {
-					$error = new FlattenException()::createFromThrowable($e);
-					$msg = $error->getMessage();
-					$code = $error->getCode();
-					$trace = $error->getTraceAsString();
-					$txt = "Status code: $code\nError: $msg\nTrace: $trace";
-					$output->writeln($txt);
-					$this->nm->spoolError($txt);
-				} catch (Exception $f) {
-					$output->writeln($f->getMessage());
-					$output->writeln($f->getTraceAsString());
-				}
+				$output->writeln("error on line: ".$e->getLine()." in file: ".$e->getFile());
+				$output->writeln($e->getMessage());
+				$output->writeln($e->getTraceAsString());
+				$this->nm->spoolAdminMsg("Battle error! ".$e->getMessage()." on line: ".$e->getLine()." in file: ".$e->getFile());
 			}
 		} else {
 			$output->writeln("battles: additional running prevented");

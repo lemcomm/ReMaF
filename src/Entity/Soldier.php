@@ -49,6 +49,7 @@ class Soldier extends NPC {
 	private ?string $destination = null;
 	private ?int $id = null;
 	private bool $improvisedWeapon = false;
+	private bool $engaged = false;
 	private Collection $events;
 	private null|false|EquipmentType $shield = null;
 	private ?EquipmentType $weapon = null;
@@ -1450,5 +1451,14 @@ class Soldier extends NPC {
 		}
 	
 	$this->setStateTraits($stateBonus);
+	}
+
+	public function getEngaged(): bool {
+		return $this->engaged;
+	}
+
+	public function setEngaged(bool $engaged): static {
+		$this->engaged = $engaged;
+		return $this;
 	}
 }

@@ -62,7 +62,7 @@ class BattleRunner {
 
 	# Overrides for other scenarios.
 	# Leave version, combatVersion, and combatRules default to do specific overrides.
-	public int $version = 3;
+	public int $version = 4;
 	public int $combatVersion = 3;
 	public string $combatRules = 'legacy';
 	public bool $legacyRuleset = true;
@@ -598,6 +598,9 @@ class BattleRunner {
 				$soldier->setFighting($soldier->isActive(false, false, $this->legacyActivity, $this->ignoreWounds));
 				$soldier->resetAttacks();
 				$soldier->resetHitsTaken();
+				if ($this->version > 3) {
+					$soldier->setEngaged(false);
+				}
 			}
 			$count = $group->getFightingSoldiers()->count();
 			if (!$first && $this->recalculatePower) {
@@ -786,9 +789,13 @@ class BattleRunner {
 		$noCavTargets = 0;
 		$extras = [];
 		$this->resetStageResult();
+		if ($phase !== $this->chargePhase) {
+			$cavNoTargets = true;
+		}
 		foreach ($soldiers as $soldier) {
 			$counter = null;
 			$result=false;
+			$target = null;
 			if ($this->legacyRuleset) {
 				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer() && $this->battle->getType() == 'field') {
 					// Lancers will always perform a cavalry charge in the last ranged phase!
@@ -863,6 +870,10 @@ class BattleRunner {
 						$noRangeTargets++;
 					}
 				}
+				if ($this->version > 3 && $target) {
+					$soldier->setEngaged(true);
+					$target->setEngaged(true);
+				}
 			} elseif ($this->masteryRuleset) {
 				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer(true) && $this->battle->getType() == 'field') {
 					$target = $this->getRandomSoldier($enemyCollection);
@@ -931,9 +942,13 @@ class BattleRunner {
 		$bonus = sqrt($enemies);
 		$this->resetStageResult();
 		/** @var Soldier $soldier */
+		if ($phase !== $this->chargePhase) {
+			$cavNoTargets = true;
+		}
 		foreach ($soldiers as $soldier) {
 			$result = false;
 			$counter = null;
+			$target = null;
 			if ($this->legacyRuleset) {
 				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer() && $this->battle->getType() == 'field') {
 					// Lancers will always perform a cavalry charge in the last ranged phase!
@@ -1016,6 +1031,10 @@ class BattleRunner {
 						$this->log(10, "but finds no target\n");
 						$noMeleeTargets++;
 					}
+				}
+				if ($this->version > 3 && $target) {
+					$soldier->setEngaged(true);
+					$target->setEngaged(true);
 				}
 			} elseif ($this->masteryRuleset) {
 				$target = $this->getRandomSoldier($enemyCollection);
@@ -1296,7 +1315,12 @@ class BattleRunner {
 				}
 				$total = 0;
 				$count = 0;
+				/** @var Soldier $soldier */
 				foreach ($group->getActiveSoldiers() as $soldier) {
+					// Check if soldier saw action
+					if ($this->version > 3 && !$soldier->getEngaged()) {
+						continue;
+					}
 					// Check for ability to do damage
 					/** @var Soldier $soldier */
 					if ($this->checkWeapons && !$soldier->getWeapon() && !$soldier->getImprovisedWeapon()) {

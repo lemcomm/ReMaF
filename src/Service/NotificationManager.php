@@ -88,6 +88,14 @@ class NotificationManager {
 		}
 	}
 
+	public function spoolAdminMsg($txt): void {
+		try {
+			$this->discord->pushToOlympus($txt);
+		} catch (Exception $e) {
+			# Nothing.
+		}
+	}
+
 	public function spoolEvent(Event $event): bool {
 		$users = $this->findUser($event);
 
