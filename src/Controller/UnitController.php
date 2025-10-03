@@ -369,11 +369,15 @@ class UnitController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
 
-			$this->mm->manageUnit($unit->getSoldiers(), $data, $settlement, $character, $canResupply, $canRecruit, $canReassign);
-			// TODO: notice with result
-
-			$em = $this->em;
-			$em->flush();
+			$results = $this->mm->manageUnit($unit->getSoldiers(), $data, $settlement, $canResupply, $canRecruit, $canReassign);
+			$flash = '';
+			foreach ($results as $name=>$val) {
+				if ($val > 0) {
+					$flash .= $this->trans->trans('recruit.manage.action'.$name, ['%val%'=>$val], 'actions').' ';
+				}
+			}
+			$flash = rtrim($flash, ' ');
+			$this->addFlash('notice', $flash);
 			$app->setSessionData($character); // update, because maybe we changed our soldiers count
 			return $this->redirect($request->getUri());
 		}
