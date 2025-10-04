@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Character;
+use App\Entity\EquipmentType;
 use App\Entity\Race;
 use App\Entity\Resupply;
 use App\Entity\Settlement;
@@ -333,14 +334,17 @@ class UnitController extends AbstractController {
 		$entourage = [];
 		foreach ($character->getEntourage() as $each) {
 			if ($each->getEquipment()) {
-				$item = $each->getEquipment()->getId();
+				/** @var EquipmentType $equip */
+				$equip = $each->getEquipment();
+				$item = $equip->getId();
 				if (!isset($resupply[$item])) {
-					$resupply[$item] = array('item'=>$each->getEquipment(), 'resupply'=>0);
+					$resupply[$item] = array('item'=>$equip, 'resupply'=>0);
 				}
-				$resupply[$item]['resupply'] += $each->getSupply();
-				$entourage[] = $each;
-				if (!$canResupply) {
-					$canResupply = true;
+				if ($equip->getResupplyCost() >= $each->getSupply()) {
+					$resupply[$item]['resupply'] += $each->getSupply();$entourage[] = $each;
+					if (!$canResupply) {
+						$canResupply = true;
+					}
 				}
 			}
 		}
