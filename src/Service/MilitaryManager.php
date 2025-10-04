@@ -142,7 +142,7 @@ class MilitaryManager {
 		}
 	}
 
-	public function manageUnit($soldiers, $data, ?Settlement $settlement, $canResupply, $canRecruit, $canReassign): array {
+	public function manageUnit($soldiers, $data, ?Settlement $settlement, $canResupply, $canRecruit, $canReassign, $entourage): array {
 		$success=0; $fail=0; $bury=0; $retrain=0; $assign=0; $disband=0;
 
 		foreach ($data['npcs'] as $npc=>$action) {
@@ -168,10 +168,10 @@ class MilitaryManager {
 					$bury++;
 					break;
 				case 'resupply':
-					if ($canResupply && $this->resupply($soldier, $settlement)) {
-						$success++;
-					} else {
-						$fail++;
+					if ($canResupply) {
+						$resupply = $this->resupply($soldier, $settlement, $entourage);
+						$success += $resupply[1];
+						$fail += $resupply[0];
 					}
 					break;
 				case 'retrain':
@@ -260,17 +260,10 @@ class MilitaryManager {
 		return array($success, $fail);
 	}
 
-	public function resupply(Soldier $soldier, ?Settlement $settlement=null): bool {
-		$equipment_followers = [];
-		if ($settlement==null) {
-			$char = $soldier->getUnit()?->getCharacter();
-			if ($char) {
-				$equipment_followers = $char->getEntourage()->filter(function ($entry) {
-					return ($entry->getType()->getName() == 'follower' && $entry->isAlive() && $entry->getEquipment() && $entry->getSupply() > 0);
-				})->toArray();
-			}
-		}
-		$success = true;
+	public function resupply(Soldier $soldier, ?Settlement $settlement, $equipment_followers): array {
+		$char = $soldier->getUnit()?->getCharacter();
+		$needed = 0;
+		$located = 0;
 
 		$items = array('Weapon', 'Armour', 'Equipment', 'Mount');
 		foreach ($items as $item) {
@@ -278,40 +271,47 @@ class MilitaryManager {
 			$trained = 'getTrained'.$item;
 			$set = 'set'.$item;
 
-			if (!$soldier->$check()) {
-				if ($settlement==null) {
+			if (!$soldier->$check() && $soldier->$trained()) {
+				if ($settlement===null) {
 					// resupply from camp followers
-					if ($soldier->getCharacter()) {
-						$found = $this->resupplyFromEntourage($soldier, $equipment_followers, $set, $trained);
+					if (count($equipment_followers)) {
+						$found = $this->resupplyFromEntourage($soldier, $equipment_followers, $set, $soldier->$trained());
 						if ($found) {
-							continue;
+							$located++;
+						} else {
+							$needed++;
 						}
+					} else {
+						$needed++;
 					}
-					$success = false;
 				} else {
 					// resupply from settlement
-					if ($this->actman->acquireItem($settlement, $soldier->$trained(), false, true, $soldier->getCharacter())) {
+					if ($this->actman->acquireItem($settlement, $soldier->$trained(), false, true, $char)) {
 						$soldier->$set($soldier->$trained());
+						$located++;
 					} else {
 						// resupply from camp followers
-						if ($soldier->getCharacter()) {
-							$found = $this->resupplyFromEntourage($soldier, $equipment_followers, $set, $trained);
+						if (count($equipment_followers)) {
+							$found = $this->resupplyFromEntourage($soldier, $equipment_followers, $set, $soldier->$trained());
 							if ($found) {
-								continue;
+								$located++;
+							} else {
+								$needed++;
 							}
+						} else {
+							$needed++;
 						}
-						$success = false;
 					}
 				}
 			}
 		}
-		return $success;
+		return [$needed, $located];
 	}
 
-	public function resupplyFromEntourage(Soldier $soldier, ?array $followers, string $set, string $trained): bool {
+	public function resupplyFromEntourage(Soldier $soldier, ?array $followers, string $set, EquipmentType $my_item): bool {
 		foreach ($followers as $follower) {
-			$my_item = $soldier->$trained();
-			if ($follower->getSupply() >= $my_item->getResupplyCost() && $follower->getEquipment() == $my_item) {
+			/** @var Entourage $follower */
+			if ($follower->getEquipment() === $my_item && $follower->getSupply() >= $my_item->getResupplyCost()) {
 				$soldier->$set($my_item);
 				$follower->setSupply($follower->getSupply() - $my_item->getResupplyCost());
 				return true;

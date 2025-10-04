@@ -1028,8 +1028,8 @@ recruit:
   groupinfo:    "Automatically group soldiers according to equipment. Warning: This will overwrite any groups you may have."
   grouped:      Your soldiers have been automatically put into groups
   action:
-   success:    "{val} soldier(s) resupplied."
-   fail:       "{val} soldier(s) could not be resupplied."
+   success:    "{val} item(s) resupplied to soldier(s)."
+   fail:       "{val} item(s) could not be found for soldier(s)."
    bury:       "{val} soldier(s) buried."
    retrain:    "{val} soldier(s) retrained."
    assign:     "{val} soldier(s) reassigned."

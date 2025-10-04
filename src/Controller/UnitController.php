@@ -304,38 +304,43 @@ class UnitController extends AbstractController {
                 $canRecruit=false;
                 $canReassign=false;
                 $hasUnitsPerm=false;
+		$entourage=null;
 
 		if ($settlement) {
-                        # If we can manage units, we can reassign and resupply. Build the list.
-                        if ($this->pm->checkSettlementPermission($settlement, $character, 'units')) {
-                                foreach ($settlement->getUnits() as $each) {
-                                        if (!$each->getCharacter() && !$each->getPlace() && !$each->getDisbanded()) {
-                                                $units[] = $each;
-                                        }
-                                }
-                                if ($unit->getSettlement() === $settlement) {
-                                        $hasUnitsPerm = true;
-                                        $canRecruit = true;
-        				$training = $this->mm->findAvailableEquipment($settlement, true);
-                                }
-                                $canResupply = true;
+			# If we can manage units, we can reassign and resupply. Build the list.
+			if ($this->pm->checkSettlementPermission($settlement, $character, 'units')) {
+				foreach ($settlement->getUnits() as $each) {
+					if (!$each->getCharacter() && !$each->getPlace() && !$each->getDisbanded()) {
+						$units[] = $each;
+					}
+				}
+				if ($unit->getSettlement() === $settlement) {
+					$hasUnitsPerm = true;
+					$canRecruit = true;
+					$training = $this->mm->findAvailableEquipment($settlement, true);
+				}
+				$canResupply = true;
 				$resupply = $this->mm->findAvailableEquipment($settlement, false);
-                                $canReassign = true;
-                        }
+				$canReassign = true;
+			}
 
-                        # If the unit has a settlement and either they are commanded by someone or not under anyones command (and thus in it).
+			# If the unit has a settlement and either they are commanded by someone or not under anyones command (and thus in it).
 			if (!$canResupply && ($settlement === $unit->getSettlement() || $this->pm->checkSettlementPermission($settlement, $character, 'resupply'))) {
-                                $canResupply = true;
+				$canResupply = true;
 				$resupply = $this->mm->findAvailableEquipment($settlement, false);
 			}
-		} else {
-			foreach ($character->getEntourage() as $entourage) {
-				if ($entourage->getEquipment()) {
-					$item = $entourage->getEquipment()->getId();
-					if (!isset($resupply[$item])) {
-						$resupply[$item] = array('item'=>$entourage->getEquipment(), 'resupply'=>0);
-					}
-					$resupply[$item]['resupply'] += $entourage->getSupply();
+		}
+		$entourage = [];
+		foreach ($character->getEntourage() as $each) {
+			if ($each->getEquipment()) {
+				$item = $each->getEquipment()->getId();
+				if (!isset($resupply[$item])) {
+					$resupply[$item] = array('item'=>$each->getEquipment(), 'resupply'=>0);
+				}
+				$resupply[$item]['resupply'] += $each->getSupply();
+				$entourage[] = $each;
+				if (!$canResupply) {
+					$canResupply = true;
 				}
 			}
 		}
@@ -364,20 +369,17 @@ class UnitController extends AbstractController {
 			'hasUnitPerm'=>$hasUnitsPerm,
 			'me'=>$character,
 		]);
+		echo 'hello?';
 
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
-
-			$results = $this->mm->manageUnit($unit->getSoldiers(), $data, $settlement, $canResupply, $canRecruit, $canReassign);
-			$flash = '';
+			$results = $this->mm->manageUnit($unit->getSoldiers(), $data, $settlement, $canResupply, $canRecruit, $canReassign, $entourage);
 			foreach ($results as $name=>$val) {
 				if ($val > 0) {
-					$flash .= $this->trans->trans('recruit.manage.action'.$name, ['%val%'=>$val], 'actions').' ';
+					$this->addFlash('notice', $this->trans->trans('recruit.manage.action.'.$name, ['%val%'=>$val], 'actions'));
 				}
 			}
-			$flash = rtrim($flash, ' ');
-			$this->addFlash('notice', $flash);
 			$app->setSessionData($character); // update, because maybe we changed our soldiers count
 			return $this->redirect($request->getUri());
 		}
