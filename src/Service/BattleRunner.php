@@ -300,7 +300,7 @@ class BattleRunner {
 		$this->em->flush();
 		$this->em->remove($battle);
 		$this->history->evaluateBattle($this->report);
-		$this->notes->spoolBattleReport($this->report);
+		$this->notes->spoolBattleReport($this->report, $this->combatRules);
 	}
 
 	public function prepare(): array {
