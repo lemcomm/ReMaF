@@ -143,7 +143,8 @@ class MilitaryManager {
 	}
 
 	public function manageUnit($soldiers, $data, ?Settlement $settlement, $canResupply, $canRecruit, $canReassign, $entourage): array {
-		$success=0; $fail=0; $bury=0; $retrain=0; $assign=0; $disband=0;
+		$success=0; $fail=0; $bury=0; $retrain=0; $assign=0; $disband=0; $assignOver=0; $assignFail=0;
+		$units = [];
 
 		foreach ($data['npcs'] as $npc=>$action) {
 
@@ -153,8 +154,18 @@ class MilitaryManager {
 			switch ($action['action']) {
 				case 'assignto':
 					if ($canReassign && $data['assignto']) {
-						$soldier->setUnit($data['assignto']);
-						$assign++;
+						/** @var Unit $unit */
+						$unit = $data['assignto'];
+						if (!array_key_exists($unit->getId(), $units)) {
+							$units[$unit->getId()] = $unit->getSoldiers()->count();
+						}
+						if ($units[$unit->getId()] >= 200) {
+							$assignOver++;
+						} else {
+							$assign++;
+							$soldier->setUnit($data['assignto']);
+							$units[$unit->getId()] = $units[$unit->getId()]+1;
+						}
 					}
 					break;
 				case 'disband':
@@ -184,7 +195,7 @@ class MilitaryManager {
 			$this->em->flush();
 		}
 
-		return ['success' => $success, 'fail' => $fail, 'bury' => $bury, 'retrain' => $retrain, 'assign' => $assign, 'disband' => $disband];
+		return ['success' => $success, 'fail' => $fail, 'bury' => $bury, 'retrain' => $retrain, 'assign' => $assign, 'disband' => $disband, 'assignOver'=>$assignOver, 'assignFail' => $assignFail];
 	}
 
 	public function manageEntourage($npcs, $data, ?Settlement $settlement=null, ?Character $character=null): array {

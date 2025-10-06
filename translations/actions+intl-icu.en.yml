@@ -1033,6 +1033,8 @@ recruit:
    bury:       "{val} soldier(s) buried."
    retrain:    "{val} soldier(s) retrained."
    assign:     "{val} soldier(s) reassigned."
+   assignOver: "{val} soldier(s) could not be reassigned due to units being limited to 200 soldiers."
+   assignFail: "{val} soldier(s) could not be reassigned due to either not having reassignment permission or not having a unit to reassign to."
    disband:    "{val} soldier(s) disbanded."
  offers:
   name:         Knights offers
