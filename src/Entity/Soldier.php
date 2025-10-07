@@ -112,14 +112,16 @@ class Soldier extends NPC {
 		$armor = $this->armour;
 		$covered = 0;
 		$armorHit = [];
-		foreach($armor->getArmor() as $piece){
-			if (in_array($hitLoc, ArmorCalculator::forms[$piece['form']]['coverage'])) {
-				$covered += ArmorCalculator::layers[$piece['layer']]['protection'][$aspect];
-				$armorHit[] = [
-				'armorPiece' => $piece['layer'].' '.$piece['form'],
-				'coverage' => ArmorCalculator::forms[$piece['form']]['coverage'],
-				'protection' => ArmorCalculator::layers[$piece['layer']]['protection']
-				];
+		if ($armor) {
+			foreach ($armor->getArmor() as $piece) {
+				if (in_array($hitLoc, ArmorCalculator::forms[$piece['form']]['coverage'])) {
+					$covered += ArmorCalculator::layers[$piece['layer']]['protection'][$aspect];
+					$armorHit[] = [
+						'armorPiece' => $piece['layer'] . ' ' . $piece['form'],
+						'coverage' => ArmorCalculator::forms[$piece['form']]['coverage'],
+						'protection' => ArmorCalculator::layers[$piece['layer']]['protection']
+					];
+				}
 			}
 		}
 		return ['armorProtection' => $covered, 'armorHit' => $armorHit];
