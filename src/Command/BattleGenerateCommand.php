@@ -56,6 +56,7 @@ class BattleGenerateCommand extends Command {
 		$output->writeln('<info>Battle type: '.$battle->getType().'</info>');
 		$score = $input->getOption('defScore');
 		$runner = $this->runner;
+		$runner->reset(); # Ensure known state.
 		if ($score !== null) {
 			$score = (int) $score;
 			$runner->defenseOverride = true;

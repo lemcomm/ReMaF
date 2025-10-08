@@ -58,6 +58,7 @@ class ProcessBattlesCommand extends Command {
 				$query = $this->em->createQuery('SELECT b FROM App\Entity\Battle b WHERE b.complete < :now ORDER BY b.id ASC');
 				$query->setParameters(['now' => $now]);
 				foreach ($query->getResult() as $battle) {
+					$this->br->reset(); # Restore to known state.
 					$this->br->enableLog($arg_debug);
 					$this->br->run($battle, $cycle);
 				}
