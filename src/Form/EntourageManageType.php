@@ -58,7 +58,7 @@ class EntourageManageType extends AbstractType {
 						'class'=>EquipmentType::class,
 						'choice_label'=>'nameTrans',
 						'query_builder'=>function(EntityRepository $er) {
-							return $er->createQueryBuilder('e')->orderBy('e.name', 'ASC');
+							return $er->createQueryBuilder('e')->where('e.restricted = false')->orderBy('e.name', 'ASC');
 						},
 						'data' => $npc->getEquipment(),
 						'choice_translation_domain' => 'messages',

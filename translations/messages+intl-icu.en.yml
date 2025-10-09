@@ -1147,6 +1147,7 @@ error:
   battlereport: You were not a participant in that battle, so you have to rely on eye witness reports for its details
   nothead:      Only the head of the House may access this page.
   nohouse:      You must be in a house to perform this action.
+  arcane:       This thing is lost knowledge beyond your understanding.
 
  missing:
   character:    Character required, but missing. Please select a character from the character page or log in again.

@@ -322,14 +322,16 @@ class DataController extends AbstractController {
 		$all_items = $em->getRepository(EquipmentType::class)->findAll();
 		$items = array();
 		foreach ($all_items as $item) {
-			$items[] = array(
-				'id'		=> $item->getId(),
-				'name'	=> $this->trans->trans('item.'.$item->getName(), ['%choice%' => 1]),
-				'desc'	=> trim($this->trans->trans('description.'.$item->getName())),
-				'icon'	=> $item->getIcon(),
-				'provider'	=> $item->getProvider()->getId(),
-				'trainer'	=> $item->getTrainer()->getId()
-			);
+			if (!$item->getRestricted()) {
+				$items[] = array(
+					'id'		=> $item->getId(),
+					'name'	=> $this->trans->trans('item.'.$item->getName(), ['%choice%' => 1]),
+					'desc'	=> trim($this->trans->trans('description.'.$item->getName())),
+					'icon'	=> $item->getIcon(),
+					'provider'	=> $item->getProvider()->getId(),
+					'trainer'	=> $item->getTrainer()->getId()
+				);
+			}
 		}
 		$result['data']['buildings'] = $buildings;
 		$result['data']['features'] = $features;
