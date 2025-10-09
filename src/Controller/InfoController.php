@@ -108,7 +108,7 @@ class InfoController extends AbstractController {
 			'BuildingType' => $em->getRepository(BuildingType::class)->findBy([], ['name' => 'asc']),
 			'FeatureType' => $em->getRepository(FeatureType::class)->findBy([], ['name' => 'asc']),
 			'EntourageType' => $em->getRepository(EntourageType::class)->findBy([], ['name' => 'asc']),
-			default => $em->getRepository(EquipmentType::class)->findBy([], ['name' => 'asc', 'restricted'=>false]),
+			default => $em->getRepository(EquipmentType::class)->findBy(['restricted'=>false], ['name' => 'asc']),
 		};
 		$toc = $this->pager->getPage('manual', 'toc', $request->getLocale());
 
