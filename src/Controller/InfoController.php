@@ -13,11 +13,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class InfoController extends AbstractController {
 	public function __construct(
 		private EntityManagerInterface $em,
-		private PageReader $pager) {
+		private PageReader             $pager,
+		private TranslatorInterface		$trans) {
 	}
 
 	#[Route ('/info/buildings', name:'maf_info_buildings')]
@@ -88,7 +90,10 @@ class InfoController extends AbstractController {
 		$em = $this->em;
 		$equipmenttype = $em->getRepository(EquipmentType::class)->find($id);
 		if (!$equipmenttype) {
-			throw $this->createNotFoundException('error.notfound.equipmenttype');
+			throw $this->createNotFoundException($this->trans->trans('error.notfound.equipmenttype'));
+		}
+		if ($equipmenttype->getRestricted()) {
+			throw $this->createAccessDeniedException($this->trans->trans('error.noaccess.arcane'));
 		}
 
 		return $this->render('Info/equipmenttype.html.twig', [
@@ -103,7 +108,7 @@ class InfoController extends AbstractController {
 			'BuildingType' => $em->getRepository(BuildingType::class)->findBy([], ['name' => 'asc']),
 			'FeatureType' => $em->getRepository(FeatureType::class)->findBy([], ['name' => 'asc']),
 			'EntourageType' => $em->getRepository(EntourageType::class)->findBy([], ['name' => 'asc']),
-			default => $em->getRepository(EquipmentType::class)->findBy([], ['name' => 'asc']),
+			default => $em->getRepository(EquipmentType::class)->findBy(['restricted'=>false], ['name' => 'asc']),
 		};
 		$toc = $this->pager->getPage('manual', 'toc', $request->getLocale());
 

@@ -163,7 +163,6 @@ class CombatManager {
 		$damage = 0;
 		$hitLoc = $this->getHitLoc($target);
 		$hitData = $this->resolveHit($me, $target, $hitLoc, $dice);
-		
 
 		for ($i = 0; $i < $dice; $i++) {
 			$damage += rand(1, 6);
@@ -202,7 +201,12 @@ class CombatManager {
 
 		// Example
 		// broadsword (15/10) [6/8/6]
-		$strAttackerWeapon = $me->getWeapon()->getName()." (".$me->getWeapon()->getAttackClass()."/".$me->getWeapon()->getDefenseClass().") [".implode('/', $me->getWeapon()->getAspect())."]";
+		if ($me->getWeapon()) {
+			$strAttackerWeapon = $me->getWeapon()->getName()." (".$me->getWeapon()->getAttackClass()."/".$me->getWeapon()->getDefenseClass().") [".implode('/', $me->getWeapon()->getAspect())."]";
+		} else {
+			$strAttackerWeapon = "improvised (0/0) [1/0/0/0]";
+		}
+
 		
 		// Example
 		// mail hauberk (torso, abdomen, hips) [2/8/6]
@@ -333,7 +337,11 @@ class CombatManager {
 	}
 
 	public function resolveHit(Character|Soldier $me, Character|Soldier $target, $hitloc, $dice) {
-		$aspects = $me->getWeapon()->getAspect();
+		if ($me->getWeapon()) {
+			$aspects = $me->getWeapon()->getAspect();
+		} else {
+			$aspects = ["bashing" => 1, "cutting" => 0, "piercing" => 0, 'magefire' => 0];
+		}
 		$best =  [["aspect" => "nothing", "damage" => -100, "table" => []], -100];
 		// A note on the value -100. Maximum possible damage without magic is less than 40. Any armor value over this practically guarantees immunity.
 		$expDiceResult = $dice * 3;

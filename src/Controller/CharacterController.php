@@ -938,10 +938,10 @@ class CharacterController extends AbstractController {
 		}
 		$em = $this->em;
 		$opts = [];
-		$opts['weapons'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon']);
-		$opts['armor'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'armour']);
-		$opts['equipment'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'equipment']);
-		$opts['mounts'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'mount']);
+		$opts['weapons'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon', 'restricted'=>false]);
+		$opts['armor'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'armour', 'restricted'=>false]);
+		$opts['equipment'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'equipment', 'restricted'=>false]);
+		$opts['mounts'] = $em->getRepository(EquipmentType::class)->findBy(['type'=>'mount', 'restricted'=>false]);
 
 		$form = $this->createForm(CharacterLoadoutType::class, $character, $opts);
 		$form->handleRequest($request);

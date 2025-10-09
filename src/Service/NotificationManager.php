@@ -114,10 +114,10 @@ class NotificationManager {
 		return true;
 	}
 
-	public function spoolBattleReport(BattleReport $report): void {
+	public function spoolBattleReport(BattleReport $report, $ruleset): void {
 		$txt = "A new battle has taken place! https://mightandfealty.com/en/char/battlereport/".$report->getId();
 		try {
-			$this->discord->pushToOlympus($txt);
+			$this->discord->pushToOlympus($txt.' (Ruleset: '.$ruleset.')');
 		} catch (Exception $e) {
 			# Nothing.
 		}

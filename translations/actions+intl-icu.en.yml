@@ -1027,6 +1027,15 @@ recruit:
   group2:       Group detailed
   groupinfo:    "Automatically group soldiers according to equipment. Warning: This will overwrite any groups you may have."
   grouped:      Your soldiers have been automatically put into groups
+  action:
+   success:    "{val} item(s) resupplied to soldier(s)."
+   fail:       "{val} item(s) could not be found for soldier(s)."
+   bury:       "{val} soldier(s) buried."
+   retrain:    "{val} soldier(s) retrained."
+   assign:     "{val} soldier(s) reassigned."
+   assignOver: "{val} soldier(s) could not be reassigned due to units being limited to 200 soldiers."
+   assignFail: "{val} soldier(s) could not be reassigned due to either not having reassignment permission or not having a unit to reassign to."
+   disband:    "{val} soldier(s) disbanded."
  offers:
   name:         Knights offers
   description:  Set aside soldiers to offer to new knights swearing allegiance to you.

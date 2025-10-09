@@ -132,6 +132,7 @@ class InteractionType extends AbstractType {
 	private function attackFields(FormBuilderInterface $builder, array $options): void {
 		$builder->add('mastery', CheckboxType::class, [
 			'empty_data' => false,
+			'required'=>false,
 			'label' => 'interaction.attack.mastery',
 		]);
 	}

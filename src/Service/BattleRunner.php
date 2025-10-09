@@ -24,7 +24,7 @@ class BattleRunner {
 	NOTE: There's a bunch of code in here that is "live" but not actually called relating to 2D battles.
 	*/
 
-	# Preset values.
+	# Preset values. Requires resetting.
 	private int $defaultOffset = 135;
 	private int $battleSeparation = 270;
 	/*
@@ -35,6 +35,7 @@ class BattleRunner {
 	const array rulesets = ['legacy', 'mastery'];
 
 	# The following variables are used all over this class, in multiple functions, sometimes as far as 4 or 5 functions deep.
+	# Requires resetting.
 	private Battle $battle;
 	private bool|string $regionType = false;
 	private float $xpMod;
@@ -47,7 +48,7 @@ class BattleRunner {
 	private int $battlesize=1;
 	private bool $resuming = false;
 
-	# Siege properties.
+	# Siege properties. Will require resetting.
 	private int $defMinContacts;
 	private int $defUsedContacts = 0;
 	private int $defCurrentContacts = 0;
@@ -57,11 +58,11 @@ class BattleRunner {
 	private int $attCurrentContacts = 0;
 	private int $attSlain;
 
-	# Public to allow manipulation by SimulateBattleCommand.
+	# Public to allow manipulation by SimulateBattleCommand. Requires resetting.
 	public int $defenseBonus=0;
 	public bool $defenseOverride = false;
 
-	# Overrides for other scenarios.
+	# Overrides for other scenarios. Requires resetting.
 	# Leave version, combatVersion, and combatRules default to do specific overrides.
 	public int $version = 4;
 	public int $combatVersion = 3;
@@ -69,7 +70,7 @@ class BattleRunner {
 	public bool $legacyRuleset = true;
 	public bool $masteryRuleset = false;
 
-	# Specific override flags.
+	# Specific override flags. Requires resetting.
 	public bool $legacyMorale = false;
 	public bool $ignoreUnfinished = false;
 	public bool $legacySieges = false;
@@ -81,7 +82,7 @@ class BattleRunner {
 	public bool $autoImprovise = true;
 	public bool $checkWeapons = true;
 
-	# StageResult data.
+	# StageResult data. Has dedicated reset command.
 	private int $attacks = 0;
 	private int $shots = 0;
 	private int $rangedHits = 0;
@@ -125,6 +126,36 @@ class BattleRunner {
 	/*
 	 * Setup Functions
 	 */
+	public function reset(): void {
+		#$this->defaultOffset = 135;
+		#$this->battleSeparation = 270;
+		$this->regionType = false;
+		$this->xpMod = 0;
+		$this->debug = 0;
+		$this->rangedPhases = 3;
+		$this->chargePhase = 3;
+		$this->report = null;
+		$this->tempLog = null;
+		$this->nobility = null;
+		$this->battlesize = 1;
+		$this->defenseBonus = 0;
+		$this->defenseOverride = false;
+		$this->version = 4;
+		$this->combatVersion = 3;
+		$this->combatRules = 'legacy';
+		$this->legacyRuleset = true;
+		$this->legacyMorale = false;
+		$this->ignoreUnfinished = false;
+		$this->legacySieges = false;
+		$this->legacyActivity = false;
+		$this->recalculatePower = true;
+		$this->ignoreWounds = false;
+		$this->ignoreMorale = false;
+		$this->legacyHitRolls = false;
+		$this->autoImprovise = true;
+		$this->checkWeapons = true;
+	}
+
 	public function enableLog($level=9999): void {
 		$level?$this->debug=$level:$this->debug=9999;
 	}
@@ -157,6 +188,7 @@ class BattleRunner {
 	 * #####################
 	 */
 	public function run(Battle $battle, $cycle): void {
+		$this->reset();
 		$this->battle = $battle;
 		$this->prepareCombatManager();
 		if ($this->combatRules === 'legacy') {
@@ -312,7 +344,7 @@ class BattleRunner {
 		$this->em->flush();
 		$this->em->remove($battle);
 		$this->history->evaluateBattle($this->report);
-		$this->notes->spoolBattleReport($this->report);
+		$this->notes->spoolBattleReport($this->report, $this->combatRules);
 	}
 
 	public function prepare(): array {

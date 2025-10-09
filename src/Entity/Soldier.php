@@ -101,7 +101,11 @@ class Soldier extends NPC {
 
 	public function getWeaponAspect($aspect){
 		$bonus = $this->getStateTraits();
-		return floor($this->getWeapon()->getAspect()[$aspect] * $bonus['Frenzy']);
+		if ($this->getWeapon()) {
+			return floor($this->getWeapon()->getAspect()[$aspect] * $bonus['Frenzy']);
+		}
+		$aspects = ["bashing" => 1, "cutting" => 0, "piercing" => 0, 'magefire' => 0];
+		return floor($aspects[$aspect] * $bonus['Frenzy']);
 	}
 	
 	public function getWeaponAttackClass(){
@@ -112,13 +116,23 @@ class Soldier extends NPC {
 		$armor = $this->armour;
 		$covered = 0;
 		$armorHit = [];
-		foreach($armor->getArmor() as $piece){
+		if (!$armor) {
+			# Assume cloth. Rework this later when we move equipment into statics.
+			$pieces = [
+				['form' => 'tunic', 'layer' => 'cloth'],
+				['form' => 'leggings', 'layer' => 'cloth'],
+				['form' => 'boots', 'layer' => 'cloth'],
+			];
+		} else {
+			$pieces = $armor->getArmor();
+		}
+		foreach ($pieces as $piece) {
 			if (in_array($hitLoc, ArmorCalculator::forms[$piece['form']]['coverage'])) {
 				$covered += ArmorCalculator::layers[$piece['layer']]['protection'][$aspect];
 				$armorHit[] = [
-				'armorPiece' => $piece['layer'].' '.$piece['form'],
-				'coverage' => ArmorCalculator::forms[$piece['form']]['coverage'],
-				'protection' => ArmorCalculator::layers[$piece['layer']]['protection']
+					'armorPiece' => $piece['layer'] . ' ' . $piece['form'],
+					'coverage' => ArmorCalculator::forms[$piece['form']]['coverage'],
+					'protection' => ArmorCalculator::layers[$piece['layer']]['protection']
 				];
 			}
 		}
@@ -1207,28 +1221,28 @@ class Soldier extends NPC {
 	}
 
 	public function getEffMastery(bool $attacking): array {
-		$shield = false;
 		$mastery = $this->getMastery() + $this->getStateTraits()['Bloodlust'];
-		if ($attacking) {
+		if ($this->getWeapon()) {
 			$using = $this->getWeapon()->getName();
 			$weaponBaseSkill = $this->getWeapon()->getMastery();
-			$ML = $this->getRace()->getBaseCombatSkill() * ($weaponBaseSkill + $mastery);
-			$WC = $this->getWeapon()->getAttackClass() + $this->getStateTraits()['Vainglory'] + $this->getStateTraits()['Deathwish'];
+			$AC = $this->getWeapon()->getAttackClass();
+			$DC = $this->getWeapon()->getDefenseClass();
+		} else {
+			$using = 'improvised';
+			$weaponBaseSkill = 2;
+			$AC = 0;
+			$DC = 0;
+		}
+		$ML = $this->getRace()->getBaseCombatSkill() * ($weaponBaseSkill + $mastery);
+		if ($attacking) {
+			$WC = $AC + $this->getStateTraits()['Vainglory'] + $this->getStateTraits()['Deathwish'];
 		} else {
 			if ($this->getEquipment() && str_contains($this->getEquipment()->getName(), 'shield') && $this->getMoraleState() !== 'Berserk') {
-				$using = $this->getWeapon()->getName();
-				$shield = true;
-				$weaponBaseSkill = $this->getEquipment()->getMastery();
-				$ML = $this->getRace()->getBaseCombatSkill() * ($weaponBaseSkill + $mastery);
 				$WC = $this->getEquipment()->getDefenseClass() + $this->getStateTraits()['Vainglory'];
 			} else {
-				$using = $this->getWeapon()->getName();
-				$weaponBaseSkill = $this->getWeapon()->getMastery();
-				$ML = $this->getRace()->getBaseCombatSkill() * ($weaponBaseSkill + $mastery);
-				$WC = $this->getWeapon()->getDefenseClass() + $this->getStateTraits()['Vainglory'] - $this->getStateTraits()['Deathwish'];
+				$WC = $DC + $this->getStateTraits()['Vainglory'] - $this->getStateTraits()['Deathwish'];
 			}
 		}
-
 		$pen = ($this->getModifierSum() + $this->attacks) * 5;
 		$EML = $ML + $WC - $pen;
 		return ['EML' => $EML, 'ML' => $ML, 'WC' => $WC, 'weaponBaseSkill' => $weaponBaseSkill, 'mastery' => $mastery, 'penalty' => $pen, 'using' => $using];

@@ -47,7 +47,13 @@ class BattleGroup {
 
 		if ($this->battle->getSettlement() && $this->battle->getSiege() && $this->battle->getSiege()->getSettlement() === $this->battle->getSettlement()) {
 			$type = $this->battle->getType();
-			if (($this->isDefender() && $type === 'siegeassault') || ($this->isAttacker() && $type === 'siegesortie')) {
+			$hasMilitia = null;
+			if ($type === 'siegeassault') {
+				$hasMilitia = $this->battle->getPrimaryDefender();
+			} elseif ($type === 'siegesortie') {
+				$hasMilitia = $this->battle->getPrimaryAttacker();
+			}
+			if ($this === $hasMilitia) {
 				foreach ($this->battle->getSettlement()->getUnits() as $unit) {
 					if ($unit->isLocal()) {
 						foreach ($unit->getSoldiers() as $soldier) {
