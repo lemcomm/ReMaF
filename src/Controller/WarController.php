@@ -14,6 +14,7 @@ use App\Entity\Siege;
 use App\Entity\War;
 use App\Entity\WarTarget;
 
+use App\Enum\CharacterStatus;
 use App\Form\BattleParticipateType;
 use App\Form\DamageFeatureType;
 use App\Form\InteractionType;
@@ -29,6 +30,7 @@ use App\Service\Dispatcher\PlaceDispatcher;
 use App\Service\Geography;
 use App\Service\History;
 use App\Service\Dispatcher\WarDispatcher;
+use App\Service\StatusUpdater;
 use App\Service\WarManager;
 
 use App\Twig\GameTimeExtension;
@@ -52,14 +54,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class WarController extends AbstractController {
 	public function __construct(
-		private ActionManager $am,
+		private ActionManager          $am,
 		private EntityManagerInterface $em,
-		private Geography $geo,
-		private History $hist,
-		private TranslatorInterface $trans,
-		private WarDispatcher $warDisp,
-		private PlaceDispatcher $placeDisp,
-		private WarManager $wm) {
+		private Geography              $geo,
+		private History                $hist,
+		private TranslatorInterface    $trans,
+		private WarDispatcher          $warDisp,
+		private PlaceDispatcher        $placeDisp,
+		private WarManager             $wm, private readonly StatusUpdater $statusUpdater) {
 	}
 
 	#[Route('/war/view/{id}', name:'maf_war_view', requirements:['id'=>'\d+'])]
@@ -419,6 +421,7 @@ class WarController extends AbstractController {
 						->setBlockTravel(true);
 				}
 				$this->am->queue($act);
+				$this->statusUpdater->character($character, CharacterStatus::sieging, true);
 
 				$character->setTravelLocked(true);
 
@@ -435,6 +438,7 @@ class WarController extends AbstractController {
 							->setCanCancel(true)
 							->setBlockTravel(true);
 						$this->am->queue($act);
+						$this->statusUpdater->character($defender->getCharacter(), CharacterStatus::sieging, true);
 
 						# notify
 						$this->hist->logEvent(
@@ -460,6 +464,7 @@ class WarController extends AbstractController {
 							->setCanCancel(true)
 							->setBlockTravel(true);
 						$this->am->queue($act);
+						$this->statusUpdater->character($defender->getCharacter(), CharacterStatus::sieging, true);
 
 						# notify
 						$this->hist->logEvent(
@@ -668,6 +673,7 @@ class WarController extends AbstractController {
 										->setCanCancel(false)
 										->setBlockTravel(true);
 									$this->am->queue($act);
+									$this->statusUpdater->character($character, CharacterStatus::sieging, true);
 									$this->addFlash('notice', $trans->trans('military.siege.join.success.'.$data['side'], [], "actions"));
 								}
 								if ($place) {
@@ -794,6 +800,7 @@ class WarController extends AbstractController {
 			$complete->add(new DateInterval("PT".$time."H"));
 			$act->setComplete($complete);
 			$this->am->queue($act);
+			$this->statusUpdater->character($character, CharacterStatus::looting, true);
 
 			if ($inside) {
 				$event = 'event.settlement.loot';
@@ -1238,6 +1245,7 @@ class WarController extends AbstractController {
 				->setStringValue($data['mode'])
 				->setTargetListing($data['target']);
 			$result = $this->am->queue($act);
+			$this->statusUpdater->character($character, CharacterStatus::blocking, true);
 
 			return $this->render('War/block.html.twig', [
 				'result'=>$result
@@ -1283,6 +1291,7 @@ class WarController extends AbstractController {
 			$complete->add(new DateInterval("PT".$hours."H"));
 			$act->setComplete($complete);
 			$result = $this->am->queue($act);
+			$this->statusUpdater->character($character, CharacterStatus::damaging, true);
 
 			if ($result['success']) {
 				$settlement = $target->getGeoData()->getSettlement();
@@ -1364,6 +1373,8 @@ class WarController extends AbstractController {
 					} else {
 						$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target']);
 					}
+					$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
+					$this->em->flush();
 					if ($result['outside'] && $character->getInsideSettlement()) {
 						// leave settlement if we attack targets outside
 						$character->setInsideSettlement(null);
@@ -1410,6 +1421,7 @@ class WarController extends AbstractController {
 				->setHourly(true)
 				->setBlockTravel(false);
 			$success = $this->am->queue($act);
+			$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
 			$target = $data['target'];
 		}
 

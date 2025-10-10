@@ -13,6 +13,7 @@ use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Entity\RealmPosition;
 use App\Entity\User;
+use App\Enum\CharacterStatus;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -32,7 +33,8 @@ class CharacterManager {
 		private ConversationManager $convman,
 		private DungeonMaster $dm,
 		private WarManager $warman,
-		private AssociationManager $assocman) {
+		private AssociationManager $assocman,
+		private StatusUpdater $statusUpdater) {
 	}
 
 	public function create(User $user, $name, $gender='m', $alive=true, ?Race $race=null, ?Character $father=null, ?Character $mother=null, ?Character $partner=null): Character {
@@ -777,13 +779,16 @@ class CharacterManager {
 			# Fun edge case that can happen in battles.
 			$character->setPrisonerOf(null);
 			$captor->removePrisoner($character);
+			$this->statusUpdater->character($captor, CharacterStatus::prisoner, null);
 		} else {
 			$character->setPrisonerOf($captor);
 			$captor->addPrisoner($character);
+			$this->statusUpdater->character($character, CharacterStatus::prisoner, $captor->getname());
 
 			// transfer prisoners of my prisoner to me
 			foreach ($character->getPrisoners() as $prisoner) {
 				$prisoner->setPrisonerOf($captor);
+				$this->statusUpdater->character($prisoner, CharacterStatus::prisoner, $captor->getname());
 				$captor->addPrisoner($prisoner);
 				$character->removePrisoner($prisoner);
 				// TODO: history log / event notification

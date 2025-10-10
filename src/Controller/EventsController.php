@@ -8,12 +8,14 @@ use App\Entity\EntourageType;
 use App\Entity\EventLog;
 use App\Entity\EventMetadata;
 use App\Entity\Soldier;
+use App\Enum\CharacterStatus;
 use App\Form\EntourageAssignType;
 use App\Service\ActionManager;
 use App\Service\AppState;
 use App\Service\CharacterManager;
 use App\Service\History;
 use App\Service\PermissionManager;
+use App\Service\StatusUpdater;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,8 +28,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class EventsController extends AbstractController {
 	public function __construct(
-		private AppState $app,
-		private EntityManagerInterface $em) {
+		private AppState               $app,
+		private EntityManagerInterface $em,
+		private StatusUpdater          $statusUpdater) {
 	}
 
 	#[Route ('/events/', name:'maf_events')]
@@ -105,9 +108,12 @@ class EventsController extends AbstractController {
 			throw new AccessDeniedHttpException('error.noaccess.log');
 		}
 
+		$count = 0;
 		foreach ($metas as $meta) {
+			$count -= $meta->countNewEvents();
 			$meta->setLastAccess(new DateTime('now'));
 		}
+		$this->statusUpdater->addCharCounter($character, CharacterStatus::events, $count);
 		$em->flush();
 
 		$scholar_type = $em->getRepository(EntourageType::class)->findOneBy(['name'=>'scholar']);
@@ -139,6 +145,7 @@ class EventsController extends AbstractController {
 					$func = 'setTarget'.ucfirst($log->getType());
 					$act->$func($log->getSubject());
 					$actMan->queue($act);
+					$this->statusUpdater->character($character, CharacterStatus::researching, true);
 					$research = $act;
 				}
 				foreach ($form->get('entourage')->getData() as $npc) {
@@ -172,9 +179,14 @@ class EventsController extends AbstractController {
 		$em = $this->em;
 		$query = $em->createQuery('SELECT m FROM App\Entity\EventMetadata m JOIN m.reader r WHERE m.log = :log AND r.user = :me');
 		$query->setParameters(array('log'=>$log, 'me'=>$character->getUser()));
+		$count = 0;
 		foreach ($query->getResult() as $meta) {
+			$count -= $meta->countNewEvents();
 			// FIXME: this should use the display time, not now - just in case the player looks at the screen for a long time and new events happen inbetween!
 			$meta->setLastAccess(new DateTime('now'));
+		}
+		if ($count < 0) {
+			$this->statusUpdater->addCharCounter($character, CharacterStatus::events, $count);
 		}
 		$em->flush();
 
@@ -210,6 +222,7 @@ class EventsController extends AbstractController {
 		foreach ($query->getResult() as $meta) {
 			// FIXME: this should use the display time, not now - just in case the player looks at the screen for a long time and new events happen inbetween!
 			$meta->setLastAccess(new DateTime('now'));
+			$this->statusUpdater->character($meta->getReader(), CharacterStatus::events, 0);
 		}
 		$em->flush();
 

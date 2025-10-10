@@ -1014,17 +1014,25 @@ no:           no
 techtree:     Technology Tree
 charstatus:
  prebattle:    pre-battle
- inbattle:     battle
- travelling:   travel
- annexing:     annex
- supporting:   support
- opposing:     oppose
- looting:      loot
- blocking:     block
- granting:     grant
- renaming:     rename
+ inbattle:     battling
+ travelling:   travelling
+ annexing:     annexing
+ supporting:   supporting
+ opposing:     opposing
+ looting:      looting
+ blocking:     blocking
+ granting:     granting
+ renaming:     renaming
  reclaiming:   reclaim
+ newOccupant:  occupying
+ following:    "following {name}"
+ followed:     "followed by {f}"
+ training:     training
+ researching:  researching
+ escaping:     escaping
  sieging:     sieging
+ assinging:   assigning
+ damaging:    damaging
 newevents:    "{number} event{count, plural, =1 {} other {s}}"
 newmessages:  "{number} message{count, plural, =1 {} other {s}}"
 requests:     "{number} request{count, plural, =1 {} other {s}}"

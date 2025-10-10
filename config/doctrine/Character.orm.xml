@@ -45,6 +45,7 @@
 		<field name="gold" type="integer"/>
 		<field name="spotting_distance" type="integer"/>
 		<field name="visibility" type="integer"/>
+		<field name="status" type="array" nullable="true"/>
 
 		<field name="npc" type="boolean"/>
 		<many-to-one field="fromDungeon" target-entity="Dungeon" inversed-by="spawns"/>

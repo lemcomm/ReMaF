@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Character;
 use App\Entity\Place;
 use App\Entity\Settlement;
+use App\Enum\CharacterStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
@@ -16,7 +17,8 @@ class Interactions {
 		private Geography $geo,
 		private History $history,
 		private PermissionManager $pm,
-		private Politics $pol) {
+		private Politics $pol,
+		private StatusUpdater $status) {
 	}
 
 
@@ -107,6 +109,7 @@ class Interactions {
 			if ($settlement->getOwner() != $prisoner || $settlement->getSteward() != $prisoner) {
 				$this->history->visitLog($settlement, $prisoner);
 			}
+			$this->status->character($prisoner, CharacterStatus::inSettlement, $settlement->getName());
 		}
 		// if you're a prisoner yourself, bring your captor with you
 		if ($captor = $character->getPrisonerOf()) {
@@ -116,7 +119,9 @@ class Interactions {
 			if ($settlement->getOwner() !== $captor) {
 				$this->history->visitLog($settlement, $captor);
 			}
+			$this->status->character($captor, CharacterStatus::inSettlement, $settlement->getName());
 		}
+		$this->status->character($character, CharacterStatus::inSettlement, $settlement->getName());
 		$this->em->flush();
 
 		return true;
@@ -163,12 +168,13 @@ class Interactions {
 		// bring your prisoners with you
 		foreach ($character->getPrisoners() as $prisoner) {
 			$prisoner->setInsideSettlement(null);
-			// $settlement->removeCharactersPresent($prisoner); => Symfony 2.7 turns this into a DELETE - WTF ???
 			if ($settlement->getOwner() != $prisoner || $settlement->getSteward() != $prisoner) {
 				$this->history->closeLog($settlement, $prisoner);
 			}
+			$this->status->character($prisoner, CharacterStatus::inSettlement, null);
 		}
 		// if you're a prisoner yourself, your captor can stay, sorry, you don't get to define his location...
+		$this->status->character($character, CharacterStatus::inSettlement, null);
 		$this->em->flush();
 
 		return true;
@@ -339,6 +345,7 @@ class Interactions {
 			if ($place->getOwner() != $prisoner) {
 				$this->history->visitLog($place, $prisoner);
 			}
+			$this->status->character($prisoner, CharacterStatus::inPlace, $place->getName());
 		}
 
 		// if you're a prisoner yourself, bring your captor with you
@@ -349,7 +356,9 @@ class Interactions {
 			if ($place->getOwner() !== $captor) {
 				$this->history->visitLog($place, $captor);
 			}
+			$this->status->character($captor, CharacterStatus::inPlace, $place->getName());
 		}
+		$this->status->character($character, CharacterStatus::inPlace, $place->getName());
 		$this->em->flush();
 
 		return true;
@@ -363,9 +372,6 @@ class Interactions {
 			// people with visiting permission cannot be forced out
 			return false;
 		}
-
-		// don't ask me why, but the below two lines work in this order and FAIL if reversed. Yeah. Fuck Doctrine.
-		// $settlement->removeCharactersPresent($character); => Symfony 2.7 turns this into a DELETE - WTF ???
 		$character->setInsidePlace(null);
 
 		// close history log
@@ -383,12 +389,13 @@ class Interactions {
 		// bring your prisoners with you
 		foreach ($character->getPrisoners() as $prisoner) {
 			$prisoner->setInsidePlace(null);
-			// $settlement->removeCharactersPresent($prisoner); => Symfony 2.7 turns this into a DELETE - WTF ???
 			if ($place->getOwner() != $prisoner) {
 				$this->history->closeLog($place, $prisoner);
 			}
-		}
+			$this->status->character($prisoner, CharacterStatus::inPlace, null);
+		};
 		// if you're a prisoner yourself, your captor can stay, sorry, you don't get to define his location...
+		$this->status->character($character, CharacterStatus::inPlace, null);
 		$this->em->flush();
 
 		return true;

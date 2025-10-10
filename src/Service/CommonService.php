@@ -7,6 +7,7 @@ use App\Entity\ActivityReportObserver;
 use App\Entity\BattleReportObserver;
 use App\Entity\Character;
 use App\Entity\Setting;
+use App\Entity\Settlement;
 use App\Entity\Skill;
 use App\Entity\SkillType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -141,7 +142,12 @@ class CommonService {
 		$query = $this->em->createQuery('SELECT s, ST_Distance(g.center, c.location) AS distance FROM App\Entity\Settlement s JOIN s.geo_data g, App\Entity\Character c WHERE c = :char ORDER BY distance ASC');
 		$query->setParameter('char', $character);
 		$query->setMaxResults(1);
-		return $query->getSingleResult();
+		return $query->getOneOrNullResult();
+	}
+
+	public function calculateActionDistance(Settlement $settlement): float|int {
+		// FIXME: ugly hardcoded crap
+		return 15*(10+sqrt($settlement->getFullPopulation()/5));
 	}
 
 	/* achievements */

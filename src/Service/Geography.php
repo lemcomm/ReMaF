@@ -342,8 +342,7 @@ class Geography {
 	}
 
 	public function calculateActionDistance(Settlement $settlement): float|int {
-		// FIXME: ugly hardcoded crap
-		return 15*(10+sqrt($settlement->getFullPopulation()/5));
+		return $this->common->calculateActionDistance($settlement);
 	}
 
 	public function calculatePlaceActionDistance(Place $place): float|int {

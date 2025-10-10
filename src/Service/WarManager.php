@@ -10,6 +10,8 @@ use App\Entity\Place;
 use App\Entity\Settlement;
 use App\Entity\Siege;
 
+use App\Enum\CharacterStatus;
+use App\Service\StatusUpdater;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Twig\GameTimeExtension;
@@ -26,10 +28,10 @@ class WarManager {
 
 	public function __construct(
 		private EntityManagerInterface $em,
-		private History $history,
-		private ActionManager $actman,
-		private GameTimeExtension $gametime,
-		private LoggerInterface $logger) {
+		private History                $history,
+		private ActionManager          $actman,
+		private GameTimeExtension      $gametime,
+		private LoggerInterface        $logger, private readonly StatusUpdater $statusUpdater) {
 	}
 
 	public function createBattle(Character $character, ?Settlement $settlement=null, ?Place $place=null, null|array|ArrayCollection $targets=array(), ?Siege $siege=null, ?BattleGroup $attackers=null, ?BattleGroup $defenders=null, $ruleset='legacy'): array {
@@ -366,7 +368,7 @@ class WarManager {
 				break;
 		}
 
-		if ($acttype == 'military.battle') {
+		if ($acttype === 'military.battle') {
 			if ($place) {
 				$act = new Action;
 				$act->setType($acttype);
@@ -388,6 +390,7 @@ class WarManager {
 				$this->actman->queue($act);
 			}
 			$character->setTravelLocked(true);
+			$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
 		} elseif (in_array($acttype, ['siege.assault','siege.sortie'])) {
 			foreach ($attackers->getCharacters() as $BGChar) {
 				if ($place) {
@@ -411,6 +414,7 @@ class WarManager {
 					$this->actman->queue($act);
 				}
 				$BGChar->setTravelLocked(true);
+				$this->statusUpdater->character($BGChar, CharacterStatus::prebattle, true);
 			}
 		}
 
@@ -426,6 +430,7 @@ class WarManager {
 					->setCanCancel(false)
 					->setBlockTravel(true);
 				$this->actman->queue($act);
+				$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
 
 				if ($target->hasAction('military.evade')) {
 					// we have an evade action set, so automatically queue a disengage
@@ -483,7 +488,8 @@ class WarManager {
 			->setTargetBattlegroup($group)
 			->setCanCancel(false)
 			->setHidden(false);
-		$result = $this->actman->queue($action);
+		$this->actman->queue($action);
+		$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
 
 		$character->setTravelLocked(true);
 

@@ -10,6 +10,7 @@ use App\Entity\ResourceType;
 use App\Entity\Settlement;
 use App\Entity\Ship;
 use App\Entity\Trade;
+use App\Enum\CharacterStatus;
 use App\Form\AreYouSureType;
 use App\Form\CultureType;
 use App\Form\EntourageRecruitType;
@@ -31,6 +32,7 @@ use App\Service\LawManager;
 use App\Service\PermissionManager;
 use App\Service\Politics;
 use App\Service\Dispatcher\UnitDispatcher;
+use App\Service\StatusUpdater;
 use App\Twig\LinksExtension;
 use DateInterval;
 use DateTime;
@@ -61,6 +63,7 @@ class ActionsController extends AbstractController {
 		private LinksExtension         $links,
 		private Politics               $pol,
 		private TranslatorInterface    $trans,
+		private StatusUpdater          $status,
 	) {
 	}
 
@@ -131,6 +134,7 @@ class ActionsController extends AbstractController {
 
 			// update action
 			$this->ar->update($action);
+			$this->status->character($character, CharacterStatus::supporting, true);
 
 			$em->flush();
 			$this->addFlash('notice', $this->trans->trans('support.success.'.$action->getType(), ["%character%"=>$character->getName(), "%target"=>$action->getTargetSettlement()->getName()], 'actions'));
@@ -184,6 +188,7 @@ class ActionsController extends AbstractController {
 
 			// update action
 			$this->ar->update($action);
+			$this->status->character($character, CharacterStatus::opposing, true);
 
 			$em->flush();
 			$this->addFlash('notice', $this->trans->trans('oppose.success.'.$action->getType(), ["%character%"=>$character->getName(), "%target"=>$action->getTargetSettlement()->getName()], 'actions'));
@@ -263,6 +268,7 @@ class ActionsController extends AbstractController {
 			$prisoner->setLocation($embark);
 			$prisoner->setTravelAtSea(true);
 		}
+		$this->status->character($character, CharacterStatus::atSea, true);
 
 		// remove my ship
 		if ($my_ship) {
@@ -444,6 +450,7 @@ class ActionsController extends AbstractController {
 			$complete->add(new DateInterval("PT".$time_to_take."S"));
 			$act->setComplete($complete);
 			$result = $this->actman->queue($act);
+			$this->status->character($character, CharacterStatus::annexing, true);
 
 			$this->hist->logEvent(
 				$settlement,
@@ -590,6 +597,8 @@ class ActionsController extends AbstractController {
 					$complete->add(new DateInterval("PT".$time_to_grant."M"));
 					$act->setComplete($complete);
 					$result = $this->actman->queue($act);
+					$this->status->character($character, CharacterStatus::granting, true);
+					$this->em->flush();
 
 					return $this->render('Actions/grant.html.twig', [
 						'settlement'=>$settlement,
@@ -695,6 +704,8 @@ class ActionsController extends AbstractController {
 				$complete->add(new DateInterval("PT6H"));
 				$act->setComplete($complete);
 				$result = $this->actman->queue($act);
+				$this->status->character($character, CharacterStatus::renaming, true);
+				$this->em->flush();
 
 				return $this->render('Actions/rename.html.twig', [
 					'settlement'=>$settlement,
@@ -1075,6 +1086,7 @@ class ActionsController extends AbstractController {
 				$complete = new DateTime("+2 hours");
 				$act->setComplete($complete);
 				$this->actman->queue($act);
+				$this->status->character($character, CharacterStatus::newOccupant, true);
 				$this->addFlash('notice', $this->trans->trans('event.settlement.occupant.start', ["%time%"=>$complete->format('Y-M-d H:i:s')], 'communication'));
 				return $this->redirectToRoute('maf_actions');
 			}

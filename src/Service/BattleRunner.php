@@ -13,6 +13,7 @@ use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Entity\Settlement;
 use App\Entity\Soldier;
+use App\Enum\CharacterStatus;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -1664,6 +1665,7 @@ class BattleRunner {
 		foreach ($allNobles as $noble) {
 			$noble->setActiveReport(null); #Unset active report.
 			$noble->setBattling(false);
+			$noble->updateStatus(CharacterStatus::battling, true);
 		}
 		foreach ($allGroups as $group) {
 			$group->setActiveReport(null); #Unset active report.

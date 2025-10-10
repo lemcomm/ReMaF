@@ -16,6 +16,7 @@ use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Entity\Spawn;
 
+use App\Enum\CharacterStatus;
 use App\Form\AssocSelectType;
 use App\Form\CharacterBackgroundType;
 use App\Form\CharacterLoadoutType;
@@ -37,6 +38,7 @@ use App\Service\History;
 use App\Service\Interactions;
 use App\Service\MilitaryManager;
 use App\Service\PermissionManager;
+use App\Service\StatusUpdater;
 use App\Service\UserManager;
 use DateInterval;
 use DateTime;
@@ -61,15 +63,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CharacterController extends AbstractController {
 	public function __construct(
-		private AppState $appstate,
-		private CharacterManager $charman,
-		private ConversationManager $conv,
-		private Dispatcher $dispatcher,
+		private AppState               $appstate,
+		private CharacterManager       $charman,
+		private ConversationManager    $conv,
+		private Dispatcher             $dispatcher,
 		private EntityManagerInterface $em,
-		private Geography $geo,
-		private History $history,
-		private TranslatorInterface $trans,
-		private UserManager $userman) {
+		private Geography              $geo,
+		private History                $history,
+		private TranslatorInterface    $trans,
+		private UserManager            $userman, private readonly StatusUpdater $statusUpdater) {
 	}
 
 	private function getSpottings(Character $character): array {
@@ -1170,6 +1172,8 @@ class CharacterController extends AbstractController {
 			$act->setComplete($complete);
 			$act->setBlockTravel(false);
 			$actman->queue($act);
+			$this->statusUpdater->character($character, CharacterStatus::escaping, true);
+			$this->em->flush();
 
 			return $this->render('Character/escape.html.twig', [
 				'queued'=>true,
@@ -1409,9 +1413,11 @@ class CharacterController extends AbstractController {
 			if ($can_travel) {
 				if ($this->geo->updateTravelSpeed($character)) {
 					$turns = 1/$character->getSpeed();
+					$this->statusUpdater->character($character, CharacterStatus::travelling, $turns);
 					if ($character->getTravelAtSea()) {
 						$character->setTravelDisembark($disembark);
 						$character->setTravelEnter(false); // we never directly enter a settlement - TODO: why not?
+						$this->statusUpdater->character($character, CharacterStatus::atSea, true);
 					}
 				} else {
 					// restore old travel data
@@ -1456,6 +1462,7 @@ class CharacterController extends AbstractController {
 			->setSpeed(0)
 			->setTravelEnter(false)
 			->setTravelDisembark(false);
+		$this->statusUpdater->character($character, CharacterStatus::travelling, false);
 		$this->em->flush();
 		return new Response();
 	}

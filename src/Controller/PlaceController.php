@@ -11,6 +11,7 @@ use App\Entity\Permission;
 use App\Entity\Place;
 use App\Entity\GeoFeature;
 use App\Entity\Spawn;
+use App\Enum\CharacterStatus;
 use App\Form\AreYouSureType;
 use App\Form\AssocSelectType;
 use App\Form\DescriptionNewType;
@@ -30,6 +31,7 @@ use App\Service\History;
 use App\Service\Interactions;
 use App\Service\PermissionManager;
 use App\Service\Politics;
+use App\Service\StatusUpdater;
 use App\Service\WarManager;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -45,11 +47,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PlaceController extends AbstractController {
 	public function __construct(
-		private AppState $app,
-		private PlaceDispatcher $dispatcher,
+		private AppState               $app,
+		private PlaceDispatcher        $dispatcher,
 		private EntityManagerInterface $em,
-		private Interactions $int,
-		private TranslatorInterface $trans) {
+		private Interactions           $int,
+		private TranslatorInterface    $trans, private readonly StatusUpdater $statusUpdater) {
 	}
 	
 	#[Route ('/place/{id}', name:'maf_place', requirements:['id'=>'\d+'])]
@@ -634,6 +636,7 @@ class PlaceController extends AbstractController {
 				$complete = new DateTime("+1 hour");
 				$act->setComplete($complete);
 				$am->queue($act);
+				$this->statusUpdater->character($character, CharacterStatus::newOccupant, true);
 				$this->addFlash('notice', $this->trans->trans('event.settlement.occupant.start', ["%time%"=>$complete->format('Y-M-d H:i:s')], 'communication'));
 				return $this->redirectToRoute('maf_actions');
 			}

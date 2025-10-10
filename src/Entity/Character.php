@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\CharacterStatus;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -136,6 +137,51 @@ class Character extends AbstractCharacter {
 	private Collection $chat_messages;
 	private ?Unit $leading_unit = null;
 	private ?Dungeon $fromDungeon = null;
+	private ?array $status = null;
+
+
+	# This should match App\Enum\CharacterStatus enum values.
+	private ?array $defaultStatus = [
+		0 => false,
+		1 => false,
+		2 => false,
+		3 => false,
+		4 => false,
+		5 => false,
+		6 => false,
+		7 => false,
+		8 => false,
+		9 => false,
+		10 => false,
+		11 => false,
+		12 => false,
+		13 => 13,
+		14 => false,
+		15 => false,
+		16 => false,
+		17 => false,
+		18 => false,
+		19 => false,
+		20 => false,
+		21 => null,
+
+		50 => 50,
+		51 => null,
+		52 => null,
+		53 => null,
+		54 => false,
+		55 => false,
+		56 => false,
+		57 => false,
+		58 => false,
+
+		103 => 0,
+		101 => 0,
+		102 => 0,
+
+		200 => 0,
+		201 => 0
+	];
 
 	public function __construct() {
 		$this->achievements = new ArrayCollection();
@@ -909,6 +955,7 @@ class Character extends AbstractCharacter {
 
 	public function hasNewEvents(): bool {
 		foreach ($this->getReadableLogs() as $log) {
+			/** @var EventMetadata $log */
 			if ($log->hasNewEvents()) {
 				return true;
 			}
@@ -928,6 +975,7 @@ class Character extends AbstractCharacter {
 	public function countNewEvents() {
 		$count = 0;
 		foreach ($this->getReadableLogs() as $log) {
+			/** @var EventMetadata $log */
 			$count += $log->countNewEvents();
 		}
 		return $count;
@@ -3856,5 +3904,23 @@ class Character extends AbstractCharacter {
 	public function setFromDungeon(?Dungeon $fromDungeon): static {
 		$this->fromDungeon = $fromDungeon;
 		return $this;
+	}
+
+	public function getStatus(): ?array {
+		if (!$this->status) {
+			$this->status = $this->defaultStatus;
+		}
+		return $this->status;
+	}
+
+	public function updateStatus(CharacterStatus $which, mixed $value): static {
+		$this->status?:$this->status = $this->defaultStatus;
+		$this->status[$which->value] = $value;
+		return $this;
+	}
+
+	public function incrementStatus(CharacterStatus $which, $int): void {
+		$this->status?:$this->status = $this->defaultStatus;
+		$this->status[$which->value] = $this->status[$which->value]+$int;
 	}
 }

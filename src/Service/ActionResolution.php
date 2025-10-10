@@ -5,7 +5,9 @@ namespace App\Service;
 use App\Entity\Action;
 
 use App\Entity\EventMetadata;
+use App\Enum\CharacterStatus;
 use App\Service\Dispatcher\Dispatcher;
+use App\Service\StatusUpdater;
 use DateInterval;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -17,17 +19,16 @@ class ActionResolution {
 
 	public function __construct(
 		private EntityManagerInterface $em,
-		private CommonService $common,
-		private History $history,
-		private Dispatcher $dispatcher,
-		private Geography $geography,
-		private Interactions $interactions,
-		private MilitaryManager $milman,
-		private Politics $politics,
-		private PermissionManager $permissions,
-		private WarManager $warman,
-		private ActionManager $actman
-	) {
+		private CommonService          $common,
+		private History                $history,
+		private Dispatcher             $dispatcher,
+		private Geography              $geography,
+		private Interactions           $interactions,
+		private MilitaryManager        $milman,
+		private Politics               $politics,
+		private PermissionManager      $permissions,
+		private WarManager             $warman,
+		private ActionManager          $actman, private readonly StatusUpdater $statusUpdater) {
 		$this->characters = new ArrayCollection();
 	}
 
@@ -649,6 +650,7 @@ class ActionResolution {
 					array('%link-character%'=>$char->getId()),
 					History::MEDIUM, false, 30
 				);
+				$this->statusUpdater->character($char, CharacterStatus::prisoner, null);
 			} else {
 				// failed
 				$this->common->addAchievement($char, 'failedescapes', 1);
