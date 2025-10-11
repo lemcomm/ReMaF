@@ -78,7 +78,7 @@ class ProcessBattlesCommand extends Command {
 				$output->writeln("error on line: ".$e->getLine()." in file: ".$e->getFile());
 				$output->writeln($e->getMessage());
 				$output->writeln($e->getTraceAsString());
-				$this->nm->spoolAdminMsg("Battle error! ".$e->getMessage()." on line: ".$e->getLine()." in file: ".$e->getFile());
+				$this->nm->spoolAdminMsg("Battle error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
 			}
 		} else {
 			$output->writeln("battles: additional running prevented");
