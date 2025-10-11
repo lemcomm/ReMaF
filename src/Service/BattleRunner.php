@@ -1240,7 +1240,7 @@ class BattleRunner {
 							if ($target->getEquipment() && $target->getEquipment() == $shield) {
 								if (rand(0,100)<80) {
 									$target->dropEquipment();
-									$this->history->addToSoldierLog($target, 'dropped.shield');
+									$target->addStagedEvent('dropped.shield');
 									$this->log(10, $target->getName()." (".$target->getTranslatableType()."): drops shield\n");
 									$huntReport['dropped']++;
 								}
@@ -1255,7 +1255,7 @@ class BattleRunner {
 								};
 								if (rand(0,100)<$chance) {
 									$target->dropWeapon();
-									$this->history->addToSoldierLog($target, 'dropped.weapon');
+									$target->addStagedEvent('dropped.weapon');
 									$this->log(10, $target->getName()." (".$target->getTranslatableType()."): drops weapon\n");
 									$huntReport['dropped']++;
 								}
@@ -1493,24 +1493,20 @@ class BattleRunner {
 
 	public function concludeBattle(): false|BattleGroup {
 		$battle = $this->battle;
-		$this->log(3, "survivors:\n");
+		$this->log(3, "Survivors & First Ones:\n");
 		$this->prepareRound(); // to update the isFighting setting correctly
+		$allNobles=[];
+		$primaryVictor = false;
 		foreach ($battle->getGroups() as $group) {
 			$this->log(5, "Evaluating ".$group->getActiveReport()->getId()." (".($group->getAttacker()?"attacker":"defender").") for survivors...\n");
-			foreach ($group->getSoldiers() as $soldier) {
-				if ($soldier->getCasualties() > 0) {
-					$this->history->addToSoldierLog($soldier, 'casualties', array("%nr%"=>$soldier->getCasualties()));
-				}
-				if ($soldier->getKills() > 0) {
-					$this->history->addToSoldierLog($soldier, 'kills', array("%nr%"=>$soldier->getKills()));
-				}
-			}
-
 			$types=array();
+			$activeSoldiers = $group->getActiveSoldiers();
 			/** @var Soldier $soldier */
+			$my_survivors = 0;
 			if ($this->version < 3) {
-				foreach ($group->getActiveSoldiers() as $soldier) {
+				foreach ($activeSoldiers as $soldier) {
 					$soldier->gainExperience(2*$this->xpMod);
+					$my_survivors++;
 
 					$type = $soldier->getType();
 					if (isset($types[$type])) {
@@ -1520,8 +1516,9 @@ class BattleRunner {
 					}
 				}
 			} else {
-				foreach ($group->getActiveSoldiers() as $soldier) {
+				foreach ($activeSoldiers as $soldier) {
 					$soldier->gainExperience(2*$this->xpMod);
+					$my_survivors++;
 
 					$type = $soldier->getTranslatableType();
 					if (isset($types[$type])) {
@@ -1532,7 +1529,6 @@ class BattleRunner {
 				}
 			}
 
-
 			$troops = array();
 			$this->log(3, "Total survivors in this group:\n");
 			foreach ($types as $type=>$number) {
@@ -1540,16 +1536,7 @@ class BattleRunner {
 				$troops[$type] = $number;
 			}
 			$group->getActiveReport()->setFinish($troops);
-		}
-
-		$allNobles=array();
-
-		$allGroups = $this->battle->getGroups();
-		$this->log(2, "Fate of First Ones:\n");
-		$primaryVictor = false;
-		foreach ($allGroups as $group) {
 			$nobleGroup=array();
-			$my_survivors = $group->getActiveSoldiers()->count();
 			if ($my_survivors > 0) {
 				$this->log(5, "Group ".$group->getActiveReport()->getId()." (".($group->getAttacker()?"attacker":"defender").") has survivors, and is victor.\n");
 				$victory = true;
@@ -1575,6 +1562,18 @@ class BattleRunner {
 				$victory = false;
 			}
 			foreach ($group->getSoldiers() as $soldier) {
+				if ($soldier->isAlive()) {
+					foreach ($soldier->getStagedEvents() as $event) {
+						$this->history->addToSoldierLog($soldier, $event);
+						$soldier->setStagedEvents([]);
+					}
+					if ($soldier->getCasualties() > 0) {
+						$this->history->addToSoldierLog($soldier, 'casualties', array("%nr%"=>$soldier->getCasualties()));
+					}
+					if ($soldier->getKills() > 0) {
+						$this->history->addToSoldierLog($soldier, 'kills', array("%nr%"=>$soldier->getKills()));
+					}
+				}
 				if ($soldier->isNoble()) {
 					$id = $soldier->getCharacter()->getId();
 					$allNobles[] = $soldier->getCharacter(); // store these here, because in some cases below they get removed from battlegroups
@@ -1641,7 +1640,7 @@ class BattleRunner {
 			$noble->setActiveReport(null); #Unset active report.
 			$noble->setBattling(false);
 		}
-		foreach ($allGroups as $group) {
+		foreach ($battle->getGroups() as $group) {
 			$group->setActiveReport(null); #Unset active report.
 		}
 		$this->em->flush();

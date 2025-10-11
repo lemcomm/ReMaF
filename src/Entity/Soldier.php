@@ -83,6 +83,7 @@ class Soldier extends NPC {
 		'Unstoppable' => false,									// Megalomania & Heroism
 		'Unbreakable' => false									// Berserk & Heroism
 	];
+	private array $stagedEvents = [];
 
 	/**
 	 * Constructor
@@ -1473,6 +1474,20 @@ class Soldier extends NPC {
 
 	public function setEngaged(bool $engaged): static {
 		$this->engaged = $engaged;
+		return $this;
+	}
+
+	public function getStagedEvents(): array {
+		return $this->stagedEvents;
+	}
+
+	public function setStagedEvents(array $stagedEvents): static {
+		$this->stagedEvents = $stagedEvents;
+		return $this;
+	}
+
+	public function addStagedEvent(string $which): static {
+		$this->stagedEvents[] = $which;
 		return $this;
 	}
 }
