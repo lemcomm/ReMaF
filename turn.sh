@@ -16,7 +16,7 @@ pg_dump -C maf | gzip > $BACKUPDIR/maf-$DAY.sql.gz
 php $APP maf:tor:update 2>&1 > $LOGDIR/exits-$DAY.log
 php $APP maf:process:expires 2>&1 > $LOGDIR/turn-$DAY.log
 php $APP maf:process:economy -t 2>&1 >> $LOGDIR/turn-$DAY.log
-php $APP maf:run -t -d turn 2>&1 >> $LOGDIR/turn-$DAY.log
+php $APP maf:run -v -t -d turn 2>&1 >> $LOGDIR/turn-$DAY.log
 php $APP maf:process:convs 2>&1 >> $LOGDIR/turn-$DAY.log
 php $APP maf:process:slumbers -t 2>&1 >> $LOGDIR/turn-$DAY.log
 echo "----- turn done -----" >> $LOGDIR/turn-$DAY.log
