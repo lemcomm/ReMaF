@@ -40,9 +40,11 @@ class ActionManager {
 			if ($character) {
 				$perm = $this->pm->checkSettlementPermission($settlement, $character, 'resupply', true)[3];
 				if ($perm) {
-					if ($item->getResupplyCost() > $perm->getValueRemaining()) return false;
-					if ($perm->getReserve()!==null && $left < $perm->getReserve()) return false;
-					$perm->setValueRemaining($perm->getValueRemaining() - $item->getResupplyCost());
+					if ($perm->getValue()) {
+						if ($item->getResupplyCost() > $perm->getValueRemaining()) return false;
+						if ($perm->getReserve() !== null && $left < $perm->getReserve()) return false;
+						$perm->setValueRemaining($perm->getValueRemaining() - $item->getResupplyCost());
+					}
 				}
 			}
 			$provider->setResupply($left);
