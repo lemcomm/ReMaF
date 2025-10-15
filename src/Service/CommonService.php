@@ -3,13 +3,14 @@
 namespace App\Service;
 
 use App\Entity\Achievement;
+use App\Entity\Action;
 use App\Entity\ActivityReportObserver;
 use App\Entity\BattleReportObserver;
 use App\Entity\Character;
 use App\Entity\Setting;
-use App\Entity\Settlement;
 use App\Entity\Skill;
 use App\Entity\SkillType;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
 
@@ -88,6 +89,23 @@ class CommonService {
 		$setting->setValue($value);
 		$this->em->flush($setting);
 	}
+	public function queueAction(Action $action): array {
+		$action->setStarted(new DateTime("now"));
+
+		// store in database and queue
+		$max=0;
+		foreach ($action->getCharacter()->getActions() as $act) {
+			if ($act->getPriority()>$max) {
+				$max=$act->getPriority();
+			}
+		}
+		$action->setPriority($max+1);
+		$this->em->persist($action);
+
+		$this->em->flush();
+
+		return array('success'=>true);
+	}
 
 	public function trainSkill(Character $char, ?SkillType $type=null, $pract = 0, $theory = 0): bool {
 		if (!$type) {
@@ -136,18 +154,6 @@ class CommonService {
 		$training->setUpdated(new \DateTime('now'));
 		$this->em->flush();
 		return true;
-	}
-
-	public function findNearestSettlement(Character $character) {
-		$query = $this->em->createQuery('SELECT s, ST_Distance(g.center, c.location) AS distance FROM App\Entity\Settlement s JOIN s.geo_data g, App\Entity\Character c WHERE c = :char ORDER BY distance ASC');
-		$query->setParameter('char', $character);
-		$query->setMaxResults(1);
-		return $query->getOneOrNullResult();
-	}
-
-	public function calculateActionDistance(Settlement $settlement): float|int {
-		// FIXME: ugly hardcoded crap
-		return 15*(10+sqrt($settlement->getFullPopulation()/5));
 	}
 
 	/* achievements */

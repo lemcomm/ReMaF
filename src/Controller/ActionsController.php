@@ -18,7 +18,6 @@ use App\Form\InteractionType;
 use App\Form\RealmSelectType;
 use App\Form\TradeCancelType;
 use App\Form\TradeType;
-use App\Service\ActionManager;
 use App\Service\ActionResolution;
 use App\Service\AppState;
 use App\Service\CommonService;
@@ -50,8 +49,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ActionsController extends AbstractController {
+
 	public function __construct(
-		private ActionManager          $actman,
 		private ActionResolution       $ar,
 		private AppState               $app,
 		private Dispatcher             $dispatcher,
@@ -64,6 +63,7 @@ class ActionsController extends AbstractController {
 		private Politics               $pol,
 		private TranslatorInterface    $trans,
 		private StatusUpdater          $status,
+		private CommonService          $common,
 	) {
 	}
 
@@ -79,7 +79,7 @@ class ActionsController extends AbstractController {
 				'%type%' => $this->trans->trans($settlement->getType()),
 				'%name%' => $this->links->ObjectLink($settlement) ));
 		} else {
-			$nearest = $common->findNearestSettlement($character);
+			$nearest = $this->geo->findNearestSettlement($character);
 			$settlement=array_shift($nearest);
 			$pagetitle = $this->trans->trans('settlement.area', array(
 				'%name%' => $this->links->ObjectLink($settlement) ));
@@ -449,7 +449,7 @@ class ActionsController extends AbstractController {
 			$complete = new DateTime("now");
 			$complete->add(new DateInterval("PT".$time_to_take."S"));
 			$act->setComplete($complete);
-			$result = $this->actman->queue($act);
+			$result = $this->common->queueAction($act);
 			$this->status->character($character, CharacterStatus::annexing, true);
 
 			$this->hist->logEvent(
@@ -596,7 +596,7 @@ class ActionsController extends AbstractController {
 					$complete = new DateTime("now");
 					$complete->add(new DateInterval("PT".$time_to_grant."M"));
 					$act->setComplete($complete);
-					$result = $this->actman->queue($act);
+					$result = $this->common->queueAction($act);
 					$this->status->character($character, CharacterStatus::granting, true);
 					$this->em->flush();
 
@@ -703,7 +703,7 @@ class ActionsController extends AbstractController {
 				$complete = new DateTime("now");
 				$complete->add(new DateInterval("PT6H"));
 				$act->setComplete($complete);
-				$result = $this->actman->queue($act);
+				$result = $this->common->queueAction($act);
 				$this->status->character($character, CharacterStatus::renaming, true);
 				$this->em->flush();
 
@@ -1085,7 +1085,7 @@ class ActionsController extends AbstractController {
 				$act->setBlockTravel(true);
 				$complete = new DateTime("+2 hours");
 				$act->setComplete($complete);
-				$this->actman->queue($act);
+				$this->common->queueAction($act);
 				$this->status->character($character, CharacterStatus::newOccupant, true);
 				$this->addFlash('notice', $this->trans->trans('event.settlement.occupant.start', ["%time%"=>$complete->format('Y-M-d H:i:s')], 'communication'));
 				return $this->redirectToRoute('maf_actions');

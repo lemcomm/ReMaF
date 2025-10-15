@@ -26,9 +26,10 @@ use App\Form\ChatType;
 use App\Form\EntourageManageType;
 use App\Form\InteractionType;
 
-use App\Service\ActionManager;
+use App\Service\ActionResolution;
 use App\Service\AppState;
 use App\Service\CharacterManager;
+use App\Service\CommonService;
 use App\Service\ConversationManager;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
@@ -1145,7 +1146,7 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/escape', name:'maf_char_escape')]
-	public function escapeAction(ActionManager $actman, Request $request): RedirectResponse|Response {
+	public function escapeAction(CommonService $common, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('personalEscapeTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -1171,7 +1172,7 @@ class CharacterController extends AbstractController {
 			$complete->add(new DateInterval("PT".$hours."H"));
 			$act->setComplete($complete);
 			$act->setBlockTravel(false);
-			$actman->queue($act);
+			$common->queueAction($act);
 			$this->statusUpdater->character($character, CharacterStatus::escaping, true);
 			$this->em->flush();
 

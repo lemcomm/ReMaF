@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class AppState {
 
 	public function __construct(
-		private CommonService $common,
+		private Geography $geo,
 		private EntityManagerInterface $em,
 		private RequestStack $requestStack,
 		private Security $security) {
@@ -95,7 +95,7 @@ class AppState {
 			if ($character->getInsideSettlement()) {
 				$session->set('nearest_settlement', $character->getInsideSettlement());
 			} elseif ($character->getLocation()) {
-				$near = $this->common->findNearestSettlement($character);
+				$near = $this->geo->findNearestSettlement($character);
 				$session->set('nearest_settlement', $near[0]);
 			}
 			#$this->session->set('soldiers', $character->getLivingSoldiers()->count());

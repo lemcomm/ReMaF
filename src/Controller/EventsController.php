@@ -10,9 +10,10 @@ use App\Entity\EventMetadata;
 use App\Entity\Soldier;
 use App\Enum\CharacterStatus;
 use App\Form\EntourageAssignType;
-use App\Service\ActionManager;
+use App\Service\ActionResolution;
 use App\Service\AppState;
 use App\Service\CharacterManager;
+use App\Service\CommonService;
 use App\Service\History;
 use App\Service\PermissionManager;
 use App\Service\StatusUpdater;
@@ -92,7 +93,7 @@ class EventsController extends AbstractController {
 	}
 	
 	#[Route ('/events/log/{id}', name:'maf_events_log', requirements:['id'=>'\d+'])]
-	public function eventlogAction(ActionManager $actMan, $id, Request $request): RedirectResponse|Response {
+	public function eventlogAction(CommonService $common, $id, Request $request): RedirectResponse|Response {
 		$character = $this->app->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -144,7 +145,7 @@ class EventsController extends AbstractController {
 					$act->setHourly(true);
 					$func = 'setTarget'.ucfirst($log->getType());
 					$act->$func($log->getSubject());
-					$actMan->queue($act);
+					$common->queueAction($act);
 					$this->statusUpdater->character($character, CharacterStatus::researching, true);
 					$research = $act;
 				}

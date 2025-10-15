@@ -13,6 +13,7 @@ use App\Service\CommonService;
 use App\Service\Geography;
 use App\Service\Interactions;
 use App\Service\PermissionManager;
+use App\Service\PlaceManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class AssociationDispatcher extends Dispatcher {
@@ -24,9 +25,10 @@ class AssociationDispatcher extends Dispatcher {
 		protected Geography $geo,
 		protected Interactions $interactions,
 		protected AssociationManager $assocman,
-		protected EntityManagerInterface $em
+		protected EntityManagerInterface $em,
+		protected PlaceManager $poi
 	) {
-		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em);
+		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em, $poi);
 	}
 
 	public function politicsAssocsActions(): array {

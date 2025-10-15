@@ -11,7 +11,6 @@ use App\Entity\Settlement;
 use App\Entity\Siege;
 
 use App\Enum\CharacterStatus;
-use App\Service\StatusUpdater;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Twig\GameTimeExtension;
@@ -29,9 +28,11 @@ class WarManager {
 	public function __construct(
 		private EntityManagerInterface $em,
 		private History                $history,
-		private ActionManager          $actman,
 		private GameTimeExtension      $gametime,
-		private LoggerInterface        $logger, private readonly StatusUpdater $statusUpdater) {
+		private LoggerInterface        $logger,
+		private StatusUpdater $statusUpdater,
+		private CommonService $common,
+	) {
 	}
 
 	public function createBattle(Character $character, ?Settlement $settlement=null, ?Place $place=null, null|array|ArrayCollection $targets=array(), ?Siege $siege=null, ?BattleGroup $attackers=null, ?BattleGroup $defenders=null, $ruleset='legacy'): array {
@@ -378,7 +379,7 @@ class WarManager {
 					->setTargetBattlegroup($attackers)
 					->setCanCancel(false)
 					->setBlockTravel(true);
-				$this->actman->queue($act);
+				$this->common->queueAction($act);
 			} else {
 				$act = new Action;
 				$act->setType($acttype);
@@ -387,7 +388,7 @@ class WarManager {
 					->setTargetBattlegroup($attackers)
 					->setCanCancel(false)
 					->setBlockTravel(true);
-				$this->actman->queue($act);
+				$this->common->queueAction($act);
 			}
 			$character->setTravelLocked(true);
 			$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
@@ -402,7 +403,7 @@ class WarManager {
 						->setTargetBattlegroup($attackers)
 						->setCanCancel(false)
 						->setBlockTravel(true);
-					$this->actman->queue($act);
+					$this->common->queueAction($act);
 				} else {
 					$act = new Action;
 					$act->setType($acttype);
@@ -411,7 +412,7 @@ class WarManager {
 						->setTargetBattlegroup($attackers)
 						->setCanCancel(false)
 						->setBlockTravel(true);
-					$this->actman->queue($act);
+					$this->common->queueAction($act);
 				}
 				$BGChar->setTravelLocked(true);
 				$this->statusUpdater->character($BGChar, CharacterStatus::prebattle, true);
@@ -429,7 +430,7 @@ class WarManager {
 					->setStringValue('forced')
 					->setCanCancel(false)
 					->setBlockTravel(true);
-				$this->actman->queue($act);
+				$this->common->queueAction($act);
 				$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
 
 				if ($target->hasAction('military.evade')) {
@@ -488,7 +489,7 @@ class WarManager {
 			->setTargetBattlegroup($group)
 			->setCanCancel(false)
 			->setHidden(false);
-		$this->actman->queue($action);
+		$this->common->queueAction($action);
 		$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
 
 		$character->setTravelLocked(true);
@@ -566,7 +567,7 @@ class WarManager {
 			->setBlockTravel(false);
 		$act->addOpposingAction($act);
 
-		return $this->actman->queue($act);
+		return $this->common->queueAction($act);
 	}
 
 	public function addRegroupAction($battlesize, Character $character): void {
@@ -587,7 +588,7 @@ class WarManager {
 		$complete = new \DateTime('now');
 		$complete->add(new \DateInterval('PT'.ceil($regroup_time).'M'));
 		$act->setComplete($complete);
-		$this->actman->queue($act);
+		$this->common->queueAction($act);
 	}
 
 	public function disbandSiege(Siege $siege, ?Character $leader = null, $completed = FALSE): bool {

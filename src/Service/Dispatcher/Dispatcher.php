@@ -21,6 +21,7 @@ use App\Service\CommonService;
 use App\Service\Geography;
 use App\Service\Interactions;
 use App\Service\PermissionManager;
+use App\Service\PlaceManager;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -50,7 +51,9 @@ class Dispatcher {
 		protected PermissionManager $pm, 
 		protected Geography $geo, 
 		protected Interactions $interactions, 
-		protected EntityManagerInterface $em) {
+		protected EntityManagerInterface $em,
+		protected PlaceManager $poi
+	) {
 	}
 
 	public function getCharacter() {
@@ -418,7 +421,7 @@ class Dispatcher {
 	}
 
 	public function placeListTest(): array {
-		if ($this->getCharacter() && $this->geo->findPlacesInActionRange($this->getCharacter())) {
+		if ($this->getCharacter() && $this->poi->findPlacesInActionRange($this->getCharacter())) {
 			return $this->action("place.list", "maf_place_actionable");
 		} else {
 			return array("name"=>"place.actionable.name", "description"=>"unavailable.noplace");
@@ -442,7 +445,7 @@ class Dispatcher {
 			if (!$this->geo->findMyRegion($character)) {
 				return array("name"=>"place.new.name", "description"=>"unavailable.notinregion");
 			}
-			if (!$this->geo->checkPlacePlacement($character)) {
+			if (!$this->poi->checkPlacePlacement($character)) {
 				return array("name"=>"place.new.name", "description"=>"unavailable.toocrowded");
 			}
 			$occupied = null;
@@ -2357,7 +2360,7 @@ class Dispatcher {
 			if ($this->getCharacter()->getInsideSettlement()) {
 				$this->actionableSettlement = $this->getCharacter()->getInsideSettlement();
 			} else if ($location=$this->getCharacter()->getLocation()) {
-				$nearest = $this->common->findNearestSettlement($this->getCharacter());
+				$nearest = $this->geo->findNearestSettlement($this->getCharacter());
 				$settlement=array_shift($nearest);
 				if ($nearest['distance'] < $this->geo->calculateActionDistance($settlement)) {
 					$this->actionableSettlement=$settlement;

@@ -23,13 +23,14 @@ use App\Form\SiegeType;
 use App\Form\SiegeStartType;
 use App\Form\WarType;
 
-use App\Service\ActionManager;
+use App\Service\ActionResolution;
 use App\Service\CharacterManager;
 use App\Service\CommonService;
 use App\Service\Dispatcher\PlaceDispatcher;
 use App\Service\Geography;
 use App\Service\History;
 use App\Service\Dispatcher\WarDispatcher;
+use App\Service\PlaceManager;
 use App\Service\StatusUpdater;
 use App\Service\WarManager;
 
@@ -54,14 +55,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class WarController extends AbstractController {
 	public function __construct(
-		private ActionManager          $am,
 		private EntityManagerInterface $em,
 		private Geography              $geo,
 		private History                $hist,
 		private TranslatorInterface    $trans,
 		private WarDispatcher          $warDisp,
 		private PlaceDispatcher        $placeDisp,
-		private WarManager             $wm, private readonly StatusUpdater $statusUpdater) {
+		private WarManager             $wm,
+		private StatusUpdater $statusUpdater,
+		private PlaceManager $poi,
+		private CommonService $common
+	) {
 	}
 
 	#[Route('/war/view/{id}', name:'maf_war_view', requirements:['id'=>'\d+'])]
@@ -156,7 +160,7 @@ class WarController extends AbstractController {
 			$act = new Action;
 			$act->setType('settlement.defend')->setCharacter($character)->setTargetSettlement($settlement);
 			$act->setBlockTravel(false);
-			$result = $this->am->queue($act);
+			$result = $this->common->queueAction($act);
 
 			#TODO: Turn this into a flash and redirect.
 
@@ -183,7 +187,7 @@ class WarController extends AbstractController {
 			$act = new Action;
 			$act->setType('place.defend')->setCharacter($character)->setTargetPlace($place);
 			$act->setBlockTravel(false);
-			$result = $this->am->queue($act);
+			$result = $this->common->queueAction($act);
 
 			#TODO: Convert to flash and redirect.
 
@@ -208,7 +212,7 @@ class WarController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 		if ($place) {
-			$nearby = $this->geo->findPlacesInActionRange($character);
+			$nearby = $this->poi->findPlacesInActionRange($character);
 			if ($nearby === null || !in_array($place, $nearby)) {
 				$place = null; # Nice try.
 			}
@@ -420,7 +424,7 @@ class WarController extends AbstractController {
 						->setCanCancel(false)
 						->setBlockTravel(true);
 				}
-				$this->am->queue($act);
+				$this->common->queueAction($act);
 				$this->statusUpdater->character($character, CharacterStatus::sieging, true);
 
 				$character->setTravelLocked(true);
@@ -437,7 +441,7 @@ class WarController extends AbstractController {
 							->setStringValue('forced')
 							->setCanCancel(true)
 							->setBlockTravel(true);
-						$this->am->queue($act);
+						$this->common->queueAction($act);
 						$this->statusUpdater->character($defender->getCharacter(), CharacterStatus::sieging, true);
 
 						# notify
@@ -463,7 +467,7 @@ class WarController extends AbstractController {
 							->setStringValue('forced')
 							->setCanCancel(true)
 							->setBlockTravel(true);
-						$this->am->queue($act);
+						$this->common->queueAction($act);
 						$this->statusUpdater->character($defender->getCharacter(), CharacterStatus::sieging, true);
 
 						# notify
@@ -672,7 +676,7 @@ class WarController extends AbstractController {
 										->setTargetBattlegroup($side)
 										->setCanCancel(false)
 										->setBlockTravel(true);
-									$this->am->queue($act);
+									$this->common->queueAction($act);
 									$this->statusUpdater->character($character, CharacterStatus::sieging, true);
 									$this->addFlash('notice', $trans->trans('military.siege.join.success.'.$data['side'], [], "actions"));
 								}
@@ -799,7 +803,7 @@ class WarController extends AbstractController {
 			$complete = new DateTime("now");
 			$complete->add(new DateInterval("PT".$time."H"));
 			$act->setComplete($complete);
-			$this->am->queue($act);
+			$this->common->queueAction($act);
 			$this->statusUpdater->character($character, CharacterStatus::looting, true);
 
 			if ($inside) {
@@ -1197,7 +1201,7 @@ class WarController extends AbstractController {
 			$act = new Action;
 			$act->setType('military.evade')->setCharacter($character);
 			$act->setBlockTravel(false);
-			$result = $this->am->queue($act);
+			$result = $this->common->queueAction($act);
 
 			return $this->render('War/evade.html.twig', [
 				'result'=>$result
@@ -1244,7 +1248,7 @@ class WarController extends AbstractController {
 				->setBlockTravel(true)
 				->setStringValue($data['mode'])
 				->setTargetListing($data['target']);
-			$result = $this->am->queue($act);
+			$result = $this->common->queueAction($act);
 			$this->statusUpdater->character($character, CharacterStatus::blocking, true);
 
 			return $this->render('War/block.html.twig', [
@@ -1290,7 +1294,7 @@ class WarController extends AbstractController {
 			$complete = new DateTime("now");
 			$complete->add(new DateInterval("PT".$hours."H"));
 			$act->setComplete($complete);
-			$result = $this->am->queue($act);
+			$result = $this->common->queueAction($act);
 			$this->statusUpdater->character($character, CharacterStatus::damaging, true);
 
 			if ($result['success']) {
@@ -1420,7 +1424,7 @@ class WarController extends AbstractController {
 				->setCanCancel(true)
 				->setHourly(true)
 				->setBlockTravel(false);
-			$success = $this->am->queue($act);
+			$success = $this->common->queueAction($act);
 			$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
 			$target = $data['target'];
 		}

@@ -18,8 +18,8 @@ use App\Form\ListingType;
 use App\Form\PartnershipsNewType;
 use App\Form\PartnershipsOldType;
 use App\Form\PrisonersManageType;
-use App\Service\ActionManager;
 use App\Service\CharacterManager;
+use App\Service\CommonService;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
 use App\Service\History;
@@ -50,7 +50,9 @@ class PoliticsController extends AbstractController {
 		private EntityManagerInterface $em,
 		private History                $hist,
 		private Politics               $pol,
-		private TranslatorInterface    $trans, private readonly StatusUpdater $statusUpdater) {
+		private TranslatorInterface    $trans,
+		private StatusUpdater $statusUpdater
+	) {
 	}
 	
 	#[Route ('/politics', name:'maf_politics')]
@@ -714,7 +716,7 @@ class PoliticsController extends AbstractController {
 	}
 	
 	#[Route ('/politics/prisoners', name:'maf_politics_prisoners')]
-	public function prisonersAction(ActionManager $actMan, CharacterManager $charMan, Request $request): RedirectResponse|Response {
+	public function prisonersAction(CommonService $common, CharacterManager $charMan, Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('personalPrisonersTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -779,7 +781,7 @@ class PoliticsController extends AbstractController {
 							$complete->add(new DateInterval("PT2H"));
 							$act->setComplete($complete);
 							$act->setBlockTravel(false);
-							$actMan->queue($act);
+							$common->queueAction($act);
 							$this->statusUpdater->character($character, CharacterStatus::assigning, true);
 
 							$this->hist->logEvent(

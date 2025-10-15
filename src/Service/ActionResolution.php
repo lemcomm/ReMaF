@@ -4,7 +4,10 @@ namespace App\Service;
 
 use App\Entity\Action;
 
+use App\Entity\Character;
+use App\Entity\EquipmentType;
 use App\Entity\EventMetadata;
+use App\Entity\Settlement;
 use App\Enum\CharacterStatus;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\StatusUpdater;
@@ -28,7 +31,8 @@ class ActionResolution {
 		private Politics               $politics,
 		private PermissionManager      $permissions,
 		private WarManager             $warman,
-		private ActionManager          $actman, private readonly StatusUpdater $statusUpdater) {
+		private StatusUpdater $statusUpdater
+	) {
 		$this->characters = new ArrayCollection();
 	}
 
@@ -65,6 +69,24 @@ class ActionResolution {
 			return $this->$up($action);
 		}
 		return false;
+	}
+
+	public function queue(Action $action): array {
+		$action->setStarted(new DateTime("now"));
+
+		// store in database and queue
+		$max=0;
+		foreach ($action->getCharacter()->getActions() as $act) {
+			if ($act->getPriority()>$max) {
+				$max=$act->getPriority();
+			}
+		}
+		$action->setPriority($max+1);
+		$this->em->persist($action);
+
+		$this->em->flush();
+
+		return array('success'=>true);
 	}
 
 
@@ -539,7 +561,7 @@ class ActionResolution {
 					$complete = new DateTime('now');
 					$complete->add(new DateInterval('PT60M'));
 					$act->setComplete($complete);
-					$this->actman->queue($act);
+					$this->common->queueAction($act);
 				}
 				$this->warman->removeCharacterFromBattlegroup($char, $action->getTargetBattlegroup());
 				$this->em->remove($action);

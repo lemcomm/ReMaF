@@ -8,7 +8,7 @@ use App\Enum\CharacterStatus;
 class StatusUpdater {
 
 	public function __construct(
-		private CommonService $common,
+		private Geography $geo
 	) {
 	}
 
@@ -50,9 +50,9 @@ class StatusUpdater {
 
 	private function setNearestSettlement(Character $char): void {
 		# This is mostly just in case we add some weird stuff later.
-		$nearest = $this->common->findNearestSettlement($char);
+		$nearest = $this->geo->findNearestSettlement($char);
 		$settlement = array_shift($nearest);
-		if ($nearest && $nearest['distance'] < $this->common->calculateActionDistance($settlement)) {
+		if ($nearest && $nearest['distance'] < $this->geo->calculateActionDistance($settlement)) {
 			$char->updateStatus(CharacterStatus::location, CharacterStatus::atSettlement->value);
 			$char->updateStatus(CharacterStatus::atSettlement, $settlement->getName());
 		} elseif ($nearest) {
