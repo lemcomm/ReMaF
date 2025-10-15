@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Service\GameRunner;
 use App\Service\NotificationManager;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -17,9 +18,8 @@ class RunCommand extends  Command {
 	private LoggerInterface $logger;
 	private NotificationManager $note;
 
-	public function __construct(GameRunner $game, LoggerInterface $logger, NotificationManager $note) {
+	public function __construct(GameRunner $game, NotificationManager $note) {
 		$this->game = $game;
-		$this->logger = $logger;
 		$this->note = $note;
 		parent::__construct();
 	}
@@ -41,30 +41,34 @@ class RunCommand extends  Command {
 
 		switch ($which) {
 			case 'hourly':
-				$complete = $this->game->runCycle('update', 600, $opt_time, $opt_debug, $output);
-				if ($complete) {
+				try {
+					$complete = $this->game->runCycle('update', 600, $opt_time, $opt_debug, $output);
 					$this->game->nextCycle(false);
-					$this->logger->info("update complete");
+					$output->writeln("update complete");
 					$output->writeln("<info>update complete</info>");
 					return Command::SUCCESS;
-				} else {
-					$this->logger->error("update error");
-					$output->writeln("<error>update complete</error>");
-					$this->note->spoolError("$which update error, exit code $complete");
+				} catch (Exception $e) {
+					$output->writeln("Update error!");
+					$output->writeln("error on line: ".$e->getLine()." in file: ".$e->getFile());
+					$output->writeln($e->getMessage());
+					$output->writeln($e->getTraceAsString());
+					$this->note->spoolAdminMsg("Update error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
 					return Command::FAILURE;
 				}
 			case 'turn':
 				$output->writeln("<info>running turn:</info>");
-				$complete = $this->game->runCycle('turn', 1200, $opt_time, $opt_debug, $output);
-				if ($complete) {
+				try {
+					$complete = $this->game->runCycle('turn', 1200, $opt_time, $opt_debug, $output);
 					$this->game->nextCycle();
-					$this->logger->info("turn complete");
+					$output->writeln("turn complete");
 					$output->writeln("<info>turn complete</info>");
 					return Command::SUCCESS;
-				} else {
-					$this->logger->error("turn error");
-					$output->writeln("<error>turn complete</error>");
-					$this->note->spoolError("$which turn error, exit code $complete");
+				} catch (Exception $e) {
+					$output->writeln("Turn error!");
+					$output->writeln("error on line: ".$e->getLine()." in file: ".$e->getFile());
+					$output->writeln($e->getMessage());
+					$output->writeln($e->getTraceAsString());
+					$this->note->spoolAdminMsg("Turn error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
 					return Command::FAILURE;
 				}
 		}

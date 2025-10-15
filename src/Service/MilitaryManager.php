@@ -198,10 +198,8 @@ class MilitaryManager {
 		return ['success' => $success, 'fail' => $fail, 'bury' => $bury, 'retrain' => $retrain, 'assign' => $assign, 'disband' => $disband, 'assignOver'=>$assignOver, 'assignFail' => $assignFail];
 	}
 
-	public function manageEntourage($npcs, $data, ?Settlement $settlement=null, ?Character $character=null): array {
-		$assigned_soldiers = 0; $targetgroup='(no)';
+	public function manageEntourage($npcs, $data, ?Settlement $settlement=null, ?Character $character=null): void {
 		$assigned_entourage = 0;
-		$success=0; $fail=0;
 		foreach ($npcs as $npc) {
 			$change = $data['npcs'][$npc->getId()];
 			if (isset($change['group'])) {
@@ -219,15 +217,6 @@ class MilitaryManager {
 			if (isset($change['action'])) {
 				$this->logger->debug("applying action ".$change['action']." to soldier #".$npc->getId()." (".$npc->getName().")");
 				switch ($change['action']) {
-					case 'assign':
-						if ($data['assignto']) {
-							$tg = $this->assign($npc, $data['assignto']);
-							if ($tg != "") {
-								$targetgroup = $tg;
-								$assigned_soldiers++;
-							}
-						}
-						break;
 					case 'assign2':
 						if ($data['assignto']) {
 							if ($this->assignEntourage($npc, $data['assignto'])) {
@@ -235,28 +224,15 @@ class MilitaryManager {
 							}
 						}
 						break;
-					case 'disband':		$this->disband($npc); break;
-					case 'disband2':		$this->disbandEntourage($npc, $character); break;
-					case 'bury':			$this->bury($npc); break;
-					case 'makemilitia':	if ($settlement) { $this->makeMilitia($npc, $settlement); } break;
-					case 'makesoldier':	if ($settlement) { $this->makeSoldier($npc, $character); } break;
-					case 'resupply':		if ($this->resupply($npc, $settlement)) { $success++; } else { $fail++; } break;
-					case 'retrain':		$this->retrain($npc, $settlement, $data['weapon'], $data['armour'], $data['equipment'], $data['mount']);
-												break;
+					case 'disband2':
+						$this->disbandEntourage($npc, $character);
+						break;
+					case 'bury':
+						$this->bury($npc);
+						break;
 				}
 			}
 		}
-
-		if ($assigned_soldiers > 0) {
-			// notify target that he received soldiers
-			$this->history->logEvent(
-				$data['assignto'],
-				'event.military.assigned',
-				array('%count%'=>$assigned_soldiers, '%link-character%'=>$character->getId(), '%group%'=>$targetgroup),
-				History::MEDIUM, false, 30
-			);
-		}
-
 		if ($assigned_entourage > 0) {
 			// notify target that he received entourage
 			$this->history->logEvent(
@@ -267,8 +243,6 @@ class MilitaryManager {
 			);
 		}
 		$this->em->flush();
-
-		return array($success, $fail);
 	}
 
 	public function resupply(Soldier $soldier, ?Settlement $settlement, $equipment_followers): array {

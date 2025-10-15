@@ -440,24 +440,32 @@ class GameRunner {
 		// militia
 		// dead militia is auto-buried
 		// need to manually delete this because the cascade doesn't work if I delete by DQL, we also use the opportunity to clean up orphaned records
+		$date = date("Y-m-d H:i:s");
+		$this->output("$date --   Get rid of old soldier logs...");
 		$query = $this->em->createQuery('DELETE FROM App\Entity\SoldierLog l WHERE l.soldier IS NULL OR l.soldier IN (SELECT s.id FROM App\Entity\Soldier s WHERE s.base IS NOT NULL AND s.alive=false)');
 		$query->execute();
 		$this->em->flush();
+		$date = date("Y-m-d H:i:s");
+		$this->output("$date --   Get rid of dead soldiers...");
 		$query = $this->em->createQuery('DELETE FROM App\Entity\Soldier s WHERE s.base IS NOT NULL AND s.alive=false');
 		$query->execute();
 
 		// routed militia - for now, just return them
+		$date = date("Y-m-d H:i:s");
+		$this->output("$date --   Un-rout militia...");
 		$query = $this->em->createQuery('UPDATE App\Entity\Soldier s SET s.routed = false WHERE s.routed = true AND s.character IS NULL');
 		$query->execute();
 		$this->em->clear();
 
 		// militia auto-resupply
+		$date = date("Y-m-d H:i:s");
+		$this->output("$date --   Resupply militia...");
 		$query = $this->em->createQuery('SELECT s FROM App\Entity\Soldier s WHERE s.base IS NOT NULL AND s.alive=true AND s.wounded=0 AND s.routed=false AND
 			(s.has_weapon=false OR s.has_armour=false OR s.has_equipment=false)');
 		$iterableResult = $query->toIterable();
 		$i=1;
 		foreach ($iterableResult as $soldier) {
-			$this->milman->resupply($soldier, $soldier->getBase());
+			$this->milman->resupply($soldier, $soldier->getBase(), []);
 			if (($i++ % $this->batchsize) == 0) {
 				$this->em->flush();
 				$this->em->clear();
