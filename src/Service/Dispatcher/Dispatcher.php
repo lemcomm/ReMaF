@@ -49,8 +49,7 @@ class Dispatcher {
 		protected AppState $appstate, 
 		protected CommonService $common, 
 		protected PermissionManager $pm, 
-		protected Geography $geo, 
-		protected Interactions $interactions, 
+		protected Geography $geo,
 		protected EntityManagerInterface $em,
 		protected PlaceManager $poi
 	) {

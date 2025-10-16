@@ -5,7 +5,6 @@ namespace App\Service\Dispatcher;
 use App\Service\AppState;
 use App\Service\CommonService;
 use App\Service\Geography;
-use App\Service\Interactions;
 use App\Service\PermissionManager;
 use App\Service\PlaceManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,11 +16,10 @@ class ActivityDispatcher extends Dispatcher {
 		protected CommonService $common,
 		protected PermissionManager $pm,
 		protected Geography $geo,
-		protected Interactions $interactions,
 		protected EntityManagerInterface $em,
 		protected PlaceManager $poi
 	) {
-		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em, $poi);
+		parent::__construct($appstate, $common, $pm, $geo, $em, $poi);
 	}
 
 	public function activityActions(): array {

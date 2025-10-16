@@ -7,7 +7,6 @@ use App\Entity\Place;
 use App\Service\AppState;
 use App\Service\CommonService;
 use App\Service\Geography;
-use App\Service\Interactions;
 use App\Service\MilitaryManager;
 use App\Service\PermissionManager;
 use App\Service\PlaceManager;
@@ -22,11 +21,10 @@ class PlaceDispatcher extends WarDispatcher {
 		protected PermissionManager $pm,
 		protected Geography $geo,
 		protected MilitaryManager $milman,
-		protected Interactions $interactions,
 		protected EntityManagerInterface $em,
 		protected PlaceManager $poi
 	) {
-		parent::__construct($appstate, $common, $pm, $geo, $milman, $interactions, $em, $poi);
+		parent::__construct($appstate, $common, $pm, $geo, $milman, $em, $poi);
 	}
 
 	/* ========== Place Dispatchers ========= */

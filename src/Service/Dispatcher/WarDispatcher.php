@@ -5,7 +5,6 @@ namespace App\Service\Dispatcher;
 use App\Service\AppState;
 use App\Service\CommonService;
 use App\Service\Geography;
-use App\Service\Interactions;
 use App\Service\MilitaryManager;
 use App\Service\PermissionManager;
 use App\Service\PlaceManager;
@@ -19,11 +18,10 @@ class WarDispatcher extends Dispatcher {
 		protected PermissionManager $pm,
 		protected Geography $geo,
 		protected MilitaryManager $milman,
-		protected Interactions $interactions,
 		protected EntityManagerInterface $em,
 		protected PlaceManager $poi
 	) {
-		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em, $poi);
+		parent::__construct($appstate, $common, $pm, $geo, $em, $poi);
 	}
 
 	/* =========== Tests ========== */
