@@ -6,6 +6,8 @@ use App\Entity\Association;
 use App\Entity\AssociationMember;
 use App\Entity\Character;
 use App\Entity\CharacterBackground;
+use App\Entity\GeoData;
+use App\Entity\MapRegion;
 use App\Entity\Partnership;
 use App\Entity\Place;
 use App\Entity\Race;
@@ -167,6 +169,67 @@ class CharacterManager {
 			$selection.=$ancestor->getMother()->getGenome();
 		}
 		return $selection[array_rand(str_split($selection))];
+	}
+
+	public function placeInGame(Character $char, Place|Settlement|GeoData|MapRegion $where): void {
+		if ($where instanceof Place) {
+			if ($where->getLocation()) {
+				$char->setLocation($where->getLocation());
+			} elseif ($where->getMapRegion()) {
+				$char->setInsideRegion($where->getMapRegion());
+			} elseif ($where->getSettlement()) {
+				$char->setInsideSettlement($where->getSettlement());
+				$where->setLocation($where->getGeoMarker()->getLocation());
+			}
+			$char->setInsidePlace($where);
+			$char->setWorld($where->getWorld());
+			$this->history->logEvent(
+				$char,
+				'event.character.start2',
+				array('%link-place%'=>$where->getId()),
+				History::HIGH,	true
+			);
+			$this->history->logEvent(
+				$where,
+				'event.place.start',
+				array('%link-character%'=>$char->getId()),
+				History::MEDIUM, false, 15
+			);
+			$this->history->visitLog($where, $char);
+		} elseif ($where instanceof Settlement) {
+			$char->setWorld($where->getWorld());
+			$char->setInsideSettlement($where);
+			if ($where->getMapRegion()) {
+				$char->setInsideRegion($where->getMapRegion());
+			} else {
+				$char->setLocation($where->getGeoMarker()->getLocation());
+			}
+
+			$this->history->logEvent(
+				$char,
+				'event.character.start',
+				array('%link-settlement%'=>$where->getId()),
+				History::HIGH,	true
+			);
+		} elseif ($where instanceof GeoData) {
+			$char->setWorld($where->getWorld());
+			$char->setLocation($where->getCenter());
+			$this->history->logEvent(
+				$char,
+				'event.character.start3',
+				array(),
+				History::HIGH,	true
+			);
+		} elseif ($where instanceof MapRegion) {
+			$char->setWorld($where->getWorld());
+			$char->setInsideRegion($where);
+			$this->history->logEvent(
+				$char,
+				'event.character.start3',
+				array(),
+				History::HIGH,	true
+			);
+		}
 	}
 
 	public function kill(Character $character, $killer=null, $forcekiller=false, $deathmsg='death'): true {
@@ -490,10 +553,7 @@ class CharacterManager {
 		// TODO: permission lists - plus clear out those of old dead characters!
 
 		# Remove all allegiances -- as the dead have no loyalties.
-		$character->setRealm(null);
-		$character->setLiegeLand(null);
-		$character->setLiegePlace(null);
-		$character->setLiegePosition(null);
+		$this->politics->updateAllegiance($character, null, null, null, null);
 
 		// clean out dungeon stuff
 		$this->dm->cleanupDungeoneer($character);
@@ -509,8 +569,8 @@ class CharacterManager {
 		// List is set to 90 as this sorts them to the retired listing on the account character list.
 		$character->setRetired(true)->setList(90)->setSlumbering(true);
 		// remove from map and hiearchy
-		$character->setLocation(null)->setInsideSettlement(null)->setTravel(null)->setProgress(null)->setSpeed(null);
-		$character->setLiege(null);
+		$character->setLocation()->setInsideSettlement()->setTravel()->setProgress()->setSpeed();
+		$character->setLiege();
 
 		$this->history->logEvent($character, 'event.character.retired', array(), History::HIGH, true);
 
@@ -754,10 +814,7 @@ class CharacterManager {
 		// TODO: permission lists - plus clear out those of old dead characters!
 
 		# Remove all allegiances -- as the retired have no loyalties.
-		$character->setRealm(null);
-		$character->setLiegeLand(null);
-		$character->setLiegePlace(null);
-		$character->setLiegePosition(null);
+		$this->politics->updateAllegiance($character, null, null, null, null);
 
 		// clean out dungeon stuff
 		$this->dm->retireDungeoneer($character);
@@ -777,7 +834,7 @@ class CharacterManager {
 	public function imprison_prepare(Character $character, Character $captor): void {
 		if ($character->getPrisoners()->contains($captor)) {
 			# Fun edge case that can happen in battles.
-			$character->setPrisonerOf(null);
+			$character->setPrisonerOf();
 			$captor->removePrisoner($character);
 			$this->statusUpdater->character($captor, CharacterStatus::prisoner, null);
 		} else {
@@ -797,7 +854,7 @@ class CharacterManager {
 
 
 		// clear travel
-		$character->setTravel(null)->setProgress(null)->setSpeed(null);
+		$character->setTravel()->setProgress()->setSpeed();
 	}
 
 	public function imprison_complete(Character $character): void {
@@ -819,14 +876,12 @@ class CharacterManager {
 	public function locationInheritance($thing, Character $char, $heir, $via): void {
 		# $heir and $via can be false or Character objects.
 		if ($thing instanceof Settlement) {
-			$type = 'settlement';
 			$bequeath = 'bequeathEstate';
 			$fail = 'failInheritEstate';
 		} else {
 			if ($thing->getType()->getName() == 'home' && $thing->getHouse() && $thing->getOwner() === $thing->getHouse()->getHead()) {
 				return; # Lineage is respected over law.
 			}
-			$type = 'place';
 			$bequeath = 'bequeathPlace';
 			$fail = 'failInheritPlace';
 		}
@@ -1144,6 +1199,16 @@ class CharacterManager {
 		);
 	}
 
+	/**
+	 * Used as dynamic call in this file. Search for $this->$bequeath.
+	 * @noinspection PhpUnused
+	 * @param Settlement     $settlement
+	 * @param Character      $heir
+	 * @param Character      $from
+	 * @param Character|null $via
+	 *
+	 * @return void
+	 */
 	public function bequeathEstate(Settlement $settlement, Character $heir, Character $from, ?Character $via=null): void {
 		$this->politics->changeSettlementOwner($settlement, $heir); # Bequeathing never changes units over. No need to handle that.
 
@@ -1174,6 +1239,15 @@ class CharacterManager {
 		);
 	}
 
+	/**
+	 * Used as dynamic call in this file. Search for $this->$fail.
+	 * @noinspection PhpUnused
+	 * @param Character  $character
+	 * @param Settlement $settlement
+	 * @param            $string
+	 *
+	 * @return void
+	 */
 	private function failInheritEstate(Character $character, Settlement $settlement, $string = 'inherifail'): void {
 		$this->politics->changeSettlementOwner($settlement, null); # Estates going lordless don't lose unit ownerships. No need to handle.
 		$this->history->logEvent(
@@ -1184,6 +1258,16 @@ class CharacterManager {
 
 	}
 
+	/**
+	 * Used as dynamic call in this file. Search for $this->$bequeath.
+	 * @noinspection PhpUnused
+	 * @param Place          $place
+	 * @param Character      $heir
+	 * @param Character      $from
+	 * @param Character|null $via
+	 *
+	 * @return void
+	 */
 	public function bequeathPlace(Place $place, Character $heir, Character $from, ?Character $via=null): void {
 		$oldowner = $place->getOwner();
 		$oldowner?->removeOwnedPlace($place);
@@ -1231,6 +1315,15 @@ class CharacterManager {
 		);
 	}
 
+	/**
+	 * Used as dynamic call in this file. Search for $this->$fail.
+	 * @noinspection PhpUnused
+	 * @param Character $character
+	 * @param Place     $place
+	 * @param           $string
+	 *
+	 * @return void
+	 */
 	private function failInheritPlace(Character $character, Place $place, $string = 'inherifail'): void {
 		$oldowner = $place->getOwner();
 		$oldowner?->removeOwnedPlace($place);
@@ -1516,30 +1609,6 @@ class CharacterManager {
 	public function checkReturnability(Character $character): void {
 		if (!is_null($character->getRetiredOn()) && $character->getRetiredOn()->diff(new DateTime("now"))->days < 7) {
 			throw new AccessDeniedHttpException('error.noaccess.notreturnable');
-		}
-	}
-
-	public function updateAllegiance(Character $character, ?Realm $realm, ?Place $place, ?Settlement $settlement, ?RealmPosition $position): void {
-		if ($realm) {
-			$character->setRealm($realm);
-			$character->setLiegeLand(null);
-			$character->setLiegePlace(null);
-			$character->setLiegePosition(null);
-		} elseif ($place) {
-			$character->setRealm(null);
-			$character->setLiegeLand(null);
-			$character->setLiegePlace($place);
-			$character->setLiegePosition(null);
-		} elseif ($settlement) {
-			$character->setRealm(null);
-			$character->setLiegeLand($settlement);
-			$character->setLiegePlace(null);
-			$character->setLiegePosition(null);
-		} elseif ($position) {
-			$character->setRealm(null);
-			$character->setLiegeLand(null);
-			$character->setLiegePlace(null);
-			$character->setLiegePosition($position);
 		}
 	}
 

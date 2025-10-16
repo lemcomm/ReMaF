@@ -225,7 +225,7 @@ class GameRequestController extends AbstractController {
 					}
 					if ($id->getToSettlement()) {
 						$settlement = $id->getToSettlement();
-						$character->setLiegeLand($settlement);
+						$pol->updateAllegiance($character, null, null, $settlement, null);
 						$character->setOathCurrent(TRUE);
 						$character->setRealm(NULL);
 						$this->hist->logEvent(
@@ -244,12 +244,12 @@ class GameRequestController extends AbstractController {
 						$em->remove($id);
 						$em->flush();
 
-						[$conv, $supConv] = $conv->sendExistingCharacterMsg(null, $settlement, null, null, $character);
+						$conv->sendExistingCharacterMsg(null, $settlement, null, null, $character);
 						return $this->redirectToRoute($route);
 					}
 					if ($id->getToPlace()) {
 						$place = $id->getToPlace();
-						$character->setLiegePlace($place);
+						$pol->updateAllegiance($character, null, $place, null, null);
 						$character->setOathCurrent(TRUE);
 						$character->setRealm(NULL);
 						$this->hist->logEvent(
@@ -268,12 +268,12 @@ class GameRequestController extends AbstractController {
 						$em->remove($id);
 						$em->flush();
 
-						[$conv, $supConv] = $conv->sendExistingCharacterMsg(null, null, $place, null, $character);
+						$conv->sendExistingCharacterMsg(null, null, $place, null, $character);
 						return $this->redirectToRoute($route);
 					}
 					if ($id->getToPosition()) {
 						$pos = $id->getToPosition();
-						$character->setLiegePosition($pos);
+						$pol->updateAllegiance($character, null, null, null, $pos);
 						$character->setOathCurrent(TRUE);
 						/* FIXME: Positions don't currently have logs. Should they? Hm.
 						$this->hist->logEvent(
@@ -293,7 +293,7 @@ class GameRequestController extends AbstractController {
 						$em->remove($id);
 						$em->flush();
 
-						[$conv, $supConv] = $conv->sendExistingCharacterMsg(null, null, null, $pos, $character);
+						$conv->sendExistingCharacterMsg(null, null, null, $pos, $character);
 						return $this->redirectToRoute($route);
 					}
 				} else {

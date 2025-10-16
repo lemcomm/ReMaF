@@ -5,11 +5,8 @@ namespace App\Controller;
 use App\Entity\Action;
 use App\Entity\Association;
 use App\Entity\Character;
-use App\Entity\FeatureType;
-use App\Entity\GeoData;
 use App\Entity\Permission;
 use App\Entity\Place;
-use App\Entity\GeoFeature;
 use App\Entity\Spawn;
 use App\Enum\CharacterStatus;
 use App\Form\AreYouSureType;
@@ -20,7 +17,6 @@ use App\Form\PlacePermissionsSetType;
 use App\Form\PlaceManageType;
 use App\Form\PlaceNewType;
 use App\Form\RealmSelectType;
-use App\Service\ActionResolution;
 use App\Service\AppState;
 use App\Service\AssociationManager;
 use App\Service\CommonService;
@@ -91,7 +87,7 @@ class PlaceController extends AbstractController {
 			$militia = null;
 		}
 
-		if ($character && $character->getInsidePlace() == $place) {
+		if ($character && $character->getInsidePlace() === $place) {
 			$inside = true;
 		} else {
 			$inside = false;
@@ -248,7 +244,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/new', name:'maf_place_new')]
-	public function newAction(DescriptionManager $desc, Economy $econ, Geography $geo, History $hist, PermissionManager $pm, Request $request): RedirectResponse|Response {
+	public function newAction(Economy $econ, Geography $geo, History $hist, PermissionManager $pm, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('placeCreateTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -371,7 +367,6 @@ class PlaceController extends AbstractController {
 		$form = $this->createForm(PlaceNewType::class, null, ['types'=>$query->getResult(), 'realms' => $character->findRealms()]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$em = $this->em;
 			$data = $form->getData();
 			$fail = $this->checkPlaceNames($form, $data['name'], $data['formal_name']);
 			if (!$fail && $this->poi->checkPlacePlacement($character)) {
@@ -392,53 +387,17 @@ class PlaceController extends AbstractController {
 				}
 			}
 			if (!$fail) {
-				$place = new Place();
-				$this->em->persist($place);
-				$place->setName($data['name']);
-				$place->setFormalName($data['formal_name']);
-				$place->setShortDescription($data['short_description']);
-				$place->setCreator($character);
-				$place->setType($data['type']);
-				$place->setRealm($form->get('realm')->getData());
-				$place->setDestroyed(false);
-				$place->setWorld($character->getWorld());
-				if ($where = $character->getInsideSettlement()) {
-					$place->setSettlement($character->getInsideSettlement());
-					if ($where->getGeoData()) {
-						$place->setGeoData($where->getGeoData());
-					} else {
-						$place->setMapRegion($where->getMapRegion());
-					}
-				} else {
-					$region = $geo->findMyRegion($character);
-					if ($region instanceof GeoData) {
-						$loc = $character->getLocation();
-						$feat = new GeoFeature;
-						$feat->setLocation($loc);
-						$feat->setGeoData($region);
-						$feat->setName($data['name']);
-						$feat->setActive(true);
-						$feat->setWorkers(0);
-						$feat->setCondition(0);
-						$feat->setWorld($character->getWorld());
-						$feat->setType($em->getRepository(FeatureType::class)->findOneBy(['name'=>'place']));
-						$em->persist($feat);
-						$em->flush(); #We need the above to set the below and do relations.
-						$place->setGeoMarker($feat);
-						$place->setLocation($loc);
-					} else {
-						$place->setMapRegion($region);
-					}
-				}
-				$place->setVisible($data['type']->getVisible());
-				if ($data['type'] != 'embassy' && $data['type'] != 'capital') {
-					$place->setActive(true);
-				} else {
-					$place->setActive(false);
-				}
-				if ($data['type'] != 'capital') {
-					$place->setOwner($character);
-				}
+				$where = $character->getInsideSettlement()?:$geo->findMyRegion($character);
+				$place = $this->poi->create(
+					$data['name'],
+					$data['formal_name'],
+					$data['short_description'],
+					$data['description'],
+					$data['type'],
+					$character,
+					$where,
+					$form->get('realm')->getData()
+				);
 				$this->em->flush(); # We can't create history for something that doesn't exist yet.
 				$hist->logEvent(
 					$place,
@@ -455,7 +414,6 @@ class PlaceController extends AbstractController {
 						true
 					);
 				}
-				$desc->newDescription($place, $data['description'], $character);
 				$this->em->flush();
 				$this->addFlash('notice', $this->trans->trans('new.success', ["%name%"=>$place->getName()], 'places'));
 				return $this->redirectToRoute('maf_place_actionable');
@@ -780,7 +738,7 @@ class PlaceController extends AbstractController {
                         $place->setDestroyed(true);
 			if ($spawn = $place->getSpawn()) {
 				$em->remove($spawn);
-				$place->setSpawn(null);
+				$place->setSpawn();
 			}
 			$em->flush();
 			if ($siege = $place->getSiege()) {

@@ -3,6 +3,14 @@
 namespace App\Service;
 
 use App\Entity\Character;
+use App\Entity\FeatureType;
+use App\Entity\GeoData;
+use App\Entity\GeoFeature;
+use App\Entity\MapRegion;
+use App\Entity\Place;
+use App\Entity\PlaceType;
+use App\Entity\Realm;
+use App\Entity\Settlement;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PlaceManager {
@@ -13,17 +21,93 @@ class PlaceManager {
 		private EntityManagerInterface $em,
 		private Geography $geo,
 		private PermissionManager $pm,
+		private History $hist,
+		private DescriptionManager $desc,
 	) {}
 
-	public function findPlacesInSpotRange(Character $character) {
+	public function create(
+		string $name,
+		string $formal,
+		string $desc,
+		string $longDesc,
+		PlaceType $type,
+		Character $char,
+		MapRegion|GeoData|Settlement $where,
+		?Realm $realm
+	): Place {
+		$place = new Place();
+		$this->em->persist($place);
+		$place->setName($name);
+		$place->setType($type);
+		$place->setFormalName($formal);
+		$place->setShortDescription($desc);
+		$place->setCreator($char);
+		$place->setRealm($realm);
+		$place->setDestroyed(false);
+		$place->setWorld($char->getWorld());
+		if ($where instanceof Settlement) {
+			$place->setSettlement($where);
+			if ($where->getGeoData()) {
+				$place->setGeoData($where->getGeoData());
+			} else {
+				$place->setMapRegion($where->getMapRegion());
+			}
+		} elseif ($where instanceof GeoData) {
+			$loc = $char->getLocation();
+			$feat = new GeoFeature;
+			$feat->setLocation($loc);
+			$feat->setGeoData($where);
+			$feat->setName($name);
+			$feat->setActive(true);
+			$feat->setWorkers(0);
+			$feat->setCondition(0);
+			$feat->setType($this->em->getRepository(FeatureType::class)->findOneBy(['name'=>'place']));
+			$this->em->persist($feat);
+			$this->em->flush(); #We need the above to set the below and do relations.
+			$place->setGeoMarker($feat);
+			$place->setLocation($loc);
+			$place->setGeoData($where);
+		} else {
+			$place->setMapRegion($where);
+		}
+		$place->setVisible($type->getVisible());
+		if ($type->getName() !== 'capital') {
+			$place->setOwner($char);
+		}
+		if ($type->getName() !== 'capital' && $type->getName() !== 'embassy') {
+			$place->setActive(true);
+		}
+		if ($place->getSettlement()) {
+			$this->hist->logEvent(
+				$place,
+				'event.place.formalized',
+				array('%link-settlement%'=>$place->getSettlement()->getId(), '%link-character%'=>$char->getId()),
+				History::HIGH, true
+			);
+			if ($type->getVisible()) {
+				$this->hist->logEvent(
+					$place->getSettlement(),
+					'event.settlement.newplace',
+					array('%link-place%'=>$place->getId(), '%link-character%'=>$char->getId()),
+					History::MEDIUM,
+					true
+				);
+			}
+		}
+
+		$this->desc->newDescription($place, $longDesc, $char);
+		return $place;
+	}
+
+	public function findPlacesInSpotRange(Character $character): ?array {
 		return $this->findPlacesNearMe($character, $this->geo->calculateSpottingDistance($character));
 	}
 
-	public function findPlacesInActionRange(Character $character) {
+	public function findPlacesInActionRange(Character $character): ?array {
 		return $this->findPlacesNearMe($character, $this->geo->calculateInteractionDistance($character));
 	}
 
-	public function checkPlacePlacement(Character $character) {
+	public function checkPlacePlacement(Character $character): bool {
 		if ($this->findPlacesNearMe($character, self::$placeSeparation)) {
 			return false; #Too close!
 		}
@@ -35,7 +119,7 @@ class PlaceManager {
 		return true; #Good to go!
 	}
 
-	public function findPlacesNearMe(Character $character, $maxdistance) {
+	public function findPlacesNearMe(Character $character, $maxdistance): ?array {
 		if ($settlement = $character->getInsideSettlement()) {
 			$results = [];
 			if ($settlement->getPlaces()) {
