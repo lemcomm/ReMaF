@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Enum\RaceName;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -16,6 +17,7 @@ class LoadSkillsData extends Fixture {
                 "survival" => array('pro' => null),
                 "combat" => array('pro' => null),
                 "magic" => array('pro' => null),
+		"races" => array('pro' => null),
 
                 # Tier 1
                 "bows" => array('pro' => "equipment"),
@@ -39,6 +41,24 @@ class LoadSkillsData extends Fixture {
                 "medicine" => array('pro' => "survival"),
                 "anatomy" => array('pro' => "survival"),
                 "riding" => array('pro' => "survival"),
+
+		"firstWorld" => ['pro'=>'races'],
+		"secondWorld" => ['pro'=>'races'],
+		"oldWorld" => ['pro'=>'races'],
+		"highMonster" => ['pro'=>'races'],
+		"lowMonster" => ['pro'=>'races'],
+		"legend" => ['pro'=>'races'],
+
+		RaceName::firstOne->value => ['pro'=>'firstWorld'],
+		RaceName::secondOne->value => ['pro'=>'secondWorld'],
+		RaceName::magitek->value => ['pro'=>'magitek'],
+		RaceName::human->value => ['pro'=>'secondWorld'],
+		RaceName::orc->value => ['pro'=>'secondWorld'],
+		RaceName::elf->value => ['pro'=>'secondWorld'],
+		RaceName::ogre->value => ['pro'=>'highMonster'],
+		RaceName::wyvern->value => ['pro'=>'lowMonster'],
+		RaceName::slime->value => ['pro'=>'lowMonster'],
+		RaceName::dragon->value => ['pro'=>'legend'],
         );
 
         private array $skills = array(
@@ -94,6 +114,19 @@ class LoadSkillsData extends Fixture {
                 "javelin" => array('cat' => 'thrown'),
 
 		"shield" => array('cat' => 'equipment'),
+
+		"military" => ['cat' => [
+			RaceName::firstOne->value,
+			RaceName::secondOne->value,
+			RaceName::magitek->value,
+			RaceName::human->value,
+			RaceName::orc->value,
+			RaceName::elf->value,
+			RaceName::ogre->value,
+			RaceName::wyvern->value,
+			RaceName::slime->value,
+			RaceName::dragon->value,
+		]],
         );
 
 	public function load(ObjectManager $manager): void {
@@ -117,19 +150,30 @@ class LoadSkillsData extends Fixture {
 		}
 		echo 'Loading Skill Types...';
 		foreach ($this->skills as $name=>$data) {
-			$type = $manager->getRepository(SkillType::class)->findOneBy(['name'=>$name]);
-			if (!$type) {
-				$type = new SkillType();
-				$manager->persist($type);
-				$type->setName($name);
-			}
-			$cat = $manager->getRepository(SkillCategory::class)->findOneBy(['name'=>$data['cat']]);
-			if ($cat) {
-				$type->setCategory($cat);
+			if (is_array($data['cat'])) {
+				foreach ($data['cat'] as $each) {
+					$this->newSkillType($manager, $name, $each);
+				}
 			} else {
-				echo 'No Skill category of name '.$data['cat'].' found for skill '.$name.'\n';
+				$this->newSkillType($manager, $name, $data['cat']);
 			}
+
 			$manager->flush();
+		}
+	}
+
+	private function newSkillType($manager, $name, $category) {
+		$type = $manager->getRepository(SkillType::class)->findOneBy(['name'=>$name]);
+		if (!$type) {
+			$type = new SkillType();
+			$manager->persist($type);
+			$type->setName($name);
+		}
+		$cat = $manager->getRepository(SkillCategory::class)->findOneBy(['name'=>$category]);
+		if ($cat) {
+			$type->setCategory($cat);
+		} else {
+			echo 'No Skill category of name '.$category.' found for skill '.$name.'\n';
 		}
 	}
 }

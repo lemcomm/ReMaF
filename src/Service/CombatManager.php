@@ -30,7 +30,9 @@ class CombatManager {
 	public function __construct(
 		private CommonService $common,
 		private CharacterManager $charMan,
-		private History $history) {
+		private History $history,
+		private SkillManager $skills,
+	) {
 	}
 
 	public function prepare(): void {
@@ -424,7 +426,7 @@ class CombatManager {
 	public function ChargeAttack(Soldier|Character $me, $target, $act=false, $battle=false, $xpMod = 1, $defBonus = null): array {
 		if ($battle) {
 			if ($me->isNoble() && $me->getWeapon()) {
-				$this->common->trainSkill($me->getCharacter(), $me->getEquipment()->getSkill(), $xpMod);
+				$this->skills->trainSkill($me->getCharacter(), $me->getEquipment()->getSkill(), $xpMod);
 			} else {
 				$me->gainExperience(1*$xpMod);
 			}
@@ -456,7 +458,7 @@ class CombatManager {
 			$logs[] = $each;
 		}
 		if ($me->isNoble() && $me->getWeapon()) {
-			$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
+			$this->skills->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
 		} else {
 			$me->gainExperience(($result=='kill'?2:1)*$xpMod);
 		}
@@ -635,7 +637,7 @@ class CombatManager {
 	public function MeleeAttack($me, $target, $mPower, $act=false, $battle=false, $xpMod = 1, $defBonus = 0, $enableCounter = true): array {
 		if ($battle) {
 			if ($me->isNoble() && $me->getWeapon()) {
-				$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
+				$this->skills->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
 			} else {
 				$me->gainExperience(1*$xpMod);
 			}
@@ -799,10 +801,10 @@ class CombatManager {
 		if ($battle) {
 			if ($me->isNoble() && $me->getWeapon()) {
 				if (in_array($me->getType(), ['armoured archer', 'archer'])) {
-					$this->common->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
+					$this->skills->trainSkill($me->getCharacter(), $me->getWeapon()->getSkill(), $xpMod);
 				} else {
 					if ($me->getEquipment()) {
-						$this->common->trainSkill($me->getCharacter(), $me->getEquipment()->getSkill(), $xpMod);
+						$this->skills->trainSkill($me->getCharacter(), $me->getEquipment()->getSkill(), $xpMod);
 					}
 				}
 			} else {

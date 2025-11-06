@@ -96,6 +96,7 @@ class Generator {
 		$soldier->setHome($home)->setDistanceHome(0);
 		$soldier->setUnit($unit);
 		$soldier->setAlive(true);
+		$soldier->getTranslatableType(true);
 
 		$this->em->persist($soldier);
 		return $soldier;

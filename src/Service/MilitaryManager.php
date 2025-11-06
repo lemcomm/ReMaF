@@ -49,6 +49,7 @@ class MilitaryManager {
 		// TODO: add the speed (efficiency) of the training building here, at least with some effect
 		// (not full, because you can't focus them)
 		foreach ($settlement->getUnits() as $unit) {
+			/** @var Soldier $recruit */
 			foreach ($unit->getRecruits() as $recruit) {
 				if (!$recruit->isAlive()) {
 					# Cleanup this recruit if they're dead for some reason (like starvation).
@@ -77,6 +78,7 @@ class MilitaryManager {
 					// training finished
 					$recruit->setTraining(0)->setTrainingRequired(0);
 					$this->history->addToSoldierLog($recruit, 'traincomplete');
+					$recruit->getTranslatableType(true);
 					if ($unit->getCharacter() && $unit->getCharacter()->getInsideSettlement() != $settlement) {
 						$recruit->setTravelDays(ceil($this->getSoldierTravelTime($settlement, $unit->getCharacter())));
 						$recruit->setDestination('unit');

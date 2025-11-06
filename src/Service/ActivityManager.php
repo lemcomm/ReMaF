@@ -38,7 +38,9 @@ class ActivityManager {
 		private LoggerInterface $logger,
 		private CombatManager $combat,
 		private CharacterManager $charMan,
-		private History $history) {
+		private History $history,
+		private SkillManager $skills,
+	) {
 	}
 
 	/*
@@ -534,7 +536,7 @@ class ActivityManager {
 				$meScore = 25; # Basic to-hit chance.
 			}
 			echo $meChar->getName().' - ';
-			$this->common->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
+			$this->skills->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." fires - ");
 			if ($this->combat->RangedRoll(0, 1*$themChar->getRace()->getSize(), 0, $meScore)) {
 				[$result, $sublogs] = $this->combat->rangedHit($meChar, $themChar, $meRanged, $act, false, 1, $themScore);
@@ -547,7 +549,7 @@ class ActivityManager {
 				$meScore = 45; # Basic to-hit chance.
 			}
 			echo $meChar->getName().' - ';
-			$this->common->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
+			$this->skills->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." attacks - ");
 			if ($this->combat->MeleeRoll(0, $this->combat->toHitSizeModifier($meChar, $themChar), $meScore)) {
 				[$result, $sublogs] = $this->combat->MeleeAttack($meChar, $themChar, $meMelee, $act, false, 1, $themScore, false);

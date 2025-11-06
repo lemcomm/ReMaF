@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Enum\CharacterStatus;
+use App\Enum\RaceName;
+use App\Service\CharacterManager;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -138,6 +140,7 @@ class Character extends AbstractCharacter {
 	private ?Unit $leading_unit = null;
 	private ?Dungeon $fromDungeon = null;
 	private ?array $status = null;
+	private ?array $familiarity = null;
 
 
 	# This should match App\Enum\CharacterStatus enum values.
@@ -3922,5 +3925,50 @@ class Character extends AbstractCharacter {
 	public function incrementStatus(CharacterStatus $which, $int): void {
 		$this->status?:$this->status = $this->defaultStatus;
 		$this->status[$which->value] = $this->status[$which->value]+$int;
+	}
+
+	public function getTranslatableType(): string {
+		if ($this->race) {
+			return $this->race->getName().".leader";
+		} else {
+			return RaceName::firstOne->value.".leader";
+		}
+	}
+
+	public function getFamiliarity(): array {
+		if (!$this->familiarity) {
+			$arr = [];
+			$race = $this->race;
+			$group = $race->getRaceGroup();
+			foreach ($this->skills as $skill) {
+				if ($skill->getType()->getName() === 'military') {
+					$score = $skill->getScore();
+					$arr[$skill->getType()->getCategory()->getName()] = $score;
+					foreach (CharacterManager::$raceGroups as $key => $value) {
+						if ($value === $group) {
+							if (array_key_exists($key, $arr) && $arr[$key] > $score) {
+								$arr[$key] = $score;
+							} else {
+								$arr[$key] = $score;
+							}
+						}
+					}
+				}
+			}
+			/*if ($race->getName() === RaceName::firstOne->value) {
+				$arr[RaceName::firstOne->value] = 1000;
+				$arr[RaceName::secondOne->value] = 200;
+				$arr[$race->getRaceGroup()] = 1000;
+			}*/
+			$this->familiarity = $arr;
+		}
+		return $this->familiarity;
+	}
+
+	public function updateFamiliarity($which, $value): self {
+		$fam = $this->familiarity?:[];
+		$fam[$which] = $value;
+		$this->familiarity = $fam;
+		return $this;
 	}
 }

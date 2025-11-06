@@ -31,7 +31,8 @@ class ActionResolution {
 		private Politics               $politics,
 		private PermissionManager      $permissions,
 		private WarManager             $warman,
-		private StatusUpdater $statusUpdater
+		private StatusUpdater 		$statusUpdater,
+		private SkillManager            $skills,
 	) {
 		$this->characters = new ArrayCollection();
 	}
@@ -739,7 +740,7 @@ class ActionResolution {
 	}
 
 	private function update_train_skill(Action $action): void {
-		$this->common->trainSkill($action->getcharacter(), $action->getTargetSkill(), 0, 1);
+		$this->skills->trainSkill($action->getcharacter(), $action->getTargetSkill(), 0, 1);
 	}
 
 	public function log($level, $text): void {

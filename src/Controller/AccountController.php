@@ -9,6 +9,7 @@ use App\Entity\Race;
 use App\Entity\User;
 
 use App\Enum\CharacterStatus;
+use App\Enum\RaceName;
 use App\Form\CharacterCreationType;
 use App\Form\ListSelectType;
 use App\Form\UserSettingsType;
@@ -333,7 +334,7 @@ class AccountController extends AbstractController {
 			}
 
 			if ($works) {
-				$race = $em->getRepository(Race::class)->findOneBy(array('name'=>'first one'));
+				$race = $em->getRepository(Race::class)->findOneBy(array('name'=>RaceName::firstOne->value));
 				$character = $charMan->create($user, $data['name'], $data['gender'], !$data['dead'], $race, $data['father'], $data['mother'], $data['partner']);
 
 				if (!$data['dead']) {

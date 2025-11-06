@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\BattleGroupStatus;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Exception;
@@ -23,6 +24,14 @@ class BattleGroup {
 	private ?BattleGroup $reinforcing = null;
 	private Collection $characters;
 	private ?int $visualSize = null;
+	private ?array $status = null;
+
+	private ?array $defaultStatus = [
+		0 => null, # Exact soldier count
+		1 => null, # Rough soldier count
+	];
+
+	public static int $familiarityMinimum = 35; # This is calculated based on $skill->getScore();
 
 	/**
 	 * Constructor
@@ -66,6 +75,103 @@ class BattleGroup {
 				}
 			}
 		}
+	}
+
+	public function setupCounts(): void {
+		if (null === $this->soldiers) {
+			$this->setupSoldiers();
+		}
+		$exact = [];
+		#$rough = []; #Holding on to this in case we want to bring it back, but this is handled by getTroopsSummary.
+		foreach ($this->soldiers as $soldier) {
+			$type = $soldier->getTranslatableType();
+			/*
+			$explode = explode('.', $type); # These should be all 'race.soldierType'.
+			if ($explode) { #Should always be true, but just in case...
+				if (!array_key_exists($explode[0], $exact)) {
+					$rough[$explode[0]."soldier"] = 1;
+				} else {
+					$rough[$explode[0]."soldier"]++;
+				}
+			}
+			*/
+			if (!array_key_exists($type, $exact)) {
+				$exact[$type] = 1;
+			} else {
+				$exact[$type]++;
+			}
+		}
+		foreach ($this->characters as $char) {
+			$type = $char->getTranslatableType();
+			/*
+			$explode = explode('.', $type)?:$type; # These should be all 'race.soldierType'.
+			if (!array_key_exists($explode[0], $exact)) {
+				$rough[$explode[0]."leader"] = 1;
+			} else {
+				$rough[$explode[0]."leader"]++;
+			}
+			*/
+			if (!array_key_exists($type, $exact)) {
+				$exact[$type] = 1;
+			} else {
+				$exact[$type]++;
+			}
+		}
+		$this->status[BattleGroupStatus::exactCount->value] = $exact;
+		#$this->status[BattleGroupStatus::roughCount->value] = $rough;
+	}
+
+	public function updateCounts(?Character $char): void {
+		$exact = $this->getStatus()[BattleGroupStatus::exactCount->value];
+		#$rough = $this->getStatus()[BattleGroupStatus::roughCount->value]; #Holding on to this in case we want to bring it back, but this is handled by getTroopsSummary.
+		if ($char) {
+			foreach ($char->getUnits() as $unit) {
+				foreach ($unit->getActiveSoldiers() as $soldier) {
+					$type = $soldier->getTranslatableType();
+					/*
+					$explode = explode('.', $type)?:$type; # These should be all 'race.soldierType'.
+					if (!array_key_exists($explode[0], $exact)) {
+						$rough[$explode[0]] = 0;
+					}
+					$rough[$explode[0]]++;
+					*/
+					if (!array_key_exists($type, $exact)) {
+						$exact[$type] = 0;
+					}
+					$exact[$type]++;
+				}
+			}
+			$type = $char->getTranslatableType();
+			/*
+			$explode = explode('.', $type)?:$type; # These should be all 'race.soldierType'.
+			if (!array_key_exists($explode[0], $exact)) {
+				$rough[$explode[0]] = 0;
+			}
+			$rough[$explode[0]]++;
+			*/
+			if (!array_key_exists($type, $exact)) {
+				$exact[$type] = 1;
+			} else {
+				$exact[$type]++;
+			}
+			$this->status[BattleGroupStatus::exactCount->value] = $exact;
+			#$this->status[BattleGroupStatus::roughCount->value] = $rough;
+		} else {
+			$this->setupCounts();
+		}
+	}
+
+	public function updateRoughCounts(): void {
+		$rough = [];
+		foreach ($this->status[BattleGroupStatus::exactCount->value] as $type=>$count) {
+			if (str_contains('noble', $type)) $rough[] = [$type => $count]; # Player characters stand out.
+			if ($count % 50 >= 25) {
+				$rough[] = [$type => round($count, -2)+50];
+			} else {
+				$rough[] = [$type => round($count, -2)]; # Round to the nearest 10.
+			}
+		}
+		$this->status[BattleGroupStatus::roughCount->value] = $rough;
 	}
 
 	/**
@@ -117,14 +223,21 @@ class BattleGroup {
 		return !$this->attacker;
 	}
 
-	public function getTroopsSummary(): array {
+	public function getTroopsSummary($known = []): array {
+		if (null === $this->soldiers) {
+			$this->setupCounts();
+		}
 		$types = [];
-		foreach ($this->getSoldiers() as $soldier) {
-			$type = $soldier->getType();
-			if (isset($types[$type])) {
-				$types[$type]++;
+		foreach ($this->status[BattleGroupStatus::exactCount->value] as $type=>$count) {
+			$explode = explode('.', $type);
+			if (array_key_exists($explode[0], $known) && $known[$explode[0]] >= self::$familiarityMinimum) {
+				$types[$type] = $count;
 			} else {
-				$types[$type] = 1;
+				if ($explode[1] === 'leader') {
+					$types[$explode[0].".leader"] = $count;
+				} else {
+					$types[$explode[0].".soldier"] = $count;
+				}
 			}
 		}
 		return $types;
@@ -492,5 +605,34 @@ class BattleGroup {
 	 */
 	public function removeCharacter(Character $characters): void {
 		$this->characters->removeElement($characters);
+	}
+
+	public function getStatus(): ?array {
+		if (!$this->status) {
+			$this->status = $this->defaultStatus;
+		}
+		return $this->status;
+	}
+
+	public function updateStatus(BattleGroupStatus $which, mixed $value, mixed $subkey = null): static {
+		$this->status?:$this->status = $this->defaultStatus;
+		if ($which === BattleGroupStatus::exactCount || $which === BattleGroupStatus::roughCount) {
+			$arr = $this->status[$which->value];
+			if (array_key_exists($subkey, $arr)) {
+				$arr[$subkey] = $arr[$subkey] + $value;
+			} else {
+				$arr[$subkey] = $value;
+			}
+			$this->status[$which->value] = $arr;
+		} else {
+			$this->status[$which->value] = $value;
+		}
+		return $this;
+	}
+
+	public function resetStatus(BattleGroupStatus $which): static {
+		# If status exists, reset that key, otherwise just set status to defaultStatus.
+		$this->status?$this->status[$which->value]=$this->defaultStatus[$which->value]:$this->status = $this->defaultStatus;
+		return $this;
 	}
 }

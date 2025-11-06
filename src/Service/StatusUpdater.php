@@ -2,7 +2,9 @@
 
 namespace App\Service;
 
+use App\Entity\BattleGroup;
 use App\Entity\Character;
+use App\Enum\BattleGroupStatus;
 use App\Enum\CharacterStatus;
 
 class StatusUpdater {
@@ -43,9 +45,23 @@ class StatusUpdater {
 				} else {
 					$this->setNearestSettlement($char);
 				}
+				break;
 			default:
 				$char->updateStatus($which, $value);
 		}
+	}
+
+	/**
+	 * This is largely a shell, in case we need/expand it later. Unlike the above, which does some complex stuff.
+	 * @param BattleGroup       $bg
+	 * @param BattleGroupStatus $which
+	 * @param                   $value
+	 * @param                   $subvalue
+	 *
+	 * @return void
+	 */
+	public function battleGroup(BattleGroup $bg, BattleGroupStatus $which, $value, $subvalue): void {
+		$bg->updateStatus($which, $value, $subvalue);
 	}
 
 	private function setNearestSettlement(Character $char): void {

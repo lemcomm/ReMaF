@@ -16,6 +16,7 @@ use App\Entity\Settlement;
 use App\Entity\RealmPosition;
 use App\Entity\User;
 use App\Enum\CharacterStatus;
+use App\Enum\RaceName;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,6 +26,24 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class CharacterManager {
 	public ?ArrayCollection $seen; # Used by findHeir, which is called both locally and by GameRunner, which need this to be controlled.
+
+	public static array $raceGroups = [
+		RaceName::firstOne->value => 'firstWorld',
+		RaceName::secondOne->value => 'firstWorld',
+		RaceName::magitek->value => 'oldWorld',
+		RaceName::human->value => 'secondWorld',
+		RaceName::elf->value => 'secondWorld',
+		RaceName::orc->value => 'secondWorld',
+		RaceName::ogre->value => 'highMonster',
+		RaceName::dragon->value => 'legend',
+		RaceName::wyvern->value => 'lowMonster',
+		RaceName::slime->value => 'lowMonster',
+	];
+
+	public static array $noRaceGroupSkills = [
+		'highMonster',
+		'lowMonster',
+	];
 
 	public function __construct(
 		private EntityManagerInterface $em,
@@ -37,6 +56,7 @@ class CharacterManager {
 		private WarManager $warman,
 		private AssociationManager $assocman,
 		private StatusUpdater $statusUpdater) {
+		self::$raceGroups[RaceName::firstOne->value] = 'firstWorld';
 	}
 
 	public function create(User $user, $name, $gender='m', $alive=true, ?Race $race=null, ?Character $father=null, ?Character $mother=null, ?Character $partner=null): Character {
@@ -114,7 +134,7 @@ class CharacterManager {
 			$this->em->persist($relation);
 		}
 		if (!$race) {
-			$race = $this->em->getRepository(Race::class)->findOneBy(['name'=>'first one']);
+			$race = $this->em->getRepository(Race::class)->findOneBy(['name'=>RaceName::firstOne->value]);
 		}
 		$character->setRace($race);
 
