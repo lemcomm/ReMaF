@@ -30,7 +30,7 @@ class CharacterCreateCommand extends Command {
 			->setDescription('Generator command for creating a character.')
 			->addArgument('name', InputArgument::REQUIRED, 'What is their name?')
 			->addArgument('where', InputArgument::REQUIRED, 'Where should they spawn? Should be in the format of Location:ID, i.e.: GeoData:8, MapRegion:15, Settlement:16, Place:9.')
-			->addArgument('user', InputArgument::REQUIRED, 'User ID to own the character?')
+			->addOption('user', 'u', InputArgument::OPTIONAL, 'User ID to own the character?', null)
 			->addOption('gender', 'g', InputArgument::OPTIONAL, 'Gender? "male" or "female". Default: male', 'male')
 			->addOption('mother', 'm', InputArgument::OPTIONAL, 'Optional: Character ID of mother, if any', null)
 			->addOption('father', 'f', InputArgument::OPTIONAL, 'Optional: Character ID of father, if any?', null)
@@ -42,13 +42,13 @@ class CharacterCreateCommand extends Command {
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$name = $input->getArgument('name');
 		$where = $this->findWhere($input->getArgument('where'));
-		$user = $this->findUser($input->getArgument('user'));
+		$user = $this->findUser($input->getOption('user'));
 		$gender = $input->getOption('gender');
 		$mother = $input->getOption('mother')?$this->findCharacter($input->getOption('mother')):null;
 		$father = $input->getOption('father')?$this->findCharacter($input->getOption('father')):null;
 		$race = $this->findRace($input->getOption('race'));
 		$inside = $input->getOption('inside');
-		if (!$where || !$user) {
+		if (!$where || $user === false) {
 			$output->writeln('<error>Unable to calculate where to spawn or which user to assign the character to.</error>');
 			return Command::FAILURE;
 		}else {
@@ -103,7 +103,8 @@ class CharacterCreateCommand extends Command {
 		}
 	}
 
-	private function findUser($string): false|User {
+	private function findUser($string): null|false|User {
+		if ($string === null) return null;
 		$user = $this->em->getRepository(User::class)->findOneBy(['id' => $string]);
 		if ($user) {
 			return $user;

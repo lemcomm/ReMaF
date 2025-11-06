@@ -17,6 +17,7 @@ use App\Entity\RealmPosition;
 use App\Entity\User;
 use App\Enum\CharacterStatus;
 use App\Enum\RaceName;
+use App\Service\UserManager;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -47,19 +48,19 @@ class CharacterManager {
 
 	public function __construct(
 		private EntityManagerInterface $em,
-		private History $history,
-		private MilitaryManager $milman,
-		private Politics $politics,
-		private RealmManager $realmmanager,
-		private ConversationManager $convman,
-		private DungeonMaster $dm,
-		private WarManager $warman,
-		private AssociationManager $assocman,
-		private StatusUpdater $statusUpdater) {
+		private History                $history,
+		private MilitaryManager        $milman,
+		private Politics               $politics,
+		private RealmManager           $realmmanager,
+		private ConversationManager    $convman,
+		private DungeonMaster          $dm,
+		private WarManager             $warman,
+		private AssociationManager     $assocman,
+		private StatusUpdater          $statusUpdater, private readonly UserManager $userManager) {
 		self::$raceGroups[RaceName::firstOne->value] = 'firstWorld';
 	}
 
-	public function create(User $user, $name, $gender='m', $alive=true, ?Race $race=null, ?Character $father=null, ?Character $mother=null, ?Character $partner=null): Character {
+	public function create(?User $user, $name, $gender='m', $alive=true, ?Race $race=null, ?Character $father=null, ?Character $mother=null, ?Character $partner=null): Character {
 		$character = new Character();
 		$character->setGeneration(1);
 		$character->setAlive($alive)->setSlumbering(!$alive)->setNpc(false);
@@ -153,9 +154,14 @@ class CharacterManager {
 	}
 
 	// FIXME: should be private after initial update
-	public function createGenome(User $user, ?Character $father=null, ?Character $mother=null): string {
+	public function createGenome(?User $user, ?Character $father=null, ?Character $mother=null): string {
 		$genome = '__';
-		$genome_set = $user->getGenomeSet();
+		if ($user) {
+			$genome_set = $user->getGenomeSet();
+		} else {
+			$genomeArr = array_rand(str_split($this->userManager->createGenomeSet()), 2);
+			return $genomeArr[0].$genomeArr[1];
+		}
 
 		if ($father) {
 			$genome[0] = $this->randomGenome($father);

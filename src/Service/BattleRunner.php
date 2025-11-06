@@ -646,7 +646,6 @@ class BattleRunner {
 					break;
 			}
 		}
-		# TODO: Continue battle resumption from here.
 		$doRanged = TRUE;
 		$this->log(20,  "Current stage is $myStage out of $maxStage.\n");
 		if ($myStage && $myStage > 1 && $myStage === $maxStage) {
@@ -668,6 +667,7 @@ class BattleRunner {
 				$combat = $this->runStage('normal', $rangedPenalty, $phase);
 			}
 			$phase++;
+			$battle->setPhase($phase);
 			$this->em->flush();
 		}
 		$this->log(20, "...hunt phase...\n");
@@ -735,6 +735,7 @@ class BattleRunner {
 	public function runStage($type, $rangedPenaltyStart, $phase): bool {
 		$groups = $this->battle->getGroups();
 		$battle = $this->battle;
+		/** @var BattleGroup $group */
 		foreach ($groups as $group) {
 			$rangedPenalty = $rangedPenaltyStart; #We need each group to reset their rangedPenalty and defenseBonus.
 			$defBonus = $this->defenseBonus;
@@ -754,13 +755,33 @@ class BattleRunner {
 				}
 			}
 			if ($type === 'ranged' || $type === 'normal') {
-				$stageReport = new BattleReportStage; # Generate new stage report. Hunts do this separately.
-				$this->em->persist($stageReport);
-				$stageReport->setRound($phase);
-				$stageReport->setGroupReport($group->getActiveReport());
-				$this->em->flush();
-				$group->getActiveReport()->addCombatStage($stageReport);
-
+				$stageReport = null;
+				$complete = false;
+				if ($this->resuming) {
+					/** @var BattleReportStage $stage */
+					foreach ($group->getActiveReport()->getCombatStages() as $stage) {
+						if ($stage->getRound() === $phase) {
+							if (count($stage->getData()) > 0) {
+								$complete = true;
+							}
+							$stageReport = $stage;
+							break;
+						}
+					}
+				}
+				if ($complete) {
+					# We have a stageReport for this group and this group has already finished processing.
+					continue;
+				}
+				if (!$this->resuming || !$stageReport) {
+					$this->resuming = false;
+					$stageReport = new BattleReportStage; # Generate new stage report.
+					$this->em->persist($stageReport);
+					$stageReport->setRound($phase);
+					$stageReport->setGroupReport($group->getActiveReport());
+					$this->em->flush();
+					$group->getActiveReport()->addCombatStage($stageReport);
+				}
 				$enemyCollection = new ArrayCollection;
 				foreach ($group->getEnemies() as $enemygroup) {
 					/** @var BattleGroup $enemygroup */
@@ -776,45 +797,45 @@ class BattleRunner {
 				} else {
 					$this->log(5, "group ".$group->getActiveReport()->getId()." (Reinforcing group ".$group->getReinforcing()->getActiveReport()->getId().") - ".$attackers." left, $enemies targets\n");
 				}
-			}
 
-			/*
-			Combat Phase Handling Code
-			*/
-			if ($type === 'ranged') {
-				$soldierShuffle = $group->getFightingSoldiers()->toArray();
-				if (($this->legacyRuleset && $this->version >= 3) || $this->masteryRuleset)  {
-					shuffle ($soldierShuffle);
-				}
-				[$stageResult, $extras, $enemyCollection, $enemies] = $this->runRangedPhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies);
+				/*
+				Combat Phase Handling Code
+				*/
+				if ($type === 'ranged') {
+					$soldierShuffle = $group->getFightingSoldiers()->toArray();
+					if (($this->legacyRuleset && $this->version >= 3) || $this->masteryRuleset)  {
+						shuffle ($soldierShuffle);
+					}
+					[$stageResult, $extras, $enemies] = $this->runRangedPhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies);
 
-				if ($this->legacyRuleset) {
-					if (array_key_exists('shots', $stageResult)) {
-						$shots = $stageResult['shots'];
-					} else {
-						$shots = 0;
+					if ($this->legacyRuleset) {
+						if (array_key_exists('shots', $stageResult)) {
+							$shots = $stageResult['shots'];
+						} else {
+							$shots = 0;
+						}
+						if (array_key_exists('rangedHits', $stageResult)) {
+							$rangedHits = $stageResult['rangedHits'];
+						} else {
+							$rangedHits = 0;
+						}
+						if ($this->legacyMorale && !$this->ignoreMorale && $enemies > 0 && $rangedHits > 0) {
+							$stageResult = $this->legacyUpdateRangedMorale($group, $enemies, $shots, $rangedHits, $stageResult);
+						}
 					}
-					if (array_key_exists('rangedHits', $stageResult)) {
-						$rangedHits = $stageResult['rangedHits'];
-					} else {
-						$rangedHits = 0;
+					$stageResult = ['alive'=>$attackers, 'enemies'=>$enemies] + $stageResult;
+					$stageReport->setData($stageResult); # Commit this stage's results to the combat report.
+					$stageReport->setExtra($extras);
+				} elseif ($type === 'normal') {
+					$soldierShuffle = $group->getFightingSoldiers()->toArray();
+					if (($this->legacyRuleset && $this->version >= 3) || $this->masteryRuleset)  {
+						shuffle ($soldierShuffle);
 					}
-					if ($this->legacyMorale && !$this->ignoreMorale && $enemies > 0 && $rangedHits > 0) {
-						$stageResult = $this->legacyUpdateRangedMorale($group, $enemies, $shots, $rangedHits, $stageResult);
-					}
+					[$stageResult, $extras, $enemies] = $this->runMeleePhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies);
+					$stageResult = ['alive'=>$attackers, 'enemies'=>$enemies] + $stageResult;
+					$stageReport->setData($stageResult); # Commit this stage's results to the combat report.
+					$stageReport->setExtra($extras);
 				}
-			} elseif ($type === 'normal') {
-				$soldierShuffle = $group->getFightingSoldiers()->toArray();
-				if (($this->legacyRuleset && $this->version >= 3) || $this->masteryRuleset)  {
-					shuffle ($soldierShuffle);
-				}
-				[$stageResult, $extras, $enemyCollection, $enemies] = $this->runMeleePhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies);
-
-			}
-			if ($type === 'ranged' || $type === 'normal') {
-				$stageResult = ['alive'=>$attackers, 'enemies'=>$enemies] + $stageResult;
-				$stageReport->setData($stageResult); # Commit this stage's results to the combat report.
-				$stageReport->setExtra($extras);
 			}
 
 			/*
@@ -1015,7 +1036,7 @@ class BattleRunner {
 			}
 		}
 		$stageResult = $this->buildStageResult();
-		return [$stageResult, $extras, $enemyCollection, $enemies];
+		return [$stageResult, $extras, $enemies];
 	}
 
 	private function runMeleePhase($soldiers, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies): array {
@@ -1202,40 +1223,44 @@ class BattleRunner {
 
 		}
 		$stageResult = $this->buildStageResult();
-		return [$stageResult, $extras, $enemyCollection, $enemies];
+		return [$stageResult, $extras, $enemies];
 	}
 
 	private function runHuntPhase($groups, $rangedPenalty): void {
 		$fleeing_entourage = array();
+		$groupReport = null;
+		/** @var BattleGroup $group */
 		foreach ($groups as $group) {
 			$groupReport = $group->getActiveReport(); # After it's built, the $huntResult array is saved via $groupReport->setHunt($huntResult);
-			if ($group->getFightingSoldiers()->count()==0) {
-				$this->log(10, "group is retreating:\n");
-				$countGroup=0;
-				foreach ($group->getCharacters() as $char) {
-					$this->log(10, "character ".$char->getName());
-					$count=0; #Entourage per character.
-					foreach ($char->getLivingEntourage() as $e) {
-						$fleeing_entourage[] = $e;
-						$count++;
-						$countGroup++;
+			if (!$groupReport->getHunt() || count($groupReport->getHunt()) === 0) {
+				if ($group->getFightingSoldiers()->count()==0) {
+					$this->log(10, "group is retreating:\n");
+					$countGroup=0;
+					foreach ($group->getCharacters() as $char) {
+						$this->log(10, "character ".$char->getName());
+						$count=0; #Entourage per character.
+						foreach ($char->getLivingEntourage() as $e) {
+							$fleeing_entourage[] = $e;
+							$count++;
+							$countGroup++;
+						}
+						$this->log(10, " $count entourage\n");
 					}
-					$this->log(10, " $count entourage\n");
+					$groupReport->setHunt(array('entourage'=>$countGroup));
 				}
-				$groupReport->setHunt(array('entourage'=>$countGroup));
 			}
 		}
 		$this->em->flush();
 		$this->log(10, count($fleeing_entourage)." entourage are on the run.\n");
 
 		$shield = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'shield']);
+		$groupReport = null;
 		foreach ($groups as $group) {
 			$groupReport = $group->getActiveReport();
-			# For the life of me, I don't remember why I added this next bit.
-			if($groupReport->getHunt()) {
-				$huntReport = $groupReport->getHunt();
-			} else {
+			if (!$groupReport->getHunt() || count($groupReport->getHunt()) === 0) {
 				$huntReport = array('killed'=>0, 'entkilled'=>0, 'dropped'=>0);
+			} else {
+				continue;
 			}
 			$this->prepareRound(); // called again each group to update the fighting status of all enemies
 
@@ -1356,7 +1381,12 @@ class BattleRunner {
 			$retreated = 0;
 			$routed = 0;
 			$extras = [];
+			/** @var BattleREportStage $stageResult */
 			$stageResult = $group->getActiveReport()->getCombatStages()->last(); #getCombatStages always returns these in round ascending order. Thus, the latest one will be last. :)
+			if (array_key_exists('retreated', $stageResult->getExtra())) {
+				# If this group hasn't already processed, this key won't exist.
+				continue;
+			}
 			if ($this->legacyRuleset) {
 				$allHP = 0;
 				$countUs = 0;
@@ -1495,16 +1525,6 @@ class BattleRunner {
 				if (!$this->ignoreMorale) {
 					$this->log(10, "==> avg. morale: ".round($total/max(1,$count))."\n\n");
 				}
-				$combatResults = $stageResult->getData(); # Fetch original array.
-				$combatResults['routed'] = $routed; # Append routed info.
-				$combatResults['stared'] = $staredDeath;
-				$combatResults['retreated'] = $retreated;
-				$stageResult->setData($combatResults); # Add routed to array and save.
-				$stageExtra = $stageResult->getExtra();
-				foreach ($extras as $extra) {
-					$stageExtra[] = $extra;
-				}
-				$stageResult->setExtra($stageExtra);
 			} elseif ($this->masteryRuleset) {
 				/** @var Soldier $soldier */
 				foreach ($group->getFightingSoldiers() as $soldier) {
@@ -1532,17 +1552,17 @@ class BattleRunner {
 						$this->log(10, "  ".$soldier->getName()." (".$soldier->getTranslatableType()."): toughness $solWillpower vs $solPenalty\n");
 					}
 				}
-				$combatResults = $stageResult->getData(); # Fetch original array.
-				$combatResults['routed'] = $routed; # Append routed info.
-				$combatResults['stared'] = $staredDeath;
-				$combatResults['retreated'] = $retreated;
-				$stageResult->setData($combatResults); # Add routed to array and save.
-				$stageExtra = $stageResult->getExtra();
-				foreach ($extras as $extra) {
-					$stageExtra[] = $extra;
-				}
-				$stageResult->setExtra($stageExtra);
 			}
+			$combatResults = $stageResult->getData(); # Fetch original array.
+			$combatResults['routed'] = $routed; # Append routed info.
+			$combatResults['stared'] = $staredDeath;
+			$combatResults['retreated'] = $retreated;
+			$stageResult->setData($combatResults); # Add routed to array and save.
+			$stageExtra = $stageResult->getExtra();
+			foreach ($extras as $extra) {
+				$stageExtra[] = $extra;
+			}
+			$stageResult->setExtra($stageExtra);
 		}
 	}
 
@@ -2183,6 +2203,8 @@ class BattleRunner {
 					$maxStage = $battle->getSiege()->getMaxStage();
 				}
 				return [$location, $myStage, $maxStage];
+			} else {
+				$this->resuming = false;
 			}
 		}
 
