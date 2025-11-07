@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
+use App\Enum\SettlementLaw;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 
 class Settlement {
+	protected bool|Collection $defenders = false;
 	public bool $corruption = false;
 	private ?string $name = null;
 	private int $population;
@@ -66,6 +68,11 @@ class Settlement {
 	private float $employees = -1;
 	private ?Association $faith = null;
 	private float $food_provision_limit = 1;
+	private ?array $local_laws = null;
+	private ?array $defaultLaws = [
+		0 => false, # allowThralls
+		1 => 0.0, # wealthTax %
+	];
 
 	/**
 	 * Constructor
@@ -165,11 +172,7 @@ class Settlement {
 				$opposeCount += 10; # Player characters matter.
 			}
 		}
-		foreach ($this->getUnits() as $unit) {
-			if ($unit->isLocal()) {
-				$militia += $unit->getActiveSoldiers()->count();
-			}
-		}
+		$militia += $this->countDefenders(true);
 		$enforce_claim = false;
 		foreach ($this->getClaims() as $claim) {
 			if ($claim->getEnforceable() && $claim->getCharacter() == $taker) {
@@ -482,12 +485,14 @@ class Settlement {
 		return false;
 	}
 
-	public function countDefenders() {
+	public function countDefenders($militiaOnly = false) {
 		$defenders = 0;
 		$militia = 0;
-		foreach ($this->findDefenders() as $char) {
-			foreach ($char->getUnits() as $unit) {
-				$defenders += $unit->getActiveSoldiers()->count();
+		if (!$militiaOnly) {
+			foreach ($this->findDefenders() as $char) {
+				foreach ($char->getUnits() as $unit) {
+					$defenders += $unit->getActiveSoldiers()->count();
+				}
 			}
 		}
 		foreach ($this->getUnits() as $unit) {
@@ -498,7 +503,9 @@ class Settlement {
 		return $militia + $defenders;
 	}
 
-	public function findDefenders(): ArrayCollection {
+	public function findDefenders(): Collection {
+		if ($this->defenders) return $this->defenders;
+
 		// anyone with a "defend settlement" action who is nearby
 		$defenders = new ArrayCollection;
 		foreach ($this->getRelatedActions() as $act) {
@@ -506,6 +513,7 @@ class Settlement {
 				$defenders->add($act->getCharacter());
 			}
 		}
+		$this->defenders = $defenders;
 		return $defenders;
 	}
 
@@ -1844,6 +1852,19 @@ class Settlement {
 		} else {
 			$this->food_provision_limit = $limit;
 		}
+		return $this;
+	}
+
+	public function getLocalLaws(): ?array {
+		if (!$this->local_laws) {
+			$this->local_laws = $this->defaultLaws;
+		}
+		return $this->local_laws;
+	}
+
+	public function updateLocalLaws(SettlementLaw $which, mixed $value): static {
+		$this->local_laws?:$this->local_laws = $this->defaultLaws;
+		$this->local_laws[$which->value] = $value;
 		return $this;
 	}
 }
