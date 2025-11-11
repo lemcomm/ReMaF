@@ -31,9 +31,9 @@ php $APP maf:stats:turn -d 2>&1 > $LOGDIR/stats.log
 # cp /var/www/qgis/maps/allrealms.png /var/www/qgis/maps/history/allrealms-$DATE.png
 # cp /var/www/qgis/maps/2ndrealms.png /var/www/qgis/maps/history/2ndrealms-$DATE.png
 # cp /var/www/qgis/maps/majorrealms.png /var/www/qgis/maps/history/majorrealms-$DATE.png
-# curl -so /var/www/qgis/maps/allrealms.png "http://maps.westhold.lemuriacommunity.org/qgis?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&BBOX=0,0,512000,512000&CRS=EPSG:3857&WIDTH=2048&HEIGHT=2048&LAYERS=water,blocked,AllRealms&FORMAT=image/png&map=MapWithRealms.qgs"
-# curl -so /var/www/qgis/maps/2ndrealms.png "http://maps.westhold.lemuriacommunity.org/qgis?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&BBOX=0,0,512000,512000&CRS=EPSG:3857&WIDTH=2048&HEIGHT=2048&LAYERS=water,blocked,2ndLevelRealms&FORMAT=image/png&map=MapWithRealms.qgs"
-# curl -so /var/www/qgis/maps/majorrealms.png "http://maps.westhold.lemuriacommunity.org/qgis?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&BBOX=0,0,512000,512000&CRS=EPSG:3857&WIDTH=2048&HEIGHT=2048&LAYERS=water,blocked,MajorRealms&FORMAT=image/png&map=MapWithRealms.qgs"
+# curl -so /var/www/qgis/maps/allrealms.png "http://realmmaps.mightandfealty.com/cgi-bin/qgis_mapserv.fcgi?VERSION=1.3.0&REQUEST=GetMap&BBOX=0,0,512000,512000&CRS=EPSG:4326&WIDTH=2048&HEIGHT=2048&LAYERS=water,blocked,AllRealms&FORMAT=image/png"
+# curl -so /var/www/qgis/maps/2ndrealms.png "http://realmmaps.mightandfealty.com/cgi-bin/qgis_mapserv.fcgi?VERSION=1.3.0&REQUEST=GetMap&BBOX=0,0,512000,512000&CRS=EPSG:4326&WIDTH=2048&HEIGHT=2048&LAYERS=water,blocked,2ndLevelRealms&FORMAT=image/png"
+# curl -so /var/www/qgis/maps/majorrealms.png "http://realmmaps.mightandfealty.com/cgi-bin/qgis_mapserv.fcgi?VERSION=1.3.0&REQUEST=GetMap&BBOX=0,0,512000,512000&CRS=EPSG:4326&WIDTH=2048&HEIGHT=2048&LAYERS=water,blocked,MajorRealms&FORMAT=image/png"
 # convert /var/www/qgis/maps/allrealms.png -resize 256x256 /var/www/qgis/maps/allrealms-thumb.png
 # convert /var/www/qgis/maps/2ndrealms.png -resize 256x256 /var/www/qgis/maps/2ndrealms-thumb.png
 # convert /var/www/qgis/maps/majorrealms.png -resize 256x256 /var/www/qgis/maps/majorrealms-thumb.png

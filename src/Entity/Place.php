@@ -6,6 +6,7 @@ use App\Interface\ChatLocationInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
+use Stripe\Person;
 
 class Place implements ChatLocationInterface {
 	private string $name;
@@ -198,8 +199,17 @@ class Place implements ChatLocationInterface {
 			}
 		} elseif ($this->getOwner() === $char) {
 			return true;
-		} elseif (!$this->getOwner() && ($this->getGeoData()->getSettlement()->getOwner() === $char || $this->getGeoData()->getSettlement()->getSteward() === $char)) {
-			return true;
+		} elseif (!$this->getOwner()) {
+			$here = $this->getGeoData()?:$this->getMapRegion();
+			$town = $here->getSettlement();
+			if ($town) {
+				if ($town->isOccupied()) {
+					if ($town->getOccupant() && $town->getOccupant() === $char) return true;
+				} else {
+					if ($town->getOwner() && $town->getOwner() === $char) return true;
+					if ($town->getSteward() && $town->getSteward() === $char) return true;
+				}
+			}
 		}
 		return false;
 	}
