@@ -823,6 +823,8 @@ settlement:
  details: Settlement Details
  dummy:   Click a settlement on the map to show its details here.
  area:  "{name} area"
+ in:    "inside {name}"
+ at:   "at {name}"
  type:  Type
  fortified: Fortified
  size:
@@ -1015,7 +1017,7 @@ techtree:     Technology Tree
 charstatus:
  prebattle:    pre-battle
  inbattle:     battling
- travelling:   travelling
+ travelling:   travelling ({turn} turn(s))
  annexing:     annexing
  supporting:   supporting
  opposing:     opposing
@@ -1033,6 +1035,7 @@ charstatus:
  sieging:     sieging
  assinging:   assigning
  damaging:    damaging
+ siegeLead:   siege leading
 newevents:    "{number} event{count, plural, =1 {} other {s}}"
 newmessages:  "{number} message{count, plural, =1 {} other {s}}"
 requests:     "{number} request{count, plural, =1 {} other {s}}"

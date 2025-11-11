@@ -50,17 +50,18 @@ Table headers are handled as translation strings from the character.list databas
 			{% set locationVal = status[charStatus.location.value] %}
 			{% if locationVal > 50 %}
 				{% if locationVal == charStatus.atSettlement.value %}
-					{{ status[charStatus.atSettlement.value] }}
+					{{ 'settlement.at'|trans({'%name%':status[charStatus.atSettlement.value]}) }}
 				{% elseif locationVal == charStatus.inSettlement.value %}
-					{{ status[charStatus.inSettlement.value] }}
+					{{ 'settlement.in'|trans({'%name%':status[charStatus.inSettlement.value]}) }}
 				{% elseif locationVal == charStatus.atSea.value %}
 					{{ 'atsea'|trans }}
 				{% else %}
-					{{ 'settlement.area'|trans({'%name%':character.status[charStatus.nearSettlement.value]}) }}
+					{{ 'settlement.area'|trans({'%name%':status[charStatus.nearSettlement.value]}) }}
 				{% endif %}
 			{% else %}
 				-
 			{% endif %}
+			<!-- LC: {{ locationVal }}-->
 		</td>
 		<td>
 			{% set currently = character.status[charStatus.currently.value] %}
@@ -68,6 +69,8 @@ Table headers are handled as translation strings from the character.list databas
 				{{ 'charstatus.prebattle'|trans }}
 			{% elseif currently == charStatus.sieging.value %}
 				{{ 'charstatus.sieging'|trans }}
+			{% elseif currently == charStatus.siegeLead.value %}
+				{{ 'charstatus.siegeLead'|trans }}
 			{% elseif currently == charStatus.annexing.value %}
 				{{ 'charstatus.annexing'|trans }}
 			{% elseif currently == charStatus.supporting.value %}
@@ -86,9 +89,10 @@ Table headers are handled as translation strings from the character.list databas
 				{{ 'charstatus.reclaiming'|trans }}
 			{% elseif currently == charStatus.newOccupant.value %}
 				{{ 'charstatus.newOccupant'|trans }}
-			{% elseif locationVal == charStatus.travelling.value %}
-				{{ 'charstatus.travelling'|trans }}
+			{% elseif currently == charStatus.travelling.value %}
+				{{ 'charstatus.travelling'|trans({'%turn%':status[charStatus.travelling.value]|round(1, 'ceil')}) }}
 			{% endif %}
+			<!-- CC: {{ currently }}-->
 		</td>
 		<td align="center">
 			{% if character.status[charStatus.messages.value] > 0 %}{{ "newmessages"|trans({'%count%':character.status[charStatus.messages.value], "%number%":character.status[charStatus.messages.value]}) }}{% endif %}

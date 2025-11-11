@@ -15,24 +15,14 @@ class StatusUpdater {
 	}
 
 	public function character(Character $char, CharacterStatus $which, $value): void {
+		/*
+		 * inPlace doesn't have updaters because it shouldn't touch the settlement one, which it will fall back to.
+		 * atSea updates all of them because sea travel is a mess at times.
+		 */
+		$key = $which->value;
 		switch ($which) {
-			case CharacterStatus::inPlace:
-				$char->updateStatus($which, $value);
-				if ($value === null) {
-					if ($char->getInsideSettlement()) {
-						$char->updateStatus(CharacterStatus::location, CharacterStatus::inSettlement->value);
-					} else {
-						$this->setNearestSettlement($char);
-					}
-				} else {
-					$char->updateStatus(CharacterStatus::inPlace, $value);
-				}
-				break;
 			case CharacterStatus::inSettlement:
-				$char->updateStatus($which, $value);
-				if ($value === null) {
-					$this->setNearestSettlement($char);
-				}
+				$this->setNearestSettlement($char, true, $value);
 				break;
 			case CharacterStatus::atSea:
 				$char->updateStatus($which, $value);
@@ -45,6 +35,16 @@ class StatusUpdater {
 				} else {
 					$this->setNearestSettlement($char);
 				}
+				break;
+			case CharacterStatus::atSettlement:
+				$this->setNearestSettlement($char, false, $value);
+				$char->updateStatus($which, $value);
+				$char->updateStatus(CharacterStatus::inSettlement, null);
+				$char->updateStatus(CharacterStatus::nearSettlement, null);
+				break;
+			case $key >= 0 && $key < 50:
+				$char->updateStatus($which, $value);
+				$this->updateCurrently($char, $which, $value);
 				break;
 			default:
 				$char->updateStatus($which, $value);
@@ -64,18 +64,63 @@ class StatusUpdater {
 		$bg->updateStatus($which, $value, $subvalue);
 	}
 
-	private function setNearestSettlement(Character $char): void {
-		# This is mostly just in case we add some weird stuff later.
-		$nearest = $this->geo->findNearestSettlement($char);
-		$settlement = array_shift($nearest);
-		if ($nearest && $nearest['distance'] < $this->geo->calculateActionDistance($settlement)) {
-			$char->updateStatus(CharacterStatus::location, CharacterStatus::atSettlement->value);
-			$char->updateStatus(CharacterStatus::atSettlement, $settlement->getName());
-		} elseif ($nearest) {
-			$char->updateStatus(CharacterStatus::location, CharacterStatus::nearSettlement->value);
-			$char->updateStatus(CharacterStatus::nearSettlement, $settlement->getName());
+	private function updateCurrently(Character $char, CharacterStatus $which, $value): void {
+		$current = $char->getStatus()[CharacterStatus::currently->value];
+		if ($which === CharacterStatus::battling) {
+			$battles = $char->findBattleCount();
+			if ($battles === 1 && $value) {
+				$char->updateStatus(CharacterStatus::prebattle, false);
+			} elseif ($battles > 2 && !$value) {
+				$char->updateStatus(CharacterStatus::prebattle, true);
+				$this->updateCurrently($char, CharacterStatus::prebattle, true);
+			}
 		} else {
-			$char->updateStatus(CharacterStatus::location, CharacterStatus::inWorld->value);
+			$high = 9999;
+			foreach ($char->getStatus() as $key=>$val) {
+				if ($key >= 0 && $key < 50) {
+					if ($val && $key < $high) {
+						$high = $key;
+						break;
+					}
+				}
+			}
+			if ($high === 9999) {
+				$high = 13;
+			}
+			$char->updateStatus(CharacterStatus::currently, $high);
+		}
+	}
+
+	private function setNearestSettlement(Character $char, $inside = null, $value = null): void {
+		if ($inside) {
+			$char->updateStatus(CharacterStatus::location, CharacterStatus::inSettlement->value);
+			$char->updateStatus(CharacterStatus::inSettlement, $value);
+			$char->updateStatus(CharacterStatus::atSettlement, null);
+			$char->updateStatus(CharacterStatus::nearSettlement, null);
+		} elseif ($inside === false) {
+			$char->updateStatus(CharacterStatus::location, CharacterStatus::atSettlement->value);
+			$char->updateStatus(CharacterStatus::inSettlement, null);
+			$char->updateStatus(CharacterStatus::atSettlement, $value);
+			$char->updateStatus(CharacterStatus::nearSettlement, null);
+		} else {
+			$nearest = $this->geo->findNearestSettlement($char);
+			$settlement = array_shift($nearest);
+			if ($nearest && $nearest['distance'] < $this->geo->calculateActionDistance($settlement)) {
+				$char->updateStatus(CharacterStatus::location, CharacterStatus::atSettlement->value);
+				$char->updateStatus(CharacterStatus::inSettlement, null);
+				$char->updateStatus(CharacterStatus::atSettlement, $settlement->getName());
+				$char->updateStatus(CharacterStatus::nearSettlement, null);
+			} elseif ($nearest) {
+				$char->updateStatus(CharacterStatus::location, CharacterStatus::nearSettlement->value);
+				$char->updateStatus(CharacterStatus::inSettlement, null);
+				$char->updateStatus(CharacterStatus::atSettlement, null);
+				$char->updateStatus(CharacterStatus::nearSettlement, $settlement->getName());
+			} else {
+				$char->updateStatus(CharacterStatus::location, CharacterStatus::inWorld->value);
+				$char->updateStatus(CharacterStatus::inSettlement, null);
+				$char->updateStatus(CharacterStatus::atSettlement, null);
+				$char->updateStatus(CharacterStatus::nearSettlement, null);
+			}
 		}
 	}
 

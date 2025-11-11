@@ -167,11 +167,12 @@ class Character extends AbstractCharacter {
 		19 => false,
 		20 => false,
 		21 => null,
+		22 => false,
+		23 => null,
 
 		50 => 50,
 		51 => null,
 		52 => null,
-		53 => null,
 		54 => false,
 		55 => false,
 		56 => false,
@@ -555,6 +556,14 @@ class Character extends AbstractCharacter {
 	public function isLooting(): bool {
 		if ($this->hasAction('settlement.loot')) return true;
 		return false;
+	}
+
+	public function findBattleActions(): ArrayCollection {
+		return $this->findActions(['military.battle', 'settlement.attack', 'siege.sortie', 'siege.assault']);
+	}
+
+	public function findBattleCount(): int {
+		return $this->findBattleActions()->count();
 	}
 
 	public function findForcedBattles(): ArrayCollection {

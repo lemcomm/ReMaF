@@ -16,6 +16,7 @@ use App\Entity\Skill;
 use App\Entity\SkillCategory;
 use App\Entity\Soldier;
 use App\Enum\CharacterStatus;
+use App\Service\StatusUpdater;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -112,17 +113,17 @@ class BattleRunner {
 		private EntityManagerInterface	$em,
 		private LoggerInterface 	$logger,
 		private History         	$history,
-		private Geography       	$geo,
-		private CharacterManager	$character_manager,
-		private CommonService   	$common,
-		private Interactions    	$interactions,
-		private Politics        	$politics,
-		private MilitaryManager 	$milman,
-		private HelperService   	$helper,
-		private CombatManager   	$combat,
-		private WarManager      	$warman,
-		private NotificationManager 	$notes,
-		private SkillManager 		$skills,
+		private Geography           $geo,
+		private CharacterManager    $character_manager,
+		private CommonService       $common,
+		private Interactions        $interactions,
+		private Politics            $politics,
+		private MilitaryManager     $milman,
+		private HelperService       $helper,
+		private CombatManager       $combat,
+		private WarManager          $warman,
+		private NotificationManager $notes,
+		private SkillManager        $skills, private readonly StatusUpdater $statusUpdater,
 	) {
 	}
 
@@ -290,6 +291,7 @@ class BattleRunner {
 					);
 					$char->setActiveReport(null); #Unset active report.
 					$char->setBattling(false);
+					$this->statusUpdater->character($char, CharacterStatus::battling, false);
 				}
 				$group->setActiveReport(null);
 			}
@@ -509,6 +511,7 @@ class BattleRunner {
 						$char->setActiveReport($charReport);
 						$group->getActiveReport()->addCharacter($charReport);
 						$char->setBattling(true);
+						$this->statusUpdater->character($char, CharacterStatus::battling, true);
 						if (!$this->regionType) {
 							if ($myRegion = $this->geo->findMyRegion($char)) {
 								$this->regionType = $myRegion->getBiome()->getName(); #We're hijacking this loop to grab the region type for later calculations.
@@ -1714,7 +1717,7 @@ class BattleRunner {
 		foreach ($allNobles as $noble) {
 			$noble->setActiveReport(null); #Unset active report.
 			$noble->setBattling(false);
-			$noble->updateStatus(CharacterStatus::battling, true);
+			$noble->updateStatus(CharacterStatus::battling, false);
 		}
 		foreach ($battle->getGroups() as $group) {
 			$group->setActiveReport(null); #Unset active report.

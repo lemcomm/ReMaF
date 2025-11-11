@@ -26,10 +26,11 @@ enum CharacterStatus: int {
 	case damaging = 19;
 	case prebattle = 20;
 	case prisoner = 21;
+	case siegeLead = 22;
+	case travelling = 23;
 
 	case location = 50; # Pointer value for the below.
 	case inWorld = 51;
-	case travelling = 53;
 	case inSettlement = 54;
 	case inPlace = 55;
 	case nearSettlement = 56;

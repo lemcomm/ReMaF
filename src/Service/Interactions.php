@@ -171,10 +171,10 @@ class Interactions {
 			if ($settlement->getOwner() != $prisoner || $settlement->getSteward() != $prisoner) {
 				$this->history->closeLog($settlement, $prisoner);
 			}
-			$this->status->character($prisoner, CharacterStatus::inSettlement, null);
+			$this->status->character($prisoner, CharacterStatus::atSettlement, $settlement->getName());
 		}
 		// if you're a prisoner yourself, your captor can stay, sorry, you don't get to define his location...
-		$this->status->character($character, CharacterStatus::inSettlement, null);
+		$this->status->character($character, CharacterStatus::atSettlement, $settlement->getName());
 		$this->em->flush();
 
 		return true;

@@ -31,8 +31,8 @@ class WarManager {
 		private History                $history,
 		private GameTimeExtension      $gametime,
 		private LoggerInterface        $logger,
-		private StatusUpdater $statusUpdater,
-		private CommonService $common,
+		private StatusUpdater          $statusUpdater,
+		private CommonService          $common,
 	) {
 	}
 
@@ -642,6 +642,7 @@ class WarManager {
 							$group->setLeader(null);
 							$char->removeLeadingBattlegroup($group);
 						}
+						$this->statusUpdater->character($char, CharacterStatus::sieging, false);
 					}
 				}
 				$this->removeCharacterFromBattlegroup($character, $group, true);
