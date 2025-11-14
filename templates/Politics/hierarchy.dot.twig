@@ -10,9 +10,9 @@ edge [color=black, fontcolor=black, arrowhead="vee"];
 		{% set opacity = "a0" %}
 	{% endif %}
 	{{ char.id }} [label="{{ char.name }}", fillcolor="{% if char.male %}#380e00{{opacity}}{% else %}#8c0005{{opacity}}{% endif %}", url="{{ link(char, true) }}"];
-	{% if char.liege %}
-	{{ char.liege.id }} -> {{ char.id }};
-	{% endif %}
+	{% for each in char.findVassals %}
+		{{ char.id }} -> {{ each.id }}
+	{% endfor %}
 {% endfor %}
 
 }
