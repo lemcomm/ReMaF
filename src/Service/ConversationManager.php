@@ -208,9 +208,6 @@ class ConversationManager {
         public function getAllUnreadMessages(Character $char) {
                 $unread = new ArrayCollection();
                 foreach ($char->getConvPermissions()->filter(function($entry) {return $entry->getActive() == true;}) as $perm) {
-                        if ($perm->getUnread() > 0) {
-                                $perm->setUnread(0);
-                        }
                         $perm->setLastAccess(new DateTime("now"));
                         if ($perm->getUnread() > 0) {
                                 foreach ($perm->getConversation()->getMessages() as $message) {
@@ -218,6 +215,7 @@ class ConversationManager {
                                                 $unread->add($message);
                                         }
                                 }
+				$perm->setUnread(0);
                         }
                 }
 		if ($local = $char->getLocalConversation()) {

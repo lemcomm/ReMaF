@@ -142,7 +142,7 @@ class MilitaryManager {
 		}
 	}
 
-	public function manageUnit($soldiers, $data, ?Settlement $settlement, $canResupply, $canRecruit, $canReassign, $entourage): array {
+	public function manageUnit($soldiers, $data, ?Settlement $settlement, $canResupply, $canRecruit, $canReassign, $entourage, Character $character): array {
 		$success=0; $fail=0; $bury=0; $retrain=0; $assign=0; $disband=0; $assignOver=0; $assignFail=0;
 		$units = [];
 
@@ -180,7 +180,7 @@ class MilitaryManager {
 					break;
 				case 'resupply':
 					if ($canResupply) {
-						$resupply = $this->resupply($soldier, $settlement, $entourage);
+						$resupply = $this->resupply($soldier, $settlement, $entourage, $character);
 						$success += $resupply[1];
 						$fail += $resupply[0];
 					}
@@ -245,12 +245,17 @@ class MilitaryManager {
 		$this->em->flush();
 	}
 
-	public function resupply(Soldier $soldier, ?Settlement $settlement, $equipment_followers): array {
-		$char = $soldier->getUnit()?->getCharacter();
+	public function resupply(Soldier $soldier, ?Settlement $settlement, $equipment_followers, ?Character $character = null): array {
+		if ($character) {
+			$char = $character;
+		} else {
+			$char = $soldier->getUnit()?->getCharacter();
+		}
 		$needed = 0;
 		$located = 0;
 
 		$items = array('Weapon', 'Armour', 'Equipment', 'Mount');
+		$unit = $soldier->getUnit();
 		foreach ($items as $item) {
 			$check = 'getHas'.$item;
 			$trained = 'getTrained'.$item;
@@ -271,9 +276,11 @@ class MilitaryManager {
 					}
 				} else {
 					// resupply from settlement
-					if ($this->actman->acquireItem($settlement, $soldier->$trained(), false, true, $char)) {
-						$soldier->$set($soldier->$trained());
-						$located++;
+					if ($character->getInsideSettlement() === $settlement && (($unit->isLocal() && $unit->getSettlement() === $settlement) || $unit->getCharacter() === $char)) {
+						if ($this->actman->acquireItem($settlement, $soldier->$trained(), false, true, $char)) {
+							$soldier->$set($soldier->$trained());
+							$located++;
+						}
 					} else {
 						// resupply from camp followers
 						if (count($equipment_followers)) {
