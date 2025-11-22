@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\DungeonMonsterType;
-use App\Service\ActionManager;
 use App\Service\AppState;
+use App\Service\CommonService;
 use App\Service\DungeonMaster;
 use App\Service\Geography;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,7 +15,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 use App\Entity\Action;
 
@@ -110,14 +109,15 @@ class DungeonController extends AbstractController {
 	}
 
 	/**
-	 * @param ActionManager $am
-	 * @param Geography $geo
-	 * @param Dungeon $dungeon
+	 * @param CommonService $common
+	 * @param Geography     $geo
+	 * @param Dungeon       $dungeon
+	 *
 	 * @return RedirectResponse|Response
 	 * @throws Exception
 	 */
 	#[Route ('/dungeon/enter/{dungeon}', name:'maf_dungeon_enter', requirements: ['dungeon'=>'\d+'])]
-	public function enterAction(ActionManager $am, Geography $geo, Dungeon $dungeon): RedirectResponse|Response {
+	public function enterAction(CommonService $common, Geography $geo, Dungeon $dungeon): RedirectResponse|Response {
 		$dungeoneer = $this->gateway(false);
 		if (! $dungeoneer instanceof Dungeoneer ) {
 			return $this->redirectToRoute($dungeoneer);
@@ -136,7 +136,7 @@ class DungeonController extends AbstractController {
 					$act->setType('dungeon.explore')->setCharacter($dungeoneer->getCharacter());
 					$act->setBlockTravel(true);
 					$act->setCanCancel(false);
-					$am->queue($act);
+					$common->queueAction($act);
 					$dungeoneer->getCharacter()->setSpecial(true); // turn on the special navigation menu
 					$this->em->flush();
 					return $this->redirectToRoute('maf_dungeon');

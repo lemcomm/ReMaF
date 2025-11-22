@@ -12,7 +12,8 @@ use App\Entity\SkillType;
 use App\Form\ActivitySelectType;
 use App\Form\EquipmentLoadoutType;
 
-use App\Service\ActionManager;
+use App\Service\ActionResolution;
+use App\Service\CommonService;
 use App\Service\Dispatcher\ActivityDispatcher;
 use App\Service\ActivityManager;
 use App\Service\AppState;
@@ -188,7 +189,7 @@ class ActivityController extends AbstractController {
         }
 
 	#[Route ('/activity/train/{skill}', name:'maf_train_skill', requirements:['skill'=>'[A-Za-z_\- ]*'])]
-	public function trainSkillAction(ActionManager $actionman, $skill): RedirectResponse {
+	public function trainSkillAction(CommonService $common, $skill): RedirectResponse {
 		$character = $this->gateway('activityTrainTest', $skill);
 		if (! $character instanceof Character) {
                         return $this->redirectToRoute($character);
@@ -210,7 +211,7 @@ class ActivityController extends AbstractController {
                         $act->setCanCancel(true);
                         $act->setTargetSkill($type);
                         $act->setHourly(false);
-                        $actionman->queue($act); #Includes a flush.
+                        $common->queueAction($act); #Includes a flush.
                         $this->addFlash('notice', $this->trans->trans('train.'.$skill.'.success', array(), 'activity'));
 		} else {
 			$this->addFlash('notice', $this->trans->trans('train.'.$skill.'.notfound', array(), 'activity'));

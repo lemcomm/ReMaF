@@ -14,6 +14,7 @@ use App\Entity\Siege;
 use App\Entity\War;
 use App\Entity\WarTarget;
 
+use App\Enum\CharacterStatus;
 use App\Form\BattleParticipateType;
 use App\Form\DamageFeatureType;
 use App\Form\InteractionType;
@@ -22,13 +23,15 @@ use App\Form\SiegeType;
 use App\Form\SiegeStartType;
 use App\Form\WarType;
 
-use App\Service\ActionManager;
+use App\Service\ActionResolution;
 use App\Service\CharacterManager;
 use App\Service\CommonService;
 use App\Service\Dispatcher\PlaceDispatcher;
 use App\Service\Geography;
 use App\Service\History;
 use App\Service\Dispatcher\WarDispatcher;
+use App\Service\PlaceManager;
+use App\Service\StatusUpdater;
 use App\Service\WarManager;
 
 use App\Twig\GameTimeExtension;
@@ -52,14 +55,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class WarController extends AbstractController {
 	public function __construct(
-		private ActionManager $am,
 		private EntityManagerInterface $em,
-		private Geography $geo,
-		private History $hist,
-		private TranslatorInterface $trans,
-		private WarDispatcher $warDisp,
-		private PlaceDispatcher $placeDisp,
-		private WarManager $wm) {
+		private Geography              $geo,
+		private History                $hist,
+		private TranslatorInterface    $trans,
+		private WarDispatcher          $warDisp,
+		private PlaceDispatcher        $placeDisp,
+		private WarManager             $wm,
+		private StatusUpdater $statusUpdater,
+		private PlaceManager $poi,
+		private CommonService $common
+	) {
 	}
 
 	#[Route('/war/view/{id}', name:'maf_war_view', requirements:['id'=>'\d+'])]
@@ -154,7 +160,7 @@ class WarController extends AbstractController {
 			$act = new Action;
 			$act->setType('settlement.defend')->setCharacter($character)->setTargetSettlement($settlement);
 			$act->setBlockTravel(false);
-			$result = $this->am->queue($act);
+			$result = $this->common->queueAction($act);
 
 			#TODO: Turn this into a flash and redirect.
 
@@ -181,7 +187,7 @@ class WarController extends AbstractController {
 			$act = new Action;
 			$act->setType('place.defend')->setCharacter($character)->setTargetPlace($place);
 			$act->setBlockTravel(false);
-			$result = $this->am->queue($act);
+			$result = $this->common->queueAction($act);
 
 			#TODO: Convert to flash and redirect.
 
@@ -206,7 +212,7 @@ class WarController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 		if ($place) {
-			$nearby = $this->geo->findPlacesInActionRange($character);
+			$nearby = $this->poi->findPlacesInActionRange($character);
 			if ($nearby === null || !in_array($place, $nearby)) {
 				$place = null; # Nice try.
 			}
@@ -418,7 +424,8 @@ class WarController extends AbstractController {
 						->setCanCancel(false)
 						->setBlockTravel(true);
 				}
-				$this->am->queue($act);
+				$this->common->queueAction($act);
+				$this->statusUpdater->character($character, CharacterStatus::sieging, true);
 
 				$character->setTravelLocked(true);
 
@@ -434,7 +441,8 @@ class WarController extends AbstractController {
 							->setStringValue('forced')
 							->setCanCancel(true)
 							->setBlockTravel(true);
-						$this->am->queue($act);
+						$this->common->queueAction($act);
+						$this->statusUpdater->character($defender->getCharacter(), CharacterStatus::sieging, true);
 
 						# notify
 						$this->hist->logEvent(
@@ -459,7 +467,8 @@ class WarController extends AbstractController {
 							->setStringValue('forced')
 							->setCanCancel(true)
 							->setBlockTravel(true);
-						$this->am->queue($act);
+						$this->common->queueAction($act);
+						$this->statusUpdater->character($defender->getCharacter(), CharacterStatus::sieging, true);
 
 						# notify
 						$this->hist->logEvent(
@@ -667,7 +676,8 @@ class WarController extends AbstractController {
 										->setTargetBattlegroup($side)
 										->setCanCancel(false)
 										->setBlockTravel(true);
-									$this->am->queue($act);
+									$this->common->queueAction($act);
+									$this->statusUpdater->character($character, CharacterStatus::sieging, true);
 									$this->addFlash('notice', $trans->trans('military.siege.join.success.'.$data['side'], [], "actions"));
 								}
 								if ($place) {
@@ -719,7 +729,7 @@ class WarController extends AbstractController {
 	}
 
 	#[Route('/war/settlement/loot', name:'maf_war_settlement_loot')]
-	public function lootSettlementAction(CommonService $common, LoggerInterface $logger, Request $request): RedirectResponse|Response {
+	public function lootSettlementAction(CommonService $common, LoggerInterface $logger, WarManager $war, Request $request): RedirectResponse|Response {
 		$character = $this->warDisp->gateway('militaryLootSettlementTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -743,24 +753,7 @@ class WarController extends AbstractController {
 		$form = $this->createForm(LootType::class, null, ['settlement'=>$settlement, 'em'=>$em, 'inside'=>$inside]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-
-			// FIXME: shouldn't militia defend against looting?
-			$my_soldiers = 0;
-			foreach ($character->getUnits() as $unit) {
-				$my_soldiers += $unit->getActiveSoldiers()->count();
-			}
-			$ratio = $my_soldiers / (100 + $settlement->getFullPopulation());
-			if ($ratio > 0.25) { $ratio = 0.25; }
-			if (!$inside) {
-				if ($settlement->isFortified()) {
-					$ratio *= 0.1;
-				} else {
-					$ratio *= 0.25;
-				}
-			}
-
 			$data = $form->getData();
-
 			foreach ($data['method'] as $method) {
 				if (($method=='thralls' || $method=='resources') && !$data['target']) {
 					$form->addError(new FormError("loot.target"));
@@ -793,7 +786,8 @@ class WarController extends AbstractController {
 			$complete = new DateTime("now");
 			$complete->add(new DateInterval("PT".$time."H"));
 			$act->setComplete($complete);
-			$this->am->queue($act);
+			$this->common->queueAction($act);
+			$this->statusUpdater->character($character, CharacterStatus::looting, true);
 
 			if ($inside) {
 				$event = 'event.settlement.loot';
@@ -809,270 +803,7 @@ class WarController extends AbstractController {
 
 			$result = array();
 			foreach ($data['method'] as $method) {
-				switch ($method) {
-					case 'thralls':
-						$mod = 1;
-						$cycle = $common->getCycle();
-						if ($settlement->getAbductionCooldown() && !$inside) {
-							$cooldown = $settlement->getAbductionCooldown() - $cycle;
-							if ($cooldown <= -24) {
-								$mod = 1;
-							} elseif ($cooldown <= -20) {
-								$mod = 0.9;
-							} elseif ($cooldown <= -16) {
-								$mod = 0.75;
-							} elseif ($cooldown <= -12) {
-								$mod = 0.6;
-							} elseif ($cooldown <= -8) {
-								$mod = 0.45;
-							} elseif ($cooldown <= -4) {
-								$mod = 0.3;
-							} elseif ($cooldown <= -2) {
-								$mod = 0.25;
-							} elseif ($cooldown <= -1) {
-								$mod = 0.225;
-							} elseif ($cooldown <= 0) {
-								$mod = 0.2;
-							} elseif ($cooldown <= 6) {
-								$mod = 0.15;
-							} elseif ($cooldown <= 12) {
-								$mod = 0.1;
-							} elseif ($cooldown <= 18) {
-								$mod = 0.05;
-							} else {
-								$mod = 0;
-							}
-						}
-						$max = floor($settlement->getPopulation() * $ratio * 1.5 * $mod);
-						[$taken] = $this->lootvalue($max);
-						if ($taken > 0) {
-							// no loss / inefficiency here
-							$destination->setThralls($destination->getThralls() + $taken);
-							$settlement->setPopulation($settlement->getPopulation() - $taken);
-							# Now to factor in abduction cooldown so the next looting operation to abduct people won't be nearly so successful.
-							# Yes, this is semi-random. It's setup to *always* increase, but the amount can be quite unpredictable.
-							if ($settlement->getAbductionCooldown()) {
-								$cooldown = $settlement->getAbductionCooldown() - $cycle;
-							} else {
-								$cooldown = 0;
-							}
-							if ($cooldown < 0) {
-								$settlement->setAbductionCooldown($cycle);
-							} elseif ($cooldown < 1) {
-								$settlement->setAbductionCooldown($cycle + 1);
-							} elseif ($cooldown <= 2) {
-								$settlement->setAbductionCooldown($cycle + rand(1,2) + rand(2,3));
-							} elseif ($cooldown <= 4) {
-								$settlement->setAbductionCooldown($cycle + rand(3,4) + rand(2,3));
-							} elseif ($cooldown <= 6) {
-								$settlement->setAbductionCooldown($cycle + rand(5,6) + rand(2,4));
-							} elseif ($cooldown <= 8) {
-								$settlement->setAbductionCooldown($cycle + rand(7,8) + rand(2,4));
-							} elseif ($cooldown <= 12) {
-								$settlement->setAbductionCooldown($cycle + rand(9,12) + rand(4,6));
-							} elseif ($cooldown <= 16) {
-								$settlement->setAbductionCooldown($cycle + rand(13,16) + rand(4,6));
-							} elseif ($cooldown <= 20) {
-								$settlement->setAbductionCooldown($cycle + rand(17,20) + rand(4,6));
-							} else {
-								$settlement->setAbductionCooldown($cycle + rand(21,24) + rand(4,6));
-							}
-							$this->hist->logEvent(
-								$destination,
-								'event.settlement.lootgain.thralls',
-								array('%amount%'=>$taken, '%link-character%'=>$character->getId(), '%link-settlement%'=>$settlement->getId()),
-								History::MEDIUM, true, 15
-							);
-							if (rand(0,100) < 20) {
-								$this->hist->logEvent(
-									$settlement,
-									'event.settlement.thrallstaken2',
-									array('%amount%' => $taken, '%link-settlement%'=>$destination->getId()),
-									History::MEDIUM, false, 30
-								);
-							} else {
-								$this->hist->logEvent(
-									$settlement,
-									'event.settlement.thrallstaken',
-									array('%amount%' => $taken),
-									History::MEDIUM, false, 30
-								);
-							}
-						}
-						$result['thralls'] = $taken;
-						break;
-					case 'supply':
-						$food = $em->getRepository(ResourceType::class)->findOneBy(['name'=>"food"]);
-						$local_food_storage = $settlement->findResource($food);
-						$can_take = ceil(20 * $ratio);
-
-						$max_supply = $common->getGlobal('supply.max_value', 800);
-						$max_items = $common->getGlobal('supply.max_items', 15);
-						$max_food = $common->getGlobal('supply.max_food', 50);
-
-						foreach ($character->getAvailableEntourageOfType('follower') as $follower) {
-							if ($follower->getEquipment()) {
-								if ($inside) {
-									$provider = $follower->getEquipment()->getProvider();
-									if ($building = $settlement->getBuildingByType($provider)) {
-										$available = round($building->getResupply() * $ratio);
-										[$taken, $lost] = $this->lootvalue($available);
-										if ($lost > 0) {
-											$building->setResupply($building->getResupply() - $lost);
-										}
-										if ($taken > 0) {
-											if ($follower->getSupply() < $max_supply) {
-												$items = floor($taken / $follower->getEquipment()->getResupplyCost());
-												if ($items > 0) {
-													$follower->setSupply(min($max_supply, min($follower->getEquipment()->getResupplyCost()*$max_items, $follower->getSupply() + $items * $follower->getEquipment()->getResupplyCost() )));
-												}
-												if (!isset($result['supply'][$follower->getEquipment()->getName()])) {
-													$result['supply'][$follower->getEquipment()->getName()] = 0;
-												}
-												$result['supply'][$follower->getEquipment()->getName()]+=$items;
-											}
-										}
-									} // else no such equipment available here
-								} // else we are looting the countryside where we can get only food
-							} else {
-								// supply food
-								// fake additional food stowed away by peasants - there is always some food to be found in a settlement or on its farms
-								if ($inside) {
-									$loot_max = round(min($can_take*5, $local_food_storage->getStorage() + $local_food_storage->getAmount()*0.333));
-								} else {
-									$loot_max = round(min($can_take*5, $local_food_storage->getStorage()*0.5 + $local_food_storage->getAmount()*0.5));
-								}
-								[$taken, $lost] = $this->lootvalue($loot_max);
-								if ($lost > 0) {
-									$local_food_storage->setStorage(max(0,$local_food_storage->getStorage() - $lost));
-								}
-								if ($taken > 0) {
-									if ($follower->getSupply() < $max_food) {
-										$follower->setSupply(min($max_food, max(0,$follower->getSupply()) + $taken));
-										if (!isset($result['supply']['food'])) {
-											$result['supply']['food'] = 0;
-										}
-										$result['supply']['food']++;
-									}
-								}
-							}
-						}
-						break;
-					case 'resources':
-						$result['resources'] = array();
-						$notice_target = false; $notice_victim = false;
-						foreach ($settlement->getResources() as $resource) {
-							$available = round($resource->getStorage() * $ratio);
-							if ($resource->getType()->getName() == 'food') {
-								$can_carry = $my_soldiers * 5;
-							} else {
-								$can_carry = $my_soldiers * 2;
-							}
-							[$taken, $lost] = $this->lootvalue(min($available, $can_carry));
-							if ($lost > 0) {
-								$resource->setStorage($resource->getStorage() - $lost);
-								if (rand(0,100) < $lost && rand(0,100) < 50) {
-									$notice_victim = true;
-								}
-							}
-							if ($taken > 0) {
-								$dres = $destination->findResource($resource->getType());
-								if ($dres) {
-									$dres->setStorage($dres->getStorage() + $taken); // this can bring a settlement temporarily above its max storage value
-									$notice_target = true;
-								}
-								// TODO: we don't have this resource - what to we do? right now, the plunder is simply lost
-							}
-							$result['resources'][$resource->getType()->getName()] = $taken;
-						}
-						if ($notice_target) {
-							$this->hist->logEvent(
-								$destination,
-								'event.settlement.lootgain.resource',
-								array('%link-character%'=>$character->getId(), '%link-settlement%'=>$settlement->getId()),
-								History::MEDIUM, true, 15
-							);
-						}
-						if ($notice_victim) {
-							$this->hist->logEvent(
-								$settlement,
-								'event.settlement.resourcestaken2',
-								array('%link-settlement%'=>$destination->getId()),
-								History::MEDIUM, false, 30
-							);
-						}
-						break;
-					case 'wealth':
-						if ($character === $settlement->getOwner() || $character === $settlement->getSteward()) {
-							// forced tax collection - doesn't depend on soldiers so much
-							if ($ratio >= 0.02) {
-								$mod = 0.3;
-							} else if ($ratio >= 0.01) {
-								$mod = 0.2;
-							} else if ($ratio >= 0.005) {
-								$mod = 0.1;
-							} else {
-								$mod = 0.05;
-							}
-							$steal = rand(ceil($settlement->getGold() * $ratio), ceil($settlement->getGold() * $mod));
-							$drop = $steal + ceil(rand(10,20) * $settlement->getGold() / 100);
-						} else {
-							$steal = rand(0, ceil($settlement->getGold() * $ratio));
-							$drop = ceil(rand(40,60) * $settlement->getGold() / 100);
-						}
-						$steal = ceil($steal * 0.75); // your soldiers will pocket some (and we just want to make it less effective)
-						$result['gold'] = $steal; // send result to page for display
-						$character->setGold($character->getGold() + $steal); //add gold to characters purse
-						$settlement->setGold($settlement->getGold() - $drop); //remove gold from settlement ?Why do we remove a different amount of gold from the settlement?
-						break;
-					case 'burn':
-						$targets = min(5, floor(sqrt($my_soldiers/5)));
-						$buildings = $settlement->getBuildings()->toArray();
-						for ($i=0; $i<$targets; $i++) {
-							$pick = array_rand($buildings);
-							$target = $buildings[$pick];
-							$type = $target->getType()->getName();
-							[, $damage] = $this->lootvalue(round($my_soldiers * 32 / $targets)); #Drop first return -- yes, it looks weird.
-							if (!isset($result['burn'][$type])) {
-								$result['burn'][$type] = 0;
-							}
-							$result['burn'][$type] += $damage;
-							if ($target->isActive()) {
-								// damaged, inoperative now, but keep current workers as repair crew
-								$workers = $target->getEmployees();
-								$target->abandon($damage);
-								$target->setWorkers($workers / $settlement->getPopulation());
-								$this->hist->logEvent(
-									$settlement,
-									'event.settlement.burned',
-									array('%link-buildingtype%'=>$target->getType()->getId()),
-									History::MEDIUM, false, 30
-								);
-							} else {
-								$target->setCondition($target->getCondition() - $damage);
-								if (abs($target->getCondition()) > $target->getType()->getBuildHours()) {
-									// destroyed
-									$this->hist->logEvent(
-										$settlement,
-										'event.settlement.burned2',
-										array('%link-buildingtype%'=>$target->getType()->getId()),
-										History::HIGH, false, 30
-									);
-									$em->remove($target);
-									$settlement->removeBuilding($target);
-								} else {
-									// damaged
-									$this->hist->logEvent(
-										$settlement,
-										'event.settlement.burned',
-										array('%link-buildingtype%'=>$target->getType()->getId()),
-										History::MEDIUM, false, 30
-									);
-								}
-							}
-						}
-						break;
-				}
+				$war->lootSettlement($settlement, $destination, $character, $method, $inside);
 			}
 			$em->flush();
 
@@ -1084,17 +815,6 @@ class WarController extends AbstractController {
 		return $this->render('War/lootSettlement.html.twig', [
 			'form'=>$form->createView(), 'settlement'=>$settlement
 		]);
-	}
-
-	private function lootvalue($max): array {
-		$a = max(rand(0, $max), rand(0, $max));
-		$b = max(rand(0, $max), rand(0, $max));
-
-		if ($a < $b) {
-			return array($a, $b);
-		} else {
-			return array($b, $a);
-		}
 	}
 
 	#[Route('/war/disengage', name:'maf_war_disengage')]
@@ -1190,7 +910,7 @@ class WarController extends AbstractController {
 			$act = new Action;
 			$act->setType('military.evade')->setCharacter($character);
 			$act->setBlockTravel(false);
-			$result = $this->am->queue($act);
+			$result = $this->common->queueAction($act);
 
 			return $this->render('War/evade.html.twig', [
 				'result'=>$result
@@ -1237,7 +957,8 @@ class WarController extends AbstractController {
 				->setBlockTravel(true)
 				->setStringValue($data['mode'])
 				->setTargetListing($data['target']);
-			$result = $this->am->queue($act);
+			$result = $this->common->queueAction($act);
+			$this->statusUpdater->character($character, CharacterStatus::blocking, true);
 
 			return $this->render('War/block.html.twig', [
 				'result'=>$result
@@ -1282,7 +1003,8 @@ class WarController extends AbstractController {
 			$complete = new DateTime("now");
 			$complete->add(new DateInterval("PT".$hours."H"));
 			$act->setComplete($complete);
-			$result = $this->am->queue($act);
+			$result = $this->common->queueAction($act);
+			$this->statusUpdater->character($character, CharacterStatus::damaging, true);
 
 			if ($result['success']) {
 				$settlement = $target->getGeoData()->getSettlement();
@@ -1364,6 +1086,8 @@ class WarController extends AbstractController {
 					} else {
 						$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target']);
 					}
+					$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
+					$this->em->flush();
 					if ($result['outside'] && $character->getInsideSettlement()) {
 						// leave settlement if we attack targets outside
 						$character->setInsideSettlement(null);
@@ -1409,7 +1133,8 @@ class WarController extends AbstractController {
 				->setCanCancel(true)
 				->setHourly(true)
 				->setBlockTravel(false);
-			$success = $this->am->queue($act);
+			$success = $this->common->queueAction($act);
+			$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
 			$target = $data['target'];
 		}
 

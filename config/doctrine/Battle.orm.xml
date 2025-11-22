@@ -5,11 +5,16 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<field name="location" type="point" nullable="true"/>
+		<field name="locationArray" type="array" nullable="true"/>
 		<field name="started" type="datetime"/>
 		<field name="complete" type="datetime"/>
 		<field name="initial_complete" type="datetime"/>
 		<field name="type" type="string" nullable="true"/>
 		<field name="ruleset" type="string" nullable="true"/>
+		<field name="xpMod" type="float" nullable="true"/>
+		<field name="phase" type="smallint" nullable="true"/>
+		<field name="size" type="integer" nullable="true"/>
+		<field name="regionType" type="string" nullable="true"/>
 		<many-to-one field="primary_attacker" target-entity="BattleGroup" inversed-by="attacking_in_battles"/>
 		<many-to-one field="primary_defender" target-entity="BattleGroup" inversed-by="defending_in_battles"/>
 

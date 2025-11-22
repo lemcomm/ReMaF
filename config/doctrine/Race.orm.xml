@@ -30,5 +30,6 @@
 		<field name="toughness" type="integer" nullable="true"/>
 		<field name="baseCombatSkill" type="integer" nullable="true"/>
 		<field name="fearless" type="boolean" nullable="true"/>
+		<field name="raceGroup" type="string" nullable="true"/>
 	</entity>
 </doctrine-mapping>

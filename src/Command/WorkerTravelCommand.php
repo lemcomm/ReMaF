@@ -4,11 +4,13 @@ namespace App\Command;
 
 use App\Entity\Artifact;
 use App\Entity\Ship;
+use App\Enum\CharacterStatus;
 use App\Service\CommonService;
 use App\Service\Geography;
 use App\Service\History;
 
 use App\Service\Interactions;
+use App\Service\StatusUpdater;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -24,13 +26,15 @@ class WorkerTravelCommand extends  Command {
 	private Geography $geo;
 	private History $hist;
 	private Interactions $interactions;
+	private StatusUpdater $status;
 
-	public function __construct(EntityManagerInterface $em, CommonService $common, Geography $geo, History $hist, Interactions $interactions) {
+	public function __construct(EntityManagerInterface $em, CommonService $common, Geography $geo, History $hist, Interactions $interactions, StatusUpdater $status) {
 		$this->em = $em;
 		$this->common = $common;
 		$this->geo = $geo;
 		$this->hist = $hist;
 		$this->interactions = $interactions;
+		$this->status = $status;
 		parent::__construct();
 	}
 
@@ -57,6 +61,7 @@ class WorkerTravelCommand extends  Command {
 		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.travel IS NOT NULL AND c.travel_locked = false')->setMaxresults($batch)->setFirstResult($offset);
 		$i = 0;
 		foreach ($query->toIterable() as $char) {
+			$update = true;
 			if ($char->getInsidePlace()) {
 				if (!$interactions->characterLeavePlace($char)) {
 					continue; #If you can't leave, you can't travel.
@@ -100,6 +105,8 @@ class WorkerTravelCommand extends  Command {
 						$ship->setCycle($cycle);
 						$ship->setWorld($char->getWorld());
 						$this->em->persist($ship);
+						$this->status->character($char, CharacterStatus::atSea, false);
+						$update = false;
 					} else {
 						$history->logEvent(
 							$char,
@@ -119,10 +126,14 @@ class WorkerTravelCommand extends  Command {
 						$interactions->characterEnterSettlement($char, $settlement);
 					}
 					$char->setTravelEnter(false);
+					$update = false;
 				}
-
+				if ($update) {
+					$this->status->character($char, CharacterStatus::travelling, false);
+				}
 			} else {
 				$char->setProgress($progress);
+				$this->status->character($char, CharacterStatus::travelling, 1/$char->getSpeed());
 			}
 			if (!$artifactsNaN) {
 				$artifacts = $this->geo->findNearbyArtifacts($char);

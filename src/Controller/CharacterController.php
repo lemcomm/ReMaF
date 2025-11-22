@@ -16,6 +16,7 @@ use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Entity\Spawn;
 
+use App\Enum\CharacterStatus;
 use App\Form\AssocSelectType;
 use App\Form\CharacterBackgroundType;
 use App\Form\CharacterLoadoutType;
@@ -25,9 +26,9 @@ use App\Form\ChatType;
 use App\Form\EntourageManageType;
 use App\Form\InteractionType;
 
-use App\Service\ActionManager;
 use App\Service\AppState;
 use App\Service\CharacterManager;
+use App\Service\CommonService;
 use App\Service\ConversationManager;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
@@ -37,6 +38,7 @@ use App\Service\History;
 use App\Service\Interactions;
 use App\Service\MilitaryManager;
 use App\Service\PermissionManager;
+use App\Service\StatusUpdater;
 use App\Service\UserManager;
 use DateInterval;
 use DateTime;
@@ -61,15 +63,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CharacterController extends AbstractController {
 	public function __construct(
-		private AppState $appstate,
-		private CharacterManager $charman,
-		private ConversationManager $conv,
-		private Dispatcher $dispatcher,
+		private AppState               $appstate,
+		private CharacterManager       $charman,
+		private ConversationManager    $conv,
+		private Dispatcher             $dispatcher,
 		private EntityManagerInterface $em,
-		private Geography $geo,
-		private History $history,
-		private TranslatorInterface $trans,
-		private UserManager $userman) {
+		private Geography              $geo,
+		private History                $history,
+		private TranslatorInterface    $trans,
+		private UserManager            $userman, private readonly StatusUpdater $statusUpdater) {
 	}
 
 	private function getSpottings(Character $character): array {
@@ -90,7 +92,7 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/', name:'maf_char')]
-	public function indexAction(AppState $appstate): RedirectResponse|Response {
+	public function indexAction(): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -120,7 +122,7 @@ class CharacterController extends AbstractController {
 	}
 
     	#[Route ('/char/summary', name:'maf_char_recent')]
-	public function summaryAction(GameRequestManager $grm, Request $request): RedirectResponse|Response {
+	public function summaryAction(GameRequestManager $grm): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter(true, true, true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -300,7 +302,6 @@ class CharacterController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$now = new DateTime('now');
 		$user = $character->getUser();
 		$em = $this->em;
 		$canSpawn = $this->userman->checkIfUserCanSpawnCharacters($user, true);
@@ -510,24 +511,12 @@ class CharacterController extends AbstractController {
 					return $this->redirectToRoute('maf_chars');
 				}
 			}
-			# new character spawn in.
-			if ($place->getLocation()) {
-				$character->setLocation($place->getLocation());
-				$settlement = null;
-			} elseif ($place->getSettlement()) {
-				$settlement = $place->getSettlement();
-				$character->setLocation($settlement->getGeoMarker()->getLocation());
-				$character->setInsideSettlement($settlement);
-			} else {
-				$region = $place->getMapRegion();
-				$character->setInsideRegion($region);
-			}
+			$this->charman->placeInGame($character, $place);
+			$this->em->flush();
 			if ($character->getRetired()) {
 				$character->setRetired(false);
 				$character->setReturnedOn(new DateTime("now"));
 			}
-			$character->setInsidePlace($place);
-			$character->setWorld($place->getWorld());
 			if ($character->getList() != 1) {
 				# Resets this on formerly retired characters.
 				$character->setList(1);
@@ -536,19 +525,8 @@ class CharacterController extends AbstractController {
 			# $conv should always be a Conversation, while supConv will be if realm is not Ultimate--otherwise null.
 			# Both instances of Converstion.
 
-			$this->history->logEvent(
-				$character,
-				'event.character.start2',
-				array('%link-place%'=>$place->getId()),
-				History::HIGH,	true
-			);
-			$this->history->logEvent(
-				$place,
-				'event.place.start',
-				array('%link-character%'=>$character->getId()),
-				History::MEDIUM, false, 15
-			);
 			$this->history->visitLog($place, $character);
+			$settlement = $character->getInsideSettlement();
 			if ($settlement) {
 				$this->history->logEvent(
 					$settlement,
@@ -750,7 +728,7 @@ class CharacterController extends AbstractController {
 			$svg = stream_get_contents($pipes[1]);
 			fclose($pipes[1]);
 
-			$return_value = proc_close($process);
+			proc_close($process);
 		}
 
 		return $this->render('Account/familytree.html.twig', [
@@ -947,7 +925,7 @@ class CharacterController extends AbstractController {
 		$form->handleRequest($request);
 
 		if ($form->isSubmitted() && $form->isValid()) {
-			$data = $form->getData();
+			$form->getData();
 			$em->flush();
 
 
@@ -1017,7 +995,6 @@ class CharacterController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$fail = false;
-			$id = $character->getId();
 			$data = $form->getData();
 			$em = $this->em;
 			if (!$data['sure']) {
@@ -1143,7 +1120,7 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/escape', name:'maf_char_escape')]
-	public function escapeAction(ActionManager $actman, Request $request): RedirectResponse|Response {
+	public function escapeAction(CommonService $common, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('personalEscapeTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -1169,7 +1146,9 @@ class CharacterController extends AbstractController {
 			$complete->add(new DateInterval("PT".$hours."H"));
 			$act->setComplete($complete);
 			$act->setBlockTravel(false);
-			$actman->queue($act);
+			$common->queueAction($act);
+			$this->statusUpdater->character($character, CharacterStatus::escaping, true);
+			$this->em->flush();
 
 			return $this->render('Character/escape.html.twig', [
 				'queued'=>true,
@@ -1246,7 +1225,7 @@ class CharacterController extends AbstractController {
 			} elseif (array_key_exists('crest', $data)) {
 				$form->addError(new FormError('Requested Crest ID not available for this character.'));
 			} else {
-				$character->setCrest(null);
+				$character->setCrest();
 				$change = true;
 			}
 			if ($change) {
@@ -1409,9 +1388,11 @@ class CharacterController extends AbstractController {
 			if ($can_travel) {
 				if ($this->geo->updateTravelSpeed($character)) {
 					$turns = 1/$character->getSpeed();
+					$this->statusUpdater->character($character, CharacterStatus::travelling, $turns);
 					if ($character->getTravelAtSea()) {
 						$character->setTravelDisembark($disembark);
 						$character->setTravelEnter(false); // we never directly enter a settlement - TODO: why not?
+						$this->statusUpdater->character($character, CharacterStatus::atSea, true);
 					}
 				} else {
 					// restore old travel data
@@ -1426,7 +1407,7 @@ class CharacterController extends AbstractController {
 					$character->setProgress($old['progress']);
 					$character->setSpeed($old['speed']);
 				} else {
-					$character->setTravel(null);
+					$character->setTravel();
 					$character->setProgress(0);
 					$character->setSpeed(0);
 				}
@@ -1451,11 +1432,12 @@ class CharacterController extends AbstractController {
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$character->setTravel(null)
+		$character->setTravel()
 			->setProgress(0)
 			->setSpeed(0)
 			->setTravelEnter(false)
 			->setTravelDisembark(false);
+		$this->statusUpdater->character($character, CharacterStatus::travelling, false);
 		$this->em->flush();
 		return new Response();
 	}
@@ -1473,7 +1455,6 @@ class CharacterController extends AbstractController {
 			throw $this->createNotFoundException('error.notfound.battlereport');
 		}
 
-		$check = false;
 		if (!$sec->isGranted('ROLE_ADMIN')) {
 			$check = $report->checkForObserver($character);
 			if (!$check) {

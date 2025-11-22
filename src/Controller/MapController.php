@@ -12,6 +12,7 @@ use App\Service\CommonService;
 use App\Service\Geography;
 use App\Form\SetMarkerType;
 
+use App\Service\PlaceManager;
 use Doctrine\ORM\EntityManagerInterface;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use LongitudeOne\Spatial\PHP\Types\Geometry\LineString;
@@ -31,7 +32,8 @@ class MapController extends AbstractController {
 		private CommonService $common,
 		private EntityManagerInterface $em,
 		private Geography $geo,
-		private TranslatorInterface $trans) {
+		private TranslatorInterface $trans,
+		private PlaceManager $poi,) {
 	}
 	
 	#[Route ('/map', name:'maf_map')]
@@ -542,7 +544,7 @@ class MapController extends AbstractController {
 			}
 
 			// mix in places
-			$results = $this->geo->findPlacesInSpotRange($character);
+			$results = $this->poi->findPlacesInSpotRange($character);
 			if ($results != null) {
 				foreach ($results as $p) {
 					if ($p->getLocation()) {

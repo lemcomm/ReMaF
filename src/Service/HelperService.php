@@ -2,9 +2,12 @@
 
 namespace App\Service;
 
+use App\Entity\AbstractReport;
 use App\Entity\Activity;
+use App\Entity\ActivityReport;
 use App\Entity\ActivityReportObserver;
 use App\Entity\Battle;
+use App\Entity\BattleReport;
 use App\Entity\BattleReportObserver;
 use App\Entity\Character;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -35,21 +38,25 @@ class HelperService {
 		return true;
 	}
 
-	public function addObservers($thing, $report): void {
+	public function addObservers(Battle|Activity $thing, AbstractReport $report, $resuming = false): void {
 		if ($thing instanceof Battle) {
 			$type = 'battle';
-		} elseif ($thing instanceof Activity) {
+		} else {
 			$type = 'act';
 		}
-		$added = new ArrayCollection;
 		$someone = null;
 		if ($type === 'battle') {
+			if ($resuming) {
+				$added = $report->getObservers();
+			} else {
+				$added = new ArrayCollection;
+			}
 			foreach ($thing->getGroups() as $group) {
 				foreach ($group->getCharacters() as $char) {
 					if (!$someone) {
 						$someone = $char;
 					}
-					if (!$added->contains($char)) {
+					if ((!$resuming && !$added->contains($char)) || ($resuming && !$report->checkForObserver($char))) {
 						$obs = new BattleReportObserver;
 						$this->em->persist($obs);
 						$obs->setReport($report);
@@ -58,7 +65,8 @@ class HelperService {
 					}
 				}
 			}
-		} elseif ($type === 'act') {
+		} else {
+			$added = new ArrayCollection;
 			foreach ($thing->getParticipants() as $part) {
 				$char = $part->getCharacter();
 				if (!$someone) {
@@ -83,7 +91,7 @@ class HelperService {
 
 		foreach ($nearby as $each) {
 			$char = $each['character'];
-			if (!$added->contains($char)) {
+			if ((!$resuming && !$added->contains($char)) || ($resuming && !$report->checkForObserver($char))) {
 				$obs = $this->common->newObserver($type);
 				$this->em->persist($obs);
 				$obs->setReport($report);
@@ -93,7 +101,7 @@ class HelperService {
 		}
 		if ($thing->getPlace()) {
 			foreach ($thing->getPlace()->getCharactersPresent() as $char) {
-				if (!$added->contains($char)) {
+				if ((!$resuming && !$added->contains($char)) || ($resuming && !$report->checkForObserver($char))) {
 					$obs = $this->common->newObserver($type);
 					$this->em->persist($obs);
 					$obs->setReport($report);
@@ -104,7 +112,7 @@ class HelperService {
 		}
 		if ($thing->getSettlement()) {
 			foreach ($thing->getSettlement()->getCharactersPresent() as $char) {
-				if (!$added->contains($char)) {
+				if ((!$resuming && !$added->contains($char)) || ($resuming && !$report->checkForObserver($char))) {
 					$obs = $this->common->newObserver($type);
 					$this->em->persist($obs);
 					$obs->setReport($report);

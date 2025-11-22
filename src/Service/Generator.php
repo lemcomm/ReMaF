@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class Generator {
 	public function __construct(
 		private EntityManagerInterface $em,
-		private ActionManager $actman) {
+		private MilitaryManager $milman) {
 	}
 
 	public function randomName(?Settlement $home=null, $gender=false): string {
@@ -58,18 +58,18 @@ class Generator {
 		$soldier->setExperience(0)->setTraining(0);
 		$soldier->setRace($race);
 		if ($home) {
-			if ($this->actman->acquireItem($home, $weapon, true, false)
-				&& $this->actman->acquireItem($home, $armour, true, false)
-				&& $this->actman->acquireItem($home, $equipment, true, false)
-				&& $this->actman->acquireItem($home, $mount, true, false)) {
+			if ($this->milman->acquireEquipment($home, $weapon, true, false)
+				&& $this->milman->acquireEquipment($home, $armour, true, false)
+				&& $this->milman->acquireEquipment($home, $equipment, true, false)
+				&& $this->milman->acquireEquipment($home, $mount, true, false)) {
 
-				$this->actman->acquireItem($home, $weapon, true);
+				$this->milman->acquireEquipment($home, $weapon, true);
 				$soldier->setWeapon($weapon);
-				$this->actman->acquireItem($home, $armour, true);
+				$this->milman->acquireEquipment($home, $armour, true);
 				$soldier->setArmour($armour);
-				$this->actman->acquireItem($home, $equipment, true);
+				$this->milman->acquireEquipment($home, $equipment, true);
 				$soldier->setEquipment($equipment);
-				$this->actman->acquireItem($home, $mount, true);
+				$this->milman->acquireEquipment($home, $mount, true);
 				$soldier->setMount($mount);
 			} else {
 				return null;
@@ -96,6 +96,7 @@ class Generator {
 		$soldier->setHome($home)->setDistanceHome(0);
 		$soldier->setUnit($unit);
 		$soldier->setAlive(true);
+		$soldier->getTranslatableType(true);
 
 		$this->em->persist($soldier);
 		return $soldier;

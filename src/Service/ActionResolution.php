@@ -4,8 +4,13 @@ namespace App\Service;
 
 use App\Entity\Action;
 
+use App\Entity\Character;
+use App\Entity\EquipmentType;
 use App\Entity\EventMetadata;
+use App\Entity\Settlement;
+use App\Enum\CharacterStatus;
 use App\Service\Dispatcher\Dispatcher;
+use App\Service\StatusUpdater;
 use DateInterval;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -17,16 +22,17 @@ class ActionResolution {
 
 	public function __construct(
 		private EntityManagerInterface $em,
-		private CommonService $common,
-		private History $history,
-		private Dispatcher $dispatcher,
-		private Geography $geography,
-		private Interactions $interactions,
-		private MilitaryManager $milman,
-		private Politics $politics,
-		private PermissionManager $permissions,
-		private WarManager $warman,
-		private ActionManager $actman
+		private CommonService          $common,
+		private History                $history,
+		private Dispatcher             $dispatcher,
+		private Geography              $geography,
+		private Interactions           $interactions,
+		private MilitaryManager        $milman,
+		private Politics               $politics,
+		private PermissionManager      $permissions,
+		private WarManager             $warman,
+		private StatusUpdater 		$statusUpdater,
+		private SkillManager            $skills,
 	) {
 		$this->characters = new ArrayCollection();
 	}
@@ -64,6 +70,24 @@ class ActionResolution {
 			return $this->$up($action);
 		}
 		return false;
+	}
+
+	public function queue(Action $action): array {
+		$action->setStarted(new DateTime("now"));
+
+		// store in database and queue
+		$max=0;
+		foreach ($action->getCharacter()->getActions() as $act) {
+			if ($act->getPriority()>$max) {
+				$max=$act->getPriority();
+			}
+		}
+		$action->setPriority($max+1);
+		$this->em->persist($action);
+
+		$this->em->flush();
+
+		return array('success'=>true);
 	}
 
 
@@ -196,6 +220,13 @@ class ActionResolution {
 			if ($action->getCharacter()->getInsideSettlement() !== $settlement) {
 				$this->interactions->characterEnterSettlement($action->getCharacter(), $settlement);
 			}
+			$this->statusUpdater->character($action->getCharacter(), CharacterStatus::annexing, false);
+			foreach ($action->getSupportingActions() as $support) {
+				$this->statusUpdater->character($support->getCharacter(), CharacterStatus::supporting, false);
+			}
+			foreach ($action->getOpposingActions() as $oppose) {
+				$this->statusUpdater->character($oppose->getCharacter(), CharacterStatus::opposing, false);
+			}
 		}
 		$this->em->remove($action);
 	}
@@ -209,12 +240,13 @@ class ActionResolution {
 
 	private function settlement_loot(Action $action): void {
 		// just remove this, damage and all has already been applied, we just needed the action to stop travel
+		$this->statusUpdater->character($action->getCharacter(), CharacterStatus::looting, false);
 		$this->em->remove($action);
 	}
 
 	private function update_military_block(Action $action): void {
 		if ($action->getCharacter()->isInBattle()) {
-			return; // to avoid double battls
+			return; // to avoid double battles
 		}
 		// check if there are targets nearby we want to engage
 		$maxdistance = 2 * $this->geography->calculateInteractionDistance($action->getCharacter());
@@ -228,6 +260,7 @@ class ActionResolution {
 			}
 		}
 		if ($victims) {
+			$this->statusUpdater->character($action->getCharacter(), CharacterStatus::blocking, false);
 			$this->warman->createBattle($action->getCharacter(), null, null, $victims);
 			$this->em->remove($action);
 		}
@@ -236,6 +269,7 @@ class ActionResolution {
 
 	private function military_damage(Action $action): void {
 		// just remove this, damage and all has already been applied, we just needed the action to stop travel
+		$this->statusUpdater->character($action->getCharacter(), CharacterStatus::damaging, false);
 		$this->em->remove($action);
 	}
 
@@ -252,37 +286,6 @@ class ActionResolution {
 			array(),
 			History::LOW, false, 15
 		);
-		$this->em->remove($action);
-		$this->em->flush();
-	}
-
-	// TODO: this is not actually being used anymore - do we still want to keep it?
-	private function settlement_enter(Action $action): void {
-		$settlement = $action->getTargetSettlement();
-
-		if (!$settlement) {
-			$this->log(0, 'invalid action '.$action->getId());
-			// TODO: clean it up, but during alpha we want it to hang around for debug purposes
-			return;
-		}
-
-		if ($this->interactions->characterEnterSettlement($action->getCharacter(), $settlement)) {
-			// entered the place
-			$this->history->logEvent(
-				$action->getCharacter(),
-				'resolution.enter.success',
-				array('%settlement%'=>$settlement),
-				History::LOW, false, 20
-			);
-		} else {
-			// we are not allowed to enter
-			$this->history->logEvent(
-				$action->getCharacter(),
-				'resolution.enter.success',
-				array('%settlement%'=>$settlement),
-				History::LOW, false, 20
-			);
-		}
 		$this->em->remove($action);
 		$this->em->flush();
 	}
@@ -321,6 +324,7 @@ class ActionResolution {
 				array('%new%'=>$newname),
 				History::LOW, false, 20
 			);
+			$this->statusUpdater->character($action->getCharacter(), CharacterStatus::renaming, false);
 
 		}
 		$this->em->remove($action);
@@ -366,6 +370,7 @@ class ActionResolution {
 			if (strpos($action->getStringValue(), 'clear_realm') !== false && $settlement->getRealm()) {
 				$this->politics->changeSettlementRealm($settlement, null, 'grant');
 			}
+			$this->statusUpdater->character($action->getCharacter(), CharacterStatus::granting, false);
 		}
 		$this->em->remove($action);
 		$this->em->flush();
@@ -393,6 +398,7 @@ class ActionResolution {
 			);
 		} else {
 			$this->politics->changeSettlementOccupier($to, $settlement, $settlement->getOccupier());
+			$this->statusUpdater->character($action->getCharacter(), CharacterStatus::newOccupant, false);
 		}
 		$this->em->remove($action);
 		$this->em->flush();
@@ -556,7 +562,7 @@ class ActionResolution {
 					$complete = new DateTime('now');
 					$complete->add(new DateInterval('PT60M'));
 					$act->setComplete($complete);
-					$this->actman->queue($act);
+					$this->common->queueAction($act);
 				}
 				$this->warman->removeCharacterFromBattlegroup($char, $action->getTargetBattlegroup());
 				$this->em->remove($action);
@@ -616,6 +622,7 @@ class ActionResolution {
 	}
 
 	private function personal_prisonassign(Action $action): void {
+		$this->statusUpdater->character($action->getCharacter(), CharacterStatus::assigning, false);
 		// just remove, this is just a blocking action
 		$this->em->remove($action);
 	}
@@ -649,6 +656,8 @@ class ActionResolution {
 					array('%link-character%'=>$char->getId()),
 					History::MEDIUM, false, 30
 				);
+				$this->statusUpdater->character($char, CharacterStatus::prisoner, null);
+				$this->statusUpdater->character($char, CharacterStatus::escaping, false);
 			} else {
 				// failed
 				$this->common->addAchievement($char, 'failedescapes', 1);
@@ -725,12 +734,13 @@ class ActionResolution {
 				History::LOW, false, 30
 			);
 			$this->em->remove($action);
+			$this->statusUpdater->character($action->getCharacter(), CharacterStatus::researching, false);
 			$this->em->flush();
 		}
 	}
 
 	private function update_train_skill(Action $action): void {
-		$this->common->trainSkill($action->getcharacter(), $action->getTargetSkill(), 0, 1);
+		$this->skills->trainSkill($action->getcharacter(), $action->getTargetSkill(), 0, 1);
 	}
 
 	public function log($level, $text): void {

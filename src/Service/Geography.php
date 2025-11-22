@@ -29,7 +29,6 @@ class Geography {
 
 	private int $embark_distance = 200;
 	private int $road_buffer = 200;
-	private int $place_separation = 500;
 
 	private int $base_speed = 12000; // 12km a day base speed
 	private int $spotBase = -1;
@@ -49,8 +48,7 @@ class Geography {
 
 	public function __construct(
 		private CommonService $common,
-		private EntityManagerInterface $em,
-		private PermissionManager $pm) {
+		private EntityManagerInterface $em) {
 	}
 
 	private function getSpotBase() {
@@ -314,7 +312,10 @@ class Geography {
 	}
 
 	public function findNearestSettlement(Character $character) {
-		return $this->common->findNearestSettlement($character);
+		$query = $this->em->createQuery('SELECT s, ST_Distance(g.center, c.location) AS distance FROM App\Entity\Settlement s JOIN s.geo_data g, App\Entity\Character c WHERE c = :char ORDER BY distance ASC');
+		$query->setParameter('char', $character);
+		$query->setMaxResults(1);
+		return $query->getOneOrNullResult();
 	}
 
 	public function findNearestPlace(Character $character) {
@@ -479,65 +480,6 @@ class Geography {
 		}
 		$query = $qb->getQuery();
 		return $query->getResult();
-	}
-
-	public function findPlacesNearMe(Character $character, $maxdistance) {
-		if ($settlement = $character->getInsideSettlement()) {
-			$results = [];
-			if ($settlement->getPlaces()) {
-				foreach ($settlement->getPlaces() as $place) {
-					if (!$place->getDestroyed()) {
-						$results[] = $place;
-					}
-				}
-			} else {
-				return NULL;
-			}
-		} else {
-			$query = $this->em->createQuery('SELECT p as place, ST_Distance(me.location, p.location) AS distance, ST_Azimuth(me.location, p.location) AS direction FROM App\Entity\Character me, App\Entity\Place p WHERE me.id = :me AND ST_Distance(me.location, p.location) < :maxdistance AND (p.destroyed IS NULL or p.destroyed = false)');
-			$query->setParameters(['me'=>$character, 'maxdistance'=>$maxdistance]);
-			$results = $query->getResult();
-
-			/* So Doctrine loses its mind if we try to select an object and get zero, but you'll notice every single other one of these works without a try/catch, likely because we're not selecting an object but specific data. If *that* returns 0 rows, well, it don't care I guess.
-			try {
-				$results = $query->getResult();
-			} catch (\Doctrine\DBAL\DBALException $e) {
-				$results = NULL;
-				# No results :(
-			}
-			*/
-		}
-		if ($results) {
-			$places = array();
-			foreach ($results as $result) {
-				if($result->getOwner() == $character OR $this->pm->checkPlacePermission($result, $character, 'see') OR $result->getVisible()) {
-					$places[] = $result;
-				}
-			}
-			return $places;
-		} else {
-			return NULL;
-		}
-	}
-
-	public function findPlacesInSpotRange(Character $character) {
-		return $this->findPlacesNearMe($character, $this->calculateSpottingDistance($character));
-	}
-
-	public function findPlacesInActionRange(Character $character) {
-		return $this->findPlacesNearMe($character, $this->calculateInteractionDistance($character));
-	}
-
-	public function checkPlacePlacement(Character $character) {
-		if ($this->findPlacesNearMe($character, $this->place_separation)) {
-			return false; #Too close!
-		}
-		$settlement = $this->findNearestSettlement($character)[0];
-		$distance = $this->calculateDistancetoSettlement($character, $settlement);
-		if ($distance < $this->place_separation) {
-			return false; #Too close!
-		}
-		return true; #Good to go!
 	}
 
 	public function findBattlesNearMe(Character $character, $maxdistance) {

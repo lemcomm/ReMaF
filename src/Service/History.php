@@ -9,6 +9,8 @@ use App\Entity\EventLog;
 use App\Entity\EventMetadata;
 use App\Entity\Soldier;
 use App\Entity\SoldierLog;
+use App\Enum\CharacterStatus;
+use App\Service\StatusUpdater;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -23,9 +25,10 @@ class History {
 	const int NOTIFY = 20;
 
 	public function __construct(
-		private EntityManagerInterface $em,
-		private CommonService $common,
-		private NotificationManager $noteman) {
+		private EntityManagerInterface	$em,
+		private CommonService		$common,
+		private NotificationManager	$noteman,
+		private StatusUpdater 		$statusUpdater) {
 	}
 
 
@@ -49,6 +52,16 @@ class History {
 		// notify player by mail of important events
 		if ($priority >= History::NOTIFY) {
 			$this->noteman->spoolEvent($event);
+		}
+
+		foreach ($log->getMetadatas() as $meta) {
+			/** @var EventMetadata $meta */
+			if (!$meta->getAccessUntil()) {
+				$reader = $meta->getReader();
+				if ($reader && !$meta->getAccessUntil()) {
+					$this->statusUpdater->addCharCounter($reader, CharacterStatus::events);
+				}
+			}
 		}
 
 		return $event;

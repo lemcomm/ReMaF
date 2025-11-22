@@ -84,6 +84,8 @@ class Soldier extends NPC {
 		'Unbreakable' => false									// Berserk & Heroism
 	];
 	private array $stagedEvents = [];
+	private ?string $typeString = null;
+	private ?string $tranString = null;
 
 	/**
 	 * Constructor
@@ -192,67 +194,70 @@ class Soldier extends NPC {
 		return $this;
 	}
 
-	public function getTranslatableType(): string {
+	public function getTranslatableType($recalc = false): string {
+		if (!$recalc && $this->tranString) return $this->tranString;
 		if ($this->race) {
 			if ($this->race->getUseEquipment()) {
-				return $this->race->getName().".".$this->getType();
+				$this->tranString = $this->race->getName().".".$this->getType();
 			} else {
-				return "monster.".$this->race->getName();
+				$this->tranString = $this->race->getName().".monster";
 			}
 		} else {
-			return $this->getType();
+			$this->tranString = $this->getType();
 		}
+		return $this->tranString;
 	}
 
-	public function getType(): string {
-		if ($this->isNoble) return 'noble';
-		if ($this->race->getName() === 'magitek') {
+	public function getType($recalc = false): string {
+		if (!$recalc && $this->typeString) return $this->typeString;
+		if ($this->isNoble) {
+			$this->typeString = 'leader';
+		} elseif ($this->race->getName() === 'magitek') {
 			if ($this->weapon && $this->weapon->getRanged() > 0) {
-				return 'watcher';
-			}
-			return 'mauler';
-		}
-		if (!$this->weapon && !$this->armour) return 'rabble';
-
-		$def = 0;
-		if ($this->armour) {
-			$def += $this->armour->getDefense();
-		}
-		if ($this->equipment) {
-			$def += $this->equipment->getDefense();
-		}
-
-		if ($this->mount) {
-			if ($this->weapon && $this->weapon->getRanged() > 0) {
-				return 'mounted archer';
+				$this->typeString = 'watcher';
 			} else {
-				if ($def >= 90) {
-					return 'heavy cavalry';
+				$this->typeString = 'mauler';
+			}
+		} elseif (!$this->weapon && !$this->armour) {
+			$this->typeString = 'rabble';
+		} else {
+			$def = 0;
+			if ($this->armour) {
+				$def += $this->armour->getDefense();
+			}
+			if ($this->equipment) {
+				$def += $this->equipment->getDefense();
+			}
+			if ($this->mount) {
+				if ($this->weapon && $this->weapon->getRanged() > 0) {
+					$this->typeString = 'mounted archer';
 				} else {
-					return 'light cavalry';
+					if ($def >= 90) {
+						$this->typeString = 'heavy cavalry';
+					} else {
+						$this->typeString = 'light cavalry';
+					}
 				}
-			}
-		}
-		if ($this->weapon && $this->weapon->getRanged() > 0) {
-			if ($def >= 50) {
-				return 'armoured archer';
+			} elseif ($this->weapon && $this->weapon->getRanged() > 0) {
+				if ($def >= 50) {
+					$this->typeString = 'armoured archer';
+				} else {
+					$this->typeString = 'archer';
+				}
+			} elseif ($this->armour && $this->armour->getDefense() >= 70) {
+				$this->typeString = 'heavy infantry';
+			} elseif ($def >= 60) {
+				$this->typeString = 'medium infantry';
 			} else {
-				return 'archer';
+				$this->typeString = 'light infantry';
 			}
 		}
-		if ($this->armour && $this->armour->getDefense() >= 70) {
-			return 'heavy infantry';
-		}
-
-		if ($def >= 60) {
-			return 'medium infantry';
-		}
-		return 'light infantry';
+		return $this->typeString;
 	}
 
 	public function isActive($include_routed = false, $militia = false, $legacyMode = false, $ignoreWounds = false): bool {
 		if (!$this->isAlive() || $this->getTrainingRequired() > 0 || $this->getTravelDays() > 0) return false;
-		if ($this->getType() == 'noble') {
+		if ($this->isNoble()) {
 			if ($include_routed) {
 				return $this->getCharacter()->isActive(true);
 			}
@@ -260,7 +265,7 @@ class Soldier extends NPC {
 				return false;
 			}
 		}
-		if ($this->getType() == 'noble' && $include_routed) {
+		if ($this->isNoble() && $include_routed) {
 			# nobles have their own active check, but FOs withdraw sometimes, so if they're routed they aren't active.
 			return $this->getCharacter()->isActive(true, $legacyMode);
 		}

@@ -7,9 +7,9 @@ use App\Entity\Place;
 use App\Service\AppState;
 use App\Service\CommonService;
 use App\Service\Geography;
-use App\Service\Interactions;
 use App\Service\MilitaryManager;
 use App\Service\PermissionManager;
+use App\Service\PlaceManager;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -21,10 +21,10 @@ class PlaceDispatcher extends WarDispatcher {
 		protected PermissionManager $pm,
 		protected Geography $geo,
 		protected MilitaryManager $milman,
-		protected Interactions $interactions,
-		protected EntityManagerInterface $em
+		protected EntityManagerInterface $em,
+		protected PlaceManager $poi
 	) {
-		parent::__construct($appstate, $common, $pm, $geo, $milman, $interactions, $em);
+		parent::__construct($appstate, $common, $pm, $geo, $milman, $em, $poi);
 	}
 
 	/* ========== Place Dispatchers ========= */
@@ -369,7 +369,7 @@ class PlaceDispatcher extends WarDispatcher {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"place.enter.name", "description"=>"unavailable.npc");
 		}
-		$nearby = $this->geo->findPlacesInActionRange($this->getCharacter());
+		$nearby = $this->poi->findPlacesInActionRange($this->getCharacter());
 		if ($nearby && !in_array($place, $nearby)) {
 			return array("name"=>"place.enter.name", "description"=>"unavailable.noplace");
 		}

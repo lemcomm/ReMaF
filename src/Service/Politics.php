@@ -139,24 +139,11 @@ class Politics {
 				}
 			}
 		}
-		if ($character->getLiege()) {
-			$character->setLiege();
-		}
-		if ($character->getRealm()) {
-			$character->setRealm();
-		}
-		if ($character->getLiegeLand()) {
-			$character->setLiegeLand();
-		}
-		if ($character->getLiegePlace()) {
-			$character->setLiegePlace();
-		}
-		if ($character->getLiegePosition()) {
-			$character->setLiegePosition();
-		}
+		$this->updateAllegiance($character, null, null, null, null);
 	}
 
 	public function disown(Character $character): true {
+		$this->updateAllegiance($character, null, null, null, null);
 		if ($character->getLiege()) {
 			$this->history->logEvent(
 				$character,
@@ -170,7 +157,6 @@ class Politics {
 				array('%link-character%'=>$character->getId()),
 				History::MEDIUM, true
 			);
-			$character->setLiege();
 			return true;
 		}
 		if ($character->getLiegeLand()) {
@@ -186,7 +172,6 @@ class Politics {
 				array('%link-character%'=>$character->getId()),
 				History::MEDIUM, true
 			);
-			$character->setLiegeLand();
 			return true;
 		}
 		if ($character->getLiegePlace()) {
@@ -202,7 +187,6 @@ class Politics {
 				array('%link-character%'=>$character->getId()),
 				History::MEDIUM, true
 			);
-			$character->setLiegePlace();
 			return true;
 		}
 		if ($character->getLiegePosition()) {
@@ -220,7 +204,6 @@ class Politics {
 				History::MEDIUM, true
 			);
 			*/
-			$character->setLiegePosition();
 			return true;
 		}
 		if ($character->getRealm()) {
@@ -236,7 +219,6 @@ class Politics {
 				array('%link-character%'=>$character->getId()),
 				History::LOW, true
 			);
-			$character->setRealm();
 			return true;
 		}
 		return true;
@@ -1141,5 +1123,13 @@ class Politics {
 			}
 		}
 		return $wars;
+	}
+
+	public function updateAllegiance(Character $character, ?Realm $realm, ?Place $place, ?Settlement $settlement, ?RealmPosition $position, ?Character $liege = null): void {
+		$character->setRealm($realm);
+		$character->setLiegePlace($place);
+		$character->setLiegeLand($settlement);
+		$character->setLiegePosition($position);
+		$character->setLiege($liege);
 	}
 }

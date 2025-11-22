@@ -9,7 +9,7 @@ use App\Entity\Realm;
 use App\Entity\Settlement;
 use App\Entity\Spawn;
 use App\Service\DescriptionManager;
-use App\Service\History;
+use App\Service\PlaceManager;
 use App\Service\RealmManager;
 use App\Service\UserManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,7 +21,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
 class InitSpawnCommand extends  Command {
-	public function __construct(private EntityManagerInterface $em, private RealmManager $rm, private History $hist, private DescriptionManager $dm, private UserManager $um) {
+	public function __construct(
+		private EntityManagerInterface $em,
+		private RealmManager $rm,
+		private DescriptionManager $dm,
+		private UserManager $um,
+		private PlaceManager $poi,
+	) {
 		parent::__construct();
 	}
 	protected function configure(): void {
@@ -96,7 +102,11 @@ class InitSpawnCommand extends  Command {
 		}
 		# Force spawn the character.
 		# Yes, this means they don't arrive at a Place of Interest, but it looks less weird this way.
-		$char->setLocation($settlement->getGeoMarker()->getLocation());
+		if ($settlement->getGeoData()) {
+			$char->setLocation($settlement->getGeoMarker()?->getLocation());
+		} else {
+			$char->setInsideRegion($settlement->getMapRegion());
+		}
 		$char->setInsideSettlement($settlement)->setRetired(false)->setAlive(true);
 
 		# I don't know why you'd have a character without a user, but a user isn't *strictly* necessary...
@@ -116,40 +126,16 @@ class InitSpawnCommand extends  Command {
 
 		# Setup initial place of interest to spawn at.
 		#TODO: This code, along with that in PlaceController::newAction should be combined in a service.
-		$place = new Place();
-		$em->persist($place);
-		$place->setName($placeName);
-		$place->setType($placeType);
-		$place->setFormalName($placeName);
-		$place->setShortDescription('A place of new beginnings.');
-		$place->setCreator($char);
-		$place->setRealm($realm);
-		$place->setDestroyed(false);
-		$place->setSettlement($settlement);
-		$place->setGeoData($settlement->getGeoData());
-		$place->setVisible($placeType->getVisible());
-		if ($placeType->getName() !== 'capital') {
-			$place->setOwner($char);
-		}
-		if ($placeType->getName() !== 'capital' && $placeType->getName() !== 'embassy') {
-			$place->setActive(true);
-		}
-		$this->hist->logEvent(
-			$place,
-			'event.place.formalized',
-			array('%link-settlement%'=>$settlement->getId(), '%link-character%'=>$char->getId()),
-			History::HIGH, true
+		$place = $this->poi->create(
+			$placeName,
+			$placeName,
+			'A place of new beginnings.',
+			'A place of new beginnings in an untapped world.',
+			$placeType,
+			$char,
+			$settlement,
+			$realm
 		);
-		if ($placeType->getVisible()) {
-			$this->hist->logEvent(
-				$settlement,
-				'event.settlement.newplace',
-				array('%link-place%'=>$place->getId(), '%link-character%'=>$char->getId()),
-				History::MEDIUM,
-				true
-			);
-		}
-		$this->dm->newDescription($place, 'A place of new beginnings in an untapped world.', $char);
 		$em->flush();
 
 		# Setup spawn requirements.

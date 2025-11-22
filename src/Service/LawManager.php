@@ -195,6 +195,7 @@ class LawManager {
 			'realmPlaceMembership',
 			'realmFaith',
 			'realmVotingAge',
+			'freeform'
 		];
 		if (in_array($type, $simpleLaws)) {
 			$old->setInvalidatedBy($law);

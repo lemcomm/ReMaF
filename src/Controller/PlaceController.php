@@ -5,12 +5,10 @@ namespace App\Controller;
 use App\Entity\Action;
 use App\Entity\Association;
 use App\Entity\Character;
-use App\Entity\FeatureType;
-use App\Entity\GeoData;
 use App\Entity\Permission;
 use App\Entity\Place;
-use App\Entity\GeoFeature;
 use App\Entity\Spawn;
+use App\Enum\CharacterStatus;
 use App\Form\AreYouSureType;
 use App\Form\AssocSelectType;
 use App\Form\DescriptionNewType;
@@ -19,9 +17,9 @@ use App\Form\PlacePermissionsSetType;
 use App\Form\PlaceManageType;
 use App\Form\PlaceNewType;
 use App\Form\RealmSelectType;
-use App\Service\ActionManager;
 use App\Service\AppState;
 use App\Service\AssociationManager;
+use App\Service\CommonService;
 use App\Service\DescriptionManager;
 use App\Service\Dispatcher\PlaceDispatcher;
 use App\Service\Economy;
@@ -29,7 +27,9 @@ use App\Service\Geography;
 use App\Service\History;
 use App\Service\Interactions;
 use App\Service\PermissionManager;
+use App\Service\PlaceManager;
 use App\Service\Politics;
+use App\Service\StatusUpdater;
 use App\Service\WarManager;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -45,11 +45,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PlaceController extends AbstractController {
 	public function __construct(
-		private AppState $app,
-		private PlaceDispatcher $dispatcher,
+		private AppState               $app,
+		private PlaceDispatcher        $dispatcher,
 		private EntityManagerInterface $em,
-		private Interactions $int,
-		private TranslatorInterface $trans) {
+		private Interactions           $int,
+		private TranslatorInterface    $trans,
+		private StatusUpdater $statusUpdater,
+		private PlaceManager $poi,
+	) {
 	}
 	
 	#[Route ('/place/{id}', name:'maf_place', requirements:['id'=>'\d+'])]
@@ -84,7 +87,7 @@ class PlaceController extends AbstractController {
 			$militia = null;
 		}
 
-		if ($character && $character->getInsidePlace() == $place) {
+		if ($character && $character->getInsidePlace() === $place) {
 			$inside = true;
 		} else {
 			$inside = false;
@@ -111,12 +114,12 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/actionable', name:'maf_place_actionable')]
-	public function actionableAction(Geography $geo): RedirectResponse|Response {
+	public function actionableAction(): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('placeListTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
-		$places = $geo->findPlacesInActionRange($character);
+		$places = $this->poi->findPlacesInActionRange($character);
 
 		$coll = new ArrayCollection($places);
 		$iterator = $coll->getIterator();
@@ -241,7 +244,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/new', name:'maf_place_new')]
-	public function newAction(DescriptionManager $desc, Economy $econ, Geography $geo, History $hist, PermissionManager $pm, Request $request): RedirectResponse|Response {
+	public function newAction(Economy $econ, Geography $geo, History $hist, PermissionManager $pm, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('placeCreateTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -258,7 +261,7 @@ class PlaceController extends AbstractController {
 		} elseif ($region = $geo->findMyRegion($character)) {
 			$settlement = $region->getSettlement();
 			$canPlace = $pm->checkSettlementPermission($settlement, $character, 'placeoutside');
-			$notTooClose = $geo->checkPlacePlacement($character); #Too close? Returns false. Too close is under 500 meteres to nearest place or settlement.
+			$notTooClose = $this->poi->checkPlacePlacement($character); #Too close? Returns false. Too close is under 500 meteres to nearest place or settlement.
 		} else {
 			$settlement = false;
 		}
@@ -364,10 +367,9 @@ class PlaceController extends AbstractController {
 		$form = $this->createForm(PlaceNewType::class, null, ['types'=>$query->getResult(), 'realms' => $character->findRealms()]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$em = $this->em;
 			$data = $form->getData();
 			$fail = $this->checkPlaceNames($form, $data['name'], $data['formal_name']);
-			if (!$fail && $geo->checkPlacePlacement($character)) {
+			if (!$fail && $this->poi->checkPlacePlacement($character)) {
 				$fail = TRUE; #You shouldn't even have access but players will be players, best check anyways.
 				$this->addFlash('error', $this->trans->trans('unavailable.placestooclose', [], 'messages'));
 			}
@@ -385,53 +387,17 @@ class PlaceController extends AbstractController {
 				}
 			}
 			if (!$fail) {
-				$place = new Place();
-				$this->em->persist($place);
-				$place->setName($data['name']);
-				$place->setFormalName($data['formal_name']);
-				$place->setShortDescription($data['short_description']);
-				$place->setCreator($character);
-				$place->setType($data['type']);
-				$place->setRealm($form->get('realm')->getData());
-				$place->setDestroyed(false);
-				$place->setWorld($character->getWorld());
-				if ($where = $character->getInsideSettlement()) {
-					$place->setSettlement($character->getInsideSettlement());
-					if ($where->getGeoData()) {
-						$place->setGeoData($where->getGeoData());
-					} else {
-						$place->setMapRegion($where->getMapRegion());
-					}
-				} else {
-					$region = $geo->findMyRegion($character);
-					if ($region instanceof GeoData) {
-						$loc = $character->getLocation();
-						$feat = new GeoFeature;
-						$feat->setLocation($loc);
-						$feat->setGeoData($region);
-						$feat->setName($data['name']);
-						$feat->setActive(true);
-						$feat->setWorkers(0);
-						$feat->setCondition(0);
-						$feat->setWorld($character->getWorld());
-						$feat->setType($em->getRepository(FeatureType::class)->findOneBy(['name'=>'place']));
-						$em->persist($feat);
-						$em->flush(); #We need the above to set the below and do relations.
-						$place->setGeoMarker($feat);
-						$place->setLocation($loc);
-					} else {
-						$place->setMapRegion($region);
-					}
-				}
-				$place->setVisible($data['type']->getVisible());
-				if ($data['type'] != 'embassy' && $data['type'] != 'capital') {
-					$place->setActive(true);
-				} else {
-					$place->setActive(false);
-				}
-				if ($data['type'] != 'capital') {
-					$place->setOwner($character);
-				}
+				$where = $character->getInsideSettlement()?:$geo->findMyRegion($character);
+				$place = $this->poi->create(
+					$data['name'],
+					$data['formal_name'],
+					$data['short_description'],
+					$data['description'],
+					$data['type'],
+					$character,
+					$where,
+					$form->get('realm')->getData()
+				);
 				$this->em->flush(); # We can't create history for something that doesn't exist yet.
 				$hist->logEvent(
 					$place,
@@ -448,7 +414,6 @@ class PlaceController extends AbstractController {
 						true
 					);
 				}
-				$desc->newDescription($place, $data['description'], $character);
 				$this->em->flush();
 				$this->addFlash('notice', $this->trans->trans('new.success', ["%name%"=>$place->getName()], 'places'));
 				return $this->redirectToRoute('maf_place_actionable');
@@ -609,7 +574,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/changeoccupant', name:'maf_place_occupant', requirements:['id'=>'\d+'])]
-	public function changeOccupantAction(ActionManager $am, Geography $geo, Place $id, Request $request): RedirectResponse|Response {
+	public function changeOccupantAction(CommonService $common, Geography $geo, Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 		$character = $this->dispatcher->gateway('placeChangeOccupantTest', false, true, false, $place);
 		if (! $character instanceof Character) {
@@ -633,7 +598,8 @@ class PlaceController extends AbstractController {
 				$act->setBlockTravel(true);
 				$complete = new DateTime("+1 hour");
 				$act->setComplete($complete);
-				$am->queue($act);
+				$common->queueAction($act);
+				$this->statusUpdater->character($character, CharacterStatus::newOccupant, true);
 				$this->addFlash('notice', $this->trans->trans('event.settlement.occupant.start', ["%time%"=>$complete->format('Y-M-d H:i:s')], 'communication'));
 				return $this->redirectToRoute('maf_actions');
 			}
@@ -772,7 +738,7 @@ class PlaceController extends AbstractController {
                         $place->setDestroyed(true);
 			if ($spawn = $place->getSpawn()) {
 				$em->remove($spawn);
-				$place->setSpawn(null);
+				$place->setSpawn();
 			}
 			$em->flush();
 			if ($siege = $place->getSiege()) {
