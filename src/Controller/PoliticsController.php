@@ -132,17 +132,17 @@ class PoliticsController extends AbstractController {
 	private function addToHierarchy(Character $character): void {
 		if (!isset($this->hierarchy[$character->getId()])) {
 			$this->hierarchy[$character->getId()] = $character;
-			if ($liege = $character->findLiege()) {
-				if (!($liege instanceof Character)) {
-					foreach ($liege as $one) {
-						$this->addToHierarchy($one);
-					}
-				} else {
+			$lieges = $character->findLieges();
+			if (!$lieges->isEmpty()) {
+				foreach ($character->findLieges() as $liege) {
 					$this->addToHierarchy($liege);
 				}
 			}
-			foreach ($character->findVassals() as $vassal) {
-				$this->addToHierarchy($vassal);
+			$vassals = $character->findVassals();
+			if (!$vassals->isEmpty()) {
+				foreach ($character->findVassals() as $vassal) {
+					$this->addToHierarchy($vassal);
+				}
 			}
 		}
 	}

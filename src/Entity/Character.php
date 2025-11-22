@@ -1168,6 +1168,16 @@ class Character extends AbstractCharacter {
 		return null;
 	}
 
+	public function findLieges() {
+		$lieges = $this->findLiege();
+		if ($lieges && !$lieges instanceof Collection) {
+			$lieges = new ArrayCollection([$lieges]);
+		} else {
+			$lieges = new ArrayCollection();
+		}
+		return $lieges;
+	}
+
 	public function findControlledSettlements(): ArrayCollection {
 		$all = new ArrayCollection;
 		foreach ($this->getOwnedSettlements() as $each) {

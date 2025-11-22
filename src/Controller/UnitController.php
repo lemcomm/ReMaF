@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Character;
+use App\Entity\Entourage;
 use App\Entity\EquipmentType;
 use App\Entity\Race;
 use App\Entity\Resupply;
@@ -305,7 +306,6 @@ class UnitController extends AbstractController {
                 $canRecruit=false;
                 $canReassign=false;
                 $hasUnitsPerm=false;
-		$entourage=null;
 
 		if ($settlement) {
 			# If we can manage units, we can reassign and resupply. Build the list.
@@ -333,6 +333,7 @@ class UnitController extends AbstractController {
 		}
 		$entourage = [];
 		foreach ($character->getEntourage() as $each) {
+			/** @var Entourage $each */
 			if ($each->getEquipment()) {
 				/** @var EquipmentType $equip */
 				$equip = $each->getEquipment();
@@ -340,8 +341,9 @@ class UnitController extends AbstractController {
 				if (!isset($resupply[$item])) {
 					$resupply[$item] = array('item'=>$equip, 'resupply'=>0);
 				}
-				if ($equip->getResupplyCost() >= $each->getSupply()) {
-					$resupply[$item]['resupply'] += $each->getSupply();$entourage[] = $each;
+				if ($equip->getResupplyCost() <= $each->getSupply()) {
+					$resupply[$item]['resupply'] += $each->getSupply();
+					$entourage[] = $each;
 					if (!$canResupply) {
 						$canResupply = true;
 					}
@@ -373,12 +375,11 @@ class UnitController extends AbstractController {
 			'hasUnitPerm'=>$hasUnitsPerm,
 			'me'=>$character,
 		]);
-		echo 'hello?';
 
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
-			$results = $this->mm->manageUnit($unit->getSoldiers(), $data, $settlement, $canResupply, $canRecruit, $canReassign, $entourage);
+			$results = $this->mm->manageUnit($unit->getSoldiers(), $data, $settlement, $canResupply, $canRecruit, $canReassign, $entourage, $character);
 			foreach ($results as $name=>$val) {
 				if ($val > 0) {
 					$this->addFlash('notice', $this->trans->trans('recruit.manage.action.'.$name, ['%val%'=>$val], 'actions'));

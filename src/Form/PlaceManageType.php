@@ -151,10 +151,10 @@ class PlaceManageType extends AbstractType {
 				]);
 			}
 		} else {
-			if ($me->getOwner()) {
+			if ($me->isOwner($char)) {
 				$builder->add('realm', EntityType::class, [
 					'required'=>false,
-					'choices'=> $me->getOwner()->findRealms(),
+					'choices'=> $char->findRealms(),
 					'class'=>Realm::class,
 					'choice_label' => 'name',
 					'placeholder'=>'realm.empty',
