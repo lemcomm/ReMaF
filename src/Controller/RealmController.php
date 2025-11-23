@@ -10,6 +10,7 @@ use App\Entity\Election;
 use App\Entity\RealmRelation;
 use App\Entity\Spawn;
 use App\Entity\Vote;
+use App\Form\AreYouSureType;
 use App\Form\AssocSelectType;
 use App\Form\ElectionType;
 use App\Form\InteractionType;
@@ -95,6 +96,7 @@ class RealmController extends AbstractController {
 		$territory = $realm->findTerritory();
 		$population = 0;
 		$restorable = FALSE;
+		$disownable = FALSE;
 		foreach ($territory as $settlement) {
 			$population += $settlement->getPopulation() + $settlement->getThralls();
 		}
@@ -131,9 +133,11 @@ class RealmController extends AbstractController {
 			$diplomacy[$index][$side] = $relation->getStatus();
 		}
 		 foreach ($superrulers as $superruler) {
-			if ($superruler == $character) {
+			if ($superruler === $character) {
 				if (!$realm->getActive()) {
 					$restorable = TRUE;
+				} else {
+					$disownable = TRUE;
 				}
 			}
 		}
@@ -148,7 +152,8 @@ class RealmController extends AbstractController {
 			'area' =>		$this->geo->calculateRealmArea($realm),
 			'nobles' =>		$realm->findMembers()->count(),
 			'diplomacy' =>	$diplomacy,
-			'restorable' => $restorable
+			'restorable' => $restorable,
+			'disownable' => $disownable,
 		]);
 	}
 
@@ -983,6 +988,51 @@ class RealmController extends AbstractController {
 		return $this->redirectToRoute('maf_realm', ["id"=>$realm->getId()]);
 	}
 
+	#[Route('/realm/{realm}/disown', name:'maf_realm_disown', requirements:['id'=>'\d+'])]
+	public function disownAction(Request $request, Realm $realm): RedirectResponse|Response {
+		$char = $this->gateway($realm, 'diplomacyDisownTest');
+		if (!($char instanceof Character)) {
+			return $this->redirectToRoute($char);
+		}
+
+		$myRealm = $realm->getSuperior();
+
+		$form = $this->createForm(AreYouSureType::class);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$myRealm->getInferiors()->removeElement($realm);
+			$realm->setSuperior();
+			$this->hist->logEvent(
+				$realm,
+				'event.realm.disowned',
+				["%link-realm%"=>$myRealm->getId()],
+				History::ULTRA, true
+			);
+			$this->hist->logEvent(
+				$myRealm,
+				'event.realm.disown',
+				["%link-realm%"=>$realm->getId()],
+				History::MEDIUM, true
+			);
+			$this->addFlash('notice', $this->trans->trans(
+				'diplomacy.disown.success', array(
+					'%realm%'=>$realm->getName(), '%type%'=>$this->trans->trans(
+						'realm.designation.'.$realm->getDesignation()->getName(), [], 'politics'
+					)
+				), 'politics'
+			));
+			$this->em->flush();
+			return $this->redirectToRoute('maf_realm', ["id"=>$realm->getId()]);
+		}
+
+		return $this->render('Realm/disown.html.twig', [
+			'realm' => $realm,
+			'parent' => $myRealm,
+			'form' => $form->createView()
+		]);
+
+	}
+
 	#[Route('/realm/{realm}/break', name:'maf_realm_break', requirements:['realm'=>'\d+'])]
 	public function breakAction(Realm $realm, Request $request): RedirectResponse|Response {
 		$character = $this->gateway($realm, 'diplomacyBreakHierarchyTest');
@@ -1000,12 +1050,13 @@ class RealmController extends AbstractController {
 				$realm,
 				'event.realm.left',
 				array('%link-realm%'=>$parent->getId()),
-				History::HIGH
+				History::HIGH, true
 			);
 			$this->hist->logEvent(
 				$parent,
 				'event.realm.wasleft',
-				array('%link-realm%'=>$realm->getId())
+				array('%link-realm%'=>$realm->getId()),
+				History::MEDIUM, true
 			);
 
 			// TODO: messaging everyone who needs to know

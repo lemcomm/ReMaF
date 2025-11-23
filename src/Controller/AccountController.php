@@ -8,6 +8,8 @@ use App\Entity\EventMetadata;
 use App\Entity\Race;
 use App\Entity\User;
 
+use App\Enum\CharacterStatus;
+use App\Enum\RaceName;
 use App\Form\CharacterCreationType;
 use App\Form\ListSelectType;
 use App\Form\UserSettingsType;
@@ -108,86 +110,17 @@ class AccountController extends AbstractController {
 
 		$characters = array();
 		foreach ($user->getCharacters() as $character) {
-			//building our list of character statuses --Andrew
-			$annexing = false;
-			$supporting = false;
-			$opposing = false;
-			$looting = false;
-			$blocking = false;
-			$granting = false;
-			$renaming = false;
-			$reclaiming = false;
-			$preBattle = false;
-			$siege = false;
 			$alive = $character->getAlive();
-			if ($alive && $character->getLocation()) {
-				$nearest = $common->findNearestSettlement($character);
-				$settlement=array_shift($nearest);
-				$at_settlement = ($nearest['distance'] < $geo->calculateActionDistance($settlement));
-				$location = $settlement->getName();
-			} else {
-				$location = false;
-				$at_settlement = false;
-			}
-			if ($character->getList()<100) {
-				$unread = $character->countNewMessages();
-				$events = $character->countNewEvents();
-			} else {
-				// dead characters don't have events or messages...
-				$unread = 0;
-				$events = 0;
-			}
 			if ($character->getBattling() && $character->getBattleGroups()->isEmpty()) {
 				# NOTE: Because sometimes, battling isn't reset after a battle. May be related to entity locking.
 				$character->setBattling(false);
 				$em->flush();
 			}
 
-			// This adds in functionality for detecting character actions on this page. --Andrew
-			if ($alive && $character->getActions()) {
-				foreach ($character->getActions() as $actions) {
-					switch($actions->getType()) {
-						case 'settlement.take':
-							$annexing = true;
-							break;
-						case 'support':
-							$supporting = true;
-							break;
-						case 'oppose':
-							$opposing = true;
-							break;
-						case 'settlement.loot':
-							$looting = true;
-							break;
-						case 'military.block':
-							$blocking = true;
-							break;
-						case 'settlement.grant':
-							$granting = true;
-							break;
-						case 'settlement.rename':
-							$renaming = true;
-							break;
-						case 'military.reclaim':
-							$reclaiming = true;
-							break;
-					}
-				}
-			}
 			if ($alive && !is_null($character->getRetiredOn()) && $character->getRetiredOn()->diff(new DateTime("now"))->days > 7) {
 				$unretirable = true;
 			} else {
 				$unretirable = false;
-			}
-			if ($alive && !$character->getBattleGroups()->isEmpty()) {
-				foreach ($character->getBattleGroups() as $group) {
-					if ($group->getBattle()) {
-						$preBattle = true;
-					}
-					if ($group->getSiege()) {
-						$siege = true;
-					}
-				}
 			}
 
 			$data = array(
@@ -195,30 +128,14 @@ class AccountController extends AbstractController {
 				'name' => $character->getName(),
 				'list' => $character->getList(),
 				'alive' => $character->getAlive(),
-				'battling' => $character->getBattling(),
+				'location' => $character->getLocation(),
 				'retired' => $character->getRetired(),
 				'unretirable' => $unretirable,
+				'status' => $character->getStatus(),
 				'npc' => $character->isNPC(),
 				'slumbering' => $character->getSlumbering(),
-				'prisoner' => $character->getPrisonerOf(),
 				'log' => $character->getLog(),
-				'location' => $location,
-				'at_settlement' => $at_settlement,
-				'at_sea' => (bool)$character->getTravelAtSea(),
-				'travel' => (bool)$character->getTravel(),
-				'prebattle' => $preBattle,
-				'sieging' => $siege,
-				'annexing' => $annexing,
-				'supporting' => $supporting,
-				'opposing' => $opposing,
-				'looting' => $looting,
-				'blocking' => $blocking,
-				'granting' => $granting,
-				'renaming' => $renaming,
-				'reclaiming' => $reclaiming,
-				'unread' => $unread,
 				'requests' => count($grm->findAllManageableRequests($character)),
-				'events' => $events
 			);
 
 			if (!$character->isNPC()) {
@@ -416,7 +333,7 @@ class AccountController extends AbstractController {
 			}
 
 			if ($works) {
-				$race = $em->getRepository(Race::class)->findOneBy(array('name'=>'first one'));
+				$race = $em->getRepository(Race::class)->findOneBy(array('name'=>RaceName::firstOne->value));
 				$character = $charMan->create($user, $data['name'], $data['gender'], !$data['dead'], $race, $data['father'], $data['mother'], $data['partner']);
 
 				if (!$data['dead']) {

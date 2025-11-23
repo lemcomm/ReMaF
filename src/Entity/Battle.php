@@ -31,6 +31,11 @@ class Battle {
 	private ?BattleReport $report = null;
 	private ?MapRegion $mapRegion = null;
 	private ?World $world = null;
+	private ?float $xpMod = null;
+	private ?array $locationArray = null;
+	private ?int $size = null;
+	private ?int $phase = null;
+	private ?string $regionType = null;
 
 	/**
 	 * Constructor
@@ -484,6 +489,51 @@ class Battle {
 
 	public function setRuleset(?string $ruleset): static {
 		$this->ruleset = $ruleset;
+		return $this;
+	}
+
+	public function getXpMod(): ?float {
+		return $this->xpMod;
+	}
+
+	public function setXpMod(?float $xpMod): static {
+		$this->xpMod = $xpMod;
+		return $this;
+	}
+
+	public function getLocationArray(): ?array {
+		return $this->locationArray;
+	}
+
+	public function setLocationArray(?array $locationArray): static {
+		$this->locationArray = $locationArray;
+		return $this;
+	}
+
+	public function getSize(): ?int {
+		return $this->size;
+	}
+
+	public function setSize(?int $size): static {
+		$this->size = $size;
+		return $this;
+	}
+
+	public function getPhase(): ?int {
+		return $this->phase;
+	}
+
+	public function setPhase(?int $phase): static {
+		$this->phase = $phase;
+		return $this;
+	}
+
+	public function getRegionType(): ?string {
+		return $this->regionType;
+	}
+
+	public function setRegionType(?string $regionType): static {
+		$this->regionType = $regionType;
 		return $this;
 	}
 }

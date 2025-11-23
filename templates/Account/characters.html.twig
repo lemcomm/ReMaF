@@ -2,8 +2,9 @@
 
 {# This macro builds the table rows for each character on the list. If you want to change the rows, change the logic in the table.
 Table headers are handled as translation strings from the character.list database entry. #}
-{% macro characterrow(character, locked, canSpawn) %}
+{% macro characterrow(character, locked, canSpawn, charStatus) %}
 <tr class="characterrow">
+	{% set status = character.status %}
 	{% if character.alive and not character.npc and character.location and not character.retired %}
 		<td class="editable edit-list" data-id="{{ character.id }}" data-name="{{ character.name }}" data-list="{{ character.list }}"><img src="{{ asset('images/nametag.svg') }}" alt="tag" title="{{ 'account.list'|trans }}"/></td>
 	{% else %}
@@ -14,7 +15,7 @@ Table headers are handled as translation strings from the character.list databas
 		<td colspan="6">
 			<img src="{{ asset('images/lock.svg') }}" alt="{{ 'locked'|trans }}" title="{{ 'locked'|trans }}" height="20px" />
 		</td>
-	{% elseif character.battling %}
+	{% elseif character.status[charStatus.battling.value] %}}
 		<td align="center" colspan="6">
 			<i>{{ 'battling'|trans }}</i><
 		</td>
@@ -41,57 +42,65 @@ Table headers are handled as translation strings from the character.list databas
 		<td>
 			{% if character.slumbering %}
 				<img src="{{ asset('images/zzz.png') }}" alt="{{ 'inactive'|trans }}" title="{{ 'inactive'|trans }}" height="16px" />
-			{% elseif character.prisoner %}
-				<img src="{{ asset('images/nicubunu_chain.svg') }}" alt="{{ 'prisonerof'|trans({"%captor%":character.prisoner.name}) }}" title="{{ 'prisonerof'|trans({"%captor%":character.prisoner.name}) }}" height="16px" />
+			{% elseif status[charStatus.prisoner.value] %}
+				<img src="{{ asset('images/nicubunu_chain.svg') }}" alt="{{ 'prisonerof'|trans({"%captor%":status[charStatus.prisoner.value]}) }}" title="{{ 'prisonerof'|trans({"%captor%":status[charStatus.prisoner.value]}) }}" height="16px" />
 			{% endif %}
 		</td>
 		<td>
-			{% if character.location %}
-				{% if character.at_settlement %}
-					{{ character.location }}
-				{% elseif character.at_sea %}
+			{% set locationVal = status[charStatus.location.value] %}
+			{% if locationVal > 50 %}
+				{% if locationVal == charStatus.atSettlement.value %}
+					{{ 'settlement.at'|trans({'%name%':status[charStatus.atSettlement.value]}) }}
+				{% elseif locationVal == charStatus.inSettlement.value %}
+					{{ 'settlement.in'|trans({'%name%':status[charStatus.inSettlement.value]}) }}
+				{% elseif locationVal == charStatus.atSea.value %}
 					{{ 'atsea'|trans }}
 				{% else %}
-					{{ 'settlement.area'|trans({'%name%':character.location}) }}
+					{{ 'settlement.area'|trans({'%name%':status[charStatus.nearSettlement.value]}) }}
 				{% endif %}
 			{% else %}
 				-
 			{% endif %}
+			<!-- LC: {{ locationVal }}-->
 		</td>
 		<td>
-			{% if character.prebattle %}
+			{% set currently = character.status[charStatus.currently.value] %}
+			{% if currently == charStatus.prebattle.value %}
 				{{ 'charstatus.prebattle'|trans }}
-			{% elseif character.sieging %}
+			{% elseif currently == charStatus.sieging.value %}
 				{{ 'charstatus.sieging'|trans }}
-			{% elseif character.annexing %}
+			{% elseif currently == charStatus.siegeLead.value %}
+				{{ 'charstatus.siegeLead'|trans }}
+			{% elseif currently == charStatus.annexing.value %}
 				{{ 'charstatus.annexing'|trans }}
-			{% elseif character.supporting %}
+			{% elseif currently == charStatus.supporting.value %}
 				{{ 'charstatus.supporting'|trans }}
-			{% elseif character.opposing %}
+			{% elseif currently == charStatus.opposing.value %}
 				{{ 'charstatus.opposing'|trans }}
-			{% elseif character.looting %}
+			{% elseif currently == charStatus.looting.value %}
 				{{ 'charstatus.looting'|trans }}
-			{% elseif character.blocking %}
+			{% elseif currently == charStatus.blocking.value %}
 				{{ 'charstatus.blocking'|trans }}
-			{% elseif character.granting %}
+			{% elseif currently == charStatus.granting.value %}
 				{{ 'charstatus.granting'|trans }}
-			{% elseif character.renaming %}
+			{% elseif currently == charStatus.renaming.value %}
 				{{ 'charstatus.renaming'|trans }}
-			{% elseif character.reclaiming %}
+			{% elseif currently == charStatus.reclaiming.value %}
 				{{ 'charstatus.reclaiming'|trans }}
-			{% else %}{% if character.travel %}
-					{# So, this nested if is done so that if nothing else, this field ends up blank. --Andrew #}
-					{{ 'charstatus.travelling'|trans }}
-				{% endif %}
+			{% elseif currently == charStatus.newOccupant.value %}
+				{{ 'charstatus.newOccupant'|trans }}
+			{% elseif currently == charStatus.travelling.value %}
+				{{ 'charstatus.travelling'|trans({'%turn%':status[charStatus.travelling.value]|round(1, 'ceil')}) }}
 			{% endif %}
+			<!-- CC: {{ currently }}-->
 		</td>
 		<td align="center">
-			{% if character.unread > 0 %}{{ "newmessages"|trans({'%count%':character.unread, "%number%":character.unread}) }}{% endif %}
-			{% if character.unread > 0 and character.requests > 0 %} | {% endif %}
-			{% if character.requests > 0 %}{{ "requests"|trans({'%count%':character.requests, "%number%":character.requests}) }}{% endif %}
+			{% if character.status[charStatus.messages.value] > 0 %}{{ "newmessages"|trans({'%count%':character.status[charStatus.messages.value], "%number%":character.status[charStatus.messages.value]}) }}{% endif %}
+			{% if character.status[charStatus.messages.value] > 0 and character.status[charStatus.requests.value] > 0 %} | {% endif %}
+			{% if character.status[charStatus.requests.value] > 0 %}{{ "requests"|trans({'%count%':character.status[charStatus.requests.value], "%number%":character.status[charStatus.requests.value]}) }}{% endif %}
 		</td>
 		<td align="right">
-			{% if character.events > 0 %}{{ "newevents"|trans({'%count%':character.events, "%number%":character.events}) }}{% endif %}
+			{% if character.status[charStatus.events.value] > 0 %}{{ "newevents"|trans({'%count%':character.status[charStatus.events.value], "%number%":character.status[charStatus.events.value]}) }}{% endif %}
 		</td>
 		<td>
 			<a href="{{ path('maf_play', {'id': character.id, 'logic': 'play'}) }}">{{ 'account.play'|trans }}</a>
@@ -216,7 +225,8 @@ Table headers are handled as translation strings from the character.list databas
 			</tr>
 			{% set current_list = character.list %}
 		{% endif %}
-		{{ macros.characterrow(character, locked, canSpawn) }}
+		{% set charStatus = enum('App\\Enum\\CharacterStatus') %}
+		{{ macros.characterrow(character, locked, canSpawn, charStatus) }}
 	{% endfor %}
 	</table>
 {% endif %}

@@ -42,7 +42,9 @@ class Economy {
 		private EntityManagerInterface $em,
 		private Geography $geo,
 		private History $history,
-		private LoggerInterface $logger) {
+		private LoggerInterface $logger,
+		private WarManager $war,
+	) {
 	}
 
 	public function getResources(): array {
@@ -420,6 +422,32 @@ class Economy {
 		return $supply_data;
 	}
 
+	public function freeThralls(Settlement $settlement) {
+		$thralls = $settlement->getThralls();
+		$rand = mt_rand(1, 50)/10;
+		$free = max(1, floor($thralls*$rand));
+		$settlement->setPopulation($settlement->getPopulation()+$free);
+		$settlement->setThralls($thralls-$free);
+		$this->history->logEvent(
+			$settlement,
+			$free>1?'event.settlement.thralls.free2':'event.settlement.thralls.free',
+			array('%amount%'=>$free),
+			History::LOW, false, 30
+		);
+	}
+
+	public function addThralls(Settlement $settlement) {
+		$militia = $settlement->countDefenders(true);
+		if ($militia * 10 > $settlement->getThralls()) {
+			$amount = $this->war->lootSettlement($settlement, $settlement, null, 'thralls', true)['thralls'];
+			$this->history->logEvent(
+				$settlement,
+				$amount>1?'event.settlement.thralls.add2':'event.settlement.thralls.add',
+				array('%amount%'=>$amount),
+				History::LOW, false, 30
+			);
+		}
+	}
 
 	public function FoodSupply(Settlement $settlement, $shortage) {
 		$real_shortage = $shortage;
@@ -650,13 +678,7 @@ class Economy {
 		if ($baseresource<=0) return 0;
 
 		// stationed militia contributes 50% to the local economy
-/*
-	this old code is more transparent, but takes a lot longer
-		$militia_bonus = round($settlement->getMilitia()->count() / 2);
-*/
-		$query = $this->em->createQuery('SELECT count(s) FROM App\Entity\Soldier s JOIN s.base b WHERE b = :here AND s.training_required <= 0');
-		$query->setParameter('here', $settlement);
-		$militia_bonus = $query->getSingleScalarResult() * 0.5;
+		$militia_bonus = $settlement->countDefenders(true) * 0.5;
 		$workforce = $settlement->getAvailableWorkforce() + $militia_bonus;
 		if ($workforce <= 0) {
 			return 0;
@@ -730,12 +752,9 @@ class Economy {
 
 	public function ResourceDemand(Settlement $settlement, ResourceType $resource, $split_results=false, $regenerate=false) {
 		// this is the population used for all resources except food, which has its own calculation
-		$militia = $settlement->countDefenders();
 		$population = $settlement->getPopulation() + $settlement->getThralls()/2;
-
 		$buildings_operation = $this->ResourceForBuildingOperation($settlement, $resource);
 		$buildings_construction = $this->ResourceForBuildingConstruction($settlement, $resource);
-
 		switch (strtolower($resource->getName())) {
 			case 'food':
 				$foodLimit = $settlement->getFoodProvisionLimit();

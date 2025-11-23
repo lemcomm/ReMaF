@@ -21,6 +21,7 @@ use App\Service\CommonService;
 use App\Service\Geography;
 use App\Service\Interactions;
 use App\Service\PermissionManager;
+use App\Service\PlaceManager;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,9 +49,10 @@ class Dispatcher {
 		protected AppState $appstate, 
 		protected CommonService $common, 
 		protected PermissionManager $pm, 
-		protected Geography $geo, 
-		protected Interactions $interactions, 
-		protected EntityManagerInterface $em) {
+		protected Geography $geo,
+		protected EntityManagerInterface $em,
+		protected PlaceManager $poi
+	) {
 	}
 
 	public function getCharacter() {
@@ -418,7 +420,7 @@ class Dispatcher {
 	}
 
 	public function placeListTest(): array {
-		if ($this->getCharacter() && $this->geo->findPlacesInActionRange($this->getCharacter())) {
+		if ($this->getCharacter() && $this->poi->findPlacesInActionRange($this->getCharacter())) {
 			return $this->action("place.list", "maf_place_actionable");
 		} else {
 			return array("name"=>"place.actionable.name", "description"=>"unavailable.noplace");
@@ -442,7 +444,7 @@ class Dispatcher {
 			if (!$this->geo->findMyRegion($character)) {
 				return array("name"=>"place.new.name", "description"=>"unavailable.notinregion");
 			}
-			if (!$this->geo->checkPlacePlacement($character)) {
+			if (!$this->poi->checkPlacePlacement($character)) {
 				return array("name"=>"place.new.name", "description"=>"unavailable.toocrowded");
 			}
 			$occupied = null;
@@ -621,6 +623,7 @@ class Dispatcher {
 		$actions[] = $this->diplomacyRelationsTest();
 		$actions[] = $this->diplomacyHierarchyTest();
 		$actions[] = $this->diplomacySubrealmTest();
+		$actions[] = $this->diplomacyDisownTest();
 		$actions[] = $this->diplomacyBreakHierarchyTest();
 
 		return array("name"=>"diplomacy", "elements"=>$actions);
@@ -652,6 +655,7 @@ class Dispatcher {
 			$actions[] = $this->metaRenameTest();
 			$actions[] = $this->metaRetireTest();
 			$actions[] = $this->metaKillTest();
+			$actions[] = $this->metaStatusTest();
 		}
 
 		return array("name"=>"meta.name", "elements"=>$actions);
@@ -1776,6 +1780,20 @@ class Dispatcher {
 		return $this->action("diplomacy.restore", "maf_realm_restore", true, array('realm'=>$this->realm->getId()));
 	}
 
+	public function diplomacyDisownTest(): array {
+		if (($check = $this->politicsActionsGenericTests()) !== true) {
+			return array("name"=>"diplomacy.disown", "description"=>"unavailable.$check");
+		}
+		if (!$this->realm->getSuperior()->findRulers()->contains($this->getCharacter())) {
+			return array("name"=>"diplomacy.disown", "description"=>"unavailable.notsuperruler");
+		} else {
+			return $this->action("diplomacy.disown", "maf_realm_disown", true,
+				array('realm'=>$this->realm->getId()),
+				array("%name%"=>$this->realm->getName(), "%formalname%"=>$this->realm->getFormalName())
+			);
+		}
+	}
+
 	public function diplomacyBreakHierarchyTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.break", "description"=>"unavailable.$check");
@@ -2146,6 +2164,13 @@ class Dispatcher {
 		return array("name"=>"meta.kill.name", "url"=>"maf_char_kill", "description"=>"meta.kill.description");
 	}
 
+	public function metaStatusTest(): array {
+		if (!$this->getCharacter()->isActive()) {
+			return ['name'=>'meta.status.name', 'description'=>'unavailable.notActive'];
+		}
+		return ['name'=>'meta.status.name', 'url'=>'maf_char_rebuildStatus', 'description'=>'meta.status.description'];
+	}
+
 	public function metaHeraldryTest(): array {
 		if ($this->getCharacter()->isNPC()) {
 			return array("name"=>"meta.background.name", "description"=>"unavailable.npc");
@@ -2357,7 +2382,7 @@ class Dispatcher {
 			if ($this->getCharacter()->getInsideSettlement()) {
 				$this->actionableSettlement = $this->getCharacter()->getInsideSettlement();
 			} else if ($location=$this->getCharacter()->getLocation()) {
-				$nearest = $this->common->findNearestSettlement($this->getCharacter());
+				$nearest = $this->geo->findNearestSettlement($this->getCharacter());
 				$settlement=array_shift($nearest);
 				if ($nearest['distance'] < $this->geo->calculateActionDistance($settlement)) {
 					$this->actionableSettlement=$settlement;

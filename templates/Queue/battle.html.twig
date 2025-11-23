@@ -45,8 +45,9 @@
 	<tr>
 	{% for group in battle.groups %}
 		<td valign="top"><ul>
-		{% for type,amount in group.troopssummary %}
-			<li>{{ amount }} {{ ('soldier.'~type)|trans({'count':amount}) }}</li>
+		{% for type,amount in group.troopssummary(familiarity) %}
+			{% set string = type|split('.') %}
+			<li>{{ amount }} {{ ('soldier.'~string.1)|trans({'count':amount})|title }} ({{ string.0|trans|title }}) </li>
 		{% endfor %}
 		</ul></td>
 	{% endfor %}

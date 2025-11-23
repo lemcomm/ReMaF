@@ -11,18 +11,20 @@ use App\Entity\PlacePermission;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\SettlementPermission;
+use App\Enum\CharacterStatus;
 use App\Form\AreYouSureType;
 use App\Form\CharacterSelectType;
 use App\Form\ListingType;
 use App\Form\PartnershipsNewType;
 use App\Form\PartnershipsOldType;
 use App\Form\PrisonersManageType;
-use App\Service\ActionManager;
 use App\Service\CharacterManager;
+use App\Service\CommonService;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\GameRequestManager;
 use App\Service\History;
 use App\Service\Politics;
+use App\Service\StatusUpdater;
 use App\Twig\LinksExtension;
 use DateInterval;
 use DateTime;
@@ -44,11 +46,13 @@ class PoliticsController extends AbstractController {
 	private $hierarchy=array();
 	
 	public function __construct(
-		private Dispatcher $disp,
+		private Dispatcher             $disp,
 		private EntityManagerInterface $em,
-		private History $hist,
-		private Politics $pol,
-		private TranslatorInterface $trans) {
+		private History                $hist,
+		private Politics               $pol,
+		private TranslatorInterface    $trans,
+		private StatusUpdater $statusUpdater
+	) {
 	}
 	
 	#[Route ('/politics', name:'maf_politics')]
@@ -712,7 +716,7 @@ class PoliticsController extends AbstractController {
 	}
 	
 	#[Route ('/politics/prisoners', name:'maf_politics_prisoners')]
-	public function prisonersAction(ActionManager $actMan, CharacterManager $charMan, Request $request): RedirectResponse|Response {
+	public function prisonersAction(CommonService $common, CharacterManager $charMan, Request $request): RedirectResponse|Response {
 		$character = $this->disp->gateway('personalPrisonersTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -777,7 +781,8 @@ class PoliticsController extends AbstractController {
 							$complete->add(new DateInterval("PT2H"));
 							$act->setComplete($complete);
 							$act->setBlockTravel(false);
-							$actMan->queue($act);
+							$common->queueAction($act);
+							$this->statusUpdater->character($character, CharacterStatus::assigning, true);
 
 							$this->hist->logEvent(
 								$prisoner,

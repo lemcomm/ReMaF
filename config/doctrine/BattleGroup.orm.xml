@@ -5,6 +5,7 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<field name="attacker" type="boolean"/>
+		<field name="status" type="array" nullable="true"/>
 
 		<many-to-one field="battle" target-entity="Battle" inversed-by="groups"/>
 		<one-to-many field="related_actions" target-entity="Action" mapped-by="target_battlegroup">

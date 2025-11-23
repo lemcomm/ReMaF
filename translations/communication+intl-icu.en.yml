@@ -132,6 +132,11 @@ event:
    assault2: "{character} is leading an assault against {settlement}."
    sortie: "{character} is leading a sortie from the settlement."
    sortie2: "{character} is leading a sortie from {settlement}."
+  thralls:
+   free:        "There is {amount} new citizen due to slavery laws."
+   free2:       "There are {amount} new citizens due to slavery laws."
+   slave:       "There is {amount} new thralls due to slavery laws."
+   slave2:      "There are {amount} new thalls due to salvery laws."
  travel:
   disembark:    Your ships have arrived at their destination and you have disembarked.
   cantland:     The ships captain cannot find a suitable landing spot, please try a short distance further up or down the coast.
@@ -373,6 +378,8 @@ event:
   deserted:     Vanished into history with no members remaining.
   restored:     "{character} of {realm}, has revived the realm, becoming its new ruler."
   restorer:     Revived the realm of {realm}, becoming its new ruler.
+  disowned:     "Disowned by {realm}, becoming independent."
+  disown:       "Disowned {realm}, making them independent."
   war:
    declared:    Declared war "{war}".
    received:    "{realm} has declared war, announcing settlements of your realm as targets. They call it \"{war}\"."

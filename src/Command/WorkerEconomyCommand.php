@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Settlement;
 use App\Service\Economy;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -41,6 +42,7 @@ class WorkerEconomyCommand extends Command {
 		$query = $this->em->createQuery('SELECT s FROM App\Entity\Settlement s')->setMaxresults($batch)->setFirstResult($offset);
 		$iterableResult = $query->toIterable();
 		$count = 0;
+		/** @var Settlement $settlement */
 		foreach ($iterableResult as $settlement) {
 			$count++;
 			// workaround for our calculations below causing errors on 0 values
@@ -93,6 +95,9 @@ class WorkerEconomyCommand extends Command {
 			if (!$settlement->getSiege() || !$settlement->getSiege()->getEncircled()) {
 				// check workforce
 				$this->economy->checkWorkforce($settlement);
+			}
+			if ($settlement->getThralls() && !$settlement->getAllowThralls()) {
+				$this->economy->freeThralls($settlement);
 			}
 			if ($count > 24) {
 				$output->writeln("Keeping things light, clearing Doctrine.");

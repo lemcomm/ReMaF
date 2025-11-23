@@ -4,10 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Action;
 use App\Entity\Battle;
+use App\Entity\BattleGroup;
 use App\Entity\Character;
+use App\Entity\EntourageType;
+use App\Enum\BattleGroupStatus;
+use App\Service\CommonService;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\Geography;
 use App\Service\History;
+use App\Service\SkillManager;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,8 +24,9 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class QueueController extends AbstractController {
 	public function __construct(
-		private Dispatcher $dispatcher,
-		private EntityManagerInterface $em) {
+		private Dispatcher             $dispatcher,
+		private EntityManagerInterface $em,
+		private SkillManager $skillManager) {
 	}
 	
 	#[Route('/queue/', name:'maf_queue')]
@@ -69,6 +75,7 @@ class QueueController extends AbstractController {
 	
 	#[Route('/queue/battle/{id}', name:'maf_queue_battle', requirements:['id'=>'\d+'])]
 	public function battleAction(Geography $geo, $id): RedirectResponse|Response {
+		/** @var Character $character */
 		$character = $this->dispatcher->gateway();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -87,6 +94,16 @@ class QueueController extends AbstractController {
 			$loc = $geo->locationName($battle->getLocation(), $battle->getWorld());
 			$location = array('key'=>'battle.location.'.$loc['key'], 'entity'=>$loc['entity']);
 		}
+		$change = false;
+		/** @var BattleGroup $group */
+		foreach ($battle->getGroups() as $group) {
+			if ($group->getStatus()[BattleGroupStatus::exactCount->value] === null) {
+				$group->setupCounts();
+				$change = true;
+			}
+		}
+		if ($change) $this->em->flush();
+		if ($this->skillManager->setupSkill($character, 'military')) $this->em->flush();
 
 		// FIXME:
 		// preparation timer should be in the battle, not in the individual actions
@@ -96,7 +113,8 @@ class QueueController extends AbstractController {
 		return $this->render('Queue/battle.html.twig', [
 			"battle" => $battle,
 			"location" => $location,
-			"now" => new DateTime("now")
+			"now" => new DateTime("now"),
+			"familiarity" => $character->getFamiliarity(),
 		]);
 	}
 

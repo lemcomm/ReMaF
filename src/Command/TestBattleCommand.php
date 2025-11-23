@@ -19,8 +19,6 @@ class TestBattleCommand extends  Command {
 	public function __construct(
 		private EntityManagerInterface $em,
 		private UrlGeneratorInterface $url,
-		private MilitaryManager $mil,
-		private CharacterManager $cm
 	) {
 		parent::__construct();
 	}
@@ -36,7 +34,6 @@ class TestBattleCommand extends  Command {
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$charArr = [];
 		$charArr2 = [];
-		$unitArr = [];
 		$attackers = '';
 		$defenders = '';
 		$set = $input->getOption('set');
@@ -61,7 +58,6 @@ class TestBattleCommand extends  Command {
 						'command' => 'maf:char:create',
 						'name' => 'Tester '.$i,
 						'where' => 'Settlement:1249',
-						'user' => 56
 					]);
 					$this->getApplication()->doRun($charGen, $output);
 					$last = $this->em->createQuery('SELECT c FROM App\Entity\Character c ORDER BY c.id DESC')->setMaxResults(1)->getResult();
@@ -108,7 +104,6 @@ class TestBattleCommand extends  Command {
 						'command' => 'maf:char:create',
 						'name' => 'Tester '.$i,
 						'where' => 'Settlement:1249',
-						'user' => 56
 					]);
 					$this->getApplication()->doRun($charGen, $output);
 					$last = $this->em->createQuery('SELECT c FROM App\Entity\Character c ORDER BY c.id DESC')->setMaxResults(1)->getResult();
@@ -157,7 +152,6 @@ class TestBattleCommand extends  Command {
 						'command' => 'maf:char:create',
 						'name' => 'Revenant '.$i,
 						'where' => 'Settlement:1249',
-						'user' => 56,
 						'-r' => 'magitek',
 					]);
 					$this->getApplication()->doRun($charGen, $output);
@@ -217,7 +211,6 @@ class TestBattleCommand extends  Command {
 						'command' => 'maf:char:create',
 						'name' => 'Tester '.$i,
 						'where' => 'Settlement:1249',
-						'user' => 56
 					]);
 					$this->getApplication()->doRun($charGen, $output);
 					$last = $this->em->createQuery('SELECT c FROM App\Entity\Character c ORDER BY c.id DESC')->setMaxResults(1)->getResult();

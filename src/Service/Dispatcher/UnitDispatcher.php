@@ -7,9 +7,9 @@ use App\Entity\Unit;
 use App\Service\AppState;
 use App\Service\CommonService;
 use App\Service\Geography;
-use App\Service\Interactions;
 use App\Service\MilitaryManager;
 use App\Service\PermissionManager;
+use App\Service\PlaceManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class UnitDispatcher extends Dispatcher {
@@ -20,10 +20,10 @@ class UnitDispatcher extends Dispatcher {
 		protected PermissionManager $pm,
 		protected Geography $geo,
 		protected MilitaryManager $milman,
-		protected Interactions $interactions,
-		protected EntityManagerInterface $em
+		protected EntityManagerInterface $em,
+		protected PlaceManager $poi
 	) {
-		parent::__construct($appstate, $common, $pm, $geo, $interactions, $em);
+		parent::__construct($appstate, $common, $pm, $geo, $em, $poi);
 	}
 
 	/* =========== Tests ========== */

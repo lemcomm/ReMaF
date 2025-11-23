@@ -30,6 +30,7 @@ class Race {
 	private ?int $willpower = null;
 	private ?int $baseCombatSkill = null;
 	private ?bool $fearless = null;
+	private ?string $raceGroup = null;
 
 	public function getId(): ?int {
 		return $this->id;
@@ -277,6 +278,15 @@ class Race {
 
 	public function setFearless(?bool $fearless): static {
 		$this->fearless = $fearless;
+		return $this;
+	}
+
+	public function getRaceGroup(): ?string {
+		return $this->raceGroup;
+	}
+
+	public function setRaceGroup(?string $group): static {
+		$this->raceGroup = $group;
 		return $this;
 	}
 }

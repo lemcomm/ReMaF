@@ -667,6 +667,15 @@ diplomacy:
   submit:       Declare independence
   done:         "{realm} is now an independent {type}."
 
+ disown:
+  name:         Disown Realm
+  description:  Tired of a subrealm being your responsibility? Disown it.
+  intro: >
+   While {realm} is a part of {parent} at this time, you can always declare that relation null and void and make
+   {realm} independent.<br />
+   Of course, you should make sure you are willing to handle the possible repercussions of this step.
+  success:         "{realm} is now an independent {type}."
+
  relations:
   name:         Relations
   title:        Diplomatic Relations of {realm}
