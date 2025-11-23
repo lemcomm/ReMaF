@@ -27,7 +27,6 @@ class StatusUpdater {
 		 * inPlace doesn't have updaters because it shouldn't touch the settlement one, which it will fall back to.
 		 * atSea updates all of them because sea travel is a mess at times.
 		 */
-		$key = $which->value;
 		switch ($which) {
 			case CharacterStatus::inSettlement:
 				$this->setNearestSettlement($char, true, $value);
@@ -50,15 +49,39 @@ class StatusUpdater {
 			case CharacterStatus::nearSettlement:
 				$this->setNearestSettlement($char, null, $value);
 				break;
-			case $key >= 0 && $key < 50:
+			case CharacterStatus::normal:
+			case CharacterStatus::battling:
+			case CharacterStatus::annexing:
+			case CharacterStatus::supporting:
+			case CharacterStatus::opposing:
+			case CharacterStatus::looting:
+			case CharacterStatus::blocking:
+			case CharacterStatus::granting:
+			case CharacterStatus::renaming:
+			case CharacterStatus::reclaiming:
+			case CharacterStatus::following:
+			case CharacterStatus::followed:
+			case CharacterStatus::newOccupant:
+			case CharacterStatus::training:
+			case CharacterStatus::researching:
+			case CharacterStatus::escaping:
+			case CharacterStatus::assigning:
+			case CharacterStatus::damaging:
+			case CharacterStatus::prebattle:
+			case CharacterStatus::prisoner:
+			case CharacterStatus::siegeLead:
+			case CharacterStatus::travelling:
+			# You'd think this should be able to be $which->value < 50 and $which->value > 0 but that doesn't work.
 				$char->updateStatus($which, $value);
 				$this->updateCurrently($char, $which, $value);
 				break;
 			case CharacterStatus::sieging:
+				$char->updateStatus($which, $value);
 				if (!$value) {
-					$char->updateStatus($which, $value);
 					$char->updateStatus(CharacterStatus::siegeLead, null);
 				}
+				$this->updateCurrently($char, $which, $value);
+				break;
 			default:
 				$char->updateStatus($which, $value);
 		}
@@ -78,7 +101,6 @@ class StatusUpdater {
 	}
 
 	private function updateCurrently(Character $char, CharacterStatus $which, $value): void {
-		$current = $char->getStatus()[CharacterStatus::currently->value];
 		if ($which === CharacterStatus::battling) {
 			$battles = $char->findBattleCount();
 			if ($battles === 1 && $value) {
@@ -88,19 +110,21 @@ class StatusUpdater {
 				$this->updateCurrently($char, CharacterStatus::prebattle, true);
 			}
 		} else {
-			$high = 9999;
+			$low = 9999;
 			foreach ($char->getStatus() as $key=>$val) {
-				if ($key >= 0 && $key < 50) {
-					if ($val && $key < $high) {
-						$high = $key;
+				if ($key >= 0 && $key < 50 && $key !== 13) {
+					if ($val && $key < $low) {
+						$low = $key;
 						break;
 					}
+				} elseif ($key > 50) {
+					break;
 				}
 			}
-			if ($high === 9999) {
-				$high = 13;
+			if ($low === 9999) {
+				$low = 13;
 			}
-			$char->updateStatus(CharacterStatus::currently, $high);
+			$char->updateStatus(CharacterStatus::currently, $low);
 		}
 	}
 
