@@ -424,16 +424,24 @@ class Economy {
 
 	public function freeThralls(Settlement $settlement) {
 		$thralls = $settlement->getThralls();
-		$rand = mt_rand(1, 50)/10;
-		$free = max(1, floor($thralls*$rand));
-		$settlement->setPopulation($settlement->getPopulation()+$free);
-		$settlement->setThralls($thralls-$free);
-		$this->history->logEvent(
-			$settlement,
-			$free>1?'event.settlement.thralls.free2':'event.settlement.thralls.free',
-			array('%amount%'=>$free),
-			History::LOW, false, 30
-		);
+		if ($thralls > 0) {
+			$rand = mt_rand(1, 50)/10;
+			$free = max(1, floor($thralls*$rand));
+			if ($free > $thralls) {
+				$free = $thralls;
+			}
+			$settlement->setPopulation($settlement->getPopulation()+$free);
+			$settlement->setThralls($thralls-$free);
+			$this->history->logEvent(
+				$settlement,
+				$free>1?'event.settlement.thralls.free2':'event.settlement.thralls.free',
+				array('%amount%'=>$free),
+				History::LOW, false, 30
+			);
+		} elseif ($thralls < 0) {
+			$settlement->setThralls(0);
+		}
+
 	}
 
 	public function addThralls(Settlement $settlement) {

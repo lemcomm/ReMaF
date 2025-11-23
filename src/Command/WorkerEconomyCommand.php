@@ -96,7 +96,7 @@ class WorkerEconomyCommand extends Command {
 				// check workforce
 				$this->economy->checkWorkforce($settlement);
 			}
-			if ($settlement->getThralls() && !$settlement->getAllowThralls()) {
+			if ($settlement->getThralls() != 0 && !$settlement->getAllowThralls()) {
 				$this->economy->freeThralls($settlement);
 			}
 			if ($count > 24) {

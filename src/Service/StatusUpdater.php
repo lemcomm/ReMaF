@@ -70,10 +70,15 @@ class StatusUpdater {
 			case CharacterStatus::prebattle:
 			case CharacterStatus::prisoner:
 			case CharacterStatus::siegeLead:
-			case CharacterStatus::travelling:
 			# You'd think this should be able to be $which->value < 50 and $which->value > 0 but that doesn't work.
 				$char->updateStatus($which, $value);
 				$this->updateCurrently($char, $which, $value);
+				break;
+			case CharacterStatus::travelling:
+				$char->updateStatus($which, $value);
+				if (!$char->getInsideSettlement()) {
+					$this->setNearestSettlement($char);
+				}
 				break;
 			case CharacterStatus::sieging:
 				$char->updateStatus($which, $value);
@@ -103,12 +108,18 @@ class StatusUpdater {
 	private function updateCurrently(Character $char, CharacterStatus $which, $value): void {
 		if ($which === CharacterStatus::battling) {
 			$battles = $char->findBattleCount();
-			if ($battles === 1 && $value) {
-				$char->updateStatus(CharacterStatus::prebattle, false);
-			} elseif ($battles > 2 && !$value) {
-				$char->updateStatus(CharacterStatus::prebattle, true);
-				$this->updateCurrently($char, CharacterStatus::prebattle, true);
+			if ($value) {
+				$char->updateStatus(CharacterStatus::currently, CharacterStatus::battling->value);
+				if ($battles === 1) {
+					$char->updateStatus(CharacterStatus::prebattle, false);
+				}
+			} else {
+				if ($battles > 0) {
+					$char->updateStatus(CharacterStatus::prebattle, true);
+					$this->updateCurrently($char, CharacterStatus::prebattle, true);
+				}
 			}
+
 		} else {
 			$low = 9999;
 			foreach ($char->getStatus() as $key=>$val) {

@@ -184,6 +184,15 @@ class UpdateDatabaseCommand extends  Command {
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
 		}
+		if (in_array('A8', $versions)) {
+			$output->writeln('Loading New Skill Data');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadSkillsData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+		}
 
 		return Command::SUCCESS;
 	}
