@@ -7,6 +7,7 @@ use App\Entity\Character;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -130,10 +131,14 @@ class InteractionType extends AbstractType {
 	}
 
 	private function attackFields(FormBuilderInterface $builder, array $options): void {
-		$builder->add('mastery', CheckboxType::class, [
+		$builder->add('battleType', ChoiceType::class, [
 			'empty_data' => false,
-			'required'=>false,
-			'label' => 'interaction.attack.mastery',
+			'required'=>true,
+			'label' => 'interaction.attack.type',
+			'choices'=>[
+				'interaction.attack.legacy'=>'legacy',
+				'interaction.attack.mastery'=>'mastery',
+			]
 		]);
 	}
 

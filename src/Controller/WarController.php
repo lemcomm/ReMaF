@@ -1084,11 +1084,7 @@ class WarController extends AbstractController {
 					$this->hist->logEvent($target, 'event.character.overwhelmed', ['%link-character%' => $character->getId()], History::HIGH, true);
 					$this->addFlash("warning", $this->trans->trans("military.battles.initiate.backfire", ["%link-character%" => $target->getId()], "actions"));
 				} else {
-					if ($data['mastery']) {
-						$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target'], null, null, null, 'mastery');
-					} else {
-						$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target']);
-					}
+					$result = $this->wm->createBattle($character, $character->getInsideSettlement(), null, $data['target'], null, null, null, $data['battleType']);
 					$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
 					$this->em->flush();
 					if ($result['outside'] && $character->getInsideSettlement()) {

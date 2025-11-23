@@ -51,6 +51,8 @@
 			<dd>{{ link(group.siege.place) }}</dd>
 		{% endif %}
 	{% endif %}
+	<dt>{{ "queue.target.battleSystem"|trans({}, "actions") }}</dt>
+	<dd>{{ ("interaction.attack."~(group.battle.ruleset))|trans({}, "messages") }}</dd>
 {% endif %}
 {% if action.targetlisting %}
 	<dt>{{ "queue.target.list"|trans({}, "actions") }}</dt>

@@ -1342,7 +1342,9 @@ interaction:
   name:     Target(s)
   message:  Message to target(s)
   submit:   Initiate attack
-  mastery:  Use Mastery System?
+  type:     Which battle system?
+  legacy:   Legacy Combat
+  mastery:  Mastery Combat
  grant:
   name:         Grant control
   submit:       Grant
