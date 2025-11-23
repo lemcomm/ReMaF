@@ -426,6 +426,7 @@ class WarController extends AbstractController {
 				}
 				$this->common->queueAction($act);
 				$this->statusUpdater->character($character, CharacterStatus::sieging, true);
+				$this->statusUpdater->character($character, CharacterStatus::siegeLead, true);
 
 				$character->setTravelLocked(true);
 
@@ -561,6 +562,8 @@ class WarController extends AbstractController {
 									$group = $siege->getDefender();
 								}
 								$group->setLeader($newleader);
+								$this->statusUpdater->character($character, CharacterStatus::siegeLead, null);
+								$this->statusUpdater->character($newleader, CharacterStatus::siegeLead, true);
 								$em->flush();
 								if ($place) {
 									return $this->redirectToRoute('maf_war_siege_place', array('place'=>$place->getId(), 'action'=>'select'));

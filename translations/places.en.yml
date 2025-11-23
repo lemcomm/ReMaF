@@ -105,7 +105,7 @@ place:
   join:
    name:         Join %name%
    name2:        Join Association
-   description: It looks like the %assoc% is available for joining.
+   description: It looks like the %name% is available for joining.
  addAssoc:
   name:   Expand Association Here
   description:  It looks like you have the means to expand one of your associations to this Place.

@@ -211,7 +211,8 @@ class ConversationManager {
                         $perm->setLastAccess(new DateTime("now"));
                         if ($perm->getUnread() > 0) {
                                 foreach ($perm->getConversation()->getMessages() as $message) {
-                                        if ($message->sent() > $perm->getLastAccess()) {
+					/** @var Message $message */
+					if ($message->getSent() > $perm->getLastAccess()) {
                                                 $unread->add($message);
                                         }
                                 }

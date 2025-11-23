@@ -71,7 +71,8 @@ class CharacterController extends AbstractController {
 		private Geography              $geo,
 		private History                $history,
 		private TranslatorInterface    $trans,
-		private UserManager            $userman, private readonly StatusUpdater $statusUpdater) {
+		private UserManager            $userman,
+		private StatusUpdater $statusUpdater) {
 	}
 
 	private function getSpottings(Character $character): array {
@@ -1410,6 +1411,7 @@ class CharacterController extends AbstractController {
 					$character->setTravel();
 					$character->setProgress(0);
 					$character->setSpeed(0);
+					$this->statusUpdater->character($character, CharacterStatus::travelling, null);
 				}
 			}
 			$em->flush();
@@ -1538,6 +1540,99 @@ class CharacterController extends AbstractController {
 				'version'=>$report->getVersion()?:2, 'report'=>$report, 'location'=>$location, 'count'=>$count, 'roundcount'=>$totalRounds, 'access'=>$check, 'fighters'=>$fighters
 			]);
 		}
+	}
+
+	#[Route ('/char/rebuildStatus', name:'maf_char_rebuildStatus')]
+	public function rebuildStatus(): RedirectResponse {
+		$char = $this->dispatcher->gateway('metaStatusTest');
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+		$status = $this->statusUpdater;
+		$char->resetStatus();
+		if ($char->getTravelAtSea()) {
+			$status->character($char, CharacterStatus::atSea, true);
+		}
+		if ($char->getInsidePlace()) {
+			$status->character($char, CharacterStatus::inPlace, $char->getInsidePlace()->getName());
+		}
+		if ($char->getInsideSettlement()) {
+			$status->character($char, CharacterStatus::inSettlement, $char->getInsideSettlement()->getName());
+		} else {
+			$nearest = $this->geo->findNearestSettlement($char);
+			$settlement = array_shift($nearest);
+			$location = $settlement->getName();
+			$atSettlement = ($nearest['distance'] < $this->geo->calculateActionDistance($settlement));
+			if ($atSettlement) {
+				$status->character($char, CharacterStatus::atSettlement, $location);
+			} else {
+				$status->setNearestSettlement($char);
+			}
+		}
+		if ($char->getSpeed()) {
+			$status->character($char, CharacterStatus::travelling, 1/$char->getSpeed());
+		}
+		foreach ($char->getActions() as $action) {
+			/** @var Action $action */
+			switch ($action->getType()) {
+				case 'settlement.take':
+					$status->character($char, CharacterStatus::annexing, true);
+					break;
+				case 'support':
+					$status->character($char, CharacterStatus::supporting, true);
+					break;
+				case 'oppose':
+					$status->character($char, CharacterStatus::opposing, true);
+					break;
+				case 'settlement.loot':
+					$status->character($char, CharacterStatus::looting, true);
+					break;
+				case 'military.block':
+					$status->character($char, CharacterStatus::blocking, true);
+					break;
+				case 'settlement.grant':
+					$status->character($char, CharacterStatus::granting, true);
+					break;
+				case 'settlement.rename':
+					$status->character($char, CharacterStatus::renaming, true);
+					break;
+				case 'military.reclaim':
+					$status->character($char, CharacterStatus::reclaiming, true);
+					break;
+				case 'settlement.occupant':
+				case 'place.occupant':
+					$status->character($char, CharacterStatus::newOccupant, true);
+					break;
+				case 'character.escape':
+					$status->character($char, CharacterStatus::escaping, true);
+					break;
+				case 'military.battle':
+					$status->character($char, CharacterStatus::prebattle, true);
+					break;
+				case 'task.research':
+					$status->character($char, CharacterStatus::researching, true);
+					break;
+				case 'military.siege':
+					$status->character($char, CharacterStatus::sieging, true);
+					if ($action->getTargetBattlegroup()->getLeader() === $char) {
+						$status->character($char, CharacterStatus::siegeLead, true);
+					}
+					break;
+				case 'train.skill':
+					$status->character($char, CharacterStatus::training, true);
+			}
+		}
+		if ($char->getBattling()) {
+			$status->character($char, CharacterStatus::battling, true);
+		}
+		if ($char->getPrisonerOf()) {
+			$status->character($char, CharacterStatus::prisoner, $char->getPrisonerOf()->getName());
+		}
+		$status->character($char, CharacterStatus::messages, $char->countNewMessages());
+		$status->character($char, CharacterStatus::events, $char->countNewEvents());
+		$this->em->flush();
+		$this->addFlash('notice', $this->trans->trans('meta.status.success', [], 'actions'));
+		return $this->redirectToRoute('maf_char_recent');
 	}
 
 }

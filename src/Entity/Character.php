@@ -3928,6 +3928,11 @@ class Character extends AbstractCharacter {
 		return $this;
 	}
 
+	public function resetStatus(): static {
+		$this->status = $this->defaultStatus;
+		return $this;
+	}
+
 	public function getStatus(): ?array {
 		if (!$this->status) {
 			$this->status = $this->defaultStatus;
@@ -3935,6 +3940,13 @@ class Character extends AbstractCharacter {
 		return $this->status;
 	}
 
+	/**
+	 * Unless you're certain, you shouldn't be calling this directly outside of Service/StatusUpdater.
+	 * @param CharacterStatus $which
+	 * @param mixed           $value
+	 *
+	 * @return $this
+	 */
 	public function updateStatus(CharacterStatus $which, mixed $value): static {
 		$this->status?:$this->status = $this->defaultStatus;
 		$this->status[$which->value] = $value;

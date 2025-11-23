@@ -14,6 +14,14 @@ class StatusUpdater {
 	) {
 	}
 
+	/**
+	 * Main status update function for characters. Handles chain-updates among other things.
+	 * @param Character $char
+	 * @param CharacterStatus $which
+	 * @param                 $value
+	 *
+	 * @return void
+	 */
 	public function character(Character $char, CharacterStatus $which, $value): void {
 		/*
 		 * inPlace doesn't have updaters because it shouldn't touch the settlement one, which it will fall back to.
@@ -38,14 +46,19 @@ class StatusUpdater {
 				break;
 			case CharacterStatus::atSettlement:
 				$this->setNearestSettlement($char, false, $value);
-				$char->updateStatus($which, $value);
-				$char->updateStatus(CharacterStatus::inSettlement, null);
-				$char->updateStatus(CharacterStatus::nearSettlement, null);
+				break;
+			case CharacterStatus::nearSettlement:
+				$this->setNearestSettlement($char, null, $value);
 				break;
 			case $key >= 0 && $key < 50:
 				$char->updateStatus($which, $value);
 				$this->updateCurrently($char, $which, $value);
 				break;
+			case CharacterStatus::sieging:
+				if (!$value) {
+					$char->updateStatus($which, $value);
+					$char->updateStatus(CharacterStatus::siegeLead, null);
+				}
 			default:
 				$char->updateStatus($which, $value);
 		}
@@ -91,7 +104,7 @@ class StatusUpdater {
 		}
 	}
 
-	private function setNearestSettlement(Character $char, $inside = null, $value = null): void {
+	public function setNearestSettlement(Character $char, $inside = null, $value = null): void {
 		if ($inside) {
 			$char->updateStatus(CharacterStatus::location, CharacterStatus::inSettlement->value);
 			$char->updateStatus(CharacterStatus::inSettlement, $value);
@@ -124,7 +137,7 @@ class StatusUpdater {
 		}
 	}
 
-	public function addCharCounter(Character $char, CharacterStatus $which, $amt = 1) {
+	public function addCharCounter(Character $char, CharacterStatus $which, $amt = 1): void {
 		$char->incrementStatus($which, $amt);
 	}
 }

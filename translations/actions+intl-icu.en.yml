@@ -1205,6 +1205,10 @@ meta:
  unitsettings:
   name:         Battle Setup
   description:  Alter deployment orders
+ status:
+  name:         Rebuild Status
+  description:  Force a status recalculation.
+  success:      Character status information has been rebuilt.
 
 escape:
  name:      Escape

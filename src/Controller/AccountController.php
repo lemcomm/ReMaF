@@ -136,7 +136,6 @@ class AccountController extends AbstractController {
 				'slumbering' => $character->getSlumbering(),
 				'log' => $character->getLog(),
 				'requests' => count($grm->findAllManageableRequests($character)),
-				#'events' => $alive?$character->countNewEvents():0, #Leaving this in place in case this is actually the faster path.
 			);
 
 			if (!$character->isNPC()) {

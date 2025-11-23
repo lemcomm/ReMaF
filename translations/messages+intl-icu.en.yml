@@ -1893,6 +1893,7 @@ unavailable:
  unfinishedbusiness: "You have some unfinished business to attend to first. Perhaps it's a duel that requires your participation?"
  unitdisbanded: This unit has been disbanded.
  nopossiblesources: No places to request food from.
+ notactive: This character isn't active in the game.
 
 marker:
  name:      Marker name

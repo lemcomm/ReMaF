@@ -28,7 +28,10 @@
 		{{ 'diplomacy.restore.description'|trans({}, "politics") }}
 		<button id="restorerealm">{{ 'diplomacy.restore.link'|trans({},"politics") }}</button>
 	</div>
+{% elseif disownable %}
+	<a href="{{ path('maf_realm_disown', {'realm':realm.id}) }}">{{ 'diplomacy.disown.name'|trans({},"politics") }}</a>
 {% endif %}
+
 
 <dl>
 	<dt>{{ 'realm.name'|trans({},"politics") }}</dt>

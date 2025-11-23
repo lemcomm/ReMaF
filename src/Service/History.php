@@ -58,7 +58,7 @@ class History {
 			/** @var EventMetadata $meta */
 			if (!$meta->getAccessUntil()) {
 				$reader = $meta->getReader();
-				if ($reader && !$meta->getAccessUntil()) {
+				if ($reader) {
 					$this->statusUpdater->addCharCounter($reader, CharacterStatus::events);
 				}
 			}

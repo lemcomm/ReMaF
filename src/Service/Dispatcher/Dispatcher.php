@@ -623,6 +623,7 @@ class Dispatcher {
 		$actions[] = $this->diplomacyRelationsTest();
 		$actions[] = $this->diplomacyHierarchyTest();
 		$actions[] = $this->diplomacySubrealmTest();
+		$actions[] = $this->diplomacyDisownTest();
 		$actions[] = $this->diplomacyBreakHierarchyTest();
 
 		return array("name"=>"diplomacy", "elements"=>$actions);
@@ -654,6 +655,7 @@ class Dispatcher {
 			$actions[] = $this->metaRenameTest();
 			$actions[] = $this->metaRetireTest();
 			$actions[] = $this->metaKillTest();
+			$actions[] = $this->metaStatusTest();
 		}
 
 		return array("name"=>"meta.name", "elements"=>$actions);
@@ -1778,6 +1780,20 @@ class Dispatcher {
 		return $this->action("diplomacy.restore", "maf_realm_restore", true, array('realm'=>$this->realm->getId()));
 	}
 
+	public function diplomacyDisownTest(): array {
+		if (($check = $this->politicsActionsGenericTests()) !== true) {
+			return array("name"=>"diplomacy.disown", "description"=>"unavailable.$check");
+		}
+		if (!$this->realm->getSuperior()->findRulers()->contains($this->getCharacter())) {
+			return array("name"=>"diplomacy.disown", "description"=>"unavailable.notsuperruler");
+		} else {
+			return $this->action("diplomacy.disown", "maf_realm_disown", true,
+				array('realm'=>$this->realm->getId()),
+				array("%name%"=>$this->realm->getName(), "%formalname%"=>$this->realm->getFormalName())
+			);
+		}
+	}
+
 	public function diplomacyBreakHierarchyTest(): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.break", "description"=>"unavailable.$check");
@@ -2146,6 +2162,13 @@ class Dispatcher {
 			return array("name"=>"meta.kill.name", "description"=>"unavailable.prisonershort");
 		}
 		return array("name"=>"meta.kill.name", "url"=>"maf_char_kill", "description"=>"meta.kill.description");
+	}
+
+	public function metaStatusTest(): array {
+		if (!$this->getCharacter()->isActive()) {
+			return ['name'=>'meta.status.name', 'description'=>'unavailable.notActive'];
+		}
+		return ['name'=>'meta.status.name', 'url'=>'maf_char_rebuildStatus', 'description'=>'meta.status.description'];
 	}
 
 	public function metaHeraldryTest(): array {
