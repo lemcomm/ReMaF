@@ -133,7 +133,7 @@ class WorkerTravelCommand extends  Command {
 				}
 			} else {
 				$char->setProgress($progress);
-				$this->status->character($char, CharacterStatus::travelling, 1/$char->getSpeed());
+				$this->status->character($char, CharacterStatus::travelling, ceil(1/$char->getSpeed()*6));
 			}
 			if (!$artifactsNaN) {
 				$artifacts = $this->geo->findNearbyArtifacts($char);

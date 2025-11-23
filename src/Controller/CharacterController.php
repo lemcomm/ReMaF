@@ -1389,7 +1389,7 @@ class CharacterController extends AbstractController {
 			if ($can_travel) {
 				if ($this->geo->updateTravelSpeed($character)) {
 					$turns = 1/$character->getSpeed();
-					$this->statusUpdater->character($character, CharacterStatus::travelling, $turns);
+					$this->statusUpdater->character($character, CharacterStatus::travelling, ceil(1/$character->getSpeed()*6));
 					if ($character->getTravelAtSea()) {
 						$character->setTravelDisembark($disembark);
 						$character->setTravelEnter(false); // we never directly enter a settlement - TODO: why not?
@@ -1570,7 +1570,7 @@ class CharacterController extends AbstractController {
 			}
 		}
 		if ($char->getSpeed()) {
-			$status->character($char, CharacterStatus::travelling, 1/$char->getSpeed());
+			$status->character($char, CharacterStatus::travelling, ceil(1/$char->getSpeed()*6));
 		}
 		foreach ($char->getActions() as $action) {
 			/** @var Action $action */
