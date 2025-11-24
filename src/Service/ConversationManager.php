@@ -15,6 +15,7 @@ use App\Entity\Realm;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\StatisticGlobal;
+use App\Enum\CharacterStatus;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,7 +25,9 @@ use Doctrine\ORM\EntityManagerInterface;
 class ConversationManager {
 	public function __construct(
 		private EntityManagerInterface $em,
-		private CommonService $common) {
+		private CommonService $common,
+		private StatusUpdater $status,
+	) {
 	}
 
         public function getConversations(Character $char): mixed {
@@ -207,31 +210,35 @@ class ConversationManager {
 
         public function getAllUnreadMessages(Character $char) {
                 $unread = new ArrayCollection();
-                foreach ($char->getConvPermissions()->filter(function($entry) {return $entry->getActive() == true;}) as $perm) {
-                        $perm->setLastAccess(new DateTime("now"));
+                foreach ($char->getConvPermissions() as $perm) {
+			/** @var ConversationPermission $perm */
+			$perm->setLastAccess(new DateTime("now"));
                         if ($perm->getUnread() > 0) {
                                 foreach ($perm->getConversation()->getMessages() as $message) {
 					/** @var Message $message */
-					if ($message->getSent() > $perm->getLastAccess()) {
+					if ($message->getSent() > $perm->getLastAccess() && $message->getSent() > $perm->getStartTime() && ($message->getSent() < $perm->getEndTime() || !$perm->getEndTime())) {
                                                 $unread->add($message);
                                         }
                                 }
 				$perm->setUnread(0);
+				$perm->setLastAccess(new DateTime("now"));
                         }
                 }
 		if ($local = $char->getLocalConversation()) {
 			foreach ($local->getMessages() as $msg) {
 				if (!$msg->getRead()) {
 					$unread->add($msg);
+					$msg->setRead(TRUE);
 				}
 			}
 		}
+		$this->status->character($char, CharacterStatus::messages, 0);
+		$this->em->flush();
                 # We got the messages, now sort them...
                 $iterator = $unread->getIterator();
                 $iterator->uasort(function($a, $b) {
                         return ($a->getSent() > $b->getSent()) ? -1 : 1 ;
                 });
-                $this->em->flush();
                 return new ArrayCollection(iterator_to_array($iterator));
         }
 

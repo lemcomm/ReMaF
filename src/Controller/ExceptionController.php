@@ -59,26 +59,12 @@ class ExceptionController extends AbstractController {
 				if ($errBits[0] === 'messages') {
 					# These are errors the players get by accessing pages they shouldn't be able to, and are thus, intentional game design, not errors in the sense of this file.
 					$forward = false;
-				} elseif ($errBits[0] === 'error.noaccess.character') {
-					if ($user !== '(none)') {
-						# This is literally just catching people trying to access the wrong character.
-						# We still show them the error, but we also record it in the database.
-						$charId = $request->attributes->get('_route_params')['id'];
-						$logic = $request->query->get('logic');
-						$this->app->logUser($user, $request->attributes->get('_route').'_'.$charId.'_'.$logic, true);
-						$forward2 = true;
-					}
 				}
 			}
 			if ($forward) {
 				try {
 					$text = "Status Code: $code \nError: $error\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n$trace";
 					$this->discord->pushToErrors($text);
-					if ($forward2) {
-						$owner = $this->em->getRepository(Character::class)->findOneBy(['id'=>$charId]);
-						$text = "User #".$userId." attempted to access Character #".$charId." owned by ".$owner?->getUser()->getId();
-						$this->discord->pushToOlympus($text);
-					}
 				} catch (Exception $e) {
 					// Do nothing.
 				}

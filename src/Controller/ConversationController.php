@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\MessageTag;
+use App\Enum\CharacterStatus;
 use App\Service\ConversationManager;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\Geography;
 use App\Service\NewsManager;
+use App\Service\StatusUpdater;
 use DateInterval;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -37,12 +39,14 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ConversationController extends AbstractController {
 	public function __construct(
-		private ConversationManager $convman,
-		private Dispatcher $dispatcher,
+		private ConversationManager    $convman,
+		private Dispatcher             $dispatcher,
 		private EntityManagerInterface $em,
-		private Geography $geo,
-		private NewsManager $news,
-		private TranslatorInterface $trans) {
+		private Geography              $geo,
+		private NewsManager            $news,
+		private TranslatorInterface    $trans,
+		private StatusUpdater $statusUpdater,
+	) {
 	}
 
 	#[Route ('/conv', name:'maf_convs')]
@@ -466,10 +470,13 @@ class ConversationController extends AbstractController {
 		} else {
 			$messages = $conv->findMessages($char);
 		}
+		$wasUnread = 0;
 		if (!$override) {
 			$perms = $conv->findCharPermissions($char);
+			/** @var ConversationPermission $each */
 			foreach ($perms as $each) {
 				if ($each->getUnread()) {
+					$wasUnread -= $each->getUnread();
 					$each->setUnread(0);
 				}
 			}
@@ -477,6 +484,7 @@ class ConversationController extends AbstractController {
 			if ($lastPerm->getActive()) {
 				$lastPerm->setLastAccess(new DateTime('now'));
 			}
+			$this->statusUpdater->addCharCounter($char, CharacterStatus::messages, $wasUnread);
 			$em->flush();
 		}
 
@@ -561,9 +569,12 @@ class ConversationController extends AbstractController {
 		$total = $messages->count();
 
 		if ($unread) {
+			$wasUnread = 0;
 			foreach($unread as $msg) {
+				$wasUnread--;
 				$msg->setRead(TRUE);
 			}
+			$this->statusUpdater->addCharCounter($char, CharacterStatus::messages, $wasUnread);
 			$em->flush();
 		}
 

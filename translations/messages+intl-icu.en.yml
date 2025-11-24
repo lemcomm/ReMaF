@@ -1355,7 +1355,7 @@ interaction:
   name:     New member(s)
   submit:   Add member(s)
  abdicate:
-  name:     "Announce as successor:"
+  name:     "Announce as successor (if anyone):"
   submit:   Abdicate
  giveship:
   name:     "Give ship to:"

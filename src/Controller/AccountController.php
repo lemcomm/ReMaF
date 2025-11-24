@@ -8,16 +8,15 @@ use App\Entity\EventMetadata;
 use App\Entity\Race;
 use App\Entity\User;
 
-use App\Enum\CharacterStatus;
 use App\Enum\RaceName;
 use App\Form\CharacterCreationType;
 use App\Form\ListSelectType;
 use App\Form\UserSettingsType;
 
-use App\Service\ActionResolution;
 use App\Service\AppState;
 use App\Service\CharacterManager;
 use App\Service\CommonService;
+use App\Service\DiscordIntegrator;
 use App\Service\GameRequestManager;
 use App\Service\Geography;
 use App\Service\PaymentManager;
@@ -476,7 +475,8 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/listtoggle', name:'maf_chars_toggle', defaults: ['_format'=>'json'])]
-	public function listtoggleAction(Request $request, EntityManagerInterface $em): Response {
+	public function listtoggleAction(Request $request, EntityManagerInterface $em, AppState $app, DiscordIntegrator $discord): Response {
+		/** @var User $user */
 		$user = $this->getUser();
 		$id = $request->request->get('id');
 
@@ -485,6 +485,9 @@ class AccountController extends AbstractController {
 			throw new AccessDeniedHttpException('error.notfound.character');
 		}
 		if ($character->getUser() !== $user) {
+			$app->logUser($user, $request->attributes->get('_route').'_'.$character->getId(), true);
+			$text = "User #".$user->getId()." attempted to access Character #".$character->getId()." owned by ".$character->getUser()?->getId();
+			$discord->pushToOlympus($text);
 			throw new AccessDeniedHttpException('error.noaccess.character');
 		}
 
@@ -502,7 +505,7 @@ class AccountController extends AbstractController {
 
 
 	#[Route ('/account/play/{id}', name:'maf_play', requirements: ['id'=>'\d+'])]
-	public function playAction(Character $id, Request $request, AppState $app, EntityManagerInterface $em, PaymentManager $pay, UserManager $userMan): RedirectResponse {
+	public function playAction(Character $id, Request $request, AppState $app, EntityManagerInterface $em, PaymentManager $pay, UserManager $userMan, DiscordIntegrator $discord): RedirectResponse {
 		$user = $this->getUser();
 		$character = $id;
 		if ($user->isBanned()) {
@@ -516,6 +519,9 @@ class AccountController extends AbstractController {
 		$this->checkCharacterLimit($user, $pay, $em);
 
 		if ($character->getUser() !== $user) {
+			$app->logUser($user, $request->attributes->get('_route').'_'.$character->getId().'_'.$logic, true);
+			$text = "User #".$user->getId()." attempted to access Character #".$character->getId()." owned by ".$character->getUser()?->getId();
+			$discord->pushToOlympus($text);
 			throw $this->createAccessDeniedException('error.noaccess.character');
 		}
 		if ($character->getBattling()) {
