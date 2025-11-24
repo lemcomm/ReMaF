@@ -334,7 +334,7 @@
 {% endif %}
 
 <p>
-{% if is_granted('ROLE_ADMIN') %}
+{% if is_granted('ROLE_ADMIN') and debug %}
 <h2>Raw Debug Output</h2>
 <pre>{{ report.debug }}</pre>
 {% endif %}

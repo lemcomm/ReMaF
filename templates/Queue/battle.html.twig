@@ -49,6 +49,18 @@
 			{% set string = type|split('.') %}
 			<li>{{ amount }} {{ ('soldier.'~string.1)|trans({'count':amount})|title }} ({{ string.0|trans|title }}) </li>
 		{% endfor %}
+		{% if debug %}
+			<br>-- DEBUG STATUS --
+			{% for type,amount in group.troopssummary(familiarity, true) %}
+				{% set string = type|split('.') %}
+				<li>{{ amount }} {{ ('soldier.'~string.1)|trans({'count':amount})|title }} ({{ string.0|trans|title }}) </li>
+			{% endfor %}
+			<br>-- DEBUG TROOPS --
+			{% for type,amount in group.debugTroopSummary() %}
+				{% set string = type|split('.') %}
+				<li>{{ amount }} {{ ('soldier.'~string.1)|trans({'count':amount})|title }} ({{ string.0|trans|title }}) </li>
+			{% endfor %}
+		{% endif %}
 		</ul></td>
 	{% endfor %}
 	</tr>

@@ -1445,7 +1445,7 @@ class CharacterController extends AbstractController {
 	}
 
      	#[Route ('/char/battlereport/{id}', name:'maf_battlereport', requirements: ['id'=>'\d+'])]
-	public function viewBattleReportAction(Security $sec, BattleReport $id): RedirectResponse|Response {
+	public function viewBattleReportAction(Request $request, Security $sec, BattleReport $id): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter(true,true,true);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -1457,6 +1457,10 @@ class CharacterController extends AbstractController {
 			throw $this->createNotFoundException('error.notfound.battlereport');
 		}
 
+		$debug = $request->query->get('debug', false);
+		if ($debug && !$sec->isGranted('ROLE_OLYMPUS')) {
+			$debug = false;
+		}
 		if (!$sec->isGranted('ROLE_ADMIN')) {
 			$check = $report->checkForObserver($character);
 			if (!$check) {
@@ -1524,7 +1528,7 @@ class CharacterController extends AbstractController {
 			}
 
 			return $this->render('Character/viewBattleReport.html.twig', [
-				'version'=>1, 'start'=>$start, 'survivors'=>$survivors, 'nobles'=>$nobles, 'report'=>$report, 'location'=>$location, 'access'=>$check
+				'version'=>1, 'start'=>$start, 'survivors'=>$survivors, 'nobles'=>$nobles, 'report'=>$report, 'location'=>$location, 'access'=>$check, 'debug'=>$debug,
 			]);
 		} else {
 			$count = $report->getGroups()->count(); # These return in a specific order, low to high, ID ascending.
@@ -1537,7 +1541,7 @@ class CharacterController extends AbstractController {
 			}
 
 			return $this->render('Character/viewBattleReport.html.twig', [
-				'version'=>$report->getVersion()?:2, 'report'=>$report, 'location'=>$location, 'count'=>$count, 'roundcount'=>$totalRounds, 'access'=>$check, 'fighters'=>$fighters
+				'version'=>$report->getVersion()?:2, 'report'=>$report, 'location'=>$location, 'count'=>$count, 'roundcount'=>$totalRounds, 'access'=>$check, 'fighters'=>$fighters, 'debug'=>$debug,
 			]);
 		}
 	}

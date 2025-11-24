@@ -223,21 +223,51 @@ class BattleGroup {
 		return !$this->attacker;
 	}
 
-	public function getTroopsSummary($known = []): array {
+	public function getTroopsSummary($known = [], $debugOverride = false): array {
 		if (null === $this->soldiers) {
 			$this->setupCounts();
 		}
 		$types = [];
 		foreach ($this->status[BattleGroupStatus::exactCount->value] as $type=>$count) {
 			$explode = explode('.', $type);
-			if (array_key_exists($explode[0], $known) && $known[$explode[0]] >= self::$familiarityMinimum) {
-				$types[$type] = $count;
+			if ($debugOverride || (array_key_exists($explode[0], $known) && $known[$explode[0]] >= self::$familiarityMinimum)) {
+				if (array_key_exists($type, $types)) {
+					$types[$type] = $types[$type]+$count;
+				} else {
+					$types[$type] = $count;
+				}
 			} else {
 				if ($explode[1] === 'leader') {
-					$types[$explode[0].".leader"] = $count;
+					$type2 = $explode[0].".leader";
 				} else {
-					$types[$explode[0].".soldier"] = $count;
+					$type2 = $explode[0].".soldier";
 				}
+				if (array_key_exists($type2, $types)) {
+					$types[$type2] = $types[$type2]+$count;
+				} else {
+					$types[$type2] = $count;
+				}
+			}
+		}
+		return $types;
+	}
+
+	public function debugTroopSummary(): array {
+		$types = [];
+		foreach ($this->getSoldiers() as $soldier) {
+			$type = $soldier->getTranslatableType();
+			if (isset($types[$type])) {
+				$types[$type]++;
+			} else {
+				$types[$type] = 1;
+			}
+		}
+		foreach ($this->characters as $char) {
+			$type = $char->getTranslatableType();
+			if (isset($types[$type])) {
+				$types[$type]++;
+			} else {
+				$types[$type] = 1;
 			}
 		}
 		return $types;

@@ -16,6 +16,7 @@ use App\Service\SkillManager;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
@@ -74,7 +75,7 @@ class QueueController extends AbstractController {
 	}
 	
 	#[Route('/queue/battle/{id}', name:'maf_queue_battle', requirements:['id'=>'\d+'])]
-	public function battleAction(Geography $geo, $id): RedirectResponse|Response {
+	public function battleAction(Request $request, Security $sec, Geography $geo, $id): RedirectResponse|Response {
 		/** @var Character $character */
 		$character = $this->dispatcher->gateway();
 		if (! $character instanceof Character) {
@@ -107,14 +108,19 @@ class QueueController extends AbstractController {
 
 		// FIXME:
 		// preparation timer should be in the battle, not in the individual actions
-
 		// TODO: add progress and time when battle will happen (see above)
+
+		$debug = $request->query->get('debug', false);
+		if ($debug && !$sec->isGranted('ROLE_OLYMPUS')) {
+			$debug = false;
+		}
 
 		return $this->render('Queue/battle.html.twig', [
 			"battle" => $battle,
 			"location" => $location,
 			"now" => new DateTime("now"),
 			"familiarity" => $character->getFamiliarity(),
+			"debug"=>$debug,
 		]);
 	}
 
