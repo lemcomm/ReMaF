@@ -311,7 +311,7 @@ class MilitaryManager {
 					}
 				} else {
 					// resupply from settlement
-					if ($character->getInsideSettlement() === $settlement && (($unit->isLocal() && $unit->getSettlement() === $settlement) || $unit->getCharacter() === $char)) {
+					if ($character && $character->getInsideSettlement() === $settlement && (($unit->isLocal() && $unit->getSettlement() === $settlement) || $unit->getCharacter() === $char)) {
 						if ($this->acquireEquipment($settlement, $soldier->$trained(), false, true, $char)) {
 							$soldier->$set($soldier->$trained());
 							$located++;
