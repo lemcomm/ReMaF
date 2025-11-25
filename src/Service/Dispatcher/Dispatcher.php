@@ -1784,7 +1784,9 @@ class Dispatcher {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
 			return array("name"=>"diplomacy.disown", "description"=>"unavailable.$check");
 		}
-		if (!$this->realm->getSuperior()->findRulers()->contains($this->getCharacter())) {
+		if (!$this->realm->getSuperior()) {
+			return ["name"=>"diplomacy.disown", "description"=>"unavailable.notvassal"];
+		} elseif (!$this->realm->getSuperior()->findRulers()->contains($this->getCharacter())) {
 			return array("name"=>"diplomacy.disown", "description"=>"unavailable.notsuperruler");
 		} else {
 			return $this->action("diplomacy.disown", "maf_realm_disown", true,

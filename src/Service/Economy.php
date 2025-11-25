@@ -517,7 +517,7 @@ class Economy {
 						$settlement,
 						'event.settlement.setback',
 						array(),
-						History::MEDIUM, false, 15
+						History::MEDIUM, false
 					);
 				}
 			}
@@ -530,7 +530,7 @@ class Economy {
 						$settlement,
 						'event.settlement.hunger',
 						array(),
-						History::MEDIUM, false, 10
+						History::MEDIUM, false
 					);
 				}
 			} else {
@@ -540,7 +540,7 @@ class Economy {
 					$settlement,
 					'event.settlement.starvation',
 					array(),
-					History::HIGH, false, 10
+					History::HIGH, false
 				);
 
 				// now we have hit starvation, it's time to cancel trades

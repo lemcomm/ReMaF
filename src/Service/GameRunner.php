@@ -500,9 +500,13 @@ class GameRunner {
 		}
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   $heal healed, $worse worsened, $dead died");
-
 		$this->em->flush();
 		$this->em->clear();
+
+		$this->output("$date --   Correcting soldiers with superhuman health...");
+		$query = $this->em->createQuery('UPDATE App\Entity\Soldier s SET s.wounded = 0 WHERE s.wounded < 0');
+		$query->execute();
+		$this->em->flush();
 
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Processing units of slumberers...");

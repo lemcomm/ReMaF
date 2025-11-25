@@ -212,7 +212,6 @@ class ConversationManager {
                 $unread = new ArrayCollection();
                 foreach ($char->getConvPermissions() as $perm) {
 			/** @var ConversationPermission $perm */
-			$perm->setLastAccess(new DateTime("now"));
                         if ($perm->getUnread() > 0) {
                                 foreach ($perm->getConversation()->getMessages() as $message) {
 					/** @var Message $message */
@@ -223,6 +222,7 @@ class ConversationManager {
 				$perm->setUnread(0);
 				$perm->setLastAccess(new DateTime("now"));
                         }
+			$perm->setLastAccess(new DateTime("now"));
                 }
 		if ($local = $char->getLocalConversation()) {
 			foreach ($local->getMessages() as $msg) {

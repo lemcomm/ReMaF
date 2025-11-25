@@ -120,6 +120,7 @@ class PlaceManager {
 	}
 
 	public function findPlacesNearMe(Character $character, $maxdistance): ?array {
+		$nested = false;
 		if ($settlement = $character->getInsideSettlement()) {
 			$results = [];
 			if ($settlement->getPlaces()) {
@@ -135,6 +136,7 @@ class PlaceManager {
 			$query = $this->em->createQuery('SELECT p as place, ST_Distance(me.location, p.location) AS distance, ST_Azimuth(me.location, p.location) AS direction FROM App\Entity\Character me, App\Entity\Place p WHERE me.id = :me AND ST_Distance(me.location, p.location) < :maxdistance AND (p.destroyed IS NULL or p.destroyed = false)');
 			$query->setParameters(['me'=>$character, 'maxdistance'=>$maxdistance]);
 			$results = $query->getResult();
+			$nested = true;
 
 			/* So Doctrine loses its mind if we try to select an object and get zero, but you'll notice every single other one of these works without a try/catch, likely because we're not selecting an object but specific data. If *that* returns 0 rows, well, it don't care I guess.
 			try {
@@ -148,8 +150,13 @@ class PlaceManager {
 		if ($results) {
 			$places = array();
 			foreach ($results as $result) {
-				if($result->getOwner() == $character OR $this->pm->checkPlacePermission($result, $character, 'see') OR $result->getVisible()) {
-					$places[] = $result;
+				if ($nested) {
+					$place = $result[0];
+				} else {
+					$place = $result;
+				}
+				if($place->getOwner() == $character OR $this->pm->checkPlacePermission($place, $character, 'see') OR $place->getVisible()) {
+					$places[] = $place;
 				}
 			}
 			return $places;

@@ -126,7 +126,7 @@
 {% if char.background and char.background.appearance and char.background.appearance is defined %}
 	{{ char.background.appearance|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 {% endif %}
-{% if relationship %}
+{% if relationship and char.background.personality %}
 	<h4>{{ 'character.personality'|trans|title }}</h4>
 	{{ char.background.personality|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
 {% endif %}

@@ -1,5 +1,5 @@
 <div id="sd_content">
-	<h2 id="sd_name">{{ char.name }} {% if char.male %}♂{% else %}♀{% endif %}</h2>
+	<h2 id="sd_name">{% if char.knownAs %}{{ char.knownAs }} ({{ char.pureName }}){% else %}{{ char.pureName }}{% endif %} {% if char.male %}♂{% else %}♀{% endif %}</h2>
 	<div id="sd_id" class="hidden">{{ char.id }}</div>
 	<dl>
 		{% for parent in char.parents %}

@@ -88,7 +88,7 @@ class CommonService {
 			$this->em->persist($setting);
 		}
 		$setting->setValue($value);
-		$this->em->flush($setting);
+		$this->em->flush();
 	}
 	public function queueAction(Action $action): array {
 		$action->setStarted(new DateTime("now"));

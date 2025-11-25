@@ -37,6 +37,7 @@ class ExceptionController extends AbstractController {
 		$code = $exception->getStatusCode();
 		$error = $exception->getMessage();
 		$trace = $exception->getTraceAsString();
+		$line = $exception->getLine();
 		$data = [
 			'status_code' => $code,
 			'exception' => $error,
@@ -63,7 +64,7 @@ class ExceptionController extends AbstractController {
 			}
 			if ($forward) {
 				try {
-					$text = "Status Code: $code \nError: $error\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n$trace";
+					$text = "Status Code: $code \nError: $error\nOn Line: $line\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n$trace";
 					$this->discord->pushToErrors($text);
 				} catch (Exception $e) {
 					// Do nothing.

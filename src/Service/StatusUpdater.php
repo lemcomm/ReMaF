@@ -79,6 +79,7 @@ class StatusUpdater {
 				if (!$char->getInsideSettlement()) {
 					$this->setNearestSettlement($char);
 				}
+				$this->updateCurrently($char, $which, $value);
 				break;
 			case CharacterStatus::sieging:
 				$char->updateStatus($which, $value);
