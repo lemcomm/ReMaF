@@ -330,18 +330,23 @@ class ConversationManager {
                         }
                         if (!$total) {
                                 $count = 0;
-                                foreach ($conv->findActivePermissions() as $perm) {
+					/** @var ConversationPermission $perm */
+					foreach ($conv->findActivePermissions() as $perm) {
                                         if (!$antiTickUp && $perm->getCharacter() != $char) {
                                                 if ($org) {
                                                         if ($org === 'realm' && !$perm->getCharacter()->getAutoReadRealms()) {
                                                                 $perm->setUnread($perm->getUnread()+1);
+								$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
                                                         } elseif ($org === 'assoc' && !$perm->getCharacter()->getAutoReadAssocs()) {
                                                                 $perm->setUnread($perm->getUnread()+1);
+								$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
                                                         } elseif ($org === 'house' && !$perm->getCharacter()->getAutoReadHouse()) {
                                                                 $perm->setUnread($perm->getUnread()+1);
+								$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
                                                         }
                                                 } else {
                                                         $perm->setUnread($perm->getUnread()+1);
+							$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
                                                 }
                                         }
                                         $count++;
@@ -524,6 +529,7 @@ class ConversationManager {
                                 $perm->setActive(true);
                                 if ($content && (!$realm || !$recipient->getAutoReadRealms())) {
                                         $perm->setUnread(1);
+					$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
                                 } else {
                                         $perm->setUnread(0);
                                 }
