@@ -3,6 +3,7 @@
 namespace App\Enum;
 
 enum RaceName: string {
+	# Under no circumstance should races in this list have hyphens. It breaks familiarity.
 	case firstOne = 'first one';
 	case secondOne = 'second one';
 	case magitek = 'magitek';

@@ -104,7 +104,10 @@ class QueueController extends AbstractController {
 			}
 		}
 		if ($change) $this->em->flush();
-		if ($this->skillManager->setupSkill($character, 'military')) $this->em->flush();
+		if ($this->skillManager->setupSkill($character, 'military')) {
+			$this->em->flush();
+			return $this->redirectToRoute('maf_queue_battle', ['id'=>$battle->getId()]);
+		}
 
 		// FIXME:
 		// preparation timer should be in the battle, not in the individual actions
@@ -114,12 +117,18 @@ class QueueController extends AbstractController {
 		if ($debug && !$sec->isGranted('ROLE_OLYMPUS')) {
 			$debug = false;
 		}
+		$familiarity = $character->getFamiliarity();
+		if ($debug) {
+			foreach ($familiarity as $key=>$value) {
+				echo $key.' : '.$value." -- ";
+			}
+		}
 
 		return $this->render('Queue/battle.html.twig', [
 			"battle" => $battle,
 			"location" => $location,
 			"now" => new DateTime("now"),
-			"familiarity" => $character->getFamiliarity(),
+			"familiarity" => $familiarity,
 			"debug"=>$debug,
 		]);
 	}

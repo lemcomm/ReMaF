@@ -49,16 +49,16 @@ class LoadSkillsData extends Fixture {
 		"lowMonster" => ['pro'=>'races'],
 		"legend" => ['pro'=>'races'],
 
-		RaceName::firstOne->value => ['pro'=>'firstWorld'],
-		RaceName::secondOne->value => ['pro'=>'secondWorld'],
-		RaceName::magitek->value => ['pro'=>'magitek'],
-		RaceName::human->value => ['pro'=>'secondWorld'],
-		RaceName::orc->value => ['pro'=>'secondWorld'],
-		RaceName::elf->value => ['pro'=>'secondWorld'],
-		RaceName::ogre->value => ['pro'=>'highMonster'],
-		RaceName::wyvern->value => ['pro'=>'lowMonster'],
-		RaceName::slime->value => ['pro'=>'lowMonster'],
-		RaceName::dragon->value => ['pro'=>'legend'],
+		'first one' => ['pro'=>'firstWorld'],
+		'second one' => ['pro'=>'firstWorld'],
+		'magitek' => ['pro'=>'oldWorld'],
+		'human' => ['pro'=>'secondWorld'],
+		'orc' => ['pro'=>'secondWorld'],
+		'elf' => ['pro'=>'secondWorld'],
+		'ogre' => ['pro'=>'highMonster'],
+		'wyvern' => ['pro'=>'lowMonster'],
+		'slime' => ['pro'=>'lowMonster'],
+		'dragon' => ['pro'=>'legend'],
         );
 
         private array $skills = array(
@@ -152,7 +152,7 @@ class LoadSkillsData extends Fixture {
 		foreach ($this->skills as $name=>$data) {
 			if (is_array($data['cat'])) {
 				foreach ($data['cat'] as $each) {
-					$this->newSkillType($manager, $name, $each);
+					$this->newSkillType($manager, $each.'-'.$name, $each);
 				}
 			} else {
 				$this->newSkillType($manager, $name, $data['cat']);
@@ -163,17 +163,13 @@ class LoadSkillsData extends Fixture {
 	}
 
 	private function newSkillType($manager, $name, $category) {
-		$type = $manager->getRepository(SkillType::class)->findOneBy(['name'=>$name]);
+		$category = $manager->getRepository(SkillCategory::class)->findOneBy(['name'=>$category]);
+		$type = $manager->getRepository(SkillType::class)->findOneBy(['name'=>$name, 'category'=>$category]);
 		if (!$type) {
 			$type = new SkillType();
 			$manager->persist($type);
 			$type->setName($name);
-		}
-		$cat = $manager->getRepository(SkillCategory::class)->findOneBy(['name'=>$category]);
-		if ($cat) {
-			$type->setCategory($cat);
-		} else {
-			echo 'No Skill category of name '.$category.' found for skill '.$name.'\n';
+			$type->setCategory($category);
 		}
 	}
 }

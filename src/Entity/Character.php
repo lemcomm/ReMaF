@@ -3972,18 +3972,20 @@ class Character extends AbstractCharacter {
 			$race = $this->race;
 			$group = $race->getRaceGroup();
 			foreach ($this->skills as $skill) {
-				if ($skill->getType()->getName() === 'military') {
+				if (str_ends_with($skill->getType()->getName(), 'military')) {
+					$name = explode('-', $skill->getType()->getName());
+					$arr[$name[0]] = $skill->getScore();/*
 					$score = $skill->getScore();
 					$arr[$skill->getType()->getCategory()->getName()] = $score;
 					foreach (CharacterManager::$raceGroups as $key => $value) {
-						if ($value === $group) {
-							if (array_key_exists($key, $arr) && $arr[$key] > $score) {
+						if ($value === $group && $key !== $name[0]) {
+							if (array_key_exists($key, $arr) && $arr[$key] < $score) {
 								$arr[$key] = $score;
 							} else {
 								$arr[$key] = $score;
 							}
 						}
-					}
+					}*/
 				}
 			}
 			/*if ($race->getName() === RaceName::firstOne->value) {

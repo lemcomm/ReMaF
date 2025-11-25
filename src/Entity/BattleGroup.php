@@ -31,7 +31,7 @@ class BattleGroup {
 		1 => null, # Rough soldier count
 	];
 
-	public static int $familiarityMinimum = 35; # This is calculated based on $skill->getScore();
+	public static int $familiarityMinimum = 30; # This is calculated based on $skill->getScore();
 
 	/**
 	 * Constructor

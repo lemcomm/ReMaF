@@ -8,6 +8,7 @@ use App\Entity\SkillCategory;
 use App\Entity\SkillType;
 use App\Enum\RaceName;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 
 class SkillManager {
 
@@ -73,42 +74,51 @@ class SkillManager {
 		if ($which === 'military') {
 			/** @var Skill $skill */
 			foreach ($char->getSkills() as $skill) {
-				if ($skill->getType()->getName() === $skill) {
-					return true;
+				if (str_ends_with($skill->getType()->getName(), $which)) {
+					return false;
 				}
 			}
-			$category = $this->em->getRepository(SkillCategory::class)->findOneBy(['name'=>$char->getRace()->getName()]);
-			$type = $this->em->getRepository(SkillType::class)->findOneBy(['name'=>'military', 'category'=>$category]);
-			$skill = new Skill();
-			$this->em->persist($skill);
-			$skill->setCharacter($char);
-			$skill->setType($type);
-			$skill->setCategory($category);
-			$skill->setPractice(1000);
-			$skill->setTheory(1000);
-			$skill->setPracticeHigh(1000);
-			$skill->setTheoryHigh(1000);
-			$skill->setUpdated(new \DateTime('now'));
-			$super = $category->getCategory(); # Military Skill -> Race Skill Category -> Race Group Skill Category
-			if (!in_array($super->getName(), self::$noRaceGroupSkills)) {
-				foreach ($super->getSubCategories() as $sub) {
-					foreach ($sub->getSkills() as $each) {
-						$skill = new Skill();
-						$this->em->persist($skill);
-						$skill->setCharacter($char);
-						$skill->setType($type);
-						$skill->setCategory($category);
-						$skill->setPractice(200);
-						$skill->setTheory(200);
-						$skill->setPracticeHigh(200);
-						$skill->setTheoryHigh(200);
-						$skill->setUpdated(new \DateTime('now'));
-					}
-				}
+			if ($char->getRace()->getName() === RaceName::firstOne->value) {
+				$this->setupFirstOneMilitary($char);
 			}
 			return true;
 		}
 		return false;
+	}
+
+	private function setupFirstOneMilitary(Character $char) {
+		$raceName = RaceName::firstOne->value;
+		$category = $this->em->getRepository(SkillCategory::class)->findOneBy(['name'=>$raceName]);
+		if (!$category) {
+			throw new Exception("Missing skill category for $raceName");
+		}
+		$type = $this->em->getRepository(SkillType::class)->findOneBy(['name'=>$raceName.'-military', 'category'=>$category]);
+		if (!$type) {
+			throw new Exception("Missing skill type for $raceName-military");
+		}
+		$skill = new Skill();
+		$this->em->persist($skill);
+		$skill->setCharacter($char);
+		$skill->setType($type);
+		$skill->setCategory($category);
+		$skill->setPractice(1000);
+		$skill->setTheory(1000);
+		$skill->setPracticeHigh(1000);
+		$skill->setTheoryHigh(1000);
+		$skill->setUpdated(new \DateTime('now'));
+		$raceName = RaceName::secondOne->value;
+		$category = $this->em->getRepository(SkillCategory::class)->findOneBy(['name'=>$raceName]);
+		$type = $this->em->getRepository(SkillType::class)->findOneBy(['name'=>$raceName.'-military', 'category'=>$category]);
+		$skill = new Skill();
+		$this->em->persist($skill);
+		$skill->setCharacter($char);
+		$skill->setType($type);
+		$skill->setCategory($category);
+		$skill->setPractice(200);
+		$skill->setTheory(200);
+		$skill->setPracticeHigh(200);
+		$skill->setTheoryHigh(200);
+		$skill->setUpdated(new \DateTime('now'));
 	}
 
 }
