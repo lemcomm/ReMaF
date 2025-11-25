@@ -205,7 +205,7 @@ class CharacterManager {
 				$char->setInsideRegion($where->getMapRegion());
 			} elseif ($where->getSettlement()) {
 				$char->setInsideSettlement($where->getSettlement());
-				$where->setLocation($where->getGeoMarker()->getLocation());
+				$where->setLocation($where->getSettlement()->getGeoMarker()->getLocation());
 			}
 			$char->setInsidePlace($where);
 			$char->setWorld($where->getWorld());
