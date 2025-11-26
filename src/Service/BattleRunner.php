@@ -2202,7 +2202,7 @@ class BattleRunner {
 		foreach ($group->getCharacters() as $char) {
 			# This first part is just to allow for reinforcements.
 			$continue = false;
-			foreach ($char->getSoldiers() as $soldier) {
+			foreach ($char->getSoldiersOld() as $soldier) {
 				# This should only ever be the noble themselves but just in case...
 				if ($soldier->isNoble()) {
 					$continue = true;

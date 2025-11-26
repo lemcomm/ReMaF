@@ -61,7 +61,7 @@ class UserManager {
 		return $user;
 	}
 
-	public function createGenomeSet() {
+	public function createGenomeSet(): string {
 		$genome = str_split($this->genome_all);
 
 		while (count($genome) > $this->genome_setsize) {

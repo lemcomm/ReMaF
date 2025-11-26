@@ -159,8 +159,7 @@ class CharacterManager {
 		if ($user) {
 			$genome_set = $user->getGenomeSet();
 		} else {
-			$genomeArr = array_rand(str_split($this->userManager->createGenomeSet()), 2);
-			return $genomeArr[0].$genomeArr[1];
+			$genome_set = $this->userManager->createGenomeSet();
 		}
 
 		if ($father) {
@@ -181,6 +180,11 @@ class CharacterManager {
 		// FIXME: apparently, sometimes this return an empty string? HOW ?
 		if ($genome == '' || $genome == '  ') {
 			throw new Exception("Please report this error to mafteam@lemuriacommunity.org: u:".$user->getId()."/f:".($father?$father->getId():'0')."/m:".($mother?$mother->getId():'0')."/g:".$genome."/");
+		}
+		if (strlen($genome) > 2) {
+			throw new Exception("Genome is too long! Result was $genome");
+		} else {
+			echo $genome;
 		}
 
 		return $genome;
