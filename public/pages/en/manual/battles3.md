@@ -1,6 +1,6 @@
 ### This manual page is detailing a highly experimental and incomplete feature that is in the process of being implemented. Everything on this page, while as detailed as it may be, is subject to change. ###
 
-This manual page specifically details the "Mastery" Might & Fealty combat system. [Click here to view the "Legacy" combat system.](battles3)
+This manual page specifically details the "Mastery" Might & Fealty combat system. [Click here to view the "Legacy" combat system.](battles)
 
 Of particular note, this system is not currently in use for sieges, assaults, or sorties. It is, at this time, entirely opt-in for noble vs noble battles.
 
