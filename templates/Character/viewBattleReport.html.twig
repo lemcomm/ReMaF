@@ -229,7 +229,7 @@
 						{% endfor %}
 					{% else %}
 						{% for soldiers, i in group.start %}
-								<li>{{ i }} {{ ('soldier.'~soldiers)|trans({'count':i})|title }}</li>
+							<li>{{ i }} {{ ('soldier.'~soldiers)|trans({'count':i})|title }}</li>
 						{% endfor %}
 					{% endif %}
 				</ul></td>
@@ -263,6 +263,25 @@
 								{% endif %}
 							{% endfor %}
 							<li>{{ ('battle.extras.'~extra.what)|trans({'%who%':who?link(who):'[nobody]', '%by%':by?link(by):'[nobody]'})|raw }}</li>
+						{% endfor %}
+						{% for key, value in group.reinforcements %}
+							{{ 'battle.reinforcement.announce'|trans({}) }}
+							{% if key == 'characters' %}
+								{% for id in value %}
+									{% for participant in fighters %}
+										{% if participant.character.id == extra.who %}
+											{% set who = participant.character %}
+										{% endif %}
+									{% endfor %}
+									<li>{{ 'battle.reinforcement.character'|trans({'%who%':who?link(id):'[nobody]'})|raw }}</li>
+								{% endfor %}
+							{% endif %}
+							{% if key == 'troops' %}
+								{% for soldiers, i in value %}
+									{% set string = soldiers|split('.') %}
+									<li>{{ i }} {{ ('soldier.'~string.1)|trans({'count':i})|title }} ({{ string.0|trans|title }}) </li>
+								{% endfor %}
+							{% endif %}
 						{% endfor %}
 					{% endif %}
 				{% endfor %}

@@ -313,9 +313,10 @@ class BattleGroup {
 	/**
 	 * @throws Exception
 	 */
-	public function getEnemies() {
+	public function getEnemies($withReinforcements = false) {
 		$enemies = [];
 		if ($this->battle) {
+			# TODO: Look at reworking this with how reinforcements are handled in battlerunner.
 			if ($this->getReinforcing()) {
 				$primary = $this->getReinforcing();
 			} else {
@@ -323,7 +324,7 @@ class BattleGroup {
 			}
 			$enemies = new ArrayCollection;
 			foreach ($this->battle->getGroups() as $group) {
-				if ($group != $primary && $group->getReinforcing() != $primary) {
+				if ($group != $primary && ($withReinforcements && $group->getReinforcing() !== $primary) || (!$withReinforcements && !$group->getReinforcing())) {
 					$enemies->add($group);
 				}
 			}

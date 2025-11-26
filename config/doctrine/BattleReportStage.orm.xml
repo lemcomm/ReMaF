@@ -8,6 +8,7 @@
 		<field name="round" type="smallint"/>
 		<field name="data" type="array"/>
 		<field name="extra" type="array" nullable="true"/>
+		<field name="reinforcements" type="array" nullable="true"/>
 
 	</entity>
 </doctrine-mapping>

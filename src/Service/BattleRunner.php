@@ -16,7 +16,6 @@ use App\Entity\Skill;
 use App\Entity\SkillCategory;
 use App\Entity\Soldier;
 use App\Enum\CharacterStatus;
-use App\Service\StatusUpdater;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -37,6 +36,7 @@ class BattleRunner {
 	*/
 
 	const array rulesets = ['legacy', 'mastery'];
+	const int roundsPerRun = 1;
 
 	# The following variables are used all over this class, in multiple functions, sometimes as far as 4 or 5 functions deep.
 	# Requires resetting.
@@ -169,10 +169,6 @@ class BattleRunner {
 		$this->debug=0;
 	}
 
-	public function getLastReport() {
-		return $this->report;
-	}
-
 	private function prepareCombatManager(): void {
 		$this->combatRules = $this->battle->getRuleset()?:'legacy';
 		$this->combat->version = $this->combatVersion;
@@ -262,14 +258,19 @@ class BattleRunner {
 			$this->em->flush();
 			// the main call to actually run the battle:
 			$this->log(15, "Resolving Battle...\n");
-			$this->resolveBattle($myStage, $maxStage);
-			$this->log(15, "Post Battle Cleanup...\n");
-			$victor = $this->concludeBattle();
-			if ($victor) {
-				$victorReport = $victor->getActiveReport();
+			$complete = $this->resolveBattle($myStage, $maxStage);
+			if ($complete) {
+				$this->log(15, "Post Battle Cleanup...\n");
+				$victor = $this->concludeBattle();
+				if ($victor) {
+					$victorReport = $victor->getActiveReport();
+				} else {
+					$victorReport = false;
+				}
 			} else {
-				$victorReport = false;
+				$this->em->flush();
 			}
+
 		} else {
 			// if there are no soldiers in the battle
 			$this->log(1, "failed battle\n");
@@ -351,7 +352,47 @@ class BattleRunner {
 		$this->notes->spoolBattleReport($this->report, $this->combatRules);
 	}
 
+	public function countSoldierTypes($soldiers): array {
+		$types=[];
+		$groupCount = 0;
+
+		/** @var Soldier $soldier */
+		if ($this->version < 3) {
+			foreach ($soldiers as $soldier) {
+				$groupCount++;
+				if ($soldier->getExperience()<=5) {
+					$soldier->addXP(2);
+				} else {
+					$soldier->addXP(1);
+				}
+				$type = $soldier->getType(true);
+				if (isset($types[$type])) {
+					$types[$type]++;
+				} else {
+					$types[$type] = 1;
+				}
+			}
+		} else {
+			foreach ($soldiers as $soldier) {
+				$groupCount++;
+				if ($soldier->getExperience()<=5) {
+					$soldier->addXP(2);
+				} else {
+					$soldier->addXP(1);
+				}
+				$type = $soldier->getTranslatableType(true);
+				if (isset($types[$type])) {
+					$types[$type]++;
+				} else {
+					$types[$type] = 1;
+				}
+			}
+		}
+		return [$types, $groupCount];
+	}
+
 	public function prepare(): array {
+		/** @var BattleGroup $group */
 		$battle = $this->battle;
 		$combatworthygroups = 0;
 		$this->nobility = new ArrayCollection;
@@ -369,7 +410,7 @@ class BattleRunner {
 		}
 		$totalCount = 0;
 		foreach ($battle->getGroups() as $group) {
-			/** @var BattleGroup $group */
+			$id = $group->getId();
 			if ($siege && $defGroup == NULL) {
 				if ($group !== $attGroup && !$group->getReinforcing()) {
 					$defGroup = $group;
@@ -385,49 +426,14 @@ class BattleRunner {
 			$group->setupSoldiers();
 			$this->addNobility($group);
 
-			$types=[];
-			$groupCount = 0;
-
-			/** @var Soldier $soldier */
-			if ($this->version < 3) {
-				foreach ($group->getActiveSoldiers() as $soldier) {
-					$groupCount++;
-					if ($soldier->getExperience()<=5) {
-						$soldier->addXP(2);
-					} else {
-						$soldier->addXP(1);
-					}
-					$type = $soldier->getType(true);
-					if (isset($types[$type])) {
-						$types[$type]++;
-					} else {
-						$types[$type] = 1;
-					}
-				}
-			} else {
-				foreach ($group->getActiveSoldiers() as $soldier) {
-					$groupCount++;
-					if ($soldier->getExperience()<=5) {
-						$soldier->addXP(2);
-					} else {
-						$soldier->addXP(1);
-					}
-					$type = $soldier->getTranslatableType(true);
-					if (isset($types[$type])) {
-						$types[$type]++;
-					} else {
-						$types[$type] = 1;
-					}
-				}
-			}
-
+			[$types, $groupCount] = $this->countSoldierTypes($group->getActiveSoldiers());
 
 			$totalCount += $groupCount;
 			$groupReport->setCount($groupCount);
 			$combatworthy=false;
 			$troops = array();
 
-			$this->log(3, "Totals in this group:\n");
+			$this->log(3, "Totals in group $id:\n");
 			foreach ($types as $type => $number) {
 				$this->log(3, $type . ": $number \n");
 				$troops[$type] = $number;
@@ -456,6 +462,49 @@ class BattleRunner {
 
 		// FIXME: in huge battles, this can potentially take, like, FOREVER :-(
 		if ($combatworthygroups>1) {
+			# Checking for reinforcements!
+			$emptyGroups = [];
+			$reinforcements = false;
+			if ($battle->getPhase() > 0) {
+				# Check for reinforcements on battles that have already ran.
+				foreach ($battle->getGroups() as $group) {
+					$reinforcing = $group->getReinforcing();
+					if ($reinforcing) {
+						$troops = [];
+						$data = [];
+						$id = $reinforcing->getId();
+						foreach ($group->getCharacters() as $char) {
+							$reinforcing->addCharacter($char);
+							$group->removeCharacter($char);
+							$data['characters'][] = $char->getId();
+						}
+						$emptyGroups[] = $group;
+						[$types, $ignored] = $this->countSoldierTypes($group->getActiveSoldiers());
+						$reinforcements = true;
+						$this->log(3, "New soldiers in this group $id:\n");
+						/** @var BattleReportStage $lastStageReport */
+						$lastStageReport = $reinforcing->getActiveReport()->getCombatStages()->last();
+						foreach ($types as $type => $number) {
+							$this->log(3, $type . ": $number \n");
+							$troops[$type] = $number;
+						}
+						$data['troops'][] = $troops;
+						$lastStageReport->setReinforcements($data);
+					}
+				}
+			}
+			if ($reinforcements) {
+				$this->em->flush();
+			}
+			foreach ($emptyGroups as $group) {
+				$this->em->remove($group);
+			}
+			if ($reinforcements) {
+				$group->setupSoldiers();
+				$this->addNobility($group);
+				$this->em->flush();
+			}
+
 			# Only siege assaults get defense bonuses.
 			if ($this->defenseBonus) {
 				$this->log(10, "Defense Bonus / Fortification: ".$this->defenseBonus."\n");
@@ -465,11 +514,6 @@ class BattleRunner {
 				/** @var Soldier $soldier */
 				if (!$this->resuming || !$battle->getRegionType()) {
 					$mysize = $group->getVisualSize();
-					if ($group->getReinforcedBy()) {
-						foreach ($group->getReinforcedBy() as $reinforcement) {
-							$mysize += $reinforcement->getVisualSize();
-						}
-					}
 
 					/* TODO: Replace siegeFinale call with myStage and maxStage passed var comparisons.
 					if ($battle->getSiege() && !$this->siegeFinale && $group == $attGroup) {
@@ -615,7 +659,7 @@ class BattleRunner {
 		}
 	}
 
-	public function resolveBattle($myStage, $maxStage): void {
+	public function resolveBattle($myStage, $maxStage): bool {
 		$battle = $this->battle;
 		if ($this->resuming && $battle->getPhase()) {
 			$phase = $battle->getPhase();
@@ -659,6 +703,7 @@ class BattleRunner {
 		}
 		#$this->prepareBattlefield();
 		$this->log(20, "...starting phases...\n");
+		$runCount = 0;
 		while ($combat) {
 			$this->prepareRound();
 			# Main combat loop, go!
@@ -670,13 +715,18 @@ class BattleRunner {
 				$combat = $this->runStage('normal', $rangedPenalty, $phase);
 			}
 			$phase++;
+			$runCount++;
 			$battle->setPhase($phase);
 			$this->em->flush();
+			if (!$combat && $runCount >= self::roundsPerRun) {
+				return false;
+			}
 		}
 		$this->log(20, "...hunt phase...\n");
 		if ($this->legacyRuleset) {
 			$this->runStage('hunt', $rangedPenalty, $phase);
 		}
+		return true;
 	}
 
 	public function prepareRound($first = false): void {
@@ -2150,6 +2200,19 @@ class BattleRunner {
 
 	public function addNobility(BattleGroup $group): void {
 		foreach ($group->getCharacters() as $char) {
+			# This first part is just to allow for reinforcements.
+			$continue = false;
+			foreach ($char->getSoldiers() as $soldier) {
+				# This should only ever be the noble themselves but just in case...
+				if ($soldier->isNoble()) {
+					$continue = true;
+					break;
+				}
+			}
+			if ($continue) {
+				# Character already in group.
+				continue;
+			}
 			// TODO: might make this actual buy options, instead of hardcoded
 			/** @var Character $char */
 			if ($this->version >= 2) {
@@ -2183,6 +2246,7 @@ class BattleRunner {
 			$noble->setCharacter($char);
 			$group->getSoldiers()->add($noble);
 			$this->nobility->add($noble);
+			# Note: These are deliberately NOT persisted or saved to the database.
 		}
 	}
 

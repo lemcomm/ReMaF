@@ -1405,6 +1405,9 @@ battle:
  defenses:      An assault against a defended position with
  initial:       initial troops
  combat:        combat
+ reinforcement:
+  character:    "{who} joined the battle."
+  announce:     "Reinforcements have arrived"
  ranged:
   title:        ranged phase
   shots:        "{i} shot{count, plural, =1 {} other {s}} fired"
