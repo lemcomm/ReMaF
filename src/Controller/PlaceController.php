@@ -7,6 +7,7 @@ use App\Entity\Association;
 use App\Entity\Character;
 use App\Entity\Permission;
 use App\Entity\Place;
+use App\Entity\Realm;
 use App\Entity\Spawn;
 use App\Enum\CharacterStatus;
 use App\Form\AreYouSureType;
@@ -512,6 +513,15 @@ class PlaceController extends AbstractController {
 				$data['owning_realm'] = $form->get('owning_realm')->getData();
 				$data['ambassador'] = $form->get('ambassador')->getData();
 				$data['realm'] = $form->get('realm')->getData();
+				if ($data['hosting_realm'] && !$data['hosting_realm'] instanceof Realm) {
+					$data['hosting_realm'] = $this->em->getRepository(Realm::class)->find($data['hosting_realm']);
+				}
+				if ($data['owning_realm'] && !$data['owning_realm'] instanceof Realm) {
+					$data['owning_realm'] = $this->em->getRepository(Realm::class)->find($data['owner_realm']);
+				}
+				if ($data['realm'] && !$data['realm'] instanceof Realm) {
+					$data['realm'] = $this->em->getRepository(Realm::class)->find($data['realm']);
+				}
 				if ($place->getName() != $data['name']) {
 					$place->setName($data['name']);
 				}

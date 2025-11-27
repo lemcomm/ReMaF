@@ -51,7 +51,6 @@ class ExceptionController extends AbstractController {
 		$bits = explode("::", $error);
 		if ($code !== 404) {
 			$forward = true;
-			$forward2 = false;
 			$errBits = explode("::", $error);
 			if (str_contains($error, 'RFC 2822')) {
 				# Filter out junk bot email addresses.
@@ -63,9 +62,20 @@ class ExceptionController extends AbstractController {
 				}
 			}
 			if ($forward) {
+				$traces = str_split($trace, 1000);
 				try {
-					$text = "Status Code: $code \nError: $error\nOn Line: $line\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n$trace";
-					$this->discord->pushToErrors($text);
+					if (strlen($trace) < 1000) {
+						$text = "Status Code: $code \nError: `$error`\nOn Line: $line\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n```$trace```";
+						$this->discord->pushToErrors($text);
+					} else {
+						$text = "Status Code: $code \nError: `$error`\nOn Line: $line\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n```$traces[0]```";
+						$this->discord->pushToErrors($text);
+						unset($traces[0]);
+						sleep(0.1);
+						foreach ($traces as $tracer) {
+							$this->discord->pushToErrors("```$tracer```");
+						}
+					}
 				} catch (Exception $e) {
 					// Do nothing.
 				}

@@ -68,7 +68,7 @@ class PlaceManageType extends AbstractType {
 			'required'=>true,
 		));
 		if ($type == 'embassy') {
-			if ($me->getOwner() === $char) {
+			if ($me->isOwner($char)) {
 				$builder->add('realm', EntityType::class, [
 					'required'=>false,
 					'choices'=> $me->getOwner()->findRealms(),
@@ -86,7 +86,7 @@ class PlaceManageType extends AbstractType {
 			if (!$me->getHostingRealm()) {
 				$builder->add('hosting_realm', EntityType::class, [
 					'required'=>false,
-					'choices'=> $me->getRealm()->findHierarchy(true),
+					'choices'=> $me->getRealm()?->findHierarchy(true),
 					'class'=>Realm::class,
 					'choice_label' => 'name',
 					'placeholder'=>'realm.empty',
@@ -94,10 +94,10 @@ class PlaceManageType extends AbstractType {
 					'data'=>$me->getHostingRealm()
 				]);
 				$builder->add('owning_realm', HiddenType::class, [
-					'data'=>$me->getOwningRealm(),
+					'data'=>$me->getOwningRealm()?->getId(),
 				]);
 				$builder->add('ambassador', HiddenType::class, [
-					'data'=>$me->getAmbassador(),
+					'data'=>$me->getAmbassador()?->getId(),
 				]);
 			} elseif (!$me->getOwningRealm()) {
 				$builder->add('hosting_realm', EntityType::class, [
@@ -167,13 +167,13 @@ class PlaceManageType extends AbstractType {
 				]);
 			}
 			$builder->add('hosting_realm', HiddenType::class, [
-				'data'=>$me->getHostingRealm()
+				'data'=>$me->getHostingRealm()?->getId()
 			]);
 			$builder->add('owning_realm', HiddenType::class, [
-				'data'=>$me->getOwningRealm()
+				'data'=>$me->getOwningRealm()?->getId()
 			]);
 			$builder->add('ambassador', HiddenType::class, [
-				'data'=>$me->getAmbassador()
+				'data'=>$me->getAmbassador()?->getId()
 			]);
 		}
 	}
