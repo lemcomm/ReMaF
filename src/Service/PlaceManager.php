@@ -155,7 +155,7 @@ class PlaceManager {
 				} else {
 					$place = $result;
 				}
-				if($place && $place->getOwner() == $character OR $this->pm->checkPlacePermission($place, $character, 'see') OR $place->getVisible()) {
+				if($place && ($place->getOwner() == $character || $this->pm->checkPlacePermission($place, $character, 'see') || $place->getVisible())) {
 					$places[] = $place;
 				}
 			}
