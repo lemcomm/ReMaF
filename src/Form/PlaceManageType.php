@@ -80,7 +80,7 @@ class PlaceManageType extends AbstractType {
 				]);
 			} else {
 				$builder->add('realm', HiddenType::class, [
-					'data'=>$me->getRealm(),
+					'data'=>$me->getRealm()?->getId(),
 				]);
 			}
 			if (!$me->getHostingRealm()) {
@@ -163,7 +163,7 @@ class PlaceManageType extends AbstractType {
 				]);
 			} else {
 				$builder->add('realm', HiddenType::class, [
-					'data'=>$me->getRealm(),
+					'data'=>$me->getRealm()?->getId(),
 				]);
 			}
 			$builder->add('hosting_realm', HiddenType::class, [
