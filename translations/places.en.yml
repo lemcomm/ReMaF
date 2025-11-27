@@ -103,7 +103,7 @@ place:
   none:         No associations are present here.
   list:         "Associations Located Here:"
   join:
-   name:         Join %name%
+   name:         Join the %name%
    name2:        Join Association
    description: It looks like the %name% is available for joining.
  addAssoc:
@@ -115,7 +115,7 @@ place:
  evictAssoc:
   name:   Evict the %name%
   description:  Tired of an association causing problems? Evict them.
-  longdesc: Associations can be quite extensive. And you're well within your abilities to remdey that problem.
+  longdesc: Associations can be quite extensive. And you're well within your abilities to remedy that problem.
   intro: >
     If you've found the %name% to be troublesome, it's a fairly simple matter to evict them.
 

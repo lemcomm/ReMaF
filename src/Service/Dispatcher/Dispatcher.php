@@ -1416,19 +1416,19 @@ class Dispatcher {
 
 	public function assocJoinTest($ignored, Association $assoc): array {
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
-			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.$check"];
+			return ["name"=>"place.associations.join.name", "description"=>"unavailable.$check", "transkeys"=>["%name%"=>$assoc->getName()]];
 		}
 		$character = $this->getCharacter();
 		if (!$character->getInsidePlace()) {
-			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.outsideplace"];
+			return ["name"=>"place.associations.join.name", "description"=>"unavailable.outsideplace", "transkeys"=>["%name%"=>$assoc->getName()]];
 		} else {
 			$place = $character->getInsidePlace();
 		}
 		if (!$place->containsAssociation($assoc)) {
-			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.assocnothere"];
+			return ["name"=>"place.associations.join.name", "description"=>"unavailable.assocnothere", "transkeys"=>["%name%"=>$assoc->getName()]];
 		}
 		if ($assoc->findMember($character)) {
-			return ["name"=>"place.associations.join.name2", "description"=>"unavailable.alreadyinassoc"];
+			return ["name"=>"place.associations.join.name", "description"=>"unavailable.alreadyinassoc", "transkeys"=>["%name%"=>$assoc->getName()]];
 		}
 		return $this->action('place.associations.join', 'maf_assoc_join', true,
 			['id'=>$assoc->getId()],
@@ -2517,7 +2517,7 @@ class Dispatcher {
 		return $data;
 	}
 
-	protected function varCheck($data, $name = null, $url = null, $desc = null, $longdesc = null, $params = null, $trans = null, $vars = null) {
+	protected function varCheck($data, $name = null, $url = null, $desc = null, $longdesc = null, $params = null, $trans = null, $vars = null, $alwaysTransKeys = false) {
 		# Function for overriding the action output, in order to allow one check to use one of multiple checks and then return a correct output for that check.
 		if ($name) {
 			$data['name'] = $name;
@@ -2542,6 +2542,8 @@ class Dispatcher {
 			if ($vars) {
 				$data['vars'] = $vars;
 			}
+		} elseif ($alwaysTransKeys) {
+			$data['transkeys'] = $trans;
 		}
 		return $data;
 	}
