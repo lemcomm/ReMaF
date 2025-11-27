@@ -1017,7 +1017,7 @@ techtree:     Technology Tree
 charstatus:
  prebattle:    pre-battle
  inbattle:     battling
- travelling:   travelling ({turn} hour(s))
+ travelling:   travelling (~{turn} hour(s))
  annexing:     annexing
  supporting:   supporting
  opposing:     opposing

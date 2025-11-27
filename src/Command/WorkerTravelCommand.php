@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Artifact;
+use App\Entity\Character;
 use App\Entity\Ship;
 use App\Enum\CharacterStatus;
 use App\Service\CommonService;
@@ -60,8 +61,8 @@ class WorkerTravelCommand extends  Command {
 		// primary travel action - update our speed, check if we've arrived and update progress
 		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.travel IS NOT NULL AND c.travel_locked = false')->setMaxresults($batch)->setFirstResult($offset);
 		$i = 0;
+		/** @var Character $char */
 		foreach ($query->toIterable() as $char) {
-			$update = true;
 			if ($char->getInsidePlace()) {
 				if (!$interactions->characterLeavePlace($char)) {
 					continue; #If you can't leave, you can't travel.
@@ -80,7 +81,8 @@ class WorkerTravelCommand extends  Command {
 			}
 			$geography->updateTravelSpeed($char);
 			// TODO: check the return status, it should alert us to invalid travel settings!
-			$progress = $char->getProgress() + ($char->getSpeed() * $speedmod);
+			$realSpeed = $char->getSpeed() * $speedmod;
+			$progress = $char->getProgress() + $realSpeed;
 			if ($progress >= 1.0) {
 				// we have arrived!
 				$char->setLocation($char->getTravel()->getPoint(-1));
@@ -106,7 +108,6 @@ class WorkerTravelCommand extends  Command {
 						$ship->setWorld($char->getWorld());
 						$this->em->persist($ship);
 						$this->status->character($char, CharacterStatus::atSea, false);
-						$update = false;
 					} else {
 						$history->logEvent(
 							$char,
@@ -126,14 +127,12 @@ class WorkerTravelCommand extends  Command {
 						$interactions->characterEnterSettlement($char, $settlement);
 					}
 					$char->setTravelEnter(false);
-					$update = false;
 				}
-				if ($update) {
-					$this->status->character($char, CharacterStatus::travelling, false);
-				}
+				$this->status->character($char, CharacterStatus::travelling, false);
 			} else {
 				$char->setProgress($progress);
-				$this->status->character($char, CharacterStatus::travelling, ceil(1/$char->getSpeed()*6));
+				$remaining = (1-$progress)/$realSpeed;
+				$this->status->character($char, CharacterStatus::travelling, $remaining);
 			}
 			if (!$artifactsNaN) {
 				$artifacts = $this->geo->findNearbyArtifacts($char);
