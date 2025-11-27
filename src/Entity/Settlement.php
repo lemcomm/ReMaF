@@ -451,9 +451,10 @@ class Settlement {
 		return false;
 	}
 
-	public function hasBuildingNamed($name) {
+	public function hasBuildingNamed($name): bool {
 		$has = $this->getBuildingByName($name);
 		if (!$has) return false;
+		/** @var Building $has */
 		return $has->isActive();
 	}
 

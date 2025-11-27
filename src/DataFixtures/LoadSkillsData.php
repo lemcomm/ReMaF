@@ -127,6 +127,12 @@ class LoadSkillsData extends Fixture {
 			RaceName::slime->value,
 			RaceName::dragon->value,
 		]],
+
+		"horseback" => ['cat' => 'riding'],
+		"lizardback" => ['cat' => 'riding'],
+		"wyvernback" => ['cat' => 'riding'],
+		"wargback" => ['cat' => 'riding'],
+		"dragonback" => ['cat' => 'riding'],
         );
 
 	public function load(ObjectManager $manager): void {

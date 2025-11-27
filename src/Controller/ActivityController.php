@@ -32,22 +32,49 @@ class ActivityController extends AbstractController {
 		private ActivityDispatcher $activityDispatcher,
 		private ActivityManager $actman,
 		private EntityManagerInterface $em,
-		private TranslatorInterface $trans) {
+		private TranslatorInterface $trans,
+		private Geography $geo,
+	) {
 	}
 	
 	private function gateway($test, $secondary = null) {
 		return $this->activityDispatcher->gateway($test, null, true, false, $secondary);
 	}
 
+	public function tournamentCreateAction(Request $request): Response|RedirectResponse {
+		$char = $this->gateway('activityTournamentCreateTest');
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+		$settlement = $char->getInsideSettlement();
+		$fights = false;
+		$races = false;
+		$jousts = false;
+		$grand = false;
+		if ($settlement && $settlement->getOwner() === $char || $settlement->getSteward() === $char) {
+			if ($settlement->hasBuildingNamed('arena')) $fights = true;
+			if ($settlement->hasBuildingNamed('list field')) $jousts = true;
+			if ($settlement->hasBuildingNamed('race track')) $races = true;
+			if ($fights && $races && $jousts) {
+				if ($settlement->hasBuildingNamed('tournament grounds')) {
+					$grand = true;
+				}
+			}
+		}
+		#TODO: Finish form, and this route.
+		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'duel', 'maxdistance'=>$this->geo->calculateInteractionDistance($char), 'me'=>$char, 'subselect'=>$opts]);
+
+	}
+
 	#[Route ('/activity/duel/challenge', name:'maf_activity_duel_challenge')]
-	public function duelChallengeAction(Geography $geo, Request $request): RedirectResponse|Response {
+	public function duelChallengeAction(Request $request): RedirectResponse|Response {
 		$char = $this->gateway('activityDuelChallengeTest');
 		if (! $char instanceof Character) {
                         return $this->redirectToRoute($char);
 		}
 		$opts = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon', 'restricted'=>false]);
 
-		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'duel', 'maxdistance'=>$geo->calculateInteractionDistance($char), 'me'=>$char, 'subselect'=>$opts]);
+		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'duel', 'maxdistance'=>$this->geo->calculateInteractionDistance($char), 'me'=>$char, 'subselect'=>$opts]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
                         $data = $form->getData();
