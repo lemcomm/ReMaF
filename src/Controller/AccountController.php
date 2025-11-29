@@ -467,7 +467,7 @@ class AccountController extends AbstractController {
 			if (!$character || $character->getUser() !== $user) {
 				return new Response("error");
 			}
-			$character->setList($data['list']);
+			$character->setList($data['list']?:1);
 			$em->flush();
 			return new Response("done");
 		}

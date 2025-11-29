@@ -18,6 +18,7 @@ use App\Entity\Settlement;
 
 use App\Entity\World;
 use DateTime;
+use Exception;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -715,10 +716,19 @@ class Geography {
 			$point = json_decode($result[0]['disembark']);
 
 			$invalid[] = array('type'=>'feature', 'geometry'=>$point);
-			// FIXME: this breaks because: ST_Line_Substring: "If 'start' and 'end' have the same value this is equivalent to ST_Line_Interpolate_Point."
-			$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.travel = ST_Line_Substring(c.travel, 0, ST_Line_Locate_Point(c.travel, ST_Point(:x,:y))) WHERE c=:me');
-			$query->setParameters(['me'=>$character, 'x'=>$point->coordinates[0], 'y'=>$point->coordinates[1]]);
-			$query->execute();
+			try {
+				// NOTE: this breaks because: ST_Line_Substring: "If 'start' and 'end' have the same value this is equivalent to ST_Line_Interpolate_Point."
+				$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.travel = ST_Line_Substring(c.travel, 0, ST_Line_Locate_Point(c.travel, ST_Point(:x,:y))) WHERE c=:me');
+				$query->setParameters(['me'=>$character, 'x'=>$point->coordinates[0], 'y'=>$point->coordinates[1]]);
+				$query->execute();
+			} catch (Exception $e) {
+				if (str_contains($e->getMessage(), 'Geometry type (Point) does not match column type (LineString)')) {
+					# Above execution returned that the travel line is actually a point. So we just stop travelling instead.
+					$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.travel = null WHERE c=:me');
+					$query->setParameters(['me'=>$character]);
+					$query->execute();
+				}
+			}
 		}
 		return array($invalid, $crosses_land);
 	}
