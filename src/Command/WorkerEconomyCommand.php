@@ -44,60 +44,62 @@ class WorkerEconomyCommand extends Command {
 		$count = 0;
 		/** @var Settlement $settlement */
 		foreach ($iterableResult as $settlement) {
+			$bypass = false;
 			$count++;
+			if ($settlement->getThralls() != 0 && !$settlement->getAllowThralls()) {
+				$this->economy->freeThralls($settlement);
+			}
 			// workaround for our calculations below causing errors on 0 values
 			if ($settlement->getPopulation()<5) {
 				$settlement->setPopulation(5);
-				continue;
+				$bypass = true;
 			}
-
-			// check and update trades, food and wealth production
-			$WealthProduction = 0;
-			foreach ($this->economy->getResources() as $resource) {
-				if (!$settlement->getSiege() || ($settlement->getSiege() && !$settlement->getSiege()->getEncircled())) {
-					$production = $this->economy->ResourceProduction($settlement, $resource, false, true); // with forced recalculation to update building effects
-					$WealthProduction += $production * $resource->getGoldValue();
-					$tradebalance = $this->economy->TradeBalance($settlement, $resource);
-					// wealth counts trade for 10%, but even outgoing trade adds (networking effects)
-					if ($tradebalance < 0) {
-						$tradebalance += $this->economy->fixTrades($settlement, $resource, $production, $tradebalance);
-					}
-					$WealthProduction += ($production + abs($tradebalance)*0.1) * $resource->getGoldValue();
-
-					// calculate supply and update storage
-					$demand = $this->economy->ResourceDemand($settlement, $resource, false, true);
-					$available = $production + $tradebalance;
-					$available = $this->economy->updateSupplyAndStorage($settlement, $resource, $demand, $available);
-
-					// growth or starvation
-					if ($resource->getName()=='food') {
-						if ($available <= 0) {
-							$shortage = 1.0;
-						} else {
-							$shortage = ($demand - $available) / $available;
+			if (!$bypass) {
+				// check and update trades, food and wealth production
+				$WealthProduction = 0;
+				foreach ($this->economy->getResources() as $resource) {
+					if (!$settlement->getSiege() || ($settlement->getSiege() && !$settlement->getSiege()->getEncircled())) {
+						$production = $this->economy->ResourceProduction($settlement, $resource, false, true); // with forced recalculation to update building effects
+						$WealthProduction += $production * $resource->getGoldValue();
+						$tradebalance = $this->economy->TradeBalance($settlement, $resource);
+						// wealth counts trade for 10%, but even outgoing trade adds (networking effects)
+						if ($tradebalance < 0) {
+							$tradebalance += $this->economy->fixTrades($settlement, $resource, $production, $tradebalance);
 						}
-						$output->writeln("food in ".$settlement->getName()." (".$settlement->getId()."): $production + $tradebalance (+storage) = $available of $demand = ".(round($shortage*100)/100));
-						$this->economy->FoodSupply($settlement, $shortage);
+						$WealthProduction += ($production + abs($tradebalance)*0.1) * $resource->getGoldValue();
+
+						// calculate supply and update storage
+						$demand = $this->economy->ResourceDemand($settlement, $resource, false, true);
+						$available = $production + $tradebalance;
+						$available = $this->economy->updateSupplyAndStorage($settlement, $resource, $demand, $available);
+
+						// growth or starvation
+						if ($resource->getName()=='food') {
+							if ($available <= 0) {
+								$shortage = 1.0;
+							} else {
+								$shortage = ($demand - $available) / $available;
+							}
+							$output->writeln("food in ".$settlement->getName()." (".$settlement->getId()."): $production + $tradebalance (+storage) = $available of $demand = ".(round($shortage*100)/100));
+							$this->economy->FoodSupply($settlement, $shortage);
+						}
+					} else {
+						$output->writeln("skipping ".$settlement->getName()." (".$settlement->getId().") as it is encircled.");
 					}
-				} else {
-					$output->writeln("skipping ".$settlement->getName()." (".$settlement->getId().") as it is encircled.");
 				}
-			}
 
-			// taxation
-			if ($settlement->getOwner()) {
-				// no tax collection in free settlements
-				if (!is_nan($WealthProduction)) {
-					$settlement->setGold(round($settlement->getGold() * 0.9 + $WealthProduction));
+				// taxation
+				if ($settlement->getOwner()) {
+					// no tax collection in free settlements
+					if (!is_nan($WealthProduction)) {
+						$settlement->setGold(round($settlement->getGold() * 0.9 + $WealthProduction));
+					}
 				}
-			}
 
-			if (!$settlement->getSiege() || !$settlement->getSiege()->getEncircled()) {
-				// check workforce
-				$this->economy->checkWorkforce($settlement);
-			}
-			if ($settlement->getThralls() != 0 && !$settlement->getAllowThralls()) {
-				$this->economy->freeThralls($settlement);
+				if (!$settlement->getSiege() || !$settlement->getSiege()->getEncircled()) {
+					// check workforce
+					$this->economy->checkWorkforce($settlement);
+				}
 			}
 			if ($count > 24) {
 				$output->writeln("Keeping things light, clearing Doctrine.");

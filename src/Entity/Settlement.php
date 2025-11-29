@@ -548,6 +548,9 @@ class Settlement {
 	 */
 	public function setThralls(int $thralls): static {
 		$this->thralls = $thralls;
+		if ($this->thralls < 0) {
+			$this->thralls = 0;
+		}
 
 		return $this;
 	}
