@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Service\GameRunner;
 use App\Service\NotificationManager;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +14,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class RunCommand extends  Command {
 
 	private GameRunner $game;
-	private LoggerInterface $logger;
 	private NotificationManager $note;
 
 	public function __construct(GameRunner $game, NotificationManager $note) {
@@ -42,7 +40,7 @@ class RunCommand extends  Command {
 		switch ($which) {
 			case 'hourly':
 				try {
-					$complete = $this->game->runCycle('update', 600, $opt_time, $opt_debug, $output);
+					$this->game->runCycle('update', 600, $opt_time, $opt_debug, $output);
 					$this->game->nextCycle(false);
 					$output->writeln("update complete");
 					$output->writeln("<info>update complete</info>");
@@ -52,13 +50,13 @@ class RunCommand extends  Command {
 					$output->writeln("error on line: ".$e->getLine()." in file: ".$e->getFile());
 					$output->writeln($e->getMessage());
 					$output->writeln($e->getTraceAsString());
-					$this->note->spoolAdminMsg("Update error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
+					$this->note->spoolError("Update error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
 					return Command::FAILURE;
 				}
 			case 'turn':
 				$output->writeln("<info>running turn:</info>");
 				try {
-					$complete = $this->game->runCycle('turn', 1200, $opt_time, $opt_debug, $output);
+					$this->game->runCycle('turn', 1200, $opt_time, $opt_debug, $output);
 					$this->game->nextCycle();
 					$output->writeln("turn complete");
 					$output->writeln("<info>turn complete</info>");
@@ -68,7 +66,7 @@ class RunCommand extends  Command {
 					$output->writeln("error on line: ".$e->getLine()." in file: ".$e->getFile());
 					$output->writeln($e->getMessage());
 					$output->writeln($e->getTraceAsString());
-					$this->note->spoolAdminMsg("Turn error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
+					$this->note->spoolError("Turn error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
 					return Command::FAILURE;
 				}
 		}

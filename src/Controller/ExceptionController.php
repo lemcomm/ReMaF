@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Character;
 use App\Service\AppState;
 use App\Service\DiscordIntegrator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,9 +11,7 @@ use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class ExceptionController extends AbstractController {
 	public function __construct(
@@ -27,13 +24,12 @@ class ExceptionController extends AbstractController {
 	 * Converts an Exception to a Response.
 	 *
 	 * @param FlattenException          $exception A FlattenException instance
-	 * @param DebugLoggerInterface|null $logger    A DebugLoggerInterface instance
 	 * @param Request                   $request
 	 *
 	 * @return Response
 	 */
 	#[Route ('/error/')]
-	public function exceptionAction(FlattenException $exception, ?DebugLoggerInterface $logger, Request $request): Response {
+	public function exceptionAction(FlattenException $exception, Request $request): Response {
 		$code = $exception->getStatusCode();
 		$error = $exception->getMessage();
 		$trace = $exception->getTraceAsString();
@@ -46,7 +42,6 @@ class ExceptionController extends AbstractController {
 		$type = $request->headers->get('accept');
 		$ref = $request->server->get('HTTP_REFERER');
 		$userId = $this->getUser()?->getId()?:'(none)';
-		$user = $this->getUser()?:'(none)';
 		$agent = $request->headers->get('User-Agent');
 		$bits = explode("::", $error);
 		if ($code !== 404) {
@@ -62,20 +57,9 @@ class ExceptionController extends AbstractController {
 				}
 			}
 			if ($forward) {
-				$traces = str_split($trace, 1000);
 				try {
-					if (strlen($trace) < 1000) {
-						$text = "Status Code: $code \nError: `$error`\nOn Line: $line\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n```$trace```";
-						$this->discord->pushToErrors($text);
-					} else {
-						$text = "Status Code: $code \nError: `$error`\nOn Line: $line\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n```$traces[0]```";
-						$this->discord->pushToErrors($text);
-						unset($traces[0]);
-						sleep(0.1);
-						foreach ($traces as $tracer) {
-							$this->discord->pushToErrors("```$tracer```");
-						}
-					}
+					$text = "Status Code: $code \nError: `$error`\nOn Line: $line\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n```$trace```";
+					$this->discord->pushToErrors($text);
 				} catch (Exception $e) {
 					// Do nothing.
 				}

@@ -819,10 +819,10 @@ class GameRunner {
 				# Handle supplies for living units.
 				$living = $unit->getLivingSoldiers();
 				$count = $living->count();
-				$modifiedCount = $count*$unit->getConsumption();
-				if ($count < 1 || $modifiedCount < 1) {
+				if ($count < 1) {
 					continue;
 				}
+				$modifiedCount = $count*$unit->getConsumption();
 				$char = $unit->getCharacter();
 				$food = 0;
 				$fsupply = false;
@@ -834,7 +834,7 @@ class GameRunner {
 				}
 				$date = date("Y-m-d H:i:s");
 				if ($fsupply) {
-					$this->debug("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." from ".$fsupply->getId()." from unit ".$fsupply->getUnit()->getId()." and soldier count of ".$count." (needs ".$modifiedCount." per settings)");
+					$this->debug("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." from Supply ".$fsupply->getId()." from unit ".$fsupply->getUnit()->getId()." and soldier count of ".$count." (needs ".$modifiedCount." per settings)");
 				} else {
 					$this->debug("$date --   Unit ".$unit->getId()." initial food quantity: ".$food." and soldier count of ".$count." (modified count of ".$modifiedCount.")");
 				}
@@ -907,12 +907,18 @@ class GameRunner {
 							}
 						}
 					}
+					$settlement = $unit->getSupplier();
+					if (!$settlement) {
+						if ($unit->getSettlement() && !$unit->getCharacter()) {
+							$settlement = $unit->getSettlement();
+						}
+					}
 					if ($severity < 20) {
-						if ($unit->getSupplier()) {
+						if ($settlement) {
 							$this->history->logEvent(
 								$unit,
 								'event.unit.starvation.light1',
-								array("%link-settlement%"=>$unit->getSupplier()->getId()),
+								array("%link-settlement%"=>$settlement->getId()),
 								History::MEDIUM, false, 30
 							);
 						} else {
@@ -925,11 +931,11 @@ class GameRunner {
 						}
 
 					} elseif ($severity < 40) {
-						if ($unit->getSupplier()) {
+						if ($settlement) {
 							$this->history->logEvent(
 								$unit,
 								'event.unit.starvation.medium1',
-								array("%link-settlement%"=>$unit->getSupplier()->getId()),
+								array("%link-settlement%"=>$settlement->getId()),
 								History::MEDIUM, false, 30
 							);
 						} else {
@@ -940,13 +946,12 @@ class GameRunner {
 								History::MEDIUM, false, 30
 							);
 						}
-
 					} else {
-						if ($unit->getSupplier()) {
+						if ($settlement) {
 							$this->history->logEvent(
 								$unit,
 								'event.unit.starvation.high1',
-								array("%link-settlement%"=>$unit->getSupplier()->getId()),
+								array("%link-settlement%"=>$settlement->getId()),
 								History::MEDIUM, false, 30
 							);
 						} else {
