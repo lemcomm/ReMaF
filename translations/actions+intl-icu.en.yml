@@ -991,6 +991,10 @@ recruit:
   supply:       Due to a lack of equipment, only {only} of {planned} planned recruits could be added.
   unit:         Unit
   nounit:       (Select a Unit)
+  unitnothere:  This unit does not appear to be at this settlement.
+  toomany:      The number of soldiers you're trying to recruit is greater than the number of people in the settlement.
+  toomany2:     There are not enough recruits available in this settlement. This settlement can only support {max}.
+  unitmax:      Due to the unit hitting the cap of 200 soldiers, only {only} of the planned {planned} were recruited.
  warning:
   over25percent:  You are recruiting a considerable share of your population into military service. These peasants will no longer be available for construction, farming or production. Make sure you can handle the consequences.
   over50percent:  You are recruiting more than half of your population into military service. Unless you have taken specific steps to prevent it, this will likely result in the economic destruction of this settlement. Make sure you know what you are doing.
@@ -1422,6 +1426,7 @@ unit:
  manage:
   created:  The unit of {unit} has been created.
   provisionlimited: The unit of {unit} can only request up to {limit}% provisions from {settlement} per the settlement permissions. This value has been automatically set to this for your convenience.
+  success:  "{unit} has been updated."
  supplies:
   food:     Has {amount} food stored, enough for {days} game days.
  resupply:
@@ -1458,9 +1463,13 @@ unit:
  recall:
   name:     Recall {name}
   intro:    Decide it is time to call a Unit back? Simply confirm your choice below and the message will be sent, recalling {name} from whatever distant land they may be in.
+  success:  Unit has been recalled!
+  failed:   Unit recall has failed.
  return:
   name:     Return {name}
   intro:    Sometimes, you just don't need as many soldiers. From here you can send {name} back home.
+  success:  Unit has been sent home.
+  fail:     Sending the unit home has failed.
  disband:
   name:     Disband {name}
   intro:    From here you can choose to completely disband a unit, sending all the soldiers on home and reliquishing {name} to the annals of history.

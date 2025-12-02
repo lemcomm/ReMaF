@@ -737,7 +737,7 @@ class WarManager {
 		}
 	}
 
-	public function leaveSiege($character, $siege): bool {
+	public function leaveSiege(Character $character, $siege): bool {
 		if ($siege->getBattles()->count() > 0) {
 			return false;
 		}
@@ -759,6 +759,7 @@ class WarManager {
 		if ($attacker) {
 			$siege->updateEncirclement();
 		}
+		$this->statusUpdater->character($character, CharacterStatus::sieging, false);
 		$this->em->flush();
 		return true;
 	}

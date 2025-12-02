@@ -101,6 +101,10 @@ class Siege {
 		return $allsiegers;
 	}
 
+	public function getEncirclement(): ?int {
+		return $this->encirclement;
+	}
+
 	/**
 	 * Get stage
 	 *

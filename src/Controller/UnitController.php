@@ -19,7 +19,6 @@ use App\Form\UnitConfigType;
 use App\Form\UnitRebaseType;
 use App\Form\UnitSoldiersType;
 use App\Service\AppState;
-use App\Service\Economy;
 use App\Service\GameRequestManager;
 use App\Service\Generator;
 use App\Service\History;
@@ -142,7 +141,7 @@ class UnitController extends AbstractController {
         }
 
 	#[Route('/units/new', name:'maf_unit_new')]
-        public function createAction(GameRequestManager $gm, Request $request): RedirectResponse|Response {
+        public function createAction(Request $request): RedirectResponse|Response {
                 $character = $this->gateway('unitNewTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -176,7 +175,7 @@ class UnitController extends AbstractController {
         }
 
 	#[Route('/units/bulk', name:'maf_unit_bulk')]
-	public function unitBulkManage(GameRequestManager $gm, Request $request): RedirectResponse|Response {
+	public function unitBulkManage(Request $request): RedirectResponse|Response {
 		$char = $this->gateway('unitBulkTest');
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
@@ -239,7 +238,7 @@ class UnitController extends AbstractController {
 	}
 
 	#[Route('/units/{unit}/manage', name:'maf_unit_manage', requirements:['unit'=>'\d+'])]
-        public function unitManageAction(GameRequestManager $gm, Request $request, Unit $unit): RedirectResponse|Response {
+        public function unitManageAction(Request $request, Unit $unit): RedirectResponse|Response {
                 $character = $this->gateway('unitManageTest', $unit);
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -283,7 +282,7 @@ class UnitController extends AbstractController {
 				$unit->setProvision($limit);
 				$this->addFlash('warning', $this->trans->trans('unit.manage.provisionlimited', ['%settlement%'=>$unit->getSettlement()->getName(), '%unit%'=>$unit->getName(), '%limit%'=>$limit], 'actions'));
 			}
-			$this->addFlash('notice', $this->trans->trans('unit.manage.success', array(), 'actions'));
+			$this->addFlash('notice', $this->trans->trans('unit.manage.success', array('%unit%'=>$unit->getName()), 'actions'));
 			return $this->redirectToRoute('maf_units');
                 }
 
@@ -342,11 +341,22 @@ class UnitController extends AbstractController {
 					$resupply[$item] = array('item'=>$equip, 'resupply'=>0);
 				}
 				if ($equip->getResupplyCost() <= $each->getSupply()) {
-					$resupply[$item]['resupply'] += $each->getSupply();
-					$entourage[] = $each;
 					if (!$canResupply) {
 						$canResupply = true;
 					}
+					$entourage[] = $each;
+					$found = false;
+					foreach ($resupply as $inner) {
+						if ($inner['item'] === $equip) {
+							$inner['resupply']+= $each->getSupply();
+							$found = true;
+							break;
+						}
+					}
+					if ($found) {
+						continue;
+					}
+					$resupply[] = ['item'=>$equip, 'resupply'=>$each->getSupply()];
 				}
 			}
 		}
@@ -359,7 +369,6 @@ class UnitController extends AbstractController {
                                         $canReassign = true;
                                 }
                         }
-
                 }
 
                 if (!$canReassign && $units && count($units) > 0 && $units[0] !== $unit && $unit->getMarshal() === $character) {
@@ -643,7 +652,7 @@ class UnitController extends AbstractController {
                                 $this->addFlash('notice', $this->trans->trans('unit.rebase.success', array(), 'actions'));
                                 return $this->redirectToRoute('maf_units');
                         } else {
-                                $this->addFlash('error', $this->trans->trans('unit.rebase.failed', array(), 'actions'));
+                                $this->addFlash('error', $this->trans->trans('unit.rebase.fail', array(), 'actions'));
                         }
                 }
 
@@ -669,7 +678,7 @@ class UnitController extends AbstractController {
                                 $this->addFlash('notice', $this->trans->trans('unit.disband.success', array(), 'actions'));
                                 return $this->redirectToRoute('maf_units');
                         } else {
-                                $this->addFlash('error', $this->trans->trans('unit.disband.failed', array(), 'actions'));
+                                $this->addFlash('error', $this->trans->trans('unit.disband.fail', array(), 'actions'));
                         }
                 }
 
@@ -696,7 +705,7 @@ class UnitController extends AbstractController {
                                 $this->addFlash('notice', $this->trans->trans('unit.return.success', array(), 'actions'));
                                 return $this->redirectToRoute('maf_units');
                         } else {
-                                $this->addFlash('error', $this->trans->trans('unit.return.failed', array(), 'actions'));
+                                $this->addFlash('error', $this->trans->trans('unit.return.fail', array(), 'actions'));
                         }
                 }
 
@@ -781,16 +790,16 @@ class UnitController extends AbstractController {
      		if ($form->isSubmitted() && $form->isValid()) {
      			$data = $form->getData();
                         if ($data['unit']->getSettlement() !== $settlement) {
-                                $form->addError(new FormError("recruit.troops.unitnothere"));
+                                $form->addError(new FormError($this->trans->trans("recruit.troops.unitnothere", [], 'actions')));
                                 return $this->render('Unit/recruit.html.twig', $renderArray);
                         }
 
      			if ($data['number'] > $settlement->getPopulation()) {
-     				$form->addError(new FormError("recruit.troops.toomany"));
+     				$form->addError(new FormError($this->trans->trans("recruit.troops.toomany", [], 'actions')));
                                 return $this->render('Unit/recruit.html.twig', $renderArray);
      			}
      			if ($data['number'] > $settlement->getRecruitLimit()) {
-     				$form->addError(new FormError($this->trans->trans("recruit.troops.toomany2"), null, array('%max%'=>$settlement->getRecruitLimit(true))));
+     				$form->addError(new FormError($this->trans->trans("recruit.troops.toomany2", array('%max%'=>$settlement->getRecruitLimit(true)), 'actions')));
                                 return $this->render('Unit/recruit.html.twig', $renderArray);
      			}
                         if ($data['number'] > $data['unit']->getAvailable()) {

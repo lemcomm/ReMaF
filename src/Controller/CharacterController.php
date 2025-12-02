@@ -1049,7 +1049,6 @@ class CharacterController extends AbstractController {
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$fail = false;
-			$id = $character->getId();
 			$data = $form->getData();
 			$em = $this->em;
 			if (!$data['sure']) {
@@ -1266,13 +1265,18 @@ class CharacterController extends AbstractController {
 		$total_food = 0;
 		foreach ($character->getEntourage() as $entourage) {
 			if ($entourage->getType()->getName() == 'follower') {
-				if ($entourage->getEquipment()) {
-					if (!isset($resupply[$entourage->getEquipment()->getId()])) {
-						$resupply[$entourage->getEquipment()->getId()] = array('equipment'=>$entourage->getEquipment(), 'amount'=>0);
+				$supply = $entourage->getSupply();
+				$equip = $entourage->getEquipment();
+				if ($equip) {
+					$actual = floor($supply/$equip->getResupplyCost());
+					if ($actual > 1) {
+						if (!isset($resupply[$equip->getId()])) {
+							$resupply[$equip->getId()] = array('equipment'=>$equip, 'amount'=>0);
+						}
+						$resupply[$equip->getId()]['amount'] += $actual;
 					}
-					$resupply[$entourage->getEquipment()->getId()]['amount'] += floor($entourage->getSupply()/$entourage->getEquipment()->getResupplyCost());
 				} else {
-					$total_food += $entourage->getSupply();
+					$total_food += $supply;
 				}
 			}
 		}
