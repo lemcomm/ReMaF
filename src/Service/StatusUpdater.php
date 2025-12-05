@@ -14,6 +14,31 @@ class StatusUpdater {
 	) {
 	}
 
+	public static array $actionWeights = [
+		1 => 1,
+		20 => 2,
+		17 => 3,
+		21 => 4,
+		22 => 5,
+		2 => 6,
+		3 => 7,
+		4 => 8,
+		5 => 9,
+		6 => 10,
+		7 => 11,
+		8 => 12,
+		9 => 13,
+		10 => 14,
+		11 => 15,
+		12 => 16,
+		14 => 17,
+		15 => 18,
+		16 => 19,
+		18 => 20,
+		19 => 21,
+		23 => 22,
+	]; # 13 deliberately skipped
+
 	/**
 	 * Main status update function for characters. Handles chain-updates among other things.
 	 * @param Character $char
@@ -115,22 +140,25 @@ class StatusUpdater {
 					$char->updateStatus(CharacterStatus::prebattle, false);
 				}
 			} else {
-				if ($battles > 0) {
+				if ($battles > 1) {
+					# findBattleCount will still see a finishing battle, so we look to see if there's more than one.
 					$char->updateStatus(CharacterStatus::prebattle, true);
 					$this->updateCurrently($char, CharacterStatus::prebattle, true);
 				}
 			}
-
 		} else {
 			$low = 9999;
 			foreach ($char->getStatus() as $key=>$val) {
-				if ($key >= 0 && $key < 50 && $key !== 13) {
-					if ($val && $key < $low) {
-						$low = $key;
-						break;
-					}
-				} elseif ($key > 50) {
+				if ($key >= 50) {
+					# No action keys are at/above 50.
 					break;
+				}
+				if (
+					$val &&
+					array_key_exists($key, self::$actionWeights) &&
+					self::$actionWeights[$key] < $low
+				) {
+					$low = $key;
 				}
 			}
 			if ($low === 9999) {
