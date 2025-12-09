@@ -14,40 +14,17 @@ class StatusUpdater {
 	) {
 	}
 
-	public static array $actionWeights = [
-		1 => 1,
-		20 => 2,
-		17 => 3,
-		21 => 4,
-		22 => 5,
-		2 => 6,
-		3 => 7,
-		4 => 8,
-		5 => 9,
-		6 => 10,
-		7 => 11,
-		8 => 12,
-		9 => 13,
-		10 => 14,
-		11 => 15,
-		12 => 16,
-		14 => 17,
-		15 => 18,
-		16 => 19,
-		18 => 20,
-		19 => 21,
-		23 => 22,
-	]; # 13 deliberately skipped
-
 	/**
 	 * Main status update function for characters. Handles chain-updates among other things.
-	 * @param Character $char
+	 *
+	 * @param Character       $char
 	 * @param CharacterStatus $which
 	 * @param                 $value
+	 * @param bool            $bulk
 	 *
 	 * @return void
 	 */
-	public function character(Character $char, CharacterStatus $which, $value): void {
+	public function character(Character $char, CharacterStatus $which, $value, $bulk = false): void {
 		/*
 		 * inPlace doesn't have updaters because it shouldn't touch the settlement one, which it will fall back to.
 		 * atSea updates all of them because sea travel is a mess at times.
@@ -97,21 +74,21 @@ class StatusUpdater {
 			case CharacterStatus::siegeLead:
 			# You'd think this should be able to be $which->value < 50 and $which->value > 0 but that doesn't work.
 				$char->updateStatus($which, $value);
-				$this->updateCurrently($char, $which, $value);
+				if (!$bulk) $this->updateCurrently($char, $which, $value);
 				break;
 			case CharacterStatus::travelling:
 				$char->updateStatus($which, $value);
 				if (!$char->getInsideSettlement()) {
 					$this->setNearestSettlement($char);
 				}
-				$this->updateCurrently($char, $which, $value);
+				if (!$bulk) $this->updateCurrently($char, $which, $value);
 				break;
 			case CharacterStatus::sieging:
 				$char->updateStatus($which, $value);
 				if (!$value) {
 					$char->updateStatus(CharacterStatus::siegeLead, null);
 				}
-				$this->updateCurrently($char, $which, $value);
+				if (!$bulk) $this->updateCurrently($char, $which, $value);
 				break;
 			default:
 				$char->updateStatus($which, $value);
@@ -131,7 +108,11 @@ class StatusUpdater {
 		$bg->updateStatus($which, $value, $subvalue);
 	}
 
-	private function updateCurrently(Character $char, CharacterStatus $which, $value): void {
+	public function resetCurrent(Character $char): void {
+		$this->updateCurrently($char, null, null);
+	}
+
+	private function updateCurrently(Character $char, ?CharacterStatus $which, $value): void {
 		if ($which === CharacterStatus::battling) {
 			$battles = $char->findBattleCount();
 			if ($value) {
@@ -147,24 +128,54 @@ class StatusUpdater {
 				}
 			}
 		} else {
-			$low = 9999;
-			foreach ($char->getStatus() as $key=>$val) {
-				if ($key >= 50) {
-					# No action keys are at/above 50.
-					break;
-				}
-				if (
-					$val &&
-					array_key_exists($key, self::$actionWeights) &&
-					self::$actionWeights[$key] < $low
-				) {
-					$low = $key;
-				}
+			$status = $char->getStatus();
+			if ($status[1]) { #Battling
+				$char->updateStatus(CharacterStatus::currently, 1);
+			} elseif ($status[20]) { #Pre-battle
+				$char->updateStatus(CharacterStatus::currently, 20);
+			} elseif ($status[17]) { #Escaping
+				$char->updateStatus(CharacterStatus::currently, 17);
+			} elseif ($status[21]) { #Prisoner
+				$char->updateStatus(CharacterStatus::currently, 21);
+			} elseif ($status[22]) { #SiegeLead
+				$char->updateStatus(CharacterStatus::currently, 22);
+			} elseif ($status[2]) { #Sieging
+				$char->updateStatus(CharacterStatus::currently, 2);
+			} elseif ($status[3]) { #Annexing
+				$char->updateStatus(CharacterStatus::currently, 3);
+			} elseif ($status[4]) { #Supporting
+				$char->updateStatus(CharacterStatus::currently, 4);
+			} elseif ($status[5]) { #Opposing
+				$char->updateStatus(CharacterStatus::currently, 5);
+			} elseif ($status[6]) { #Looting
+				$char->updateStatus(CharacterStatus::currently, 6);
+			} elseif ($status[7]) { #Blocking
+				$char->updateStatus(CharacterStatus::currently, 7);
+			} elseif ($status[8]) { #Granting
+				$char->updateStatus(CharacterStatus::currently, 8);
+			} elseif ($status[9]) { #Renaming
+				$char->updateStatus(CharacterStatus::currently, 9);
+			} elseif ($status[10]) { #Reclaiming
+				$char->updateStatus(CharacterStatus::currently, 10);
+			} elseif ($status[11]) { #Following
+				$char->updateStatus(CharacterStatus::currently, 11);
+			} elseif ($status[12]) { #Followed
+				$char->updateStatus(CharacterStatus::currently, 12);
+			} elseif ($status[14]) { #newOccupant
+				$char->updateStatus(CharacterStatus::currently, 14);
+			} elseif ($status[15]) { #Training
+				$char->updateStatus(CharacterStatus::currently, 15);
+			} elseif ($status[16]) { #Researching
+				$char->updateStatus(CharacterStatus::currently, 16);
+			} elseif ($status[18]) { #Assinging
+				$char->updateStatus(CharacterStatus::currently, 18);
+			} elseif ($status[19]) { #Damaging
+				$char->updateStatus(CharacterStatus::currently, 19);
+			} elseif ($status[23]) { #Traveling
+				$char->updateStatus(CharacterStatus::currently, 23);
+			} else { # Default
+				$char->updateStatus(CharacterStatus::currently, 13);
 			}
-			if ($low === 9999) {
-				$low = 13;
-			}
-			$char->updateStatus(CharacterStatus::currently, $low);
 		}
 	}
 

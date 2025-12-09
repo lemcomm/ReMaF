@@ -1559,13 +1559,13 @@ class CharacterController extends AbstractController {
 		$status = $this->statusUpdater;
 		$char->resetStatus();
 		if ($char->getTravelAtSea()) {
-			$status->character($char, CharacterStatus::atSea, true);
+			$status->character($char, CharacterStatus::atSea, true, true);
 		}
 		if ($char->getInsidePlace()) {
-			$status->character($char, CharacterStatus::inPlace, $char->getInsidePlace()->getName());
+			$status->character($char, CharacterStatus::inPlace, $char->getInsidePlace()->getName(), true);
 		}
 		if ($char->getInsideSettlement()) {
-			$status->character($char, CharacterStatus::inSettlement, $char->getInsideSettlement()->getName());
+			$status->character($char, CharacterStatus::inSettlement, $char->getInsideSettlement()->getName(), true);
 		} else {
 			$nearest = $this->geo->findNearestSettlement($char);
 			$settlement = array_shift($nearest);
@@ -1578,64 +1578,67 @@ class CharacterController extends AbstractController {
 			}
 		}
 		if ($char->getSpeed()) {
-			$status->character($char, CharacterStatus::travelling, ceil(1/$char->getSpeed()*6));
+			$status->character($char, CharacterStatus::travelling, ceil(1/$char->getSpeed()*6), true);
 		}
 		foreach ($char->getActions() as $action) {
 			/** @var Action $action */
 			switch ($action->getType()) {
 				case 'settlement.take':
-					$status->character($char, CharacterStatus::annexing, true);
+					$status->character($char, CharacterStatus::annexing, true, true);
 					break;
 				case 'support':
-					$status->character($char, CharacterStatus::supporting, true);
+					$status->character($char, CharacterStatus::supporting, true, true);
 					break;
 				case 'oppose':
-					$status->character($char, CharacterStatus::opposing, true);
+					$status->character($char, CharacterStatus::opposing, true, true);
 					break;
 				case 'settlement.loot':
-					$status->character($char, CharacterStatus::looting, true);
+					$status->character($char, CharacterStatus::looting, true, true);
 					break;
 				case 'military.block':
-					$status->character($char, CharacterStatus::blocking, true);
+					$status->character($char, CharacterStatus::blocking, true, true);
 					break;
 				case 'settlement.grant':
-					$status->character($char, CharacterStatus::granting, true);
+					$status->character($char, CharacterStatus::granting, true, true);
 					break;
 				case 'settlement.rename':
-					$status->character($char, CharacterStatus::renaming, true);
+					$status->character($char, CharacterStatus::renaming, true, true);
 					break;
 				case 'military.reclaim':
-					$status->character($char, CharacterStatus::reclaiming, true);
+					$status->character($char, CharacterStatus::reclaiming, true, true);
 					break;
 				case 'settlement.occupant':
 				case 'place.occupant':
-					$status->character($char, CharacterStatus::newOccupant, true);
+					$status->character($char, CharacterStatus::newOccupant, true, true);
 					break;
 				case 'character.escape':
-					$status->character($char, CharacterStatus::escaping, true);
+					$status->character($char, CharacterStatus::escaping, true, true);
 					break;
 				case 'military.battle':
-					$status->character($char, CharacterStatus::prebattle, true);
+				case 'siege.sortie':
+				case 'siege.assault':
+					$status->character($char, CharacterStatus::prebattle, true, true);
 					break;
 				case 'task.research':
-					$status->character($char, CharacterStatus::researching, true);
+					$status->character($char, CharacterStatus::researching, true, true);
 					break;
 				case 'military.siege':
-					$status->character($char, CharacterStatus::sieging, true);
+					$status->character($char, CharacterStatus::sieging, true, true);
 					if ($action->getTargetBattlegroup()->getLeader() === $char) {
-						$status->character($char, CharacterStatus::siegeLead, true);
+						$status->character($char, CharacterStatus::siegeLead, true, true);
 					}
 					break;
 				case 'train.skill':
-					$status->character($char, CharacterStatus::training, true);
+					$status->character($char, CharacterStatus::training, true, true);
 			}
 		}
 		if ($char->getBattling()) {
-			$status->character($char, CharacterStatus::battling, true);
+			$status->character($char, CharacterStatus::battling, true, true);
 		}
 		if ($char->getPrisonerOf()) {
-			$status->character($char, CharacterStatus::prisoner, $char->getPrisonerOf()->getName());
+			$status->character($char, CharacterStatus::prisoner, $char->getPrisonerOf()->getName(), true);
 		}
+		$status->resetCurrent($char);
 		$status->character($char, CharacterStatus::messages, $char->countNewMessages());
 		$status->character($char, CharacterStatus::events, $char->countNewEvents());
 		$this->em->flush();
