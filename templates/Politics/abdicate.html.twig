@@ -1,9 +1,9 @@
 {% extends "layout.html.twig" %}
 
 {% block content %}
-	<h2>{{ "positions.abdicate"|trans({},"politics")|title }}</h2>
+	<h2>{{ "abdicate.name"|trans({},"politics")|title }}</h2>
 
-	<p>{{ "positions.abdicateDesc"|trans({"%position%":link(position)},"politics")|raw}}</p>
+	<p>{{ "abdicate.desc"|trans({"%position%":link(position)},"politics")|raw}}</p>
 
 	{{ form(form) }}
 

@@ -899,7 +899,7 @@ class PoliticsController extends AbstractController {
 
 	#[Route ('/politics/positions', name: 'maf_politics_positions')]
 	public function positionsAction(Request $request): Response {
-		$char = $this->disp->gateway();
+		$char = $this->disp->gateway('personalPositionsTest');
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
 		}
@@ -912,7 +912,7 @@ class PoliticsController extends AbstractController {
 
 	#[Route ('/politics/abdicate/{position}', name: 'maf_politics_abdicate', requirements:['position'=>'\d+'])]
 	public function abdicateAction(RealmPosition $position, CharacterManager $cm, LinksExtension $links, Request $request): Response {
-		$char = $this->disp->gateway();
+		$char = $this->disp->gateway('personalAbdicateTest', false, false, true, $position);
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
 		}
@@ -922,7 +922,7 @@ class PoliticsController extends AbstractController {
 		if ($form->isSubmitted() && $form->isValid()) {
 			$cm->abdicatePosition($char, $position);
 			$this->em->flush();
-			$this->addFlash('notice', $this->trans->trans('positions.abdicated', ['position'=>$links->ObjectLink($position)], 'politics'));
+			$this->addFlash('notice', $this->trans->trans('abdicate.success', ['position'=>$links->ObjectLink($position)], 'politics'));
 			return $this->redirectToRoute('maf_politics_positions');
 		}
 		return $this->render('Politics/abdicate.html.twig', [

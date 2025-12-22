@@ -14,6 +14,7 @@ use App\Entity\Law;
 use App\Entity\Message;
 use App\Entity\Place;
 use App\Entity\Realm;
+use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\Ship;
 use App\Service\AppState;
@@ -538,6 +539,7 @@ class Dispatcher {
 	public function PoliticsActions(): array {
 		$actions=array();
 		$actions[] = $this->personalRelationsTest();
+		$actions[] = $this->personalPositionsTest();
 		$actions[] = $this->personalPrisonersTest();
 		$actions[] = $this->personalClaimsTest();
 		if (($check = $this->politicsActionsGenericTests()) !== true) {
@@ -1280,6 +1282,22 @@ class Dispatcher {
 
 		return $this->action("diplomacy.claims", "maf_politics_claims");
 
+	}
+
+	public function personalPositionsTest(): array {
+		if ($this->getCharacter()?->getPositions()->count() > 0) {
+			return $this->action("positions", "maf_politics_positions");
+		} else {
+			return array("name"=>"positions.name", "description"=>"unavailable.nopositions");
+		}
+	}
+
+	public function personalAbdicateTest($ignored, RealmPosition $position): array {
+		if ($position->getHolders()->contains($this->getCharacter())) {
+			return $this->action("positions", "maf_politics_abdicate");
+		} else {
+			return array("name"=>"positions.name", "description"=>"unavailable.nopositions");
+		}
 	}
 
 
