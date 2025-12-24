@@ -912,7 +912,7 @@ class PoliticsController extends AbstractController {
 
 	#[Route ('/politics/abdicate/{position}', name: 'maf_politics_abdicate', requirements:['position'=>'\d+'])]
 	public function abdicateAction(RealmPosition $position, CharacterManager $cm, LinksExtension $links, Request $request): Response {
-		$char = $this->disp->gateway('personalAbdicateTest', false, false, true, $position);
+		$char = $this->disp->gateway('personalAbdicateTest', false, false, false, $position);
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
 		}

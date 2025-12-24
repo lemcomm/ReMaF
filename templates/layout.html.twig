@@ -249,7 +249,7 @@
 			onclick="displayPreferenceModal()">
 			Manage Cookie Preferences
 		</button></div>
-		{% if app.user and is_granted("ROLE_OLYMPUS") %}
+		{% if app.user and is_granted("ROLE_OLYMPUS") and app.request.attributes.get('_route') %}
 			{% if app.request.query.get('debug') %}
 				<div><a href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) }}">Debug: Off</a></div>
 			{% else %}

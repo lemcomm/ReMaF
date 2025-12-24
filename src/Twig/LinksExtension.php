@@ -263,7 +263,17 @@ class LinksExtension extends AbstractExtension {
 		switch ($classname) {
 			case 'RealmPosition':
 				$id = $entity->getId();
-				$name = $entity->findName($extra);
+				if ($extra) {
+					$name = $entity->findName($extra);
+				} else {
+					if ($entity->getRuler() && $entity->getName() === 'ruler') {
+						$name = $this->translator->trans('realm.title.male.'.$entity->getRealm()->getType(), [], 'politics').' / '.$this->translator->trans('realm.title.female.'.$entity->getRealm()->getType(), [], 'politics');
+					} elseif ($entity->getFName()) {
+						$name = $entity->getName().' / '.$entity->getFName();
+					} else {
+						$name = $entity->getName();
+					}
+				}
 				break;
 			case 'GeoFeature':
 				$entity = $entity->getType();
