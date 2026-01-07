@@ -41,7 +41,9 @@
 		<th>{{ 'npc.type'|trans }}</th>
 		{#<th>{{ 'experience'|trans }}</th>#}
 		<th data-sorter="false"></th>
-		<th colspan="2" data-sorter="false">{{ 'npc.supply'|trans }}</th>
+		<th>{{ 'npc.supply'|trans }}</th>
+		<th>{{ 'npc.supplyType'|trans }}</th>
+		<th colspan="1" data-sorter="false">{{ 'npc.supplyChange'|trans }}</th>
 		<th>{{ 'home'|trans }}</th>
 	</tr></thead>
 	<tbody>
@@ -75,16 +77,19 @@
 			{% if man.type.name == "follower" and not man.locked %}
 				<td align="right">
 					{% if man.equipment %}
-						{{ man.supply // man.equipment.resupplycost }}
+						{% set count = man.supply // man.equipment.resupplycost %}
+						{{ count }}
+						</td><td>{{ ("item."~man.equipment.name)|trans({'count':count}) }} {% if debug %}({{ man.supply }}/{{ man.equipment.resupplycost }}){% endif %}
 					{% else %}
-						{{ man.supply }}
+						{% set count = man.supply %}
+						{{ count }}</td><td>{{ ("item.food")|trans({'count':count}) }}
 					{% endif %}
 				</td>
 				<td>
 					{{ form_widget(npc.supply) }}
 				</td>
 			{% else %}
-				<td></td><td></td>
+				<td></td><td></td><td></td>
 			{% endif %}
 			<td>{% if man.home %}{{ link(man.home) }}{% endif %}</td>
 		</tr>

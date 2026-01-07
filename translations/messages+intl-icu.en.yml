@@ -1192,6 +1192,8 @@ npc:
  name:         name
  number:       number
  supply:       supply
+ supplyType:   item
+ supplyChange: change load
  is:           wandering bandit
  maxreached:   You are already playing the maximum allowed number of bandits.
  entourage:    entourage member{count, plural, =1 {} other {s}}

@@ -1240,7 +1240,7 @@ class CharacterController extends AbstractController {
 	}
 
   	#[Route ('/char/entourage', name:'maf_char_entourage')]
-	public function entourageAction(MilitaryManager $milman, PermissionManager $pm, Request $request): RedirectResponse|Response {
+	public function entourageAction(MilitaryManager $milman, PermissionManager $pm, Security $sec, Request $request): RedirectResponse|Response {
 		$character = $this->appstate->getCharacter();
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
@@ -1269,7 +1269,7 @@ class CharacterController extends AbstractController {
 				$equip = $entourage->getEquipment();
 				if ($equip) {
 					$actual = floor($supply/$equip->getResupplyCost());
-					if ($actual > 1) {
+					if ($actual >= 1) {
 						if (!isset($resupply[$equip->getId()])) {
 							$resupply[$equip->getId()] = array('equipment'=>$equip, 'amount'=>0);
 						}
@@ -1289,13 +1289,18 @@ class CharacterController extends AbstractController {
 		} else {
 			$food_days = 0;
 		}
+		$debug = $request->query->get('debug', false);
+		if ($debug && !$sec->isGranted('ROLE_OLYMPUS')) {
+			$debug = false;
+		}
 
 		return $this->render('Character/entourage.html.twig', [
 			'entourage' => $character->getEntourage(),
 			'form' => $form->createView(),
 			'food_days' => $food_days,
 			'can_resupply' => $character->getInsideSettlement()?$pm->checkSettlementPermission($character->getInsideSettlement(), $character, 'resupply'):false,
-			'resupply' => $resupply
+			'resupply' => $resupply,
+			'debug' => $debug
 		]);
 	}
 
