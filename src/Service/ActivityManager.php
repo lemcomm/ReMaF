@@ -16,6 +16,8 @@ use App\Entity\ActivityReportStage;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Entity\GeoData;
+use App\Entity\Place;
+use App\Entity\Settlement;
 use App\Entity\Style;
 
 use DateTime;
@@ -47,44 +49,60 @@ class ActivityManager {
 	HELPER FUNCTIONS
 	*/
 
-        public function verify(ActivityType $act, Character $char): bool {
+        public function verify(ActivityType $act, Character $char, $bypass = false): bool {
 		$valid = True;
 		$reqs = $act->getRequires();
-		if (!$reqs->isEmpty()) {
-			# ActivityRequirements will always have ither places or buildings or both, if the activity has requirements.
-			# Buildings require all to be present, so we set $hasBldgs to True, while Place only requires any to be owned, so we default to false.
-			$hasBldgs = True;
+		# Duels skip this as they don't require anything.
+		if ($bypass || !$reqs->isEmpty()) {
+			$valid = False;
+			$needBldgs = [];
+			$needPlaces = [];
+			$hasBldgs = False;
 			$hasPlace = False;
 			foreach ($reqs as $req) {
-				# If the requirement has a building type, as $hasBldgs is still true, we check. If getBuilding is null this one is for a place,
-				# and if $hasBldgs is false, then we've already failed the verification.
-				if ($bldg = $req->getBuilding() && $hasBldgs) {
-					if ($char->getInsideSettlement() && !$char->getInsideSettlement()->getBuildingByName($bldg)) {
-						$hasBldgs = False;
+				$b = $req->getBldg();
+				$p = $req->getPlace();
+				if ($b) {
+					$needBldgs[] = $b->getName();
+				}
+				if ($p) {
+					$needPlaces[] = $p->getName();
+				}
+			}
+			if (count($needBldgs) > 0) {
+				foreach ($needBldgs as $bldg) {
+					if ($char->getInsideSettlement() && $char->getInsideSettlement()->getBuildingByName($bldg)) {
+						unset($needBldgs[array_search($bldg, $needBldgs)]);
+					}
+					if (count($needBldgs) == 0) {
+						$hasBldgs = True;
 					}
 				}
-				# If getPlace is null, this requirement is for a building.
-				# If $hasPlace is True, then we've already passed this check.
-				if ($place = $req->getPlace() && !$hasPlace) {
+			}
+			if (count($needPlaces) > 0) {
+				foreach ($needPlaces as $place) {
 					$inPlace = $char->getInsidePlace();
-					if ($inPlace && $inPlace->getType() === $place && $inPlace->getOwner() === $char) {
-						$hasPlace = True;
+					if ($inPlace && $inPlace->getType() === $place && $inPlace->isOwner($char)) {
+						unset($needPlaces[array_search($place, $needPlaces)]);
+					}
+					if (count($needPlaces) == 0) {
+						$hasPlaces = True;
 					}
 				}
 			}
 			# Since all activities that have requirements require a place both $hasPlace and $hasBldgs should be true for this to verify.
-			if (!$hasPlace || !$hasBldgs) {
-				$valid = False;
+			if ($hasPlace && $hasBldgs) {
+				$valid = True;
 			}
 		}
 		return $valid;
 	}
 
-        public function create(ActivityType $type, ActivitySubType|string|null $subType, Character $char, ?Activity $mainAct = null): Activity|false {
+        public function create(ActivityType $type, ActivitySubType|string|null $subType, Character $char, ?Activity $mainAct = null, $bypassVerify = false): Activity|false {
 		if (!$type->getEnabled()) {
 			return False;
 		}
-		if ($this->verify($type, $char)) {
+		if ($bypassVerify || $this->verify($type, $char)) {
 			$now = new DateTime("now");
 			$act = new Activity();
 			$this->em->persist($act);
@@ -95,36 +113,17 @@ class ActivityManager {
 			if ($subType) {
 				$act->setSubType($subType);
 			}
-			if ($place = $char->getInsidePlace()) {
-				$act->setLocation($char->getLocation());
-				$act->setPlace($place);
-				if ($place->getGeoData()) {
-					$act->setGeoData($place->getGeoData());
-				} else {
-					$act->setMapRegion($place->getMapRegion());
-				}
-			} elseif ($settlement = $char->getInsideSettlement()) {
-				$act->setLocation($char->getLocation());
-				$act->setSettlement($settlement);
-				if ($settlement->getGeoData()) {
-					$act->setGeoData($settlement->getGeoData());
-				} else {
-					$act->setMapRegion($settlement->getMapregion());
-				}
-			} else {
-				$act->setLocation($char->getLocation());
-				$reg = $this->geo->findMyRegion($char);
-				if ($reg instanceof GeoData) {
-					$act->setGeoData($reg);
-				} else {
-					$act->setMapRegion($reg);
-				}
-
-			}
 			$act->setWorld($char->getWorld());
 			$act->setMainEvent($mainAct);
 			$act->setCreated($now);
 			$act->setReady(false);
+			if ($mainAct) {
+				$act->setLocation($mainAct->getLocation());
+				$act->setSettlement($mainAct->getSettlement());
+				$act->setPlace($mainAct->getPlace());
+				$act->setGeoData($mainAct->getGeoData());
+				$act->setMapRegion($mainAct->getMapRegion());
+			}
 			return $act;
 		} else {
 			return False;
@@ -182,6 +181,42 @@ class ActivityManager {
 		return $boutGroup;
 	}
 
+	private function setLocationByChar(Activity $act, Character $char): void {
+		if ($place = $char->getInsidePlace()) {
+			$this->setActPlace($act, $char, $place);
+		} elseif ($settlement = $char->getInsideSettlement()) {
+			$this->setActSettlement($act, $char, $settlement);
+		} else {
+			$act->setLocation($char->getLocation());
+			$reg = $this->geo->findMyRegion($char);
+			if ($reg instanceof GeoData) {
+				$act->setGeoData($reg);
+			} else {
+				$act->setMapRegion($reg);
+			}
+		}
+	}
+
+	private function setActSettlement(Activity $act, Character $char, Settlement $settlement): void {
+		$act->setLocation($char->getLocation());
+		$act->setSettlement($settlement);
+		if ($settlement->getGeoData()) {
+			$act->setGeoData($settlement->getGeoData());
+		} else {
+			$act->setMapRegion($settlement->getMapregion());
+		}
+	}
+
+	private function setActPlace(Activity $act, Character $char, Place $place): void {
+		$act->setLocation($char->getLocation());
+		$act->setPlace($place);
+		if ($place->getGeoData()) {
+			$act->setGeoData($place->getGeoData());
+		} else {
+			$act->setMapRegion($place->getMapRegion());
+		}
+	}
+
 	public function log($level, $text): void {
 		$this->report?->setDebug($this->report->getDebug() . $text . "\n");
 		if ($level <= $this->debug) {
@@ -194,8 +229,9 @@ class ActivityManager {
 	*/
 
 	public function createDuel(Character $me, Character $them, $name, $level, $same, EquipmentType $weapon, $weaponOnly, ?Style $meStyle = null, ?Style $themStyle = null): Activity|string {
-		$type = $this->em->getRepository('App\Entity\ActivityType')->findOneBy(['name'=>'duel']);
+		$type = $this->em->getRepository(ActivityType::class)->findOneBy(['name'=>'duel']);
 		if ($act = $this->create($type, $level, $me)) {
+			$this->setLocationByChar($act, $me);
 			if (!$name) {
 				$act->setName('Duel between '.$me->getName().' and '.$them->getName());
 			} else {
@@ -212,6 +248,48 @@ class ActivityManager {
 		} else {
 			return 'Verification check failed.';
 		}
+	}
+
+	public function createTournament(Character $me, Settlement $where, int $total, string $name, bool|array $fightTypes, bool|array $racesTypes, bool|array $joustTypes, $restrictions = null, $armor = null, $bypass = false): Activity|false {
+		$repo = $this->em->getRepository(ActivityType::class);
+		$grand = null;
+		$act = null;
+		if ($total > 1) {
+			$grand = $this->create($repo->findOneBy(['name'=>'grand tournament']), null, $me, null, $bypass);
+			$grand->setName($name);
+			$this->setActSettlement($grand, $me, $where);
+			$this->em->flush();
+		}
+		if ($fightTypes) {
+			foreach ($fightTypes as $type) {
+				$act = $this->create($repo->findOneBy(['name'=>'melee tournament']), $type, $me, $grand, $bypass);
+				$act->setWeapons($restrictions);
+				$act->setArmor($armor);
+				if (!$grand) {
+					$act->setName($name);
+					$this->setActSettlement($act, $me, $where);
+				}
+			}
+		}
+		if ($racesTypes) {
+			$act = $this->create($repo->findOneBy(['name'=>'race']), null, $me, $grand, $bypass);
+			if (!$grand) {
+				$act->setName($name);
+				$this->setActSettlement($act, $me, $where);
+			}
+		}
+		if ($joustTypes) {
+			$act = $this->create($repo->findOneBy(['name'=>'joust']), null, $me, $grand, $bypass);
+			if (!$grand) {
+				$act->setName($name);
+				$this->setActSettlement($act, $me, $where);
+			}
+		}
+		$this->em->flush();
+		if ($grand) {
+			return $grand;
+		}
+		return $act;
 	}
 
 	/*

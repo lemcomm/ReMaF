@@ -21,6 +21,7 @@ use App\Service\Geography;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,23 +48,79 @@ class ActivityController extends AbstractController {
 			return $this->redirectToRoute($char);
 		}
 		$settlement = $char->getInsideSettlement();
-		$fights = false;
-		$races = false;
-		$jousts = false;
-		$grand = false;
+		$options = ['fights' => false, 'races' => false, 'jousts' => false, 'grand' => false];
 		if ($settlement && $settlement->getOwner() === $char || $settlement->getSteward() === $char) {
-			if ($settlement->hasBuildingNamed('arena')) $fights = true;
-			if ($settlement->hasBuildingNamed('list field')) $jousts = true;
-			if ($settlement->hasBuildingNamed('race track')) $races = true;
-			if ($fights && $races && $jousts) {
+			if ($settlement->hasBuildingNamed('arena')) {
+				$options['fights'] = true;
+			}
+			if ($settlement->hasBuildingNamed('list field')) $options['jousts'] = true;
+			if ($settlement->hasBuildingNamed('race track')) $options['races'] = true;
+			if ($options['fights'] && $options['races'] && $options['jousts']) {
 				if ($settlement->hasBuildingNamed('tournament grounds')) {
-					$grand = true;
+					$options['grand'] = true;
 				}
 			}
 		}
-		#TODO: Finish form, and this route.
-		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'duel', 'maxdistance'=>$this->geo->calculateInteractionDistance($char), 'me'=>$char, 'subselect'=>$opts]);
+		$options['weapons'] = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon', 'restricted'=>false]);
 
+		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'tournament', 'subselect'=>$options]);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$data = $form->getData();
+			$hasFight = false;
+			$hasRace = false;
+			$hasJoust = false;
+			$armor = null;
+			$restrictions = null;
+			$fail = false;
+			$total = 0;
+			if ($options['fights']) {
+				$count = count($data['fightTypes']);
+				if ($count > 0) {
+					if ($count > 1 && !$options['grand']) {
+						$form->addError(new FormError($this->trans->trans('tourn.form.fightTypes.notGrand', [], 'activity')));
+						$fail = true;
+					}
+					$hasFight = $data['fightTypes'];
+					$total += $count;
+					$weapons = $form->get('weapon')->getData();
+					if (count($weapons) < 1) {
+						$restrictions = false;
+					} else {
+						$restrictions = [];
+						foreach ($weapons as $each) {
+							$restrictions[] = $each->getId();
+						}
+					}
+					$armor = $data['armor'];
+				}
+			}
+			if ($options['races'] && $data['racesTypes']) {
+				if ($hasFight) {
+					$form->addError(new FormError($this->trans->trans('tourn.form.notGrand', [], 'activity')));
+					$fail = true;
+				}
+				$hasRace = $data['racesTypes'];
+				$total++;
+			}
+			if ($options['jousts'] && $data['joustTypes']) {
+				if ($hasFight || $hasRace) {
+					$form->addError(new FormError($this->trans->trans('tourn.form.notGrand', [], 'activity')));
+					$fail = true;
+				}
+				$hasJoust = $data['joustTypes'];
+				$total++;
+			}
+			if (!$fail) {
+				$act = $this->actman->createTournament($char, $settlement, $total, $data['name'], $hasFight, $hasRace, $hasJoust, $restrictions, $armor, true);
+				if ($act) {
+					#TODO: THE STUFF! Announcements, events, flash msg, etc.
+				}
+			}
+		}
+		return $this->render('Activity/createTournament.html.twig', [
+			'form' => $form->createView(),
+		]);
 	}
 
 	#[Route ('/activity/duel/challenge', name:'maf_activity_duel_challenge')]

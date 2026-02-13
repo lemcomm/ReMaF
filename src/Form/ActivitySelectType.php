@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityRepository;
 
 use App\Entity\Character;
 use App\Entity\EquipmentType;
+use App\Enum\Activities;
 
 class ActivitySelectType extends AbstractType {
 
@@ -21,8 +22,10 @@ class ActivitySelectType extends AbstractType {
 		$resolver->setDefaults(array(
 			'intention'       => 'activitySelect_12331',
 			'translation_domain' 	=> 'activity',
+			'maxdistance' => null,
+			'me' => null,
 		));
-		$resolver->setRequired(['activityType', 'maxdistance', 'me', 'subselect']);
+		$resolver->setRequired(['activityType', 'subselect']);
 	}
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$action = $options['activityType'];
@@ -39,6 +42,74 @@ class ActivitySelectType extends AbstractType {
 		$builder->add('submit', SubmitType::class, [
 			'label'=>$action.'.form.submit'
 		]);
+	}
+
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function tournamentFields(FormBuilderInterface $builder, array $options): void {
+		$types = $options['subselect'];
+		$builder->add('name', TextType::class, array(
+			'label'=>'tourn.form.name',
+			'required'=>true,
+			'attr' => ['size'=>50]
+		));
+		if ($types['fights']) {
+			$tr = 'tourn.form.fightTypes.';
+			$choices = [
+				'solo' => Activities::fightsSolo->value,
+				'duo' => Activities::fightsDuo->value,
+				'team' => Activities::fightsTeam->value,
+				'ffa' => Activities::fightsFFA->value,
+			];
+			if ($types['grand']) {
+				$choices[] = ['all' => Activities::fightsAll->value];
+			}
+			$builder->add('fightTypes', ChoiceType::class, [
+				'label'=>$tr.'label',
+				'multiple'=>false,
+				'required'=>true,
+				'choices'=> $choices,
+				'choice_label' => function ($choice, $key, $value, $tr) {
+					if ($choice === Activities::fightsDuo->value) {
+						return $tr.'duo';
+					}
+					if ($choice === Activities::fightsTeam->value) {
+						return $tr.'teams';
+					}
+					if ($choice === Activities::fightsFFA->value) {
+						return $tr.'ffa';
+					}
+					if ($choice === Activities::fightsAll->value) {
+						return $tr.'all';
+					}
+					return $tr.'solo';
+				},
+			]);
+			$builder->add('weapon', EntityType::class, [
+				'class'=>EquipmentType::class,
+				'choice_label'=>'nameTrans',
+				'choice_translation_domain' => 'messages',
+				'choices'=>$options['weapons'],
+				'label'=>$tr.'weapon',
+			]);
+			$builder->add('armor', CheckboxType::class, [
+				'required' => false,
+				'label'=>$tr.'armor',
+			]);
+		}
+		if ($types['jousts']) {
+			$tr = 'tourn.form.joustTypes.';
+			$builder->add('joustTypes', CheckboxType::class, [
+				'label'=>$tr.'label',
+				'required' => false,
+			]);
+		}
+		if ($types['races']) {
+			$tr = 'tourn.form.racesTypes.';
+			$builder->add('racesTypes', CheckboxType::class, [
+				'label'=>$tr.'label',
+				'required' => false,
+			]);
+		}
 	}
 
 	/** @noinspection PhpUnusedPrivateMethodInspection */

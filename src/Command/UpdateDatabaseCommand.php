@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\ActivityType;
 use App\Entity\EquipmentType;
 use App\Entity\Permission;
 use App\Entity\Race;
@@ -189,6 +190,26 @@ class UpdateDatabaseCommand extends  Command {
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
 				'--group' => ['LoadSkillsData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+		}
+		if (in_array('A9', $versions)) {
+			$output->writeln('Correcting ActivtyTypes...');
+			$all = $em->getRepository(ActivityType::class)->findAll();
+			foreach ($all as $type) {
+				if ($type->getName() !== 'duel') {
+					foreach ($type->getRequires() as $old) {
+						$em->remove($old);
+					}
+				}
+			}
+			$em->flush();
+			$output->writeln('Outdated ActivtyTypes removed.');
+			$output->writeln('Loading corrected data...');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadActivityData'],
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);

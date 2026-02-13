@@ -89,6 +89,27 @@ report:
   medium:    though they had mixed thoughts on it.
   high:      and were nearly unanimous in this view.
 
+tourn:
+ create:
+  name:       Announce a Tournament
+  intro:      The ultimate proving ground of your capabilities, be it your skill in combat or your mastery of wealth in hosting one. From this page you can determine the type of tournament you wish to hold. Be advised, if you wish to hold more than a single type, you'll need a Tournament Grounds and the infrastructure it provides.
+ form:
+  name:       Tournament Name
+  fightTypes:
+   label:     Which Type of Fights shall be held?
+   solo:      Solo (1 vs 1) fights
+   duo:       Duo (2 vs 2) fights
+   team:      Team (5 vs 5) fights
+   ffa:       Free-for-all fights
+   all:       All types
+   weapon:    Which weapons shall be allowed? Selecting none is the same as selecting all.
+   armor:     Allow armor in combat?
+   notGrand:  To hold multiple fight types, you must be able to host a Grand Tournament (able to do fights, races, and jousts, and have a Tournament Grounds).
+  joustTypes:
+   label:     Include a joust?
+  notGrand:   Only a settlement with a dedicated Tournament Grounds has the facilities to host multiple tournaments at once.
+  racesTypes:
+   label:     Include races?
 
 train:
  noduplicate: Other training actions have been automatically removed. Sorry, you can only train one skill at a time.
