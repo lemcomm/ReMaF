@@ -9,12 +9,15 @@ use App\Entity\Conversation;
 use App\Entity\ConversationPermission;
 use App\Entity\House;
 use App\Entity\Message;
+use App\Entity\MessageData;
 use App\Entity\MessageRecipient;
 use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\StatisticGlobal;
+use App\Entity\World;
+use App\Enum\Activities;
 use App\Enum\CharacterStatus;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -409,6 +412,11 @@ class ConversationManager {
                         $origTarget = FALSE;
                 }
 
+		$meta = new MessageData();
+		$this->em->persist($meta);
+		$meta->setTopic($topic);
+		$meta->setContent($text);
+
                 foreach ($recipients as $rec) {
                         if (!$rec->getLocalConversation()) {
                                 $conv = $this->newLocalConversation($rec, $now, $cycle);
@@ -416,15 +424,15 @@ class ConversationManager {
                                 $conv = $rec->getLocalConversation();
                                 $conv->setUpdated($now);
                         }
-                        $msg = new Message();
-                        $this->em->persist($msg);
+
+			$msg = new Message();
+			$this->em->persist($msg);
                         $msg->setConversation($conv);
                         $msg->setType($type);
-                        $msg->setTopic($topic);
                         $msg->setCycle($cycle);
                         $msg->setSender($char);
                         $msg->setSent($now);
-                        $msg->setContent($text);
+			$msg->setData($meta);
                         if ($origTarget) {
                                 $targetMsg = $this->em->getRepository(Message::class)->findOneBy(['conversation'=>$conv, 'sender'=>$origTarget->getSender(), 'content'=>$origTarget->getContent()]);
                                 if ($targetMsg) {
@@ -627,6 +635,19 @@ class ConversationManager {
                 return $msg;
         }
 
+	public function newAllRealmsMessage(string $type, ?string $subtype, World $world, $flush = true, ?Character $sender = null, array $data = []) {
+		$realms = $this->em->getRepository(Realm::class)->findBy(['superior'=>null, 'active'=>true]);
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c WHERE c.realm IN (:realms) AND c.system = \'announcements\'')->setParameters(['realms' => $realms]);
+		$convs = $query->getResult();
+		$content = '';
+		if (in_array($type, ['melee tournament', 'joust', 'grand tournament', 'race'])) {
+			$content = '{trans:system.tourn.announce}';
+		}
+		foreach ($convs as $conv) {
+
+		}
+	}
+
         public function pruneConversation(Conversation $conv): string {
                 $keep = new ArrayCollection();
                 $perms = $conv->getPermissions();
@@ -781,21 +802,29 @@ class ConversationManager {
                         $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'general']);
                         $this->addParticipant($conv, $char);
                         $this->addParticipant($general, $char);
-                        $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
+                        $msg = $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                         #$this->newSystemMessage($general, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                 } elseif ($realm && !$same) {
+			$msgs = [];
                         $conv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
                         $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'general']);
                         $this->addParticipant($conv, $char);
                         $this->addParticipant($general, $char);
-                        $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
+			$msg = $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
+			if ($msg) {
+				$msgs[] = $msg;
+			}
                         #$this->newSystemMessage($general, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                         $supConv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'announcements']);
                         $supGeneral = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'general']);
                         $this->addParticipant($supConv, $char);
                         $this->addParticipant($supGeneral, $char);
-                        $this->newSystemMessage($supConv, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
+			$msg =  $this->newSystemMessage($supConv, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
+			if ($msg) {
+				$msgs[] = $msg;
+			}
                         #$this->newSystemMessage($supGeneral, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
+			$this->combineData($msgs);
                 } elseif ($house) {
                         $conv = $em->getRepository('App\Entity\Conversation')->findOneBy(['house'=>$house, 'system'=>'announcements']);
                         $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['house'=>$house, 'system'=>'general']);
@@ -874,6 +903,43 @@ class ConversationManager {
                 }
                 return [$conv, $supConv];
         }
+
+	/**
+	 * Combines duplicate messages into a MessageData object to reduce duplication.
+	 * Any mismatch will cause the deduplication to fail.
+	 * @param array $msgs
+	 *
+	 * @return void
+	 */
+	public function combineData(array $msgs): void {
+		$match = false;
+		$sysMatch = false;
+		$data = new MessageData();
+		$content = '';
+		$sysCont = '';
+		$topic = '';
+		foreach ($msgs as $msg) {
+			if ($content === '') {
+				$content = $msg->getContent();
+				$sysCont = $msg->getSystem();
+				$topic = $msg->getTopic();
+			} elseif ($msg->getContent() === $content && $msg->getSystem() === $sysCont && $msg->getTopic() === $topic) {
+				$match = true;
+			} else {
+				$match = false;
+			}
+		}
+		if ($match) {
+			$this->em->persist($data);
+			$data->setContent($content);
+			$data->setSystemContent($sysCont);
+			$data->setTopic($topic);
+			foreach ($msgs as $msg) {
+				$msg->setData($data);
+				$msg->setContent(null)->setSystem(null)->setTopic(null);
+			}
+		}
+	}
 
         public function addParticipant(Conversation $conv, Character $char) {
                 $perm = $this->em->getRepository('App\Entity\ConversationPermission')->findOneBy(['conversation'=>$conv, 'character'=>$char,'active'=>true]);

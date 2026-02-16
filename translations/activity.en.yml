@@ -93,6 +93,15 @@ tourn:
  create:
   name:       Announce a Tournament
   intro:      The ultimate proving ground of your capabilities, be it your skill in combat or your mastery of wealth in hosting one. From this page you can determine the type of tournament you wish to hold. Be advised, if you wish to hold more than a single type, you'll need a Tournament Grounds and the infrastructure it provides.
+ announce:
+  melee tournament:
+   flash:     A Melee Tournament has been scheduled.
+  joust:
+   flash:     A Joust has been scheduled.
+  race:
+   flash:     A Race has been scheduled.
+  grand tournament:
+   flash:     A Grand Tournament has been scheduled.
  form:
   name:       Tournament Name
   fightTypes:

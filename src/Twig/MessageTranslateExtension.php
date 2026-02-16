@@ -28,13 +28,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 
 class MessageTranslateExtension extends AbstractExtension {
 
 	private $absolute=false;
 
-	// FIXME: type hinting for $translator removed because the addition of LoggingTranslator is breaking it
 	public function __construct(private EntityManagerInterface $em, private TranslatorInterface $trans, private LinksExtension $links, private GeographyExtension $geo) {
 	}
 

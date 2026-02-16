@@ -11,18 +11,20 @@ class Message {
 	private ?string $type = null;
 	private DateTime $sent;
 	private ?int $cycle = null;
-	private ?string $system_content = null;
+	private ?array $system_content = null;
 	private ?string $content = null;
 	private ?int $recipient_count = null;
 	private ?string $target = null;
 	private ?bool $read = null;
 	private $id = null;
+	private ?bool $translated = null;
 	private Collection $replies;
 	private Collection $tags;
 	private Collection $recipients;
 	private ?Conversation $conversation = null;
 	private ?Character $sender = null;
 	private ?Message $reply_to = null;
+	private ?MessageData $data = null;
 
 	/**
 	 * Constructor
@@ -39,7 +41,10 @@ class Message {
 	 * @return string|null
 	 */
 	public function getTopic(): ?string {
-		return $this->topic;
+		if ($this->data) {
+			return $this->data->getTopic();
+		}
+		return $this->getTopic();
 	}
 
 	/**
@@ -124,20 +129,23 @@ class Message {
 	/**
 	 * Get system_content
 	 *
-	 * @return string|null
+	 * @return array|null
 	 */
-	public function getSystemContent(): ?string {
-		return $this->system_content;
+	public function getSystemContent(): ?array {
+		if ($this->data) {
+			return $this->data->getSystemContent();
+		}
+		return $this->getSystemContent();
 	}
 
 	/**
 	 * Set system_content
 	 *
-	 * @param string|null $systemContent
+	 * @param array|null $systemContent
 	 *
 	 * @return Message
 	 */
-	public function setSystemContent(?string $systemContent): static {
+	public function setSystemContent(?array $systemContent): static {
 		$this->system_content = $systemContent;
 
 		return $this;
@@ -149,7 +157,10 @@ class Message {
 	 * @return string|null
 	 */
 	public function getContent(): ?string {
-		return $this->content;
+		if ($this->data) {
+			return $this->data->getContent();
+		}
+		return $this->getContent();
 	}
 
 	/**
@@ -215,6 +226,9 @@ class Message {
 	 * @return bool|null
 	 */
 	public function getRead(): ?bool {
+		if ($this->data) {
+			return $this->data->getRead();
+		}
 		return $this->read;
 	}
 
@@ -226,8 +240,11 @@ class Message {
 	 * @return Message
 	 */
 	public function setRead(?bool $read): static {
-		$this->read = $read;
-
+		if ($this->data) {
+			$this->data->setRead($read);
+		} else {
+			$this->read = $read;
+		}
 		return $this;
 	}
 
@@ -410,5 +427,23 @@ class Message {
 			}
 		}
 		return false;
+	}
+
+	public function getTranslated(): ?bool {
+		return $this->translated;
+	}
+
+	public function setTranslated(?bool $translated): static {
+		$this->translated = $translated;
+		return $this;
+	}
+
+	public function getData(): ?MessageData {
+		return $this->data;
+	}
+
+	public function setData(?MessageData $data): static {
+		$this->data = $data;
+		return $this;
 	}
 }

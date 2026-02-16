@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="App\Entity\MessageData">
+		<id name="id" type="bigint">
+			<generator strategy="AUTO"/>
+		</id>
+		<one-to-many field="message" target-entity="Message" mapped-by="data"/>
+		<field name="topic" type="string" nullable="true"/>
+		<field name="content" type="text" nullable="true"/>
+		<field name="system_content" type="array" nullable="true"/>
+		<field name="read" type="boolean" nullable="true"/>
+	</entity>
+</doctrine-mapping>

@@ -49,8 +49,8 @@ class LinksExtension extends AbstractExtension {
 		return preg_replace_callback($pattern, array(get_class($this), "wikilinksReplacer"), $input);
 	}
 
-    /** @noinspection PhpUnusedPrivateMethodInspection */
-    private function wikilinksReplacer($matches): string {
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function wikilinksReplacer($matches): string {
 		$link = '';
 		foreach ($matches as $match) {
 			$data = explode(':', trim($match, "[]"));
