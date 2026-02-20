@@ -52,6 +52,28 @@ class ActivitySelectType extends AbstractType {
 			'required'=>true,
 			'attr' => ['size'=>50]
 		));
+		$builder->add('delay', ChoiceType::class, array(
+			'label'=>'tourn.form.delay.label',
+			'required'=>true,
+			'choices'=>array(
+				28,
+				56,
+				84,
+				112
+			),
+			'choice_label' => function ($choice, $key, $value) {
+				if ($choice === 28) {
+					return 'trans.form.delay.28';
+				} elseif ($choice === 56) {
+					return 'trans.form.delay.56';
+				} elseif ($choice === 84) {
+					return 'trans.form.delay.84';
+				} else {
+					return 'trans.form.delay.112';
+				}
+			}
+
+		));
 		if ($types['fights']) {
 			$tr = 'tourn.form.fightTypes.';
 			$choices = [

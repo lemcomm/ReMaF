@@ -43,7 +43,7 @@ class ActivityController extends AbstractController {
 		return $this->activityDispatcher->gateway($test, null, true, false, $secondary);
 	}
 
-	public function tournamentCreateAction(ConversationManager $conv, Request $request): Response|RedirectResponse {
+	public function tournamentCreateAction(ConversationManager $conv, CommonService $common, Request $request): Response|RedirectResponse {
 		$char = $this->gateway('activityTournamentCreateTest');
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
@@ -114,8 +114,8 @@ class ActivityController extends AbstractController {
 			}
 			if (!$fail) {
 				$act = $this->actman->createTournament($char, $settlement, $total, $data['name'], $hasFight, $hasRace, $hasJoust, $restrictions, $armor, true);
-				#TODO: Actually pick/set a date for these.
-				$date = '1-1-1';
+				$date = $common->getCycle()+$data['delay'];
+				$act->setCycle($date);
 				if ($act) {
 					# This gets swapped into the translated message so we have actual links and stuff.
 					$data = [
@@ -124,9 +124,9 @@ class ActivityController extends AbstractController {
 						'when' => $date,
 						'where' => '[s:'.$settlement->getId().']',
 					];
-					$this->addFlash('notice', $this->trans->trans('tourn.announce.'.$act->getType()->getName().'flash', [], 'activity'));
 					$conv->newAllrealmsMessage('tourn.'.$act->getType()->getName(), $act->getSubtype()?->getName(), $char->getWorld(), $data);
-					#TODO: THE STUFF! Announcements, events, flash msg, etc.
+					$this->addFlash('notice', $this->trans->trans('tourn.announce.'.$act->getType()->getName().'flash', [], 'activity'));
+					return $this->redirectToRoute('maf_actions');
 				}
 			}
 		}

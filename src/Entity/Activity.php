@@ -16,6 +16,7 @@ class Activity {
 	private DateTime $created;
 	private DateTime $start;
 	private DateTime $finish;
+	private ?int $cycle = null;
 	private bool $same;
 	private bool $weapon_only;
 	private bool $ready;
@@ -597,6 +598,15 @@ class Activity {
 
 	public function setArmor(bool $armor): static {
 		$this->armor = $armor;
+		return $this;
+	}
+
+	public function getCycle(): ?int {
+		return $this->cycle;
+	}
+
+	public function setCycle(?int $cycle): static {
+		$this->cycle = $cycle;
 		return $this;
 	}
 }

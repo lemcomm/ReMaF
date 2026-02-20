@@ -66,6 +66,9 @@ class Message {
 	 * @return string|null
 	 */
 	public function getType(): ?string {
+		if ($this->data) {
+			return $this->data->getType();
+		}
 		return $this->type;
 	}
 

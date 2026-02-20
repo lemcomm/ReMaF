@@ -12,6 +12,7 @@ class MessageData {
 	private ?string $content = null;
 	private ?array $system_content = null;
 	private ?bool $read = null;
+	private ?string $type = null;
 	private ?Message $message = null;
 
 	/**
@@ -109,5 +110,14 @@ class MessageData {
 	 */
 	public function getId(): ?int {
 		return $this->id;
+	}
+
+	public function getType(): ?string {
+		return $this->type;
+	}
+
+	public function setType(?string $type): static {
+		$this->type = $type;
+		return $this;
 	}
 }

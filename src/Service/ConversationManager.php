@@ -333,37 +333,22 @@ class ConversationManager {
                         }
                         if (!$total) {
                                 $count = 0;
-					/** @var ConversationPermission $perm */
-					foreach ($conv->findActivePermissions() as $perm) {
-                                        if (!$antiTickUp && $perm->getCharacter() != $char) {
-                                                if ($org) {
-                                                        if ($org === 'realm' && !$perm->getCharacter()->getAutoReadRealms()) {
-                                                                $perm->setUnread($perm->getUnread()+1);
-								$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
-                                                        } elseif ($org === 'assoc' && !$perm->getCharacter()->getAutoReadAssocs()) {
-                                                                $perm->setUnread($perm->getUnread()+1);
-								$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
-                                                        } elseif ($org === 'house' && !$perm->getCharacter()->getAutoReadHouse()) {
-                                                                $perm->setUnread($perm->getUnread()+1);
-								$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
-                                                        }
-                                                } else {
-                                                        $perm->setUnread($perm->getUnread()+1);
-							$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
-                                                }
-                                        }
-                                        $count++;
-                                }
+				/** @var ConversationPermission $perm */
+				if (!$antiTickUp) {
+					$count = $this->updateUnreadWithChar($conv->findActivePermissions(), $org, $char);
+				}
                         } else {
                                 $count = $total;
                         }
                         $new->setRecipientCount($count);
                         $new->setConversation($conv);
                         $conv->setUpdated($now);
-			$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
-			if ($stats) {
-				/** @var StatisticGlobal $stats */
-				$stats->setNewMessages($stats->getNewMessages()+1);
+			if ($type !== 'system') {
+				$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
+				if ($stats) {
+					/** @var StatisticGlobal $stats */
+					$stats->setNewMessages($stats->getNewMessages()+1);
+				}
 			}
                         if ($flush) {
                                 $this->em->flush();
@@ -635,7 +620,7 @@ class ConversationManager {
                 return $msg;
         }
 
-	public function newAllRealmsMessage(string $type, ?string $subtype, World $world, $flush = true, ?Character $sender = null, array $data = []) {
+	public function newAllRealmsMessage(string $type, ?string $subtype, World $world, $flush = true, ?Character $sender = null, array $data = []): int {
 		$realms = $this->em->getRepository(Realm::class)->findBy(['superior'=>null, 'active'=>true]);
 		$query = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c WHERE c.realm IN (:realms) AND c.system = \'announcements\'')->setParameters(['realms' => $realms]);
 		$convs = $query->getResult();
@@ -643,9 +628,86 @@ class ConversationManager {
 		if (in_array($type, ['melee tournament', 'joust', 'grand tournament', 'race'])) {
 			$content = '{trans:system.tourn.announce}';
 		}
-		foreach ($convs as $conv) {
+		return $this->writeSystemMessageWithData($convs, 'realms', null, $content, $data);
+	}
 
+	private function writeSystemMessageWithData(ArrayCollection $convs, $orgType, ?string $topic, string $content, array $sysContent, $antiTickUp = false): int {
+		$data = new MessageData();
+		$data->setContent($content);
+		$data->setSystemContent($sysContent);
+		$data->setTopic($topic);
+		$data->setType('system');
+		$this->em->persist($data);
+		$count = 0;
+		$total = 0;
+		/** @var Conversation $conv */
+		foreach ($convs as $conv) {
+			$count++;
+			$total++;
+			$new = new Message();
+			$this->em->persist($new);
+			$new->setData($conv);
+			$new->setCycle($this->common->getCycle());
+			$new->setSent(new DateTime("now"));
+			$new->setData($data);
+			$new->setType('system');
+			if (!$antiTickUp) {
+				$this->updateUnread($conv->findActivePermissions(), $orgType);
+			}
+			if ($count >= 5) {
+				$this->em->flush();
+			}
 		}
+		if ($count < 5) {
+			$this->em->flush();
+		}
+		return $total;
+	}
+
+	private function updateUnread(ArrayCollection $perms, $orgType): int {
+		$count = 0;
+		foreach ($perms as $perm) {
+			if ($orgType === 'realm' && !$perm->getCharacter()->getAutoReadRealms()) {
+				$perm->setUnread($perm->getUnread()+1);
+				$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+			} elseif ($orgType === 'assoc' && !$perm->getCharacter()->getAutoReadAssocs()) {
+				$perm->setUnread($perm->getUnread()+1);
+				$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+			} elseif ($orgType === 'house' && !$perm->getCharacter()->getAutoReadHouse()) {
+				$perm->setUnread($perm->getUnread()+1);
+				$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+			} else {
+				$perm->setUnread($perm->getUnread()+1);
+				$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+			}
+			$count++;
+		}
+		return $count;
+	}
+
+	private function updateUnreadWithChar(ArrayCollection $perms, bool|string $orgType, Character $char): int {
+		$count = 0;
+		foreach ($perms as $perm) {
+			if ($perm->getCharacter() != $char) {
+				if ($orgType) {
+					if ($orgType === 'realm' && !$perm->getCharacter()->getAutoReadRealms()) {
+						$perm->setUnread($perm->getUnread()+1);
+						$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+					} elseif ($orgType === 'assoc' && !$perm->getCharacter()->getAutoReadAssocs()) {
+						$perm->setUnread($perm->getUnread()+1);
+						$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+					} elseif ($orgType === 'house' && !$perm->getCharacter()->getAutoReadHouse()) {
+						$perm->setUnread($perm->getUnread()+1);
+						$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+					}
+				} else {
+					$perm->setUnread($perm->getUnread()+1);
+					$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+				}
+			}
+			$count++;
+		}
+		return $count;
 	}
 
         public function pruneConversation(Conversation $conv): string {
