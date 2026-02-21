@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Association;
 use App\Entity\AssociationMember;
+use App\Entity\BattleGroup;
 use App\Entity\Character;
 use App\Entity\CharacterBackground;
 use App\Entity\GeoData;
@@ -290,10 +291,10 @@ class CharacterManager {
 				} else {
 					$this->warman->removeCharacterFromBattlegroup($character, $bg);
 				}
-				$enemies = $bg->getEnemies();
-				if ($enemies) {
-					$enemies = $enemies->first()->getCharacters();
-				} else {
+				try {
+					$enemies = $bg->getEnemies();
+				} catch (\Exception $e) {
+					# Do nothing.
 					$enemies = false;
 				}
 			}
@@ -610,6 +611,8 @@ class CharacterManager {
 			$this->em->remove($act);
 		}
 		$enemies = false;
+		/** @var BattleGroup $bg */
+		$enemies = false;
 		foreach ($character->getBattlegroups() as $bg) {
 			if ($bg->getCharacters()->count() === 1 && $bg->getBattle()->getGroups()->count() == 2) {
 				# Just us, we can short-circuit this battle.
@@ -619,10 +622,9 @@ class CharacterManager {
 			} else {
 				$this->warman->removeCharacterFromBattlegroup($character, $bg);
 			}
-			$enemies = $bg->getEnemies();
-			if ($enemies) {
-				$enemies = $enemies->first()->getCharacters();
-			} else {
+			try {
+				$enemies = $bg->getEnemies();
+			} catch (\Exception $e) {
 				$enemies = false;
 			}
 		}
