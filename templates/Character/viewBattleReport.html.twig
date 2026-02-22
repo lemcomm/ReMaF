@@ -264,7 +264,7 @@
 							{% endfor %}
 							<li>{{ ('battle.extras.'~extra.what)|trans({'%who%':who?link(who):'[nobody]', '%by%':by?link(by):'[nobody]'})|raw }}</li>
 						{% endfor %}
-						{% for key, value in group.reinforcements %}
+						{% for key, value in stage.reinforcements %}
 							{{ 'battle.reinforcement.announce'|trans({}) }}
 							{% if key == 'characters' %}
 								{% for id in value %}

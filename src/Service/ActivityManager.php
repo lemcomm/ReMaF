@@ -33,15 +33,15 @@ class ActivityManager {
 	private ?ActivityReport $report;
 
 	public function __construct(
-		private CommonService $common,
+		private CommonService          $common,
 		private EntityManagerInterface $em,
-		private Geography $geo,
-		private HelperService $helper,
-		private LoggerInterface $logger,
-		private CombatManager $combat,
-		private CharacterManager $charMan,
-		private History $history,
-		private SkillManager $skills,
+		private Geography              $geo,
+		private HelperService          $helper,
+		private LoggerInterface        $logger,
+		private CombatLegacy           $legacy,
+		private CharacterManager       $charMan,
+		private History                $history,
+		private SkillManager           $skills,
 	) {
 	}
 
@@ -365,8 +365,8 @@ class ActivityManager {
 		$meC = $me->getCharacter();
 		/** @var Character $themC */
 		$themC = $them->getCharacter();
-		$meRanged = $this->combat->RangedPower($me, false, $me->getWeapon());
-		$meMelee = $this->combat->MeleePower($me, false, $me->getWeapon());
+		$meRanged = $this->legacy->RangedPower($me, false, $me->getWeapon());
+		$meMelee = $this->legacy->MeleePower($me, false, $me->getWeapon());
 		$meSkill = $meC->findSkill($me->getWeapon()->getSkill());
 		if ($meSkill) {
 			$meScore = $meSkill->getScore();
@@ -375,8 +375,8 @@ class ActivityManager {
 			$meScore = 0;
 			echo 'no meScore - ';
 		}
-		$themRanged = $this->combat->RangedPower($them, false, $them->getWeapon());
-		$themMelee = $this->combat->MeleePower($them, false, $them->getWeapon());
+		$themRanged = $this->legacy->RangedPower($them, false, $them->getWeapon());
+		$themMelee = $this->legacy->MeleePower($them, false, $them->getWeapon());
 		$themSkill = $themC->findSkill($them->getWeapon()->getSkill());
 		if ($themSkill) {
 			$themScore = $themSkill->getScore();
@@ -616,8 +616,8 @@ class ActivityManager {
 			echo $meChar->getName().' - ';
 			$this->skills->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." fires - ");
-			if ($this->combat->RangedRoll(0, 1*$themChar->getRace()->getSize(), 0, $meScore)) {
-				[$result, $sublogs] = $this->combat->rangedHit($meChar, $themChar, $meRanged, $act, false, 1, $themScore);
+			if ($this->legacy->RangedRoll(0, 1*$themChar->getRace()->getSize(), 0, $meScore)) {
+				[$result, $sublogs] = $this->legacy->rangedHit($meChar, $themChar, $meRanged, $act, false, 1, $themScore);
 			} else {
 				$result = 'miss';
 				$this->log(10, $result);
@@ -629,8 +629,8 @@ class ActivityManager {
 			echo $meChar->getName().' - ';
 			$this->skills->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." attacks - ");
-			if ($this->combat->MeleeRoll(0, $this->combat->toHitSizeModifier($meChar, $themChar), $meScore)) {
-				[$result, $sublogs] = $this->combat->MeleeAttack($meChar, $themChar, $meMelee, $act, false, 1, $themScore, false);
+			if ($this->legacy->MeleeRoll(0, $this->legacy->toHitSizeModifier($meChar, $themChar), $meScore)) {
+				[$result, $sublogs] = $this->legacy->MeleeAttack($meChar, $themChar, $meMelee, $act, false, 1, $themScore, false);
 			} else {
 				$result = 'miss';
 				$this->log(10, $result);

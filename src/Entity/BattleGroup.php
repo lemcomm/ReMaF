@@ -324,7 +324,12 @@ class BattleGroup {
 			}
 			$enemies = new ArrayCollection;
 			foreach ($this->battle->getGroups() as $group) {
-				if ($group != $primary && ($withReinforcements && $group->getReinforcing() !== $primary) || (!$withReinforcements && !$group->getReinforcing())) {
+				if ($group != $primary &&
+					(
+						($withReinforcements && $group->getReinforcing() !== $primary) ||
+						(!$withReinforcements && !$group->getReinforcing())
+					)
+				) {
 					$enemies->add($group);
 				}
 			}
