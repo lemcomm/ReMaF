@@ -15,7 +15,6 @@ class Soldier extends NPC {
 	protected int $charge = -1;
 	protected bool $isNoble = false;
 	protected bool $isFighting = false;
-	protected int $attacks = 0;
 	protected int $hitsTaken = 0;
 	protected int $casualties = 0;
 	protected int $kills = 0;
@@ -354,18 +353,6 @@ class Soldier extends NPC {
 		return $this->isFighting;
 	}
 
-	public function getAttacks(): int {
-		return $this->attacks;
-	}
-
-	public function addAttack($value = 1): void {
-		$this->attacks += $value;
-	}
-
-	public function resetAttacks(): void {
-		$this->attacks = 0;
-	}
-
 	public function getHitsTaken(): int {
 		return $this->hitsTaken;
 	}
@@ -392,42 +379,6 @@ class Soldier extends NPC {
 
 	public function resetCasualties() {
 		$this->casualties = 0;
-	}
-
-	public function getMorale(): int {
-		return $this->morale;
-	}
-
-	public function setMorale($value, $mastery = false): static {
-		if ($mastery) {
-			$this->morale = $value;
-			return $this;
-		}
-		if ($value > $this->maxMorale * $this->healthValue()) {
-			$this->morale = floor($this->maxMorale * $this->healthValue());
-		} else {
-			$this->morale = floor($value);
-		}
-		return $this;
-	}
-
-	public function getMaxMorale(): int {
-		return $this->maxMorale;
-	}
-
-	public function setMaxMorale($maxMorale): static {
-		$this->maxMorale = floor($maxMorale);
-		return $this;
-	}
-
-	public function reduceMorale($value = 1): static {
-		$this->morale -= $value;
-		return $this;
-	}
-
-	public function gainMorale($value = 1): static {
-		$this->morale += $value;
-		return $this;
 	}
 
 	public function getAllInUnit(): ArrayCollection|Collection|static {

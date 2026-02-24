@@ -171,8 +171,12 @@ class BattleRunner {
 		$this->debug=0;
 	}
 
-	private function prepareCombatManager(): void {
-		$this->combatRules = $this->battle->getRuleset()?:'legacy';
+	private function prepareCombatManager($combatRuleset): void {
+		if ($combatRuleset === 'toggleable') {
+			$this->combatRules = $this->battle->getRuleset()?:'legacy';
+		} else {
+			$this->combatRules = $combatRuleset;
+		}
 		if ($this->combatRules === 'legacy') {
 			$combat = $this->mastery;
 		} else {
@@ -195,10 +199,13 @@ class BattleRunner {
 	 * Main Battle Functions
 	 * #####################
 	 */
-	public function run(Battle $battle, $cycle): void {
+	public function run(Battle $battle, $cycle, $ruleset = null): void {
 		$this->reset();
 		$this->battle = $battle;
-		$this->prepareCombatManager();
+		if (!$ruleset) {
+			$ruleset = $battle->getRuleset();
+		}
+		$this->prepareCombatManager($ruleset);
 		if ($this->combatRules === 'legacy') {
 			if ($this->version < 3) {
 				$this->legacyMorale = true;

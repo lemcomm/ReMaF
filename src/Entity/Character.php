@@ -188,6 +188,7 @@ class Character extends AbstractCharacter {
 	];
 
 	public function __construct() {
+		parent::__construct();
 		$this->achievements = new ArrayCollection();
 		$this->fame = new ArrayCollection();
 		$this->journals = new ArrayCollection();
@@ -3915,7 +3916,7 @@ class Character extends AbstractCharacter {
 		return $this;
 	}
 
-	public function addAttack($ignored): void {
+	public function addAttack($value = 1): void {
 		# Deliberately empty.
 	}
 

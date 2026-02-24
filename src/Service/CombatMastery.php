@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\Activity;
 use App\Entity\Character;
 use App\Entity\Soldier;
 
@@ -12,8 +11,7 @@ class CombatMastery extends CombatAbstract {
 	# Basically, it allows previous combat versions to be run.
 	public int $version = 3;
 	public int $groupAttackResolves = 0;
-
-	public ?Activity $activity = null;
+	public bool $activity = false;
 
 	public function __construct(
 		protected CommonService $common,
@@ -23,7 +21,8 @@ class CombatMastery extends CombatAbstract {
 		parent::__construct($common, $charMan);
 	}
 
-	public function prepare(): void {
+	public function prepare($isActivity = false): void {
+		$this->activity = $isActivity;
 		# 'mastery' ruleset doesn't have toggles yet.
 	}
 
@@ -230,26 +229,40 @@ class CombatMastery extends CombatAbstract {
 		if (in_array("kill", $damResult)) {
 			// Target is killed. Check for noble capture.
 			if ($target->isNoble() && $myNoble && $random < $surrender) {
-				$me->addCasualty();
-				$this->captureInCombat($myNoble, $target->getCharacter());
-				$retResult = 'capture';
-				$strResult = 'Capture (Killing Blow)';
+				if (!$this->activity) {
+					$me->addCasualty();
+					$this->captureInCombat($myNoble, $target->getCharacter());
+					$retResult = 'capture';
+					$strResult = 'Capture (Killing Blow)';
+				} else {
+					$retResult = 'kill';
+					$strResult = 'Killing Blow';
+				}
 			} else {
-				$target->kill();
-				$me->addKill();
+				if (!$this->activity) {
+					$target->kill();
+					$me->addKill();
+				}
 				$strResult = "Kill (Fatal Blow)";
 				$retResult = 'kill';
 			}
 			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(3, $damResult[0] / 2 * -1, false, true));
 		} elseif (in_array("amputate", $damResult) && $ampRoll > $target->getToughness()) {
 			if ($target->isNoble() && $myNoble && $random < $surrender) {
-				$this->captureInCombat($myNoble, $target->getCharacter());
-				$me->addCasualty();
-				$retResult = 'capture';
-				$strResult = 'Capture (Amputation)';
+				if (!$this->activity) {
+					$me->addCasualty();
+					$this->captureInCombat($myNoble, $target->getCharacter());
+					$retResult = 'capture';
+					$strResult = 'Capture (Amputation)';
+				} else {
+					$retResult = 'amputate';
+					$strResult = 'Amputation';
+				}
 			} else {
-				$target->kill();
-				$me->addKill();
+				if (!$this->activity) {
+					$target->kill();
+					$me->addKill();
+				}
 				$strResult = "Kill (Amputation)";
 				$retResult = 'kill';
 			}
@@ -257,8 +270,10 @@ class CombatMastery extends CombatAbstract {
 			// When we implement proper post battle, we can do something else with the soldier.
 		} else {
 			// Target is wounded.
-			$target->addHitsTaken();
-			$me->addCasualty();
+			if (!$this->activity) {
+				$target->addHitsTaken();
+				$me->addCasualty();
+			}
 			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(1, -1, false, true));
 			$myLog[] = $this->parseMoraleResult($target, $target->moraleCheck(-1, 2, true, false));
 			// Shock roll
@@ -268,14 +283,21 @@ class CombatMastery extends CombatAbstract {
 			if ($shockRoll > $target->getToughness()) {
 				// Technically, this is a KO, but we assume that we kill the soldiers until a better function replaces post-battle recovery
 				if ($target->isNoble()) {
-					$strResult = "Capture (Shock)";
-					$retResult = 'capture';
-					$this->captureInCombat($myNoble, $target->getCharacter());
-					$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
+					if (!$this->activity) {
+						$this->captureInCombat($myNoble, $target->getCharacter());
+						$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
+						$strResult = "Capture (Shock)";
+						$retResult = 'capture';
+					} else {
+						$retResult = 'shock';
+						$strResult = 'Shock';
+					}
 				} else {
 					$strResult = "Kill (Shock)";
 					$retResult = 'kill';
-					$target->kill();
+					if (!$this->activity) {
+						$target->kill();
+					}
 					$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(2, -1, false, false));
 				}
 			} else {

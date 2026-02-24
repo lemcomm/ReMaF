@@ -8,6 +8,7 @@ abstract class AbstractCharacter {
 	protected int $wounded;
 	protected bool $alive;
 	protected string $name;
+	protected int $attacks = 0;
 	protected ?int $mastery = null;
 	protected int $effMastery = 0;
 	protected int $toughness = 12;
@@ -161,19 +162,45 @@ abstract class AbstractCharacter {
 		return $this->race->getBaseCombatSkill();
 	}
 
-	public function getMastery($recalc = false): int {
+	public function getMastery($recalc = false, $isChar = false, ?EquipmentType $weapon = null): int {
 		if ($this->mastery === null || $recalc) {
 			$mastery = 0;
 			$masteryLevels = [10, 50, 200, 500];
-			foreach ($masteryLevels as $xp){
-				if($this->getExperience() > $xp) {
-					$mastery++;
+			if (!$isChar) {
+				foreach ($masteryLevels as $xp){
+					if($this->getExperience() > $xp) {
+						$mastery++;
+					}
+				}
+			} else {
+				/** @var Skill $skill */
+				foreach ($this->getSkills() as $skill) {
+					if ($weapon->getSkill() && $skill->getType() === $weapon->getSkill()) {
+						$score = $skill->getScore();
+						foreach ($masteryLevels as $xp){
+							if($score > $xp) {
+								$mastery++;
+							}
+						}
+					}
 				}
 			}
 			$this->mastery = $mastery;
 			return $mastery;
 		}
 		return $this->mastery;
+	}
+
+	public function getAttacks(): int {
+		return $this->attacks;
+	}
+
+	public function addAttack($value = 1): void {
+		$this->attacks += $value;
+	}
+
+	public function resetAttacks(): void {
+		$this->attacks = 0;
 	}
 
 	public function getKills(): int {
@@ -293,13 +320,17 @@ abstract class AbstractCharacter {
 		return $this;
 	}
 
-	public function getEffMastery(bool $attacking): array {
-		$mastery = $this->getMastery() + $this->getStateTraits()['Bloodlust'];
-		if ($this->getWeapon()) {
-			$using = $this->getWeapon()->getName();
-			$weaponBaseSkill = $this->getWeapon()->getMastery();
-			$AC = $this->getWeapon()->getAttackClass();
-			$DC = $this->getWeapon()->getDefenseClass();
+	public function getEffMastery(bool $attacking, ?EquipmentType $weapon = null, $useEqp = true): array {
+		/** @var Character|Soldier $this */
+		$mastery = $this->getMastery($weapon) + $this->getStateTraits()['Bloodlust'];
+		if (!$weapon) {
+			$weapon = $this->getWeapon();
+		}
+		if ($weapon) {
+			$using = $weapon->getName();
+			$weaponBaseSkill = $weapon->getMastery();
+			$AC = $weapon->getAttackClass();
+			$DC = $weapon->getDefenseClass();
 		} else {
 			$using = 'improvised';
 			$weaponBaseSkill = 2;
@@ -310,7 +341,7 @@ abstract class AbstractCharacter {
 		if ($attacking) {
 			$WC = $AC + $this->getStateTraits()['Vainglory'] + $this->getStateTraits()['Deathwish'];
 		} else {
-			if ($this->getEquipment() && str_contains($this->getEquipment()->getName(), 'shield') && $this->getMoraleState() !== 'Berserk') {
+			if ($useEqp && $this->getEquipment() && str_contains($this->getEquipment()->getName(), 'shield') && $this->getMoraleState() !== 'Berserk') {
 				$WC = $this->getEquipment()->getDefenseClass() + $this->getStateTraits()['Vainglory'];
 			} else {
 				$WC = $DC + $this->getStateTraits()['Vainglory'] - $this->getStateTraits()['Deathwish'];
@@ -538,6 +569,42 @@ abstract class AbstractCharacter {
 		}
 
 		$this->setStateTraits($stateBonus);
+	}
+
+	public function getMorale(): int {
+		return $this->morale;
+	}
+
+	public function setMorale($value, $mastery = false): static {
+		if ($mastery) {
+			$this->morale = $value;
+			return $this;
+		}
+		if ($value > $this->maxMorale * $this->healthValue()) {
+			$this->morale = floor($this->maxMorale * $this->healthValue());
+		} else {
+			$this->morale = floor($value);
+		}
+		return $this;
+	}
+
+	public function getMaxMorale(): int {
+		return $this->maxMorale;
+	}
+
+	public function setMaxMorale($maxMorale): static {
+		$this->maxMorale = floor($maxMorale);
+		return $this;
+	}
+
+	public function reduceMorale($value = 1): static {
+		$this->morale -= $value;
+		return $this;
+	}
+
+	public function gainMorale($value = 1): static {
+		$this->morale += $value;
+		return $this;
 	}
 
 	abstract public function kill(): void;
