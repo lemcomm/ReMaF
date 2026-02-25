@@ -257,6 +257,10 @@ class Character extends AbstractCharacter {
 		return $this->getName() . ' (ID: ' . $this->id . ')';
 	}
 
+	public function toLogName(): string {
+		return 'C:'.$this->id;
+	}
+
 	public function HealOrDie(): int|bool {
 		$current = $this->healthValue();
 		if ($current >= 1) {

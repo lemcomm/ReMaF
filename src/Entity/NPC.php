@@ -18,6 +18,10 @@ class NPC extends AbstractCharacter {
 		return false;
 	}
 
+	public function toLogName(): string {
+		return 'NPC';
+	}
+
 	public function isActive($include_routed = false): bool {
 		if (!$this->isAlive()) return false;
 		if ($this->isWounded()) return false;

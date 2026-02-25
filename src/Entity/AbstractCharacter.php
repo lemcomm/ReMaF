@@ -27,6 +27,9 @@ abstract class AbstractCharacter {
 	protected int $sanityAdjustment = 0;
 	protected array $modifiers = ["Physical" => 0, "Fatigue" => 0, "Morale" => 0];
 	protected array $pendingModifiers = ["Physical" => 0, "Fatigue" => 0, "Morale" => 0];
+	protected array $injuries = [];
+	protected array $pendingInjuries = [];
+	protected array $hitLog = [];
 	protected string $moraleState = "";
 	protected ?array $stateTraits = null;
 	protected static array $defaultModifiers = ["Physical" => 0, "Fatigue" => 0, "Morale" => 0];
@@ -231,9 +234,17 @@ abstract class AbstractCharacter {
 		return $this;
 	}
 
-	public function prepModifier(string $type, int $val): static {
+	public function prepModifier(string $type, int $val, ?AbstractCharacter $who = null, ?string $hitLoc = null, ?array $hitData = null): static {
 		$this->pendingModifiers[$type] += $val;
+		if (str_starts_with($type, 'P')) {
+			$this->pendingInjuries($hitLoc, $val);
+			$this->hitLog[] = [$who->toLogName(), $hitLoc, $val, $hitData];
+		}
 		return $this;
+	}
+
+	public function getHitLog(): array {
+		return $this->hitLog;
 	}
 
 	public function getPendingModifiers(): ?array {
@@ -246,6 +257,24 @@ abstract class AbstractCharacter {
 		}
 		$this->pendingModifiers = self::$defaultModifiers;
 		return $this;
+	}
+
+	public function pendingInjuries($where, $amt) {
+		if (array_key_exists($where, $this->injuries)) {
+			$this->pendingInjuries[$where] += $amt;
+		} else {
+			$this->pendingInjuries[$where] = $amt;
+		}
+	}
+
+	public function applyInjuries() {
+		foreach ($this->pendingInjuries as $k => $v) {
+			if (array_key_exists($k, $this->injuries)) {
+				$this->injuries[$k] = $this->injuries[$k] + $v;
+			} else {
+				$this->injuries[$k] = $v;
+			}
+		}
 	}
 
 	public function getSanity(): int {
@@ -609,4 +638,5 @@ abstract class AbstractCharacter {
 
 	abstract public function kill(): void;
 
+	abstract public function toLogName(): string;
 }

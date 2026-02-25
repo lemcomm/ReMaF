@@ -68,6 +68,10 @@ class Soldier extends NPC {
 		return "soldier #$this->id ({$this->getName()}, {$this->getType()}, base $base, char $char)";
 	}
 
+	public function toLogName(): string {
+		return 'S:'.$this->id;
+	}
+
 	public function getWeaponAspect($aspect){
 		$bonus = $this->getStateTraits();
 		if ($this->getWeapon()) {

@@ -249,25 +249,14 @@ class CombatMastery extends CombatAbstract {
 			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(3, $damResult[0] / 2 * -1, false, true));
 		} elseif (in_array("amputate", $damResult) && $ampRoll > $target->getToughness()) {
 			if ($target->isNoble() && $myNoble && $random < $surrender) {
+				$retResult = 'amputate';
+				$strResult = 'Amputation';
 				if (!$this->activity) {
 					$me->addCasualty();
-					$this->captureInCombat($myNoble, $target->getCharacter());
-					$retResult = 'capture';
-					$strResult = 'Capture (Amputation)';
-				} else {
-					$retResult = 'amputate';
-					$strResult = 'Amputation';
 				}
-			} else {
-				if (!$this->activity) {
-					$target->kill();
-					$me->addKill();
-				}
-				$strResult = "Kill (Amputation)";
-				$retResult = 'kill';
 			}
 			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(3, -4, false, true));
-			// When we implement proper post battle, we can do something else with the soldier.
+			$target->prepModifier('Physical', $damResult[0], $me, $hitLoc, $hitData);
 		} else {
 			// Target is wounded.
 			if (!$this->activity) {
@@ -304,8 +293,7 @@ class CombatMastery extends CombatAbstract {
 				$retResult = 'wound';
 				$strResult = "Wound";
 			}
-
-			$target->prepModifier('Physical', $damResult[0]);
+			$target->prepModifier('Physical', $damResult[0], $me, $hitLoc, $hitData);
 			/* As we update penalty after the round, it is currently not possible to 'bleed out' from additional damage.
 			
 			if ($target->getPenalty() >= $target->getToughness()) {

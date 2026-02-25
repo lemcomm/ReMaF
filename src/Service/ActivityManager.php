@@ -412,8 +412,6 @@ class ActivityManager {
 			$themRanged = $them->getWeapon()->getRanged();
 		}
 
-		#TODO: The rest of this from here.
-
 		if ($meRanged && !$themRanged) {
 			$meFreeAttack = true;
 			$themFreeAttack = false;
@@ -514,6 +512,8 @@ class ActivityManager {
 				$continue = $this->duelLegacyAttack($act, $meReport, $themReport, $me, $meC, $themC, $round, $meRanged, $meMelee, $meScore, $themScore, $themLimit, $themWounds, true);
 			} else {
 				[$continue, $ignored] = $this->duelMasteryAttack($meC, $themC, $meReport, $themReport, $round, $limit, true);
+				$meC->applyModifier();
+				$themC->applyModifier();
 			}
 			$round++;
 			$em->flush();
@@ -522,6 +522,8 @@ class ActivityManager {
 				$continue = $this->duelLegacyAttack($act, $themReport, $meReport, $them, $themC, $meC, $round, $themRanged, $themMelee, $themScore, $meScore, $meLimit, $meWounds, true);
 			} else {
 				[$continue, $ignored] = $this->duelMasteryAttack($themC, $meC, $themReport, $meReport, $round, $limit, true);
+				$meC->applyModifier();
+				$themC->applyModifier();
 			}
 			$round++;
 			$em->flush();
@@ -554,6 +556,8 @@ class ActivityManager {
 				} else {
 					[$meGood1, $themGood1] = $this->duelMasteryAttack($meC, $themC, $meReport, $themReport, $round, $limit);
 					[$themGood2, $meGood2] = $this->duelMasteryAttack($themC, $meC, $themReport, $meReport, $round, $limit);
+					$meC->applyModifier();
+					$themC->applyModifier();
 					$meGood = ($meGood1 && $meGood2);
 					$themGood = ($themGood1 && $themGood2);
 					if (!$meGood || !$themGood) {
@@ -586,6 +590,7 @@ class ActivityManager {
 		[$results, $logs] = $this->mastery->resolveAttack($meC, $themC, $hit);
 		$results = explode(' ', $results);
 		$this->logAttack($logs);
+		#TODO: Read injuries and logs and build them into some players can see.
 		$this->fatigueRoll($meC, $round);
 		$this->createStageReport(null, $meReport, $round, ['results' => $results]);
 		if ($freehit) {

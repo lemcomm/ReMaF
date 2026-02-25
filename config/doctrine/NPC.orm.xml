@@ -8,6 +8,7 @@
 		<field name="hungry" type="smallint"/>
 		<field name="wounded" type="smallint"/>
 		<field name="distance_home" type="integer"/>
+		<field name="injuries" type="array" nullable="true"/>
 
 		<many-to-one field="race" target-entity="Race" fetch="EAGER"/>
 		<many-to-one field="home" target-entity="Settlement" fetch="EXTRA_LAZY"/>
