@@ -38,7 +38,7 @@ Table headers are handled as translation strings from the character.list databas
 		<td>
 			{% if canSpawn %}<a href="{{ path('maf_play', {'id': character.id, 'logic': 'placenew'}) }}">{{ 'account.place'|trans }}</a>{% endif %}
 		</td>
-	{% elseif character.alive and character.location %}
+	{% elseif character.alive and character.location and not character.retired%}
 		<td>
 			{% if character.slumbering %}
 				<img src="{{ asset('images/zzz.png') }}" alt="{{ 'inactive'|trans }}" title="{{ 'inactive'|trans }}" height="16px" />
@@ -105,7 +105,7 @@ Table headers are handled as translation strings from the character.list databas
 		<td>
 			<a href="{{ path('maf_play', {'id': character.id, 'logic': 'play'}) }}">{{ 'account.play'|trans }}</a>
 		</td>
-	{% elseif not character.location and character.alive and character.retired %}
+	{% elseif character.alive and character.retired %}
 		<td>
 			<!-- Status icon would normally be here. -->
 		</td>

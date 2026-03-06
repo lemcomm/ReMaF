@@ -1159,6 +1159,7 @@ error:
   nothead:      Only the head of the House may access this page.
   nohouse:      You must be in a house to perform this action.
   arcane:       This thing is lost knowledge beyond your understanding.
+  notreturnable: This character has too recently entered retirement. Please wait at least 7 days after they retire to return them.
 
  missing:
   character:    Character required, but missing. Please select a character from the character page or log in again.

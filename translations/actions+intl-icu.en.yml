@@ -1167,7 +1167,7 @@ meta:
   intro: >
    Your can decide to make your character retire from active life at any time they are not captive.<br />
    This action will make your character lose all their titles, holdings, conversations, soldiers, and position on the map,
-   so it shouldn't be taken lightly. You will also have to wait, at a minimum, a few days to return them to activity.<br><br>
+   so it shouldn't be taken lightly. <b>You will also have to wait, at a minimum, a seven days to return them to activity.</b><br><br>
    Be advised, that if you are currently commanding units, and a battle is pending, your units will defect to the enemy.
   sure:         Are you certain?
   submit:       Leave the politics behind

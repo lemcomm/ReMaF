@@ -505,7 +505,7 @@ class AccountController extends AbstractController {
 
 
 	#[Route ('/account/play/{id}', name:'maf_play', requirements: ['id'=>'\d+'])]
-	public function playAction(Character $id, Request $request, AppState $app, EntityManagerInterface $em, PaymentManager $pay, UserManager $userMan, DiscordIntegrator $discord): RedirectResponse {
+	public function playAction(Character $id, Request $request, AppState $app, EntityManagerInterface $em, PaymentManager $pay, UserManager $userMan, DiscordIntegrator $discord, TranslatorInterface $trans): RedirectResponse {
 		$user = $this->getUser();
 		$character = $id;
 		if ($user->isBanned()) {
@@ -522,14 +522,14 @@ class AccountController extends AbstractController {
 			$app->logUser($user, $request->attributes->get('_route').'_'.$character->getId().'_'.$logic, true);
 			$text = "User #".$user->getId()." attempted to access Character #".$character->getId()." owned by ".$character->getUser()?->getId();
 			$discord->pushToOlympus($text);
-			throw $this->createAccessDeniedException('error.noaccess.character');
+			throw $this->createAccessDeniedException($trans->trans('error.noaccess.character', [], 'messages'));
 		}
 		if ($character->getBattling()) {
-			throw $this->createAccessDeniedException('error.noaccess.battling');
+			throw $this->createAccessDeniedException($trans->trans('error.noaccess.battling', [], 'messages'));
 		}
 		# Make sure this character can return from retirement. This function will throw an exception if the given character has not been retired for a week.
 		if ($character->isAlive() && !is_null($character->getRetiredOn()) && $character->getRetiredOn()->diff(new DateTime("now"))->days <= 7) {
-			throw $this->createAccessDeniedException('error.noaccess.notreturnable');
+			throw $this->createAccessDeniedException($trans->trans('error.noaccess.notreturnable', [], 'messages'));
 		}
 
 		$user->setCurrentCharacter($character);
