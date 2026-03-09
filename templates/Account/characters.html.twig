@@ -97,7 +97,10 @@ Table headers are handled as translation strings from the character.list databas
 		<td align="center">
 			{% if character.status[charStatus.messages.value] > 0 %}{{ "newmessages"|trans({'%count%':character.status[charStatus.messages.value], "%number%":character.status[charStatus.messages.value]}) }}{% endif %}
 			{% if character.status[charStatus.messages.value] > 0 and character.status[charStatus.requests.value] > 0 %} | {% endif %}
+			{% if character.requests > 0 %}{{ "requests"|trans({'%count%':character.requests, "%number%":character.requests}) }}{% endif %}
+			{# Requests aren't tied into this yet, and honestly I'm not sure we can given how nebulous some of them can be in who can approve them.
 			{% if character.status[charStatus.requests.value] > 0 %}{{ "requests"|trans({'%count%':character.status[charStatus.requests.value], "%number%":character.status[charStatus.requests.value]}) }}{% endif %}
+			#}
 		</td>
 		<td align="right">
 			{% if character.status[charStatus.events.value] > 0 %}{{ "newevents"|trans({'%count%':character.status[charStatus.events.value], "%number%":character.status[charStatus.events.value]}) }}{% endif %}
