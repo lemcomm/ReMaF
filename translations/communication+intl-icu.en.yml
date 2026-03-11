@@ -225,6 +225,8 @@ event:
   prison:
    free:        Set free from imprisonment.
    free2:       Freed from imprisonment through the death of {character}.
+   free3:       Freed from imprisonment through the retirement of {character}.
+   free4:       Your captive {character} has escaped into retirement.
    kill:
     behead:     Executed by beheading while imprisoned by {character}.
     hang:       Executed by hanging while imprisoned by {character}.

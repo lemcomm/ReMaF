@@ -700,12 +700,22 @@ class CharacterManager {
 			$this->em->remove($paper);
 		}
 
+		if ($character->getPrisonerOf()) {
+			$this->history->logEvent(
+				$character->getPrisonerOf(),
+				'event.character.prison.free3',
+				array("%link-character%"=>$character->getId()),
+				History::MEDIUM, true, 30
+			);
+			$character->setPrisonerOf(null);
+		}
+
 		foreach ($character->getPrisoners() as $prisoner) {
 			$prisoner->setPrisonerOf(null);
 			$character->removePrisoner($prisoner);
 			$this->history->logEvent(
 				$prisoner,
-				'event.character.prison.free2',
+				'event.character.prison.free4',
 				array("%link-character%"=>$character->getId()),
 				History::MEDIUM, true, 30
 			);
