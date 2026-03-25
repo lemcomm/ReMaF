@@ -67,10 +67,12 @@ report:
   finish:    Duel Finish
  combat:
   miss:      "%name% attacks with their %weapon% but misses."
+  missed:    "%name% attacks with their %weapon% but misses."
   fail:      "%name% fails to do damage with their %weapon%."
   light:     "%name% deals some damage with their %weapon%."
   wound:     "%name% does signifcant damage with their %weapon%."
   kill:      "%name% delivers a major blow with their %weapon%."
+  countered:   "%name% suffered a counterattack."
   victory:   Is Declared Victorious
   loss:      Has Lost This Duel
   draw:      Was Not Clearly The Winner

@@ -100,6 +100,7 @@ class SkillManager {
 				$skill->setTheory(0);
 				$skill->setPracticeHigh(0);
 				$skill->setTheoryHigh(0);
+				$skill->setUpdated(new \DateTime('now'));
 			}
 			return true;
 		}

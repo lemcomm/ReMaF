@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\CharacterStatus;
 use App\Enum\RaceName;
+use App\Service\ArmorCalculator;
 use App\Service\CharacterManager;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -142,6 +143,7 @@ class Character extends AbstractCharacter {
 	private ?array $status = null;
 	private ?array $familiarity = null;
 
+	protected bool $isChar = true;
 
 	# This should match App\Enum\CharacterStatus enum values.
 	private ?array $defaultStatus = [
@@ -4008,5 +4010,9 @@ class Character extends AbstractCharacter {
 		$fam[$which] = $value;
 		$this->familiarity = $fam;
 		return $this;
+	}
+
+	public function isNoble(): bool {
+		return true;
 	}
 }

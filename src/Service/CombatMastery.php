@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Character;
+use App\Entity\EquipmentType;
 use App\Entity\Soldier;
 
 class CombatMastery extends CombatAbstract {
@@ -26,10 +27,10 @@ class CombatMastery extends CombatAbstract {
 		# 'mastery' ruleset doesn't have toggles yet.
 	}
 
-	public function attackRoll(Soldier|Character $me, Soldier|Character $target, $stumble = false): array {
+	public function attackRoll(Soldier|Character $me, Soldier|Character $target, ?EquipmentType $meWeapon, ?EquipmentType $themWeapon, $stumble = false): array {
 		$attRoll = rand(1, 100);
 		$defRoll = rand(1, 100);
-		if ($attRoll < $me->getEffMastery(true)['EML']) {
+		if ($attRoll < $me->getEffMastery(true, $meWeapon)['EML']) {
 			if ($attRoll % 5 == 0) {
 				$attResult = 'CS';
 			} else {
@@ -43,7 +44,7 @@ class CombatMastery extends CombatAbstract {
 		if ($stumble) {
 			$defResult = 'Ignore';
 		} else {
-			if ($defRoll < $target->getEffMastery(false)['EML']) {
+			if ($defRoll < $target->getEffMastery(false, $themWeapon)['EML']) {
 				if ($defRoll % 5 == 0) {
 					$defResult = 'CS';
 				} else {
@@ -74,12 +75,12 @@ class CombatMastery extends CombatAbstract {
 		return ['result' => $resultArray[$attResult][$defResult], 'attRoll' => $attRoll, 'attResult' => $attResult, 'defRoll' => $defRoll, 'defResult' => $defResult];
 	}
 
-	public function resolveAttack(Character|Soldier $me, Character|Soldier $target, $result, bool $reattack = false, $log = ['',[]]): array {
+	public function resolveAttack(Character|Soldier $me, Character|Soldier $target, $result, ?EquipmentType $meWeapon, ?EquipmentType $themWeapon, ?EquipmentType $meArmor, ?EquipmentType $themArmor, ?bool $reattack = false, ?array $log = ['',[]]): array {
 		$this->groupAttackResolves++;
 		// Reattack is used as a flag to control multiple attacks per round. Eventually should be a stat check.
 		// Attacker hit
-		$attMastery = $me->getEffMastery(true);
-		$defMastery = $target->getEffMastery(false);
+		$attMastery = $me->getEffMastery(true, $meWeapon);
+		$defMastery = $target->getEffMastery(false, $themWeapon);
 
 		$strAttacker = $me->getName()."(".$me->getTranslatableType().") [".$me->getMoraleState()."]";
 		$strDefender = $target->getName()." (".$target->getTranslatableType().") [".$target->getMoraleState()."]";
@@ -101,24 +102,24 @@ class CombatMastery extends CombatAbstract {
 		//$log[1][] = $me->getName()." (".$me->getTranslatableType().") attacks ".$target->getName()." (".$target->getTranslatableType()."): ".$result['result']." (".$result['attResult']."[".$result['attRoll']."] vs ".$result['defResult']."[".$result['defRoll']."])\n";
 		
 		if (str_starts_with($result['result'], 'A')) {
-			return $this->resolveDamage($me, $target, (int)substr($result['result'], -1), $reattack, $log);
+			return $this->resolveDamage($me, $target, (int)substr($result['result'], -1), $reattack, $log, $meWeapon, $themWeapon, $meArmor, $themArmor);
 		} elseif ($result['result'] === 'DTA' && !$reattack) {
 			// Defender counterattack
 			$log[0] = $log[0].'countered ';
 			$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(0, 1, false, false));
-			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, false), true, $log);
+			return $this->resolveAttack($target, $me, $this->attackRoll($target, $me, $themWeapon, $meWeapon, false), $themWeapon, $meWeapon, $meArmor, $themArmor, true, $log);
 		} elseif ($result['result'] === 'Stumble') {
 			// Defender fumbles his defense and is vulnerable to attack
 			$log[0] = $log[0].'stumble ';
 			#$log[1][] = $this->parseMoraleResult($target, $target->moraleCheck(0, 1, true, false));
-			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), $reattack, $log);
+			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, $meWeapon, $themWeapon, true), $meWeapon, $themWeapon, $meArmor, $themArmor, $reattack, $log);
 		}
 		$log[0] = $log[0].'missed';
 		$log[1][] = $this->parseMoraleResult($me, $me->moraleCheck(0, 1, true, false));
 		return $log;
 	}
 
-	public function resolveDamage(Character|Soldier $me, Character|Soldier $target, $dice, $reattack, $logs): array {
+	public function resolveDamage(Character|Soldier $me, Character|Soldier $target, $dice, $reattack, $logs, ?EquipmentType $meWeapon, ?EquipmentType $themWeapon, ?EquipmentType $meArmor, ?EquipmentType $themArmor): array {
 		
 		/* List of PreResults:
 		* DTA = Defender Tactical Advantage (Counterattack)
@@ -140,7 +141,7 @@ class CombatMastery extends CombatAbstract {
 		$moraleLog = [];
 		$damage = 0;
 		$hitLoc = $this->getHitLoc($target);
-		$hitData = $this->resolveHit($me, $target, $hitLoc, $dice);
+		$hitData = $this->resolveHit($me, $target, $hitLoc, $dice, $meWeapon, $themArmor);
 
 		for ($i = 0; $i < $dice; $i++) {
 			$damage += rand(1, 6);
@@ -179,8 +180,8 @@ class CombatMastery extends CombatAbstract {
 
 		// Example
 		// broadsword (15/10) [6/8/6]
-		if ($me->getWeapon()) {
-			$strAttackerWeapon = $me->getWeapon()->getName()." (".$me->getWeapon()->getAttackClass()."/".$me->getWeapon()->getDefenseClass().") [".implode('/', $me->getWeapon()->getAspect())."]";
+		if ($meWeapon) {
+			$strAttackerWeapon = $meWeapon->getName()." (".$meWeapon->getAttackClass()."/".$meWeapon->getDefenseClass().") [".implode('/', $meWeapon->getAspect())."]";
 		} else {
 			$strAttackerWeapon = "improvised (0/0) [1/0/0/0]";
 		}
@@ -248,11 +249,12 @@ class CombatMastery extends CombatAbstract {
 			}
 			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(3, $damResult[0] / 2 * -1, false, true));
 		} elseif (in_array("amputate", $damResult) && $ampRoll > $target->getToughness()) {
-			if ($target->isNoble() && $myNoble && $random < $surrender) {
-				$retResult = 'amputate';
-				$strResult = 'Amputation';
-				if (!$this->activity) {
-					$me->addCasualty();
+			$retResult = 'amputate';
+			$strResult = 'Amputation';
+			if (!$this->activity) {
+				$me->addCasualty();
+				if ($target->isNoble() && $myNoble && $random < $surrender) {
+					$this->captureInCombat($myNoble, $target->getCharacter());
 				}
 			}
 			$myLog[] = $this->parseMoraleResult($me, $me->moraleCheck(3, -4, false, true));
@@ -320,14 +322,14 @@ class CombatMastery extends CombatAbstract {
 		// Stumble attacks again.
 		if ($target->isActive() && in_array("stumble", $damResult ) && !$reattack) {
 			$logs[0] = $logs[0].' ';
-			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, true), true, $logs);
+			return $this->resolveAttack($me, $target, $this->attackRoll($me, $target, $meWeapon, $themWeapon, true), $meWeapon, $themWeapon, $meArmor, $themArmor, true, $logs);
 		}
 		return $logs;
 	}
 
-	public function resolveHit(Character|Soldier $me, Character|Soldier $target, $hitloc, $dice) {
-		if ($me->getWeapon()) {
-			$aspects = $me->getWeapon()->getAspect();
+	public function resolveHit(Character|Soldier $me, Character|Soldier $target, $hitloc, $dice, ?EquipmentType $meWeapon = null, ?EquipmentType $themArmor = null) {
+		if ($meWeapon) {
+			$aspects = $meWeapon->getAspect();
 		} else {
 			$aspects = ["bashing" => 1, "cutting" => 0, "piercing" => 0, 'magefire' => 0];
 		}
@@ -340,11 +342,11 @@ class CombatMastery extends CombatAbstract {
 				$armor = $target->getArmourHitLoc($hitloc, $aspect);
 				$armorProtection = $armor['armorProtection'];
 				// Sim values for AI determination
-				$expSimResult = $me->getWeaponAspect($aspect) - $armorProtection + $expDiceResult;
+				$expSimResult = $me->getWeaponAspect($aspect, $meWeapon) - $armorProtection + $expDiceResult;
 				// Max() guarantees execution safety, making any armor value possible.
 				$simDiff = max($expSimResult - array_search("heavy", $damTable), -99);
 				// Real values used for calc
-				$diff = $me->getWeaponAspect($aspect) - $armorProtection;
+				$diff = $me->getWeaponAspect($aspect, $meWeapon) - $armorProtection;
 				$best = $simDiff > $best[1] ? [["aspect" => $aspect, "damage" => $diff, "table" => $damTable, "armor" => $armor], $simDiff] : $best;
 			}
 		}

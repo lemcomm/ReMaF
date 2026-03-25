@@ -71,46 +71,11 @@ class Soldier extends NPC {
 	public function toLogName(): string {
 		return 'S:'.$this->id;
 	}
-
-	public function getWeaponAspect($aspect){
-		$bonus = $this->getStateTraits();
-		if ($this->getWeapon()) {
-			return floor($this->getWeapon()->getAspect()[$aspect] * $bonus['Frenzy']);
-		}
-		$aspects = ["bashing" => 1, "cutting" => 0, "piercing" => 0, 'magefire' => 0];
-		return floor($aspects[$aspect] * $bonus['Frenzy']);
-	}
 	
 	public function getWeaponAttackClass(){
 		return $this->getWeapon()->getClass()[0];
 	}
 
-	public function getArmourHitLoc($hitLoc, $aspect): array {
-		$armor = $this->armour;
-		$covered = 0;
-		$armorHit = [];
-		if (!$armor) {
-			# Assume cloth. Rework this later when we move equipment into statics.
-			$pieces = [
-				['form' => 'tunic', 'layer' => 'cloth'],
-				['form' => 'leggings', 'layer' => 'cloth'],
-				['form' => 'boots', 'layer' => 'cloth'],
-			];
-		} else {
-			$pieces = $armor->getArmor();
-		}
-		foreach ($pieces as $piece) {
-			if (in_array($hitLoc, ArmorCalculator::forms[$piece['form']]['coverage'])) {
-				$covered += ArmorCalculator::layers[$piece['layer']]['protection'][$aspect];
-				$armorHit[] = [
-					'armorPiece' => $piece['layer'] . ' ' . $piece['form'],
-					'coverage' => ArmorCalculator::forms[$piece['form']]['coverage'],
-					'protection' => ArmorCalculator::layers[$piece['layer']]['protection']
-				];
-			}
-		}
-		return ['armorProtection' => $covered, 'armorHit' => $armorHit];
-	}
 	/**
 	 * Get base
 	 *

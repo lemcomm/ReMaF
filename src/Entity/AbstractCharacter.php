@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Service\ArmorCalculator;
+
 abstract class AbstractCharacter {
 
 	protected ?Race $race = null;
@@ -27,7 +29,7 @@ abstract class AbstractCharacter {
 	protected int $sanityAdjustment = 0;
 	protected array $modifiers = ["Physical" => 0, "Fatigue" => 0, "Morale" => 0];
 	protected array $pendingModifiers = ["Physical" => 0, "Fatigue" => 0, "Morale" => 0];
-	protected array $injuries = [];
+	protected ?array $injuries = [];
 	protected array $pendingInjuries = [];
 	protected array $hitLog = [];
 	protected string $moraleState = "";
@@ -46,8 +48,13 @@ abstract class AbstractCharacter {
 		'Unbreakable' => false									// Berserk & Heroism
 	];
 
+	protected bool $isChar = false;
+
 	public function __construct() {
 		$this->stateTraits = self::$defaultState;
+		if ($this->injuries === null) {
+			$this->injuries = [];
+		}
 	}
 
 	public function getHp(): int {
@@ -165,11 +172,11 @@ abstract class AbstractCharacter {
 		return $this->race->getBaseCombatSkill();
 	}
 
-	public function getMastery($recalc = false, $isChar = false, ?EquipmentType $weapon = null): int {
+	public function getMastery(?EquipmentType $weapon = null, bool $recalc = false): int {
 		if ($this->mastery === null || $recalc) {
 			$mastery = 0;
 			$masteryLevels = [10, 50, 200, 500];
-			if (!$isChar) {
+			if (!$this->isChar) {
 				foreach ($masteryLevels as $xp){
 					if($this->getExperience() > $xp) {
 						$mastery++;
@@ -277,6 +284,10 @@ abstract class AbstractCharacter {
 		}
 	}
 
+	public function getInjuries(): array {
+		return $this->injuries;
+	}
+
 	public function getSanity(): int {
 		return $this->sanity;
 	}
@@ -347,6 +358,46 @@ abstract class AbstractCharacter {
 	public function setStateTraits(array $traits): static {
 		$this->stateTraits = $traits;
 		return $this;
+	}
+
+	public function isNoble(): bool {
+		return false;
+	}
+
+	public function getWeaponAspect($aspect, ?EquipmentType $weapon = null){
+		$bonus = $this->getStateTraits();
+		$weapon = $weapon ?? $this->getWeapon();
+		if ($weapon) {
+			return floor($weapon->getAspect()[$aspect] * $bonus['Frenzy']);
+		}
+		$aspects = ["bashing" => 1, "cutting" => 0, "piercing" => 0, 'magefire' => 0];
+		return floor($aspects[$aspect] * $bonus['Frenzy']);
+	}
+
+	public function getArmourHitLoc($hitLoc, $aspect, $armor = null): array {
+		$covered = 0;
+		$armorHit = [];
+		if (!$armor) {
+			# Assume cloth. Rework this later when we move equipment into statics.
+			$pieces = [
+				['form' => 'tunic', 'layer' => 'cloth'],
+				['form' => 'leggings', 'layer' => 'cloth'],
+				['form' => 'boots', 'layer' => 'cloth'],
+			];
+		} else {
+			$pieces = $armor->getArmor();
+		}
+		foreach ($pieces as $piece) {
+			if (in_array($hitLoc, ArmorCalculator::forms[$piece['form']]['coverage'])) {
+				$covered += ArmorCalculator::layers[$piece['layer']]['protection'][$aspect];
+				$armorHit[] = [
+					'armorPiece' => $piece['layer'] . ' ' . $piece['form'],
+					'coverage' => ArmorCalculator::forms[$piece['form']]['coverage'],
+					'protection' => ArmorCalculator::layers[$piece['layer']]['protection']
+				];
+			}
+		}
+		return ['armorProtection' => $covered, 'armorHit' => $armorHit];
 	}
 
 	public function getEffMastery(bool $attacking, ?EquipmentType $weapon = null, $useEqp = true): array {

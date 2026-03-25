@@ -379,7 +379,7 @@ class CombatLegacy extends CombatAbstract {
 			return $power * $me->getRace()->getMeleeModifier();
 		}
 		# If either above the above ifs compare as true we don't get here, so this is technically an else/if regardless.
-		if ($power>0) {
+		if ($power>0 && $battle) {
 			$power += $me->ExperienceBonus($power);
 		}
 
@@ -481,7 +481,6 @@ class CombatLegacy extends CombatAbstract {
 			$act = false;
 		} else {
 			$act = $this->activity;
-			$me = $me->getCharacter(); #for stndardizing the getEquipment type calls
 		}
 
 		$power = 0;

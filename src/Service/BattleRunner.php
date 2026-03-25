@@ -966,6 +966,7 @@ class BattleRunner {
 		if ($phase !== $this->chargePhase) {
 			$cavNoTargets = true;
 		}
+		/** @var Soldier $soldier */
 		foreach ($soldiers as $soldier) {
 			$counter = null;
 			$result=false;
@@ -1054,8 +1055,8 @@ class BattleRunner {
 					if ($target) {
 						$this->attacks++;
 						$noCavTargets = 0;
-						$hit = $this->mastery->attackRoll($soldier, $target);
-						[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, true); #Prevent counters during ranged phase
+						$hit = $this->mastery->attackRoll($soldier, $target, $soldier->getWeapon(), $target->getWeapon(), false);
+						[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, $soldier->getWeapon(), $target->getWeapon(), $soldier->getArmour(), $target->getArmour(), true); #Prevent counters during ranged phase
 						$this->logAttack($results, $logs);
 						$this->fatigueRoll($soldier, $phase);
 					} else {
@@ -1067,8 +1068,8 @@ class BattleRunner {
 					if ($target) {
 						$this->shots++;
 						$noRangeTargets = 0;
-						$hit = $this->mastery->attackRoll($soldier, $target);
-						[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, true); #Prevent counters during cav charge
+						$hit = $this->mastery->attackRoll($soldier, $target, $soldier->getWeapon(), $target->getWeapon(), false);
+						[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, $soldier->getWeapon(), $target->getWeapon(), $soldier->getArmour(), $target->getArmour(), true); #Prevent counters during cav charge
 						$this->logAttack($results, $logs);
 						$this->fatigueRoll($soldier, $phase);
 
@@ -1215,7 +1216,7 @@ class BattleRunner {
 				if ($target) {
 					$this->attacks++;
 					$noMeleeTargets = 0;
-					$hit = $this->mastery->attackRoll($soldier, $target);
+					$hit = $this->mastery->attackRoll($soldier, $target, $soldier->getWeapon(), $target->getWeapon());
 					/*if ($hit !== 'Defended') {
 						[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit);
 						$this->logAttack($results, $logs);
@@ -1224,7 +1225,7 @@ class BattleRunner {
 						$result = $hit;
 					}*/
 
-					[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit);
+					[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, $soldier->getWeapon(), $target->getWeapon(), $soldier->getArmour(), $target->getArmour());
 					$this->logAttack($results, $logs);
 					$this->fatigueRoll($soldier, $phase);
 				} else {
@@ -1598,6 +1599,7 @@ class BattleRunner {
 					# Since isFighting is only updated in the preparation phase, this includes soldiers that will go inactive from this round.
 					$soldier->updateState();
 					$soldier->applyModifier();
+					$soldier->applyInjuries();
 					$solBonus = $soldier->getStateTraits();
 					$solPenalty = $soldier->getModifierSum() * $solBonus['Recklessness'];
 					$solWillpower = $soldier->getWillpower() - $solBonus['Fear'];

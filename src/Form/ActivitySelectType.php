@@ -29,10 +29,6 @@ class ActivitySelectType extends AbstractType {
 	}
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$action = $options['activityType'];
-		$builder->add('name', TextType::class, array(
-			'label'=>$action.'.form.name',
-			'required'=>false
-		));
 
 		$method = $action."Fields";
 		if (method_exists(__CLASS__, $method)) {
@@ -139,6 +135,10 @@ class ActivitySelectType extends AbstractType {
 		$me = $options['me'];
 		$maxdistance = $options['maxdistance'];
 		$subselect = $options['subselect'];
+		$builder->add('name', TextType::class, array(
+			'label'=>'duel.form.name',
+			'required'=>false
+		));
 
 		$builder->add('target', EntityType::class,[
 			'label'=>'duel.form.challenger',
