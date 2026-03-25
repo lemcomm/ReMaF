@@ -9,27 +9,35 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExceptionController extends AbstractController {
 	public function __construct(
 		private DiscordIntegrator $discord,
 		private AppState $app,
-		private EntityManagerInterface $em) {
+		private EntityManagerInterface $em,
+		private TranslatorInterface $trans
+	) {
 	}
 
 	/**
 	 * Converts an Exception to a Response.
 	 *
-	 * @param FlattenException          $exception A FlattenException instance
-	 * @param Request                   $request
+	 * @param FlattenException|null $exception A FlattenException instance
+	 * @param Request               $request
 	 *
 	 * @return Response
 	 */
 	#[Route ('/error/')]
-	public function exceptionAction(FlattenException $exception, Request $request): Response {
+	public function exceptionAction(Request $request, FlattenException|null $exception = null): Response {
+		if (!$exception) {
+			$this->addFlash('notice', $this->trans->trans('error.noerror'));
+			return $this->redirectToRoute('maf_index');
+		}
 		$code = $exception->getStatusCode();
 		$error = $exception->getMessage();
 		$trace = $exception->getTraceAsString();

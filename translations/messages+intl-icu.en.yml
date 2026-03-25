@@ -1118,6 +1118,7 @@ biome:
 
 error:
  title:        Error
+ noerror:      "How have you ended up on the error page without an error? Are you URL fishing?"
  found:
   house:       You already have a house
  notfound:
