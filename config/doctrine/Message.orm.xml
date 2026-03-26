@@ -9,7 +9,6 @@
 		<field name="sent" type="datetime"/>
 		<field name="cycle" type="integer" nullable="true"/>
 		<field name="system_content" type="array" nullable="true"/>
-		<field name="translated" type="boolean" nullable="true"/>
 		<field name="target" type="string" nullable="true"/>
 		<many-to-one field="data" target-entity="MessageData" fetch="EAGER"/>
 		<many-to-one field="conversation" target-entity="Conversation" inversed-by="messages" fetch="EAGER"/>
