@@ -373,7 +373,7 @@ class GameRunner {
 		$better = 0;
 		/** @var Character $char */
 		foreach ($iterableResult as $char) {
-			$result = $char->HealOrDie();
+			[$result, $ignored, $ignored1]= $char->HealOrDie();
 			if (($i++ % $this->batchsize) == 0) {
 				$this->em->flush();
 				$this->em->clear();
@@ -477,23 +477,57 @@ class GameRunner {
 		// wounded troops: heal or die
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Heal or die...");
-		$query = $this->em->createQuery('SELECT s FROM App\Entity\Soldier s WHERE s.wounded > 0');
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\Unit u JOIN u.soldier s WHERE s.wounded > 0 OR (s.injuries != \'a:0:{}\' AND s.injuries is not null)');
 		$iterableResult = $query->toIterable();
 		$i=1;
 		$heal = 0;
 		$worse = 0;
 		$dead = 0;
+		$charCache = [];
+		$settlementCache = [];
 		/** @var Soldier $soldier */
-		foreach ($iterableResult as $soldier) {
-			$result = $soldier->HealOrDie();
-			if ($result === false) {
-				$dead++;
-			} elseif ($result < 0) {
-				$worse++;
-			} elseif ($result > 0) {
-				$heal++;
+		/** @var Unit $unit */
+		foreach ($iterableResult as $unit) {
+			$healers = false;
+			$physicians = false;
+			$inside = false;
+			$here = false;
+			if ($char = $unit->getCharacter()) {
+				if (array_key_exists($char->getId() ,$charCache)) {
+					$healers = $charCache[$char->getId()]['h'];
+					$physicians = $charCache[$char->getId()]['p'];
+				} else {
+					$healers = $char->getEntourageOfType('healer', true)->count()*50;
+					$physicians = $char->getEntourageOfType('physician', true)->count()*400;
+					$charCache[] = [$char->getId() => ['h'=>$healers, 'p'=>$physicians]];
+				}
+				$inside = $char->getInsidePlace() || $char->getInsideSettlement();
+			} elseif ($here = $unit->getDefendingSettlement()) {
+				$physicians = $here->hasBuildingNamed('university');
+				$healers = $here->hasBuildingNamed('alchemist');
+				$inside = true;
 			}
-			if (($i++ % $this->batchsize) == 0) {
+			foreach ($unit->getLivingSoldiers() as $soldier) {
+				if ($here) {
+					[$result, $healerUse, $physicianUse] = $soldier->HealOrDie($healers, $physicians, $inside);
+				} else {
+					[$result, $healerUse, $physicianUse] = $soldier->HealOrDie($healers, $physicians, $inside);
+					$physicians -= $physicianUse;
+					$healers -= $healerUse;
+				}
+				if ($result === false) {
+					$dead++;
+				} elseif ($result < 0) {
+					$worse++;
+				} elseif ($result > 0) {
+					$heal++;
+				}
+				if ($char) {
+					$charCache[$char->getId()]['h'] -= $healerUse;
+					$charCache[$char->getId()]['p'] -= $physicianUse;
+				}
+			}
+			if (($i++ % $this->batchsize/10) == 0) {
 				$this->em->flush();
 				$this->em->clear();
 			}
@@ -685,7 +719,7 @@ class GameRunner {
 					$unit->setTravelDays(null);
 					$unit->setDestination(null);
 				} else {
-					foreach ($unit->getSoldier() as $each) {
+					foreach ($unit->getSoldiers() as $each) {
 						$this->milman->disband($each);
 					}
 					$this->milman->disbandUnit($unit, true);

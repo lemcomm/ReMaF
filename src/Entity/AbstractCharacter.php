@@ -23,6 +23,7 @@ abstract class AbstractCharacter {
 	protected int $sanity = 0;
 	protected int $sanityMod = 0;
 	protected int $moraleMod = 0;
+	protected int $hungry;
 	protected int $moraleResistance = 0;
 	protected int $sanityResistance = 0;
 	protected int $moraleAdjustment = 0;
@@ -52,10 +53,11 @@ abstract class AbstractCharacter {
 
 	public function __construct() {
 		$this->stateTraits = self::$defaultState;
-		if ($this->injuries === null) {
-			$this->injuries = [];
-		}
 	}
+
+	abstract public function kill(): void;
+
+	abstract public function toLogName(): string;
 
 	public function getHp(): int {
 		return $this->race->getHp() - $this->wounded;
@@ -132,32 +134,114 @@ abstract class AbstractCharacter {
 		return $this;
 	}
 
-	public function HealOrDie(): int|bool {
+	public function HealOrDie($healer = false, $physician = false, $shelter = false): array {
 		$current = $this->healthValue();
-		if ($current >= 1) {
-			return true; #Why are you here?
+		$injuries = $this->injuries;
+		$injuryCount = count($injuries);
+		if ($current >= 1 && $injuryCount === 0) {
+			return [0, 0, 0]; #Nothing to heal.
 		}
-		$rand = rand(0, 100);
-		$raceHp = $this->race?->getHp()?:100;
-		if ($rand === 0 && $current < 0.25) {
-			# Critical failure at  low health = death.
-			$this->kill();
-			return false;
+		$hungerMod = $this->hungerMod();
+		$healerMod = $healer?2:1;
+		$physicianMod = $physician?3:1;
+		$shelterMod = $shelter?2:1;
+		$max = 10*$hungerMod*$healerMod*$physicianMod*$shelterMod; # Highest value possible is 120.
+		if ($max >= 1) {
+			$rand = rand(0, $max);
 		} else {
-			if ($rand < 10) {
-				$result = 0 - rand(1,round($raceHp/20));
-				$this->wound($result);
-				if ($this->healthValue() < 0) {
-					$this->kill();
-					return false;
-				}
-				return $result;
+			$rand = 0;
+		}
+		$legacyResult = 0;
+		if ($current < 1) {
+			$raceHp = $this->race?->getHp()?:100;
+			if ($rand === 0 && $current < 0.25 && (!$physician || rand(1, 100) < 21)) {
+				# Critical failure at  low health = death.
+				$this->kill();
+				return [false, 0, 1];
 			} else {
-				$result = rand(1,round($raceHp/10));
-				$this->heal($result);
-				return $result;
+				if ($rand < 10) {
+					$chanceMax = $raceHp/20/($healerMod?2:1)/($physicianMod?2:1)/($shelterMod?2:1);
+					$legacyResult -= rand(1,round($chanceMax));
+					$this->wound($legacyResult);
+					if ($this->healthValue() < 0) {
+						$this->kill();
+						return [false, 1, 1];
+					}
+				} elseif ($rand >= 20) {
+					if ($current < 0.25) {
+						$legacyResult -= rand(1,round($raceHp/4*$healerMod*$physicianMod*$shelterMod));
+					} else {
+						$legacyResult -= rand(1,round($raceHp/4*$healerMod*$shelterMod));
+					}
+					$this->heal($legacyResult);
+				}
 			}
 		}
+		if ($injuryCount > 0) {
+			arsort($injuries);
+			foreach ($injuries as $where => $amount) {
+				if ($rand === 0 && $amount >= 4 && (!$physician || rand(1, 100) < 21)) {
+					$this->kill(); #Critical failure
+					return [false, 0, 1];
+				} else {
+					if ($rand < 10 && $amount >= 4) {
+						if (!$physician || rand(1, 100) < 21) {
+							# Dies from injuries.
+							$this->kill();
+							return [false, 0, 0];
+						} else {
+							return [0+$legacyResult, 0, 1];
+						}
+					} elseif ((!$healer && $rand >= 20) || ($healer && $rand >= 15) || ($physician && $amount >=4)) {
+						$heal = 1;
+						if ($physician && $amount >= 4 && rand(1, 100) < 21) {
+							$heal = 2;
+						}
+						$this->injuries[$where] = $amount - $heal;
+						if ($this->injuries[$where] === 0) {
+							unset($this->injuries[$where]);
+						}
+						return [$heal+$legacyResult, 1, 1];
+					}
+				}
+				break;
+			}
+		}
+		return [0, 0, 0];
+	}
+
+	public function hungerMod(): float|int {
+		$lvl = $this->hungry;
+		if ($lvl == 0) {
+			return 1;
+		} elseif ($lvl > 1400) {
+			return 0;
+		} else {
+			return 1 - ($lvl / 1400);
+		}
+	}
+
+	public function isHungry(): bool {
+		return ($this->hungry > 0);
+	}
+
+	public function makeHungry($value = 1): static {
+		if ($value > 0) {
+			$this->hungry += $value;
+		} else {
+			$this->feed();
+		}
+		return $this;
+	}
+
+	public function feed($var = 1): static {
+		if ($this->hungry > 0) {
+			$this->hungry -= 50*$var; // drops fairly rapidly
+		}
+		if ($this->hungry < 0) {
+			$this->hungry = 0;
+		}
+		return $this;
 	}
 
 	public function getToughness(): ?int {
@@ -250,6 +334,16 @@ abstract class AbstractCharacter {
 		return $this;
 	}
 
+	/**
+	 * Converts persistent injuries to temporary modifiers for conflict.
+	 * @return void
+	 */
+	public function translateInjuryToModifiers(): void {
+		foreach ($this->injuries as $amount) {
+			$this->modifiers['Physical'] = $this->modifiers['Physical'] + $amount;
+		}
+	}
+
 	public function getHitLog(): array {
 		return $this->hitLog;
 	}
@@ -285,6 +379,9 @@ abstract class AbstractCharacter {
 	}
 
 	public function getInjuries(): array {
+		if ($this->injuries === null) {
+			$this->injuries = [];
+		}
 		return $this->injuries;
 	}
 
@@ -374,7 +471,7 @@ abstract class AbstractCharacter {
 		return floor($aspects[$aspect] * $bonus['Frenzy']);
 	}
 
-	public function getArmourHitLoc($hitLoc, $aspect, $armor = null): array {
+	public function getArmourHitLoc($hitLoc, $aspect, $armor): array {
 		$covered = 0;
 		$armorHit = [];
 		if (!$armor) {
@@ -687,7 +784,13 @@ abstract class AbstractCharacter {
 		return $this;
 	}
 
-	abstract public function kill(): void;
+	public function getHungry(): int {
+		return $this->hungry;
+	}
 
-	abstract public function toLogName(): string;
+	public function setHungry(int $hungry): static {
+		$this->hungry = $hungry;
+
+		return $this;
+	}
 }

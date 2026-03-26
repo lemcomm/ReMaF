@@ -263,16 +263,33 @@ class Character extends AbstractCharacter {
 		return 'C:'.$this->id;
 	}
 
-	public function HealOrDie(): int|bool {
+	public function HealOrDie($healer = false, $physician = false, $shelter = false): array {
 		$current = $this->healthValue();
-		if ($current >= 1) {
-			return true; #Why are you here?
+		$injuries = $this->injuries;
+		$injCount = count($injuries);
+		$heal = 0;
+		$result = 0;
+		if ($current >= 1 && $injCount === 0) {
+			return [true,0,0]; #Why are you here?
 		}
 		# Player characters don't die "naturally" from wounds, so this only ever heals.
-		$raceHp = $this->race?->getHp()?:100;
-		$result = rand(1,round($raceHp/10));
-		$this->heal($result);
-		return $result;
+		if ($current < 1) {
+			$raceHp = $this->race?->getHp()?:100;
+			$result = rand(1,round($raceHp/10));
+			$this->heal($result);
+		}
+		if ($injCount > 1) {
+			$heal = 1;
+			arsort($injuries);
+			foreach ($injuries as $where => $amount) {
+				$this->injuries[$where] = $amount - $heal;
+				if ($this->injuries[$where] === 0) {
+					unset($this->injuries[$where]);
+				}
+				break;
+			}
+		}
+		return [$heal+$result, 0, 0];
 	}
 
 	public function kill(): void {
@@ -4014,5 +4031,21 @@ class Character extends AbstractCharacter {
 
 	public function isNoble(): bool {
 		return true;
+	}
+
+	public function hungerMod(): float|int {
+		return 1; # Player characters don't worry about this.
+	}
+
+	public function isHungry(): bool {
+		return false; # Player characters don't worry about this.
+	}
+
+	public function makeHungry($value = 1): static {
+		return $this; # Player characters don't worry about this.
+	}
+
+	public function feed($var = 1): static {
+		return $this; # Player characters don't worry about this.
 	}
 }

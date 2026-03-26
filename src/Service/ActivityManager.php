@@ -435,6 +435,8 @@ class ActivityManager {
 			if ($skill) {
 				$this->skills->setupSkill($themC, 'wpn:'.$skill);
 			}
+			$meC->translateInjuryToModifiers();
+			$themC->translateInjuryToModifiers();
 
 			# Determine if ranged vs non-ranged setup.
 			$meRanged = $meWeapon->getRanged();
@@ -643,7 +645,7 @@ class ActivityManager {
 	): array {
 		$this->mastery->groupAttackResolves = 0;
 		$hit = $this->mastery->attackRoll($meC, $themC, $meWeapon, $themWeapon, false);
-		[$results, $logs] = $this->mastery->resolveAttack($meC, $themC, $hit, $meWeapon, $themWeapon, $armors[0], $armors[1]);
+		[$results, $logs] = $this->mastery->resolveAttack($meC, $themC, $hit, $meWeapon, $themWeapon, $armors[0], $armors[1], 0);
 		$results = explode(' ', $results);
 		$this->logAttack($logs);
 		#TODO: Read injuries and logs and build them into some players can see.

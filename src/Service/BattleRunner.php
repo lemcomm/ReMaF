@@ -85,6 +85,7 @@ class BattleRunner {
 	public bool $legacyHitRolls = false;
 	public bool $autoImprovise = true;
 	public bool $checkWeapons = true;
+	public bool $siegeAssault = false;
 
 	# StageResult data. Has dedicated reset command.
 	private int $attacks = 0;
@@ -162,6 +163,7 @@ class BattleRunner {
 		$this->legacyHitRolls = false;
 		$this->autoImprovise = true;
 		$this->checkWeapons = true;
+		$this->siegeAssault = false;
 	}
 
 	public function enableLog($level=9999): void {
@@ -637,6 +639,7 @@ class BattleRunner {
 						}
 					} elseif ($this->masteryRuleset) {
 						foreach ($soldiers as $soldier) {
+							$soldier->translateInjuryToModifiers();
 							if ($soldier->isNoble()) {
 								$this->common->addAchievement($soldier->getCharacter(), 'battles');
 							} else {
@@ -807,15 +810,19 @@ class BattleRunner {
 			$defBonus = $this->defenseBonus;
 			if ($this->masteryRuleset) $this->mastery->groupAttackResolves = 0;
 			# The below is partially commented out until we fully add in the battle contact and siege weapon systems.
+			$perspective = 0;
 			if ($battle->getType() == 'siegeassault') {
-				if ($battle->getPrimaryAttacker() == $group OR $group->getReinforcing() == $battle->getPrimaryAttacker()) {
+				$this->siegeAssault = true;
+				if ($battle->getPrimaryAttacker() === $group OR $group->getReinforcing() === $battle->getPrimaryAttacker()) {
 					$rangedPenalty = 1; # TODO: Make this dynamic. Right now this can lead to weird scenarios in regions with higher penalties where the defenders are actually easier to hit.
 					$siegeAttacker = TRUE;
+					$perspective = -2; # Looking up at defenders.
 					#$usedContacts = 0;
 					#$currentContacts = $this->attCurrentContacts;
 				} else {
 					$defBonus = 0; # Siege defenders use pre-determined rangedPenalty.
 					$siegeAttacker = FALSE;
+					$perspective = 2; # Looking down at attackers.
 					#$usedContacts = 0;
 					#$currentContacts = $this->defCurrentContacts;
 				}
@@ -872,7 +879,7 @@ class BattleRunner {
 					if (($this->legacyRuleset && $this->version >= 3) || $this->masteryRuleset)  {
 						shuffle ($soldierShuffle);
 					}
-					[$stageResult, $extras, $enemies] = $this->runRangedPhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies);
+					[$stageResult, $extras, $enemies] = $this->runRangedPhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies, $perspective);
 
 					if ($this->legacyRuleset) {
 						if (array_key_exists('shots', $stageResult)) {
@@ -897,7 +904,7 @@ class BattleRunner {
 					if (($this->legacyRuleset && $this->version >= 3) || $this->masteryRuleset)  {
 						shuffle ($soldierShuffle);
 					}
-					[$stageResult, $extras, $enemies] = $this->runMeleePhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies);
+					[$stageResult, $extras, $enemies] = $this->runMeleePhase($soldierShuffle, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies, $perspective);
 					$stageResult = ['alive'=>$attackers, 'enemies'=>$enemies] + $stageResult;
 					$stageReport->setData($stageResult); # Commit this stage's results to the combat report.
 					$stageReport->setExtra($extras);
@@ -955,7 +962,7 @@ class BattleRunner {
 		}
 	}
 
-	private function runRangedPhase($soldiers, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies): array {
+	private function runRangedPhase($soldiers, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies, $perspective): array {
 		$bonus = sqrt($enemies); // easier to hit if there are many enemies
 		$rangeNoTargets = false;
 		$cavNoTargets = false;
@@ -968,6 +975,7 @@ class BattleRunner {
 		}
 		/** @var Soldier $soldier */
 		foreach ($soldiers as $soldier) {
+			$myPerspective = $perspective;
 			$counter = null;
 			$result=false;
 			$target = null;
@@ -1051,12 +1059,18 @@ class BattleRunner {
 				}
 			} elseif ($this->masteryRuleset) {
 				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer(true) && $this->battle->getType() == 'field') {
+					/** @var Soldier $target */
 					$target = $this->getRandomSoldier($enemyCollection);
 					if ($target) {
+						if (!$this->siegeAssault) {
+							if ($soldier->getMount() && !$target->getMount()) {
+								$myPerspective++;
+							}
+						}
 						$this->attacks++;
 						$noCavTargets = 0;
 						$hit = $this->mastery->attackRoll($soldier, $target, $soldier->getWeapon(), $target->getWeapon(), false);
-						[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, $soldier->getWeapon(), $target->getWeapon(), $soldier->getArmour(), $target->getArmour(), true); #Prevent counters during ranged phase
+						[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, $soldier->getWeapon(), $target->getWeapon(), $soldier->getArmour(), $target->getArmour(), $myPerspective, true); #Prevent counters during ranged phase
 						$this->logAttack($results, $logs);
 						$this->fatigueRoll($soldier, $phase);
 					} else {
@@ -1069,10 +1083,9 @@ class BattleRunner {
 						$this->shots++;
 						$noRangeTargets = 0;
 						$hit = $this->mastery->attackRoll($soldier, $target, $soldier->getWeapon(), $target->getWeapon(), false);
-						[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, $soldier->getWeapon(), $target->getWeapon(), $soldier->getArmour(), $target->getArmour(), true); #Prevent counters during cav charge
+						[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, $soldier->getWeapon(), $target->getWeapon(), $soldier->getArmour(), $target->getArmour(), $myPerspective, true); #Prevent counters during cav charge
 						$this->logAttack($results, $logs);
 						$this->fatigueRoll($soldier, $phase);
-
 					} else {
 						$this->log(10, "no more targets\n");
 						$noRangeTargets++;
@@ -1106,7 +1119,7 @@ class BattleRunner {
 		return [$stageResult, $extras, $enemies];
 	}
 
-	private function runMeleePhase($soldiers, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies): array {
+	private function runMeleePhase($soldiers, $enemyCollection, $phase, $defBonus, $rangedPenalty, $attackers, $enemies, $perspective): array {
 		$noMeleeTargets = 0;
 		$noCavTargets = 0;
 		$cavNoTargets = false;
@@ -1124,6 +1137,7 @@ class BattleRunner {
 			$result = false;
 			$counter = null;
 			$target = null;
+			$myPerspective = $perspective;
 			if ($this->legacyRuleset) {
 				if (!$cavNoTargets && $phase === $this->chargePhase && $soldier->isLancer() && $this->battle->getType() == 'field') {
 					// Lancers will always perform a cavalry charge in the last ranged phase!
@@ -1224,8 +1238,17 @@ class BattleRunner {
 						$this->log(10, $soldier->getName()."(".$soldier->getTranslatableType()." attacks but ".$target->getName()." (".$target->getTranslatableType().") defended\n");
 						$result = $hit;
 					}*/
+					if (!$this->siegeAssault) {
+						if (!$soldier->isRanged()) {
+							if ($soldier->getMount() && !$target->getMount()) {
+								$myPerspective++;
+							} elseif (!$soldier->getMount() && $target->getMount()) {
+								$myPerspective--;
+							}
+						}
+					}
 
-					[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, $soldier->getWeapon(), $target->getWeapon(), $soldier->getArmour(), $target->getArmour());
+					[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, $soldier->getWeapon(), $target->getWeapon(), $soldier->getArmour(), $target->getArmour(), $myPerspective);
 					$this->logAttack($results, $logs);
 					$this->fatigueRoll($soldier, $phase);
 				} else {

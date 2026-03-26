@@ -36,7 +36,7 @@ class WarManager {
 	) {
 	}
 
-	public function createBattle(Character $character, ?Settlement $settlement=null, ?Place $place=null, null|array|ArrayCollection $targets=array(), ?Siege $siege=null, ?BattleGroup $attackers=null, ?BattleGroup $defenders=null, $ruleset='legacy'): array {
+	public function createBattle(Character $character, ?Settlement $settlement=null, ?Place $place=null, null|array|ArrayCollection $targets=array(), ?Siege $siege=null, ?BattleGroup $attackers=null, ?BattleGroup $defenders=null, $ruleset='mastery'): array {
 		/* for future reference, $outside is used to determine whether or not attackers need to leave the settlement in order to attack someone.
 		It's used by attackOthersAction of WarCon. --Andrew */
 		$type = 'field';
