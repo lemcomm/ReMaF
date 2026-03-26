@@ -303,7 +303,7 @@ class CombatMastery extends CombatAbstract {
 		// Final log string constructor
 		// Example
 		// Kill (Injury): Broadsword (15/10) [6/8/6] vs mail hauberk (torso, abdomen, hips) [2/8/6]: heavy cutting injury [19] on thigh - injury penalty 4, stumble
-		$strLog = "      $strAttackerWeapon vs $strDefenderArmor: $strDamage - $strDamResult [$strResult].\n";
+		$strLog = "     ".$me->getName()." $strAttackerWeapon vs ".$target->getName()." $strDefenderArmor: $strDamage - $strDamResult [$strResult].\n";
 		
 		$myLog[] = $strLog;
 

@@ -76,6 +76,7 @@ class TestDuelCommand extends  Command {
 				break;
 			case 3:
 				$i = 0;
+				$armor = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'chainmail']);
 				while ($i < 2) {
 					$i++;
 					$charGen = new ArrayInput([
@@ -87,17 +88,23 @@ class TestDuelCommand extends  Command {
 					$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c ORDER BY c.id DESC')->setMaxResults(1);
 					if (!$char1) {
 						$char1 = $query->getResult()[0];
+						$char1->setArmour($armor);
 					} else {
 						$char2 = $query->getResult()[0];
+						$char2->setArmour($armor);
 					}
 				}
+				$this->em->flush();
+				$this->em->clear();
+				$char1Id = $char1->getId();
+				$char2Id = $char2->getId();
 				$battleGen = new ArrayInput([
 					'command' => 'maf:duel:generate',
-					'issuer' => $char1->getId(),
-					'recipient' => $char2->getId(),
-					'weapon' => 'broadsword',
+					'issuer' => $char1Id,
+					'recipient' => $char2Id,
+					'weapon' => 'club',
 					'--ruleset' => $ruleset,
-					'--severity' => 'first blood',
+					'--severity' => 'surrender',
 					'--armor' => true,
 				]);
 				$this->getApplication()->doRun($battleGen, $output);
@@ -106,7 +113,7 @@ class TestDuelCommand extends  Command {
 		$report = $this->em->createQuery('SELECT r FROM App\Entity\ActivityReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();
 		$output->writeln("Report available at: ".$this->url->generate('maf_activity_report', ['report' => $report[0]->getId()]));
 		$this->em->clear();
-		sleep(5);
+		sleep(1);
 		if ($input->getOption('cleanup') === '1') {
 			$charKill = new ArrayInput([
 				'command' => 'maf:char:kill',

@@ -44,7 +44,7 @@ class Message {
 		if ($this->data) {
 			return $this->data->getTopic();
 		}
-		return $this->getTopic();
+		return $this->topic;
 	}
 
 	/**
@@ -138,7 +138,7 @@ class Message {
 		if ($this->data) {
 			return $this->data->getSystemContent();
 		}
-		return $this->getSystemContent();
+		return $this->system_content;
 	}
 
 	/**
@@ -163,7 +163,7 @@ class Message {
 		if ($this->data) {
 			return $this->data->getContent();
 		}
-		return $this->getContent();
+		return $this->content;
 	}
 
 	/**
@@ -229,9 +229,6 @@ class Message {
 	 * @return bool|null
 	 */
 	public function getRead(): ?bool {
-		if ($this->data) {
-			return $this->data->getRead();
-		}
 		return $this->read;
 	}
 
@@ -243,11 +240,7 @@ class Message {
 	 * @return Message
 	 */
 	public function setRead(?bool $read): static {
-		if ($this->data) {
-			$this->data->setRead($read);
-		} else {
-			$this->read = $read;
-		}
+		$this->read = $read;
 		return $this;
 	}
 

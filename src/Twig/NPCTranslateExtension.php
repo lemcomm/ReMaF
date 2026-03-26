@@ -4,6 +4,7 @@ namespace App\Twig;
 
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class NPCTranslateExtension extends AbstractExtension {
@@ -24,26 +25,7 @@ class NPCTranslateExtension extends AbstractExtension {
 		);
 	}
 
-	public function npcTranslate($content, $sysData) {
-		# RegEx string to match {trans:THING}
-		$pattern = '/({trans:[a-zA-Z0-9.\- ]+})+/';
-		# Convert $Message->getSystemConent() to an array.
-		$sysData = explode($sysData, ',');
-		$matches = [];
-		# Make sure we have things to replace. More an optimization than anyhting.
-		$hits = preg_match($pattern, $content, $matches);
-		if ($hits) {
-			# Loop through each match to find/replace
-			foreach ($matches as $match) {
-				# Trim the sting of '{trans:' and '}' to get the translation key.
-				$str = ltrim(rtrim($match, '}'), '{trans:');
-				# Convert remaining intro translated string using $sysData as keys=>values
-				$str = $this->trans->trans($str, $sysData, 'npctranslate');
-				# Actually find and replace each hit in the message content itself.
-				$content = preg_replace($pattern, $str, $content, 1);
-			}
-		}
-		return $content;
+	public function npcTranslate($content): string {
+		return $this->trans->trans($content['key'], $content['data'], 'npctranslate');
 	}
-
 }

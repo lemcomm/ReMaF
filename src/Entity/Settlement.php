@@ -279,6 +279,16 @@ class Settlement {
 		return $this;
 	}
 
+	public function isOwnerEquivalent(Character $char, $checkOccupancy = false): bool {
+		if ($this->isOccupied() && $checkOccupancy) {
+			if ($this->getOccupant() === $char) return true;
+		} else {
+			if ($this->getOwner() === $char) return true;
+			if ($this->getSteward() === $char) return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Get owner
 	 *

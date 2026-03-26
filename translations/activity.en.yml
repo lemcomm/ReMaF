@@ -71,8 +71,10 @@ report:
   fail:      "%name% fails to do damage with their %weapon%."
   light:     "%name% deals some damage with their %weapon%."
   wound:     "%name% does signifcant damage with their %weapon%."
+  amputate:  "%name% pulls off an amputating blow."
   kill:      "%name% delivers a major blow with their %weapon%."
   countered:   "%name% suffered a counterattack."
+  stumble:   "%name% took advantage of an enemy stumble."
   victory:   Is Declared Victorious
   loss:      Has Lost This Duel
   draw:      Was Not Clearly The Winner
@@ -96,16 +98,23 @@ tourn:
   name:       Announce a Tournament
   intro:      The ultimate proving ground of your capabilities, be it your skill in combat or your mastery of wealth in hosting one. From this page you can determine the type of tournament you wish to hold. Be advised, if you wish to hold more than a single type, you'll need a Tournament Grounds and the infrastructure it provides.
  announce:
-  melee tournament:
+  meleetournament:
    flash:     A Melee Tournament has been scheduled.
   joust:
    flash:     A Joust has been scheduled.
   race:
    flash:     A Race has been scheduled.
-  grand tournament:
+  grandtournament:
    flash:     A Grand Tournament has been scheduled.
  form:
   name:       Tournament Name
+  delay:
+   label:     "How far out shall it be scheduled?"
+   24:        4 Game Weeks (6 days)
+   48:        8 Game Weeks (12 days)
+   72:        12 Game Weeks (18 days)
+   96:        16 Game Weeks (24 days)
+  allWeapons: All Types
   fightTypes:
    label:     Which Type of Fights shall be held?
    solo:      Solo (1 vs 1) fights
@@ -113,7 +122,7 @@ tourn:
    team:      Team (5 vs 5) fights
    ffa:       Free-for-all fights
    all:       All types
-   weapon:    Which weapons shall be allowed? Selecting none is the same as selecting all.
+   weapon:    Which weapons shall be allowed? (Selecting none is the same as all.)
    armor:     Allow armor in combat?
    notGrand:  To hold multiple fight types, you must be able to host a Grand Tournament (able to do fights, races, and jousts, and have a Tournament Grounds).
   joustTypes:
@@ -121,6 +130,7 @@ tourn:
   notGrand:   Only a settlement with a dedicated Tournament Grounds has the facilities to host multiple tournaments at once.
   racesTypes:
    label:     Include races?
+  submit:     Announce Tournament!
 
 train:
  noduplicate: Other training actions have been automatically removed. Sorry, you can only train one skill at a time.

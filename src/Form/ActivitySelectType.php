@@ -6,6 +6,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -41,8 +42,8 @@ class ActivitySelectType extends AbstractType {
 	}
 
 	/** @noinspection PhpUnusedPrivateMethodInspection */
-	private function tournamentFields(FormBuilderInterface $builder, array $options): void {
-		$types = $options['subselect'];
+	private function tournFields(FormBuilderInterface $builder, array $options): void {
+		$types = $options['subselect']['types'];
 		$builder->add('name', TextType::class, array(
 			'label'=>'tourn.form.name',
 			'required'=>true,
@@ -52,20 +53,20 @@ class ActivitySelectType extends AbstractType {
 			'label'=>'tourn.form.delay.label',
 			'required'=>true,
 			'choices'=>array(
-				28,
-				56,
-				84,
-				112
+				24,
+				48,
+				72,
+				96
 			),
-			'choice_label' => function ($choice, $key, $value) {
-				if ($choice === 28) {
-					return 'trans.form.delay.28';
-				} elseif ($choice === 56) {
-					return 'trans.form.delay.56';
-				} elseif ($choice === 84) {
-					return 'trans.form.delay.84';
+			'choice_label' => function ($choice) {
+				if ($choice === 24) {
+					return 'tourn.form.delay.24';
+				} elseif ($choice === 48) {
+					return 'tourn.form.delay.48';
+				} elseif ($choice === 72) {
+					return 'tourn.form.delay.72';
 				} else {
-					return 'trans.form.delay.112';
+					return 'tourn.form.delay.96';
 				}
 			}
 
@@ -83,35 +84,43 @@ class ActivitySelectType extends AbstractType {
 			}
 			$builder->add('fightTypes', ChoiceType::class, [
 				'label'=>$tr.'label',
-				'multiple'=>false,
+				'multiple'=>$types['grand'],
 				'required'=>true,
 				'choices'=> $choices,
-				'choice_label' => function ($choice, $key, $value, $tr) {
+				'expanded'=>true,
+				'choice_label' => function ($choice) {
 					if ($choice === Activities::fightsDuo->value) {
-						return $tr.'duo';
+						return 'tourn.form.fightTypes.duo';
 					}
 					if ($choice === Activities::fightsTeam->value) {
-						return $tr.'teams';
+						return 'tourn.form.fightTypes.team';
 					}
 					if ($choice === Activities::fightsFFA->value) {
-						return $tr.'ffa';
+						return 'tourn.form.fightTypes.ffa';
 					}
 					if ($choice === Activities::fightsAll->value) {
-						return $tr.'all';
+						return 'tourn.form.fightTypes.all';
 					}
-					return $tr.'solo';
+					return 'tourn.form.fightTypes.solo';
 				},
 			]);
 			$builder->add('weapon', EntityType::class, [
 				'class'=>EquipmentType::class,
 				'choice_label'=>'nameTrans',
 				'choice_translation_domain' => 'messages',
-				'choices'=>$options['weapons'],
+				'choices'=> $options['subselect']['weapons'],
 				'label'=>$tr.'weapon',
+				'multiple'=>true,
+				'expanded'=>true,
+				'required'=>false,
 			]);
 			$builder->add('armor', CheckboxType::class, [
 				'required' => false,
 				'label'=>$tr.'armor',
+			]);
+		} else {
+			$builder->add('fightTypes', HiddenType::class, [
+				'data'=>false,
 			]);
 		}
 		if ($types['jousts']) {
@@ -120,12 +129,20 @@ class ActivitySelectType extends AbstractType {
 				'label'=>$tr.'label',
 				'required' => false,
 			]);
+		} else {
+			$builder->add('joustTypes', HiddenType::class, [
+				'data'=>false,
+			]);
 		}
 		if ($types['races']) {
 			$tr = 'tourn.form.racesTypes.';
 			$builder->add('racesTypes', CheckboxType::class, [
 				'label'=>$tr.'label',
 				'required' => false,
+			]);
+		} else {
+			$builder->add('racesTypes', HiddenType::class, [
+				'data'=>false,
 			]);
 		}
 	}

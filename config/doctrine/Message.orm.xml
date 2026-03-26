@@ -10,7 +10,7 @@
 		<field name="cycle" type="integer" nullable="true"/>
 		<field name="system_content" type="array" nullable="true"/>
 		<field name="translated" type="boolean" nullable="true"/>
-		<many-to-one field="data" target-entity="MessageData" inversed-by="message" fetch="EAGER"/>
+		<many-to-one field="data" target-entity="MessageData" fetch="EAGER"/>
 		<many-to-one field="conversation" target-entity="Conversation" inversed-by="messages" fetch="EAGER"/>
 		<many-to-one field="sender" target-entity="Character" inversed-by="messages"/>
 		<one-to-many field="replies" target-entity="Message" mapped-by="reply_to" on-delete="CASCADE">

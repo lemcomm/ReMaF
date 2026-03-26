@@ -628,7 +628,7 @@ class ConversationManager {
 		if (in_array($type, ['melee tournament', 'joust', 'grand tournament', 'race'])) {
 			$content = '{trans:system.tourn.announce}';
 		}
-		return $this->writeSystemMessageWithData($convs, 'realms', null, $content, $data);
+		return $this->writeSystemMessageWithData(new ArrayCollection($convs), 'realms', null, $content, $data);
 	}
 
 	private function writeSystemMessageWithData(ArrayCollection $convs, $orgType, ?string $topic, string $content, array $sysContent, $antiTickUp = false): int {
@@ -646,7 +646,7 @@ class ConversationManager {
 			$total++;
 			$new = new Message();
 			$this->em->persist($new);
-			$new->setData($conv);
+			$new->setConversation($conv);
 			$new->setCycle($this->common->getCycle());
 			$new->setSent(new DateTime("now"));
 			$new->setData($data);

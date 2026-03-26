@@ -26,7 +26,11 @@ class ActivityDispatcher extends Dispatcher {
 		if (($check = $this->interActionsGenericTests()) !== true) {
 			return array("name"=>"activity.title", "elements"=>array(array("name"=>"activity.all", "description"=>"unavailable.$check")));
 		}
+		$char = $this->getCharacter();
 		$actions = [];
+		if ($char && $char->getInsideSettlement() && $char->getInsideSettlement()->isOwnerEquivalent($char)) {
+			$actions[] = $this->activityTournamentCreateTest();
+		}
 		$actions[] = $this->activityDuelChallengeTest();
 		$actions[] = $this->activityDuelAnswerTest();
 
@@ -34,6 +38,31 @@ class ActivityDispatcher extends Dispatcher {
 	}
 
 	/* ========== Activity Dispatchers ========== */
+
+	public function activityTournamentCreateTest(): array {
+		if (($check = $this->veryGenericTests()) !== true) {
+			return array("name"=>"tourn.create.name", "description"=>"unavailable.$check");
+		}
+		$char = $this->getCharacter();
+		$settlement = $char->getInsideSettlement();
+		if (!$settlement) {
+			return array("name"=>"activity.train.name", "description"=>"unavailable.notinside");
+		}
+		if (!$settlement->isOwnerEquivalent($char)) {
+			return ["name"=>"tourn.create.name", "description"=>"unavailable.notowner"];
+		}
+		$any = $settlement->hasBuildingNamed('Arena');
+		if (!$any) {
+			$any = $settlement->hasBuildingNamed('List Field');
+		}
+		if (!$any) {
+			$any = $settlement->hasBuildingNamed('Race Track');
+		}
+		if (!$any) {
+			return ["name"=>"tourn.create.name", "description"=>"unavailable.notournbuilding"];
+		}
+		return $this->action("tourn.create", "maf_activity_tourn_create");
+	}
 
 	public function activityDuelChallengeTest(): array {
 		if (($check = $this->veryGenericTests()) !== true) {

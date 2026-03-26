@@ -234,14 +234,15 @@ class ActivityManager {
 	}
 
 	public function log($level, $text): void {
+		$text = str_replace(["\n", "\r"], '', $text);
 		if ($this->report) {
 			if ($this->logCache !== null) {
 				foreach ($this->logCache as $log) {
-					$this->report?->setDebug($this->report->getDebug() . $log . "\n");
+					$this->report->setDebug($this->report->getDebug() . $log . "\n");
 				}
 				$this->logCache = null;
 			} else {
-				$this->report?->setDebug($this->report->getDebug() . $text . "\n");
+				$this->report->setDebug($this->report->getDebug() . $text . "\n");
 			}
 		} else {
 			$this->logCache[] = $text;
@@ -277,7 +278,7 @@ class ActivityManager {
 		}
 	}
 
-	public function createTournament(Character $me, Settlement $where, int $total, string $name, bool|array $fightTypes, bool|array $racesTypes, bool|array $joustTypes, $restrictions = null, $armor = null, $bypass = false): Activity|false {
+	public function createTournament(Character $me, Settlement $where, int $total, string $name, null|array|string $fightTypes, ?bool $racesTypes, ?bool $joustTypes, $restrictions = null, $armor = null, $bypass = false): Activity|false {
 		$repo = $this->em->getRepository(ActivityType::class);
 		$grand = null;
 		$act = null;
@@ -288,9 +289,12 @@ class ActivityManager {
 			$this->em->flush();
 		}
 		if ($fightTypes) {
+			if (is_string($fightTypes)) {
+				$fightTypes = [$fightTypes];
+			}
 			foreach ($fightTypes as $type) {
 				$act = $this->create($repo->findOneBy(['name'=>'melee tournament']), $type, $me, $grand, $bypass);
-				$act->setWeapons($restrictions);
+				if ($restrictions) $act->setWeapons($restrictions);
 				$act->setArmor($armor);
 				if (!$grand) {
 					$act->setName($name);
@@ -477,6 +481,9 @@ class ActivityManager {
 			$themLimit = floor(($themMax - $themC->getWounded()) * $limit);
 			$this->log(10, '$meLimit of '.$meLimit.'. $meWounds of '.$meWounds.' vs limit of '.$limit);
 			$this->log(10, '$themLimit of '.$themLimit.'. $themWounds of '.$themWounds.' vs limit of '.$limit);
+		} else {
+			$meOrigWounds = $meC->getInjuries();
+			$themOrigWounds = $themC->getInjuries();
 		}
 
 		if (!$act->getReport()) {
@@ -554,13 +561,18 @@ class ActivityManager {
 			if ($this->ruleset === 'legacy') {
 				$continue = $this->duelLegacyAttack($act, $meReport, $themReport, $me, $meC, $themC, $round, $meRanged, $meMelee, $meScore, $themScore, $themLimit, $themWounds, true);
 			} else {
-				[$continue, $ignored] = $this->duelMasteryAttack($meC, $themC, $meReport, $themReport, $meWeapon, $themWeapon, $round, $limit, [$meArmor, $themArmor], true);
+				$this->duelMasteryAttack($meC, $themC, $meReport, $themReport, $meWeapon, $themWeapon, $round, $limit, [$meArmor, $themArmor], true);
 				$meC->applyModifier();
 				$meC->applyInjuries();
 				$themC->applyModifier();
 				$themC->applyInjuries();
 				$this->log(10, $meC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($meC->getInjuries(), true)));
+				$meCont = $this->evaluateHealth($meOrigWounds, $meC->getInjuries(), $limit);
 				$this->log(10, $themC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($themC->getInjuries(), true)));
+				$themCont = $this->evaluateHealth($themOrigWounds, $themC->getInjuries(), $limit);
+				if (!$meCont || !$themCont) {
+					$continue = false;
+				}
 			}
 			$round++;
 			$em->flush();
@@ -568,13 +580,18 @@ class ActivityManager {
 			if ($this->ruleset === 'legacy') {
 				$continue = $this->duelLegacyAttack($act, $themReport, $meReport, $them, $themC, $meC, $round, $themRanged, $themMelee, $themScore, $meScore, $meLimit, $meWounds, true);
 			} else {
-				[$continue, $ignored] = $this->duelMasteryAttack($themC, $meC, $themReport, $meReport, $themWeapon, $meWeapon, $round, $limit, [$meArmor, $themArmor], true);
+				$this->duelMasteryAttack($themC, $meC, $themReport, $meReport, $themWeapon, $meWeapon, $round, $limit, [$meArmor, $themArmor], true);
 				$meC->applyModifier();
 				$meC->applyInjuries();
 				$themC->applyModifier();
 				$themC->applyInjuries();
 				$this->log(10, $meC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($meC->getInjuries(), true)));
+				$meCont = $this->evaluateHealth($meOrigWounds, $meC->getInjuries(), $limit);
 				$this->log(10, $themC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($themC->getInjuries(), true)));
+				$themCont = $this->evaluateHealth($themOrigWounds, $themC->getInjuries(), $limit);
+				if (!$meCont || !$themCont) {
+					$continue = false;
+				}
 			}
 			$round++;
 			$em->flush();
@@ -605,17 +622,17 @@ class ActivityManager {
 						$this->log(10, $themC->getName()." wounds at ".$themC->getWounded());
 					}
 				} else {
-					[$meGood1, $themGood1] = $this->duelMasteryAttack($meC, $themC, $meReport, $themReport, $meWeapon, $themWeapon, $round, $limit, [$meArmor, $themArmor]);
-					[$themGood2, $meGood2] = $this->duelMasteryAttack($themC, $meC, $themReport, $meReport, $themWeapon, $meWeapon, $round, $limit, [$themArmor, $meArmor]);
+					$this->duelMasteryAttack($meC, $themC, $meReport, $themReport, $meWeapon, $themWeapon, $round, $limit, [$meArmor, $themArmor]);
+					$this->duelMasteryAttack($themC, $meC, $themReport, $meReport, $themWeapon, $meWeapon, $round, $limit, [$themArmor, $meArmor]);
 					$meC->applyModifier();
 					$meC->applyInjuries();
 					$themC->applyModifier();
 					$themC->applyInjuries();
 					$this->log(10, $meC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($meC->getInjuries(), true)));
+					$meCont = $this->evaluateHealth($meOrigWounds, $meC->getInjuries(), $limit);
 					$this->log(10, $themC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($themC->getInjuries(), true)));
-					$meGood = ($meGood1 && $meGood2);
-					$themGood = ($themGood1 && $themGood2);
-					if (!$meGood || !$themGood) {
+					$themCont = $this->evaluateHealth($themOrigWounds, $themC->getInjuries(), $limit);
+					if (!$meCont || !$themCont) {
 						$continue = false;
 					}
 					$round++;
@@ -626,7 +643,43 @@ class ActivityManager {
 		if ($this->ruleset === 'legacy') {
 			$this->duelConclude($me, $meReport, $them, $themReport, [$meLimit, $themLimit], null, $act);
 		} else {
-			$this->duelConclude($me, $meReport, $them, $themReport, null, [$meGood, $themGood], $act);
+			$this->duelConclude($me, $meReport, $them, $themReport, null, [$meCont, $themCont, $meOrigWounds, $themOrigWounds], $act);
+		}
+		return true;
+	}
+
+	private function evaluateHealth($meOrigWounds, $injuries, $limit): bool {
+		$change = 0;
+		$worst = 0;
+		foreach ($injuries as $where=>$value) {
+			if (array_key_exists($where, $meOrigWounds)) {
+				if ($meOrigWounds[$where] != $value) {
+					$change += $value - $meOrigWounds[$where];
+				}
+			} else {
+				$change += $value;
+			}
+			if ($value > $worst) {
+				$worst = $value;
+			}
+		}
+		if ($change > 0) {
+			if ($limit === 0.9 && $change) {
+				$this->log(10, "first blood surrender -- $change");
+				return false;
+			}
+			if ($limit === 0.6 && $change > 3) {
+				$this->log(10, "wound surrender -- $change");
+				return false;
+			}
+			if ($limit === 0.3 && ($change > 6 || $worst > 3)) {
+				$this->log(10, "regular surrender -- $change");
+				return false;
+			}
+			if ($limit === 0.0 && ($change > 10 || $worst > 4)) {
+				$this->log(10, "near death surrender -- $change");
+				return false;
+			}
 		}
 		return true;
 	}
@@ -642,7 +695,7 @@ class ActivityManager {
 		$limit,
 		array $armors,
 		$freehit = false
-	): array {
+	): void {
 		$this->mastery->groupAttackResolves = 0;
 		$hit = $this->mastery->attackRoll($meC, $themC, $meWeapon, $themWeapon, false);
 		[$results, $logs] = $this->mastery->resolveAttack($meC, $themC, $hit, $meWeapon, $themWeapon, $armors[0], $armors[1], 0);
@@ -654,55 +707,6 @@ class ActivityManager {
 		if ($freehit) {
 			$this->createStageReport(null, $themReport, $round, ['result'=>'freehit']);
 		}
-		return $this->parseMasteryResult($results, $limit);
-	}
-
-	private function parseMasteryResult(array $results, $limit): array {
-		$meContinue = true;
-		$themContinue = true;
-		$me = true;
-		foreach ($results as $result) {
-			if ($result === 'countered') {
-				if ($me) {
-					$me = false;
-				} else {
-					$me = true;
-				}
-			} elseif ($result === 'wound') {
-				if ($limit >= 0.6) {
-					if ($me) {
-						$themContinue = false;
-					} else {
-						$meContinue = false;
-					}
-				}
-			} elseif ($result === 'amputate') {
-				if ($limit >= 0.3) {
-					if ($me) {
-						$themContinue = false;
-					} else {
-						$meContinue = false;
-					}
-				}
-			} elseif ($result === 'shock') {
-				if ($limit >= 0.9) {
-					if ($me) {
-						$themContinue = false;
-					} else {
-						$meContinue = false;
-					}
-				}
-			} elseif ($result === 'kill') {
-				if ($limit >= 0) {
-					if ($me) {
-						$themContinue = false;
-					} else {
-						$meContinue = false;
-					}
-				}
-			}
-		}
-		return [$meContinue, $themContinue];
 	}
 
 	private function newActivityReportCharacter (Character $char, ActivityParticipant $part, $wpnOnly) {
@@ -830,6 +834,23 @@ class ActivityManager {
 		return false;
 	}
 
+	private function hasKillingInjury(Character $char): bool {
+		$locations = $char->getRace()->getDamageLocations();
+		foreach ($char->getInjuries() as $where=>$value) {
+			foreach ($locations[$where] as $each) {
+				if ($each[0] === $value) {
+					foreach ($each as $inner) {
+						if ($inner === 'kill') {
+							$this->log(10, $char->getName()." has killing injury of $value on $where");
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	private function duelConclude(
 		ActivityParticipant $me,
 		ActivityReportCharacter $meReport,
@@ -896,7 +917,10 @@ class ActivityManager {
 		$duelLimit = $this->getActivityLimit($act);
 		if ($duelLimit < 0.9) {
 			# No deaths on duels till first blood.
-			if ($themC->healthValue() <= 0.0 && $meC->healthValue() <= 0.0) {
+			if (
+				($this->ruleset === 'legacy' && $themC->healthValue() <= 0.0 && $meC->healthValue() <= 0.0) ||
+				($this->ruleset === 'mastery' && $this->hasKillingInjury($themC) && $this->hasKillingInjury($meC))
+			) {
 				# Special handling for both dieing, lol
 				$this->charMan->kill($meC, $themC, null, 'deathduel2');
 				$this->charMan->kill($themC, $meC, null, 'deathduel2');
@@ -908,13 +932,19 @@ class ActivityManager {
 				$themReport->setKilled(true);
 				$themReport->setWounded(false);
 				$themReport->setSurrender(false);
-			} elseif ($themC->healthValue() <= 0.0 && $meC->healthValue() > 0.0) {
+			} elseif (
+				($this->ruleset === 'legacy' && $themC->healthValue() <= 0.0 && $meC->healthValue() > 0.0) ||
+				($this->ruleset === 'mastery' && $this->hasKillingInjury($themC) && !$this->hasKillingInjury($meC))
+			) {
 				$this->charMan->kill($themC, $meC, null, 'deathduel');
 				$themReport->setStanding(false);
 				$themReport->setKilled(true);
 				$themReport->setWounded(false);
 				$themReport->setSurrender(false);
-			} elseif ($themC->healthValue() > 0.0 && $meC->healthValue() <= 0.0) {
+			} elseif (
+				($this->ruleset === 'legacy' && $themC->healthValue() > 0.0 && $meC->healthValue() <= 0.0) ||
+				($this->ruleset === 'mastery' && !$this->hasKillingInjury($themC) && $this->hasKillingInjury($meC))
+			) {
 				$this->charMan->kill($meC, $themC, null, 'deathduel');
 				$meReport->setStanding(false);
 				$meReport->setKilled(true);
@@ -945,15 +975,19 @@ class ActivityManager {
 		switch ($act->getSubtype()->getName()) {
 			case 'first blood':
 				$limit = 0.9;
+				$this->log(10, 'Duel to first blood.');
 				break;
 			case 'wound':
 				$limit = 0.6;
+				$this->log(10, 'Duel to wound.');
 				break;
 			case 'surrender':
 				$limit = 0.3;
+				$this->log(10, 'Duel to surrender.');
 				break;
 			case 'death':
 				$limit = 0;
+				$this->log(10, 'Duel to death.');
 				break;
 		}
 		return $limit;

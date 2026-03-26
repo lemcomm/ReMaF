@@ -19,6 +19,7 @@ use App\Service\Dispatcher\ActivityDispatcher;
 use App\Service\ActivityManager;
 use App\Service\AppState;
 use App\Service\Geography;
+use App\Twig\GameTimeExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -43,28 +44,32 @@ class ActivityController extends AbstractController {
 		return $this->activityDispatcher->gateway($test, null, true, false, $secondary);
 	}
 
-	public function tournamentCreateAction(ConversationManager $conv, CommonService $common, Request $request): Response|RedirectResponse {
+	#[Route('/activity/{id}', name: 'maf_activity', requirements:['act'=>'\d+'])]
+	public function viewActivity(Activity $id) {}
+
+	#[Route ('/activity/tourn/create', name:'maf_activity_tourn_create')]
+	public function tournamentCreateAction(ConversationManager $conv, CommonService $common, GameTimeExtension $gameTime, Request $request): Response|RedirectResponse {
 		$char = $this->gateway('activityTournamentCreateTest');
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
 		}
 		$settlement = $char->getInsideSettlement();
-		$options = ['fights' => false, 'races' => false, 'jousts' => false, 'grand' => false];
+		$options = ['types' => ['fights' => false, 'races' => false, 'jousts' => false, 'grand' => false]];
 		if ($settlement && $settlement->getOwner() === $char || $settlement->getSteward() === $char) {
-			if ($settlement->hasBuildingNamed('arena')) {
-				$options['fights'] = true;
+			if ($settlement->hasBuildingNamed('Arena')) {
+				$options['types']['fights'] = true;
 			}
-			if ($settlement->hasBuildingNamed('list field')) $options['jousts'] = true;
-			if ($settlement->hasBuildingNamed('race track')) $options['races'] = true;
-			if ($options['fights'] && $options['races'] && $options['jousts']) {
-				if ($settlement->hasBuildingNamed('tournament grounds')) {
-					$options['grand'] = true;
+			if ($settlement->hasBuildingNamed('List Field')) $options['types']['jousts'] = true;
+			if ($settlement->hasBuildingNamed('Race Track')) $options['types']['races'] = true;
+			if ($options['types']['fights'] && $options['types']['races'] && $options['types']['jousts']) {
+				if ($settlement->hasBuildingNamed('Tournament Grounds')) {
+					$options['types']['grand'] = true;
 				}
 			}
 		}
 		$options['weapons'] = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon', 'restricted'=>false]);
 
-		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'tournament', 'subselect'=>$options]);
+		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'tourn', 'subselect'=>$options]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
@@ -75,10 +80,14 @@ class ActivityController extends AbstractController {
 			$restrictions = null;
 			$fail = false;
 			$total = 0;
-			if ($options['fights']) {
-				$count = count($data['fightTypes']);
+			if ($options['types']['fights']) {
+				if (is_string($data['fightTypes'])) {
+					$count = 1;
+				} else {
+					$count = count($data['fightTypes']);
+				}
 				if ($count > 0) {
-					if ($count > 1 && !$options['grand']) {
+					if ($count > 1 && !$options['types']['grand']) {
 						$form->addError(new FormError($this->trans->trans('tourn.form.fightTypes.notGrand', [], 'activity')));
 						$fail = true;
 					}
@@ -96,7 +105,7 @@ class ActivityController extends AbstractController {
 					$armor = $data['armor'];
 				}
 			}
-			if ($options['races'] && $data['racesTypes']) {
+			if ($options['types']['races'] && $data['racesTypes']) {
 				if ($hasFight) {
 					$form->addError(new FormError($this->trans->trans('tourn.form.notGrand', [], 'activity')));
 					$fail = true;
@@ -104,7 +113,7 @@ class ActivityController extends AbstractController {
 				$hasRace = $data['racesTypes'];
 				$total++;
 			}
-			if ($options['jousts'] && $data['joustTypes']) {
+			if ($options['types']['jousts'] && $data['joustTypes']) {
 				if ($hasFight || $hasRace) {
 					$form->addError(new FormError($this->trans->trans('tourn.form.notGrand', [], 'activity')));
 					$fail = true;
@@ -113,19 +122,22 @@ class ActivityController extends AbstractController {
 				$total++;
 			}
 			if (!$fail) {
-				$act = $this->actman->createTournament($char, $settlement, $total, $data['name'], $hasFight, $hasRace, $hasJoust, $restrictions, $armor, true);
+				$act = $this->actman->createTournament($char, $settlement, $total, $data['name'], $data['fightTypes'], $data['racesTypes'], $data['joustTypes'], $restrictions, $armor, true);
 				$date = $common->getCycle()+$data['delay'];
 				$act->setCycle($date);
 				if ($act) {
 					# This gets swapped into the translated message so we have actual links and stuff.
 					$data = [
-						'who' => '[c:'.$char->getId().']',
-						'what' => '[a:'.$act->getId().']',
-						'when' => $date,
-						'where' => '[s:'.$settlement->getId().']',
+						'key' => 'system.tourn.announce',
+						'data' => [
+							'{who}' => '[c:'.$char->getId().']',
+							'{what}' => '[act:'.$act->getId().']',
+							'{when}' =>  $gameTime->gametimeFilter($date, 'long'),
+							'{where}' => '[s:'.$settlement->getId().']',
+						]
 					];
-					$conv->newAllrealmsMessage('tourn.'.$act->getType()->getName(), $act->getSubtype()?->getName(), $char->getWorld(), $data);
-					$this->addFlash('notice', $this->trans->trans('tourn.announce.'.$act->getType()->getName().'flash', [], 'activity'));
+					$conv->newAllRealmsMessage('tourn.'.$act->getType()->getName(), $act->getSubtype()?->getName(), $char->getWorld(), true, null, $data);
+					$this->addFlash('notice', $this->trans->trans('tourn.announce.'.str_replace(' ', '', $act->getType()->getName()).'.flash', [], 'activity'));
 					return $this->redirectToRoute('maf_actions');
 				}
 			}
