@@ -12,7 +12,6 @@ use App\Entity\SkillType;
 use App\Form\ActivitySelectType;
 use App\Form\EquipmentLoadoutType;
 
-use App\Service\ActionResolution;
 use App\Service\CommonService;
 use App\Service\ConversationManager;
 use App\Service\Dispatcher\ActivityDispatcher;
@@ -75,7 +74,6 @@ class ActivityController extends AbstractController {
 			$data = $form->getData();
 			$hasFight = false;
 			$hasRace = false;
-			$hasJoust = false;
 			$armor = null;
 			$restrictions = null;
 			$fail = false;
@@ -118,7 +116,6 @@ class ActivityController extends AbstractController {
 					$form->addError(new FormError($this->trans->trans('tourn.form.notGrand', [], 'activity')));
 					$fail = true;
 				}
-				$hasJoust = $data['joustTypes'];
 				$total++;
 			}
 			if (!$fail) {
@@ -136,7 +133,7 @@ class ActivityController extends AbstractController {
 							'{where}' => '[s:'.$settlement->getId().']',
 						]
 					];
-					$conv->newAllRealmsMessage('tourn.'.$act->getType()->getName(), $act->getSubtype()?->getName(), $char->getWorld(), true, null, $data);
+					$conv->newDelayedMessage('newAllRealmsMessage', true, null, null, $data);
 					$this->addFlash('notice', $this->trans->trans('tourn.announce.'.str_replace(' ', '', $act->getType()->getName()).'.flash', [], 'activity'));
 					return $this->redirectToRoute('maf_actions');
 				}
@@ -211,7 +208,7 @@ class ActivityController extends AbstractController {
 				$me->setAccepted(true);
 				$act->setReady(true);
 				$this->em->flush();
-				$this->addFlash('notice', $this->trans->trans('duel.answer.accepted', ['%target%'=>$them->getCharacter()->getName()]));
+				$this->addFlash('notice', $this->trans->trans('duel.answer.accepted', ['%target%'=>$them->getCharacter()->getName()], 'activity'));
 				return $this->redirectToRoute('maf_actions');
 			} else {
 				# Different weapons, we select ours, then they accept duel. No Act->setReady here.
@@ -222,7 +219,7 @@ class ActivityController extends AbstractController {
 					$me->setWeapon($form->get('equipment')->getData());
 					$me->setAccepted(true);
 					$this->em->flush();
-					$this->addFlash('notice', $this->trans->trans('duel.answer.accepted', ['%target%'=>$them->getCharacter()->getName()]));
+					$this->addFlash('notice', $this->trans->trans('duel.answer.accepted', ['%target%'=>$them->getCharacter()->getName()], 'activity'));
 					return $this->redirectToRoute('maf_actions');
 				}
 				return $this->render('Activity/duelAccept.html.twig', [
@@ -236,7 +233,7 @@ class ActivityController extends AbstractController {
 			$me->setAccepted(true);
 			$act->setReady(true);
 			$this->em->flush();
-			$this->addFlash('notice', $this->trans->trans('duel.answer.accepted2', ['%target%'=>$them->getCharacter()->getName()]));
+			$this->addFlash('notice', $this->trans->trans('duel.answer.accepted2', ['%target%'=>$them->getCharacter()->getName()], 'activity'));
 			return $this->redirectToRoute('maf_actions');
 		}
 	}
@@ -255,7 +252,7 @@ class ActivityController extends AbstractController {
 		}
 
 		$this->actman->refuseDuel($act); # Delete the activity, basically. ActMan flushes.
-		$this->addFlash('notice', $this->trans->trans('duel.answer.refused', ['%target%'=>$them->getCharacter()->getName()]));
+		$this->addFlash('notice', $this->trans->trans('duel.answer.refused', ['%target%'=>$them->getCharacter()->getName()], 'activity'));
 		return $this->redirectToRoute('maf_actions');
 	}
 
@@ -266,12 +263,10 @@ class ActivityController extends AbstractController {
 			return $this->redirectToRoute($char);
 		}
 
-		$check = false;
+		$check = $report->checkForObserver($char);
 		if (!$sec->isGranted('ROLE_ADMIN')) {
-			$check = $report->checkForObserver($char);
 			$admin = false;
 		} else {
-			$check = $report->checkForObserver($char);
 			$admin = true;
 		}
 

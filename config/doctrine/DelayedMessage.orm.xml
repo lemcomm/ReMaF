@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping>
-	<entity name="App\Entity\MessageData">
+	<entity name="App\Entity\DelayedMessage">
 		<id name="id" type="bigint">
 			<generator strategy="AUTO"/>
 		</id>
-		<field name="type" type="text" nullable="true"/>
 		<field name="topic" type="string" nullable="true"/>
-		<field name="content" type="text" nullable="true"/>
+		<field name="type" type="string" nullable="true"/>
 		<field name="system_content" type="array" nullable="true"/>
+		<many-to-one field="sender" target-entity="Character"/>
+		<field name="content" type="text" nullable="true"/>
 		<field name="target" type="string" nullable="true"/>
-		<many-to-one field="sender" target-entity="Character" fetch="EAGER"/>
 	</entity>
 </doctrine-mapping>

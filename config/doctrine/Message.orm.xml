@@ -10,9 +10,10 @@
 		<field name="cycle" type="integer" nullable="true"/>
 		<field name="system_content" type="array" nullable="true"/>
 		<field name="translated" type="boolean" nullable="true"/>
+		<field name="target" type="string" nullable="true"/>
 		<many-to-one field="data" target-entity="MessageData" fetch="EAGER"/>
 		<many-to-one field="conversation" target-entity="Conversation" inversed-by="messages" fetch="EAGER"/>
-		<many-to-one field="sender" target-entity="Character" inversed-by="messages"/>
+		<many-to-one field="sender" target-entity="Character" fetch="EAGER"/>
 		<one-to-many field="replies" target-entity="Message" mapped-by="reply_to" on-delete="CASCADE">
 			<cascade><cascade-remove /></cascade>
 		</one-to-many>
@@ -25,7 +26,5 @@
 		<one-to-many field="recipients" target-entity="MessageRecipient" mapped-by="message" on-delete="CASCADE" fetch="EAGER">
 			<cascade><cascade-remove /></cascade>
 		</one-to-many>
-		<field name="target" type="string" nullable="true"/>
-		<field name="read" type="boolean" nullable="true"/>
 	</entity>
 </doctrine-mapping>

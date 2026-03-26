@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Enum\CharacterStatus;
 use App\Enum\RaceName;
-use App\Service\ArmorCalculator;
-use App\Service\CharacterManager;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -107,7 +105,6 @@ class Character extends AbstractCharacter {
 	private Collection $siege_equipment;
 	private Collection $portals;
 	private Collection $conv_permissions;
-	private Collection $messages;
 	private Collection $tagged_messages;
 	private Collection $activity_participation;
 	private Collection $skills;
@@ -231,7 +228,6 @@ class Character extends AbstractCharacter {
 		$this->siege_equipment = new ArrayCollection();
 		$this->portals = new ArrayCollection();
 		$this->conv_permissions = new ArrayCollection();
-		$this->messages = new ArrayCollection();
 		$this->tagged_messages = new ArrayCollection();
 		$this->activity_participation = new ArrayCollection();
 		$this->skills = new ArrayCollection();
@@ -3136,37 +3132,6 @@ class Character extends AbstractCharacter {
 	}
 
 	/**
-	 * Add messages
-	 *
-	 * @param Message $messages
-	 *
-	 * @return Character
-	 */
-	public function addMessage(Message $messages): static {
-		$this->messages[] = $messages;
-
-		return $this;
-	}
-
-	/**
-	 * Remove messages
-	 *
-	 * @param Message $messages
-	 */
-	public function removeMessage(Message $messages): void {
-		$this->messages->removeElement($messages);
-	}
-
-	/**
-	 * Get messages
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getMessages(): ArrayCollection|Collection {
-		return $this->messages;
-	}
-
-	/**
 	 * Add tagged_messages
 	 *
 	 * @param MessageTag $taggedMessages
@@ -3993,8 +3958,6 @@ class Character extends AbstractCharacter {
 	public function getFamiliarity(): array {
 		if (!$this->familiarity) {
 			$arr = [];
-			$race = $this->race;
-			$group = $race->getRaceGroup();
 			foreach ($this->skills as $skill) {
 				if (str_ends_with($skill->getType()->getName(), 'military')) {
 					$name = explode('-', $skill->getType()->getName());

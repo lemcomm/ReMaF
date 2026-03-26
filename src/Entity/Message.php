@@ -15,9 +15,7 @@ class Message {
 	private ?string $content = null;
 	private ?int $recipient_count = null;
 	private ?string $target = null;
-	private ?bool $read = null;
 	private $id = null;
-	private ?bool $translated = null;
 	private Collection $replies;
 	private Collection $tags;
 	private Collection $recipients;
@@ -207,6 +205,7 @@ class Message {
 	 * @return string|null
 	 */
 	public function getTarget(): ?string {
+		if ($this->data) return $this->data->getTarget();
 		return $this->target;
 	}
 
@@ -220,27 +219,6 @@ class Message {
 	public function setTarget(?string $target): static {
 		$this->target = $target;
 
-		return $this;
-	}
-
-	/**
-	 * Get read
-	 *
-	 * @return bool|null
-	 */
-	public function getRead(): ?bool {
-		return $this->read;
-	}
-
-	/**
-	 * Set read
-	 *
-	 * @param boolean|null $read
-	 *
-	 * @return Message
-	 */
-	public function setRead(?bool $read): static {
-		$this->read = $read;
 		return $this;
 	}
 
@@ -374,6 +352,7 @@ class Message {
 	 * @return Character|null
 	 */
 	public function getSender(): ?Character {
+		if ($this->data) return $this->data->getSender();
 		return $this->sender;
 	}
 
@@ -412,10 +391,6 @@ class Message {
 		return $this;
 	}
 
-	public function isRead(): ?bool {
-		return $this->read;
-	}
-
 	public function findTag(Character $char) {
 		foreach ($this->getTags() as $tag) {
 			if ($tag->getCharacter() === $char) {
@@ -423,15 +398,6 @@ class Message {
 			}
 		}
 		return false;
-	}
-
-	public function getTranslated(): ?bool {
-		return $this->translated;
-	}
-
-	public function setTranslated(?bool $translated): static {
-		$this->translated = $translated;
-		return $this;
 	}
 
 	public function getData(): ?MessageData {

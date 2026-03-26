@@ -7,6 +7,7 @@ use App\Entity\Association;
 use App\Entity\Character;
 use App\Entity\Conversation;
 use App\Entity\ConversationPermission;
+use App\Entity\DelayedMessage;
 use App\Entity\House;
 use App\Entity\Message;
 use App\Entity\MessageData;
@@ -16,14 +17,14 @@ use App\Entity\Realm;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\StatisticGlobal;
-use App\Entity\World;
-use App\Enum\Activities;
 use App\Enum\CharacterStatus;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 
 class ConversationManager {
 	public function __construct(
@@ -51,25 +52,41 @@ class ConversationManager {
                 return $query->getResult();
         }
 
-        public function getConversationsCount(Character $char): mixed {
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 */
+	public function getConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getOrgConversationsCount(Character $char): mixed {
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 */
+	public function getOrgConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL)');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getPrivateConversationsCount(Character $char): mixed {
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 */
+	public function getPrivateConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND c.realm IS NULL AND c.house IS NULL');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getActiveConversationsCount(Character $char): mixed {
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 */
+	public function getActiveConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
@@ -245,7 +262,7 @@ class ConversationManager {
                 return new ArrayCollection(iterator_to_array($iterator));
         }
 
-        public function removePlayerConversation(Character $char, Conversation $conv) {
+        public function removePlayerConversation(Character $char, Conversation $conv): true {
                 foreach ($conv->getPermissions() as $perm) {
 			if ($perm->getCharacter() === $char) {
 				$this->em->remove($perm);
@@ -254,7 +271,7 @@ class ConversationManager {
 		return true;
         }
 
-        public function removeOrphanConversations() {
+        public function removeOrphanConversations(): int {
                 $all = $this->em->getRepository(Conversation::class);
                 $count = 0;
                 foreach ($all as $conv) {
@@ -266,7 +283,7 @@ class ConversationManager {
                 return $count;
         }
 
-        public function findNewOwner(Conversation $conv, Character $char, $flush=true) {
+        public function findNewOwner(Conversation $conv, Character $char, $flush=true): true {
                 if ($conv->getSystem() !== null) {
                         return true; #System conversations are managed separately.
                 }
@@ -540,7 +557,7 @@ class ConversationManager {
                 if ($content) {
                         # For reasons I can't figure out, writeMessages's call to find the active permissions of the new conversation bugs out and always returns empty. But only on new conversations.
                         # On existing conversations it works fine. So we pass the count manually, and use that passed count as a flag that this is a new conversation and that the message is trusted.
-                        $msg = $this->writeMessage($conv, null, $char, $content, $type, count($added), true, null, true);
+                        $this->writeMessage($conv, null, $char, $content, $type, count($added), true, null, true);
                 }
 
                 return $conv;
@@ -620,26 +637,36 @@ class ConversationManager {
                 return $msg;
         }
 
-	public function newAllRealmsMessage(string $type, ?string $subtype, World $world, $flush = true, ?Character $sender = null, array $data = []): int {
-		$realms = $this->em->getRepository(Realm::class)->findBy(['superior'=>null, 'active'=>true]);
-		$query = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c WHERE c.realm IN (:realms) AND c.system = \'announcements\'')->setParameters(['realms' => $realms]);
-		$convs = $query->getResult();
-		$content = '';
-		if (in_array($type, ['melee tournament', 'joust', 'grand tournament', 'race'])) {
-			$content = '{trans:system.tourn.announce}';
-		}
-		return $this->writeSystemMessageWithData(new ArrayCollection($convs), 'realms', null, $content, $data);
+	public function newDelayedMessage(string $target, $flush = true, ?Character $sender = null, ?string $content = null, array $systemContent = [], ?string $topic = null, string $type = 'system'): bool {
+		$msg = new DelayedMessage();
+		$msg->setTopic($topic);
+		$msg->setType($type);
+		$msg->setSender($sender);
+		$msg->setContent($content);
+		$msg->setSystemContent($systemContent);
+		$msg->setTarget($target);
+		$this->em->persist($msg);
+		if ($flush) $this->em->flush();
+		return true;
 	}
 
-	private function writeSystemMessageWithData(ArrayCollection $convs, $orgType, ?string $topic, string $content, array $sysContent, $antiTickUp = false): int {
+	public function newAllRealmsMessage($flush = true, ?Character $sender = null, ?string $topic = null, ?string $content = null, array $data = [], string $type = 'system'): int {
+		$realms = $this->em->getRepository(Realm::class)->findBy(['superior'=>null, 'active'=>true]);
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c WHERE c.realm IN (:realms) AND c.system = \'announcements\'')->setParameters(['realms' => $realms]);
+		return $this->writeSystemMessageWithData(new ArrayCollection($query->getResult()), 'realms', $topic, $content, $data, $type, $sender);
+	}
+
+	private function writeSystemMessageWithData(ArrayCollection $convs, $orgType, ?string $topic, ?string $content, array $sysContent, string $type, ?Character $sender = null, $antiTickUp = false): int {
 		$data = new MessageData();
 		$data->setContent($content);
 		$data->setSystemContent($sysContent);
 		$data->setTopic($topic);
-		$data->setType('system');
+		$data->setType($type);
 		$this->em->persist($data);
 		$count = 0;
 		$total = 0;
+		$cycle = $this->common->getCycle();
+		$now = new DateTime();
 		/** @var Conversation $conv */
 		foreach ($convs as $conv) {
 			$count++;
@@ -647,10 +674,9 @@ class ConversationManager {
 			$new = new Message();
 			$this->em->persist($new);
 			$new->setConversation($conv);
-			$new->setCycle($this->common->getCycle());
-			$new->setSent(new DateTime("now"));
+			$new->setCycle($cycle);
+			$new->setSent($now);
 			$new->setData($data);
-			$new->setType('system');
 			if (!$antiTickUp) {
 				$this->updateUnread($conv->findActivePermissions(), $orgType);
 			}
@@ -664,8 +690,7 @@ class ConversationManager {
 		return $total;
 	}
 
-	private function updateUnread(ArrayCollection $perms, $orgType): int {
-		$count = 0;
+	private function updateUnread(ArrayCollection $perms, $orgType): void {
 		foreach ($perms as $perm) {
 			if ($orgType === 'realm' && !$perm->getCharacter()->getAutoReadRealms()) {
 				$perm->setUnread($perm->getUnread()+1);
@@ -680,9 +705,7 @@ class ConversationManager {
 				$perm->setUnread($perm->getUnread()+1);
 				$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
 			}
-			$count++;
 		}
-		return $count;
 	}
 
 	private function updateUnreadWithChar(ArrayCollection $perms, bool|string $orgType, Character $char): int {
@@ -711,7 +734,6 @@ class ConversationManager {
 	}
 
         public function pruneConversation(Conversation $conv): string {
-                $keep = new ArrayCollection();
                 $perms = $conv->getPermissions();
                 $all = $conv->getMessages();
                 # Grab all conversation messages and go through each of them.
@@ -782,7 +804,7 @@ class ConversationManager {
                 }
         }
 
-        public function updateMembers(Conversation $conv, ?ArrayCollection $members=null) {
+        public function updateMembers(Conversation $conv, ?ArrayCollection $members=null): array {
                 $realm = $conv->getRealm();
                 $house = $conv->getHouse();
                 $assoc = $conv->getAssociation();
@@ -844,7 +866,7 @@ class ConversationManager {
                 return array('added'=>$added, 'removed'=>$removed);
         }
 
-        public function sendNewCharacterMsg(?Realm $realm, ?House $house, Place $place, Character $char) {
+        public function sendNewCharacterMsg(?Realm $realm, ?House $house, Place $place, Character $char): array {
                 $em = $this->em;
                 $ultimate = null;
                 $same = false;
@@ -899,7 +921,7 @@ class ConversationManager {
                 return [$conv, $supConv];
         }
 
-        public function sendExistingCharacterMsg(?Realm $realm, ?Settlement $settlement, ?Place $place, ?RealmPosition $pos, Character $char, $publicJoin = FALSE) {
+        public function sendExistingCharacterMsg(?Realm $realm, ?Settlement $settlement, ?Place $place, ?RealmPosition $pos, Character $char, $publicJoin = FALSE): array {
                 $em = $this->em;
                 if ($realm === NULL && $settlement && $settlement->getRealm()) {
                         $realm = $settlement->getRealm();
@@ -913,8 +935,7 @@ class ConversationManager {
                         return [false, false]; #No realm to join, thus, no message to send.
                 }
 
-                $ultimate = null;
-                $sameRealm = false;
+                $same = false;
                 if ($realm->isUltimate()) {
                         $ultimate = $realm;
                         $same = true;
@@ -1003,8 +1024,8 @@ class ConversationManager {
 		}
 	}
 
-        public function addParticipant(Conversation $conv, Character $char) {
-                $perm = $this->em->getRepository('App\Entity\ConversationPermission')->findOneBy(['conversation'=>$conv, 'character'=>$char,'active'=>true]);
+        public function addParticipant(Conversation $conv, Character $char): ConversationPermission|null {
+                $perm = $this->em->getRepository(ConversationPermission::class)->findOneBy(['conversation'=>$conv, 'character'=>$char,'active'=>true]);
                 if (!$perm) {
                         $now = new DateTime("now");
                         $perm = new ConversationPermission();
@@ -1020,7 +1041,7 @@ class ConversationManager {
                 return $perm;
         }
 
-        public function updateSystemConversations($orgType, $org) {
+        public function updateSystemConversations($orgType, $org): void {
                 $sysConvs = ['announcements'=>'Announcements', 'general'=>'General Discussions'];
                 foreach ($sysConvs as $sys=>$name) {
                         $conv = $this->em->getRepository('App\Entity\Conversation')->findOneBy([$orgType=>$org, 'system'=>$sys]);

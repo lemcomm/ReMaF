@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-class MessageData {
+class DelayedMessage {
 	private $id = null;
 	private ?string $topic = null;
+	private ?string $type = null;
 	private ?string $content = null;
 	private ?array $system_content = null;
-	private ?string $type = null;
 	private ?string $target = null;
 	private ?Character $sender = null;
 

@@ -244,7 +244,7 @@ class ConversationController extends AbstractController {
 			#TODO: Figure out how to make this render correctly.
 			$data = $form->getData();
 			$msg = new Message();
-			$msg->setRead(false)->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
+			$msg->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
 			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
 				'messages' => [$msg],
 				'preview' => true,
@@ -292,7 +292,7 @@ class ConversationController extends AbstractController {
 			#TODO: Figure out how to make this render correctly.
 			$data = $form->getData();
 			$msg = new Message();
-			$msg->setRead(false)->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
+			$msg->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
 			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
 				'messages' => [$msg],
 				'preview' => true,
@@ -362,7 +362,7 @@ class ConversationController extends AbstractController {
 			#TODO: Figure out how to make this render correctly.
 			$data = $form->getData();
 			$msg = new Message();
-			$msg->setRead(false)->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type'])->setTopic($data['topic']?:null);
+			$msg->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type'])->setTopic($data['topic']?:null);
 			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
 				'messages' => [$msg],
 				'preview' => true,
@@ -946,7 +946,7 @@ class ConversationController extends AbstractController {
 		} elseif ($form->getClickedButton() && $form->getClickedButton()->getName() === 'preview') {
 			$data = $form->getData();
 			$msg = new Message();
-			$msg->setRead(false)->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
+			$msg->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
 
 			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
 				'messages' => [$msg],
@@ -1003,7 +1003,7 @@ class ConversationController extends AbstractController {
 		} elseif ($form->getClickedButton() && $form->getClickedButton()->getName() === 'preview') {
 			$data = $form->getData();
 			$msg = new Message();
-			$msg->setRead(false)->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
+			$msg->setContent($data['content'])->setSender($char)->setSent(new DateTime("now"))->setTarget(null)->setType($data['type']);
 
 			$subview = $this->renderView('Conversation/msg_loop.html.twig', [
 				'messages' => [$msg],
