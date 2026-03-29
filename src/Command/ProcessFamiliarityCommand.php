@@ -9,12 +9,9 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ProcessFamiliarityCommand extends AbstractProcessCommand {
-
-	protected EntityManagerInterface $em;
 	protected string $opt_time;
 
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(protected EntityManagerInterface $em) {
 		parent::__construct($em);
 	}
 

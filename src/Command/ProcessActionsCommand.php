@@ -17,18 +17,14 @@ use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 class ProcessActionsCommand extends Command {
-	private ActionResolution $ar;
-	private CommonService $cs;
-	private EntityManagerInterface $em;
-	private NotificationManager $nm;
-
 	private int $batchSize = 200;
 
-	public function __construct(ActionResolution $ar, CommonService $cs, EntityManagerInterface $em, NotificationManager $nm) {
-		$this->ar = $ar;
-		$this->cs = $cs;
-		$this->em = $em;
-		$this->nm = $nm;
+	public function __construct(
+		private ActionResolution $ar,
+		private CommonService $cs,
+		private EntityManagerInterface $em,
+		private NotificationManager $nm
+	) {
 		parent::__construct();
 	}
 

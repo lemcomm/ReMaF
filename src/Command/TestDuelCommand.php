@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Entity\Character;
 use App\Entity\EquipmentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;

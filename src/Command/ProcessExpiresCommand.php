@@ -10,16 +10,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class ProcessExpiresCommand extends Command {
-
-	private CommonService $common;
-	private EntityManagerInterface $em;
 	private OutputInterface $output;
 	private int $cycle;
 	private int $marker_lifetime = 36;
 
-	public function __construct(CommonService $common, EntityManagerInterface $em) {
-		$this->common = $common;
-		$this->em = $em;
+	public function __construct(private CommonService $common, private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 

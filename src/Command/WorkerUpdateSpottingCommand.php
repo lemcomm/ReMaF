@@ -12,13 +12,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class WorkerUpdateSpottingCommand extends  Command {
-
-	private EntityManagerInterface $em;
-	private CommonService $common;
-
-	public function __construct(EntityManagerInterface $em, CommonService $common) {
-		$this->em = $em;
-		$this->common = $common;
+	public function __construct(
+		private EntityManagerInterface $em,
+		private CommonService $common
+	) {
 		parent::__construct();
 	}
 	

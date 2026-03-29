@@ -134,7 +134,7 @@ class ActivityController extends AbstractController {
 						]
 					];
 					$conv->newDelayedMessage('newAllRealmsMessage', true, null, null, $data);
-					$this->addFlash('notice', $this->trans->trans('tourn.announce.'.str_replace(' ', '', $act->getType()->getName()).'.flash', [], 'activity'));
+					$this->addFlash('notice', $this->trans->trans('tourn.announce.'.str_replace(' ', '', $act->getType()->getName()).'.flash', [], 'activity').'<br>'.$this->trans->trans('tourn.announce.delay', [], 'activity'));
 					return $this->redirectToRoute('maf_actions');
 				}
 			}

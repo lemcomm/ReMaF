@@ -14,17 +14,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\Common\Collections\Collection;
 
 class PaymentCommand extends Command {
-
-	private EntityManagerInterface $em;
-	private History $hist;
-	private PaymentManager $pay;
-	private RealmManager $rm;
-
-	public function __construct(EntityManagerInterface $em, History $hist, PaymentManager $pay, RealmManager $rm) {
-		$this->em = $em;
-		$this->hist = $hist;
-		$this->pay = $pay;
-		$this->rm = $rm;
+	public function __construct(
+		private EntityManagerInterface $em,
+		private History $hist,
+		private PaymentManager $pay,
+		private RealmManager $rm
+	) {
 		parent::__construct();
 	}
 

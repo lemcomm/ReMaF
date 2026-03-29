@@ -23,17 +23,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class StatisticsTurnCommand extends Command {
-
-	private EntityManagerInterface $em;
-	private CommonService $common;
-	private Economy $econ;
-	private Geography $geo;
-
-	public function __construct(CommonService $common, Economy $econ, EntityManagerInterface $em, Geography $geo) {
-		$this->common = $common;
-		$this->econ = $econ;
-		$this->em = $em;
-		$this->geo = $geo;
+	public function __construct(
+		private CommonService $common,
+		private Economy $econ,
+		private EntityManagerInterface $em,
+		private Geography $geo
+	) {
 		parent::__construct();
 	}
 	

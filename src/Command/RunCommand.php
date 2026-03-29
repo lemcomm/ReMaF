@@ -14,13 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RunCommand extends  Command {
 
-	private GameRunner $game;
-	private LoggerInterface $logger;
-	private NotificationManager $note;
-
-	public function __construct(GameRunner $game, NotificationManager $note) {
-		$this->game = $game;
-		$this->note = $note;
+	public function __construct(private GameRunner $game, private NotificationManager $note) {
 		parent::__construct();
 	}
 	protected function configure(): void {
@@ -42,7 +36,7 @@ class RunCommand extends  Command {
 		switch ($which) {
 			case 'hourly':
 				try {
-					$complete = $this->game->runCycle('update', 600, $opt_time, $opt_debug, $output);
+					$this->game->runCycle('update', 600, $opt_time, $opt_debug, $output);
 					$this->game->nextCycle(false);
 					$output->writeln("update complete");
 					$output->writeln("<info>update complete</info>");
@@ -58,7 +52,7 @@ class RunCommand extends  Command {
 			case 'turn':
 				$output->writeln("<info>running turn:</info>");
 				try {
-					$complete = $this->game->runCycle('turn', 1200, $opt_time, $opt_debug, $output);
+					$this->game->runCycle('turn', 1200, $opt_time, $opt_debug, $output);
 					$this->game->nextCycle();
 					$output->writeln("turn complete");
 					$output->writeln("<info>turn complete</info>");

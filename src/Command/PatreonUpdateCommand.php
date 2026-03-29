@@ -9,11 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class PatreonUpdateCommand extends Command {
-
-	private PaymentManager $pay;
-
-	public function __construct(PaymentManager $pay) {
-		$this->pay = $pay;
+	public function __construct(private PaymentManager $pay) {
 		parent::__construct();
 	}
 

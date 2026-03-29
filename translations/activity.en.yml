@@ -96,6 +96,7 @@ report:
 tourn:
  create:
   name:       Announce a Tournament
+  description: Why not hold a competition?
   intro:      The ultimate proving ground of your capabilities, be it your skill in combat or your mastery of wealth in hosting one. From this page you can determine the type of tournament you wish to hold. Be advised, if you wish to hold more than a single type, you'll need a Tournament Grounds and the infrastructure it provides.
  announce:
   meleetournament:
@@ -106,6 +107,7 @@ tourn:
    flash:     A Race has been scheduled.
   grandtournament:
    flash:     A Grand Tournament has been scheduled.
+  delay:      The a far reaching message announcing it will go out in a few minutes.
  form:
   name:       Tournament Name
   delay:

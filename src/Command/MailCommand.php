@@ -11,11 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 Shouldn't be too hard to do. --Andrew 20170507 */
 
 class MailCommand extends Command {
-
-	private MailManager $mm;
-
-	public function __construct(MailManager $mm) {
-		$this->mm = $mm;
+	public function __construct(private MailManager $mm) {
 		parent::__construct();
 	}
 	protected function configure(): void {

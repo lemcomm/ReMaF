@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Service\GameRunner;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,13 +11,7 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 
 class ProcessConvsCommand extends Command {
-
-	private LoggerInterface $log;
-	private GameRunner $gr;
-
-	public function __construct(LoggerInterface $log, GameRunner $gr) {
-		$this->log = $log;
-		$this->gr = $gr;
+	public function __construct(private GameRunner $gr) {
 		parent::__construct();
 	}
 
@@ -39,15 +32,15 @@ class ProcessConvsCommand extends Command {
 			$stopwatch->start('conv_cleanup');
 		}
 		if ($complete) {
-			$this->log->info("Conversation cleanup completed");
+			$output->writeln("Conversation cleanup completed");
 			$output->writeln("<info>Conversation cleanup completed</info>");
 		} else {
-			$this->log->info("Conversation cleanup errored!");
+			$output->writeln("Conversation cleanup errored!");
 			$output->writeln("<error>Conversation cleanup errored!</error>");
 		}
 		if ($timing) {
 			$event = $stopwatch->stop('conv_cleanup');
-			$this->log->info("Conversation Cleanup: ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
+			$output->writeln("Conversation Cleanup: ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
 		}
 		return COMMAND::SUCCESS;
 	}

@@ -9,12 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class ProcessActivitiesCommand extends Command {
-
-	private ActivityManager $am;
 	private mixed $ruleset;
 
-	public function __construct(ActivityManager $am) {
-		$this->am = $am;
+	public function __construct(private ActivityManager $am) {
 		$this->ruleset = $_ENV['ACTIVITY_RULESET'];
 		parent::__construct();
 	}

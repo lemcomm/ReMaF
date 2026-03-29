@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Entity\Settlement;
 use App\Service\Economy;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -13,12 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class WorkerEconomyCommand extends Command {
-
-	private EntityManagerInterface $em;
 	private Economy $economy;
 
-	public function __construct(EntityManagerInterface $em, Economy $econ) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em, Economy $econ) {
 		$this->economy = $econ;
 		parent::__construct();
 	}

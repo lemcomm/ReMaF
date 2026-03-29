@@ -13,16 +13,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class RealmHistoricCommand extends Command {
-
-	private EntityManagerInterface $em;
 	private int $cycle = 0;
 	private string $base_cmd = "/usr/bin/convert ~/realm-movies/base.png";
 	private string $output_path = "/home/maf/realm-movies/";
 	private string $mvg = "";
 	private ArrayCollection $all;
 
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 

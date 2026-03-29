@@ -20,21 +20,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class WorkerTravelCommand extends  Command {
-
-	private EntityManagerInterface $em;
-	private CommonService $common;
-	private Geography $geo;
-	private History $hist;
-	private Interactions $interactions;
-	private StatusUpdater $status;
-
-	public function __construct(EntityManagerInterface $em, CommonService $common, Geography $geo, History $hist, Interactions $interactions, StatusUpdater $status) {
-		$this->em = $em;
-		$this->common = $common;
-		$this->geo = $geo;
-		$this->hist = $hist;
-		$this->interactions = $interactions;
-		$this->status = $status;
+	public function __construct(
+		private EntityManagerInterface $em,
+		private CommonService $common,
+		private Geography $geo,
+		private History $hist,
+		private Interactions $interactions,
+		private StatusUpdater $status
+	) {
 		parent::__construct();
 	}
 

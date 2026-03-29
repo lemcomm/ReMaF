@@ -3,20 +3,9 @@
 namespace App\Command;
 
 use App\Entity\Activity;
-use App\Entity\Battle;
-use App\Entity\BattleGroup;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
-use App\Entity\GeoData;
-use App\Entity\MapRegion;
-use App\Entity\Place;
-use App\Entity\Settlement;
-use App\Entity\World;
 use App\Service\ActivityManager;
-use App\Service\BattleRunner;
-use App\Service\CommonService;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,14 +14,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DuelGenerateCommand extends Command {
 
-	private $whereString = '';
 	private ?string $ruleset;
 	private $duelLevels = ['first blood', 'wound', 'surrender', 'death'];
 
 	public function __construct(
 		private EntityManagerInterface $em,
 		private ActivityManager $actMan,
-		private CommonService $common
 	) {
 		parent::__construct();
 		$this->ruleset = $_ENV['COMBAT_RULESET'];
@@ -42,8 +29,7 @@ class DuelGenerateCommand extends Command {
 	}
 
 	protected function configure(): void {
-		$this
-			->setName('maf:duel:generate')
+		$this->setName('maf:duel:generate')
 			->setDescription('Generator command for creating a battle. To be used with other generator commands to make a duel for the game to process.')
 			->addArgument('issuer', InputArgument::REQUIRED, 'Character to issue the duel')
 			->addArgument('recipient', InputArgument::REQUIRED, 'Character to be challenged')
@@ -53,7 +39,6 @@ class DuelGenerateCommand extends Command {
 			->addOption('runnerVersion', null, InputArgument::OPTIONAL, 'Version of the BattleRunner to utilize. Defaults to the current version, but can be overridden to simulate older battles. Not supported by all rulesets.', null)
 			->addOption('char2weapon', null, InputArgument::OPTIONAL, 'Weapon for character #2 to use.', null)
 			->addOption('armor', null, InputArgument::OPTIONAL, 'Do combatants have their armor and other equipment?', false);
-		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
@@ -122,7 +107,7 @@ class DuelGenerateCommand extends Command {
 		return Command::SUCCESS;
 	}
 
-	private function findWeapon($string, $required = true): EquipmentType|null {
+	private function findWeapon($string): EquipmentType|null {
 		return $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>$string]);
 	}
 
@@ -132,18 +117,5 @@ class DuelGenerateCommand extends Command {
 			return $char;
 		}
 		return false;
-	}
-
-	private function findType(string $string, Battle $battle): Battle {
-		if ($string === 'sortie') {
-			$battle->setType('siegesortie');
-		} elseif ($string === 'assault') {
-			$battle->setType('siegeassault');
-		} elseif ($string === 'urban') {
-			$battle->setType('urban');
-		} else {
-			$battle->setType('field');
-		}
-		return $battle;
 	}
 }

@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -13,15 +12,11 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class ProcessTravelCommand extends AbstractProcessCommand {
 
-	protected EntityManagerInterface $em;
 	protected string $opt_time;
 	protected int $parallel = 6;
 	protected Stopwatch $stopwatch;
-	private LoggerInterface $logger;
 
-	public function __construct(EntityManagerInterface $em, LoggerInterface $logger) {
-		$this->em = $em;
-		$this->logger = $logger;
+	public function __construct(protected EntityManagerInterface $em) {
 		parent::__construct($em);
 	}
 
@@ -54,8 +49,7 @@ class ProcessTravelCommand extends AbstractProcessCommand {
 		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c WHERE c.travel IS NOT NULL AND (c.progress IS NULL OR c.speed IS NULL)');
 		foreach ($query->getResult() as $char) {
 			$msg = "invalid travel record for character ".$char->getId()." - progress ".$char->getProgress()." / speed ".$char->getSpeed()." !";
-			$this->logger->error($msg);
-			$this->output->writeln($msg);
+			$this->output->writeln('<error>'.$msg.'</error>');
 			$query = $this->em->createQuery('UPDATE App\Entity\Character c SET c.travel=null where c.travel IS NOT NULL AND (c.progress IS NULL OR c.speed IS NULL)');
 			$query->execute();
 		}
@@ -79,8 +73,7 @@ class ProcessTravelCommand extends AbstractProcessCommand {
 			$char = array_shift($broken);
 			$biome = $broken['biome'];
 			$msg = "Broken land/sea setting: $char in $biome - fixed.";
-			$this->logger->error($msg);
-			$this->output->writeln($msg);
+			$this->output->writeln('<error>'.$msg.'</error>');
 
 			$char->setTravelAtSea(!$char->getTravelAtSea());
 		}

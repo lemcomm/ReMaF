@@ -12,11 +12,7 @@ use Symfony\Component\VarDumper\VarDumper;
 
 
 class RealmMaxExtentCommand extends Command {
-
-	private EntityManagerInterface $em;
-
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 	protected function configure(): void {

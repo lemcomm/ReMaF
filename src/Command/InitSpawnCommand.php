@@ -159,7 +159,7 @@ class InitSpawnCommand extends  Command {
 	protected function interact(InputInterface $input, OutputInterface $output): void {
 		$helper = $this->getHelper('question');
 		if (!$input->getArgument('character')) {
-			$need = new Question('Which character ID shall be used to start the intial realm? ');
+			$need = new Question('Which character ID shall be used to start the initial realm? ');
 			$need->setValidator(function ($char) {
 				if (empty($char)) {
 					throw new Exception('Character ID cannot be empty!');
@@ -169,7 +169,7 @@ class InitSpawnCommand extends  Command {
 			$input->setArgument('character', $helper->ask($input, $output, $need));
 		}
 		if (!$input->getArgument('settlement')) {
-			$need = new Question('Which settlement ID shall be the capital of the intial realm? ');
+			$need = new Question('Which settlement ID shall be the capital of the initial realm? ');
 			$need->setValidator(function ($realm) {
 				if (empty($realm)) {
 					throw new Exception('Settlement ID cannot be empty!');
@@ -179,7 +179,7 @@ class InitSpawnCommand extends  Command {
 			$input->setArgument('settlement', $helper->ask($input, $output, $need));
 		}
 		if (!$input->getArgument('realm')) {
-			$need = new Question('What shall the intial realm be called? ');
+			$need = new Question('What shall the initial realm be called? ');
 			$need->setValidator(function ($realm) {
 				if (empty($realm)) {
 					throw new Exception('Realm name cannot be empty!');

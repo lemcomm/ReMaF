@@ -16,15 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 
 class WorkerBuildingconstructionCommand extends  Command {
-
-	private EntityManagerInterface $em;
-	private Economy $econ;
-	private History $hist;
-
-	public function __construct(EntityManagerInterface $em, Economy $econ, History $hist) {
-		$this->em = $em;
-		$this->econ = $econ;
-		$this->hist = $hist;
+	public function __construct(private EntityManagerInterface $em, private Economy $econ, private History $hist) {
 		parent::__construct();
 	}
 

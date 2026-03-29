@@ -11,11 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
 class PromoteUserCommand extends  Command {
-
-	private EntityManagerInterface $em;
-
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 	protected function configure(): void {
