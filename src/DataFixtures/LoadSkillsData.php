@@ -133,6 +133,8 @@ class LoadSkillsData extends Fixture {
 		"wyvernback" => ['cat' => 'riding'],
 		"wargback" => ['cat' => 'riding'],
 		"dragonback" => ['cat' => 'riding'],
+
+		"fishing" => ['cat'=>'survival']
         );
 
 	public function load(ObjectManager $manager): void {

@@ -775,12 +775,15 @@ achievements:
  type:
   battles:    Battles Fought
   battlesize: Battle Glory
+  claimspressed: Claimed Pressed
   captures:   First Ones Captured
   escaped:    Successful Escapes
   escapees:   Escaped Prisoners
   failedescapes: Failed Escapes
   dragons:    Dragons Slain
-
+  fish:
+   size:      Biggest Fish in Meters
+   total:     Total Fish Caught
   kills:
    soldiers:  Mortals Slain
    nobles:    First Ones Slain in Battle
@@ -1036,6 +1039,7 @@ charstatus:
  assinging:   assigning
  damaging:    damaging
  siegeLead:   siege leading
+ fishing:     fishing
 newevents:    "{number} event{count, plural, =1 {} other {s}}"
 newmessages:  "{number} message{count, plural, =1 {} other {s}}"
 requests:     "{number} request{count, plural, =1 {} other {s}}"
@@ -1203,6 +1207,8 @@ npc:
  spy:          sp{count, plural, =1 {y} other {ies}}
  priest:       priest{count, plural, =1 {} other {s}}
  herald:       herald{count, plural, =1 {} other {s}}
+ healer:       healer{count, plural, =1 {} other {s}}
+ physician:    physician{count, plural, =1 {} other {s}}
  translator:   translator{count, plural, =1 {} other {s}}
  scholar:      scholar{count, plural, =1 {} other {s}}
  soldier:      soldier{count, plural, =1 {} other {s}}

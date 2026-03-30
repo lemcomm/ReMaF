@@ -208,6 +208,20 @@ class UpdateDatabaseCommand extends  Command {
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading new entourage types...');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadEntourageData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading fish data...');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadFishData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
 		}
 
 		return Command::SUCCESS;

@@ -28,6 +28,7 @@ class ActivityDispatcher extends Dispatcher {
 		}
 		$char = $this->getCharacter();
 		$actions = [];
+		$actions[] = $this->activityFishTest();
 		if ($char && $char->getInsideSettlement() && $char->getInsideSettlement()->isOwnerEquivalent($char)) {
 			$actions[] = $this->activityTournamentCreateTest();
 		}
@@ -40,6 +41,8 @@ class ActivityDispatcher extends Dispatcher {
 	/* ========== Activity Dispatchers ========== */
 
 	public function activityTournamentCreateTest(): array {
+		#TODO: Finish this.
+		return array("name"=>"tourn.create.name", "description"=>"unavailable.notimplemented");
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"tourn.create.name", "description"=>"unavailable.$check");
 		}
@@ -62,6 +65,18 @@ class ActivityDispatcher extends Dispatcher {
 			return ["name"=>"tourn.create.name", "description"=>"unavailable.notournbuilding"];
 		}
 		return $this->action("tourn.create", "maf_activity_tourn_create");
+	}
+
+	public function activityFishTest(): array {
+		if (($check = $this->veryGenericTests()) !== true) {
+			return array("name"=>"fishing.start.name", "description"=>"unavailable.$check");
+		}
+		if ($this->getCharacter()->isDoingAction('fishing')) {
+			return array("name"=>"fishing.start.name",
+				"description"=>"unavailable.already"
+			);
+		}
+		return $this->action("fishing.start", "maf_activity_fish");
 	}
 
 	public function activityDuelChallengeTest(): array {

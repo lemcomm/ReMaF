@@ -139,6 +139,7 @@ class Character extends AbstractCharacter {
 	private ?Dungeon $fromDungeon = null;
 	private ?array $status = null;
 	private ?array $familiarity = null;
+	private Collection $fishLogs;
 
 	protected bool $isChar = true;
 
@@ -181,6 +182,7 @@ class Character extends AbstractCharacter {
 		103 => 0,
 		101 => 0,
 		102 => 0,
+		104 => 0,
 
 		200 => 0,
 		201 => 0
@@ -241,6 +243,7 @@ class Character extends AbstractCharacter {
 		$this->positions = new ArrayCollection();
 		$this->battlegroups = new ArrayCollection();
 		$this->chat_messages = new ArrayCollection();
+		$this->fishLogs = new ArrayCollection();
 	}
 
 	public function __toString() {
@@ -1254,7 +1257,7 @@ class Character extends AbstractCharacter {
 		return $this->activity_participation;
 	}
 
-	public function findSkill(SkillType $skill) {
+	public function findSkill(SkillType $skill): Skill|false {
 		foreach ($this->skills as $each) {
 			if ($each->getType() === $skill) {
 				return $each;
@@ -3864,6 +3867,20 @@ class Character extends AbstractCharacter {
 		return $this->chat_messages;
 	}
 
+	public function addFishLog(FishLog $log): static {
+		$this->fishLogs[] = $log;
+
+		return $this;
+	}
+
+	public function removeFishLog(FishLog $log): void {
+		$this->fishLogs->removeElement($log);
+	}
+
+	public function getFishLogs(): ArrayCollection|Collection {
+		return $this->fishLogs;
+	}
+
 	public function getWithdrawLevel(): ?float {
 		return $this->withdrawLevel;
 	}
@@ -3944,7 +3961,12 @@ class Character extends AbstractCharacter {
 
 	public function incrementStatus(CharacterStatus $which, $int): void {
 		$this->status?:$this->status = $this->defaultStatus;
-		$this->status[$which->value] = $this->status[$which->value]+$int;
+		if (array_key_exists($which->value, $this->status)) {
+			$this->status[$which->value] = $this->status[$which->value]+$int;
+		} else {
+			$this->status[$which->value] = $int;
+		}
+
 	}
 
 	public function getTranslatableType(): string {

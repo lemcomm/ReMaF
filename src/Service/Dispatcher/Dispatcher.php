@@ -399,6 +399,7 @@ class Dispatcher {
 			if ($this->getCharacter()->getUser()->getCrests()) {
 				$actions[] = $this->metaHeraldryTest();
 			}
+			$actions[] = $this->personalFishLogTest();
 		}
 		return array("name"=>"personal.name", "elements"=>$actions);
 	}
@@ -1263,8 +1264,16 @@ class Dispatcher {
 		}
 
 		return $this->action("relations", "maf_politics_relations");
-
 	}
+
+	public function personalFishLogTest(): array {
+		if ($this->getCharacter()->isNPC()) {
+			return array("name"=>"activity.fishlog.name", "description"=>"unavailable.npc");
+		}
+
+		return $this->action("personal.fishlog", "maf_activity_fish_log");
+	}
+
 	public function personalPrisonersTest(): array {
 		if ( $this->getCharacter()->getPrisoners()->count() == 0) {
 			return array("name"=>"diplomacy.prisoners.name", "description"=>"unavailable.noprisoners");

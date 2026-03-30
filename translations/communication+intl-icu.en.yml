@@ -165,6 +165,9 @@ event:
   killgold:     You took {gold} gold from the body of {character}.
   killartifact: You took the {artifact} from the body of {character}.
   child:        Had a child, {character}.
+  fishing:
+   success:     You caught a fish!
+   failure:     Luck was not with you in your fishing.
   health:
    improved:    Has had their injuries improve.
    worsened:    Witness their injuries worsen.

@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpUnusedPrivateMethodInspection */
+
 namespace App\Form;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -41,7 +43,37 @@ class ActivitySelectType extends AbstractType {
 		]);
 	}
 
-	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function fishingFields(FormBuilderInterface $builder, array $options): void {
+		$whereCan = $options['subselect'];
+		$choices = [];
+		foreach ($whereCan as $key => $value) {
+			if ($value) {
+				switch ($key) {
+					case 'inland':
+						$choices['fishing.form.inland'] = $key;
+						break;
+					case 'deepwater':
+						$choices['fishing.form.deepwater'] = $key;
+						break;
+					case 'river':
+						$choices['fishing.form.river'] = $key;
+						break;
+					case 'lake':
+						$choices['fishing.form.lake'] = $key;
+						break;
+					case 'coast':
+						$choices['fishing.form.coast'] = $key;
+						break;
+				}
+			}
+		}
+		$builder->add('where', ChoiceType::class, [
+			'label' => 'fishing.form.where',
+			'choices' => $choices,
+			'required' => true,
+		]);
+	}
+
 	private function tournFields(FormBuilderInterface $builder, array $options): void {
 		$types = $options['subselect']['types'];
 		$builder->add('name', TextType::class, array(
@@ -147,7 +179,6 @@ class ActivitySelectType extends AbstractType {
 		}
 	}
 
-	/** @noinspection PhpUnusedPrivateMethodInspection */
 	private function duelFields(FormBuilderInterface $builder, array $options): void {
 		$me = $options['me'];
 		$maxdistance = $options['maxdistance'];

@@ -734,9 +734,11 @@ class BattleRunner {
 			$runCount++;
 			$battle->setPhase($phase);
 			$this->em->flush();
-			if (!$combat && $runCount >= self::roundsPerRun) {
+			/*
+			if ($combat && $runCount >= self::roundsPerRun) {
 				return false;
 			}
+			*/
 		}
 		$this->log(20, "...hunt phase...\n");
 		if ($this->legacyRuleset) {

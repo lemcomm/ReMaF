@@ -8,7 +8,10 @@ use App\Entity\ActivityReport;
 use App\Entity\Character;
 
 use App\Entity\EquipmentType;
+use App\Entity\FishLog;
+use App\Entity\FishType;
 use App\Entity\SkillType;
+use App\Enum\CharacterStatus;
 use App\Form\ActivitySelectType;
 use App\Form\EquipmentLoadoutType;
 
@@ -31,11 +34,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ActivityController extends AbstractController {
 	public function __construct(
-		private ActivityDispatcher $activityDispatcher,
-		private ActivityManager $actman,
+		private ActivityDispatcher     $activityDispatcher,
+		private ActivityManager        $actman,
 		private EntityManagerInterface $em,
-		private TranslatorInterface $trans,
-		private Geography $geo,
+		private TranslatorInterface    $trans,
+		private Geography              $geo,
 	) {
 	}
 	
@@ -43,8 +46,92 @@ class ActivityController extends AbstractController {
 		return $this->activityDispatcher->gateway($test, null, true, false, $secondary);
 	}
 
-	#[Route('/activity/{id}', name: 'maf_activity', requirements:['act'=>'\d+'])]
-	public function viewActivity(Activity $id) {}
+
+	#[Route('/activity/fish', name: 'maf_activity_fish')]
+	public function fishAction(Geography $geo, Request $request): Response|RedirectResponse {
+		$char = $this->gateway('activityFishTest');
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+		$river = false;
+		$lake = false;
+		$coast = false;
+		$deepwater = false;
+		$inland = false;
+		if ($char->getTravelAtSea()) {
+			$deepwater = true;
+			$coast = true;
+		} else {
+			$here = $geo->findMyRegion($char);
+			if ($here?->getRiver()) {
+				$river = true;
+				$inland = true;
+			}
+			if ($here?->getCoast()) {
+				$coast = true;
+				$inland = true;
+			}
+			if ($here?->getLake()) {
+				$lake = true;
+				$inland = true;
+			}
+		}
+		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'fishing', 'subselect'=>['inland' => $inland, 'deepwater' => $deepwater, 'river' => $river, 'lake' => $lake, 'coast' => $coast]]);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$time = rand(3,24)*5; #15 minutes to 2 hours.
+			$data = $form->getData();
+			$act = new Action();
+			$act->setCharacter($char);
+			$act->setStarted(new \DateTime());
+			$act->setHidden(false)->setCanCancel(true)->setBlockTravel(true);
+			$act->setType('fishing');
+			$act->setComplete(new \DateTime("+$time minutes"));
+			$act->setStringValue($data['where']);
+			$this->em->persist($act);
+			$this->em->flush();
+			$this->addFlash('notice', $this->trans->trans('fishing.start.flash', [], 'activity'));
+			return $this->redirectToRoute('maf_actions');
+		}
+		return $this->render('Activity/fishing.html.twig', [
+			'form' => $form->createView(),
+		]);
+	}
+
+	#[Route('/activity/fish/log', name: 'maf_activity_fish_log')]
+	public function fishLogAction(): Response {
+		$char = $this->activityDispatcher->gateway('personalFishLogTest');
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+		$char->updateStatus(CharacterStatus::fishlogs, 0);
+		$this->em->flush();
+		return $this->render('Activity/fishLog.html.twig', [
+			'catches' => $char->getFishLogs()
+		]);
+	}
+
+	#[Route('/activity/fish/{id}', name: 'maf_activity_fishes', requirements:['act'=>'\d+'])]
+	public function fishesAction(FishType $id): Response {
+		$char = $this->gateway('activityFishTest');
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+		$found = false;
+		/** @var FishLog $fish */
+		foreach ($char->getFishLogs() as $fish) {
+			if ($fish->getFish() === $id) {
+				$found = true;
+			}
+		}
+		if (!$found) {
+			$this->addFlash('error', $this->trans->trans('fishing.unknown', [], 'activity'));
+			return $this->redirectToRoute('maf_actions');
+		}
+		return $this->render('Activity/fishes.html.twig', [
+			'fish' => $id
+		]);
+	}
 
 	#[Route ('/activity/tourn/create', name:'maf_activity_tourn_create')]
 	public function tournamentCreateAction(ConversationManager $conv, CommonService $common, GameTimeExtension $gameTime, Request $request): Response|RedirectResponse {
@@ -120,9 +207,9 @@ class ActivityController extends AbstractController {
 			}
 			if (!$fail) {
 				$act = $this->actman->createTournament($char, $settlement, $total, $data['name'], $data['fightTypes'], $data['racesTypes'], $data['joustTypes'], $restrictions, $armor, true);
-				$date = $common->getCycle()+$data['delay'];
-				$act->setCycle($date);
 				if ($act) {
+					$date = $common->getCycle()+$data['delay'];
+					$act->setCycle($date);
 					# This gets swapped into the translated message so we have actual links and stuff.
 					$data = [
 						'key' => 'system.tourn.announce',
@@ -136,6 +223,8 @@ class ActivityController extends AbstractController {
 					$conv->newDelayedMessage('newAllRealmsMessage', true, null, null, $data);
 					$this->addFlash('notice', $this->trans->trans('tourn.announce.'.str_replace(' ', '', $act->getType()->getName()).'.flash', [], 'activity').'<br>'.$this->trans->trans('tourn.announce.delay', [], 'activity'));
 					return $this->redirectToRoute('maf_actions');
+				} else {
+					$this->addFlash('error', $this->trans->trans('tourn.announce.failed', [], 'activity'));
 				}
 			}
 		}
@@ -322,4 +411,7 @@ class ActivityController extends AbstractController {
 
 		return $this->redirectToRoute('maf_actions');
 	}
+
+	#[Route('/activity/{id}', name: 'maf_activity', requirements:['act'=>'\d+'])]
+	public function viewActivity(Activity $id) {}
 }

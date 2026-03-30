@@ -52,6 +52,495 @@ duel:
   weaponOnly: "Weapons Only? (No Armor Bonuses)"
   wound: "Until Wounding"
 
+fishing:
+ biggest: "Word going around is that the biggest fish were caught by:"
+ most: "There's talk that the most active fishermen are:"
+ start:
+  name: Go Fishing?
+  description: Find inner peace.
+  desc: Have you found the daily toil a bit too much? Has it driven you to want to scream in frustration? Take a break, then. Try fishing. Maybe you'll catch something, maybe you won't, but the time to yourself will be invaluable.
+  flash: You grab your pole and set out for some peace, quiet, and fish.
+ form:
+  where: Where to cast?
+  inland: A nearby pond
+  deepwater: In the ocean
+  coast: Along the coast
+  river: At the river
+  lake: The nearby lake
+  submit: Go fishing!
+ unknown: You've never caught that fish so you know nothing about it.
+
+
+fish:
+ locale:
+ silk sher:
+  name: Silk Sher
+  desc: >
+   A colossal, aquatic creature with a feline head and canine muzzle. 
+   It has a long catfish body with four, relative to it's size, small catfish like fins and a turtle tail.
+   The silk sher's body is covered in thick skin with pastel green swirls across a deep blue.
+ relerast:
+  name: Relerast
+  desc: > 
+   A large, aquatic creature with a tubular head, no eyes, and a camel-like mouth.
+   It has a stumpy orca body with eight enormous dugong-like flippers, a very small dorsal fin and a powerful tail.
+   The Relerast's whole body is covered in thin scales and it is completely chocolate brown with brown spots.
+ pygmy viorly:
+  name: Pygmy Viorly
+  desc: >
+   A medium, aquatic creature with an armadillo head covered with bony protrusions, and a pointed snout.
+   It has a elongated trout body with six very small shark-like fins, a very large dorsal fin and a dolphin tail.
+   The Pygmy Viorly's body is covered in thin scales. 
+   Most of its body is chocolate brown with grey patches, while the rest of its body is straw with grey patches.
+ giant iserlane:
+  name: Giant Iserlane
+  desc: >
+   A large, aquatic creature with a dolphin head, two sheep eyes, and a short snout with no teeth.
+   It has a elongated catfish body with eight miniature shark-like fins, a large dorsal fin and a walrus tail.
+   The Giant Iserane's whole body is covered in rock-like skin.
+   It has the markings of a raccoon in dark blue, vivid orange and grey.
+ wiunk:
+  name: Wiunk
+  desc: >
+   A medium, aquatic creature with a giraffe head covered with medium-length horns, four sheep eyes on flexible stalks, and a bottlenose dolphin-like snout filled with serrated teeth.
+   It has a long shark body with eight elongated penguin-like flippers, an enormous dorsal fin and a dolphin tail.
+   The Wiunk's whole body is covered in thin skin that releases oily secretions, except its face which is covered in delicate scales.
+   It is mostly mahogany, with off-white sections and white highlights, while its upper body is dull green and mottled straw.
+ osene:
+  name: Osene
+  desc: >
+   A massive, aquatic creature with an eagle head with two very long horns above the brow, and a long snout.
+   It has a short orca body with six stunted sea-lion-like flippers, a very small dorsal fin and a manatee tail.
+   The Osene's back is covered in thick slime, while the rest of its body is covered in delicate scales.
+   It is light purple with light brown diamonds on one half, and dull blue off-white on the other; the two areas are separated by a thin, light gray line. Meanwhile, its appendages are deep blue.
+ mana:
+  name: Mana
+  desc: >
+   A medium, aquatic creature with a reptilian head covered with short horns, two eagle eyes, and a bottlenose dolphin-like snout.
+   It has a long shark body with four stunted leviathan-like flippers, an elongated dorsal fin and a seal tail.
+   The Mana's whole body is covered in fish scales, except its tail which is covered in thin scales.
+   Most of its body is cream, while the rest of its body is deep blue with dark brown spirals.
+ rean:
+  name: Rean
+  desc: >
+   A medium, aquatic creature with a cheetah head, and a crocodilian snout.
+   It has a short catfish body with four very small trout-like fins, a very small dorsal fin and a turtle tail.
+   The Rean's body is covered in tough scales.
+   Most of its body is light gray with dark purple bands, while the rest of its body is dark blue.
+ green nenter:
+  name: Green Nenter
+  desc: >
+   A medium, aquatic creature with a square head, no eyes, and a long proboscis.
+   It has a elongated dugong body with six stunted pleiosaur-like flippers, a small dorsal fin and a fragile tail.
+   The Green Nenter's body is covered in thick slime.
+   It is completely green-blue.
+ goldenback ereseli:
+  name: Goldenback Ereseli
+  desc: >
+   A large, aquatic creature with a zebra head, seven fly eyes on flexible stalks, and a long snout.
+   It has a long manatee body with four very large dugong-like flippers, a small dorsal fin and a sea-lion tail.
+   The Goldenback Ereseli's body is covered in a tough hide, and delicate scales.
+   It is mostly forest green, with sandy brown sections and black highlights, while its head is pine.
+ common fiste:
+  name: Common Fiste
+  desc: >
+   A tiny, aquatic creature with a flat head, two narrow light green eyes, drooping ears, a complicated nose, and a bottlenose dolphin-like snout filled with sharp teeth.
+   It has a short trout body with six elongated trout-like fins, a very large dorsal fin and a powerful tail.
+   The Common Fiste's body is covered in thin scales.
+   It is mostly tan with blue-green bands, with dark gray sections and black highlights, while its front/underbelly is almond with blue-green diamonds.
+ thelenip:
+  name: Thelenip
+  desc: >
+   A massive, aquatic creature with a chicken head covered with short horns, two feline eyes, and a short snout.
+   It has a short walrus body with four miniature dolphin-like flippers, a large dorsal fin and a seal tail.
+   The Thelinip's head, neck, shoulders and back are covered in rock-like skin, while the rest of its body is covered in thin scales.
+   It is light brown with cream bands on one half, and light green green-blue on the other; the two areas are separated by a thin, chocolate brown line. Meanwhile, its face is dark yellow.
+ isio:
+  name: Isio
+  desc: >
+   A medium, aquatic creature with a reptilian head covered with tendrils, no eyes, a rabbit nose, and a long snout.
+   It has a long slug body with no fins, and an orca tail.
+   The Isio's body is covered in thick skin beneath very thick mucus, and delicate scales.
+   It has the markings of a great white shark in white and tan.
+ beti:
+  name: Beti
+  desc: >
+   A tiny, aquatic creature with a tubular head, no eyes, and a pointed snout.
+   It has a medium-length leviathan body with six very small orca-like flippers, a very small dorsal fin and a fragile tail.
+   The Beti's body is covered in armour plating.
+   It is completely beige.
+ krivi:
+  name: Krivi
+  desc: >
+   A medium, aquatic creature with a round head with elongated pronged horns, two vivid green feline eyes, and a canine muzzle.
+   It has a stumpy manatee body with eight miniature walrus-like flippers, a stunted dorsal fin and a fragile tail.
+   The Krivi's head is covered in thin scales, while the rest of its body is covered in leathery skin.
+   It has the markings of a badger in dark green and pastel yellow.
+ spe:
+  name: Spe
+  desc: >
+   A small, aquatic creature with a horse head, pig ears, and a bottlenose dolphin-like snout.
+   It has a elongated walrus body with four small penguin-like flippers, a miniature dorsal fin and a thick tail.
+   The Spe's body is covered in an exoskeleton.
+   It is light gray, ochre, salmon pink, pale green and indigo.
+ glurac:
+  name: Glurac
+  desc: >
+   A massive, aquatic creature with a domed head, two dark purple feline eyes, and a long snout with two very long canines.
+   It has a stumpy dugong body with eight large pleiosaur-like flippers, a very small dorsal fin and a fragile tail.
+   The Glurac's body is covered in very thick skin that releases oily secretions.
+   It is mostly off-white and mottled ochre, with yellow-green sections and black highlights, while its head is dark purple.
+ yar:
+  name: Yar
+  desc: >
+   A very large, aquatic creature with a wedge shaped head, six narrow chocolate brown eyes, and a shark-like jaw filled with blunt teeth.
+   It has a long catfish body with four miniature trout-like fins, a very small dorsal fin and a bony tail.
+   The Yar's whole body is covered in an exoskeleton.
+   It is light pink, light grey and indigo.
+ honey coser:
+  name: Honey Coser
+  desc: >
+   A tiny, aquatic creature with a skeletal head, no eyes, no visible nose, and a protruding jaw with two very long canines.
+   It has a medium-length shark body with eight elongated trout-like fins, a small dorsal fin and a slender tail.
+   The Honey Coser's body is covered in thick slime.
+   It is mostly almond, with light blue sections and light purple highlights, while its mouth is dull green.
+ uredic:
+  name: Uredic
+  desc: >
+   A tiny, aquatic creature with a skeletal head, nine deep blue feline eyes, and a bottlenose dolphin-like snout.
+   It has a elongated turtle body with six stunted shark-like flippers, a stunted dorsal fin and a fragile tail.
+   The Uredic's whole body is covered in thick skin beneath very thick mucus, except its face which is covered in thin scales.
+   It is mostly off-white with dark blue spirals, with light gray sections and mottled brown highlights, while its front/underbelly is dark orange with dark blue spirals.
+ frilled xiner:
+  name: Frilled Xiner
+  desc: >
+   A tiny, aquatic creature with a catfish head, and a short snout.
+   It has a medium-length shark body with four enormous shark-like fins, a large dorsal fin and a sea-lion tail.
+   The Frilled Xiner's body is covered in gelatinous skin.
+   It is completely ochre.
+ crosto:
+  name: Crosto
+  desc: >
+   A tiny, aquatic creature with a bird head with two long horns above the brow, two enormous straw eyes, a cat nose, and a protruding jaw.
+   It has a short catfish body with six elongated trout-like fins, a very small dorsal fin and a dolphin tail.
+   The Crosto's head, neck, shoulders and back are covered in crystalline formations, while the rest of its body is covered in delicate scales.
+   Most of its body is light blue, while the rest of its body is dull blue with mousey brown swirls.
+ neselle:
+  name: Neselle
+  desc: >
+   A tiny, aquatic creature with a pigeon head, two wide dark gray eyes, and a canine muzzle.
+   It has a long shark body with four elongated trout-like fins, a stunted dorsal fin and a slender tail.
+   The Neselle's body is covered in very thin skin beneath thin mucus.
+   It is completely light purple with white speckles.
+ great orange ouscu:
+  name: Great Orange Ouscu
+  desc: >
+   A small, aquatic creature with an angular head covered with tendrils, two complex light purple eyes, and a short snout with two very long canines.
+   It has a very long shark body with four miniature shark-like fins, a large dorsal fin and a delicate tail.
+   The Great Orange Ouscu's head is covered in delicate scales, while the rest of its body is covered in rubbery skin.
+   It is black on one half, and beige forest green on the other; the two areas are separated by a thin, cream line. Meanwhile, its upper body is black with grey spirals.
+ nusu:
+  name: Nusu
+  desc: >
+   A small, aquatic creature with a snake head, nine ochre feline eyes, and a short snout.
+   It has a long catfish body with six miniature trout-like fins, a miniature dorsal fin and a fragile tail.
+   The Nusu's whole body is covered in rock-like skin, except its face which is covered in delicate scales.
+   It is completely dark brown with tan diamonds.
+ vatro:
+  name: Vatro
+  desc: >
+   A small, aquatic creature with a large head, four light green compound eyes on rigid stalks, a complicated nose, and a short snout.
+   It has a long shark body with four small trout-like fins, a large dorsal fin and a slender tail.
+   The Vatro's body is covered in rock-like skin.
+   It is pastel green on one half, and beige pine on the other; the two areas are separated by a thin, pastel red line. Meanwhile, its appendages are mottled brown with tan spirals.
+ royal dwi:
+  name: Royal Dwi
+  desc: >
+   A small, aquatic creature with a smooth head, six enormous sky blue eyes, and a camel-like mouth.
+   It has a long snake body with no fins, and a heavy tail.
+   The Royal Dwi's body is covered in rubbery skin, and delicate scales.
+   It is almond on one half, and pale yellow dark brown on the other; the two areas are separated by a thin, dark purple line. Meanwhile, its front/underbelly is slate.
+ vanan:
+  name: Vanan
+  desc: >
+   A small, aquatic creature with a vulture head with short pronged horns, two human eyes, and a sharp, hooked beak filled with small, sharp teeth.
+   It has a stubby pleiosaur body with four very small leviathan-like flippers, a large dorsal fin and a turtle tail.
+   The Vanan's back is covered in very thin skin beneath thick mucus, while the rest of its body is covered in delicate scales.
+   It is black and beige.
+ cine:
+  name: Cine
+  desc: >
+   A small, aquatic creature with a duck head with a medium-length horn on the forehead, two sheep eyes, and a camel-like mouth.
+   It has a medium-length trout body with eight very small trout-like fins, an elongated dorsal fin and a sea-lion tail.
+   The Cine's body is covered in thick skin beneath very thin mucus.
+   It is mostly light orange with white spots, with ochre sections and blue-green highlights, while its head is dark purple with white rings.
+ kynegil:
+  name: Kynegil
+  desc: >
+   A small, aquatic creature with a red panda head, and a protruding jaw.
+   It has a medium-length eel body with no fins, and a dolphin tail.
+   The Kynegil's whole body is covered in thick, rubbery skin, except its face which is covered in thin scales.
+   It has the markings of a panda in beige and tan.
+ leobui:
+  name: Leobui
+  desc: >
+   A small, aquatic creature with a chameleon head, no eyes, horse ears, and a long snout.
+   It has a medium-length trout body with eight stunted shark-like fins, a stunted dorsal fin and a penguin tail.
+   The Leobui's body is covered in thin scales.
+   It is completely blue with black diamonds.
+ eracoro:
+  name: Eracoro
+  desc: >
+   A small, aquatic creature with a chicken head covered with spines, two sheep eyes, and a short snout.
+   It has a long catfish body with four miniature shark-like fins, a miniature dorsal fin and a walrus tail.
+   The Eracoro's body is covered in leathery skin, and delicate scales.
+   It has the markings of a leopard in pine and light purple.
+ tedre:
+  name: Tedre
+  desc: >
+   A small, aquatic creature with a goose head, and a protruding jaw.
+   It has a medium-length shark body with four stunted trout-like fins, a miniature dorsal fin and a dolphin tail.
+   The Tedre's body is covered in scales.
+   It is mostly ochre, with beige sections and mahogany highlights, while its head is pale pink with white patches.
+ sciandan:
+  name: Sciandan
+  desc: >
+   A small, aquatic creature with a tubular head, seven dull red serpentine eyes on the sides of its head, and an indented jaw.
+   It has a stumpy trout body with six very small catfish-like fins, an enormous dorsal fin and a weak tail.
+   The Sciandan's body is covered in tough scales.
+   It has the markings of a leopard in black and light blue.
+ tia:
+  name: Tia
+  desc: >
+   A small, aquatic creature with a seal head, and a sharp, hooked beak filled with both sharp and blunt teeth.
+   It has a elongated catfish body with four elongated trout-like fins, an enormous dorsal fin and a walrus tail.
+   The Tia's body is covered in thin skin that releases oily secretions, and delicate scales.
+   It is mostly vivid green, with light gray sections and mottled brown highlights, while its lower body is light blue and mottled forest green.
+ siteger:
+  name: Siteger
+  desc: >
+   A small, aquatic creature with a gorilla head, no eyes, and a crocodilian snout filled with serrated teeth.
+   It has a long shark body with eight very large shark-like fins, a stunted dorsal fin and a powerful tail.
+   The Siteger's body is covered in thin slime.
+   It has the markings of a panda in cream and sandy yellow.
+ ererme:
+  name: Ererme
+  desc: >
+   A medium, aquatic creature with a hare head, two complex sandy brown eyes, and a sharp, hooked beak filled with flat teeth.
+   It has a medium-length manatee body with four small orca-like flippers, an enormous dorsal fin and a shark tail.
+   The Ererme's body is covered in scales.
+   It has the markings of a leopard in yellow-green and grey.
+ fumman:
+  name: Fumman
+  desc: >
+   A small, aquatic creature with an eagle head, and a camel-like mouth.
+   It has a long catfish body with six elongated catfish-like fins, a very small dorsal fin and a spindly tail.
+   The Fumman's body is covered in scales.
+   It is completely sandy brown.
+ janere:
+  name: Janere
+  desc: >
+   A medium, aquatic creature with a square head, eight wide salmon pink eyes, webbed, fin-like ears, and a long jaw filled with flat teeth.
+   It has a very long shark body with four miniature catfish-like fins, a very small dorsal fin and a thick tail.
+   The Janere's body is covered in armour plating.
+   Most of its body is forest green with dark blue swirls, while the rest of its body is vivid green with dark blue diamonds.
+ atont:
+  name: Atont
+  desc: >
+   A medium, aquatic creature with a ridged head, two narrow grey eyes, a droopy nose, and a protruding jaw.
+   It has a medium-length turtle body with four small pleiosaur-like flippers, a small dorsal fin and a slender tail.
+   The Atont's whole body is covered in thick skin that releases oily secretions, except its face which is covered in thin scales.
+   It is dull green on one half, and sky blue mahogany on the other; the two areas are separated by a thin, light brown line. Meanwhile, a strip down its back light purple with chocolate brown rings.
+ matop:
+  name: Matop
+  desc: >
+   A small, aquatic creature with an elongated head, two off-white compound eyes, and a long snout filled with tendrils.
+   It has a long trout body with four very large catfish-like fins, a small dorsal fin and a muscular tail.
+   The Matop's whole body is covered in rock-like skin.
+   It is completely blue-grey with pine diamonds.
+ resthas:
+  name: Resthas
+  desc: >
+   A small, aquatic creature with a bulldog head, no eyes, and a pointed snout filled with blunt teeth.
+   It has a very long shark body with four miniature shark-like fins, an elongated dorsal fin and a penguin tail.
+   The Resthas's head, neck, shoulders and back are covered in crystalline formations, while the rest of its body is covered in thin scales.
+   It is off-white with mottled brown diamonds on one half, and beige dark blue on the other; the two areas are separated by a thin, sandy brown line. Meanwhile, the rest of its body is grey with mottled brown diamonds.
+ domalac:
+  name: Domalac
+  desc: >
+   A small, aquatic creature with a square head, and a bottlenose dolphin-like snout filled with blunt teeth.
+   It has a short turtle body with eight large orca-like flippers, a very small dorsal fin and a heavy tail.
+   The Domalac's body is covered in tough scales.
+   It has the markings of a red panda in light gray, blue-grey, blue and light brown.
+ frilled eroneron:
+  name: Frilled Eroneron
+  desc: >
+   A small, aquatic creature with an elongated head, five sunken tan eyes, and a long snout.
+   It has a elongated walrus body with eight small seal-like flippers, an enormous dorsal fin and a muscular tail.
+   The Frilled Eroneron's body is covered in thick slime.
+   It is completely black with white rings.
+ wild togareds:
+  name: Wild Togereds
+  desc: >
+   A small, aquatic creature with a puffin head with curled horns, and a short snout filled with flat teeth.
+   It has a long shark body with eight miniature trout-like fins, a very small dorsal fin and a bony tail.
+   The Wild Togareds's body is covered in scales.
+   It has the markings of a red panda in chocolate brown, pale orange, sandy brown and dull blue.
+ rock-este:
+  name: Rock-Este
+  desc: >
+   A small, aquatic creature with a trout head, two eagle eyes that are partially retractable, and a canine muzzle filled with tendrils.
+   It has a long shark body with eight small trout-like fins, a small dorsal fin and a manatee tail.
+   The Rock-Este's head is covered in thin scales, while the rest of its body is covered in a tough hide.
+   It has the markings of a tiger in dull green, green-blue and white.
+ chreden:
+  name: Chreden
+  desc: >
+   A small, aquatic creature with a hippo head covered with tendrils, fox ears, and a protruding jaw with two very long canines.
+   It has a long manatee body with eight large whale-like flippers, a large dorsal fin and a walrus tail.
+   The Chreden's head, neck, shoulders and back are covered in crystalline formations, while the rest of its body is covered in thin scales.
+   It has the markings of a giraffe in light yellow and tan.
+ shire maci:
+  name: Shire Maci
+  desc: >
+   A small, aquatic creature with a spoonbill head, two beady forest green eyes, and a camel-like mouth.
+   It has a very long pleiosaur body with four elongated manatee-like flippers, a large dorsal fin and a walrus tail.
+   The Shire Maci's back is covered in leathery skin, while the rest of its body is covered in thin scales.
+   It is completely metallic grey with almond rings.
+ honey tesex:
+  name: Honey Tesex
+  desc: >
+   A small, aquatic creature with an angular head, six enormous indigo eyes, elephantine ears, and a short snout.
+   It has a long eel body with no fins, and a heavy tail.
+   The Honey Tesex's body is covered in crystalline formations.
+   Most of its body is sandy brown with sandy yellow diamonds, while the rest of its body is pine and mottled sandy yellow.
+ iner:
+  name: Iner
+  desc: >
+   A medium, aquatic creature with a walrus head covered with spikes, two slate feline eyes, and a sharp, hooked beak filled with flat teeth.
+   It has a short eel body with no fins, and a fragile tail.
+   The Iner's body is covered in scales.
+   It is completely dull green with grey diamonds.
+ great silver yanoka:
+  name: Great Silver Yanoka
+  desc: >
+   A medium, aquatic creature with a hippo head, two seal eyes, and a camel-like mouth.
+   It has a short trout body with four small trout-like fins, an enormous dorsal fin and a dugong tail.
+   The Great Silver Yanoka's body is covered in tough scales.
+   It is dark purple, mahogany and light blue.
+ schey:
+  name: Schey
+  desc: >
+   A medium, aquatic creature with a wedge shaped head covered with bony ridges, no eyes, and a crocodilian snout filled with sharp teeth.
+   It has a long orca body with eight very large sea-lion-like flippers, a small dorsal fin and a fragile tail.
+   The Schey's whole body is covered in very thin skin beneath thick mucus.
+   Most of its body is vivid pink, while the rest of its body is purple.
+ brers:
+  name: Brers
+  desc: >
+   A medium, aquatic creature with a vulture head, two chameleon eyes that are fully retractable, and a long snout.
+   It has a stumpy catfish body with eight enormous shark-like fins, a miniature dorsal fin and a turtle tail.
+   The Brers's body is covered in armour plating.
+   It is deep pink on one half, and grey cream on the other; the two areas are separated by a thin, black line. Meanwhile, the rest of its body is tan with beige diamonds.
+ tin:
+  name: Tin
+  desc: >
+   A medium, aquatic creature with a swordfish head, no eyes, and a camel-like mouth.
+   It has a long catfish body with four stunted shark-like fins, a large dorsal fin and a weak tail.
+   The Tin's head is covered in delicate scales, while the rest of its body is covered in an exoskeleton.
+   It is completely sandy yellow and mottled light brown.
+ ech:
+  name: Ech
+  desc: >
+   A medium, aquatic creature with a flat head, two narrow forest green eyes, webbed, fin-like ears, and a camel-like mouth.
+   It has a medium-length whale body with four very small walrus-like flippers, a very large dorsal fin and a weak tail.
+   The Ech's whole body is covered in armour plating, except its tail which is covered in delicate scales.
+   It is blue with purple swirls on one half, and light green dull green on the other; the two areas are separated by a thin, green-blue line. Meanwhile, its upper body is dull blue.
+ picorb:
+  name: Picorb
+  desc: >
+   A large, aquatic creature with a chameleon head covered with deep grooves, two human eyes, a human nose, and a pair of piercing mandibles.
+   It has a medium-length trout body with six very large trout-like fins, a miniature dorsal fin and a dolphin tail.
+   The Picorb's whole body is covered in thin skin beneath thick mucus, except its tail which is covered in thin scales.
+   It is mostly dull green, with green-blue sections and tan highlights, while its upper body is cream with off-white stripes.
+ nete:
+  name: Nete
+  desc: >
+   A large, aquatic creature with an egg-shaped head, two enormous light blue eyes, a long trunk, and a bottlenose dolphin-like snout filled with small, sharp teeth.
+   It has a elongated sea-lion body with four elongated sea-lion-like flippers, a miniature dorsal fin and a powerful tail.
+   The Nete's body is covered in gelatinous skin.
+   Most of its body is dark green, while the rest of its body is lime green.
+ nertat:
+  name: Nertat
+  desc: >
+   A large, aquatic creature with a vulture head, two sheep eyes, and a long snout with two very long canines.
+   It has a elongated eel body with no fins, and a dugong tail.
+   The Nertat's whole body is covered in tough skin, except its face which is covered in delicate scales.
+   It is completely blue.
+ wood-vatertin:
+  name: Wood-Vatertin
+  desc: >
+   A medium, aquatic creature with a snake head with a very long horn on the forehead, two snake eyes, an elephant trunk, and a pointed snout filled with sharp teeth.
+   It has a stubby trout body with eight enormous catfish-like fins, a small dorsal fin and a dugong tail.
+   The Wood-Vatertin's whole body is covered in an exoskeleton.
+   It is black on one half, and light gray grey on the other; the two areas are separated by a thin, light green line. Meanwhile, its appendages are off-white with cream rings.
+ great crested hanonte:
+  name: Great Crested Hanonte
+  desc: >
+   A medium, aquatic creature with a domed head, no eyes, and a pair of piercing mandibles.
+   It has a long eel body with no fins, and a fragile tail.
+   The Great Crested Hanonte's body is covered in thin skin beneath very thick mucus.
+   It is completely white.
+ erinel:
+  name: Erinel
+  desc: >
+   A very large, aquatic creature with a rat head, two human eyes, and an indented jaw.
+   It has a elongated slug body with no fins, and an orca tail.
+   The Erinel's body is covered in an exoskeleton.
+   It is completely black with dark gray rings.
+ shire usein:
+  name: Shire Usein
+  desc: >
+   A very large, aquatic creature with a moose head covered with bony protrusions, no eyes, and a camel-like mouth.
+   It has a long trout body with six large shark-like fins, a small dorsal fin and a dolphin tail.
+   The Shire Usein's body is covered in fish scales, and thin scales.
+   It has the markings of a giraffe in dark gray and ochre.
+ trer:
+  name: Trer
+  desc: >
+   A very large, aquatic creature with an anteater head covered with long horns, six dark yellow serpentine eyes, and a feline muzzle filled with small, sharp teeth.
+   It has a medium-length catfish body with four large catfish-like fins, a miniature dorsal fin and a manatee tail.
+   The Trer's whole body is covered in rock-like skin, except its tail which is covered in thin scales.
+   It is completely dull green.
+ rite:
+  name: Rite
+  desc: >
+   A very large, aquatic creature with a wide head covered with deep grooves, two wide grey eyes, and a long jaw filled with blunt teeth.
+   It has a elongated seal body with four stunted dolphin-like flippers, an enormous dorsal fin and a delicate tail.
+   The Rite's head, neck, shoulders and back are covered in thick, rubbery skin, while the rest of its body is covered in delicate scales.
+   It is completely sky blue with pastel green patches.
+ athabe:
+  name: Athabe
+  desc: >
+   A medium, aquatic creature with a snake head, no eyes, and a pointed snout.
+   It has a short trout body with eight enormous catfish-like fins, a very small dorsal fin and a dolphin tail.
+   The Athabe's head is covered in thin scales, while the rest of its body is covered in a tough hide.
+   It is pastel orange, green-blue and light brown.
+ emperor sustred:
+  name: Emperor Sustred
+  desc: >
+   A large, aquatic creature with a wedge shaped head with a fleshy crest on its head, two complex black eyes, a small nose, and a protruding jaw filled with blunt teeth.
+   It has a short sea-lion body with four very small seal-like flippers, a very large dorsal fin and a seal tail.
+   The Emperor Sustred's whole body is covered in an exoskeleton, except its tail which is covered in thin scales.
+   Most of its body is vivid yellow, while the rest of its body is sandy yellow with straw bands.
+ spra:
+  name: Spra
+  desc: >
+   A massive, aquatic creature with a skeletal head with a short horn on the forehead, two large forest green eyes, and a pointed snout.
+   It has a medium-length slug body with no fins, and a fragile tail.
+   The Spra's body is covered in tough scales.
+   It is light yellow, cream, ochre, sandy yellow and cream.
+
 report:
  title: Activity Report
  loc:
@@ -108,6 +597,7 @@ tourn:
   grandtournament:
    flash:     A Grand Tournament has been scheduled.
   delay:      The a far reaching message announcing it will go out in a few minutes.
+  failed:     Tournament creation failed. Please report this to the admins, as it shouldn't be possible to get this message.
  form:
   name:       Tournament Name
   delay:

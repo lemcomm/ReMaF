@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
-class ProcessDelayedMessagesCommand extends Command {
+class ProcessMessagesCommand extends Command {
 
 	public function __construct(
 		private ConversationManager $conv,
@@ -24,7 +24,7 @@ class ProcessDelayedMessagesCommand extends Command {
 	protected function configure(): void {
 		$this
 			->setName('maf:process:messages')
-			->setDescription("Processes delayed messages and sends them. Exists so users don't have to wait multiple seconds for these to send.")
+			->setDescription("Processes messages and sends them. Also deletes old chats.")
 			->addOption('time', 't', InputOption::VALUE_NONE, 'output timing information')
 		;
 	}
@@ -34,7 +34,7 @@ class ProcessDelayedMessagesCommand extends Command {
 		$timing = $input->getOption('time');
 		if ($timing) {
 			$stopwatch = new Stopwatch();
-			$stopwatch->start('conv_cleanup');
+			$stopwatch->start('messages');
 		}
 
 		$all = $this->em->getRepository(DelayedMessage::class)->findAll();
@@ -49,9 +49,11 @@ class ProcessDelayedMessagesCommand extends Command {
 			$this->em->flush();
 		}
 		$output->writeln("$i delayed messages sent resulting in $j new messages in game.");
+		$count = $this->em->createQuery('DELETE FROM App\Entity\ChatMessage m WHERE m.ts < :date')->setParameters(['date'=>new \DateTime("-14 days")])->execute();
+		$output->writeln("$count chat messages older than 14 days have been deleted.");
 		if ($timing) {
-			$event = $stopwatch->stop('conv_cleanup');
-			$output->writeln("Delayed Message Sending: ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
+			$event = $stopwatch->stop('messages');
+			$output->writeln("Message Sending & Cleanup: ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
 		}
 		return COMMAND::SUCCESS;
 	}

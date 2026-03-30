@@ -53,16 +53,13 @@ class SkillManager {
 			if ($pract) {
 				$newPract = $training->getPractice() + $pract;
 				$training->setPractice($newPract);
-				if ($newPract > $training->getPracticeHigh()) {
-					$training->setPracticeHigh($newPract);
+				if ($training->getTheory() < $training->getPractice() / 2) {
+					$training->setTheory($training->getTheory()+1);
 				}
 			}
 			if ($theory) {
 				$newTheory = $training->getTheory() + $theory;
-				$training->getTheory($newTheory);
-				if ($newTheory > $training->getTheoryHigh()) {
-					$training->setTheoryHigh($newTheory);
-				}
+				$training->setTheory($newTheory);
 			}
 		}
 		$training->setUpdated(new \DateTime('now'));

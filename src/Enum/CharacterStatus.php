@@ -28,6 +28,7 @@ enum CharacterStatus: int {
 	case prisoner = 21;
 	case siegeLead = 22;
 	case travelling = 23;
+	case fishing = 24;
 
 	case location = 50; # Pointer value for the below.
 	case inWorld = 51;
@@ -41,6 +42,7 @@ enum CharacterStatus: int {
 	case messages = 101;
 	case requests = 102;
 	case events = 103;
+	case fishlogs = 104;
 
 	#Military stuffs
 	case soldiers = 200;
