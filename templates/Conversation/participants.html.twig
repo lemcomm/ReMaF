@@ -30,6 +30,8 @@
 				<td>
 					{% if perm.endTime %}
 						{{ perm.endTime|date('Y-m-d H:i:s') }}
+					{% else %}
+						<i>{{ 'participants.table.active'|trans({}, 'conversations')|raw }}</i>
 					{% endif %}
 				</td>
 			{% else %}

@@ -692,13 +692,10 @@ class ConversationController extends AbstractController {
 
 		$manager = false;
 		$owner = false;
-		if (!$conv->getRealm()) {
-			if ($me = $conv->findActiveCharpermission($char)) {
-				$manager = $me->getManager();
-				$owner = $me->getOwner();
-			}
-		} else {
-			$me = false;
+		$me = $conv->findActiveCharpermission($char);
+		if ($me) {
+			$manager = $me->getManager();
+			$owner = $me->getOwner();
 		}
 
 		return $this->render('Conversation/participants.html.twig', [

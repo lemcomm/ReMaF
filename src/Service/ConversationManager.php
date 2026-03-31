@@ -348,13 +348,17 @@ class ConversationManager {
                                         $new->setReplyTo($target);
                                 }
                         }
-                        if (!$total) {
+                        if (!$total && $char) {
                                 $count = 0;
 				/** @var ConversationPermission $perm */
 				if (!$antiTickUp) {
 					$count = $this->updateUnreadWithChar($conv->findActivePermissions(), $org, $char);
 				}
-                        } else {
+                        } elseif (!$total && !$char) {
+				$all = $conv->findActivePermissions();
+				$count = $all->count();
+				$this->updateUnread($all, $org);
+			} else {
                                 $count = $total;
                         }
                         $new->setRecipientCount($count);
@@ -625,7 +629,9 @@ class ConversationManager {
                         $content = 'A First One by the name of '.$origin.' at has joined the realm as a knight of [realmpos:'.$extra['pos'].'].';
                 } elseif ($type == 'realmjoinposition2') {
                         $content = 'A First One by the name of '.$origin.' at has joined the subrealm of [r:'.$extra['realm'].'] as a knight of [realmpos:'.$extra['pos'].'].';
-                }
+                } elseif ($type == 'newsuperiorrealm') {
+			$content = "A new superior realm called ".$extra['realm']." has been requested of the bureaucrats by the realm's rulers, but it'll take them until tomorrow to get it all ready.";
+		}
 
                 #public function writeMessage(Conversation $conv, $replyTo = null, Character $char = null, $text, $type, $total = null, $flush = true, $antiTickUp = false, $internal = false)
                 $msg = $this->writeMessage($conv, null, null, $content, 'system', null, $flush, $antiTickUp, true);

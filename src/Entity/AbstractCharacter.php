@@ -137,7 +137,11 @@ abstract class AbstractCharacter {
 	public function HealOrDie($healer = false, $physician = false, $shelter = false): array {
 		$current = $this->healthValue();
 		$injuries = $this->injuries;
-		$injuryCount = count($injuries);
+		if ($injuries) {
+			$injuryCount = count($injuries);
+		} else {
+			$injuryCount = 0;
+		}
 		if ($current >= 1 && $injuryCount === 0) {
 			return [0, 0, 0]; #Nothing to heal.
 		}
@@ -152,6 +156,8 @@ abstract class AbstractCharacter {
 			$rand = 0;
 		}
 		$legacyResult = 0;
+		$physUse = 0;
+		$healerUse = 0;
 		if ($current < 1) {
 			$raceHp = $this->race?->getHp()?:100;
 			if ($rand === 0 && $current < 0.25 && (!$physician || rand(1, 100) < 21)) {
@@ -166,6 +172,13 @@ abstract class AbstractCharacter {
 					if ($this->healthValue() < 0) {
 						$this->kill();
 						return [false, 1, 1];
+					} else {
+						if ($physicianMod > 1) {
+							$physUse = 1;
+						}
+						if ($healerMod > 1) {
+							$healerUse = 1;
+						}
 					}
 				} elseif ($rand >= 20) {
 					if ($current < 0.25) {
@@ -174,6 +187,12 @@ abstract class AbstractCharacter {
 						$legacyResult -= rand(1,round($raceHp/4*$healerMod*$shelterMod));
 					}
 					$this->heal($legacyResult);
+					if ($physicianMod > 1) {
+						$physUse = 1;
+					}
+					if ($healerMod > 1) {
+						$healerUse = 1;
+					}
 				}
 			}
 		}
@@ -189,8 +208,10 @@ abstract class AbstractCharacter {
 							# Dies from injuries.
 							$this->kill();
 							return [false, 0, 0];
+						} elseif ($physician) {
+							return [0+$legacyResult, $healerUse+0, $physUse+1];
 						} else {
-							return [0+$legacyResult, 0, 1];
+							return [0+$legacyResult, $healerUse+0, $physUse];
 						}
 					} elseif ((!$healer && $rand >= 20) || ($healer && $rand >= 15) || ($physician && $amount >=4)) {
 						$heal = 1;
@@ -201,7 +222,7 @@ abstract class AbstractCharacter {
 						if ($this->injuries[$where] === 0) {
 							unset($this->injuries[$where]);
 						}
-						return [$heal+$legacyResult, 1, 1];
+						return [$heal+$legacyResult, $healerUse+1, $physUse+1];
 					}
 				}
 				break;

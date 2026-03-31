@@ -192,24 +192,28 @@ class NotificationManager {
 		}
 	}
 
-	public function spoolNewRealm(Character $char, Realm $realm, $sub = false): void {
+	public function spoolNewRealm(Character $char, Realm $realm, bool $sub = false, Realm|false $pro = false): void {
 		if ($sub) {
 			$txt = $char->getName()." has created the new subrealm of ".$realm->getFormalName().". It includes the settlements of: ";
+		} elseif ($pro) {
+			$txt = $char->getName()." has created the new sovereign realm of".$realm->getFormalName()." as a superior of ".$pro->getFormalName();
 		} else {
 			$txt = $char->getName()." has created the new realm of ".$realm->getFormalName().". It includes the settlements of: ";
 		}
-		$url = 'https://mightandfealty.com/settlement/';
-		$count = $realm->getSettlements()->count();
-		$i = 1;
-		foreach ($realm->getSettlements() as $each) {
-			if ($i > 1 && $i == $count) {
-				$txt .= ', and '.$this->dLink($each->getName(), $url.$each->getId()).'.';
-			} elseif ($i === 1) {
-				$txt .= $this->dLink($each->getName(), $url.$each->getId());
-			} else {
-				$txt .= ', '.$this->dLink($each->getName(), $url.$each->getId());
+		if (!$pro) {
+			$url = 'https://mightandfealty.com/settlement/';
+			$count = $realm->getSettlements()->count();
+			$i = 1;
+			foreach ($realm->getSettlements() as $each) {
+				if ($i > 1 && $i == $count) {
+					$txt .= ', and '.$this->dLink($each->getName(), $url.$each->getId()).'.';
+				} elseif ($i === 1) {
+					$txt .= $this->dLink($each->getName(), $url.$each->getId());
+				} else {
+					$txt .= ', '.$this->dLink($each->getName(), $url.$each->getId());
+				}
+				$i++;
 			}
-			$i++;
 		}
 		$this->discord->pushToGeneral($txt);
 	}

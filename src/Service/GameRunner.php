@@ -4,12 +4,14 @@ namespace App\Service;
 
 use App\Entity\Character;
 use App\Entity\Election;
+use App\Entity\Realm;
 use App\Entity\RealmPosition;
 use App\Entity\Resupply;
 use App\Entity\Siege;
 use App\Entity\Soldier;
 use App\Entity\Supply;
 use App\Entity\Unit;
+use App\Service\RealmManager;
 use DateInterval;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -34,18 +36,17 @@ class GameRunner {
 
 	public function __construct(
 		private EntityManagerInterface $em,
-		private CommonService $common,
-		private LoggerInterface $logger,
-		private ActionResolution $resolver,
-		private History $history,
-		private MilitaryManager $milman,
-		private Geography $geography,
-		private RealmManager $rm,
+		private CommonService       $common,
+		private LoggerInterface     $logger,
+		private ActionResolution    $resolver,
+		private History             $history,
+		private MilitaryManager     $milman,
+		private Geography           $geography,
+		private RealmManager        $rm,
 		private ConversationManager $convman,
-		private PermissionManager $pm,
-		private CharacterManager $cm,
-		private WarManager $wm
-	) {
+		private PermissionManager   $pm,
+		private CharacterManager    $cm,
+		private WarManager          $wm) {
 		$this->cycle = $this->common->getCycle();
 	}
 
@@ -477,7 +478,10 @@ class GameRunner {
 		// wounded troops: heal or die
 		$date = date("Y-m-d H:i:s");
 		$this->output("$date --   Heal or die...");
-		$query = $this->em->createQuery('SELECT u FROM App\Entity\Unit u JOIN u.soldier s WHERE s.wounded > 0 OR (s.injuries != \'a:0:{}\' AND s.injuries is not null)');
+		$query = $this->em->createQuery('SELECT u FROM App\Entity\Unit u WHERE u.id in (:units)');
+		$subquery = $this->em->createQuery('SELECT IDENTITY(s.unit) FROM App\Entity\Soldier s WHERE s.wounded > 0 OR (s.injuries != \'a:0:{}\' AND s.injuries is not null)');
+		$subresult = $subquery->getResult();
+		$query->setParameter('units', $subresult);
 		$iterableResult = $query->toIterable();
 		$i=1;
 		$heal = 0;
@@ -492,14 +496,15 @@ class GameRunner {
 			$physicians = false;
 			$inside = false;
 			$here = false;
-			if ($char = $unit->getCharacter()) {
+			$char = $unit->getCharacter();
+			if ($char) {
 				if (array_key_exists($char->getId() ,$charCache)) {
 					$healers = $charCache[$char->getId()]['h'];
 					$physicians = $charCache[$char->getId()]['p'];
 				} else {
 					$healers = $char->getEntourageOfType('healer', true)->count()*50;
 					$physicians = $char->getEntourageOfType('physician', true)->count()*400;
-					$charCache[] = [$char->getId() => ['h'=>$healers, 'p'=>$physicians]];
+					$charCache[$char->getId()] = ['h'=>$healers, 'p'=>$physicians];
 				}
 				$inside = $char->getInsidePlace() || $char->getInsideSettlement();
 			} elseif ($here = $unit->getDefendingSettlement()) {
@@ -1409,6 +1414,25 @@ class GameRunner {
 		if ($last==='complete') return 1;
 		$this->output("Realms Cycle...");
 
+		$this->output("Checking for new realms...");
+		$query = $this->em->createQuery("SELECT r FROM App\Entity\Realm r WHERE r.system = 'new'");
+		$result = $query->getResult();
+		/** @var Realm $realm */
+		foreach ($result as $realm) {
+			$ruler = $realm->findRulers();
+			if ($ruler->count() > 0) {
+				foreach ($ruler as $each) {
+					$this->rm->updateHierarchy($each, $realm, false);
+				}
+			}
+			$topic = $realm->getName().' Announcements';
+			$this->convman->newConversation(null, null, $topic, null, null, $realm, 'announcements');
+			$topic = $realm->getName().' General Discussion';
+			$this->convman->newConversation(null, null, $topic, null, null, $realm, 'general');
+			$realm->setSystem(null);
+			$this->em->flush();
+		}
+
 		$timeout = new DateTime("now");
 		$timeout->sub(new DateInterval("P7D"));
 
@@ -1638,9 +1662,9 @@ class GameRunner {
 	/**
 	 * @return int
 	 */
-	public function runConversationsCleanup(): int {
+	public function runConversationsCleanup($output): int {
+		$this->outInt = $output;
 		# This is run separately from the main turn command, and runs after it. It remains here because it is still primarily turn logic.
-		# Ideally, this does nothing. If it does something though, it just means we caught a character that should or shouldn't be part of a conversation and fixed it.
 		$lastRealm = $this->common->getGlobal('cycle.convs.realm', 0);
 		$lastRealm=(int)$lastRealm;
 		$this->output("Conversation Cycle...");

@@ -319,6 +319,7 @@ realm:
     The designation of your realm must always stay above that of all inferior realms, limiting your choices.
   submit:       Announce changes
   success:      Realm details have been updated.
+  promote:      A request to promote your realm has been sent to your realm's superior realm.
  abolish:
   name:         Dismantle Realm
   description:  Tear down this realm.
@@ -499,6 +500,11 @@ realm:
   toggle:
    active: Allow new arrivals to join the realm here
    inactive: Forbid new arrivals from joining here
+ promote:
+  preamble: 'You have received a request from {character}, a ruler of {realm}, a {type}, to promote their realm to the {newType} tier, on {date}, as follows:'
+  extra: "As a reminder, the basic realm tiers, from lowest (1) to highest (9) are Baronet (1), Barony (2), Viscounty (3), County (4), March (5), Duchy (6), Principality (7), Kingdom (8), and Empire (9)."
+  deny:  "You have denied {realm}'s request to change tier."
+  accept: "You have accepted {realm}'s request to change tier."
 
 position:
  name:          "Masculine (Default) Title:"
@@ -651,11 +657,19 @@ diplomacy:
   newname:      Name of the new realm
   ruler:        Ruler of the new realm
   empty:        -- Choose --
-  submit:       Create realm
+  submit:       Create Realm
   invalid:
    ruler:       Your selected ruler is not the lord of any of the estates you picked to join the new subrealm.
    size:        The subrealm must contain at least one estate, and at least one must remain with your main realm.
   success:      Your subrealm has been created.
+
+ superior:
+  name:         Create Superior Realm
+  description:  Move your realm under a new realm.
+  intro: >
+   As the ruler of {name}, a sovereign realm in it's own right, you can decide that your realm is better as part of a newer, higher tier realm.
+  submit:       Create Realm
+  success:      Your superior realm has been created.
 
  break:
   name:         Declare Independence

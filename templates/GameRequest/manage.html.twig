@@ -85,6 +85,15 @@
 			{% if gamerequest.text %}{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks}}{% endif %}
 			<a href="{{path('maf_gamerequest_approve', {"id":gamerequest.id}) }}"><button id="approve">{{ 'diplomacy.join.approve'|trans({},"politics") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'diplomacy.join.deny'|trans({},"politics") }}</button></a>
 			</div>
+		{% elseif gamerequest.type == 'promote' %}
+			<hr>
+			{{ 'realm.promote.preamble'|trans({"%character%":link(gamerequest.fromCharacter), "%realm%":link(gamerequest.fromRealm), "%tier%":gamerequest.numberValue, "%date%":gamerequest.created|date("D, d M Y H:i:s"), "type":('realm.type.'~gamerequest.fromRealm.type)|trans({}, "politics"), "newType":('realm.type.'~gamerequest.numberValue)|trans({}, "politics")}, "politics")|raw }}<br>
+			{{ 'realm.promote.extra'|trans({}, 'politics') }}
+			<div class="subcontent inline_announcements" style="color:#460702">
+				<h4>{{ gamerequest.subject|title }}</h4>
+				{% if gamerequest.text %}{{ gamerequest.text|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks}}{% endif %}
+				<a href="{{path('maf_gamerequest_approve', {"id":gamerequest.id}) }}"><button id="approve">{{ 'diplomacy.join.approve'|trans({},"politics") }}</button></a> | <a href="{{path('maf_gamerequest_deny', {"id":gamerequest.id}) }}"><button id="deny">{{ 'diplomacy.join.deny'|trans({},"politics") }}</button></a>
+			</div>
 		{% endif %}
 	{% else %}
 		{{ 'house.manage.applicants.empty'|trans({},"politics")|raw }}<br />

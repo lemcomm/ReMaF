@@ -623,6 +623,7 @@ class Dispatcher {
 
 		$actions[] = $this->diplomacyRelationsTest();
 		$actions[] = $this->diplomacyHierarchyTest();
+		$actions[] = $this->diplomacySuperiorTest();
 		$actions[] = $this->diplomacySubrealmTest();
 		$actions[] = $this->diplomacyDisownTest();
 		$actions[] = $this->diplomacyBreakHierarchyTest();
@@ -1758,6 +1759,22 @@ class Dispatcher {
 			return array("name"=>$name, "description"=>"unavailable.notdiplomat");
 		}
 		return array("name"=>$name, "url"=>"maf_realm_join", "parameters"=>array('id'=>$this->realm->getId()), "description"=>$desc);
+	}
+
+	public function diplomacySuperiorTest(): array {
+		if (($check = $this->politicsActionsGenericTests()) !== true) {
+			return array("name"=>"diplomacy.superior", "description"=>"unavailable.$check");
+		}
+		if ($this->realm->getType()>=9) {
+			return array("name"=>"diplomacy.superior", "description"=>"unavailable.toolow");
+		}
+		if ($this->realm->getSuperior()) {
+			return array("name"=>"diplomacy.superior", "description"=>"unavailable.notsovereign");
+		}
+		if (!$this->realm->findRulers()->contains($this->getCharacter())) {
+			return array("name"=>"diplomacy.superior", "description"=>"unavailable.notleader");
+		}
+		return $this->action("diplomacy.superior", "maf_realm_superior", true, array('realm'=>$this->realm->getId()));
 	}
 
 	public function diplomacySubrealmTest(): array {

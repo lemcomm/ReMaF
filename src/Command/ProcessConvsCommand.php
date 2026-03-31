@@ -25,12 +25,12 @@ class ProcessConvsCommand extends Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$timing = $input->getOption('time');
-
-		$complete = $this->gr->runConversationsCleanup();
 		if ($timing) {
 			$stopwatch = new Stopwatch();
 			$stopwatch->start('conv_cleanup');
 		}
+
+		$complete = $this->gr->runConversationsCleanup($output);
 		if ($complete) {
 			$output->writeln("Conversation cleanup completed");
 			$output->writeln("<info>Conversation cleanup completed</info>");

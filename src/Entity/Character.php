@@ -265,7 +265,11 @@ class Character extends AbstractCharacter {
 	public function HealOrDie($healer = false, $physician = false, $shelter = false): array {
 		$current = $this->healthValue();
 		$injuries = $this->injuries;
-		$injCount = count($injuries);
+		if ($injuries) {
+			$injCount = count($injuries);
+		} else {
+			$injCount = 0;
+		}
 		$heal = 0;
 		$result = 0;
 		if ($current >= 1 && $injCount === 0) {

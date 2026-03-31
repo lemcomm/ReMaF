@@ -16,9 +16,12 @@ class RealmCreationType extends AbstractType {
 			'intention'       	=> 'newrealm_1845',
 			'translation_domain' => 'politics'
 		));
+
+		$resolver->setDefaults(['limit' => false]);
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
+		$limit = $options['limit'];
 		$builder->add('name', TextType::class, array(
 			'label'=>'realm.name',
 			'required'=>true,
@@ -36,15 +39,20 @@ class RealmCreationType extends AbstractType {
 			)
 		));
 
+		if ($limit) {
+			$start = $limit;
+		} else {
+			$start = 1;
+		}
 		$realmtypes = array();
-		for ($i=1;$i<9;$i++) {
+		for ($i=$start;$i<10;$i++) {
 			$realmtypes['realm.type.'.$i] = $i;
 		}
 
 		$builder->add('type', ChoiceType::class, array(
 			'required'=>true, 
 			'choices' => $realmtypes,
-			'label'=> 'realm.designation',
+			'label'=> 'realm.type.title',
 			'placeholder' => 'realm.new.choose',
 		));
 

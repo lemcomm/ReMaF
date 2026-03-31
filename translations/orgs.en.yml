@@ -430,3 +430,15 @@ law:
   realmVotingAge:
    label:    Mininum Days Required in Realm to Vote
    desc:     Sets (or unsets) the minimum required days in the realm to vote on elections or other matters. The default is everyone can vote.
+  realmSelfPromote:
+   label:    Subordinate Realm Promotions
+   desc:     Determines if subordinate realms can promote/demote themselves, must request it, or can't at all.
+   always:
+    name:    Self-Promotion Allowed
+    desc:    Realms may promote/demote themselves to a higher tier if it is available.
+   request:
+    name:    Request Required
+    desc:    Realms may request promotion/demotion as an automatic part of realm management changes.
+   never:
+    name:    Realms May Never Self-Promote
+    desc:    Realms must remain at the tier they were created as.
