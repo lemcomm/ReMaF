@@ -1,0 +1,9 @@
+# Might & Fealty
+# Text strings for NPC & System translated message contents
+# Authors: Andrew Gwynn
+# Contact: mafteam@lemuriacommunity.org
+system:
+ tourn:
+  announce: "{who} has announced that {where} shall be hosting the {what} on {when}."
+
+# Eventually this will include the NPC Translator messages as well.

@@ -14,11 +14,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\Stopwatch\Stopwatch;
 
 
 class ProcessBattlesCommand extends Command {
+	private ?string $ruleset;
+
 	public function __construct(
 		private BattleRunner $br,
 		private CommonService $cs,
@@ -26,6 +27,10 @@ class ProcessBattlesCommand extends Command {
 		private NotificationManager $nm,
 		private WarManager $wm) {
 		parent::__construct();
+		$this->ruleset = $_ENV['COMBAT_RULESET'];
+		if ($this->ruleset === 'toggleable') {
+			$this->ruleset = null;
+		}
 	}
 
 	protected function configure(): void {
@@ -60,7 +65,7 @@ class ProcessBattlesCommand extends Command {
 				foreach ($query->getResult() as $battle) {
 					$this->br->reset(); # Restore to known state.
 					$this->br->enableLog($arg_debug);
-					$this->br->run($battle, $cycle);
+					$this->br->run($battle, $cycle, $this->ruleset);
 				}
 				if ($opt_time) {
 					$event = $stopwatch->lap('battles');

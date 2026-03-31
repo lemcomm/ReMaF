@@ -67,6 +67,29 @@ class RealmManager {
 		return $realm;
 	}
 
+	public function procreate($name, $formalname, $type, Character $ruler, Realm $subrealm): Realm {
+		$realm = $this->_create($name, $formalname, $type, $ruler);
+		$subrealm->setSuperior($realm);
+		$realm->addInferior($subrealm);
+
+		$this->history->logEvent(
+			$realm,
+			'event.prorealm.founded',
+			array('%link-character%'=>$ruler->getId(), '%link-realm%'=>$subrealm->getId()),
+			History::ULTRA, true
+		);
+		$this->history->logEvent(
+			$subrealm,
+			'event.prorealm.founder',
+			array('%link-realm%'=>$subrealm->getId()),
+			History::ULTRA, true
+		);
+		$realm->setSystem('new');
+
+		# $this->updateHierarchy($ruler, $realm, false); #This is done as part of turn.
+		return $realm;
+	}
+
 	private function _create($name, $formalname, $type, $ruler): Realm {
 		$realm = new Realm;
 		$realm->setName($name)->setFormalName($formalname);
@@ -122,7 +145,7 @@ class RealmManager {
 		}
 	}
 
-	private function updateHierarchy(Character $char, Realm $realm, $setrealm=true): void {
+	public function updateHierarchy(Character $char, Realm $realm, $setrealm=true): void {
 		// update the downwards hierarchy on a new realm creation
 		// everyone on here gets unlimited access, because the realm just got founded
 		$this->history->openLog($realm, $char);

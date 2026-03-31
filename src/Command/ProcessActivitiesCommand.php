@@ -9,11 +9,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class ProcessActivitiesCommand extends Command {
+	private mixed $ruleset;
 
-	private ActivityManager $am;
-
-	public function __construct(ActivityManager $am) {
-		$this->am = $am;
+	public function __construct(private ActivityManager $am) {
+		$this->ruleset = $_ENV['ACTIVITY_RULESET'];
 		parent::__construct();
 	}
 
@@ -25,7 +24,7 @@ class ProcessActivitiesCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-		$this->am->runAll();
+		$this->am->runAll($this->ruleset);
 		$output->writeln("...activities complete");
 		return Command::SUCCESS;
 	}

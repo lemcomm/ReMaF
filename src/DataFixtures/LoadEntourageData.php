@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\BuildingType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -12,15 +13,17 @@ use App\Entity\EntourageType;
 class LoadEntourageData extends Fixture implements DependentFixtureInterface {
 
 	private array $entourage = array(
-		'follower'          => array('train' => 50, 'provider' =>'Inn'),
-		'herald'            => array('train' =>100, 'provider' =>'School'),
-		'merchant'          => array('train' =>120, 'provider' =>'Market'),
-		'priest'            => array('train' =>150, 'provider' =>'Temple'),
-		'prospector'        => array('train' =>200, 'provider' =>'Library'),
-		'scholar'           => array('train' =>300, 'provider' =>'University'),
-		'scout'             => array('train' => 65, 'provider' =>'Inn'),
-		'spy'               => array('train' =>500, 'provider' =>'Academy'),
-		'translator'        => array('train' =>125, 'provider' =>'School'),
+		'follower'	=> ['train' => 50, 'provider' =>'Inn'],
+		'healer'	=> ['train' => 120, 'provider' => 'Alchemist'],
+		'herald'	=> ['train' =>100, 'provider' =>'School'],
+		'merchant'	=> ['train' =>120, 'provider' =>'Market'],
+		'physician'	=> ['train' => 300, 'provider' =>'University'],
+		'priest'	=> ['train' =>150, 'provider' =>'Temple'],
+		'prospector'	=> ['train' =>200, 'provider' =>'Library'],
+		'scholar'	=> ['train' =>300, 'provider' =>'University'],
+		'scout'		=> ['train' => 65, 'provider' =>'Inn'],
+		'spy'		=> ['train' =>500, 'provider' =>'Academy'],
+		'translator'	=> ['train' =>125, 'provider' =>'School'],
 	);
 
 	public function getDependencies(): array {
@@ -39,7 +42,7 @@ class LoadEntourageData extends Fixture implements DependentFixtureInterface {
 			}
 			$type->setTraining($data['train']);
 			if ($data['provider']) {
-				$provider = $this->getReference('buildingtype: '.strtolower($data['provider']));
+				$provider = $this->getReference('buildingtype: '.strtolower($data['provider']), BuildingType::class);
 				if ($provider) {
 					$type->setProvider($provider);
 				} else {

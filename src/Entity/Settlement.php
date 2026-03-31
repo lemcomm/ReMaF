@@ -279,6 +279,16 @@ class Settlement {
 		return $this;
 	}
 
+	public function isOwnerEquivalent(Character $char, $checkOccupancy = false): bool {
+		if ($this->isOccupied() && $checkOccupancy) {
+			if ($this->getOccupant() === $char) return true;
+		} else {
+			if ($this->getOwner() === $char) return true;
+			if ($this->getSteward() === $char) return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Get owner
 	 *
@@ -451,9 +461,10 @@ class Settlement {
 		return false;
 	}
 
-	public function hasBuildingNamed($name) {
+	public function hasBuildingNamed($name): bool {
 		$has = $this->getBuildingByName($name);
 		if (!$has) return false;
+		/** @var Building $has */
 		return $has->isActive();
 	}
 

@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Conversation;
+use App\Entity\Law;
 use App\Entity\Permission;
 use App\Entity\Realm;
 use App\Entity\RealmPosition;
@@ -212,7 +214,7 @@ class RealmController extends AbstractController {
 	}
 
 	#[Route('/realm/{realm}/manage', name:'maf_realm_manage', requirements:['realm'=>'\d+'])]
-	public function manageAction(Realm $realm, Request $request): RedirectResponse|Response {
+	public function manageAction(Realm $realm, GameRequestManager $gr, Request $request): RedirectResponse|Response {
 		$character = $this->gateway($realm, 'hierarchyManageRealmTest');
 		if (!($character instanceof Character)) {
 			return $this->redirectToRoute($character);
@@ -222,8 +224,14 @@ class RealmController extends AbstractController {
 		foreach ($realm->getInferiors() as $inferior) {
 			if ($inferior->getType()>$min) { $min = $inferior->getType(); }
 		}
-		if ($realm->getSuperior()) {
-			$max = $realm->getSuperior()->getType();
+		$noPromote = false;
+		$sup = $realm->getSuperior();
+		if ($sup) {
+			$max = $sup->getType();
+			$law = $sup->findLaw('realmSelfPromote');
+			if (!$law || $law->getValue() === 'never') {
+				$noPromote = true;
+			}
 		} else {
 			$max = 0;
 		}
@@ -236,7 +244,8 @@ class RealmController extends AbstractController {
 				->setParameters(['type'=>$realm->getType()])
 				->getResult();
 		}
-		$form = $this->createForm(RealmManageType::class, $realm, ['min'=>$min, 'max'=>$max, 'designations' => $desigs]);
+		$oldType = $realm->getType();
+		$form = $this->createForm(RealmManageType::class, $realm, ['min'=>$min, 'max'=>$max, 'designations' => $desigs, 'noPromote'=>$noPromote]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
@@ -249,6 +258,27 @@ class RealmController extends AbstractController {
 			}
 			$fail = $this->checkRealmNames($form, $data->getName(), $data->getFormalName(), $realm);
 			if (!$fail) {
+				if ($sup && $data->getType() !== $oldType) {
+					/** @var Law $law */
+					$law = $sup->findLaw('realmSelfPromote');
+					if ($law && $law->getValue() === 'request') {
+						$gr->newRequestFromRealmToRealm(
+							'promote',
+							null,
+							$data->getType(),
+							null,
+							$realm->getName().' Requests Promotion',
+							'[c:'.$character->getId().'] has requested their realm be promoted to tier '.$data->getType().'.',
+							$character,
+							$realm,
+							$realm->getSuperior()
+						);
+						$this->addFlash('notice', $this->trans->trans('realm.manage.promote', [], 'politics'));
+						$realm->setType($oldType); # Override the automatic setting.
+					}
+				} elseif (!$sup && $data->getType() !== $oldType) {
+
+				}
 				foreach ($realm->getConversations() as $convo) {
 					if ($convo->getSystem() == 'announcements') {
 						$convo->setTopic($realm->getName().' Announcements');
@@ -841,6 +871,38 @@ class RealmController extends AbstractController {
 			'unavailable'=>$unavailable,
 			'choices'=>$available,
 			'form'=>$form->createView()
+		]);
+	}
+
+	#[Route('/realm/{realm}/superior', name:'maf_realm_superior', requirements:['realm'=>'\d+'])]
+	public function superiorAction(ConversationManager $conv, NotificationManager $nm, AppState $app, Realm $realm, Request $request): RedirectResponse|Response {
+		$char = $this->gateway($realm, 'diplomacySuperiorTest');
+		if (!($char instanceof Character)) {
+			return $this->redirectToRoute($char);
+		}
+
+		$form = $this->createForm(RealmCreationType::class, null, ['limit'=>$realm->getType()+1]);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$data = $form->getData();
+			$fail = $this->checkRealmNames($form, $data['name'], $data['formal_name']);
+			if (!$fail) {
+				// good name, create realm
+				$new = $this->rm->procreate($data['name'], $data['formal_name'], $data['type'], $char, $realm);
+				$this->em->flush();
+				// and create the initial realm conversation, making sure our ruler is set up for the messaging system
+				$announce = $this->em->getRepository(Conversation::class)->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
+				$conv->newSystemMessage($announce, 'newsuperiorrealm', null, null, true, ['realm'=>$new->getFormalName()]);
+				$nm->spoolNewRealm($char, $new, false, $realm);
+
+				$app->setSessionData($char); // update, because we changed our realm count
+				return $this->redirectToRoute('maf_politics_realms');
+			}
+		}
+
+		return $this->render('Realm/superior.html.twig', [
+			'realm' => $realm,
+			'form' => $form->createView()
 		]);
 	}
 

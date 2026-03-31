@@ -10,11 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class StatisticsNetworkCommand extends  Command {
-
-	private EntityManagerInterface $em;
-
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 

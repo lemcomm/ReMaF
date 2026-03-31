@@ -33,6 +33,7 @@ class LoadLawData extends Fixture {
 			'realmPlaceMembership'	=> ['allow_multiple'=>false],
 			'realmFaith'		=> ['allow_multiple'=>true],
 			'realmVotingAge'	=> ['allow_multiple'=>false],
+			'realmSelfPromote'      => ['allow_multiple'=>false],
 		]
 	];
 

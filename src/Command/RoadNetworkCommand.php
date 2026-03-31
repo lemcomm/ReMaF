@@ -13,11 +13,9 @@ class RoadNetworkCommand extends Command {
 
 	private int $travel_points = 5000;
 	private int $max_distance = 50000;
-	private EntityManagerInterface $em;
 	private array $destinations;
 
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 

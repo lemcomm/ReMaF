@@ -15,16 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class WorkerScoutSpottingCommand extends  Command {
-
-	private EntityManagerInterface $em;
-	private History $hist;
-	private LoggerInterface $logger;
 	private int $tower_range = 4000;
 
-	public function __construct(EntityManagerInterface $em, History $hist, LoggerInterface $logger) {
-		$this->em = $em;
-		$this->hist = $hist;
-		$this->logger = $logger;
+	public function __construct(private EntityManagerInterface $em, private History $hist, private LoggerInterface $logger) {
 		parent::__construct();
 	}
 

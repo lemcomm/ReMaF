@@ -172,6 +172,7 @@ participants:
   end:    Permission End Time
   current:   Current Role
   unknown:  Time Unknown
+  active:   Active
  role:
   owner:    Owner
   manager:  Manager

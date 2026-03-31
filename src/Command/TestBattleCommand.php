@@ -4,8 +4,6 @@ namespace App\Command;
 
 use App\Entity\Character;
 use App\Entity\EquipmentType;
-use App\Service\CharacterManager;
-use App\Service\MilitaryManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;

@@ -53,7 +53,13 @@
 				{% set wpn = character.weapon.name %}
 				{% for stage in character.stages %}
 					{% if stage.round == i and stage.round != 32767 %}
+						{%  if stage.data.result %}
 						<li>{{ ('report.combat.'~stage.data.result)|trans({'%name%':character.character.name, '%weapon%':wpn})|raw }}</li>
+						{% endif %}{% if stage.data.results is defined %}
+							{% for each in stage.data.results %}
+								<li>{{ ('report.combat.'~each)|trans({'%name%':character.character.name, '%weapon%':wpn})|raw }}</li>
+							{% endfor %}
+						{% endif %}
 					{% endif %}
 				{% endfor %}
 				</td>

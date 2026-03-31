@@ -15,6 +15,10 @@ class Entourage extends NPC {
 		return true;
 	}
 
+	public function toLogName(): string {
+		return 'E:'.$this->id;
+	}
+
 	/**
 	 * Get supply
 	 *

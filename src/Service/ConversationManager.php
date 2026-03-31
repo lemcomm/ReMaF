@@ -7,8 +7,10 @@ use App\Entity\Association;
 use App\Entity\Character;
 use App\Entity\Conversation;
 use App\Entity\ConversationPermission;
+use App\Entity\DelayedMessage;
 use App\Entity\House;
 use App\Entity\Message;
+use App\Entity\MessageData;
 use App\Entity\MessageRecipient;
 use App\Entity\Place;
 use App\Entity\Realm;
@@ -21,6 +23,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 
 class ConversationManager {
 	public function __construct(
@@ -48,25 +52,41 @@ class ConversationManager {
                 return $query->getResult();
         }
 
-        public function getConversationsCount(Character $char): mixed {
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 */
+	public function getConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getOrgConversationsCount(Character $char): mixed {
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 */
+	public function getOrgConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND (c.realm IS NOT NULL OR c.house IS NOT NULL OR c.association IS NOT NULL)');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getPrivateConversationsCount(Character $char): mixed {
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 */
+	public function getPrivateConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND c.realm IS NULL AND c.house IS NULL');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
         }
 
-        public function getActiveConversationsCount(Character $char): mixed {
+	/**
+	 * @throws NonUniqueResultException
+	 * @throws NoResultException
+	 */
+	public function getActiveConversationsCount(Character $char): mixed {
                 $query = $this->em->createQuery('SELECT count(c.id) FROM App\Entity\Conversation c JOIN c.permissions p WHERE p.character = :me AND p.active = true');
                 $query->setParameter('me', $char);
                 return $query->getSingleScalarResult();
@@ -242,7 +262,7 @@ class ConversationManager {
                 return new ArrayCollection(iterator_to_array($iterator));
         }
 
-        public function removePlayerConversation(Character $char, Conversation $conv) {
+        public function removePlayerConversation(Character $char, Conversation $conv): true {
                 foreach ($conv->getPermissions() as $perm) {
 			if ($perm->getCharacter() === $char) {
 				$this->em->remove($perm);
@@ -251,7 +271,7 @@ class ConversationManager {
 		return true;
         }
 
-        public function removeOrphanConversations() {
+        public function removeOrphanConversations(): int {
                 $all = $this->em->getRepository(Conversation::class);
                 $count = 0;
                 foreach ($all as $conv) {
@@ -263,7 +283,7 @@ class ConversationManager {
                 return $count;
         }
 
-        public function findNewOwner(Conversation $conv, Character $char, $flush=true) {
+        public function findNewOwner(Conversation $conv, Character $char, $flush=true): true {
                 if ($conv->getSystem() !== null) {
                         return true; #System conversations are managed separately.
                 }
@@ -328,39 +348,28 @@ class ConversationManager {
                                         $new->setReplyTo($target);
                                 }
                         }
-                        if (!$total) {
+                        if (!$total && $char) {
                                 $count = 0;
-					/** @var ConversationPermission $perm */
-					foreach ($conv->findActivePermissions() as $perm) {
-                                        if (!$antiTickUp && $perm->getCharacter() != $char) {
-                                                if ($org) {
-                                                        if ($org === 'realm' && !$perm->getCharacter()->getAutoReadRealms()) {
-                                                                $perm->setUnread($perm->getUnread()+1);
-								$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
-                                                        } elseif ($org === 'assoc' && !$perm->getCharacter()->getAutoReadAssocs()) {
-                                                                $perm->setUnread($perm->getUnread()+1);
-								$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
-                                                        } elseif ($org === 'house' && !$perm->getCharacter()->getAutoReadHouse()) {
-                                                                $perm->setUnread($perm->getUnread()+1);
-								$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
-                                                        }
-                                                } else {
-                                                        $perm->setUnread($perm->getUnread()+1);
-							$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
-                                                }
-                                        }
-                                        $count++;
-                                }
-                        } else {
+				/** @var ConversationPermission $perm */
+				if (!$antiTickUp) {
+					$count = $this->updateUnreadWithChar($conv->findActivePermissions(), $org, $char);
+				}
+                        } elseif (!$total && !$char) {
+				$all = $conv->findActivePermissions();
+				$count = $all->count();
+				$this->updateUnread($all, $org);
+			} else {
                                 $count = $total;
                         }
                         $new->setRecipientCount($count);
                         $new->setConversation($conv);
                         $conv->setUpdated($now);
-			$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
-			if ($stats) {
-				/** @var StatisticGlobal $stats */
-				$stats->setNewMessages($stats->getNewMessages()+1);
+			if ($type !== 'system') {
+				$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticGlobal s ORDER BY s.id DESC')->setMaxResults(1)->getOneOrNullResult();
+				if ($stats) {
+					/** @var StatisticGlobal $stats */
+					$stats->setNewMessages($stats->getNewMessages()+1);
+				}
 			}
                         if ($flush) {
                                 $this->em->flush();
@@ -409,6 +418,11 @@ class ConversationManager {
                         $origTarget = FALSE;
                 }
 
+		$meta = new MessageData();
+		$this->em->persist($meta);
+		$meta->setTopic($topic);
+		$meta->setContent($text);
+
                 foreach ($recipients as $rec) {
                         if (!$rec->getLocalConversation()) {
                                 $conv = $this->newLocalConversation($rec, $now, $cycle);
@@ -416,15 +430,15 @@ class ConversationManager {
                                 $conv = $rec->getLocalConversation();
                                 $conv->setUpdated($now);
                         }
-                        $msg = new Message();
-                        $this->em->persist($msg);
+
+			$msg = new Message();
+			$this->em->persist($msg);
                         $msg->setConversation($conv);
                         $msg->setType($type);
-                        $msg->setTopic($topic);
                         $msg->setCycle($cycle);
                         $msg->setSender($char);
                         $msg->setSent($now);
-                        $msg->setContent($text);
+			$msg->setData($meta);
                         if ($origTarget) {
                                 $targetMsg = $this->em->getRepository(Message::class)->findOneBy(['conversation'=>$conv, 'sender'=>$origTarget->getSender(), 'content'=>$origTarget->getContent()]);
                                 if ($targetMsg) {
@@ -547,7 +561,7 @@ class ConversationManager {
                 if ($content) {
                         # For reasons I can't figure out, writeMessages's call to find the active permissions of the new conversation bugs out and always returns empty. But only on new conversations.
                         # On existing conversations it works fine. So we pass the count manually, and use that passed count as a flag that this is a new conversation and that the message is trusted.
-                        $msg = $this->writeMessage($conv, null, $char, $content, $type, count($added), true, null, true);
+                        $this->writeMessage($conv, null, $char, $content, $type, count($added), true, null, true);
                 }
 
                 return $conv;
@@ -615,7 +629,9 @@ class ConversationManager {
                         $content = 'A First One by the name of '.$origin.' at has joined the realm as a knight of [realmpos:'.$extra['pos'].'].';
                 } elseif ($type == 'realmjoinposition2') {
                         $content = 'A First One by the name of '.$origin.' at has joined the subrealm of [r:'.$extra['realm'].'] as a knight of [realmpos:'.$extra['pos'].'].';
-                }
+                } elseif ($type == 'newsuperiorrealm') {
+			$content = "A new superior realm called ".$extra['realm']." has been requested of the bureaucrats by the realm's rulers, but it'll take them until tomorrow to get it all ready.";
+		}
 
                 #public function writeMessage(Conversation $conv, $replyTo = null, Character $char = null, $text, $type, $total = null, $flush = true, $antiTickUp = false, $internal = false)
                 $msg = $this->writeMessage($conv, null, null, $content, 'system', null, $flush, $antiTickUp, true);
@@ -627,8 +643,103 @@ class ConversationManager {
                 return $msg;
         }
 
+	public function newDelayedMessage(string $target, $flush = true, ?Character $sender = null, ?string $content = null, array $systemContent = [], ?string $topic = null, string $type = 'system'): bool {
+		$msg = new DelayedMessage();
+		$msg->setTopic($topic);
+		$msg->setType($type);
+		$msg->setSender($sender);
+		$msg->setContent($content);
+		$msg->setSystemContent($systemContent);
+		$msg->setTarget($target);
+		$this->em->persist($msg);
+		if ($flush) $this->em->flush();
+		return true;
+	}
+
+	public function newAllRealmsMessage($flush = true, ?Character $sender = null, ?string $topic = null, ?string $content = null, array $data = [], string $type = 'system'): int {
+		$realms = $this->em->getRepository(Realm::class)->findBy(['superior'=>null, 'active'=>true]);
+		$query = $this->em->createQuery('SELECT c FROM App\Entity\Conversation c WHERE c.realm IN (:realms) AND c.system = \'announcements\'')->setParameters(['realms' => $realms]);
+		return $this->writeSystemMessageWithData(new ArrayCollection($query->getResult()), 'realms', $topic, $content, $data, $type, $sender);
+	}
+
+	private function writeSystemMessageWithData(ArrayCollection $convs, $orgType, ?string $topic, ?string $content, array $sysContent, string $type, ?Character $sender = null, $antiTickUp = false): int {
+		$data = new MessageData();
+		$data->setContent($content);
+		$data->setSystemContent($sysContent);
+		$data->setTopic($topic);
+		$data->setType($type);
+		$this->em->persist($data);
+		$count = 0;
+		$total = 0;
+		$cycle = $this->common->getCycle();
+		$now = new DateTime();
+		/** @var Conversation $conv */
+		foreach ($convs as $conv) {
+			$count++;
+			$total++;
+			$new = new Message();
+			$this->em->persist($new);
+			$new->setConversation($conv);
+			$new->setCycle($cycle);
+			$new->setSent($now);
+			$new->setData($data);
+			if (!$antiTickUp) {
+				$this->updateUnread($conv->findActivePermissions(), $orgType);
+			}
+			if ($count >= 5) {
+				$this->em->flush();
+			}
+		}
+		if ($count < 5) {
+			$this->em->flush();
+		}
+		return $total;
+	}
+
+	private function updateUnread(ArrayCollection $perms, $orgType): void {
+		foreach ($perms as $perm) {
+			if ($orgType === 'realm' && !$perm->getCharacter()->getAutoReadRealms()) {
+				$perm->setUnread($perm->getUnread()+1);
+				$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+			} elseif ($orgType === 'assoc' && !$perm->getCharacter()->getAutoReadAssocs()) {
+				$perm->setUnread($perm->getUnread()+1);
+				$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+			} elseif ($orgType === 'house' && !$perm->getCharacter()->getAutoReadHouse()) {
+				$perm->setUnread($perm->getUnread()+1);
+				$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+			} else {
+				$perm->setUnread($perm->getUnread()+1);
+				$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+			}
+		}
+	}
+
+	private function updateUnreadWithChar(ArrayCollection $perms, bool|string $orgType, Character $char): int {
+		$count = 0;
+		foreach ($perms as $perm) {
+			if ($perm->getCharacter() != $char) {
+				if ($orgType) {
+					if ($orgType === 'realm' && !$perm->getCharacter()->getAutoReadRealms()) {
+						$perm->setUnread($perm->getUnread()+1);
+						$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+					} elseif ($orgType === 'assoc' && !$perm->getCharacter()->getAutoReadAssocs()) {
+						$perm->setUnread($perm->getUnread()+1);
+						$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+					} elseif ($orgType === 'house' && !$perm->getCharacter()->getAutoReadHouse()) {
+						$perm->setUnread($perm->getUnread()+1);
+						$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+					}
+				} else {
+					$perm->setUnread($perm->getUnread()+1);
+					$this->status->addCharCounter($perm->getCharacter(), CharacterStatus::messages);
+				}
+			}
+			$count++;
+		}
+		return $count;
+	}
+
         public function pruneConversation(Conversation $conv): string {
-                $keep = new ArrayCollection();
                 $perms = $conv->getPermissions();
                 $all = $conv->getMessages();
                 # Grab all conversation messages and go through each of them.
@@ -699,7 +810,7 @@ class ConversationManager {
                 }
         }
 
-        public function updateMembers(Conversation $conv, ?ArrayCollection $members=null) {
+        public function updateMembers(Conversation $conv, ?ArrayCollection $members=null): array {
                 $realm = $conv->getRealm();
                 $house = $conv->getHouse();
                 $assoc = $conv->getAssociation();
@@ -761,7 +872,7 @@ class ConversationManager {
                 return array('added'=>$added, 'removed'=>$removed);
         }
 
-        public function sendNewCharacterMsg(?Realm $realm, ?House $house, Place $place, Character $char) {
+        public function sendNewCharacterMsg(?Realm $realm, ?House $house, Place $place, Character $char): array {
                 $em = $this->em;
                 $ultimate = null;
                 $same = false;
@@ -781,21 +892,29 @@ class ConversationManager {
                         $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'general']);
                         $this->addParticipant($conv, $char);
                         $this->addParticipant($general, $char);
-                        $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
+                        $msg = $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                         #$this->newSystemMessage($general, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                 } elseif ($realm && !$same) {
+			$msgs = [];
                         $conv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'announcements']);
                         $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'general']);
                         $this->addParticipant($conv, $char);
                         $this->addParticipant($general, $char);
-                        $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
+			$msg = $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
+			if ($msg) {
+				$msgs[] = $msg;
+			}
                         #$this->newSystemMessage($general, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                         $supConv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'announcements']);
                         $supGeneral = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'general']);
                         $this->addParticipant($supConv, $char);
                         $this->addParticipant($supGeneral, $char);
-                        $this->newSystemMessage($supConv, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
+			$msg =  $this->newSystemMessage($supConv, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
+			if ($msg) {
+				$msgs[] = $msg;
+			}
                         #$this->newSystemMessage($supGeneral, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
+			$this->combineData($msgs);
                 } elseif ($house) {
                         $conv = $em->getRepository('App\Entity\Conversation')->findOneBy(['house'=>$house, 'system'=>'announcements']);
                         $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['house'=>$house, 'system'=>'general']);
@@ -808,7 +927,7 @@ class ConversationManager {
                 return [$conv, $supConv];
         }
 
-        public function sendExistingCharacterMsg(?Realm $realm, ?Settlement $settlement, ?Place $place, ?RealmPosition $pos, Character $char, $publicJoin = FALSE) {
+        public function sendExistingCharacterMsg(?Realm $realm, ?Settlement $settlement, ?Place $place, ?RealmPosition $pos, Character $char, $publicJoin = FALSE): array {
                 $em = $this->em;
                 if ($realm === NULL && $settlement && $settlement->getRealm()) {
                         $realm = $settlement->getRealm();
@@ -822,8 +941,7 @@ class ConversationManager {
                         return [false, false]; #No realm to join, thus, no message to send.
                 }
 
-                $ultimate = null;
-                $sameRealm = false;
+                $same = false;
                 if ($realm->isUltimate()) {
                         $ultimate = $realm;
                         $same = true;
@@ -875,8 +993,45 @@ class ConversationManager {
                 return [$conv, $supConv];
         }
 
-        public function addParticipant(Conversation $conv, Character $char) {
-                $perm = $this->em->getRepository('App\Entity\ConversationPermission')->findOneBy(['conversation'=>$conv, 'character'=>$char,'active'=>true]);
+	/**
+	 * Combines duplicate messages into a MessageData object to reduce duplication.
+	 * Any mismatch will cause the deduplication to fail.
+	 * @param array $msgs
+	 *
+	 * @return void
+	 */
+	public function combineData(array $msgs): void {
+		$match = false;
+		$sysMatch = false;
+		$data = new MessageData();
+		$content = '';
+		$sysCont = '';
+		$topic = '';
+		foreach ($msgs as $msg) {
+			if ($content === '') {
+				$content = $msg->getContent();
+				$sysCont = $msg->getSystem();
+				$topic = $msg->getTopic();
+			} elseif ($msg->getContent() === $content && $msg->getSystem() === $sysCont && $msg->getTopic() === $topic) {
+				$match = true;
+			} else {
+				$match = false;
+			}
+		}
+		if ($match) {
+			$this->em->persist($data);
+			$data->setContent($content);
+			$data->setSystemContent($sysCont);
+			$data->setTopic($topic);
+			foreach ($msgs as $msg) {
+				$msg->setData($data);
+				$msg->setContent(null)->setSystem(null)->setTopic(null);
+			}
+		}
+	}
+
+        public function addParticipant(Conversation $conv, Character $char): ConversationPermission|null {
+                $perm = $this->em->getRepository(ConversationPermission::class)->findOneBy(['conversation'=>$conv, 'character'=>$char,'active'=>true]);
                 if (!$perm) {
                         $now = new DateTime("now");
                         $perm = new ConversationPermission();
@@ -892,7 +1047,7 @@ class ConversationManager {
                 return $perm;
         }
 
-        public function updateSystemConversations($orgType, $org) {
+        public function updateSystemConversations($orgType, $org): void {
                 $sysConvs = ['announcements'=>'Announcements', 'general'=>'General Discussions'];
                 foreach ($sysConvs as $sys=>$name) {
                         $conv = $this->em->getRepository('App\Entity\Conversation')->findOneBy([$orgType=>$org, 'system'=>$sys]);

@@ -5,7 +5,7 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<field name="type" type="string"/>
-		<field name="value" type="integer"/>
+		<field name="value" type="float"/>
 
 		<many-to-one field="character" target-entity="Character" inversed-by="achievements"/>
 	</entity>

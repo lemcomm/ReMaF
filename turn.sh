@@ -3,8 +3,8 @@
 BACKUPDIR="/var/www/maf/backups"
 LOGDIR="/var/www/maf/var/log"
 APP="/var/www/maf/bin/console"
-DAY=`date +%a%H`
-DATE=`date +%y%m%d%H`
+DAY=$(date +%a%H)
+DATE=$(date +%y%m%d%H)
 
 pg_dump -C maf | gzip > $BACKUPDIR/maf-$DAY.sql.gz
 
@@ -13,19 +13,19 @@ pg_dump -C maf | gzip > $BACKUPDIR/maf-$DAY.sql.gz
 # sudo setfacl -R -m u:www-data:rwX -m u:maf:rwX /home/maf/symfony/app/cache /home/maf/symfony/app/logs /home/maf/symfony/app/spool
 # sudo setfacl -dR -m u:www-data:rwX -m u:maf:rwX /home/maf/symfony/app/cache /home/maf/symfony/app/logs /home/maf/symfony/app/spool
 
-php $APP maf:tor:update 2>&1 > $LOGDIR/exits-$DAY.log
-php $APP maf:process:expires 2>&1 > $LOGDIR/turn-$DAY.log
-php $APP maf:process:economy -t 2>&1 >> $LOGDIR/turn-$DAY.log
-php $APP maf:run -v -t -d turn 2>&1 >> $LOGDIR/turn-$DAY.log
-php $APP maf:process:convs 2>&1 >> $LOGDIR/turn-$DAY.log
-php $APP maf:process:slumbers -t 2>&1 >> $LOGDIR/turn-$DAY.log
+php $APP maf:tor:update > $LOGDIR/exits-$DAY.log 2>&1
+php $APP maf:process:expires > $LOGDIR/turn-$DAY.log 2>&1
+php $APP maf:process:economy -t >> $LOGDIR/turn-$DAY.log 2>&1
+php $APP maf:run -v -t -d turn >> $LOGDIR/turn-$DAY.log 2>&1
+php $APP maf:process:convs >> $LOGDIR/turn-$DAY.log 2>&1
+php $APP maf:process:slumbers -t >> $LOGDIR/turn-$DAY.log 2>&1
 echo "----- turn done -----" >> $LOGDIR/turn-$DAY.log
 
 # If you're on a server where you want mails, you may want to setup the below as appropriate.
 # mail you@hostname.stuff -s 'MaF Turn' < $LOGDIR/turn-$DAY.log
 
 
-php $APP maf:stats:turn -d 2>&1 > $LOGDIR/stats.log
+php $APP maf:stats:turn -d > $LOGDIR/stats.log 2>&1
 
 # map generation and legacy map storage
 # cp /var/www/qgis/maps/allrealms.png /var/www/qgis/maps/history/allrealms-$DATE.png

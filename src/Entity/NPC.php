@@ -5,7 +5,6 @@ namespace App\Entity;
 class NPC extends AbstractCharacter {
 	private int $experience;
 	private bool $locked;
-	private int $hungry;
 	private int $distance_home=0;
 	private ?Settlement $home = null;
 
@@ -16,6 +15,10 @@ class NPC extends AbstractCharacter {
 
 	public function isEntourage(): bool {
 		return false;
+	}
+
+	public function toLogName(): string {
+		return 'NPC';
 	}
 
 	public function isActive($include_routed = false): bool {
@@ -85,40 +88,6 @@ class NPC extends AbstractCharacter {
 		return $this;
 	}
 
-	public function hungerMod(): float|int {
-		$lvl = $this->hungry;
-		if ($lvl == 0) {
-			return 1;
-		} elseif ($lvl > 1400) {
-			return 0;
-		} else {
-			return 1 - ($lvl / 1400);
-		}
-	}
-
-	public function isHungry(): bool {
-		return ($this->hungry > 0);
-	}
-
-	public function makeHungry($value = 1): static {
-		if ($value > 0) {
-			$this->hungry += $value;
-		} else {
-			$this->feed();
-		}
-		return $this;
-	}
-
-	public function feed($var = 1): static {
-		if ($this->hungry > 0) {
-			$this->hungry -= 50*$var; // drops fairly rapidly
-		}
-		if ($this->hungry < 0) {
-			$this->hungry = 0;
-		}
-		return $this;
-	}
-
 	public function gainExperience($amount = 1): void {
 		$this->experience += intval(ceil($amount));
 	}
@@ -167,28 +136,6 @@ class NPC extends AbstractCharacter {
 	 */
 	public function setLocked(bool $locked): static {
 		$this->locked = $locked;
-
-		return $this;
-	}
-
-	/**
-	 * Get hungry
-	 *
-	 * @return integer
-	 */
-	public function getHungry(): int {
-		return $this->hungry;
-	}
-
-	/**
-	 * Set hungry
-	 *
-	 * @param integer $hungry
-	 *
-	 * @return NPC
-	 */
-	public function setHungry(int $hungry): static {
-		$this->hungry = $hungry;
 
 		return $this;
 	}

@@ -7,6 +7,7 @@ use App\Entity\ActivitySubType;
 use App\Entity\ActivityRequirement;
 use App\Entity\BuildingType;
 use App\Entity\PlaceType;
+use App\Enum\Activities;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -16,7 +17,7 @@ use Doctrine\Persistence\ObjectManager;
 class LoadActivityData extends Fixture implements DependentFixtureInterface {
 
 	private array $types = array(
-		'duel'			=> [
+		'duel'	=> [
 			'enabled' => True,
 			'buildings'=> null,
 			'places'=>null,
@@ -27,13 +28,19 @@ class LoadActivityData extends Fixture implements DependentFixtureInterface {
 				'death'
 				],
 		],
-		'arena'			=> ['enabled' => False, 'buildings' => ['Arena'],                    'places' => ['arena', 'tournament']],
-		'melee tournament'	=> ['enabled' => False, 'buildings' => ['Arena'],                    'places' => ['arena', 'tournament']],
-		'joust'			=> ['enabled' => False, 'buildings'=> null,                          'places' => ['tournament']],
-		'grand tournament'	=> ['enabled' => False, 'buildings' => ['Arena', 'Archery Range'],   'places' => ['tournament']],
-		'race'			=> ['enabled' => False, 'buildings' => ['Race Track'],               'places' => ['track']],
-		'hunt'			=> ['enabled' => False, 'buildings' => ['Hunters Lodge'],            'places' => ['tournament']],
-		'ball'			=> ['enabled' => False, 'buildings'=> null,                          'places' =>['home', 'capital', 'castle', 'embassy']],
+		'arena'			=> ['enabled' => False, 'buildings' => ['Arena']],
+		'melee tournament'	=> ['enabled' => True, 'buildings' => ['Arena'], 'subtypes'=>[
+			Activities::fightsSolo->value,
+			Activities::fightsDuo->value,
+			Activities::fightsTeam->value,
+			Activities::fightsFFA->value,
+			Activities::fightsAll->value,
+		]],
+		'joust'			=> ['enabled' => True, 'buildings'=>  ['List Field']],
+		'grand tournament'	=> ['enabled' => True, 'buildings' => ['Tournament Grounds']],
+		'race'			=> ['enabled' => True, 'buildings' => ['Race Track']],
+		'hunt'			=> ['enabled' => False, 'buildings' => ['Hunters Lodge'],	'places' => ['home', 'capital', 'castle', 'embassy']],
+		'ball'			=> ['enabled' => False, 'buildings'=> null,			'places' => ['home', 'capital', 'castle', 'embassy']],
 	);
 
 	public function getDependencies(): array {

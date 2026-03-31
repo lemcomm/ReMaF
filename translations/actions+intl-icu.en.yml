@@ -119,6 +119,7 @@ queue:
   explore:      Explore dungeon
  character:
   escape:       Escape
+ fishing:       Fishing
 
 chat:
   settlement:
@@ -1239,6 +1240,15 @@ personal:
  party:
   name:         Dungeon Party
   description:  Check the status of your dungeon exploration group.
+ fishlog:
+  name:         Fishing Log
+  description:  Review your catch history.
+  intro: >
+    Curious how your recent catch compares to your historical catches? Take a look!
+  fishName:     Fish Type
+  size:         Size (in Meters)
+  when:         Date
+  where:        Where
  dungeoncards:
   name:         Dungeon Actions
   description:  Review your available dungeon actions.

@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\EquipmentType;
+use App\Entity\ActivityType;
 use App\Entity\Permission;
 use App\Entity\Race;
 use App\Entity\RealmDesignation;
@@ -16,11 +16,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateDatabaseCommand extends  Command {
-
-	private EntityManagerInterface $em;
-
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 	protected function configure(): void {
@@ -189,6 +185,40 @@ class UpdateDatabaseCommand extends  Command {
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
 				'--group' => ['LoadSkillsData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+		}
+		if (in_array('A9', $versions)) {
+			$output->writeln('Correcting ActivtyTypes...');
+			$all = $em->getRepository(ActivityType::class)->findAll();
+			foreach ($all as $type) {
+				if ($type->getName() !== 'duel') {
+					foreach ($type->getRequires() as $old) {
+						$em->remove($old);
+					}
+				}
+			}
+			$em->flush();
+			$output->writeln('Outdated ActivtyTypes removed.');
+			$output->writeln('Loading corrected data...');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadActivityData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading new entourage types...');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadEntourageData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading fish data...');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadFishData'],
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);

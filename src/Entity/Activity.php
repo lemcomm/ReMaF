@@ -16,9 +16,12 @@ class Activity {
 	private DateTime $created;
 	private DateTime $start;
 	private DateTime $finish;
+	private ?int $cycle = null;
 	private bool $same;
 	private bool $weapon_only;
 	private bool $ready;
+	private array $weapons = [];
+	private bool $armor = false;
 	private Point $location;
 	private ?ActivityReport $report = null;
 	private Collection $events;
@@ -577,6 +580,33 @@ class Activity {
 	public function setPlace(?Place $place = null): static {
 		$this->place = $place;
 
+		return $this;
+	}
+
+	public function getWeapons(): array {
+		return $this->weapons;
+	}
+
+	public function setWeapons(array $weapons): static {
+		$this->weapons = $weapons;
+		return $this;
+	}
+
+	public function isArmor(): bool {
+		return $this->armor;
+	}
+
+	public function setArmor(bool $armor): static {
+		$this->armor = $armor;
+		return $this;
+	}
+
+	public function getCycle(): ?int {
+		return $this->cycle;
+	}
+
+	public function setCycle(?int $cycle): static {
+		$this->cycle = $cycle;
 		return $this;
 	}
 }

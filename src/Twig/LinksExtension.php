@@ -49,8 +49,8 @@ class LinksExtension extends AbstractExtension {
 		return preg_replace_callback($pattern, array(get_class($this), "wikilinksReplacer"), $input);
 	}
 
-    /** @noinspection PhpUnusedPrivateMethodInspection */
-    private function wikilinksReplacer($matches): string {
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function wikilinksReplacer($matches): string {
 		$link = '';
 		foreach ($matches as $match) {
 			$data = explode(':', trim($match, "[]"));
@@ -241,6 +241,7 @@ class LinksExtension extends AbstractExtension {
 			'law' => 'maf_law',
 			'deity' => 'maf_deity',
 			'journal' => 'maf_journal',
+			'fishtype' => 'maf_activity_fishes',
 			default => 'invalid link entity "' . $name . '", this should never happen!',
 		};
 	}
@@ -350,9 +351,12 @@ class LinksExtension extends AbstractExtension {
 				$name = $entity->getName();
 				$linktype = 'unit';
 				break;
-			default:
+			case 'FishType':
 				$id = $entity->getId();
 				$name = $entity->getName();
+			default:
+				$id = $entity->getId();
+				$name = ucwords($entity->getName());
 		}
 		// setting link-types only for some entities:
 		switch ($classname) {
@@ -432,7 +436,7 @@ class LinksExtension extends AbstractExtension {
 		}
 		if ($raw) return $url;
 		$link = '<a ';
-		if (in_array($class, ['character', 'building', 'buildingtype', 'equipment', 'equipmenttype', 'weapon', 'armour', 'entouragetype', 'entourage'])) {
+		if (in_array($class, ['character', 'building', 'buildingtype', 'equipment', 'equipmenttype', 'weapon', 'armour', 'entouragetype', 'entourage', 'fishtype'])) {
 			$link .= 'class="link_'.$class.'" ';
 		}
 		$link .= 'href="'.$url.'">'.$name.'</a>';

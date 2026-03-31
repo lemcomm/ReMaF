@@ -2,33 +2,20 @@
 
 namespace App\Command;
 
-use App\Entity\Battle;
-use App\Entity\BattleGroup;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
-use App\Entity\GeoData;
-use App\Entity\MapRegion;
-use App\Entity\Place;
 use App\Entity\Race;
-use App\Entity\Settlement;
 use App\Entity\Unit;
-use App\Service\BattleRunner;
-use App\Service\CommonService;
 use App\Service\Generator;
 use App\Service\MilitaryManager;
-use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SoldiersAddCommand extends Command {
 
-	private $whereString = '';
 	public function __construct(private EntityManagerInterface $em, private Generator $generator, private MilitaryManager $military) {
 		parent::__construct();
 	}
@@ -91,14 +78,12 @@ class SoldiersAddCommand extends Command {
 
 			$total = (int) $input->getArgument('quantity');
 			$count = 1;
-			$all = [];
 			$xp = (int) $input->getOption('xp');
 
 			while ($count <= $total) {
 				$soldier = $this->generator->randomSoldier($weapon, $armor, $equipment, $mount, null, 0, $unit, $race);
 				$soldier->setTrainingRequired(0);
 				$soldier->setExperience($xp);
-				$all[] = $soldier;
 				$count++;
 			}
 			$this->em->flush();

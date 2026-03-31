@@ -53,16 +53,13 @@ class SkillManager {
 			if ($pract) {
 				$newPract = $training->getPractice() + $pract;
 				$training->setPractice($newPract);
-				if ($newPract > $training->getPracticeHigh()) {
-					$training->setPracticeHigh($newPract);
+				if ($training->getTheory() < $training->getPractice() / 2) {
+					$training->setTheory($training->getTheory()+1);
 				}
 			}
 			if ($theory) {
 				$newTheory = $training->getTheory() + $theory;
-				$training->getTheory($newTheory);
-				if ($newTheory > $training->getTheoryHigh()) {
-					$training->setTheoryHigh($newTheory);
-				}
+				$training->setTheory($newTheory);
 			}
 		}
 		$training->setUpdated(new \DateTime('now'));
@@ -70,7 +67,7 @@ class SkillManager {
 		return true;
 	}
 
-	public function setupSkill(Character $char, string $which, ?string $category = null) {
+	public function setupSkill(Character $char, string $which, ?string $category = null): bool {
 		if ($which === 'military') {
 			/** @var Skill $skill */
 			foreach ($char->getSkills() as $skill) {
@@ -82,11 +79,32 @@ class SkillManager {
 				$this->setupFirstOneMilitary($char);
 			}
 			return true;
+		} elseif (str_starts_with($which, 'wpn:')) {
+			$type = ltrim($which, 'wpn:');
+			$type = $this->em->getRepository(SkillType::class)->findOneBy(['name' => $type]);
+			if (!$type) {
+				return false;
+			}
+			$query = $this->em->createQuery('SELECT s FROM App\Entity\Skill s WHERE s.character = :me AND s.type = :type ORDER BY s.id ASC')->setParameters(['me'=>$char, 'type'=>$type])->setMaxResults(1);
+			$skill = $query->getResult();
+			if (!$skill) {
+				$skill = new Skill();
+				$this->em->persist($skill);
+				$skill->setCharacter($char);
+				$skill->setType($type);
+				$skill->setCategory($type->getCategory());
+				$skill->setPractice(0);
+				$skill->setTheory(0);
+				$skill->setPracticeHigh(0);
+				$skill->setTheoryHigh(0);
+				$skill->setUpdated(new \DateTime('now'));
+			}
+			return true;
 		}
 		return false;
 	}
 
-	private function setupFirstOneMilitary(Character $char) {
+	private function setupFirstOneMilitary(Character $char): void {
 		$raceName = RaceName::firstOne->value;
 		$category = $this->em->getRepository(SkillCategory::class)->findOneBy(['name'=>$raceName]);
 		if (!$category) {

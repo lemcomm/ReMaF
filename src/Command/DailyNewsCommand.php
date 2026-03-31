@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Service\AppState;
 use App\Service\MailManager;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;

@@ -1,0 +1,35 @@
+{% extends "layout.html.twig" %}
+
+{% trans_default_domain 'actions' %}
+{% block content %}
+	<h2>{{ "personal.fishlog.name"|trans|title }}</h2>
+	<p>{{ "personal.fishlog.intro"|trans|raw}}</p>
+
+<table id="fish">
+	<thead>
+		<tr>
+			<th>{{ "personal.fishlog.when"|trans }}</th>
+			<th>{{ "personal.fishlog.name"|trans }}</th>
+			<th>{{ "personal.fishlog.size"|trans }}</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for fish in catches %}
+		<tr>
+			<td>{{ fish.ts|date }}</td>
+			<td>{{ link(fish.fish)|raw }}</td>
+			<td>{{ fish.size }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+
+<script language="javascript" type="text/javascript">
+	$(document).ready(function() {
+		$("#fish").tablesorter({
+			sortList: [[0,0]],
+		});
+	});
+</script>
+
+{% endblock %}

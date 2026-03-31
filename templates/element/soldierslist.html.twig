@@ -28,12 +28,12 @@
 					{% if not man.alive %}
 						<img class="tt" src="{{ asset('images/cybergedeon_skull.svg') }}" alt="{{ 'dead'|trans }}" title="{{ 'dead'|trans }}" height="16px" />
 					{% else %}
-						{% if man.wounded %}
+						{% if man.wounded or man.getInjuries|length > 0 %}
 							<img class="tt" src="{{ asset('images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" />
-							{% if man.wounded > 25 %}
+							{% if man.wounded > 25 or man.injuries|length > 2 %}
 								<img class="tt" src="{{ asset('images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" style="margin-left:-12px"/>
 							{% endif %}
-							{% if man.wounded > 50 %}
+							{% if man.wounded > 50 or man.injuries|length > 4 %}
 								<img class="tt" src="{{ asset('images/blood_clipart.svg') }}" alt="{{ 'wounded'|trans }}" title="{{ 'wounded'|trans }}" height="16px" style="margin-left:-12px"/>
 							{% endif %}
 						{% endif %}

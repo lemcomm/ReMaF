@@ -16,6 +16,8 @@ use App\Entity\ActivityReportStage;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Entity\GeoData;
+use App\Entity\Place;
+use App\Entity\Settlement;
 use App\Entity\Style;
 
 use DateTime;
@@ -28,18 +30,24 @@ As you might expect, ActivityManager handles Activities.
 
 class ActivityManager {
 	private int $debug=0;
-	private ?ActivityReport $report;
+	private ?ActivityReport $report = null;
+	private ?array $logCache = [];
+	private string $ruleset;
+	public int $version = 1;
+
+	const array rulesets = ['legacy', 'mastery'];
 
 	public function __construct(
-		private CommonService $common,
+		private CommonService          $common,
 		private EntityManagerInterface $em,
-		private Geography $geo,
-		private HelperService $helper,
-		private LoggerInterface $logger,
-		private CombatManager $combat,
-		private CharacterManager $charMan,
-		private History $history,
-		private SkillManager $skills,
+		private Geography              $geo,
+		private HelperService          $helper,
+		private LoggerInterface        $logger,
+		private CombatLegacy           $legacy,
+		private CombatMastery	       $mastery,
+		private CharacterManager       $charMan,
+		private History                $history,
+		private SkillManager           $skills,
 	) {
 	}
 
@@ -47,44 +55,70 @@ class ActivityManager {
 	HELPER FUNCTIONS
 	*/
 
-        public function verify(ActivityType $act, Character $char): bool {
+	public function reset(): void {
+		$this->logCache = [];
+	}
+
+	public function validateRuleset($ruleset): bool {
+		if (in_array($ruleset, self::rulesets)) {
+			return true;
+		}
+		return false;
+	}
+        public function verify(ActivityType $act, Character $char, $bypass = false): bool {
 		$valid = True;
 		$reqs = $act->getRequires();
-		if (!$reqs->isEmpty()) {
-			# ActivityRequirements will always have ither places or buildings or both, if the activity has requirements.
-			# Buildings require all to be present, so we set $hasBldgs to True, while Place only requires any to be owned, so we default to false.
-			$hasBldgs = True;
+		# Duels skip this as they don't require anything.
+		if ($bypass || !$reqs->isEmpty()) {
+			$valid = False;
+			$needBldgs = [];
+			$needPlaces = [];
+			$hasBldgs = False;
 			$hasPlace = False;
 			foreach ($reqs as $req) {
-				# If the requirement has a building type, as $hasBldgs is still true, we check. If getBuilding is null this one is for a place,
-				# and if $hasBldgs is false, then we've already failed the verification.
-				if ($bldg = $req->getBuilding() && $hasBldgs) {
-					if ($char->getInsideSettlement() && !$char->getInsideSettlement()->getBuildingByName($bldg)) {
-						$hasBldgs = False;
+				$b = $req->getBldg();
+				$p = $req->getPlace();
+				if ($b) {
+					$needBldgs[] = $b->getName();
+				}
+				if ($p) {
+					$needPlaces[] = $p->getName();
+				}
+			}
+			if (count($needBldgs) > 0) {
+				foreach ($needBldgs as $bldg) {
+					if ($char->getInsideSettlement() && $char->getInsideSettlement()->getBuildingByName($bldg)) {
+						unset($needBldgs[array_search($bldg, $needBldgs)]);
+					}
+					if (count($needBldgs) == 0) {
+						$hasBldgs = True;
 					}
 				}
-				# If getPlace is null, this requirement is for a building.
-				# If $hasPlace is True, then we've already passed this check.
-				if ($place = $req->getPlace() && !$hasPlace) {
+			}
+			if (count($needPlaces) > 0) {
+				foreach ($needPlaces as $place) {
 					$inPlace = $char->getInsidePlace();
-					if ($inPlace && $inPlace->getType() === $place && $inPlace->getOwner() === $char) {
-						$hasPlace = True;
+					if ($inPlace && $inPlace->getType() === $place && $inPlace->isOwner($char)) {
+						unset($needPlaces[array_search($place, $needPlaces)]);
+					}
+					if (count($needPlaces) == 0) {
+						$hasPlaces = True;
 					}
 				}
 			}
 			# Since all activities that have requirements require a place both $hasPlace and $hasBldgs should be true for this to verify.
-			if (!$hasPlace || !$hasBldgs) {
-				$valid = False;
+			if ($hasPlace && $hasBldgs) {
+				$valid = True;
 			}
 		}
 		return $valid;
 	}
 
-        public function create(ActivityType $type, ActivitySubType|string|null $subType, Character $char, ?Activity $mainAct = null): Activity|false {
+        public function create(ActivityType $type, ActivitySubType|string|null $subType, Character $char, ?Activity $mainAct = null, $bypassVerify = false): Activity|false {
 		if (!$type->getEnabled()) {
 			return False;
 		}
-		if ($this->verify($type, $char)) {
+		if ($bypassVerify || $this->verify($type, $char)) {
 			$now = new DateTime("now");
 			$act = new Activity();
 			$this->em->persist($act);
@@ -95,36 +129,17 @@ class ActivityManager {
 			if ($subType) {
 				$act->setSubType($subType);
 			}
-			if ($place = $char->getInsidePlace()) {
-				$act->setLocation($char->getLocation());
-				$act->setPlace($place);
-				if ($place->getGeoData()) {
-					$act->setGeoData($place->getGeoData());
-				} else {
-					$act->setMapRegion($place->getMapRegion());
-				}
-			} elseif ($settlement = $char->getInsideSettlement()) {
-				$act->setLocation($char->getLocation());
-				$act->setSettlement($settlement);
-				if ($settlement->getGeoData()) {
-					$act->setGeoData($settlement->getGeoData());
-				} else {
-					$act->setMapRegion($settlement->getMapregion());
-				}
-			} else {
-				$act->setLocation($char->getLocation());
-				$reg = $this->geo->findMyRegion($char);
-				if ($reg instanceof GeoData) {
-					$act->setGeoData($reg);
-				} else {
-					$act->setMapRegion($reg);
-				}
-
-			}
 			$act->setWorld($char->getWorld());
 			$act->setMainEvent($mainAct);
 			$act->setCreated($now);
 			$act->setReady(false);
+			if ($mainAct) {
+				$act->setLocation($mainAct->getLocation());
+				$act->setSettlement($mainAct->getSettlement());
+				$act->setPlace($mainAct->getPlace());
+				$act->setGeoData($mainAct->getGeoData());
+				$act->setMapRegion($mainAct->getMapRegion());
+			}
 			return $act;
 		} else {
 			return False;
@@ -182,8 +197,56 @@ class ActivityManager {
 		return $boutGroup;
 	}
 
+	private function setLocationByChar(Activity $act, Character $char): void {
+		if ($place = $char->getInsidePlace()) {
+			$this->setActPlace($act, $char, $place);
+		} elseif ($settlement = $char->getInsideSettlement()) {
+			$this->setActSettlement($act, $char, $settlement);
+		} else {
+			$act->setLocation($char->getLocation());
+			$reg = $this->geo->findMyRegion($char);
+			if ($reg instanceof GeoData) {
+				$act->setGeoData($reg);
+			} else {
+				$act->setMapRegion($reg);
+			}
+		}
+	}
+
+	private function setActSettlement(Activity $act, Character $char, Settlement $settlement): void {
+		$act->setLocation($char->getLocation());
+		$act->setSettlement($settlement);
+		if ($settlement->getGeoData()) {
+			$act->setGeoData($settlement->getGeoData());
+		} else {
+			$act->setMapRegion($settlement->getMapregion());
+		}
+	}
+
+	private function setActPlace(Activity $act, Character $char, Place $place): void {
+		$act->setLocation($char->getLocation());
+		$act->setPlace($place);
+		if ($place->getGeoData()) {
+			$act->setGeoData($place->getGeoData());
+		} else {
+			$act->setMapRegion($place->getMapRegion());
+		}
+	}
+
 	public function log($level, $text): void {
-		$this->report?->setDebug($this->report->getDebug() . $text . "\n");
+		$text = str_replace(["\n", "\r"], '', $text);
+		if ($this->report) {
+			if ($this->logCache !== null) {
+				foreach ($this->logCache as $log) {
+					$this->report->setDebug($this->report->getDebug() . $log . "\n");
+				}
+				$this->logCache = null;
+			} else {
+				$this->report->setDebug($this->report->getDebug() . $text . "\n");
+			}
+		} else {
+			$this->logCache[] = $text;
+		}
 		if ($level <= $this->debug) {
 			$this->logger->info($text);
 		}
@@ -194,8 +257,9 @@ class ActivityManager {
 	*/
 
 	public function createDuel(Character $me, Character $them, $name, $level, $same, EquipmentType $weapon, $weaponOnly, ?Style $meStyle = null, ?Style $themStyle = null): Activity|string {
-		$type = $this->em->getRepository('App\Entity\ActivityType')->findOneBy(['name'=>'duel']);
+		$type = $this->em->getRepository(ActivityType::class)->findOneBy(['name'=>'duel']);
 		if ($act = $this->create($type, $level, $me)) {
+			$this->setLocationByChar($act, $me);
 			if (!$name) {
 				$act->setName('Duel between '.$me->getName().' and '.$them->getName());
 			} else {
@@ -214,29 +278,75 @@ class ActivityManager {
 		}
 	}
 
+	public function createTournament(Character $me, Settlement $where, int $total, string $name, null|array|string $fightTypes, ?bool $racesTypes, ?bool $joustTypes, $restrictions = null, $armor = null, $bypass = false): Activity|false {
+		$repo = $this->em->getRepository(ActivityType::class);
+		$grand = null;
+		$act = null;
+		if ($total > 1) {
+			$grand = $this->create($repo->findOneBy(['name'=>'grand tournament']), null, $me, null, $bypass);
+			$grand->setName($name);
+			$this->setActSettlement($grand, $me, $where);
+			$this->em->flush();
+		}
+		if ($fightTypes) {
+			if (is_string($fightTypes)) {
+				$fightTypes = [$fightTypes];
+			}
+			foreach ($fightTypes as $type) {
+				$act = $this->create($repo->findOneBy(['name'=>'melee tournament']), $type, $me, $grand, $bypass);
+				if ($restrictions) $act->setWeapons($restrictions);
+				$act->setArmor($armor);
+				if (!$grand) {
+					$act->setName($name);
+					$this->setActSettlement($act, $me, $where);
+				}
+			}
+		}
+		if ($racesTypes) {
+			$act = $this->create($repo->findOneBy(['name'=>'race']), null, $me, $grand, $bypass);
+			if (!$grand) {
+				$act->setName($name);
+				$this->setActSettlement($act, $me, $where);
+			}
+		}
+		if ($joustTypes) {
+			$act = $this->create($repo->findOneBy(['name'=>'joust']), null, $me, $grand, $bypass);
+			if (!$grand) {
+				$act->setName($name);
+				$this->setActSettlement($act, $me, $where);
+			}
+		}
+		$this->em->flush();
+		if ($grand) {
+			return $grand;
+		}
+		return $act;
+	}
+
 	/*
 	ACTIVITY DELETE FUNCTIONS
 	*/
 
 	public function cleanupAct(Activity $act): true {
-		$em = $this->em;
 		foreach ($act->getEvents() as $sub) {
 			$this->cleanupAct($sub);
 		}
-		foreach ($act->getParticipants() as $part) {
-			foreach($part->getBoutParticipation() as $bout) {
-				$em->remove($bout);
+		$this->em->remove($act);
+		foreach ($act->getParticipants() as $each) {
+			foreach($each->getBoutParticipation() as $bout) {
+				$this->em->remove($bout);
 			}
-			$em->remove($part);
+			$this->em->remove($each);
 		}
 		foreach ($act->getGroups() as $group) {
-			$em->remove($group);
+			$this->em->remove($group);
 		}
 		foreach ($act->getBouts() as $bout) {
-			$em->remove($bout);
+			$this->em->remove($bout);
 		}
-		$em->remove($act);
-		$em->flush();
+		$this->em->remove($act);
+		$this->em->flush();
+		# For reasons, which I don't understand, removing $act here breaks my dev environment. --Andrew
 		return true;
 	}
 
@@ -252,12 +362,14 @@ class ActivityManager {
 	ACTIVITY RUNNING FUNCTIONS
 	*/
 
-	public function runAll(): true {
+	public function runAll(string $ruleset): true {
 		$em = $this->em;
+		$this->ruleset = $ruleset;
                 $now = new DateTime("now");
 		$query = $em->createQuery('SELECT a FROM App\Entity\Activity a WHERE a.ready = true');
 		$all = $query->getResult();
 		foreach ($all as $act) {
+			$this->reset(); #Ensure known state.
 			$type = $act->getType()->getName();
 			if ($type === 'duel') {
 				$this->runDuel($act);
@@ -266,8 +378,10 @@ class ActivityManager {
 		return true;
 	}
 
-	public function run(Activity $act): true|string {
+	public function run(Activity $act, string $ruleset): true|string {
+		$this->reset();
 		$type = $act->getType()->getName();
+		$this->ruleset = $ruleset;
 		if ($type === 'duel') {
 			return $this->runDuel($act);
 		}
@@ -276,7 +390,9 @@ class ActivityManager {
 
 	private function runDuel(Activity $act): true {
 		$em = $this->em;
+		/** @var ActivityParticipant $me */
 		$me = $act->findChallenger();
+		/** @var ActivityParticipant $them */
 		$them = $act->findChallenged();
 		if (!$me || !$them) {
 			# Duel failed. Someone probably died.
@@ -287,26 +403,60 @@ class ActivityManager {
 		$meC = $me->getCharacter();
 		/** @var Character $themC */
 		$themC = $them->getCharacter();
-		$meRanged = $this->combat->RangedPower($me, false, $me->getWeapon());
-		$meMelee = $this->combat->MeleePower($me, false, $me->getWeapon());
-		$meSkill = $meC->findSkill($me->getWeapon()->getSkill());
-		if ($meSkill) {
-			$meScore = $meSkill->getScore();
-			echo 'found meScore '.$meScore.' - ';
+		$meWeapon = $me->getWeapon();
+		$themWeapon = $them->getWeapon();
+		if ($this->ruleset === 'legacy') {
+			$meRanged = $this->legacy->RangedPower($meC, false, $meWeapon);
+			$meMelee = $this->legacy->MeleePower($meC, false, $meWeapon);
+			$meSkill = $meC->findSkill($me->getWeapon()->getSkill());
+			if ($meSkill) {
+				$meScore = $meSkill->getScore();
+				$this->log(10, '$meScore of '.$meScore);
+			} else {
+				$meScore = 0;
+				$this->log(10, 'no $meScore');
+				echo 'no meScore - ';
+			}
+			$themRanged = $this->legacy->RangedPower($themC, false, $themWeapon);
+			$themMelee = $this->legacy->MeleePower($themC, false, $themWeapon);
+			$themSkill = $themC->findSkill($them->getWeapon()->getSkill());
+			if ($themSkill) {
+				$themScore = $themSkill->getScore();
+				$this->log(10, '$themScore of '.$themScore);
+			} else {
+				$themScore = 0;
+				$this->log(10, 'no $themScore');
+			}
 		} else {
-			$meScore = 0;
-			echo 'no meScore - ';
+			# Initial setup so Mastery knows it's working an Activity.
+			$this->mastery->prepare(true);
+			# Mastery needs these to exist to work right, so we check them here.
+			$skill = $meWeapon?->getSkill()->getName();
+			if ($skill) {
+				$this->skills->setupSkill($meC, 'wpn:'.$skill);
+			}
+			$skill = $themWeapon?->getSkill()->getName();
+			if ($skill) {
+				$this->skills->setupSkill($themC, 'wpn:'.$skill);
+			}
+			$meC->translateInjuryToModifiers();
+			$themC->translateInjuryToModifiers();
+
+			# Determine if ranged vs non-ranged setup.
+			$meRanged = $meWeapon->getRanged();
+			$themRanged = $themWeapon->getRanged();
+			# Mastery doesn't use these, but we need them set for later.
+			$meMelee = 0;
+			$themMelee = 0;
+			if ($act->getWeaponOnly()) {
+				$meArmor = $meC->getArmour();
+				$themArmor = $themC->getArmour();
+			} else {
+				$meArmor = null;
+				$themArmor = null;
+			}
 		}
-		$themRanged = $this->combat->RangedPower($them, false, $them->getWeapon());
-		$themMelee = $this->combat->MeleePower($them, false, $them->getWeapon());
-		$themSkill = $themC->findSkill($them->getWeapon()->getSkill());
-		if ($themSkill) {
-			$themScore = $themSkill->getScore();
-			echo "found themScore ".$themScore." - \n";
-		} else {
-			$themScore = 0;
-			echo "no themScore - \n";
-		}
+
 		if ($meRanged && !$themRanged) {
 			$meFreeAttack = true;
 			$themFreeAttack = false;
@@ -324,13 +474,20 @@ class ActivityManager {
 		$limit = $this->getActivityLimit($act);
 		$themMax = $themC->getRace()->getHp();
 		$meMax = $meC->getRace()->getHp();
-		$meWounds = $meC->getWounded();
-		$themWounds = $themC->getWounded();
-		$meLimit = floor(($meMax - $meC->getWounded()) * $limit);
-		$themLimit = floor(($themMax - $themC->getWounded()) * $limit);
+		if ($this->ruleset === 'legacy') {
+			$meWounds = $meC->getWounded();
+			$themWounds = $themC->getWounded();
+			$meLimit = floor(($meMax - $meC->getWounded()) * $limit);
+			$themLimit = floor(($themMax - $themC->getWounded()) * $limit);
+			$this->log(10, '$meLimit of '.$meLimit.'. $meWounds of '.$meWounds.' vs limit of '.$limit);
+			$this->log(10, '$themLimit of '.$themLimit.'. $themWounds of '.$themWounds.' vs limit of '.$limit);
+		} else {
+			$meOrigWounds = $meC->getInjuries();
+			$themOrigWounds = $themC->getInjuries();
+		}
 
-		#Create Report
 		if (!$act->getReport()) {
+			#Create Report
 			$report = new ActivityReport;
 			$report->setPlace($act->getPlace());
 			$report->setSettlement($act->getSettlement());
@@ -347,18 +504,19 @@ class ActivityManager {
 			$act->setReport($report);
 			$this->report = $report;
 		} else {
+			#Reuse existing report
 			$this->report = $act->getReport();
 		}
 		if ($this->report->getObservers()->count() === 0) {
-			$this->helper->addObservers($act, $report);
+			$this->helper->addObservers($act, $this->report);
 			$em->flush();
 		}
 
 		$charReports = $this->report->getCharacters();
 		$haveMe = false;
 		$haveThem = false;
-		if ($charReports) {
-			$count = $charReports->count();
+		$count = $charReports->count();
+		if ($count > 0) {
 			if ($count === 2) {
 				foreach ($charReports as $each) {
 					if ($each->getCharacter() === $meC) {
@@ -385,40 +543,14 @@ class ActivityManager {
 			}
 		}
 		if (!$haveMe) {
-			$meReport = new ActivityReportCharacter;
-			$em->persist($meReport);
-			$this->report->addCharacter($meReport);
-			$meReport->setCharacter($meC);
-			$meReport->setWeapon($me->getWeapon());
-			if (!$wpnOnly) {
-				$meReport->setArmour($meC->getArmour());
-				$meReport->setEquipment($meC->getEquipment());
-				$meReport->setMount($meC->getMount());
-			}
-			$meReport->setActivityReport($this->report);
-			$meReport->setStanding(true);
-			$meReport->setWounded(false);
-			$meReport->setSurrender(false);
-			$meReport->setKilled(false);
+			$meReport = $this->newActivityReportCharacter($meC, $me, $wpnOnly);
 		}
 		if (!$haveThem) {
-			$themReport = new ActivityReportCharacter;
-			$em->persist($themReport);
-			$this->report->addCharacter($themReport);
-			$themReport->setCharacter($themC);
-			$themReport->setWeapon($them->getWeapon());
-			if (!$wpnOnly) {
-				$themReport->setArmour($themC->getArmour());
-				$themReport->setEquipment($themC->getEquipment());
-				$themReport->setMount($themC->getMount());
-			}
-			$themReport->setActivityReport($this->report);
-			$themReport->setStanding(true);
-			$themReport->setWounded(false);
-			$themReport->setSurrender(false);
-			$themReport->setKilled(false);
+			$themReport = $this->newActivityReportCharacter($themC, $them, $wpnOnly);
 		}
-		$em->flush();
+		if (!$haveMe || !$haveThem) {
+			$em->flush();
+		}
 
 		# Setup
 		$round = 1;
@@ -426,37 +558,41 @@ class ActivityManager {
 
 		# Special first round logic.
 		if ($meFreeAttack) {
-			$data = [];
-			$result = $this->duelAttack($me, $meC, $meRanged, $meMelee, $meScore, $themC, $themScore, $act, true);
-			$data['result'] = $this->duelCalculateReportString($result, $themC);
-			$newWounds = $this->duelCalculateResult($result);
-			$data['new'] = $newWounds;
-			$this->log(10, $themC->getName()." takes ".$newWounds." damage from the attack.\n");
-			$themWounds = $themWounds + $newWounds;
-			$data['wounds'] = $themWounds;
-			if ($themC->healthValue() < $themLimit) {
-				$continue = false;
+			if ($this->ruleset === 'legacy') {
+				$continue = $this->duelLegacyAttack($act, $meReport, $themReport, $me, $meC, $themC, $round, $meRanged, $meMelee, $meScore, $themScore, $themLimit, $themWounds, true);
+			} else {
+				$this->duelMasteryAttack($meC, $themC, $meReport, $themReport, $meWeapon, $themWeapon, $round, $limit, [$meArmor, $themArmor], true);
+				$meC->applyModifier();
+				$meC->applyInjuries();
+				$themC->applyModifier();
+				$themC->applyInjuries();
+				$this->log(10, $meC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($meC->getInjuries(), true)));
+				$meCont = $this->evaluateHealth($meOrigWounds, $meC->getInjuries(), $limit);
+				$this->log(10, $themC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($themC->getInjuries(), true)));
+				$themCont = $this->evaluateHealth($themOrigWounds, $themC->getInjuries(), $limit);
+				if (!$meCont || !$themCont) {
+					$continue = false;
+				}
 			}
-			$themC->wound($newWounds);
-			$this->createStageReport(null, $meReport, $round, $data);
-			$this->createStageReport(null, $themReport, $round, ['result'=>'freehit']);
 			$round++;
 			$em->flush();
 		} elseif ($themFreeAttack) {
-			$data = [];
-			$result = $this->duelAttack($them, $themC, $themRanged, $themMelee, $themScore, $meC, $meScore, $act, true);
-			$data['result'] = $this->duelCalculateReportString($result, $meC);
-			$newWounds = $this->duelCalculateResult($result);
-			$data['new'] = $newWounds;
-			$this->log(10, $meC->getName()." takes ".$newWounds." damage from the attack.\n");
-			$meWounds = $meWounds + $newWounds;
-			$data['wounds'] = $meWounds;
-			if ($meC->healthValue() < $meLimit) {
-				$continue = false;
+			if ($this->ruleset === 'legacy') {
+				$continue = $this->duelLegacyAttack($act, $themReport, $meReport, $them, $themC, $meC, $round, $themRanged, $themMelee, $themScore, $meScore, $meLimit, $meWounds, true);
+			} else {
+				$this->duelMasteryAttack($themC, $meC, $themReport, $meReport, $themWeapon, $meWeapon, $round, $limit, [$meArmor, $themArmor], true);
+				$meC->applyModifier();
+				$meC->applyInjuries();
+				$themC->applyModifier();
+				$themC->applyInjuries();
+				$this->log(10, $meC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($meC->getInjuries(), true)));
+				$meCont = $this->evaluateHealth($meOrigWounds, $meC->getInjuries(), $limit);
+				$this->log(10, $themC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($themC->getInjuries(), true)));
+				$themCont = $this->evaluateHealth($themOrigWounds, $themC->getInjuries(), $limit);
+				if (!$meCont || !$themCont) {
+					$continue = false;
+				}
 			}
-			$meC->wound($newWounds);
-			$this->createStageReport(null, $themReport, $round, $data);
-			$this->createStageReport(null, $meReport, $round, ['result'=>'freehit']);
 			$round++;
 			$em->flush();
 		}
@@ -474,63 +610,165 @@ class ActivityManager {
 
 		if ($continue) {
 			while ($continue) {
-				# Challenger attacks.
-				$data = [];
-				$result = $this->duelAttack($me, $meC, $meRanged, $meMelee, $meScore, $themC, $themScore, $act, $meUseRanged);
-				$data['result'] = $this->duelCalculateReportString($result, $themC);
-				$newWounds = $this->duelCalculateResult($result);
-				$data['new'] = $newWounds;
-				$this->log(10, $themC->getName()." takes ".$newWounds." damage from the attack.\n");
-				$themC->wound($newWounds);
-				$data['wounds'] = $themC->getWounded();
-				$this->createStageReport(null, $meReport, $round, $data);
-
-				# Challenged attacks.
-				$data = [];
-				$result = $this->duelAttack($them, $themC, $themRanged, $themMelee, $themScore, $meC, $meScore, $act, $themUseRanged);
-				$data['result'] = $this->duelCalculateReportString($result, $meC);
-				$newWounds = $this->duelCalculateResult($result);
-				$data['new'] = $newWounds;
-				$this->log(10, $meC->getName()." takes ".$newWounds." damage from the attack.\n");
-				$meC->wound($newWounds);
-				$data['wounds'] = $meC->getWounded();
-				$this->createStageReport(null, $themReport, $round, $data);
-
-				$round++;
-				$em->flush();
-				if ($themC->healthValue() < $themLimit || $meC->healthValue() < $meLimit) {
-					$continue = false;
-					echo $meC->getName()." health at ".$meC->healthValue()."\n";
-					echo $themC->getName()." health at ".$themC->healthValue()."\n";
+				# Regardless of system, challenger attacks first, followed by challenged. "Hits" are stored until round end.
+				if ($this->ruleset === 'legacy') {
+					$this->duelLegacyAttack($act, $meReport, $themReport, $me, $meC, $themC, $round, $meRanged, $meMelee, $meScore, $themScore, $themLimit, $themWounds, $meUseRanged);
+					$this->duelLegacyAttack($act, $themReport, $meReport, $them, $themC, $meC, $round, $themRanged, $themMelee, $themScore, $meScore, $meLimit, $meWounds, $themUseRanged);
+					$round++;
+					$em->flush();
+					if ($themC->getWounded() > $themLimit || $meC->getWounded() > $meLimit) {
+						$continue = false;
+						$this->log(10, $meC->getName()." wounds at ".$meC->getWounded());
+						$this->log(10, $themC->getName()." wounds at ".$themC->getWounded());
+					}
+				} else {
+					$this->duelMasteryAttack($meC, $themC, $meReport, $themReport, $meWeapon, $themWeapon, $round, $limit, [$meArmor, $themArmor]);
+					$this->duelMasteryAttack($themC, $meC, $themReport, $meReport, $themWeapon, $meWeapon, $round, $limit, [$themArmor, $meArmor]);
+					$meC->applyModifier();
+					$meC->applyInjuries();
+					$themC->applyModifier();
+					$themC->applyInjuries();
+					$this->log(10, $meC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($meC->getInjuries(), true)));
+					$meCont = $this->evaluateHealth($meOrigWounds, $meC->getInjuries(), $limit);
+					$this->log(10, $themC->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($themC->getInjuries(), true)));
+					$themCont = $this->evaluateHealth($themOrigWounds, $themC->getInjuries(), $limit);
+					if (!$meCont || !$themCont) {
+						$continue = false;
+					}
+					$round++;
+					$em->flush();
 				}
 			}
 		}
-
-		$this->duelConclude($me, $meReport, $them, $themReport, $meLimit, $themLimit, $act, $round);
-
+		if ($this->ruleset === 'legacy') {
+			$this->duelConclude($me, $meReport, $them, $themReport, [$meLimit, $themLimit], null, $act);
+		} else {
+			$this->duelConclude($me, $meReport, $them, $themReport, null, [$meCont, $themCont, $meOrigWounds, $themOrigWounds], $act);
+		}
 		return true;
 	}
 
-	private function getActivityLimit(Activity $act) {
-		$limit = 0.9;
-		switch ($act->getSubtype()->getName()) {
-			case 'first blood':
-				$limit = 0.9;
-				break;
-			case 'wound':
-				$limit = 0.6;
-				break;
-			case 'surrender':
-				$limit = 0.3;
-				break;
-			case 'death':
-				$limit = 0;
-				break;
+	private function evaluateHealth($meOrigWounds, $injuries, $limit): bool {
+		$change = 0;
+		$worst = 0;
+		foreach ($injuries as $where=>$value) {
+			if (array_key_exists($where, $meOrigWounds)) {
+				if ($meOrigWounds[$where] != $value) {
+					$change += $value - $meOrigWounds[$where];
+				}
+			} else {
+				$change += $value;
+			}
+			if ($value > $worst) {
+				$worst = $value;
+			}
 		}
-		return $limit;
+		if ($change > 0) {
+			if ($limit === 0.9 && $change) {
+				$this->log(10, "first blood surrender -- $change");
+				return false;
+			}
+			if ($limit === 0.6 && $change > 3) {
+				$this->log(10, "wound surrender -- $change");
+				return false;
+			}
+			if ($limit === 0.3 && ($change > 6 || $worst > 3)) {
+				$this->log(10, "regular surrender -- $change");
+				return false;
+			}
+			if ($limit === 0.0 && ($change > 10 || $worst > 4)) {
+				$this->log(10, "near death surrender -- $change");
+				return false;
+			}
+		}
+		return true;
 	}
 
-	private function duelAttack($me, $meChar, $meRanged, $meMelee, $meScore, $themChar, $themScore, $act, $ranged=false) {
+	private function duelMasteryAttack(
+		Character $meC,
+		Character $themC,
+		ActivityReportCharacter $meReport,
+		ActivityReportCharacter $themReport,
+		EquipmentType $meWeapon,
+		EquipmentType $themWeapon,
+		$round,
+		$limit,
+		array $armors,
+		$freehit = false
+	): void {
+		$this->mastery->groupAttackResolves = 0;
+		$hit = $this->mastery->attackRoll($meC, $themC, $meWeapon, $themWeapon, false);
+		[$results, $logs] = $this->mastery->resolveAttack($meC, $themC, $hit, $meWeapon, $themWeapon, $armors[0], $armors[1], 0);
+		$results = explode(' ', $results);
+		$this->logAttack($logs);
+		#TODO: Read injuries and logs and build them into some players can see.
+		$this->fatigueRoll($meC, $round);
+		$this->createStageReport(null, $meReport, $round, ['result' => false, 'results' => $results]);
+		if ($freehit) {
+			$this->createStageReport(null, $themReport, $round, ['result'=>'freehit']);
+		}
+	}
+
+	private function newActivityReportCharacter (Character $char, ActivityParticipant $part, $wpnOnly) {
+		$meReport = new ActivityReportCharacter;
+		$this->em->persist($meReport);
+		$this->report->addCharacter($meReport);
+		$meReport->setCharacter($char);
+		$meReport->setWeapon($part->getWeapon());
+		if (!$wpnOnly) {
+			$meReport->setArmour($char->getArmour());
+			$meReport->setEquipment($char->getEquipment());
+			$meReport->setMount($char->getMount());
+		}
+		$meReport->setActivityReport($this->report);
+		$meReport->setStanding(true);
+		$meReport->setWounded(false);
+		$meReport->setSurrender(false);
+		$meReport->setKilled(false);
+		return $meReport;
+	}
+
+	private function fatigueRoll(Character $char, $phase) {
+		// Fatigue - roll 1d6 + phase + penalty vs toughness, and increment fatigue. After 12 phases, this is guaranteed to increment penalty.
+		$fatigueRoll = $char->getModifierSum() + $phase;
+		$fatigueRoll += rand(1, 6);
+		if ($fatigueRoll > $char->getToughness()) {
+			$char->prepModifier('Fatigue', 1);
+			// Should be a check here to 'pass out' and become a non-killed inactive soldier.
+		}
+	}
+
+	private function duelLegacyAttack(
+		Activity $act,
+		ActivityReportCharacter $meReport,
+		ActivityReportCharacter $themReport,
+		ActivityParticipant $mePart,
+		Character $meC,
+		Character $themC,
+		$round, $meRanged, $meMelee, $meScore, $themScore, $themLimit, $themWounds, $meUseRanged,
+		$freehit = false
+	): bool {
+		$data = [];
+		$continue = true;
+		$result = $this->legacyAttack($mePart, $meC, $meRanged, $meMelee, $meScore, $themC, $themScore, $act, $meUseRanged);
+		$data['result'] = $this->duelCalculateLegacyReportString($result, $themC);
+		$newWounds = $this->duelCalculateResult($result);
+		$data['new'] = $newWounds;
+		$this->log(10, $themC->getName()." takes ".$newWounds." damage from the attack.\n");
+		$themWounds = $themWounds + $newWounds;
+		$data['wounds'] = $themWounds;
+		if ($themC->healthValue() < $themLimit) {
+			$continue = false;
+		}
+		$themC->wound($newWounds);
+		$this->createStageReport(null, $meReport, $round, $data);
+		if ($freehit) {
+			$this->createStageReport(null, $themReport, $round, ['result'=>'freehit']);
+		}
+		return $continue;
+	}
+
+	private function legacyAttack($me, $meChar, $meRanged, $meMelee, $meScore, $themChar, $themScore, $act, $ranged=false) {
 		if ($ranged) {
 			if ($meScore < 25) {
 				$meScore = 25; # Basic to-hit chance.
@@ -538,8 +776,8 @@ class ActivityManager {
 			echo $meChar->getName().' - ';
 			$this->skills->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." fires - ");
-			if ($this->combat->RangedRoll(0, 1*$themChar->getRace()->getSize(), 0, $meScore)) {
-				[$result, $sublogs] = $this->combat->rangedHit($meChar, $themChar, $meRanged, $act, false, 1, $themScore);
+			if ($this->legacy->RangedRoll(0, 1*$themChar->getRace()->getSize(), 0, $meScore)) {
+				[$result, $logs] = $this->legacy->rangedHit($meChar, $themChar, $meRanged, $act, false, 1, $themScore);
 			} else {
 				$result = 'miss';
 				$this->log(10, $result);
@@ -551,8 +789,8 @@ class ActivityManager {
 			echo $meChar->getName().' - ';
 			$this->skills->trainSkill($meChar, $me->getWeapon()->getSkill(), 1);
 			$this->log(10, $meChar->getName()." attacks - ");
-			if ($this->combat->MeleeRoll(0, $this->combat->toHitSizeModifier($meChar, $themChar), $meScore)) {
-				[$result, $sublogs] = $this->combat->MeleeAttack($meChar, $themChar, $meMelee, $act, false, 1, $themScore, false);
+			if ($this->legacy->MeleeRoll(0, $this->legacy->toHitSizeModifier($meChar, $themChar), $meScore)) {
+				[$result, $logs] = $this->legacy->MeleeAttack($meChar, $themChar, $meMelee, $act, false, 1, $themScore, false);
 			} else {
 				$result = 'miss';
 				$this->log(10, $result);
@@ -567,7 +805,7 @@ class ActivityManager {
 		return $result;
 	}
 
-	private function duelCalculateReportString($result, Character $char): string {
+	private function duelCalculateLegacyReportString($result, Character $char): string {
 		echo "Result: $result\n";
 		if (is_string($result)) return $result;
 		# This generates the report text stings.
@@ -596,24 +834,71 @@ class ActivityManager {
 		return false;
 	}
 
-	private function duelConclude(ActivityParticipant $me, ActivityReportCharacter $meReport, ActivityParticipant $them, ActivityReportCharacter $themReport, $meLimit, $themLimit, Activity $act): void {
+	private function hasKillingInjury(Character $char): bool {
+		$locations = $char->getRace()->getDamageLocations();
+		foreach ($char->getInjuries() as $where=>$value) {
+			foreach ($locations[$where] as $each) {
+				if ($each[0] === $value) {
+					foreach ($each as $inner) {
+						if ($inner === 'kill') {
+							$this->log(10, $char->getName()." has killing injury of $value on $where");
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	private function duelConclude(
+		ActivityParticipant $me,
+		ActivityReportCharacter $meReport,
+		ActivityParticipant $them,
+		ActivityReportCharacter $themReport,
+		?array $legacyArr,
+		?array $masteryArr,
+		Activity $act
+	): void {
 		$meData = [];
 		$meC = $me->getCharacter();
 		$themData = [];
 		$themC = $them->getCharacter();
-		$meWounds = $meC->getWounded();
-		$themWounds = $themC->getWounded();
-		if ($themC->healthValue() < $themLimit && $meC->healthValue() >= $meLimit) {
+		$legacy = false;
+		$mastery = false;
+		if ($this->ruleset === 'legacy') {
+			$legacy = true;
+			$meLimit = $legacyArr[0];
+			$themLimit = $legacyArr[1];
+			$meWounds = $meC->getWounded();
+			$themWounds = $themC->getWounded();
+			$meReport->setWounds($meWounds);
+			$themReport->setWounds($themWounds);
+		} else {
+			$mastery = true;
+			$meGood = $masteryArr[0];
+			$themGood = $masteryArr[1];
+		}
+		if (
+			($legacy && $themC->getWounded() > $themLimit && $meC->getWounded() <= $meLimit) ||
+			($mastery && $meGood && !$themGood)
+		) {
 			# My victory.
 			$meData['result'] = 'victory';
 			$themData['result'] = 'loss';
 			[$meData['skillCheck'], $meData['skillAcc'], $themData['skillCheck'], $themData['skillAcc']] = $this->skillEval($meC, $meReport->getWeapon(), $themC, $themReport->getWeapon());
-		} elseif ($themC->healthValue() < $themLimit && $meC->healthValue() < $meLimit) {
+		} elseif (
+			($legacy && $themC->getWounded() > $themLimit && $meC->getWounded() > $meLimit) ||
+			($mastery && !$meGood && !$themGood)
+		) {
 			# Draw.
 			$meData['result'] = 'draw';
 			$themData['result'] = 'draw';
 			[$meData['skillCheck'], $meData['skillAcc'], $themData['skillCheck'], $themData['skillAcc']] = $this->skillEval($meC, $meReport->getWeapon(), $themC, $themReport->getWeapon());
-		} elseif ($meC->healthValue() < $meLimit && $themC->healthValue() >= $themLimit) {
+		} elseif (
+			($legacy && $meC->getWounded() > $meLimit && $themC->getWounded() <= $themLimit) ||
+			($mastery && !$meGood && $themGood)
+		) {
 			# Their victory.
 			$meData['result'] = 'loss';
 			$themData['result'] = 'victory';
@@ -627,14 +912,15 @@ class ActivityManager {
 		}
 		# 32767 is the smallint max value, if you're curious.
 		$meReport->setFinish($meData);
-		$meReport->setWounds($meWounds);
 		$themReport->setFinish($themData);
-		$themReport->setWounds($themWounds);
 		$this->em->flush();
 		$duelLimit = $this->getActivityLimit($act);
 		if ($duelLimit < 0.9) {
 			# No deaths on duels till first blood.
-			if ($themC->healthValue() <= 0.0 && $meC->healthValue() <= 0.0) {
+			if (
+				($this->ruleset === 'legacy' && $themC->healthValue() <= 0.0 && $meC->healthValue() <= 0.0) ||
+				($this->ruleset === 'mastery' && $this->hasKillingInjury($themC) && $this->hasKillingInjury($meC))
+			) {
 				# Special handling for both dieing, lol
 				$this->charMan->kill($meC, $themC, null, 'deathduel2');
 				$this->charMan->kill($themC, $meC, null, 'deathduel2');
@@ -646,13 +932,19 @@ class ActivityManager {
 				$themReport->setKilled(true);
 				$themReport->setWounded(false);
 				$themReport->setSurrender(false);
-			} elseif ($themC->healthValue() <= 0.0 && $meC->healthValue() > 0.0) {
+			} elseif (
+				($this->ruleset === 'legacy' && $themC->healthValue() <= 0.0 && $meC->healthValue() > 0.0) ||
+				($this->ruleset === 'mastery' && $this->hasKillingInjury($themC) && !$this->hasKillingInjury($meC))
+			) {
 				$this->charMan->kill($themC, $meC, null, 'deathduel');
 				$themReport->setStanding(false);
 				$themReport->setKilled(true);
 				$themReport->setWounded(false);
 				$themReport->setSurrender(false);
-			} elseif ($themC->healthValue() > 0.0 && $meC->healthValue() <= 0.0) {
+			} elseif (
+				($this->ruleset === 'legacy' && $themC->healthValue() > 0.0 && $meC->healthValue() <= 0.0) ||
+				($this->ruleset === 'mastery' && !$this->hasKillingInjury($themC) && $this->hasKillingInjury($meC))
+			) {
 				$this->charMan->kill($meC, $themC, null, 'deathduel');
 				$meReport->setStanding(false);
 				$meReport->setKilled(true);
@@ -676,6 +968,29 @@ class ActivityManager {
 			false
 		);
 		$this->cleanupAct($act);
+	}
+
+	private function getActivityLimit(Activity $act) {
+		$limit = 0.9;
+		switch ($act->getSubtype()->getName()) {
+			case 'first blood':
+				$limit = 0.9;
+				$this->log(10, 'Duel to first blood.');
+				break;
+			case 'wound':
+				$limit = 0.6;
+				$this->log(10, 'Duel to wound.');
+				break;
+			case 'surrender':
+				$limit = 0.3;
+				$this->log(10, 'Duel to surrender.');
+				break;
+			case 'death':
+				$limit = 0;
+				$this->log(10, 'Duel to death.');
+				break;
+		}
+		return $limit;
 	}
 
 	private function skillEval(Character $me, EquipmentType $meW, Character $them, EquipmentType $themW): array {
@@ -765,6 +1080,12 @@ class ActivityManager {
 			$themCheck = $aCheck;
 		}
 		return [$meCheck, $skillAcc, $themCheck, $skillAcc];
+	}
+
+	public function logAttack($logs): void {
+		foreach ($logs as $each) {
+			$this->log(10, $each);
+		}
 	}
 
 }

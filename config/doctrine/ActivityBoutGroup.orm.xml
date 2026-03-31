@@ -5,7 +5,7 @@
 			<generator strategy="IDENTITY"/>
 		</id>
 		<many-to-one field="bout" target-entity="ActivityBout" inversed-by="groups"/>
-                <many-to-one field="group" target-entity="ActivityGroup" inversed-by="bout_participation"/>
+		<many-to-one field="group" target-entity="ActivityGroup" inversed-by="bout_participation"/>
 
 	</entity>
 </doctrine-mapping>

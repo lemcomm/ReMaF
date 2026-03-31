@@ -86,6 +86,7 @@ class GameRequestController extends AbstractController {
 				}
 				break;
 			case 'realm.join':
+			case 'promote':
 				if (in_array($char, $id->getToRealm()->findRulers()->toArray())) {
 					$result = true;
 				}
@@ -308,6 +309,43 @@ class GameRequestController extends AbstractController {
 					}
 				}
 				break;
+			case 'promote':
+				if ($allowed) {
+					$realm = $id->getFromRealm();
+					$valid = false;
+					$wanted = $id->getNumberValue();
+					$current = $realm->getType();
+					if ($realm->getSuperior() === $id->getToRealm() && $realm->getSuperior()?->getType() > $wanted && $wanted !== $current) {
+						$valid = true;
+					}
+					if ($valid) {
+						$realm->setType($id->getNumberValue());
+						if ($current < $wanted) {
+							$this->hist->logEvent(
+								$realm,
+								'event.realm.promoted',
+								array('%link-realm%'=>$id->getToRealm()->getId()),
+								History::HIGH, true
+							);
+						} elseif ($current > $wanted) {
+							$this->hist->logEvent(
+								$realm,
+								'event.realm.demoted',
+								array('%link-realm%'=>$id->getToRealm()->getId()),
+								History::HIGH, true
+							);
+						}
+						$em->remove($id);
+						$em->flush();
+						return $this->redirectToRoute($route);
+					} else {
+						# Regardless of why we ended up here, these just get removed.
+						$this->em->remove($id);
+						$em->flush();
+					}
+				} else {
+					throw new AccessDeniedHttpException($this->trans->trans('unavailable.notleader'));
+				}
 			case 'realm.join':
 				if ($allowed) {
 					$target = $id->getToRealm();
@@ -353,7 +391,7 @@ class GameRequestController extends AbstractController {
 					$em->flush();
 					return $this->redirectToRoute($route);
 				} else {
-					throw new AccessDeniedHttpException('unavailable.notruler');
+					throw new AccessDeniedHttpException($this->trans->trans('unavailable.notleader'));
 				}
 			case 'house.cadet':
 				if ($allowed) {
@@ -384,7 +422,7 @@ class GameRequestController extends AbstractController {
 					$this->addFlash('notice', $this->trans->trans('house.manage.cadet.approved', array('%house%'=>$cadet->getName(), '%character%'=>$character->getName()), 'politics'));
 					return $this->redirectToRoute($route);
 				} else {
-					throw new AccessDeniedHttpException('unavailable.nothead');
+					throw new AccessDeniedHttpException($this->trans->trans('unavailable.nothead'));
 				}
 			case 'house.uncadet':
 				if ($allowed) {
@@ -415,7 +453,7 @@ class GameRequestController extends AbstractController {
 					$this->addFlash('notice', $this->trans->trans('house.manage.uncadet.approved', array('%house%'=>$cadet->getName(), '%character%'=>$character->getName()), 'politics'));
 					return $this->redirectToRoute($route);
 				} else {
-					throw new AccessDeniedHttpException('unavailable.nothead');
+					throw new AccessDeniedHttpException($this->trans->trans('unavailable.nothead'));
 				}
 		}
 		return new Response();
@@ -452,7 +490,7 @@ class GameRequestController extends AbstractController {
 					$this->addFlash('notice', $this->trans->trans('military.settlement.food.rejected', array('%character%'=>$id->getFromCharacter()->getName(), '%settlement%'=>$id->getToSettlement()->getName()), 'actions'));
 					return $this->redirectToRoute($route);
 				} else {
-					throw new AccessDeniedHttpException('unavailable.notlord');
+					throw new AccessDeniedHttpException($this->trans->trans('unavailable.notlord'));
 				}
 			case 'assoc.join':
 				if ($allowed) {
@@ -593,6 +631,31 @@ class GameRequestController extends AbstractController {
 					}
 				}
 				break;
+			case 'promote':
+				if ($allowed) {
+					$realm = $id->getFromRealm();
+					$this->hist->logEvent(
+						$realm,
+						'event.realm.nopromote',
+						['%link-realm%'=>$id->getToRealm()->getId()],
+						History::MEDIUM,
+						false,
+						30
+					);
+					$this->addFlash(
+						'notice',
+						$this->trans->trans(
+							'realm.promote.deny', [
+							'%name%'=>$id->getFromRealm()->getName(),
+						], 'politics'
+						)
+					);
+					$em->remove($id);
+					$em->flush();
+					return $this->redirectToRoute($route);
+				} else {
+					throw new AccessDeniedHttpException($this->trans->trans('unavailable.notleader'));
+				}
 			case 'realm.join':
 				if ($allowed) {
 					$target = $id->getToRealm();
@@ -603,7 +666,6 @@ class GameRequestController extends AbstractController {
 						array('%link-realm%'=>$target->getId()),
 						History::MEDIUM
 					);
-
 					$this->addFlash(
 						'notice',
 						$this->trans->trans(
@@ -617,7 +679,7 @@ class GameRequestController extends AbstractController {
 					$em->flush();
 					return $this->redirectToRoute($route);
 				} else {
-					throw new AccessDeniedHttpException($this->trans->trans('unavailable.notruler'));
+					throw new AccessDeniedHttpException($this->trans->trans('unavailable.notleader'));
 				}
 			case 'house.cadet':
 				if ($allowed) {

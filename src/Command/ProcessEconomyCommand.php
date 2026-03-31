@@ -12,12 +12,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Extends src/Command/AbstractProcessCommand, which is stated here because most commands are one-offs that extend Symfony code.
  */
 class ProcessEconomyCommand extends AbstractProcessCommand {
-
-	protected EntityManagerInterface $em;
 	protected string $opt_time;
 
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(protected EntityManagerInterface $em) {
 		parent::__construct($em);
 	}
 
