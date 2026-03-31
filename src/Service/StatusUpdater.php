@@ -174,6 +174,8 @@ class StatusUpdater {
 				$char->updateStatus(CharacterStatus::currently, 19);
 			} elseif ($status[23]) { #Traveling
 				$char->updateStatus(CharacterStatus::currently, 23);
+			} elseif ($status[24]) { #Traveling
+				$char->updateStatus(CharacterStatus::currently, 24);
 			} else { # Default
 				$char->updateStatus(CharacterStatus::currently, 13);
 			}

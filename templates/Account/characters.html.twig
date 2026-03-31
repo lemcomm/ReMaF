@@ -105,7 +105,7 @@ Table headers are handled as translation strings from the character.list databas
 				{% set fish = 0 %}
 			{% endif %}
 			{% if msgCnt > 0 %}{{ "newmessages"|trans({'%count%':msgCnt, "%number%":msgCnt}) }}{% endif %}
-			{% if msgCnt > 0 and (reqs > or fish > 0) %} | {% endif %}
+			{% if msgCnt > 0 and (reqs > 0 or fish > 0) %} | {% endif %}
 			{% if reqs > 0 %}{{ "requests"|trans({'%count%':reqs, "%number%":reqs}) }}{% endif %}
 			{% if reqs > 0 and fish > 0 %} | {% endif %}
 			{% if fish > 0 %}{{ "newfish"|trans }}{% endif %}
