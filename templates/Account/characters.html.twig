@@ -89,15 +89,26 @@ Table headers are handled as translation strings from the character.list databas
 				{{ 'charstatus.reclaiming'|trans }}
 			{% elseif currently == charStatus.newOccupant.value %}
 				{{ 'charstatus.newOccupant'|trans }}
+			{% elseif currently == charStatus.fishing.value %}
+				{{ 'charstatus.fishing'|trans }}
 			{% elseif currently == charStatus.travelling.value %}
 				{{ 'charstatus.travelling'|trans({'%turn%':status[charStatus.travelling.value]|round(1, 'ceil')}) }}
 			{% endif %}
 			<!-- CC: {{ currently }}-->
 		</td>
 		<td align="center">
-			{% if character.status[charStatus.messages.value] > 0 %}{{ "newmessages"|trans({'%count%':character.status[charStatus.messages.value], "%number%":character.status[charStatus.messages.value]}) }}{% endif %}
-			{% if character.status[charStatus.messages.value] > 0 and character.status[charStatus.requests.value] > 0 %} | {% endif %}
-			{% if character.requests > 0 %}{{ "requests"|trans({'%count%':character.requests, "%number%":character.requests}) }}{% endif %}
+			{% set msgCnt = character.status[charStatus.messages.value] %}
+			{% set reqs = character.requests %}
+			{% if character.status[charStatus.fishlogs.value] is defined %}
+				{% set fish = character.status[charStatus.fishlogs.value] %}
+			{% else %}
+				{% set fish = 0 %}
+			{% endif %}
+			{% if msgCnt > 0 %}{{ "newmessages"|trans({'%count%':msgCnt, "%number%":msgCnt}) }}{% endif %}
+			{% if msgCnt > 0 and (reqs > or fish > 0) %} | {% endif %}
+			{% if reqs > 0 %}{{ "requests"|trans({'%count%':reqs, "%number%":reqs}) }}{% endif %}
+			{% if reqs > 0 and fish > 0 %} | {% endif %}
+			{% if fish > 0 %}{{ "newfish"|trans }}{% endif %}
 			{# Requests aren't tied into this yet, and honestly I'm not sure we can given how nebulous some of them can be in who can approve them.
 			{% if character.status[charStatus.requests.value] > 0 %}{{ "requests"|trans({'%count%':character.status[charStatus.requests.value], "%number%":character.status[charStatus.requests.value]}) }}{% endif %}
 			#}

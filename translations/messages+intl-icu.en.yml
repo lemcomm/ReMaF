@@ -1042,6 +1042,7 @@ charstatus:
  fishing:     fishing
 newevents:    "{number} event{count, plural, =1 {} other {s}}"
 newmessages:  "{number} message{count, plural, =1 {} other {s}}"
+newfish:      "{number} fish"
 requests:     "{number} request{count, plural, =1 {} other {s}}"
 inside:       inside {settlement}
 inside2:      inside {place}, in {settlement}

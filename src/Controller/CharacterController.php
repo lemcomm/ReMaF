@@ -1635,6 +1635,10 @@ class CharacterController extends AbstractController {
 					break;
 				case 'train.skill':
 					$status->character($char, CharacterStatus::training, true, true);
+					break;
+				case 'fishing':
+					$status->character($char, CharacterStatus::fishing, true, true);
+					break;
 			}
 		}
 		if ($char->getBattling()) {

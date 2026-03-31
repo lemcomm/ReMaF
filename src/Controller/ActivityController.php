@@ -21,6 +21,7 @@ use App\Service\Dispatcher\ActivityDispatcher;
 use App\Service\ActivityManager;
 use App\Service\AppState;
 use App\Service\Geography;
+use App\Service\StatusUpdater;
 use App\Twig\GameTimeExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,11 +35,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ActivityController extends AbstractController {
 	public function __construct(
-		private ActivityDispatcher     $activityDispatcher,
-		private ActivityManager        $actman,
-		private EntityManagerInterface $em,
-		private TranslatorInterface    $trans,
-		private Geography              $geo,
+		private ActivityDispatcher	$activityDispatcher,
+		private ActivityManager		$actman,
+		private EntityManagerInterface	$em,
+		private TranslatorInterface	$trans,
+		private Geography		$geo,
+		private StatusUpdater 		$statusUpdater,
 	) {
 	}
 	
@@ -88,6 +90,7 @@ class ActivityController extends AbstractController {
 			$act->setType('fishing');
 			$act->setComplete(new \DateTime("+$time minutes"));
 			$act->setStringValue($data['where']);
+			$this->statusUpdater->character($char, CharacterStatus::fishing, true);
 			$this->em->persist($act);
 			$this->em->flush();
 			$this->addFlash('notice', $this->trans->trans('fishing.start.flash', [], 'activity'));
