@@ -538,6 +538,8 @@ class SecurityController extends AbstractController {
 			$key->setToken($token);
 			$em->flush();
 		}
+		$user->setLastLogin(new DateTime());
+		$em->flush();
 
 		return $this->render('Account/keys.html.twig', [
 			'keys' => $user->getKeys(),

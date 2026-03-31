@@ -68,6 +68,7 @@ class AccountController extends AbstractController {
 
 		// clean out character id so we have a clear slate (especially for the template)
 		$user->setCurrentCharacter(null);
+		$user->setLastLogin(new DateTime());
 		$em->flush();
 
 		[$announcements, $notices] = $this->notifications($em, $pay);
@@ -102,6 +103,7 @@ class AccountController extends AbstractController {
 		if ($user->getLimits() === null) {
 			$userMan->createLimits($user);
 		}
+		$user->setLastLogin(new DateTime());
 		$em->flush();
 		if (!$canSpawn) {
 			$this->addFlash('error', $trans->trans('newcharacter.overspawn2', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
@@ -220,6 +222,8 @@ class AccountController extends AbstractController {
 			);
 
 		}
+		$user->setLastLogin(new DateTime());
+		$em->flush();
 
 		return $this->render('Account/overview.html.twig', [
 			'characters' => $characters,
@@ -245,6 +249,7 @@ class AccountController extends AbstractController {
 			throw new AccessDeniedHttpException('newcharacter.overlimit');
 		}
 		$canSpawn = $userMan->checkIfUserCanSpawnCharacters($user, true);
+		$user->setLastLogin(new DateTime());
 		$em->flush();
 		if (!$canSpawn) {
 			$this->addFlash('error', $trans->trans('newcharacter.overspawn2', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
@@ -407,6 +412,8 @@ class AccountController extends AbstractController {
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
+		$user->setLastLogin(new DateTime());
+		$em->flush();
 		$languages = $common->availableTranslations();
 		$form = $this->createForm(UserSettingsType::class, null, ['user'=>$user, 'languages'=>$languages]);
 		$form->handleRequest($request);
@@ -539,6 +546,7 @@ class AccountController extends AbstractController {
 			$userMan->createLimits($user);
 		}
 
+		$user->setLastLogin(new DateTime());
 		$app->setSessionData($character);
 		switch ($logic) {
 			case 'play':
