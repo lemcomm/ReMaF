@@ -315,6 +315,15 @@ class MilitaryManager {
 						if ($this->acquireEquipment($settlement, $soldier->$trained(), false, true, $char)) {
 							$soldier->$set($soldier->$trained());
 							$located++;
+						} elseif (count($equipment_followers)) {
+							$found = $this->resupplyFromEntourage($soldier, $equipment_followers, $set, $soldier->$trained());
+							if ($found) {
+								$located++;
+							} else {
+								$needed++;
+							}
+						} else {
+							$needed++;
 						}
 					} else {
 						// resupply from camp followers

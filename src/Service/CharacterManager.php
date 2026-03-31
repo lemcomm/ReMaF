@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Association;
 use App\Entity\AssociationMember;
+use App\Entity\BattleGroup;
 use App\Entity\Character;
 use App\Entity\CharacterBackground;
 use App\Entity\GeoData;
@@ -294,10 +295,10 @@ class CharacterManager {
 				} else {
 					$this->warman->removeCharacterFromBattlegroup($character, $bg);
 				}
-				$enemies = $bg->getEnemies();
-				if ($enemies) {
-					$enemies = $enemies->first()->getCharacters();
-				} else {
+				try {
+					$enemies = $bg->getEnemies();
+				} catch (\Exception $e) {
+					# Do nothing.
 					$enemies = false;
 				}
 			}
@@ -614,6 +615,8 @@ class CharacterManager {
 			$this->em->remove($act);
 		}
 		$enemies = false;
+		/** @var BattleGroup $bg */
+		$enemies = false;
 		foreach ($character->getBattlegroups() as $bg) {
 			if ($bg->getCharacters()->count() === 1 && $bg->getBattle()->getGroups()->count() == 2) {
 				# Just us, we can short-circuit this battle.
@@ -623,10 +626,9 @@ class CharacterManager {
 			} else {
 				$this->warman->removeCharacterFromBattlegroup($character, $bg);
 			}
-			$enemies = $bg->getEnemies();
-			if ($enemies) {
-				$enemies = $enemies->first()->getCharacters();
-			} else {
+			try {
+				$enemies = $bg->getEnemies();
+			} catch (\Exception $e) {
 				$enemies = false;
 			}
 		}
@@ -702,12 +704,22 @@ class CharacterManager {
 			$this->em->remove($paper);
 		}
 
+		if ($character->getPrisonerOf()) {
+			$this->history->logEvent(
+				$character->getPrisonerOf(),
+				'event.character.prison.free3',
+				array("%link-character%"=>$character->getId()),
+				History::MEDIUM, true, 30
+			);
+			$character->setPrisonerOf(null);
+		}
+
 		foreach ($character->getPrisoners() as $prisoner) {
 			$prisoner->setPrisonerOf(null);
 			$character->removePrisoner($prisoner);
 			$this->history->logEvent(
 				$prisoner,
-				'event.character.prison.free2',
+				'event.character.prison.free4',
 				array("%link-character%"=>$character->getId()),
 				History::MEDIUM, true, 30
 			);

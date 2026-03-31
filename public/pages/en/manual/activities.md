@@ -4,11 +4,11 @@ Activities in Might & Fealty are the umbrella term for referring to any multi-ch
 
 At the time of this writing the following activities are planned or in some stage of development, and may appear in upcoming updates.
 
-[duels]
+[Duels](tournaments) (Partially Implemented)
 -----
 Duels are a catch-all term for any one versus one combat or sparring. They can be used to test skills against one another or to settle a blood feud. Or anything in between.
 
-Tournaments
+[Tournaments](tournaments) (Work in Progress)
 -----------
 These can be anything from a singular grand melee or a massive, multi-hundred member, round-robin style double-knockout event, based around any of the implemented skills.
 

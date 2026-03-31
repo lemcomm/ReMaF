@@ -1020,7 +1020,7 @@ techtree:     Technology Tree
 charstatus:
  prebattle:    pre-battle
  inbattle:     battling
- travelling:   travelling ({turn} hour(s))
+ travelling:   travelling (~{turn} hour(s))
  annexing:     annexing
  supporting:   supporting
  opposing:     opposing
@@ -1122,6 +1122,7 @@ biome:
 
 error:
  title:        Error
+ noerror:      "How have you ended up on the error page without an error? Are you URL fishing?"
  found:
   house:       You already have a house
  notfound:
@@ -1163,6 +1164,7 @@ error:
   nothead:      Only the head of the House may access this page.
   nohouse:      You must be in a house to perform this action.
   arcane:       This thing is lost knowledge beyond your understanding.
+  notreturnable: This character has too recently entered retirement. Please wait at least 7 days after they retire to return them.
 
  missing:
   character:    Character required, but missing. Please select a character from the character page or log in again.
@@ -1196,6 +1198,8 @@ npc:
  name:         name
  number:       number
  supply:       supply
+ supplyType:   item
+ supplyChange: change load
  is:           wandering bandit
  maxreached:   You are already playing the maximum allowed number of bandits.
  entourage:    entourage member{count, plural, =1 {} other {s}}
@@ -1906,6 +1910,8 @@ unavailable:
  unitdisbanded: This unit has been disbanded.
  nopossiblesources: No places to request food from.
  notactive: This character isn't active in the game.
+ nopositions: "You don't hold any positions."
+ notyourposition: "This position isn't one you hold."
 
 marker:
  name:      Marker name

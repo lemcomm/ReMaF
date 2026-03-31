@@ -1646,7 +1646,7 @@ class Character extends AbstractCharacter {
 	}
 
 	/**
-	 * Get progress
+	 * Get the progress along the current travel path.
 	 *
 	 * @return float|null
 	 */
@@ -1668,7 +1668,7 @@ class Character extends AbstractCharacter {
 	}
 
 	/**
-	 * Get speed
+	 * Get the amount of travel to progress on the next travel progress calculation.
 	 *
 	 * @return float|null
 	 */

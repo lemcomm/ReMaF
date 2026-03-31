@@ -38,7 +38,7 @@ Table headers are handled as translation strings from the character.list databas
 		<td>
 			{% if canSpawn %}<a href="{{ path('maf_play', {'id': character.id, 'logic': 'placenew'}) }}">{{ 'account.place'|trans }}</a>{% endif %}
 		</td>
-	{% elseif character.alive and character.location %}
+	{% elseif character.alive and character.location and not character.retired %}
 		<td>
 			{% if character.slumbering %}
 				<img src="{{ asset('images/zzz.png') }}" alt="{{ 'inactive'|trans }}" title="{{ 'inactive'|trans }}" height="16px" />
@@ -97,7 +97,10 @@ Table headers are handled as translation strings from the character.list databas
 		<td align="center">
 			{% if character.status[charStatus.messages.value] > 0 %}{{ "newmessages"|trans({'%count%':character.status[charStatus.messages.value], "%number%":character.status[charStatus.messages.value]}) }}{% endif %}
 			{% if character.status[charStatus.messages.value] > 0 and character.status[charStatus.requests.value] > 0 %} | {% endif %}
+			{% if character.requests > 0 %}{{ "requests"|trans({'%count%':character.requests, "%number%":character.requests}) }}{% endif %}
+			{# Requests aren't tied into this yet, and honestly I'm not sure we can given how nebulous some of them can be in who can approve them.
 			{% if character.status[charStatus.requests.value] > 0 %}{{ "requests"|trans({'%count%':character.status[charStatus.requests.value], "%number%":character.status[charStatus.requests.value]}) }}{% endif %}
+			#}
 		</td>
 		<td align="right">
 			{% if character.status[charStatus.events.value] > 0 %}{{ "newevents"|trans({'%count%':character.status[charStatus.events.value], "%number%":character.status[charStatus.events.value]}) }}{% endif %}
@@ -105,7 +108,7 @@ Table headers are handled as translation strings from the character.list databas
 		<td>
 			<a href="{{ path('maf_play', {'id': character.id, 'logic': 'play'}) }}">{{ 'account.play'|trans }}</a>
 		</td>
-	{% elseif not character.location and character.alive and character.retired %}
+	{% elseif character.alive and character.retired %}
 		<td>
 			<!-- Status icon would normally be here. -->
 		</td>

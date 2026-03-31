@@ -40,9 +40,11 @@ Interaction
 
 Concepts
 --------
+* [Accolades](accolades)
 * [Activites](activities)
 * [Artifacts](artifacts)
-* [Battles](battles)
+* [Battles (Legacy)](battles)
+* [Battles (Mastery)](battles3)
 * [Diplomacy](diplomacy)
 * [Economy](economy)
 * [Elections](elections)
@@ -54,6 +56,7 @@ Concepts
 * [Skills](skills)
 * [Spotting](spotting)
 * [Supply](supply)
+* [Tournaments](tournaments)
 * [Trade](trade)
 * [Travel](travel)
 

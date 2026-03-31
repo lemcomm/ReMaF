@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Service\GameRunner;
 use App\Service\NotificationManager;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,7 +45,7 @@ class RunCommand extends  Command {
 					$output->writeln("error on line: ".$e->getLine()." in file: ".$e->getFile());
 					$output->writeln($e->getMessage());
 					$output->writeln($e->getTraceAsString());
-					$this->note->spoolAdminMsg("Update error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
+					$this->note->spoolError("Update error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
 					return Command::FAILURE;
 				}
 			case 'turn':
@@ -62,7 +61,7 @@ class RunCommand extends  Command {
 					$output->writeln("error on line: ".$e->getLine()." in file: ".$e->getFile());
 					$output->writeln($e->getMessage());
 					$output->writeln($e->getTraceAsString());
-					$this->note->spoolAdminMsg("Turn error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
+					$this->note->spoolError("Turn error! ".$e->getMessage()."\nOn line: ".$e->getLine()."\nIn file: ".$e->getFile()."\nStack Trace: ".$e->getTraceAsString());
 					return Command::FAILURE;
 				}
 		}

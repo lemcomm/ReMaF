@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\DataTransformer\CharacterTransformer;
 use App\Entity\Action;
+use App\Entity\Battle;
 use App\Entity\BattleGroup;
 use App\Entity\Character;
 use App\Entity\Listing;
@@ -675,12 +676,31 @@ class WarController extends AbstractController {
 									$act = new Action;
 									$act->setType('military.siege')
 										->setCharacter($character)
+										->setTargetPlace($place)
 										->setTargetSettlement($settlement)
 										->setTargetBattlegroup($side)
 										->setCanCancel(false)
 										->setBlockTravel(true);
 									$this->common->queueAction($act);
 									$this->statusUpdater->character($character, CharacterStatus::sieging, true);
+									if ($battle = $side->getBattle()) {
+										$this->statusUpdater->character($character, CharacterStatus::prebattle, true);
+										if ($battle->getPrimaryAttacker() === $siege->getAttacker()) {
+											$type = 'siege.assault';
+										} else {
+											$type = 'siege.sortie';
+										}
+										$act = new Action;
+										$act->setType($type);
+										$act->setCharacter($character)
+											->setTargetPlace($place)
+											->setTargetSettlement($settlement)
+											->setTargetBattlegroup($side)
+											->setCanCancel(false)
+											->setBlockTravel(true);
+										$this->common->queueAction($act);
+									}
+
 									$this->addFlash('notice', $trans->trans('military.siege.join.success.'.$data['side'], [], "actions"));
 								}
 								if ($place) {
@@ -697,13 +717,16 @@ class WarController extends AbstractController {
 							if ($siege->getDefender()->getCharacters()->contains($character)) {
 								if ($settlement->getOwner() == $character) {
 									$siege->setLeader('defenders', $character);
+									$this->statusUpdater->character($character, CharacterStatus::siegeLead, true);
 									$em->flush();
 								} elseif (!$siege->getDefender()->getLeader() || $siege->getDefender()->getLeader()->isActive(true)) {
 									$siege->setLeader('defenders', $character);
+									$this->statusUpdater->character($character, CharacterStatus::siegeLead, true);
 									$em->flush();
 								}
 							} elseif ($siege->getAttacker()->getCharacters()->contains($character) && (!$siege->getAttacker()->getLeader() || !$siege->getAttacker()->getLeader()->isActive())) {
 								$siege->setLeader('attackers', $character);
+								$this->statusUpdater->character($character, CharacterStatus::siegeLead, true);
 								$em->flush();
 							}
 							if ($place) {

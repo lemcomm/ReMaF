@@ -149,13 +149,13 @@ class PlaceDispatcher extends WarDispatcher {
 	}
 
 	public function placeEvictAssocTest($ignored, $vars): array {
+		$assoc = $vars[1];
 		if (($check = $this->placeActionsGenericTests()) !== true) {
-			return array("name"=>"place.evictAssoc.name", "description"=>"unavailable.$check");
+			return array("name"=>"place.evictAssoc.name", "description"=>"unavailable.$check", "transkeys"=>["%name%"=>$assoc->getName()]);
 		}
 		$place = $vars[0];
-		$assoc = $vars[1];
 		if (!($place instanceof Place) || !($assoc instanceof Association)) {
-			return array("name"=>"place.evictAssoc.name", "description"=>"unavailable.badinput");
+			return array("name"=>"place.evictAssoc.name", "description"=>"unavailable.badinput", "transkeys"=>["%name%"=>$assoc->getName()]);
 		}
 		$tName = $place->getType()->getName();
 		if ($tName == 'embassy') {
@@ -173,7 +173,7 @@ class PlaceDispatcher extends WarDispatcher {
 			}
 		}
 		if (!$found) {
-			return array("name"=>"place.evictAssoc.name", "description"=>"unavailable.assocnothere");
+			return array("name"=>"place.evictAssoc.name", "description"=>"unavailable.assocnothere", "transkeys"=>["%name%"=>$assoc->getName()]);
 		}
 		return $this->varCheck(
 			$return,
@@ -182,7 +182,9 @@ class PlaceDispatcher extends WarDispatcher {
 			'place.evictAssoc.description',
 			'place.evictAssoc.longdesc',
 			array('id'=>$place->getId(), 'assoc'=>$assoc->getId()),
-			array("%name%"=>$assoc->getName(), "%formalname%"=>$assoc->getFormalName())
+			array("%name%"=>$assoc->getName(), "%formalname%"=>$assoc->getFormalName()),
+			null,
+			true
 		);
 	}
 

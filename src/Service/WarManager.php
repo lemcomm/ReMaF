@@ -636,18 +636,16 @@ class WarManager {
 							History::LOW, true
 						);
 					}
-				} else {
-					foreach ($group->getCharacters() as $char) {
-						if ($group->getLeader() == $char) {
-							$group->setLeader(null);
-							$char->removeLeadingBattlegroup($group);
-						}
-						$this->statusUpdater->character($char, CharacterStatus::sieging, false);
-					}
+				}
+				if ($group->getLeader() == $character) {
+					$group->setLeader(null);
+					$character->removeLeadingBattlegroup($group);
 				}
 				$this->removeCharacterFromBattlegroup($character, $group, true);
 				$this->addRegroupAction(null, $character);
+				$this->statusUpdater->character($character, CharacterStatus::sieging, false);
 			}
+			$this->em->flush();
 			if (!$group->getBattle()) {
 				$this->em->remove($group);
 			}
@@ -737,7 +735,7 @@ class WarManager {
 		}
 	}
 
-	public function leaveSiege($character, $siege): bool {
+	public function leaveSiege(Character $character, $siege): bool {
 		if ($siege->getBattles()->count() > 0) {
 			return false;
 		}
@@ -759,6 +757,7 @@ class WarManager {
 		if ($attacker) {
 			$siege->updateEncirclement();
 		}
+		$this->statusUpdater->character($character, CharacterStatus::sieging, false);
 		$this->em->flush();
 		return true;
 	}

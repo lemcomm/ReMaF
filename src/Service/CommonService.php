@@ -90,6 +90,13 @@ class CommonService {
 		$setting->setValue($value);
 		$this->em->flush();
 	}
+
+	/**
+	 * Add start time and priority to action, then persists it and flushes the DB.
+	 * @param Action $action
+	 *
+	 * @return true[]
+	 */
 	public function queueAction(Action $action): array {
 		$action->setStarted(new DateTime("now"));
 

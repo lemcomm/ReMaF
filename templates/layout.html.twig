@@ -249,6 +249,7 @@
 			onclick="displayPreferenceModal()">
 			Manage Cookie Preferences
 		</button></div>
+
 		{% if app.user and is_granted("ROLE_OLYMPUS") %}
 			{% if app.request.attributes.get('_route') %}
 				{% if app.request.query.get('debug') %}

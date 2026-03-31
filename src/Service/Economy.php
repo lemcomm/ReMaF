@@ -600,7 +600,7 @@ class Economy {
 		}
 		$speed = $this->geo->getbaseSpeed() / exp(sqrt(1/200)); #This is the regular travel speed for M&F.
 		$days = $distance / $speed;
-		return ($days*1.33)-1; #Average travel speed of all region types.
+		return $days-1; #This used to be ($days*1.33)-1, which approximated the average of all regions, but I'm tired of people complaining. --Andrew, 20251130.
 	}
 
 	public function supplySoldiers(Unit $unit, $shortage, Settlement $settlement): void {

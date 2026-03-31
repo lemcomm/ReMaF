@@ -6,6 +6,35 @@ Skills can be both learned through experience and learned through schooling. In 
 
 Practice is better than Theory, but as with checking similar skills, the game will also factor in if your knowledge of how to do something is greater than your practice in doing it.
 
+Leadership
+----------
+How well you command and how well you can govern.
+
+Race Skills
+-----------
+These skills reflect your knowledge about a broad grouping of people, in one aspect or another. For now, that's just how they organize their militaries. All sub-bullets below have a single "Military" skill that reflects this.
+
+* First World
+  * First Ones
+  * Second Ones
+* Second World
+  * Humans
+  * Orcs
+  * Elves
+* Old World
+  * Magitek
+* High Monster
+  * Ogres
+* Low Monster
+  * Wyverns
+  * Slimes
+* Legends
+  * Dragons
+
+Surival Skills
+--------------
+For now this purely includes the riding skills (of which only horseback is currently usable), with later plans for expansion to include anatomy, medicine, and tracking skills.
+
 Weapon Skills
 -------------
 These skills reflect a character's ability to wield a particular weapon set and are earned through combat. They are organized into categories as listed below. Some of these reflect weapons that aren't implemented yet or won't be implemented as regular weapons.

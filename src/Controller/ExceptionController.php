@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Character;
 use App\Service\AppState;
 use App\Service\DiscordIntegrator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,30 +9,35 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExceptionController extends AbstractController {
 	public function __construct(
 		private DiscordIntegrator $discord,
 		private AppState $app,
-		private EntityManagerInterface $em) {
+		private EntityManagerInterface $em,
+		private TranslatorInterface $trans
+	) {
 	}
 
 	/**
 	 * Converts an Exception to a Response.
 	 *
-	 * @param FlattenException          $exception A FlattenException instance
-	 * @param DebugLoggerInterface|null $logger    A DebugLoggerInterface instance
-	 * @param Request                   $request
+	 * @param FlattenException|null $exception A FlattenException instance
+	 * @param Request               $request
 	 *
 	 * @return Response
 	 */
 	#[Route ('/error/')]
-	public function exceptionAction(FlattenException $exception, ?DebugLoggerInterface $logger, Request $request): Response {
+	public function exceptionAction(Request $request, FlattenException|null $exception = null): Response {
+		if (!$exception) {
+			$this->addFlash('notice', $this->trans->trans('error.noerror'));
+			return $this->redirectToRoute('maf_index');
+		}
 		$code = $exception->getStatusCode();
 		$error = $exception->getMessage();
 		$trace = $exception->getTraceAsString();
@@ -46,12 +50,10 @@ class ExceptionController extends AbstractController {
 		$type = $request->headers->get('accept');
 		$ref = $request->server->get('HTTP_REFERER');
 		$userId = $this->getUser()?->getId()?:'(none)';
-		$user = $this->getUser()?:'(none)';
 		$agent = $request->headers->get('User-Agent');
 		$bits = explode("::", $error);
 		if ($code !== 404) {
 			$forward = true;
-			$forward2 = false;
 			$errBits = explode("::", $error);
 			if (str_contains($error, 'RFC 2822')) {
 				# Filter out junk bot email addresses.
@@ -64,7 +66,7 @@ class ExceptionController extends AbstractController {
 			}
 			if ($forward) {
 				try {
-					$text = "Status Code: $code \nError: $error\nOn Line: $line\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n$trace";
+					$text = "Status Code: $code \nError: `$error`\nOn Line: $line\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n```$trace```";
 					$this->discord->pushToErrors($text);
 				} catch (Exception $e) {
 					// Do nothing.
