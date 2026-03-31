@@ -47,6 +47,7 @@
 		<field name="visibility" type="integer"/>
 		<field name="status" type="array" nullable="true"/>
 		<field name="familiarity" type="array" nullable="true"/>
+		<field name="injuries" type="array" nullable="true"/>
 
 		<field name="npc" type="boolean"/>
 		<many-to-one field="fromDungeon" target-entity="Dungeon" inversed-by="spawns"/>
@@ -156,7 +157,6 @@
 
 		<one-to-many field="conv_permissions" target-entity="ConversationPermission" mapped-by="character" fetch="EXTRA_LAZY"/>
 		<one-to-one field="local_conversation" target-entity="Conversation" mapped-by="local_for" fetch="EXTRA_LAZY"/>
-		<one-to-many field="messages" target-entity="Message" mapped-by="sender" fetch="EXTRA_LAZY"/>
 		<one-to-many field="tagged_messages" target-entity="MessageTag" mapped-by="character" fetch="EXTRA_LAZY"/>
 
 		<many-to-one field="realm" target-entity="Realm" inversed-by="vassals"/>
@@ -175,5 +175,6 @@
 		<one-to-many field="association_memberships" target-entity="AssociationMember" mapped-by="character"/>
 		<many-to-one field="faith" target-entity="Association" inversed-by="followers"/>
 		<one-to-many field="chat_messages" target-entity="ChatMessage" mapped-by="sender" fetch="EXTRA_LAZY"/>
+		<one-to-many field="fishLogs" target-entity="FishLog" mapped-by="character" fetch="EXTRA_LAZY"/>
 	</entity>
 </doctrine-mapping>

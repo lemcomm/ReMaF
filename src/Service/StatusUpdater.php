@@ -72,6 +72,7 @@ class StatusUpdater {
 			case CharacterStatus::prebattle:
 			case CharacterStatus::prisoner:
 			case CharacterStatus::siegeLead:
+			case CharacterStatus::fishing:
 			# You'd think this should be able to be $which->value < 50 and $which->value > 0 but that doesn't work.
 				$char->updateStatus($which, $value);
 				if (!$bulk) $this->updateCurrently($char, $which, $value);

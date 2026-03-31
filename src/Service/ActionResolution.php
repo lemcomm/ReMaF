@@ -7,7 +7,12 @@ use App\Entity\Action;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Entity\EventMetadata;
+use App\Entity\FishLog;
+use App\Entity\FishType;
+use App\Entity\GeoData;
+use App\Entity\MapRegion;
 use App\Entity\Settlement;
+use App\Entity\SkillType;
 use App\Enum\CharacterStatus;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\StatusUpdater;
@@ -242,6 +247,138 @@ class ActionResolution {
 		// just remove this, damage and all has already been applied, we just needed the action to stop travel
 		$this->statusUpdater->character($action->getCharacter(), CharacterStatus::looting, false);
 		$this->em->remove($action);
+	}
+
+	private function fishing(Action $action): void {
+		$char = $action->getCharacter();
+		$skill = $this->em->getRepository(SkillType::class)->findOneBy(['name'=>'fishing']);
+		$mySkill = $char->findSkill($skill)?:false;
+		if ($mySkill) {
+			$score = $mySkill->evaluate();
+		} else {
+			$score = 0;
+		}
+		if ($score > 75) {
+			$score = 75;
+		}
+		$rand = rand($score, 100);
+		switch ($action->getStringValue()) {
+			case 'deepwater':
+				$chance = 80;
+				break;
+			case 'coastal':
+				$chance = 65;
+				break;
+			default:
+				$chance = 50;
+		}
+		if ($rand > $chance) {
+			$all = $this->em->getRepository(FishType::class)->findBy(['locale'=>$action->getStringValue()]);
+			$which = rand(0, count($all)-1);
+			$catch = $all[$which];
+			$weighting = rand(1,10);
+			switch ($catch->getSize()) {
+				case 'colossal':
+					if ($weighting < 2) {
+						$size = rand(15000, 30000)/1000;
+					} elseif ($weighting < 10) {
+						$size = rand(22500, 37500)/1000;
+					} else {
+						$size = rand(30000, 45000)/1000;
+					}
+					break;
+				case 'massive':
+					if ($weighting < 2) {
+						$size = rand(9000, 13500)/1000;
+					} elseif ($weighting < 10) {
+						$size = rand(11000, 15000)/1000;
+					} else {
+						$size = rand(13500, 16000)/1000;
+					}
+					break;
+				case 'very large':
+					if ($weighting < 2) {
+						$size = rand(2000, 6250)/1000;
+					} elseif ($weighting < 10) {
+						$size = rand(4000, 7500)/1000;
+					} else {
+						$size = rand(6250, 9500)/1000;
+					}
+					break;
+				case 'large':
+					if ($weighting < 2) {
+						$size = rand(1200, 1650)/1000;
+					} elseif ($weighting < 10) {
+						$size = rand(1350, 1950)/1000;
+					} else {
+						$size = rand(1650, 2100)/1000;
+					}
+					break;
+				case 'medium':
+					if ($weighting < 2) {
+						$size = rand(500, 1150)/1000;
+					} elseif ($weighting < 10) {
+						$size = rand(650, 1450)/1000;
+					} else {
+						$size = rand(1150, 1600)/1000;
+					}
+					break;
+				case 'small':
+					if ($weighting < 2) {
+						$size = rand(200, 375)/1000;
+					} elseif ($weighting < 10) {
+						$size = rand(275, 475)/1000;
+					} else {
+						$size = rand(375, 550)/1000;
+					}
+					break;
+				default:
+					if ($weighting < 2) {
+						$size = rand(1, 125)/1000;
+					} elseif ($weighting < 10) {
+						$size = rand(75, 175)/1000;
+					} else {
+						$size = rand(125, 250)/1000;
+					}
+			}
+			$log = new FishLog();
+			$log->setSize($size);
+			$log->setTs(new DateTime("now"));
+			$log->setFish($catch);
+			$log->setCharacter($char);
+			$where = $this->geography->findMyRegion($char);
+			if ($where instanceof GeoData) {
+				$log->setGeoData($where);
+			} elseif ($where instanceof MapRegion) {
+				$log->setMapRegion($where);
+			}
+			$this->em->persist($log);
+			$this->statusUpdater->addCharCounter($char, CharacterStatus::fishlogs);
+			$this->em->flush();
+			$this->common->addAchievement($char, 'fish.total');
+			$this->common->setMaxAchievement($char, 'fish.size', $size);
+			$this->history->logEvent(
+				$char,
+				'event.character.fishing.success',
+				null,
+				History::LOW,
+				false,
+				16
+			);
+		} else {
+			$this->history->logEvent(
+				$char,
+				'event.character.fishing.failure',
+				null,
+				History::LOW,
+				false,
+				16
+			);
+		}
+		$this->skills->trainSkill($char, $skill);
+		$this->statusUpdater->character($char, CharacterStatus::fishing, false);
+		$this->em->remove($action);
+		$this->em->flush();
 	}
 
 	private function update_military_block(Action $action): void {

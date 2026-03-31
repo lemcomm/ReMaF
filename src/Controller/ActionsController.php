@@ -432,6 +432,7 @@ class ActionsController extends AbstractController {
 			}
 		);
 
+		/** @var Settlement $settlement */
 		$time_to_take = $settlement->getTimeToTake($character);
 
 		$form->handleRequest($request);
@@ -586,15 +587,10 @@ class ActionsController extends AbstractController {
 					$act->setType('settlement.grant')->setStringValue($extra)->setCharacter($character);
 					$act->setTargetSettlement($settlement)->setTargetCharacter($data['target']);
 					$act->setBlockTravel(true);
-					// depending on size of settlement and soldiers count, this gives values roughly between
-					// an hour for a small village and 10 hours for a large city with many soldiers
-					$soldiers = 0;
-					foreach ($settlement->getUnits() as $unit) {
-						$soldiers += $unit->getSoldiers()->count();
-					}
-					$time_to_grant = round((sqrt($settlement->getPopulation()) + sqrt($soldiers))*3);
+					// This is based off the logic in Settlement::getTimeToTake().
+					$time_to_grant = 3600 * (12 + log10(pow(1 + $settlement->getPopulation() / 400, 20))) * 0.008;
 					$complete = new DateTime("now");
-					$complete->add(new DateInterval("PT".$time_to_grant."M"));
+					$complete->add(new DateInterval("PT".$time_to_grant."S"));
 					$act->setComplete($complete);
 					$result = $this->common->queueAction($act);
 					$this->status->character($character, CharacterStatus::granting, true);

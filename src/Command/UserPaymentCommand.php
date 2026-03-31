@@ -12,13 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class UserPaymentCommand extends  Command {
-
-	private EntityManagerInterface $em;
-	private PaymentManager $pay;
-
-	public function __construct(EntityManagerInterface $em, PaymentManager $pay) {
-		$this->em = $em;
-		$this->pay = $pay;
+	public function __construct(private EntityManagerInterface $em, private PaymentManager $pay) {
 		parent::__construct();
 	}
 

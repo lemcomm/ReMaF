@@ -13,13 +13,10 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 
 class ProcessSpottingCommand extends AbstractProcessCommand {
-
-	protected EntityManagerInterface $em;
 	protected Stopwatch $stopwatch;
 	protected string $opt_time;
 
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(protected EntityManagerInterface $em) {
 		parent::__construct($em);
 	}
 

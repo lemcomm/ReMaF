@@ -16,6 +16,7 @@ class Realm extends Faction {
 	private ?string $language = null;
 	private ?string $old_description = null;
 	private ?int $id = null;
+	private ?string $system = null;
 	private ?Description $description = null;
 	private ?SpawnDescription $spawn_description = null;
 	private ?EventLog $log = null;
@@ -69,7 +70,7 @@ class Realm extends Faction {
 		$this->vassals = new ArrayCollection();
 	}
 
-	public function findRulers(): ArrayCollection|bool {
+	public function findRulers(): ArrayCollection {
 		if (!$this->rulers) {
 			$this->rulers = new ArrayCollection;
 
@@ -1253,5 +1254,14 @@ class Realm extends Faction {
 
 	public function getPositionRanks(): ?array {
 		return $this->positionRanks;
+	}
+
+	public function getSystem(): ?string {
+		return $this->system;
+	}
+
+	public function setSystem(?string $system): static {
+		$this->system = $system;
+		return $this;
 	}
 }

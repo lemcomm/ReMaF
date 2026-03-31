@@ -21,13 +21,14 @@ class RealmManageType extends AbstractType {
 			'translation_domain' => 'politics',
 			'data_class'		=> Realm::class,
 		));
-		$resolver->setRequired(['min','max', 'designations']);
+		$resolver->setRequired(['min','max', 'designations', 'noPromote']);
 	}
 
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		$min = $options['min']+1;
 		$max = $options['max'];
 		$designations = $options['designations'];
+		$noPromote = $options['noPromote'];
 		if ($max > 0) {
 			$max = $max-1;
 		} else {
@@ -64,6 +65,7 @@ class RealmManageType extends AbstractType {
 			'required'=>true,
 			'choices' => $realmtypes,
 			'label'=> 'realm.type.title',
+			'disabled'=>$noPromote,
 		]);
 
 		$builder->add('designation', EntityType::class, [

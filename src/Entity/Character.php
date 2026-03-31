@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Enum\CharacterStatus;
 use App\Enum\RaceName;
-use App\Service\CharacterManager;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -106,7 +105,6 @@ class Character extends AbstractCharacter {
 	private Collection $siege_equipment;
 	private Collection $portals;
 	private Collection $conv_permissions;
-	private Collection $messages;
 	private Collection $tagged_messages;
 	private Collection $activity_participation;
 	private Collection $skills;
@@ -141,7 +139,9 @@ class Character extends AbstractCharacter {
 	private ?Dungeon $fromDungeon = null;
 	private ?array $status = null;
 	private ?array $familiarity = null;
+	private Collection $fishLogs;
 
+	protected bool $isChar = true;
 
 	# This should match App\Enum\CharacterStatus enum values.
 	private ?array $defaultStatus = [
@@ -182,12 +182,14 @@ class Character extends AbstractCharacter {
 		103 => 0,
 		101 => 0,
 		102 => 0,
+		104 => 0,
 
 		200 => 0,
 		201 => 0
 	];
 
 	public function __construct() {
+		parent::__construct();
 		$this->achievements = new ArrayCollection();
 		$this->fame = new ArrayCollection();
 		$this->journals = new ArrayCollection();
@@ -228,7 +230,6 @@ class Character extends AbstractCharacter {
 		$this->siege_equipment = new ArrayCollection();
 		$this->portals = new ArrayCollection();
 		$this->conv_permissions = new ArrayCollection();
-		$this->messages = new ArrayCollection();
 		$this->tagged_messages = new ArrayCollection();
 		$this->activity_participation = new ArrayCollection();
 		$this->skills = new ArrayCollection();
@@ -242,6 +243,7 @@ class Character extends AbstractCharacter {
 		$this->positions = new ArrayCollection();
 		$this->battlegroups = new ArrayCollection();
 		$this->chat_messages = new ArrayCollection();
+		$this->fishLogs = new ArrayCollection();
 	}
 
 	public function __toString() {
@@ -256,16 +258,41 @@ class Character extends AbstractCharacter {
 		return $this->getName() . ' (ID: ' . $this->id . ')';
 	}
 
-	public function HealOrDie(): int|bool {
+	public function toLogName(): string {
+		return 'C:'.$this->id;
+	}
+
+	public function HealOrDie($healer = false, $physician = false, $shelter = false): array {
 		$current = $this->healthValue();
-		if ($current >= 1) {
-			return true; #Why are you here?
+		$injuries = $this->injuries;
+		if ($injuries) {
+			$injCount = count($injuries);
+		} else {
+			$injCount = 0;
+		}
+		$heal = 0;
+		$result = 0;
+		if ($current >= 1 && $injCount === 0) {
+			return [true,0,0]; #Why are you here?
 		}
 		# Player characters don't die "naturally" from wounds, so this only ever heals.
-		$raceHp = $this->race?->getHp()?:100;
-		$result = rand(1,round($raceHp/10));
-		$this->heal($result);
-		return $result;
+		if ($current < 1) {
+			$raceHp = $this->race?->getHp()?:100;
+			$result = rand(1,round($raceHp/10));
+			$this->heal($result);
+		}
+		if ($injCount > 1) {
+			$heal = 1;
+			arsort($injuries);
+			foreach ($injuries as $where => $amount) {
+				$this->injuries[$where] = $amount - $heal;
+				if ($this->injuries[$where] === 0) {
+					unset($this->injuries[$where]);
+				}
+				break;
+			}
+		}
+		return [$heal+$result, 0, 0];
 	}
 
 	public function kill(): void {
@@ -1234,7 +1261,7 @@ class Character extends AbstractCharacter {
 		return $this->activity_participation;
 	}
 
-	public function findSkill(SkillType $skill) {
+	public function findSkill(SkillType $skill): Skill|false {
 		foreach ($this->skills as $each) {
 			if ($each->getType() === $skill) {
 				return $each;
@@ -3112,37 +3139,6 @@ class Character extends AbstractCharacter {
 	}
 
 	/**
-	 * Add messages
-	 *
-	 * @param Message $messages
-	 *
-	 * @return Character
-	 */
-	public function addMessage(Message $messages): static {
-		$this->messages[] = $messages;
-
-		return $this;
-	}
-
-	/**
-	 * Remove messages
-	 *
-	 * @param Message $messages
-	 */
-	public function removeMessage(Message $messages): void {
-		$this->messages->removeElement($messages);
-	}
-
-	/**
-	 * Get messages
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getMessages(): ArrayCollection|Collection {
-		return $this->messages;
-	}
-
-	/**
 	 * Add tagged_messages
 	 *
 	 * @param MessageTag $taggedMessages
@@ -3875,6 +3871,20 @@ class Character extends AbstractCharacter {
 		return $this->chat_messages;
 	}
 
+	public function addFishLog(FishLog $log): static {
+		$this->fishLogs[] = $log;
+
+		return $this;
+	}
+
+	public function removeFishLog(FishLog $log): void {
+		$this->fishLogs->removeElement($log);
+	}
+
+	public function getFishLogs(): ArrayCollection|Collection {
+		return $this->fishLogs;
+	}
+
 	public function getWithdrawLevel(): ?float {
 		return $this->withdrawLevel;
 	}
@@ -3915,7 +3925,7 @@ class Character extends AbstractCharacter {
 		return $this;
 	}
 
-	public function addAttack($ignored): void {
+	public function addAttack($value = 1): void {
 		# Deliberately empty.
 	}
 
@@ -3955,7 +3965,12 @@ class Character extends AbstractCharacter {
 
 	public function incrementStatus(CharacterStatus $which, $int): void {
 		$this->status?:$this->status = $this->defaultStatus;
-		$this->status[$which->value] = $this->status[$which->value]+$int;
+		if (array_key_exists($which->value, $this->status)) {
+			$this->status[$which->value] = $this->status[$which->value]+$int;
+		} else {
+			$this->status[$which->value] = $int;
+		}
+
 	}
 
 	public function getTranslatableType(): string {
@@ -3969,8 +3984,6 @@ class Character extends AbstractCharacter {
 	public function getFamiliarity(): array {
 		if (!$this->familiarity) {
 			$arr = [];
-			$race = $this->race;
-			$group = $race->getRaceGroup();
 			foreach ($this->skills as $skill) {
 				if (str_ends_with($skill->getType()->getName(), 'military')) {
 					$name = explode('-', $skill->getType()->getName());
@@ -4003,5 +4016,25 @@ class Character extends AbstractCharacter {
 		$fam[$which] = $value;
 		$this->familiarity = $fam;
 		return $this;
+	}
+
+	public function isNoble(): bool {
+		return true;
+	}
+
+	public function hungerMod(): float|int {
+		return 1; # Player characters don't worry about this.
+	}
+
+	public function isHungry(): bool {
+		return false; # Player characters don't worry about this.
+	}
+
+	public function makeHungry($value = 1): static {
+		return $this; # Player characters don't worry about this.
+	}
+
+	public function feed($var = 1): static {
+		return $this; # Player characters don't worry about this.
 	}
 }

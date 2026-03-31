@@ -5,10 +5,10 @@ namespace App\Entity;
 use DateTime;
 
 class Skill {
-	private int $theory;
-	private int $practice;
-	private int $theory_high;
-	private int $practice_high;
+	private int $theory = 0;
+	private int $practice = 0;
+	private int $theory_high = 0;
+	private int $practice_high = 0;
 	private DateTime $updated;
 	private ?int $id = null;
 	private ?Character $character = null;
@@ -81,6 +81,9 @@ class Skill {
 	 */
 	public function setTheory(int $theory): static {
 		$this->theory = $theory;
+		if ($this->theory > $this->theory_high) {
+			$this->theory_high = $this->theory;
+		}
 
 		return $this;
 	}
@@ -103,6 +106,9 @@ class Skill {
 	 */
 	public function setPractice(int $practice): static {
 		$this->practice = $practice;
+		if ($this->practice > $this->practice_high) {
+			$this->practice_high = $this->practice;
+		}
 
 		return $this;
 	}

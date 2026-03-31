@@ -1,0 +1,9 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+<h2>{{ 'diplomacy.superior.name'|trans({},"politics")|title }}</h2>
+<p>{{ 'diplomacy.superior.intro'|trans({"%name%":realm.name},"politics")|raw }}</p>
+
+{{ form(form, {'attr': {'class':'wide'}}) }}
+
+{% endblock %}

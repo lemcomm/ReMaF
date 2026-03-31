@@ -1,0 +1,13 @@
+<doctrine-mapping>
+        <entity name="App\Entity\FishLog">
+                <id name="id" type="integer">
+                        <generator strategy="AUTO" />
+                </id>
+                <field name="size" type="float" />
+                <field name="ts" type="datetime"/>
+                <many-to-one field="fish" target-entity="FishType"/>
+                <many-to-one field="character" target-entity="Character" inversed-by="fishLogs"/>
+                <many-to-one field="geoData" target-entity="App\Entity\GeoData"/>
+                <many-to-one field="mapRegion" target-entity="App\Entity\MapRegion"/>
+        </entity>
+</doctrine-mapping>

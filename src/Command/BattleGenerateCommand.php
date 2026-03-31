@@ -25,8 +25,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class BattleGenerateCommand extends Command {
 
 	private $whereString = '';
+	private ?string $ruleset;
+
 	public function __construct(private EntityManagerInterface $em, private BattleRunner $runner, private CommonService $common) {
 		parent::__construct();
+		$this->ruleset = $_ENV['COMBAT_RULESET'];
+		if ($this->ruleset === 'toggleable') {
+			$this->ruleset = null;
+		}
 	}
 
 	protected function configure(): void {
@@ -119,7 +125,7 @@ class BattleGenerateCommand extends Command {
 			$output->writeln('<info>Battle ready for processing!</info>');
 			$output->writeln('<info>Running!</info>');
 			$cycle = $this->common->getCycle();
-			$runner->run($battle, $cycle);
+			$runner->run($battle, $cycle, $this->ruleset);
 			$this->em->flush();
 			return Command::SUCCESS;
 		} else {

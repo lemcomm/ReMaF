@@ -136,9 +136,9 @@ class InteractionType extends AbstractType {
 			'required'=>true,
 			'label' => 'interaction.attack.type',
 			'choices'=>[
-				'interaction.attack.legacy'=>'legacy',
 				'interaction.attack.mastery'=>'mastery',
-			]
+				'interaction.attack.legacy'=>'legacy',
+			],
 		]);
 	}
 

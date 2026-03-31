@@ -11,12 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class StatisticsHeatmapCommand extends  Command {
-
-	private EntityManagerInterface $em;
 	private bool $first = true;
 
-	public function __construct(EntityManagerInterface $em) {
-		$this->em = $em;
+	public function __construct(private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 

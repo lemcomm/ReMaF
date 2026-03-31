@@ -11,11 +11,10 @@ class Message {
 	private ?string $type = null;
 	private DateTime $sent;
 	private ?int $cycle = null;
-	private ?string $system_content = null;
+	private ?array $system_content = null;
 	private ?string $content = null;
 	private ?int $recipient_count = null;
 	private ?string $target = null;
-	private ?bool $read = null;
 	private $id = null;
 	private Collection $replies;
 	private Collection $tags;
@@ -23,6 +22,7 @@ class Message {
 	private ?Conversation $conversation = null;
 	private ?Character $sender = null;
 	private ?Message $reply_to = null;
+	private ?MessageData $data = null;
 
 	/**
 	 * Constructor
@@ -39,6 +39,9 @@ class Message {
 	 * @return string|null
 	 */
 	public function getTopic(): ?string {
+		if ($this->data) {
+			return $this->data->getTopic();
+		}
 		return $this->topic;
 	}
 
@@ -61,6 +64,9 @@ class Message {
 	 * @return string|null
 	 */
 	public function getType(): ?string {
+		if ($this->data) {
+			return $this->data->getType();
+		}
 		return $this->type;
 	}
 
@@ -124,20 +130,23 @@ class Message {
 	/**
 	 * Get system_content
 	 *
-	 * @return string|null
+	 * @return array|null
 	 */
-	public function getSystemContent(): ?string {
+	public function getSystemContent(): ?array {
+		if ($this->data) {
+			return $this->data->getSystemContent();
+		}
 		return $this->system_content;
 	}
 
 	/**
 	 * Set system_content
 	 *
-	 * @param string|null $systemContent
+	 * @param array|null $systemContent
 	 *
 	 * @return Message
 	 */
-	public function setSystemContent(?string $systemContent): static {
+	public function setSystemContent(?array $systemContent): static {
 		$this->system_content = $systemContent;
 
 		return $this;
@@ -149,6 +158,9 @@ class Message {
 	 * @return string|null
 	 */
 	public function getContent(): ?string {
+		if ($this->data) {
+			return $this->data->getContent();
+		}
 		return $this->content;
 	}
 
@@ -193,6 +205,7 @@ class Message {
 	 * @return string|null
 	 */
 	public function getTarget(): ?string {
+		if ($this->data) return $this->data->getTarget();
 		return $this->target;
 	}
 
@@ -205,28 +218,6 @@ class Message {
 	 */
 	public function setTarget(?string $target): static {
 		$this->target = $target;
-
-		return $this;
-	}
-
-	/**
-	 * Get read
-	 *
-	 * @return bool|null
-	 */
-	public function getRead(): ?bool {
-		return $this->read;
-	}
-
-	/**
-	 * Set read
-	 *
-	 * @param boolean|null $read
-	 *
-	 * @return Message
-	 */
-	public function setRead(?bool $read): static {
-		$this->read = $read;
 
 		return $this;
 	}
@@ -361,6 +352,7 @@ class Message {
 	 * @return Character|null
 	 */
 	public function getSender(): ?Character {
+		if ($this->data) return $this->data->getSender();
 		return $this->sender;
 	}
 
@@ -399,10 +391,6 @@ class Message {
 		return $this;
 	}
 
-	public function isRead(): ?bool {
-		return $this->read;
-	}
-
 	public function findTag(Character $char) {
 		foreach ($this->getTags() as $tag) {
 			if ($tag->getCharacter() === $char) {
@@ -410,5 +398,14 @@ class Message {
 			}
 		}
 		return false;
+	}
+
+	public function getData(): ?MessageData {
+		return $this->data;
+	}
+
+	public function setData(?MessageData $data): static {
+		$this->data = $data;
+		return $this;
 	}
 }

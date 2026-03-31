@@ -6,7 +6,8 @@ namespace App\Entity;
 class BattleReportStage {
 	private int $round;
 	private array $data;
-	private array $extra;
+	private ?array $extra = null;
+	private ?array $reinforcements = null;
 	private ?int $id = null;
 	private ?BattleReportGroup $group_report = null;
 
@@ -104,6 +105,15 @@ class BattleReportStage {
 	public function setGroupReport(?BattleReportGroup $groupReport = null): static {
 		$this->group_report = $groupReport;
 
+		return $this;
+	}
+
+	public function getReinforcements(): ?array {
+		return $this->reinforcements;
+	}
+
+	public function setReinforcements(?array $reinforcements = null): static {
+		$this->reinforcements = $reinforcements;
 		return $this;
 	}
 }

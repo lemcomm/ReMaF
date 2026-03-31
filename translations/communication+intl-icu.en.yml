@@ -165,6 +165,9 @@ event:
   killgold:     You took {gold} gold from the body of {character}.
   killartifact: You took the {artifact} from the body of {character}.
   child:        Had a child, {character}.
+  fishing:
+   success:     You caught a fish!
+   failure:     Luck was not with you in your fishing.
   health:
    improved:    Has had their injuries improve.
    worsened:    Witness their injuries worsen.
@@ -410,9 +413,17 @@ event:
 
   capital:      Declared that its capital shall now be {settlement}.
   arrival:      "{character} has arrived in the realm at {place}."
+  promoted:     "Was promoted to a higher tier by {realm}."
+  promoting:    "Declared itself a higher tier."
+  demoted:      "Was demoted to a lower tier by {realm}."
+  demoting:     "Declared itself a lower tier."
+  nopromote:    "{realm} has denied the realm's change in tier."
  subrealm:
   founded:      Founded by {character_1} as a subrealm of {realm} with rulership granted to {character_2}.
   arrival:      "{character} has joined the realm by becoming a vassal of {realm}."
+ prorealm:
+  founded:      Founded by {character} as a superior of {realm}.
+  founder:      Has created {realm} as it's new superior realm.
  position:
   inactivekept: The holder of {realmposition}, {character}, has succumbed to the slumber.
   inherited:

@@ -7,14 +7,13 @@ use App\Entity\World;
 use App\Service\DungeonCreator;
 use App\Service\DungeonMaster;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class HourlyCommand extends Command {
-	public function __construct(private DungeonCreator $dc, private DungeonMaster $dm, private EntityManagerInterface $em, private LoggerInterface $logger) {
+	public function __construct(private DungeonCreator $dc, private DungeonMaster $dm, private EntityManagerInterface $em) {
 		parent::__construct();
 	}
 
@@ -27,7 +26,7 @@ class HourlyCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
-		$this->info("running dungeons...");
+		$output->writeln("running dungeons...");
 		$em = $this->em;
 		$creator = $this->dc;
 		$master = $this->dm;
@@ -42,50 +41,38 @@ class HourlyCommand extends Command {
 
 		$want = ceil($players/10);
 
-		$this->info("$dungeons dungeons for $players players, we want to have $want");
+		$output->writeln("$dungeons dungeons for $players players, we want to have $want");
 
 		if ($dungeons < $want) {
 			$create = ceil(($want - $dungeons)/10);
-			$this->info("creating $create new dungeons:");
+			$output->writeln("creating $create new dungeons:");
 			for ($i=0;$i<$create;$i++) {
 				$creator->createRandomDungeon($world);
 			}
 			$em->flush();
 		}
 
-		$this->debug("updating parties...");
+		$output->writeln("updating parties...");
 		$query = $em->createQuery('UPDATE App\Entity\DungeonParty p SET p.counter=p.counter + 1 WHERE p.counter IS NOT NULL');
 		$query->execute();
 
 		$query = $em->createQuery('SELECT p FROM App\Entity\DungeonParty p WHERE p.counter > 50');
 		foreach ($query->getResult() as $party) {
-			$this->debug("party #".$party->getId()." timed out");
+			$output->writeln("party #".$party->getId()." timed out");
 			$master->dissolveParty($party);
 		}
 		$em->flush();
 
 		$dungeons = $em->getRepository(Dungeon::class)->findAll();
 		foreach ($dungeons as $dungeon) {
-			$this->debug("checking dungeon #".$dungeon->getId());
+			$output->writeln("checking dungeon #".$dungeon->getId());
 			if (!$dungeon->getCurrentLevel()) {
 				$master->startDungeon($dungeon);
 			}
 			$master->runDungeon($dungeon);
 		}
 		$em->flush();
-		$this->info("completed");
+		$output->writeln("completed");
 		return Command::SUCCESS;
 	}
-
-
-	private function debug($text): void {
-		$this->logger->debug($text);
-	}
-	private function info($text): void {
-		$this->logger->info($text);
-	}
-	private function error($text): void {
-		$this->logger->error($text);
-	}
-
 }

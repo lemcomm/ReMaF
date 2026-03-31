@@ -13,12 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class RunCommand extends  Command {
 
-	private GameRunner $game;
-	private NotificationManager $note;
-
-	public function __construct(GameRunner $game, NotificationManager $note) {
-		$this->game = $game;
-		$this->note = $note;
+	public function __construct(private GameRunner $game, private NotificationManager $note) {
 		parent::__construct();
 	}
 	protected function configure(): void {

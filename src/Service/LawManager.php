@@ -69,6 +69,11 @@ class LawManager {
 			'none' => 'realmVotingAge.none',
 			'days' => 'realmVotingAge.days'
 		],
+		'realmSelfPromote' => [
+			'always' => 'realmSelfPromote.always',
+			'request' => 'realmSelfPromote.request',
+			'never' => 'realmSelfPromote.never'
+		]
 	];
 
 	public array $allowDuplicates = ['freeform', 'realmFaith', 'taxesFood', 'taxesWood', 'taxesMetal', 'taxesWealth'];
@@ -195,6 +200,7 @@ class LawManager {
 			'realmPlaceMembership',
 			'realmFaith',
 			'realmVotingAge',
+			'realmSelfPromote',
 			'freeform'
 		];
 		if (in_array($type, $simpleLaws)) {

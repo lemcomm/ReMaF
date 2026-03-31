@@ -5,7 +5,7 @@ namespace App\Entity;
 class Achievement {
 	private ?int $id = null;
 	private string $type;
-	private int $value;
+	private float $value;
 	private Character $character;
 
 	public function __toString() {
@@ -19,7 +19,7 @@ class Achievement {
 		};
 	}
 
-	public function setValue(int $value): static {
+	public function setValue(float $value): static {
 		$this->value = $value;
 
 		return $this;

@@ -9,10 +9,13 @@
 		<field name="name" type="string"/>
 		<field name="created" type="datetime"/>
 		<field name="start" type="datetime" nullable="true"/>
+		<field name="cycle" type="integer" nullable="true"/>
 		<field name="finish" type="datetime" nullable="true"/>
 		<field name="same" type="boolean" nullable="true"/>
 		<field name="weapon_only" type="boolean" nullable="true"/>
 		<field name="ready" type="boolean" nullable="true"/>
+		<field name="weapons" type="array" nullable="true"/>
+		<field name="armor" type="boolean" nullable="true"/>
 
 		<one-to-one field="report" target-entity="ActivityReport" inversed-by="activity"/>
 

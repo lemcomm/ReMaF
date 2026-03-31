@@ -34,10 +34,17 @@ class BuildingController extends AbstractController {
 		$query->setParameters(array('me'=>$settlement->getGeoData()->getId(), 'maxdistance'=>20000));
 		$nearby_people = $query->getResult();
 
+		$query = $em->createQuery('SELECT a FROM App\Entity\Achievement a WHERE a.type = \'fish.size\' ORDER BY a.value DESC')->setMaxResults(3);
+		$biggest = $query->getResult();
+
+		$query = $em->createQuery('SELECT a FROM App\Entity\Achievement a WHERE a.type = \'fish.total\' ORDER BY a.value DESC')->setMaxREsults(3);
+
 		return $this->render('Building/tavern.html.twig', [
 			'settlement'=>$settlement,
 			'nearby_settlements'=>$nearby_settlements,
-			'nearby_people'=>$nearby_people
+			'nearby_people'=>$nearby_people,
+			'biggest'=>$biggest,
+			'fishermen'=>$query->getResult(),
 		]);
 	}
 
