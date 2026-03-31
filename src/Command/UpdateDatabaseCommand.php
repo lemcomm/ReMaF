@@ -229,6 +229,13 @@ class UpdateDatabaseCommand extends  Command {
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading skill data...');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadSkillsData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
 		}
 
 		return Command::SUCCESS;
