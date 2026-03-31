@@ -222,7 +222,7 @@ class UpdateDatabaseCommand extends  Command {
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
-			$output->writeln('Loading Law data...');
+			$output->writeln('Loading law data...');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
 				'--group' => ['LoadLawData'],
