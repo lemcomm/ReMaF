@@ -15,6 +15,7 @@ class Message {
 	private ?string $content = null;
 	private ?int $recipient_count = null;
 	private ?string $target = null;
+	private ?bool $read = null;
 	private $id = null;
 	private Collection $replies;
 	private Collection $tags;
@@ -219,6 +220,27 @@ class Message {
 	public function setTarget(?string $target): static {
 		$this->target = $target;
 
+		return $this;
+	}
+
+	/**
+	 * Get read
+	 *
+	 * @return bool|null
+	 */
+	public function getRead(): ?bool {
+		return $this->read;
+	}
+
+	/**
+	 * Set read
+	 *
+	 * @param boolean|null $read
+	 *
+	 * @return Message
+	 */
+	public function setRead(?bool $read): static {
+		$this->read = $read;
 		return $this;
 	}
 
