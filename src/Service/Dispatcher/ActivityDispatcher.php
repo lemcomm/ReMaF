@@ -41,8 +41,6 @@ class ActivityDispatcher extends Dispatcher {
 	/* ========== Activity Dispatchers ========== */
 
 	public function activityTournamentCreateTest(): array {
-		#TODO: Finish this.
-		return array("name"=>"tourn.create.name", "description"=>"unavailable.notimplemented");
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"tourn.create.name", "description"=>"unavailable.$check");
 		}
@@ -53,6 +51,14 @@ class ActivityDispatcher extends Dispatcher {
 		}
 		if (!$settlement->isOwnerEquivalent($char)) {
 			return ["name"=>"tourn.create.name", "description"=>"unavailable.notowner"];
+		}
+		foreach ($settlement->getActivities() as $activity) {
+			if ($activity->isTournament()) {
+				return ["name"=>"tourn.create.name", "description"=>"unavailable.alreadytournament"];
+			}
+			if ($activity->isCompetition()) {
+				return ["name"=>"tourn.create.name", "description"=>"unavailable.alreadycompetition"];
+			}
 		}
 		$any = $settlement->hasBuildingNamed('Arena');
 		if (!$any) {
@@ -65,6 +71,10 @@ class ActivityDispatcher extends Dispatcher {
 			return ["name"=>"tourn.create.name", "description"=>"unavailable.notournbuilding"];
 		}
 		return $this->action("tourn.create", "maf_activity_tourn_create");
+	}
+
+	public function activityJoinTest($ignored, $act): array {
+
 	}
 
 	public function activityFishTest(): array {

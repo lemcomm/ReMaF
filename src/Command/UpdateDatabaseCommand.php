@@ -237,6 +237,19 @@ class UpdateDatabaseCommand extends  Command {
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
 		}
+		if (in_array('A10', $versions)) {
+			$output->writeln('Correcting ActivtyTypes...');
+			$em->createQuery("UPDATE App\Entity\ActivityType a SET a.name = 'hunting' WHERE a.name ='hunt'")->execute();
+			$which = $em->getRepository(ActivityType::class)->findOneBy(['name' => 'hunt']);
+			$em->createQuery("DELETE FROM App\Entity\ActivityRequirement a WHERE a.type = :activity")->setParameters(['activity'=>$which])->execute();
+			$output->writeln('Loading new activty data...');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadActivityData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+		}
 
 		return Command::SUCCESS;
 	}

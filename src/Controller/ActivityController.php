@@ -136,6 +136,16 @@ class ActivityController extends AbstractController {
 		]);
 	}
 
+	#[Route ('/activity/join/{act}', name:'maf_activity_join', requirements:['act'=>'\d+'])]
+	public function joinAction(Activity $act): Response|RedirectResponse {
+		$char = $this->gateway('activityJoinTest', $act);
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+
+
+	}
+
 	#[Route ('/activity/tourn/create', name:'maf_activity_tourn_create')]
 	public function tournamentCreateAction(ConversationManager $conv, CommonService $common, GameTimeExtension $gameTime, Request $request): Response|RedirectResponse {
 		$char = $this->gateway('activityTournamentCreateTest');

@@ -1913,6 +1913,8 @@ unavailable:
  notactive: This character isn't active in the game.
  nopositions: "You don't hold any positions."
  notyourposition: "This position isn't one you hold."
+ alreadytournament: You already have a tournament scheduled here.
+ alreadycompetition: You already have a competition scheduled here.
 
 marker:
  name:      Marker name

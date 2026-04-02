@@ -37,11 +37,28 @@ class Activity {
 	private ?Settlement $settlement = null;
 	private ?Place $place = null;
 
+	const array tournamentTypes = ['melee tournament', 'grand tournament', 'race', 'joust'];
+	const array competitionTypes = ['archery', 'fishing', 'hunting'];
+
 	public function __construct() {
 		$this->events = new ArrayCollection();
 		$this->participants = new ArrayCollection();
 		$this->groups = new ArrayCollection();
 		$this->bouts = new ArrayCollection();
+	}
+
+	public function isTournament(): bool {
+		if (in_array($this->type, $this::tournamentTypes)) {
+			return true;
+		}
+		return false;
+	}
+
+	public function isCompetition(): bool {
+		if (in_array($this->type, $this::competitionTypes)) {
+			return true;
+		}
+		return false;
 	}
 
 	public function findChallenger() {
