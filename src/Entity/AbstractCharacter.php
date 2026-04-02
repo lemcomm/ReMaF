@@ -382,7 +382,7 @@ abstract class AbstractCharacter {
 	}
 
 	public function pendingInjuries($where, $amt) {
-		if (array_key_exists($where, $this->injuries)) {
+		if (array_key_exists($where, $this->pendingInjuries)) {
 			$this->pendingInjuries[$where] += $amt;
 		} else {
 			$this->pendingInjuries[$where] = $amt;
@@ -390,6 +390,7 @@ abstract class AbstractCharacter {
 	}
 
 	public function applyInjuries() {
+		if (!$this->injuries) $this->injuries = [];
 		foreach ($this->pendingInjuries as $k => $v) {
 			if (array_key_exists($k, $this->injuries)) {
 				$this->injuries[$k] = $this->injuries[$k] + $v;

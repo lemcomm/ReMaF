@@ -16,12 +16,14 @@ class MailManager {
 	protected Address $mail_from;
 	protected mixed $mail_reply_to;
 	protected mixed $optOut;
+	private array $skippedDomains = [];
 
 	public function __construct(
 		private EntityManagerInterface $em,
 		private MailerInterface $mailer,
 		private UserManager $um,
-		private TranslatorInterface $trans
+		private TranslatorInterface $trans,
+		private DiscordIntegrator $discord,
 	) {
 		$this->mail_from = new Address($_ENV['FROM_EMAIL'], $_ENV['FROM_NAME']);
 		$this->mail_reply_to = $_ENV['REPLY_EMAIL'];
@@ -95,8 +97,10 @@ class MailManager {
 
 		foreach ($users as $user) {
 			$remove = [];
-			if ($user->getLastLogin() > $twoMonths)
 			$bypass = false;
+			if ($user->getLastLogin() > $twoMonths) {
+				continue;
+			}
 			$header = $this->trans->trans('mail.event.intro', array('%name%'=>$user->getUsername()), "communication")."<br><br>\n\n";
 			$text = '';
 			foreach ($user->getMailEntries() as $each) {
@@ -107,9 +111,6 @@ class MailManager {
 				$text .= $each->getContent()."<br>\n";
 				$remove[] = $each;
 			}
-			if ($bypass) {
-				break; #Not time to send anything, skip this user.
-			}
 			$text .= "<br>\n";
 			$token = $this->um->findEmailOptOutToken($user);
 			$link = $this->optOut.'/'.$user->getId().'/'.$token;
@@ -118,7 +119,13 @@ class MailManager {
 			$intro = "Hello ".$user->getUsername().",<br><br>\n\n";
 			$msg = $intro.$header.$text.$footer;
 
-			$this->sendEmail($user->getEmail(), $this->trans->trans('mail.event.subject', array(), "communication"), $msg);
+			try {
+				$this->sendEmail($user->getEmail(), $this->trans->trans('mail.event.subject', array(), "communication"), $msg);
+			} catch (\Exception $e) {
+				$toDomain = explode('@', $user->getEmail())[1];
+				$txt = 'Received error sending to '.$toDomain.'. Full error follows: \n'.$e->getMessage();
+				$this->discord->pushToErrors($txt);
+			}
 
 			foreach ($remove as $each) {
 				$em->remove($each);

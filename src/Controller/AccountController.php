@@ -39,6 +39,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AccountController extends AbstractController {
 
+	public function __construct(private EntityManagerInterface $em) {}
+
 	private function notifications(EntityManagerInterface $em, PaymentManager $pay): array {
 		$announcements = "Welcome to the M&F Version 3.0.0 Alpha! Each alpha version will last a varying amount of time as we work on future content, with the information above this changing for each alpha version. An exact timeline for these will not be provided.";
 
@@ -57,7 +59,7 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account', name:'maf_account')]
-	public function indexAction(AppState $app, EntityManagerInterface $em, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan): Response {
+	public function indexAction(AppState $app, PaymentManager $pay, TranslatorInterface $trans, UserManager $userMan): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -69,6 +71,7 @@ class AccountController extends AbstractController {
 		// clean out character id so we have a clear slate (especially for the template)
 		$user->setCurrentCharacter(null);
 		$user->setLastLogin(new DateTime());
+		$em = $this->em;
 		$em->flush();
 
 		[$announcements, $notices] = $this->notifications($em, $pay);
@@ -86,7 +89,7 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/characters', name:'maf_chars')]
-	public function charactersAction(AppState $app, CommonService $common, GameRequestManager $grm, Geography $geo, UserManager $userMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay): Response {
+	public function charactersAction(AppState $app, GameRequestManager $grm, UserManager $userMan, TranslatorInterface $trans, PaymentManager $pay): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
@@ -104,6 +107,7 @@ class AccountController extends AbstractController {
 			$userMan->createLimits($user);
 		}
 		$user->setLastLogin(new DateTime());
+		$em = $this->em;
 		$em->flush();
 		if (!$canSpawn) {
 			$this->addFlash('error', $trans->trans('newcharacter.overspawn2', array('%date%'=>$user->getNextSpawnTime()->format('Y-m-d H:i:s')), 'messages'));
@@ -148,7 +152,7 @@ class AccountController extends AbstractController {
 
 		[$announcements, $notices] = $this->notifications($em, $pay);
 
-		$this->checkCharacterLimit($user, $pay, $em);
+		$this->checkCharacterLimit($user, $pay);
 
 		// check when our next payment is due and if we have enough to pay it
 		$now = new DateTime("now");
@@ -223,7 +227,7 @@ class AccountController extends AbstractController {
 
 		}
 		$user->setLastLogin(new DateTime());
-		$em->flush();
+		$this->em->flush();
 
 		return $this->render('Account/overview.html.twig', [
 			'characters' => $characters,
@@ -233,7 +237,7 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/newchar', name:'maf_char_new')]
-	public function newcharAction(Request $request, CharacterManager $charMan, EntityManagerInterface $em, TranslatorInterface $trans, PaymentManager $pay, UserManager $userMan): Response {
+	public function newcharAction(Request $request, CharacterManager $charMan, TranslatorInterface $trans, PaymentManager $pay, UserManager $userMan): Response {
 		/** @var User $user */
 		$user = $this->getUser();
 		if ($user->isBanned()) {
@@ -244,7 +248,8 @@ class AccountController extends AbstractController {
 		}
 		$form = $this->createForm(CharacterCreationType::class, null, ['user'=>$user, 'slotsavailable'=>$user->getNewCharsLimit()>0]);
 
-		[$make_more, $characters_active, $characters_allowed] = $this->checkCharacterLimit($user, $pay, $em);
+		$em = $this->em;
+		[$make_more, $characters_active, $characters_allowed] = $this->checkCharacterLimit($user, $pay);
 		if (!$make_more) {
 			throw new AccessDeniedHttpException('newcharacter.overlimit');
 		}
@@ -353,11 +358,11 @@ class AccountController extends AbstractController {
 		$mychars = array();
 		foreach ($user->getCharacters() as $char) {
 			$mypartners = array();
-			foreach ($this->findSexPartners($char, $em) as $partner) {
+			foreach ($this->findSexPartners($char) as $partner) {
 				$mypartners[] = array('id'=>$partner['id'], 'name'=>$partner['name'], 'mine'=>($partner['user']==$user->getId()));
 				if ($partner['user']!=$user->getId()) {
 					$theirpartners = array();
-					foreach ($this->findSexPartners($partner, $em) as $reverse) {
+					foreach ($this->findSexPartners($partner) as $reverse) {
 						$theirpartners[] = array('id'=>$reverse['id'], 'name'=>$reverse['name'], 'mine'=>($reverse['user']==$user->getId()));
 					}
 					$mychars[$partner['id']] = array('id'=>$partner['id'], 'name'=>$partner['name'], 'mine'=>false, 'partners'=>$theirpartners);
@@ -376,7 +381,8 @@ class AccountController extends AbstractController {
 		]);
 	}
 
-	private function findSexPartners($char, EntityManagerInterface $em) {
+	private function findSexPartners($char) {
+		$em = $this->em;
 		$query = $em->createQuery('SELECT p.id, p.name, u.id as user FROM App\Entity\Character p JOIN p.user u JOIN p.partnerships m WITH m.with_sex=true JOIN m.partners me WITH p!=me WHERE me=:me AND me.male != p.male ORDER BY p.name');
 		if (is_object($char)) {
 			$query->setParameter('me', $char);
@@ -386,7 +392,8 @@ class AccountController extends AbstractController {
 		return $query->getResult();
 	}
 
-	private function checkCharacterLimit(User $user, PaymentManager $pay, EntityManagerInterface $em): array {
+	private function checkCharacterLimit(User $user, PaymentManager $pay): array {
+		$em = $this->em;
 		$levels = $pay->getPaymentLevels($user);
 		$level = $levels[$user->getAccountLevel()];
 		$characters_allowed = $level['characters'];
@@ -407,12 +414,13 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/settings', name:'maf_account_settings')]
-	public function settingsAction(Request $request, CommonService $common, EntityManagerInterface $em, TranslatorInterface $trans): Response {
+	public function settingsAction(Request $request, CommonService $common, TranslatorInterface $trans): Response {
 		$user = $this->getUser();
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
 		$user->setLastLogin(new DateTime());
+		$em = $this->em;
 		$em->flush();
 		$languages = $common->availableTranslations();
 		$form = $this->createForm(UserSettingsType::class, null, ['user'=>$user, 'languages'=>$languages]);
@@ -437,10 +445,10 @@ class AccountController extends AbstractController {
 	}
 
 	#Route Annotation deliberately omitted in order to bypass auto-localization. Route defined in config/routes.yaml.
-	public function endEmailsAction(EntityManagerInterface $em, TranslatorInterface $trans, User $user, $token=null): RedirectResponse {
+	public function endEmailsAction(TranslatorInterface $trans, User $user, $token=null): RedirectResponse {
 		if ($user && $token && $user->getEmailOptOutToken() === $token) {
 			$user->setNotifications(false);
-			$em->flush();
+			$this->em->flush();
 			$this->addFlash('notice', $trans->trans('mail.optout.success', [], "communication"));
 			return $this->redirectToRoute('maf_index');
 		} else {
@@ -450,22 +458,23 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/secret/{id}', name:'maf_secret', defaults: ['_format'=>'json'])]
-	public function secretAction(EntityManagerInterface $em): Response {
+	public function secretAction(): Response {
 		// generate a new one and save it
 		$key = sha1(time()."-maf-".mt_rand(0,1000000));
 		$user = $this->getUser();
 		$user->setAppKey($key);
-		$em->flush();
+		$this->em->flush();
 
 		return new Response(json_encode($key));
 	}
 
 	#[Route ('/account/listset', name:'maf_chars_set')]
-	public function listsetAction(Request $request, EntityManagerInterface $em): Response {
+	public function listsetAction(Request $request): Response {
 		$user = $this->getUser();
 		$list_form = $this->createForm(ListSelectType::class);
 		$list_form->handleRequest($request);
 		if ($list_form->isSubmitted() && $list_form->isValid()) {
+			$em = $this->em;
 			$data = $list_form->getData();
 			echo "---";
 			var_dump($data);
@@ -482,11 +491,12 @@ class AccountController extends AbstractController {
 	}
 
 	#[Route ('/account/listtoggle', name:'maf_chars_toggle', defaults: ['_format'=>'json'])]
-	public function listtoggleAction(Request $request, EntityManagerInterface $em, AppState $app, DiscordIntegrator $discord): Response {
+	public function listtoggleAction(Request $request, AppState $app, DiscordIntegrator $discord): Response {
 		/** @var User $user */
 		$user = $this->getUser();
 		$id = $request->request->get('id');
 
+		$em = $this->em;
 		$character = $em->getRepository(Character::class)->find($id);
 		if (!$character) {
 			throw new AccessDeniedHttpException('error.notfound.character');
@@ -512,9 +522,10 @@ class AccountController extends AbstractController {
 
 
 	#[Route ('/account/play/{id}', name:'maf_play', requirements: ['id'=>'\d+'])]
-	public function playAction(Character $id, Request $request, AppState $app, EntityManagerInterface $em, PaymentManager $pay, UserManager $userMan, DiscordIntegrator $discord, TranslatorInterface $trans): RedirectResponse {
+	public function playAction(Character $id, Request $request, AppState $app, PaymentManager $pay, UserManager $userMan, DiscordIntegrator $discord, TranslatorInterface $trans): RedirectResponse {
 		$user = $this->getUser();
 		$character = $id;
+		$em = $this->em;
 		if ($user->isBanned()) {
 			throw new AccessDeniedException($user->isBanned());
 		}
@@ -523,7 +534,7 @@ class AccountController extends AbstractController {
 		}
 		$logic = $request->query->get('logic');
 		$app->logUser($user, 'play_char_'.$id.'_'.$logic);
-		$this->checkCharacterLimit($user, $pay, $em);
+		$this->checkCharacterLimit($user, $pay);
 
 		if ($character->getUser() !== $user) {
 			$app->logUser($user, $request->attributes->get('_route').'_'.$character->getId().'_'.$logic, true);
