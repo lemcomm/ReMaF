@@ -432,11 +432,15 @@ class BattleRunner {
 				}
 			}
 
-			$groupReport = new BattleReportGroup();
-			$this->em->persist($groupReport);
-			$this->report->addGroup($groupReport); # attach group report to main report
-			$groupReport->setBattleReport($this->report); # attach main report to this group report
-			$group->setActiveReport($groupReport); # attach the group report to the battle group
+			if ($group->getActiveReport()) {
+				$groupReport = $group->getActiveReport();
+			} else {
+				$groupReport = new BattleReportGroup();
+				$this->em->persist($groupReport);
+				$this->report->addGroup($groupReport); # attach group report to main report
+				$groupReport->setBattleReport($this->report); # attach main report to this group report
+				$group->setActiveReport($groupReport); # attach the group report to the battle group
+			}
 
 			$group->setupSoldiers();
 			$this->addNobility($group);
