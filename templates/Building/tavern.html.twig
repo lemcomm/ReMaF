@@ -46,7 +46,7 @@
 	{% if fishermen|length > 0 %}
 		{{ "fishing.most"|trans({}, "activity") }}
 		<ul>
-			{% for each in biggest %}
+			{% for each in fishermen %}
 				<li>{{ link(each.character) }}</li>
 			{% endfor %}
 		</ul>
