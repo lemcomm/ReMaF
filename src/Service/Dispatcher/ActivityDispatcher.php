@@ -74,7 +74,37 @@ class ActivityDispatcher extends Dispatcher {
 	}
 
 	public function activityJoinTest($ignored, $act): array {
-
+		if (($check = $this->veryGenericTests()) !== true) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.$check"];
+		}
+		$char = $this->getCharacter();
+		$settlement = $char->getInsideSettlement();
+		if (!$settlement) {
+			return ["name"=>"activity.train.name", "description"=>"unavailable.notinside"];
+		}
+		if ($act->getSettlement() !== $settlement) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.actnothere"];
+		}
+		$foundAct = false;
+		$foundComp = false;
+		foreach ($settlement->getActivities() as $activity) {
+			if (!$foundAct && $activity->isTournament()) {
+				$foundAct = true;
+			}
+			if (!$foundComp && $activity->isCompetition()) {
+				$foundComp = true;
+			}
+		}
+		if (!$foundAct && !$foundComp) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.noactivityhere"];
+		}
+		if ($char->isInBattle()) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.inbattle"];
+		}
+		if ($char->isDoingAction('tournament')) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.alreadyjoined"];
+		}
+		return $this->action("activity.join", "maf_activity_join");
 	}
 
 	public function activityFishTest(): array {

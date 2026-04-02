@@ -1915,6 +1915,9 @@ unavailable:
  notyourposition: "This position isn't one you hold."
  alreadytournament: You already have a tournament scheduled here.
  alreadycompetition: You already have a competition scheduled here.
+ alreadyjoined: You've already joined a tournament or competition.
+ noactivityhere: Nothing seems to be happening here.
+ actnothere: This activity isn't taking place here.
 
 marker:
  name:      Marker name

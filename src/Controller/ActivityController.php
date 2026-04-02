@@ -137,13 +137,21 @@ class ActivityController extends AbstractController {
 	}
 
 	#[Route ('/activity/join/{act}', name:'maf_activity_join', requirements:['act'=>'\d+'])]
-	public function joinAction(Activity $act): Response|RedirectResponse {
-		$char = $this->gateway('activityJoinTest', $act);
+	public function joinAction(Request $request, Activity $act): Response|RedirectResponse {
+		$char = $this->gateway('activityJoinCompetitioTest', $act);
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
 		}
+		$form = $this->createForm(ActivityJoinType::class, null, ['activity'=>$act]);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
 
+		}
 
+		return $this->render('Activity/join.html.twig', [
+			'act' => $act,
+			'form' => $form,
+		]);
 	}
 
 	#[Route ('/activity/tourn/create', name:'maf_activity_tourn_create')]
