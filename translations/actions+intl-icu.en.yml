@@ -1259,6 +1259,9 @@ personal:
    none:       No duels to respond to.
    some:       "{i} duel{count, plural, =1 {} other {s}}"
    pending:    "Duels needing an answer:"
+  fish:
+   yes:        You have some recently caught fish you can review.
+   no:         It seems you haven't caught any fish recently.
  requests:
   name:        Manage Requests
   description: Handle any actional requests to you or your holdings.

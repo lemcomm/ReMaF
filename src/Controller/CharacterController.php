@@ -151,6 +151,10 @@ class CharacterController extends AbstractController {
 			$messages = false;
 			$lastMsgId = null;
 		}
+		$fishLog = false;
+		if (array_key_exists(CharacterStatus::fishlogs->value, $character->getStatus())) {
+			$fishLog = $character->getStatus()[CharacterStatus::fishlogs->value];
+		}
 		return $this->render('Character/summary.html.twig', [
 			'events' => $this->charman->findEvents($character),
 			'unread' => $this->conv->getUnreadConvPermissions($character),
@@ -166,6 +170,7 @@ class CharacterController extends AbstractController {
 			'messages' => $messages,
 			'lastMsgId' => $lastMsgId,
 			'settlement' => $here,
+			'fishLog' => $fishLog,
 		]);
 	}
 

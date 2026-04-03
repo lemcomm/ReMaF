@@ -75,12 +75,18 @@
 	{% else %}
 		{{ 'personal.requests.summary.pending'|trans({}, "actions")|raw }} <a href="{{ path('maf_gamerequest_manage') }}">{{ 'personal.requests.summary.some'|trans({"count":requests|length, "%i%":requests|length}, "actions")}}</a>
 	{% endif %}
-	<h3>{{ 'personal.activities.summary.title'|trans({}, "actions")|title }}</h3>
+	<h3>{{ 'personal.activities.summary.title'|trans({}, "actions")|title }}</h3><ul>
 	{% if duels|length < 1 %}
-		{{ 'personal.activities.duels.none'|trans({}, "actions")|raw }}
+		<li>{{ 'personal.activities.duels.none'|trans({}, "actions")|raw }}</li>
 	{% else %}
-		{{ 'personal.activities.duels.pending'|trans({}, "actions")|raw }} <a href="{{ path('maf_activity_duel_answer') }}">{{ 'personal.activities.duels.some'|trans({"count":requests|length, "%i%":duels|length}, "actions")}}</a>
+		<li>	{{ 'personal.activities.duels.pending'|trans({}, "actions")|raw }} <a href="{{ path('maf_activity_duel_answer') }}">{{ 'personal.activities.duels.some'|trans({"count":requests|length, "%i%":duels|length}, "actions")}}</a></li>
 	{% endif %}
+	{% if fishLog %}
+		<li>	<a href="{{ path('maf_activity_fish_log') }}">{{ 'personal.activities.fish.yes'|trans({}, "actions") }}</a></li>
+	{% else %}
+		<li>{{ 'personal.activities.fish.no'|trans({}, "actions") }}</li>
+	{% endif %}
+	</ul>
 	<h3>{{ 'unread.title'|trans({}, "conversations")|title }}</h3>
 	{% include "Conversation/unread_template.html.twig" with {"unread":unread} only %}
 
