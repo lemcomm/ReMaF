@@ -81,7 +81,7 @@ class RealmManager {
 		$this->history->logEvent(
 			$subrealm,
 			'event.prorealm.founder',
-			array('%link-realm%'=>$subrealm->getId()),
+			array('%link-realm%'=>$realm->getId()),
 			History::ULTRA, true
 		);
 		$realm->setSystem('new');
