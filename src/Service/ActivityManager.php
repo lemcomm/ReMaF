@@ -282,11 +282,16 @@ class ActivityManager {
 		$repo = $this->em->getRepository(ActivityType::class);
 		$grand = null;
 		$act = null;
+		$organizerSet = false;
 		if ($total > 1) {
 			$grand = $this->create($repo->findOneBy(['name'=>'grand tournament']), null, $me, null, $bypass);
 			$grand->setName($name);
 			$this->setActSettlement($grand, $me, $where);
 			$this->em->flush();
+		}
+		if ($grand) {
+			$grand->setOrganizer($me);
+			$organizerSet = true;
 		}
 		if ($fightTypes) {
 			if (is_string($fightTypes)) {
@@ -300,6 +305,10 @@ class ActivityManager {
 					$act->setName($name);
 					$this->setActSettlement($act, $me, $where);
 				}
+				if (!$organizerSet) {
+					$act->setOrganizer($me);
+					$organizerSet = true;
+				}
 			}
 		}
 		if ($racesTypes) {
@@ -308,12 +317,20 @@ class ActivityManager {
 				$act->setName($name);
 				$this->setActSettlement($act, $me, $where);
 			}
+			if (!$organizerSet) {
+				$act->setOrganizer($me);
+				$organizerSet = true;
+			}
 		}
 		if ($joustTypes) {
 			$act = $this->create($repo->findOneBy(['name'=>'joust']), null, $me, $grand, $bypass);
 			if (!$grand) {
 				$act->setName($name);
 				$this->setActSettlement($act, $me, $where);
+			}
+			if (!$organizerSet) {
+				$act->setOrganizer($me);
+				$organizerSet = true;
 			}
 		}
 		$this->em->flush();

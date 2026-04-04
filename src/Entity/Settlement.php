@@ -239,6 +239,19 @@ class Settlement {
 		return round($time_to_take);
 	}
 
+	public function isPreparingTournament(): Activity|false {
+		/** @var Activity $act */
+		foreach ($this->activities as $act) {
+			if ($act->isTournament()) {
+				return $act;
+			}
+			if ($act->isCompetition()) {
+				return $act;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Get units
 	 *

@@ -25,10 +25,12 @@ class GlobalsSetCommand extends Command {
 		$which = $input->getArgument('which');
 		$value = $input->getArgument('value');
 
-		$this->cs->setGlobal($which, $value);
 		if ($which == 'actions.running' && $value == '0') {
 			$this->cs->setGlobal('actions.reported', 0);
+		} elseif ($which == 'messages.running' && $value == '0') {
+			$this->cs->setGlobal('messages.reported', 0);
 		}
+		$this->cs->setGlobal($which, $value);
 		$output->writeln("Global '$which' set to '$value'.");
 		return Command::SUCCESS;
 	}

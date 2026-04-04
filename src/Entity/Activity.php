@@ -36,6 +36,7 @@ class Activity {
 	private ?World $world = null;
 	private ?Settlement $settlement = null;
 	private ?Place $place = null;
+	private ?Character $organizer = null;
 
 	const array tournamentTypes = ['melee tournament', 'grand tournament', 'race', 'joust'];
 	const array competitionTypes = ['archery', 'fishing', 'hunting'];
@@ -47,15 +48,38 @@ class Activity {
 		$this->bouts = new ArrayCollection();
 	}
 
+	public function getEventOptions(): array {
+		$all = [];
+		if ($this->events->count() > 0) {
+			/** @var Activity $event */
+			foreach ($this->events as $event) {
+				foreach ($event->getType() as $type) {
+					if ($type->getSubtype()) {
+						$all[] = $this->getSubtype()->getName();
+					} else {
+						$all[] = $this->getType()->getName();
+					}
+				}
+			}
+		} else {
+			if ($this->getSubtype()) {
+				$all[] = $this->getSubtype()->getName();
+			} else {
+				$all[] = $this->getType()->getName();
+			}
+		}
+		return $all;
+	}
+
 	public function isTournament(): bool {
-		if (in_array($this->type, $this::tournamentTypes)) {
+		if (in_array($this->type->getName(), $this::tournamentTypes)) {
 			return true;
 		}
 		return false;
 	}
 
 	public function isCompetition(): bool {
-		if (in_array($this->type, $this::competitionTypes)) {
+		if (in_array($this->type->getName(), $this::competitionTypes)) {
 			return true;
 		}
 		return false;
@@ -490,8 +514,14 @@ class Activity {
 	 *
 	 * @return Activity|null
 	 */
-	public function getMainEvent(): ?Activity {
-		return $this->main_event;
+	public function getMainEvent($returnSelf = true): ?Activity {
+		if ($this->main_event) {
+			return $this->main_event;
+		} elseif ($returnSelf) {
+			return $this;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -624,6 +654,15 @@ class Activity {
 
 	public function setCycle(?int $cycle): static {
 		$this->cycle = $cycle;
+		return $this;
+	}
+
+	public function getOrganizer(): ?Character {
+		return $this->organizer;
+	}
+
+	public function setOrganizer(?Character $organizer): static {
+		$this->organizer = $organizer;
 		return $this;
 	}
 }

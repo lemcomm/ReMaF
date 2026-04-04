@@ -120,6 +120,8 @@ queue:
  character:
   escape:       Escape
  fishing:       Fishing
+ tournament:    In a Tournament
+ competition:   In a Competition
 
 chat:
   settlement:

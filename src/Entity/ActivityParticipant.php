@@ -19,6 +19,7 @@ class ActivityParticipant {
 	private ?Style $style = null;
 	private ?EquipmentType $weapon = null;
 	private ?ActivityGroup $group = null;
+	private ?Action $related_action = null;
 
 	/**
 	 * Constructor
@@ -262,6 +263,15 @@ class ActivityParticipant {
 	public function setAccepted(?bool $accepted = null): static {
 		$this->accepted = $accepted;
 
+		return $this;
+	}
+
+	public function getRelatedAction(): ?Action {
+		return $this->related_action;
+	}
+
+	public function setRelatedAction(?Action $related_action): static {
+		$this->related_action = $related_action;
 		return $this;
 	}
 }

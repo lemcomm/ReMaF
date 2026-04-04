@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Action;
 use App\Entity\Activity;
+use App\Entity\ActivityParticipant;
 use App\Entity\ActivityReport;
 use App\Entity\Character;
 
@@ -12,6 +13,7 @@ use App\Entity\FishLog;
 use App\Entity\FishType;
 use App\Entity\SkillType;
 use App\Enum\CharacterStatus;
+use App\Form\ActivityJoinType;
 use App\Form\ActivitySelectType;
 use App\Form\EquipmentLoadoutType;
 
@@ -23,6 +25,7 @@ use App\Service\AppState;
 use App\Service\Geography;
 use App\Service\StatusUpdater;
 use App\Twig\GameTimeExtension;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -138,14 +141,69 @@ class ActivityController extends AbstractController {
 
 	#[Route ('/activity/join/{act}', name:'maf_activity_join', requirements:['act'=>'\d+'])]
 	public function joinAction(Request $request, Activity $act): Response|RedirectResponse {
-		$char = $this->gateway('activityJoinCompetitioTest', $act);
+		$char = $this->gateway('activityJoinTest', $act);
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
 		}
 		$form = $this->createForm(ActivityJoinType::class, null, ['activity'=>$act]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-
+			$events = $act->getEvents();
+			if ($events->count() === 0) {
+				# This is just so we can reuse the code below for all joinable activities more easily.
+				$events = new ArrayCollection();
+				$events->add($act);
+			}
+			$em = $this->em;
+			$which = $form->getData()['which'];
+			$part = false;
+			foreach ($events as $event) {
+				foreach ($which as $mine) {
+					if ($mine === $event->getSubType()?->getName()) {
+						# Melee uses these.
+						$part = new ActivityParticipant();
+						$part->setCharacter($char);
+						$part->setOrganizer(false);
+						$part->setActivity($event);
+						$part->setAccepted(true);
+						$em->persist($part);
+					} elseif ($mine === $event->getType()->getName()) {
+						# Fishing, hunting, races, jousts
+						$part = new ActivityParticipant();
+						$part->setCharacter($char);
+						$part->setOrganizer(false);
+						$part->setActivity($event);
+						$part->setAccepted(true);
+						$em->persist($part);
+					}
+				}
+			}
+			if ($part) {
+				if ($act->isTournament()) {
+					$action = new Action();
+					$action->setCharacter($char)
+						->setType('tournament')
+						->setBlockTravel(true)
+						->setTargetActivityParticipant($part)
+						->setStarted(new \DateTime())
+						->setCanCancel(true);
+					$this->em->persist($action);
+				} elseif ($act->isCompetition()) {
+					$action = new Action();
+					$action->setCharacter($char)
+						->setType('competition')
+						->setBlockTravel(true)
+						->setTargetActivityParticipant($part)
+						->setStarted(new \DateTime())
+						->setCanCancel(true);
+					$this->em->persist($action);
+				}
+				$this->em->flush();
+				$this->addFlash('notice', $this->trans->trans('activity.join.flash', [], 'activity'));
+				return $this->redirectToRoute('maf_actions');
+			} else {
+				echo 'Andrew you broke it.';
+			}
 		}
 
 		return $this->render('Activity/join.html.twig', [

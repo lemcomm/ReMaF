@@ -27,10 +27,14 @@ class ActivityDispatcher extends Dispatcher {
 			return array("name"=>"activity.title", "elements"=>array(array("name"=>"activity.all", "description"=>"unavailable.$check")));
 		}
 		$char = $this->getCharacter();
+		$settlement = $char->getInsideSettlement();
 		$actions = [];
 		$actions[] = $this->activityFishTest();
-		if ($char && $char->getInsideSettlement() && $char->getInsideSettlement()->isOwnerEquivalent($char)) {
+		$act = $settlement?->isPreparingTournament();
+		if ($char && $settlement && $settlement->isOwnerEquivalent($char) && !$act) {
 			$actions[] = $this->activityTournamentCreateTest();
+		} elseif ($settlement && $act) {
+			$actions[] = $this->activityJoinTest(null, $act);
 		}
 		$actions[] = $this->activityDuelChallengeTest();
 		$actions[] = $this->activityDuelAnswerTest();
@@ -80,7 +84,7 @@ class ActivityDispatcher extends Dispatcher {
 		$char = $this->getCharacter();
 		$settlement = $char->getInsideSettlement();
 		if (!$settlement) {
-			return ["name"=>"activity.train.name", "description"=>"unavailable.notinside"];
+			return ["name"=>"activity.join.name", "description"=>"unavailable.notinside"];
 		}
 		if ($act->getSettlement() !== $settlement) {
 			return ["name"=>"activity.join.name", "description"=>"unavailable.actnothere"];
@@ -104,7 +108,7 @@ class ActivityDispatcher extends Dispatcher {
 		if ($char->isDoingAction('tournament')) {
 			return ["name"=>"activity.join.name", "description"=>"unavailable.alreadyjoined"];
 		}
-		return $this->action("activity.join", "maf_activity_join");
+		return $this->action("activity.join", "maf_activity_join", false, ['act' => $act->getId()]);
 	}
 
 	public function activityFishTest(): array {

@@ -140,6 +140,7 @@ class Character extends AbstractCharacter {
 	private ?array $status = null;
 	private ?array $familiarity = null;
 	private Collection $fishLogs;
+	private Collection $organizedActivities;
 
 	protected bool $isChar = true;
 
@@ -244,6 +245,7 @@ class Character extends AbstractCharacter {
 		$this->battlegroups = new ArrayCollection();
 		$this->chat_messages = new ArrayCollection();
 		$this->fishLogs = new ArrayCollection();
+		$this->organizedActivities = new ArrayCollection();
 	}
 
 	public function __toString() {
@@ -4036,5 +4038,19 @@ class Character extends AbstractCharacter {
 
 	public function feed($var = 1): static {
 		return $this; # Player characters don't worry about this.
+	}
+
+	public function addOrganizedActivity(Activity $act): static {
+		$this->organizedActivities[] = $act;
+
+		return $this;
+	}
+
+	public function removeOrganizedActivity(Activity $act): void {
+		$this->organizedActivities->removeElement($act);
+	}
+
+	public function getOrganizedActivity(): ArrayCollection|Collection {
+		return $this->organizedActivities;
 	}
 }

@@ -7,6 +7,14 @@ activity:
  form:
   name:      "Name"
  title:      Activities Menu
+ join:
+  name:      "Join Tournament/Competition"
+  description: Test your skills!
+  intro:     While tournaments aren't inalienable rights, they are something you do find yourself able to do from time to time. Why not join in and test your skills?
+  flash:     You've signed your name on the line of participants. Maybe send a message to those around as well?
+  form:
+   which:    Join which events?
+   submit:   Register
 
 duel:
  versus:     "<i>vs.</i>"
@@ -60,6 +68,7 @@ fishing:
   description: Find inner peace.
   desc: Have you found the daily toil a bit too much? Has it driven you to want to scream in frustration? Take a break, then. Try fishing. Maybe you'll catch something, maybe you won't, but the time to yourself will be invaluable.
   flash: You grab your pole and set out for some peace, quiet, and fish.
+ join: Fishing Competition
  form:
   where: Where to cast?
   inland: A nearby pond
@@ -596,7 +605,7 @@ tourn:
    flash:     A Race has been scheduled.
   grandtournament:
    flash:     A Grand Tournament has been scheduled.
-  delay:      The a far reaching message announcing it will go out in a few minutes.
+  delay:      A far reaching message announcing it will go out in a few minutes.
   failed:     Tournament creation failed. Please report this to the admins, as it shouldn't be possible to get this message.
  form:
   name:       Tournament Name
@@ -619,9 +628,11 @@ tourn:
    notGrand:  To hold multiple fight types, you must be able to host a Grand Tournament (able to do fights, races, and jousts, and have a Tournament Grounds).
   joustTypes:
    label:     Include a joust?
+   joust:     Jousts
   notGrand:   Only a settlement with a dedicated Tournament Grounds has the facilities to host multiple tournaments at once.
   racesTypes:
    label:     Include races?
+   races:      Races
   submit:     Announce Tournament!
 
 train:
