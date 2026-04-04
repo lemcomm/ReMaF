@@ -23,6 +23,7 @@ use App\Entity\Style;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /*
 As you might expect, ActivityManager handles Activities.
@@ -34,6 +35,7 @@ class ActivityManager {
 	private ?array $logCache = [];
 	private string $ruleset;
 	public int $version = 1;
+	public ?OutputInterface $output = null;
 
 	const array rulesets = ['legacy', 'mastery'];
 
@@ -146,7 +148,7 @@ class ActivityManager {
 		}
         }
 
-	public function createBout(Activity $act, ActivitySubType $type, $same=true, $accepted = true, $round=null): ActivityBout {
+	public function createBout(Activity $act, ActivitySubType $type): ActivityBout {
 		$bout = new ActivityBout();
 		$this->em->persist($bout);
 		$bout->setActivity($act);
@@ -250,6 +252,7 @@ class ActivityManager {
 		if ($level <= $this->debug) {
 			$this->logger->info($text);
 		}
+		$this->output?->writeln($text);
 	}
 
 	/*
@@ -363,7 +366,6 @@ class ActivityManager {
 		}
 		$this->em->remove($act);
 		$this->em->flush();
-		# For reasons, which I don't understand, removing $act here breaks my dev environment. --Andrew
 		return true;
 	}
 
@@ -387,10 +389,7 @@ class ActivityManager {
 		$all = $query->getResult();
 		foreach ($all as $act) {
 			$this->reset(); #Ensure known state.
-			$type = $act->getType()->getName();
-			if ($type === 'duel') {
-				$this->runDuel($act);
-			}
+			$this->findAndRun($act);
 		}
 		return true;
 	}
@@ -399,10 +398,23 @@ class ActivityManager {
 		$this->reset();
 		$type = $act->getType()->getName();
 		$this->ruleset = $ruleset;
+		$this->reset(); #Ensure known state.
+		return $this->findAndRun($act);
+	}
+
+	public function findAndRun(Activity $act): bool {
+		$type = $act->getType()->getName();
 		if ($type === 'duel') {
 			return $this->runDuel($act);
 		}
-		return 'typeNotFound';
+		if (in_array($type, Activity::competitionTypes)) {
+			return $this->runCompetition($act);
+		}
+		if (in_array($type, Activity::tournamentTypes)) {
+			return $this->runTournament($act);
+		}
+		$this->log(10, 'Activity type '.$type.' not found!');
+		return false;
 	}
 
 	private function runDuel(Activity $act): true {

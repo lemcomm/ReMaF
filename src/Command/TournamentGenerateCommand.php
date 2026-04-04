@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DuelGenerateCommand extends Command {
+class TournamentGenerateCommand extends Command {
 
 	private ?string $ruleset;
 	private $duelLevels = ['first blood', 'wound', 'surrender', 'death'];
@@ -29,7 +29,7 @@ class DuelGenerateCommand extends Command {
 	}
 
 	protected function configure(): void {
-		$this->setName('maf:duel:generate')
+		$this->setName('maf:tournament:generate')
 			->setDescription('Generator command for creating a battle. To be used with other generator commands to make a duel for the game to process.')
 			->addArgument('issuer', InputArgument::REQUIRED, 'Character to issue the duel')
 			->addArgument('recipient', InputArgument::REQUIRED, 'Character to be challenged')

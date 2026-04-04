@@ -11,13 +11,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class TestDuelCommand extends  Command {
+class TestDuelCommand extends AbstractTestCommand {
 
 	public function __construct(
-		private EntityManagerInterface $em,
+		protected EntityManagerInterface $em,
 		private UrlGeneratorInterface $url,
 	) {
-		parent::__construct();
+		parent::__construct($em);
 	}
 	protected function configure(): void {
 		$this
@@ -29,6 +29,7 @@ class TestDuelCommand extends  Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
+		$this->start('duelTest');
 		$char1 = null;
 		$char2 = null;
 		$set = $input->getOption('set');
@@ -112,8 +113,10 @@ class TestDuelCommand extends  Command {
 		$report = $this->em->createQuery('SELECT r FROM App\Entity\ActivityReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();
 		$output->writeln("Report available at: ".$this->url->generate('maf_activity_report', ['report' => $report[0]->getId()]));
 		$this->em->clear();
+		$this->finish('duelTest');
 		sleep(1);
 		if ($input->getOption('cleanup') === '1') {
+			$this->start('cleanup');
 			$charKill = new ArrayInput([
 				'command' => 'maf:char:kill',
 				'c' => $char1->getId(),
@@ -124,6 +127,7 @@ class TestDuelCommand extends  Command {
 				'c' => $char2->getId(),
 			]);
 			$this->getApplication()->doRun($charKill, $output);
+			$this->finish('cleanup');
 		}
 		return Command::SUCCESS;
 	}

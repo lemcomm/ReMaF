@@ -22,13 +22,15 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class BattleGenerateCommand extends Command {
+class GenerateBattleCommand extends AbstractGenerateCommand {
 
-	private $whereString = '';
 	private ?string $ruleset;
 
-	public function __construct(private EntityManagerInterface $em, private BattleRunner $runner, private CommonService $common) {
-		parent::__construct();
+	public function __construct(
+		protected EntityManagerInterface $em,
+		private BattleRunner $runner,
+		private CommonService $common) {
+		parent::__construct($em);
 		$this->ruleset = $_ENV['COMBAT_RULESET'];
 		if ($this->ruleset === 'toggleable') {
 			$this->ruleset = null;
@@ -37,7 +39,7 @@ class BattleGenerateCommand extends Command {
 
 	protected function configure(): void {
 		$this
-			->setName('maf:battle:generate')
+			->setName('maf:generate:battle')
 			->setDescription('Generator command for creating a battle. To be used with other generator commands to make a battle for the game to process.')
 			->addArgument('where', InputArgument::REQUIRED, 'Where is the battle? Should be in the format of Location:ID, i.e.: GeoData:8, MapRegion:15, Settlement:16, Place:9.')
 			->addArgument('attackers', InputArgument::REQUIRED, 'Comma separated list of attacking character IDs')
@@ -132,82 +134,6 @@ class BattleGenerateCommand extends Command {
 			$output->writeln('<warning>Not enough attackers and defenders.</warning>');
 			return Command::FAILURE;
 		}
-	}
-
-	private function findWhere(string $where, Battle $battle): Battle {
-		$set = explode(':', $where);
-		if (!array_key_exists(1, $set)) {
-			$battle->setLocation(null);
-			$world = $this->em->getRepository(World::class)->findOneBy(['name'=>'old world']);
-			$battle->setWorld($world);
-			$this->whereString = 'Unknown Location???';
-		} else {
-			switch ($set[0]) {
-				case 'G':
-				case 'GeoData':
-					$here = $this->em->getRepository(GeoData::class)->findOneBy(['id' => $set[1]]);
-					if ($here) {
-						/** @var GeoData $here */
-						$battle->setLocation($here->getCenter());
-						$battle->setWorld($here->getWorld());
-					}
-					$this->whereString = 'GeoData: '. $here->getId();
-					break;
-				case 'M':
-				case 'MapRegion':
-					$here = $this->em->getRepository(MapRegion::class)->findOneBy(['id' => $set[1]]);
-					if ($here) {
-						/** @var MapRegion $here */
-						$battle->setMapRegion($here);
-						$battle->setWorld($here->getWorld());
-					}
-					$this->whereString = 'MapRegion: '. $here->getId();
-					break;
-				case 'P':
-				case 'Place':
-					$here = $this->em->getRepository(Place::class)->findOneBy(['id' => $set[1]]);
-					if ($here) {
-						/** @var Place $here */
-						$battle->setPlace($here);
-						$battle->setWorld($here->getWorld());
-						if ($here->getGeoData()) {
-							$battle->setLocation($here->getGeoData()->getCenter());
-						} else {
-							$battle->setMapRegion($here->getMapRegion());
-						}
-					}
-					$this->whereString = 'Place: '. $here->getId();
-					break;
-				case 'S':
-				case 'Settlement':
-					$here = $this->em->getRepository(Settlement::class)->findOneBy(['id' => $set[1]]);
-					if ($here) {
-						/** @var Settlement $here */
-						$battle->setSettlement($here);
-						$battle->setWorld($here->getWorld());
-						if ($here->getGeoData()) {
-							$battle->setLocation($here->getGeoData()->getCenter());
-						} else {
-							$battle->setMapRegion($here->getMapRegion());
-						}
-					}
-					$this->whereString = 'Settlement: '. $here->getId();
-					break;
-			}
-		}
-		return $battle;
-	}
-
-	private function findCharacters($string): ArrayCollection {
-		$all = new ArrayCollection();
-		$string = explode(',', $string);
-		foreach ($string as $char) {
-			$char = $this->em->getRepository(Character::class)->findOneBy(['id' => $char]);
-			if ($char) {
-				$all->add($char);
-			}
-		}
-		return $all;
 	}
 
 	private function findType(string $string, Battle $battle): Battle {

@@ -159,22 +159,9 @@ class ActivityController extends AbstractController {
 			$part = false;
 			foreach ($events as $event) {
 				foreach ($which as $mine) {
-					if ($mine === $event->getSubType()?->getName()) {
+					if ($mine === $event->getSubType()?->getName() || $mine === $event->getType()->getName()) {
 						# Melee uses these.
-						$part = new ActivityParticipant();
-						$part->setCharacter($char);
-						$part->setOrganizer(false);
-						$part->setActivity($event);
-						$part->setAccepted(true);
-						$em->persist($part);
-					} elseif ($mine === $event->getType()->getName()) {
-						# Fishing, hunting, races, jousts
-						$part = new ActivityParticipant();
-						$part->setCharacter($char);
-						$part->setOrganizer(false);
-						$part->setActivity($event);
-						$part->setAccepted(true);
-						$em->persist($part);
+						$part = $this->actman->createParticipant($event, $char, null, null, true);
 					}
 				}
 			}
