@@ -18,6 +18,10 @@ class ActivityReport extends AbstractReport {
 	private ?ActivitySubType $subtype = null;
 	private ?GeoData $geo_data = null;
 	private ?MapRegion $map_region = null;
+	private ?ActivityReport $mainReport = null;
+	private Collection $subReports;
+	private Collection $stages;
+	private ?string $name = null;
 
 	/**
 	 * Constructor
@@ -26,6 +30,8 @@ class ActivityReport extends AbstractReport {
 		parent::__construct();
 		$this->characters = new ArrayCollection();
 		$this->groups = new ArrayCollection();
+		$this->subReports = new ArrayCollection();
+		$this->stages = new ArrayCollection();
 	}
 
 	/**
@@ -237,6 +243,65 @@ class ActivityReport extends AbstractReport {
 
 	public function setMapRegion(?MapRegion $map_region): static {
 		$this->map_region = $map_region;
+		return $this;
+	}
+
+	public function addSubReport(ActivityReport $report): static {
+		$this->subReports[] = $report;
+
+		return $this;
+	}
+
+	public function removeSubReport(ActivityReport $report): void {
+		$this->subReports->removeElement($report);
+	}
+
+	public function getSubReports(): ArrayCollection|Collection {
+		return $this->subReports;
+	}
+
+	public function getMainReport(): ?ActivityReport {
+		return $this->mainReport;
+	}
+
+	public function setMainReport(?ActivityReport $mainReport): static {
+		$this->mainReport = $mainReport;
+		return $this;
+	}
+
+	public function addStage(ActivityReportStage $stage): static {
+		$this->stages[] = $stage;
+
+		return $this;
+	}
+
+	public function removeStage(ActivityReportStage $stage): void {
+		$this->stages->removeElement($stage);
+	}
+
+	public function getStages(): ArrayCollection|Collection {
+		return $this->stages;
+	}
+
+	/**
+	 * Get name
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
+
+	/**
+	 * Set name
+	 *
+	 * @param string $name
+	 *
+	 * @return ActivityReport
+	 */
+	public function setName(string $name): static {
+		$this->name = $name;
+
 		return $this;
 	}
 }

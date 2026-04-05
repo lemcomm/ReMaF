@@ -10,8 +10,8 @@ use Doctrine\Common\Collections\Collection;
  */
 class ActivityReportCharacter {
 	private ?int $id = null;
-	private array $start;
-	private array $finish;
+	private ?array $start = null;
+	private ?array $finish = null;
 	private bool $standing;
 	private bool $wounded;
 	private bool $surrender;
@@ -41,7 +41,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return array
 	 */
-	public function getStart(): array {
+	public function getStart(): ?array {
 		return $this->start;
 	}
 
@@ -52,7 +52,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setStart(array $start): static {
+	public function setStart(?array $start): static {
 		$this->start = $start;
 
 		return $this;
@@ -63,7 +63,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return array
 	 */
-	public function getFinish(): array {
+	public function getFinish(): ?array {
 		return $this->finish;
 	}
 
@@ -74,7 +74,7 @@ class ActivityReportCharacter {
 	 *
 	 * @return ActivityReportCharacter
 	 */
-	public function setFinish(array $finish): static {
+	public function setFinish(?array $finish): static {
 		$this->finish = $finish;
 
 		return $this;

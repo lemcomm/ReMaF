@@ -10,8 +10,8 @@ use Doctrine\Common\Collections\Collection;
  */
 class ActivityReportGroup {
 	private ?int $id = null;
-	private array $start;
-	private array $finish;
+	private ?array $start = null;
+	private ?array $finish = null;
 	private Collection $stages;
 	private Collection $characters;
 	private ?ActivityReport $activity_report = null;
@@ -111,12 +111,12 @@ class ActivityReportGroup {
 	/**
 	 * Add characters
 	 *
-	 * @param ActivityReportCharacter $characters
+	 * @param ActivityReportCharacter $character
 	 *
 	 * @return ActivityReportGroup
 	 */
-	public function addCharacter(ActivityReportCharacter $characters): static {
-		$this->characters[] = $characters;
+	public function addCharacter(ActivityReportCharacter $character): static {
+		$this->characters[] = $character;
 
 		return $this;
 	}
@@ -124,10 +124,10 @@ class ActivityReportGroup {
 	/**
 	 * Remove characters
 	 *
-	 * @param ActivityReportCharacter $characters
+	 * @param ActivityReportCharacter $character
 	 */
-	public function removeCharacter(ActivityReportCharacter $characters): void {
-		$this->characters->removeElement($characters);
+	public function removeCharacter(ActivityReportCharacter $character): void {
+		$this->characters->removeElement($character);
 	}
 
 	/**
