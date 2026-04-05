@@ -145,7 +145,19 @@ class ActivityController extends AbstractController {
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
 		}
-		$form = $this->createForm(ActivityJoinType::class, null, ['activity'=>$act]);
+		$weapons = $act->getWeapons();
+		if (count($weapons) === 0) {
+			$weapons = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon']);
+		} elseif (count($weapons) === 1) {
+			$weapons = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon', 'id'=>$weapons[0]]);
+		} else {
+			$weapons = $this->em->getRepository(EquipmentType::class)->findBy(['id'=>$weapons]);
+		}
+		$armor = $act->getArmor();
+		if ($armor) {
+			$armor = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'armour']);
+		}
+		$form = $this->createForm(ActivityJoinType::class, null, ['activity'=>$act, 'weapons'=>$weapons, 'armor'=>$armor]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$events = $act->getEvents();
@@ -157,11 +169,13 @@ class ActivityController extends AbstractController {
 			$em = $this->em;
 			$which = $form->getData()['which'];
 			$part = false;
+			$myArmor = $form->getData()['armor'];
+			$myWeapon = $form->getData()['weapon'];
 			foreach ($events as $event) {
 				foreach ($which as $mine) {
 					if ($mine === $event->getSubType()?->getName() || $mine === $event->getType()->getName()) {
 						# Melee uses these.
-						$part = $this->actman->createParticipant($event, $char, null, null, true);
+						$part = $this->actman->createParticipant($event, $char, null, $myWeapon, $myArmor, true);
 					}
 				}
 			}

@@ -6,6 +6,7 @@ use App\Entity\Activity;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Service\ActivityManager;
+use App\Service\ActivityRunner;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -20,6 +21,7 @@ class TournamentGenerateCommand extends Command {
 	public function __construct(
 		private EntityManagerInterface $em,
 		private ActivityManager $actMan,
+		private ActivityRunner $ar,
 	) {
 		parent::__construct();
 		$this->ruleset = $_ENV['COMBAT_RULESET'];
@@ -59,9 +61,8 @@ class TournamentGenerateCommand extends Command {
 			return Command::FAILURE;
 		}
 		$output->writeln('<info>Defender: '.$defender->getName().'</info>');
-		$runner = $this->actMan;
 		$ruleset = $input->getOption('ruleset');
-		if ($runner->validateRuleset($ruleset)) {
+		if ($this->ar->validateRuleset($ruleset)) {
 			$output->writeln('<info>Ruleset: '.$ruleset.'</info>');
 		} else {
 			$output->writeln('<error>Ruleset: '.$ruleset.'; not accepted as valid by ActivityManager, aborting!</error>');
@@ -71,11 +72,11 @@ class TournamentGenerateCommand extends Command {
 		if ($version !== null) {
 			$version = (int)$version;
 			$output->writeln('<info>Version: ' . $version . '</info>');
-			if (0 < $version && $version > $runner->version) {
+			if (0 < $version && $version > $this->ar->version) {
 				$output->writeln('<error>Version is above ActivityManager->version, aborting!</error>');
 				return Command::FAILURE;
 			} else {
-				$runner->version = $version;
+				$this->ar->version = $version;
 			}
 		}
 		$weapon = $this->findWeapon($input->getArgument('weapon'));
@@ -102,7 +103,8 @@ class TournamentGenerateCommand extends Command {
 		$this->em->clear();
 		$act = $this->em->getRepository(Activity::class)->find($id);
 		$output->writeln('<info>Running!</info>');
-		$this->actMan->run($act, $ruleset);
+		$this->ar->output = $output;
+		$this->ar->run($act, $ruleset);
 		$output->writeln('<info>Duel completed!</info>');
 		return Command::SUCCESS;
 	}

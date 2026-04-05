@@ -8,6 +8,7 @@ use App\Entity\EquipmentType;
 use App\Entity\Settlement;
 use App\Enum\Activities;
 use App\Service\ActivityManager;
+use App\Service\ActivityRunner;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -16,14 +17,15 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class TestTournamentCommand extends  Command {
+class TestTournamentCommand extends AbstractTestCommand {
 
 	public function __construct(
-		private EntityManagerInterface $em,
+		protected EntityManagerInterface $em,
 		private UrlGeneratorInterface $url,
 		private ActivityManager $am,
+		private ActivityRunner $ar,
 	) {
-		parent::__construct();
+		parent::__construct($em);
 	}
 	protected function configure(): void {
 		$this
@@ -37,9 +39,8 @@ class TestTournamentCommand extends  Command {
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$em = $this->em;
 		$am = $this->am;
+		$ar = $this->ar;
 		$charArr = [];
-		$char1 = null;
-		$char2 = null;
 		$set = $input->getOption('set');
 		switch ($set) {
 			default:
@@ -63,15 +64,16 @@ class TestTournamentCommand extends  Command {
 				$subType = $em->getRepository(ActivitySubType::class)->findOneBy(['name'=>Activities::fightsSolo->value]);
 				$where = $em->getRepository(Settlement::class)->findOneBy(['id'=>1249]);
 				$tourn = $am->createTournament($charArr[0], $where, 1, 'Testing 1v1 Tournament', $subType, null, null, null, false);
+				$weapon = $this->findWeapon('broadsword');
 				foreach ($charArr as $char) {
-					$am->createParticipant($tourn, $char, null, null, true);
+					$am->createParticipant($tourn, $char, null, $weapon, null, true);
 				}
 				$tournID = $tourn->getId();
 				$em->flush();
 				$em->clear();
 				$tourn = $em->getRepository(Activity::class)->find($tournID);
-				$am->output = $output;
-				$am->run($tourn, $ruleset);
+				$ar->output = $output;
+				$ar->run($tourn, $ruleset);
 				break;
 		}
 		$report = $this->em->createQuery('SELECT r FROM App\Entity\ActivityReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();

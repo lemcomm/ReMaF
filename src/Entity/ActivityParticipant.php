@@ -18,6 +18,7 @@ class ActivityParticipant {
 	private ?Character $character = null;
 	private ?Style $style = null;
 	private ?EquipmentType $weapon = null;
+	private ?EquipmentType $armor = null;
 	private ?ActivityGroup $group = null;
 	private ?Action $related_action = null;
 
@@ -214,6 +215,28 @@ class ActivityParticipant {
 	 */
 	public function setWeapon(?EquipmentType $weapon = null): static {
 		$this->weapon = $weapon;
+
+		return $this;
+	}
+
+	/**
+	 * Get weapon
+	 *
+	 * @return EquipmentType|null
+	 */
+	public function getArmor(): ?EquipmentType {
+		return $this->armor;
+	}
+
+	/**
+	 * Set weapon
+	 *
+	 * @param EquipmentType|null $armor
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setArmor(?EquipmentType $armor = null): static {
+		$this->armor = $armor;
 
 		return $this;
 	}

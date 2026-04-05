@@ -5,17 +5,13 @@
 namespace App\Form;
 
 use App\Entity\Activity;
-use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Enum\Activities;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -28,11 +24,13 @@ class ActivityJoinType extends AbstractType {
 			'maxdistance' => null,
 			'me' => null,
 		));
-		$resolver->setRequired(['activity']);
+		$resolver->setRequired(['activity', 'weapons']);
 	}
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		/** @var Activity $act */
 		$act = $options['activity'];
+		$armor = $options['armor'];
+		$weapons = $options['weapons'];
 
 		$builder->add('which', ChoiceType::class, [
 			'choices' => $act->getEventOptions(),
@@ -59,6 +57,36 @@ class ActivityJoinType extends AbstractType {
 				}
 			}
 		]);
+		if (count($weapons) > 1) {
+			$builder->add('weapon', EntityType::class, array(
+				'label'=>'loadout.weapon',
+				'placeholder'=>'loadout.none',
+				'required'=>true,
+				'choice_label'=>'nameTrans',
+				'choice_translation_domain' => 'messages',
+				'class'=>EquipmentType::class,
+				'choices'=>$weapons
+			));
+		} else {
+			$builder->add('weapon', HiddenType::class, [
+				'data'=>$weapons[0]
+			]);
+		}
+		if ($armor) {
+			$builder->add('armor', EntityType::class, array(
+				'label'=>'loadout.armor',
+				'placeholder'=>'loadout.none',
+				'required'=>true,
+				'choice_label'=>'nameTrans',
+				'choice_translation_domain' => 'messages',
+				'class'=>EquipmentType::class,
+				'choices'=>$options['armor']
+			));
+		} else {
+			$builder->add('armor', HiddenType::class, [
+				'data'=>null,
+			]);
+		}
 		$builder->add('submit', SubmitType::class, [
 			'label'=>'activity.join.form.submit'
 		]);
