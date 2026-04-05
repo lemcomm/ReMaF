@@ -588,7 +588,7 @@ class ActionsController extends AbstractController {
 					$act->setTargetSettlement($settlement)->setTargetCharacter($data['target']);
 					$act->setBlockTravel(true);
 					// This is based off the logic in Settlement::getTimeToTake().
-					$time_to_grant = 3600 * (12 + log10(pow(1 + $settlement->getPopulation() / 400, 20))) * 0.008;
+					$time_to_grant = intval(3600 * (12 + log10(pow(1 + $settlement->getPopulation() / 400, 20))) * 0.008);
 					$complete = new DateTime("now");
 					$complete->add(new DateInterval("PT".$time_to_grant."S"));
 					$act->setComplete($complete);
