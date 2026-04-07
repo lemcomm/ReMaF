@@ -892,7 +892,7 @@ class ConversationManager {
                         $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'general']);
                         $this->addParticipant($conv, $char);
                         $this->addParticipant($general, $char);
-                        $msg = $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
+                        $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                         #$this->newSystemMessage($general, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                 } elseif ($realm && !$same) {
 			$msgs = [];
@@ -900,21 +900,14 @@ class ConversationManager {
                         $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$realm, 'system'=>'general']);
                         $this->addParticipant($conv, $char);
                         $this->addParticipant($general, $char);
-			$msg = $this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
-			if ($msg) {
-				$msgs[] = $msg;
-			}
+			$this->newSystemMessage($conv, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                         #$this->newSystemMessage($general, 'realmnew', null, $char, null, ['where'=>$place->getId()]);
                         $supConv = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'announcements']);
                         $supGeneral = $em->getRepository('App\Entity\Conversation')->findOneBy(['realm'=>$ultimate, 'system'=>'general']);
                         $this->addParticipant($supConv, $char);
                         $this->addParticipant($supGeneral, $char);
-			$msg =  $this->newSystemMessage($supConv, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
-			if ($msg) {
-				$msgs[] = $msg;
-			}
+			$this->newSystemMessage($supConv, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
                         #$this->newSystemMessage($supGeneral, 'realmnew2', null, $char, null, ['realm'=>$realm->getId(), 'where'=>$place->getId()]);
-			$this->combineData($msgs);
                 } elseif ($house) {
                         $conv = $em->getRepository('App\Entity\Conversation')->findOneBy(['house'=>$house, 'system'=>'announcements']);
                         $general = $em->getRepository('App\Entity\Conversation')->findOneBy(['house'=>$house, 'system'=>'general']);
@@ -1000,24 +993,32 @@ class ConversationManager {
 	 *
 	 * @return void
 	 */
-	public function combineData(array $msgs): void {
+	public function combineData(array $msgs, $override = false): void {
 		$match = false;
 		$sysMatch = false;
 		$data = new MessageData();
 		$content = '';
 		$sysCont = '';
 		$topic = '';
-		foreach ($msgs as $msg) {
-			if ($content === '') {
-				$content = $msg->getContent();
-				$sysCont = $msg->getSystem();
-				$topic = $msg->getTopic();
-			} elseif ($msg->getContent() === $content && $msg->getSystem() === $sysCont && $msg->getTopic() === $topic) {
-				$match = true;
-			} else {
-				$match = false;
+		if(!$override) {
+			foreach ($msgs as $msg) {
+				if ($content === '') {
+					$content = $msg->getContent();
+					$sysCont = $msg->getSystemContent();
+					$topic = $msg->getTopic();
+				} elseif ($msg->getContent() === $content && $msg->getSystemContent() === $sysCont && $msg->getTopic() === $topic) {
+					$match = true;
+				} else {
+					$match = false;
+				}
 			}
+		} elseif ($msgs[0] instanceof Message) {
+			$match = true;
+			$content = $msgs[0]->getContent();
+			$sysCont = $msgs[0]->getSystemContent();
+			$topic = $msgs[0]->getTopic();
 		}
+
 		if ($match) {
 			$this->em->persist($data);
 			$data->setContent($content);
@@ -1025,7 +1026,7 @@ class ConversationManager {
 			$data->setTopic($topic);
 			foreach ($msgs as $msg) {
 				$msg->setData($data);
-				$msg->setContent(null)->setSystem(null)->setTopic(null);
+				$msg->setContent(null)->setSystemContent(null)->setTopic(null);
 			}
 		}
 	}
