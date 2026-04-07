@@ -22,11 +22,16 @@ class ActivityParticipant {
 	private ?ActivityGroup $group = null;
 	private ?Action $related_action = null;
 
+	# Not backed properties.
+	private ?ActivityParticipant $target = null;
+	private ?Collection $targetedBy = null;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		$this->bout_participation = new ArrayCollection();
+		$this->targetedBy = new ArrayCollection();
 	}
 
 	public function isChallenger(): bool {
@@ -295,6 +300,37 @@ class ActivityParticipant {
 
 	public function setRelatedAction(?Action $related_action): static {
 		$this->related_action = $related_action;
+		return $this;
+	}
+
+	public function getTarget(): ?ActivityParticipant {
+		return $this->target;
+	}
+
+	public function setTarget(?ActivityParticipant $target): static {
+		$this->target = $target;
+		return $this;
+	}
+
+	public function addTargetedBy(ActivityParticipant $target): static {
+		$this->getTargetedBy()->add($target);
+		return $this;
+	}
+
+	public function removeTargetedBy(ActivityParticipant $target): static {
+		$this->getTargetedBy()->removeElement($target);
+		return $this;
+	}
+
+	public function getTargetedBy(): Collection {
+		if ($this->targetedBy === null) {
+			$this->targetedBy = new ArrayCollection();
+		}
+		return $this->targetedBy;
+	}
+
+	public function resetTargetedBy(): static {
+		$this->targetedBy = new ArrayCollection();
 		return $this;
 	}
 }

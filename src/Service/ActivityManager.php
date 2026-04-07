@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Activity;
+use App\Entity\ActivityRequirement;
 use App\Entity\ActivityType;
 use App\Entity\ActivitySubType;
 use App\Entity\ActivityParticipant;
@@ -49,8 +50,9 @@ class ActivityManager {
 			$needPlaces = [];
 			$hasBldgs = False;
 			$hasPlaces = False;
+			/** @var ActivityRequirement $req */
 			foreach ($reqs as $req) {
-				$b = $req->getBldg();
+				$b = $req->getBuilding();
 				$p = $req->getPlace();
 				if ($b) {
 					$needBldgs[] = $b->getName();
@@ -68,6 +70,9 @@ class ActivityManager {
 						$hasBldgs = True;
 					}
 				}
+			} else {
+				# Nothing to verify.
+				$hasBldgs = True;
 			}
 			if (count($needPlaces) > 0) {
 				foreach ($needPlaces as $place) {
@@ -79,10 +84,15 @@ class ActivityManager {
 						$hasPlaces = True;
 					}
 				}
+			} else {
+				# Nothing to verify.
+				$hasPlaces = True;
 			}
 			# Since all activities that have requirements require a place both $hasPlace and $hasBldgs should be true for this to verify.
 			if ($hasPlaces && $hasBldgs) {
 				$valid = True;
+			} else {
+				$this->output?->writeln("Verify check of hasPlaces: $hasPlaces; and hasBldgs: $hasBldgs");
 			}
 		}
 		return $valid;
@@ -90,7 +100,7 @@ class ActivityManager {
 
         public function create(ActivityType $type, ActivitySubType|string|null $subType, Character $char, ?Activity $mainAct = null, $bypassVerify = false): Activity|false {
 		if (!$type->getEnabled()) {
-			return False;
+			$this->output?->writeln("Requested acitivty type ".$type->getName()." is not enabled.");
 		}
 		if ($bypassVerify || $this->verify($type, $char)) {
 			$now = new DateTime("now");
@@ -116,6 +126,7 @@ class ActivityManager {
 			}
 			return $act;
 		} else {
+			$this->output?->writeln("Requested acitivty type ".$type->getName()." is not valid.");
 			return False;
 		}
         }
@@ -234,7 +245,7 @@ class ActivityManager {
 		}
 	}
 
-	public function createTournament(Character $me, Settlement $where, int $total, string $name, null|array|string $fightTypes, ?bool $racesTypes, ?bool $joustTypes, $restrictions = null, $armor = null, $bypass = false): Activity|false {
+	public function createTournament(Character $me, Settlement $where, int $total, string $name, null|array|string|ActivitySubType $fightTypes, ?bool $racesTypes, ?bool $joustTypes, $restrictions = null, $armor = null, $bypass = false): Activity|false {
 		$repo = $this->em->getRepository(ActivityType::class);
 		$grand = null;
 		$act = null;
@@ -250,7 +261,7 @@ class ActivityManager {
 			$organizerSet = true;
 		}
 		if ($fightTypes) {
-			if (is_string($fightTypes)) {
+			if (!is_array($fightTypes)) {
 				$fightTypes = [$fightTypes];
 			}
 			foreach ($fightTypes as $type) {

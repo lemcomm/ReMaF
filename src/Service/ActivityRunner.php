@@ -61,14 +61,14 @@ class ActivityRunner {
 		return true;
 	}
 
-	public function run(Activity $act, string $ruleset): true|string {
+	public function run(Activity $act, string $ruleset): Activity|true|string {
 		$this->reset();
 		$this->ruleset = $ruleset;
 		$this->reset(); #Ensure known state.
 		return $this->findAndRun($act);
 	}
 
-	public function findAndRun(Activity $act): bool {
+	public function findAndRun(Activity $act): Activity|bool {
 		$type = $act->getType()->getName();
 		if ($type === 'duel') {
 			return $this->runDuel($act);
@@ -83,7 +83,7 @@ class ActivityRunner {
 		return false;
 	}
 
-	private function runTournament(Activity $act): true {
+	private function runTournament(Activity $act): Activity|true {
 		$type = $act->getType()->getName();
 		$grand = false;
 		$melee = false;
@@ -102,7 +102,7 @@ class ActivityRunner {
 				}
 			}
 		} elseif ($type === 'melee tournament') {
-			$this->runMeleeTournament($act, null);
+			return $this->runMeleeTournament($act, null);
 		} elseif ($type === 'race') {
 			$race = true;
 		} elseif ($type === 'joust') {
@@ -111,7 +111,7 @@ class ActivityRunner {
 		return true;
 	}
 
-	private function runMeleeTournament(Activity $act, ?ActivityReport $mainReport) {
+	private function runMeleeTournament(Activity $act, ?ActivityReport $mainReport): Activity|true {
 		$this->report = $act->getReport();
 		if (!$this->report) {
 			$this->report = $this->newReport($act);
@@ -127,6 +127,11 @@ class ActivityRunner {
 			$round = $stages->last()->getRound()+1;
 		}
 		$fighters = $act->getParticipants();
+		if ($round === 1) {
+			foreach ($fighters as $fighter) {
+				$this->common->addAchievement($fighter->getCharacter(), 'attendTournament', 1);
+			}
+		}
 		$total = $fighters->count();
 		$ffa = false;
 		$subType = $act->getSubType()->getName();
@@ -154,54 +159,61 @@ class ActivityRunner {
 		 */
 		$running = true;
 		$act->setStart(new DateTime());
-		while ($running) {
-			$default = false;
-			$stageReport = $this->createStageReport($this->report, $round, []);
-			if ($remaining < $boutSize) {
-				$mySize = $remaining;
-				if ($mySize < 2) {
-					$winners = null;
-					$default = true;
-					foreach ($fighters as $each) {
-						$winners[] = $each;
-					}
+		$default = false;
+		$stageReport = $this->createStageReport($this->report, $round, []);
+		if ($remaining < $boutSize) {
+			$mySize = $remaining;
+			if ($mySize < 2) {
+				$winners = null;
+				$default = true;
+				foreach ($fighters as $each) {
+					$winners[] = $each;
 				}
-			} else {
-				$mySize = $boutSize;
 			}
-			if (!$default) {
-				$participants = new ArrayCollection;
-				$have = 0;
-				$who = null;
-				while ($have < $mySize) {
-					if ($who === null) {
-						$who = $fighters->first();
-					} else {
-						$who = $fighters->next();
-					}
-					if ($who) {
-						$participants->add($who);
-						$this->log(10, 'Added ' . $who->getCharcter()->getName() . ' to the bout.');
-						$have++;
-						$remaining--;
-						$this->log(10, "Have = $have -- Remaining = $remaining");
-						$fighters->remove($who);
-					}
-				}
-				if ($ffa) {
-					#TODO: The below function.
-					[$winners, $losers, $subReport] = $this->runMeleeFFABout($act, $participants, $mySize);
+		} else {
+			$mySize = $boutSize;
+		}
+		if (!$default) {
+			$participants = new ArrayCollection;
+			$have = 0;
+			$who = null;
+			while ($have < $mySize) {
+				$this->log(10, "Have $have, want $mySize, of remaining ".$fighters->count());
+				if ($who === null) {
+					$who = $fighters->first();
 				} else {
-					[$winners, $losers, $subReport] = $this->runMeleeTeamBout($act, $participants, $mySize);
+					$who = $fighters->next()?:$fighters->first();
 				}
-			} else {
-				$losers = [];
-				$subReport = false;
+				$this->log(10, "Who instanceof ".gettype($who));
+				if ($who) {
+					$participants->add($who);
+					$this->log(10, 'Added ' . $who->getCharacter()->getName() . ' to the bout.');
+					$have++;
+					$remaining--;
+					$this->log(10, "Have = $have -- Remaining = $remaining");
+					$fighters->removeElement($who);
+				}
+				sleep(1);
 			}
-			$winData = [];
-			$lossData = [];
-			foreach ($winners as $winner) {
-				$winData[] = $winner->getCharacter()->getId();
+			if ($ffa) {
+				$this->log(10, "Handing off to runMeleeFFABout");
+				#TODO: The below function.
+				[$winners, $losers, $subReport] = $this->runMeleeFFABout($act, $participants, $mySize);
+			} else {
+				$this->log(10, "Handing off to runMeleeTeamBout");
+				[$winners, $losers, $subReport] = $this->runMeleeTeamBout($act, $participants, $mySize);
+			}
+		} else {
+			$losers = [];
+			$subReport = false;
+		}
+		$winData = [];
+		$lossData = [];
+		foreach ($winners as $winner) {
+			$this->log(10, "Winner: ".$winner->getCharacter()->getName());
+			$winner->setTarget(null)->resetTargetedBy();
+			$winData[] = $winner->getCharacter()->getId();
+			if ($mainReport) {
 				if (!$default) {
 					$this->history->logEvent(
 						$winner->getCharacter(),
@@ -220,9 +232,31 @@ class ActivityRunner {
 					);
 				}
 			}
-			foreach ($losers as $loser) {
-				$lossData[] = $loser->getCharacter()->getId();
-				$act->removeParticipant($loser);
+			if (!$default) {
+				$this->history->logEvent(
+					$winner->getCharacter(),
+					$eventType.'.win',
+					['%link-activity%'=>$this->report->getId(), '%round%'=>$round+1],
+					History::LOW,
+					false
+				);
+			} else {
+				$this->history->logEvent(
+					$winner->getCharacter(),
+					$eventType.'.default',
+					['%link-activity%'=>$this->report->getId(), '%round%'=>$round+1],
+					History::LOW,
+					false
+				);
+			}
+
+		}
+		foreach ($losers as $loser) {
+			$this->log(10, "Winner: ".$loser->getCharacter()->getName());
+			$loser->setTarget(null)->resetTargetedBy();
+			$lossData[] = $loser->getCharacter()->getId();
+			$act->removeParticipant($loser);
+			if ($mainReport) {
 				$this->history->logEvent(
 					$loser->getCharacter(),
 					$eventType.'.loss',
@@ -231,22 +265,46 @@ class ActivityRunner {
 					false
 				);
 			}
-			# We attach the subReport ID here just so we can link it easier in the report view.
-			$allData = [
-				'winners' => $winData,
-				'losers' => $lossData,
-			];
-			if ($subReport) {
-				$allData['subReport'] = $subReport->getId();
-			} else {
-				$allData['subReport'] = $subReport;
-			}
-			$stageReport->setData($allData);
+			$this->history->logEvent(
+				$loser->getCharacter(),
+				$eventType.'.loss',
+				['%link-activityreport%'=>$this->report->getId(), '%round%'=>$round],
+				History::LOW,
+				false
+			);
 		}
-		if ((!$ffa && $act->getParticipants()->count() <= $boutSize / 2) || ($ffa && $act->getParticipants()->count() === 1)) {
-			#TODO: Final completion code.
+		# We attach the subReport ID here just so we can link it easier in the report view.
+		$allData = [
+			'winners' => $winData,
+			'losers' => $lossData,
+		];
+		if ($subReport) {
+			$allData['subReport'] = $subReport->getId();
 		} else {
-			#TODO: Round complete. Save work for next run.
+			$allData['subReport'] = $subReport;
+		}
+		$stageReport->setData($allData);
+		$this->em->flush();
+		if ((!$ffa && $act->getParticipants()->count() <= $boutSize / 2) || ($ffa && $act->getParticipants()->count() === 1)) {
+			$this->log(10, "Tournament complete!");
+			foreach ($winners as $winner) {
+				$char = $winner->getCharacter();
+				$this->history->logEvent(
+					$char,
+					$eventType.'.win2',
+					['%link-activity%'=>$this->report->getId(), '%name%'=>$act->getName()],
+					History::HIGH,
+					true
+				);
+				$this->common->addAchievement($char, 'tournamentWin', 1);
+			}
+			$this->em->flush();
+			$this->am->cleanupAct($act);
+			return true;
+		} else {
+			$this->log(10, "Tournamnet has more to go!");
+			$this->em->flush();
+			return $act;
 		}
 	}
 
@@ -263,18 +321,23 @@ class ActivityRunner {
 		foreach ($participants as $each) {
 			$cta = count($teamA);
 			$ctb = count($teamB);
-			if ($cta < $boutSize && $ctb < $boutSize) {
+			$this->log(10, "Counts A: $cta -- B: $ctb");
+			if ($cta < $boutSize/2 && $ctb < $boutSize/2) {
 				# Both teams have slots available.
 				$flip = rand(0,1);
 				if ($flip) {
+					$this->log(10, "Adding ".$each->getCharacter()->getName()." to Team B");
 					$teamB[] = $each;
 				} else {
+					$this->log(10, "Adding ".$each->getCharacter()->getName()." to Team A");
 					$teamA[] = $each;
 				}
-			} elseif ($cta < $boutSize && $ctb >= $boutSize) {
+			} elseif ($cta < $boutSize/2 && $ctb >= $boutSize/2) {
 				$teamA[] = $each;
-			} elseif ($cta >= $boutSize && $ctb < $boutSize) {
+				$this->log(10, "Adding ".$each->getCharacter()->getName()." to Team A -- B too large");
+			} elseif ($cta >= $boutSize/2 && $ctb < $boutSize/2) {
 				$teamB[] = $each;
+				$this->log(10, "Adding ".$each->getCharacter()->getName()." to Team B -- A too large");
 			}
 		}
 		# Store these for use in final return.
@@ -332,6 +395,8 @@ class ActivityRunner {
 					$ec->applyModifier();
 					$ec->applyInjuries();
 					$this->log(10, $ec->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($ec->getInjuries(), true)));
+					#TODO: Rework this to figure out injury/wound change rather than relying on whoever is most injured.
+					# Maybe rework evaluateHealth to return the $change and use that?
 					if (!$this->evaluateHealth($info[$id]['origWounds'], $ec->getInjuries(), $limit)) {
 						$remove[] = $each;
 						if (in_array($each, $teamA)) {
@@ -375,10 +440,16 @@ class ActivityRunner {
 	}
 
 	private function runMeleeCombat($act, $info, $team, $enemies, $round, $limit): array {
-		$ctb = count($enemies);
+		if ($this->ruleset === 'mastery') {
+			$this->mastery->prepare(true);
+		}
+		$enemyCount = count($enemies);
 		$results = [];
+		/** @var ActivityParticipant $fighter */
 		foreach ($team as $fighter) {
-			$target = $this->getRandomEnemy($fighter, $enemies, $ctb);
+			$target = $this->getRandomEnemy($fighter, $enemies, $enemyCount);
+			$fighter->setTarget($target);
+			$target->addTargetedBy($fighter);
 			$fc = $fighter->getCharacter();
 			$tc = $target->getCharacter();
 			$fid = $fc->getId();
@@ -1144,15 +1215,10 @@ class ActivityRunner {
 		}
 		return false;
 	}
-	public function getRandomEnemy($who, $enemies, $eCount) {
+	public function getRandomEnemy(ActivityParticipant $who, array $enemies, int $eCount) {
 		if ($who->getTarget()) return $who->getTarget(); # Already focusing on someone.
-		if ($who->getTargettedBy()->count() > 0) return $who->getTargettedBy()->first(); # Attack my attacker.
-		$index = rand(1, $eCount);
-		$target = $enemies->first();
-		for ($i=1;$i<$index-2;$i++) {
-			$target = $enemies->next();
-		}
-		return $target;
+		if ($who->getTargetedBy()->count() > 0) return $who->getTargetedBy()->first(); # Attack my attacker.
+		return $enemies[rand(0, $eCount-1)];
 	}
 
 	private function findSkillScore(ActivityParticipant $me) {

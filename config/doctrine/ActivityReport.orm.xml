@@ -29,7 +29,7 @@
 		<one-to-many field="journals" target-entity="Journal" mapped-by="activity_report"/>
 		<one-to-many field="subReports" target-entity="ActivityReport" mapped-by="mainReport"/>
 		<many-to-one field="mainReport" target-entity="ActivityReport" inversed-by="subReports"/>
-		<one-to-many field="stage" target-entity="ActivityReportStage" mapped-by="activity_report">
+		<one-to-many field="stages" target-entity="ActivityReportStage" mapped-by="activity_report">
 			<order-by>
 				<order-by-field name="round" direction="ASC"/>
 			</order-by>

@@ -63,6 +63,7 @@ class TestTournamentCommand extends AbstractTestCommand {
 				$em->flush();
 				$subType = $em->getRepository(ActivitySubType::class)->findOneBy(['name'=>Activities::fightsSolo->value]);
 				$where = $em->getRepository(Settlement::class)->findOneBy(['id'=>1249]);
+				$am->output = $output;
 				$tourn = $am->createTournament($charArr[0], $where, 1, 'Testing 1v1 Tournament', $subType, null, null, null, false);
 				$weapon = $this->findWeapon('broadsword');
 				foreach ($charArr as $char) {
@@ -73,7 +74,14 @@ class TestTournamentCommand extends AbstractTestCommand {
 				$em->clear();
 				$tourn = $em->getRepository(Activity::class)->find($tournID);
 				$ar->output = $output;
-				$ar->run($tourn, $ruleset);
+				$complete = false;
+				while (!$complete) {
+					$tourn = $ar->run($tourn, $ruleset);
+					if ($tourn === true) {
+						$complete = true;
+					}
+				}
+
 				break;
 		}
 		$report = $this->em->createQuery('SELECT r FROM App\Entity\ActivityReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();
