@@ -3,12 +3,14 @@
 namespace App\Command;
 
 use App\Entity\Activity;
+use App\Entity\ActivityParticipant;
 use App\Entity\ActivitySubType;
 use App\Entity\EquipmentType;
 use App\Entity\Settlement;
 use App\Enum\Activities;
 use App\Service\ActivityManager;
 use App\Service\ActivityRunner;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -49,7 +51,7 @@ class TestTournamentCommand extends AbstractTestCommand {
 		$i = 0;
 		switch ($set) {
 			case 1:
-				while ($i < 8) {
+				while ($i < 16) {
 					$i++;
 					$charGen = new ArrayInput([
 						'command' => 'maf:char:create',
@@ -72,16 +74,21 @@ class TestTournamentCommand extends AbstractTestCommand {
 				$tournID = $tourn->getId();
 				$em->flush();
 				$em->clear();
-				$tourn = $em->getRepository(Activity::class)->find($tournID);
 				$ar->output = $output;
-				$complete = false;
-				while (!$complete) {
+				$loop = 1;
+				$max = 5;
+				while (true) {
+					$output->writeln("Starting tournament run loop #$loop!");
+					$tourn = $em->getRepository(Activity::class)->find($tournID);
 					$tourn = $ar->run($tourn, $ruleset);
-					if ($tourn === true) {
-						$complete = true;
+					if ($tourn !== true) {
+						$this->healFighters($tourn->getParticipants());
+						$this->em->clear();
+					} elseif ($tourn === true || $loop > $max) {
+						break;
 					}
+					$loop++;
 				}
-
 				break;
 		}
 		$report = $this->em->createQuery('SELECT r FROM App\Entity\ActivityReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();
@@ -98,5 +105,17 @@ class TestTournamentCommand extends AbstractTestCommand {
 			}
 		}
 		return Command::SUCCESS;
+	}
+
+	private function healFighters(Collection $participants) {
+		/** @var ActivityParticipant $participant */
+		foreach ($participants as $participant) {
+			# So this reflects actual tournament recovery.
+			$participant->getCharacter()->HealOrDie();
+			$participant->getCharacter()->HealOrDie();
+			$participant->getCharacter()->HealOrDie();
+			$participant->getCharacter()->HealOrDie();
+		}
+		$this->em->flush();
 	}
 }

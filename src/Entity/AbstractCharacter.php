@@ -384,7 +384,7 @@ abstract class AbstractCharacter {
 	}
 
 	public function pendingInjuries($where, $amt) {
-		if (array_key_exists($where, $this->injuries)) {
+		if (array_key_exists($where, $this->pendingInjuries)) {
 			$this->pendingInjuries[$where] += $amt;
 		} else {
 			$this->pendingInjuries[$where] = $amt;
