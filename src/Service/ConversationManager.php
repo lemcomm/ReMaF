@@ -370,6 +370,14 @@ class ConversationManager {
 					/** @var StatisticGlobal $stats */
 					$stats->setNewMessages($stats->getNewMessages()+1);
 				}
+				if ($org === 'realm') {
+					$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticRealm r WHERE r.realm = :realm ORDER BY r.id DESC')->setParameters(['realm'=>$conv->getRealm()])->setMaxResults(1)->getOneOrNullResult();
+					if ($stats) {
+						/** @var StatisticGlobal $stats */
+						$stats->setNewMessages($stats->getNewMessages()+1);
+					}
+				}
+
 			}
                         if ($flush) {
                                 $this->em->flush();
@@ -554,6 +562,13 @@ class ConversationManager {
 		if ($stats) {
 			/** @var StatisticGlobal $stats */
 			$stats->setNewConversations($stats->getNewConversations()+1);
+		}
+		if ($realm) {
+			$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticRealm r WHERE r.realm = :realm ORDER BY r.id DESC')->setParameters(['realm'=>$realm])->setMaxResults(1)->getOneOrNullResult();
+			if ($stats) {
+				/** @var StatisticGlobal $stats */
+				$stats->setNewMessages($stats->getNewMessages()+1);
+			}
 		}
                 $this->em->flush();
 

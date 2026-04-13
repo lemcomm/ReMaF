@@ -584,6 +584,15 @@ report:
   minor low: Onlookers found their skill a little inferior,
   low:       Onlookers found their skill inferior,
   very low:  Onlookers found their skill quite inferior,
+ tournament:
+  participants: Contenders
+  round:     Round %i%
+  final:     Final Results
+  default:   "%name% wins by default"
+  advance:   "%name% advances"
+  loss:      "%name% is defeated"
+  link:      View Report
+  winner:    "%name% is declared the winner!"
 
  acc:
   none:      but they had zero confidence in this opinion.

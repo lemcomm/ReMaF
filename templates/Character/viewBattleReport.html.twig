@@ -207,7 +207,7 @@
 						{% if participant.character.crest %}
 							{{ character_link(participant.character.id, '<img src="'~path("maf_heraldry_crest", {"id":participant.character.crest.id})~'" width="60px" height="60px"/>') }}
 						{% else %}
-							{{ character_link(participant.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }}
+							{# {{ character_link(participant.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
 						{% endif %}
 						{{ link(participant.character) }}
 						</li>

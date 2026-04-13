@@ -437,6 +437,7 @@ class ActivityController extends AbstractController {
 			$admin = false;
 		} else {
 			$admin = true;
+			$check = true;
 		}
 
 		if ($report->getPlace()) {
@@ -452,9 +453,19 @@ class ActivityController extends AbstractController {
 			$settlement = $report->getGeoData()->getSettlement();
 			$inside = false;
 		}
-		foreach ($report->getCharacters() as $group) {
-			$totalRounds = $group->getStages()->count();
-			break;
+		$stages = $report->getStages();
+		if ($stages) {
+			$totalRounds = 0;
+			foreach ($report->getStages() as $each) {
+				if ($each->getRound() > $totalRounds) {
+					$totalRounds = $each->getRound();
+				}
+			}
+		} else {
+			foreach ($report->getCharacters() as $group) {
+				$totalRounds = $group->getStages()->count();
+				break;
+			}
 		}
 
 		return $this->render('Activity/viewReport.html.twig', ['report'=>$report, 'place'=>$place, 'settlement'=>$settlement, 'inside'=>$inside, 'access'=>$check, 'admin'=>$admin, 'roundcount'=>$totalRounds]);

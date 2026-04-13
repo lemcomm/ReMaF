@@ -51,7 +51,7 @@ class TestTournamentCommand extends AbstractTestCommand {
 		$i = 0;
 		switch ($set) {
 			case 1:
-				while ($i < 16) {
+				while ($i < 95) {
 					$i++;
 					$charGen = new ArrayInput([
 						'command' => 'maf:char:create',
@@ -91,7 +91,7 @@ class TestTournamentCommand extends AbstractTestCommand {
 				}
 				break;
 		}
-		$report = $this->em->createQuery('SELECT r FROM App\Entity\ActivityReport r ORDER BY r.id DESC')->setMaxResults(1)->getResult();
+		$report = $this->em->createQuery('SELECT r FROM App\Entity\ActivityReport r WHERE r.mainReport is null ORDER BY r.id DESC')->setMaxResults(1)->getResult();
 		$output->writeln("Report available at: ".$this->url->generate('maf_activity_report', ['report' => $report[0]->getId()]));
 		$this->em->clear();
 		sleep(1);

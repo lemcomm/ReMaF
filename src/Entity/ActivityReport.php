@@ -109,6 +109,18 @@ class ActivityReport extends AbstractReport {
 		return $this->characters;
 	}
 
+	public function findCharacters(): ArrayCollection {
+		$all = new ArrayCollection();
+		foreach ($this->subReports as $each) {
+			foreach ($each->getCharacters() as $char) {
+				if (!$all->contains($char->getCharacter())) {
+					$all->add($char->getCharacter());
+				}
+			}
+		}
+		return $all;
+	}
+
 	/**
 	 * Add groups
 	 *
