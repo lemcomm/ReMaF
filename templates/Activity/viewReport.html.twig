@@ -4,12 +4,16 @@
 {% block content %}
 <h2>{{ 'report.title'|trans|title }}</h2>
 <p>
-	{% if place %}
-		{{ 'report.loc.place'|trans({'%location%':link(place)})|raw }}
-	{% elseif not inside %}
-		{{ 'report.loc.near'|trans({'%location%':link(settlement)})|raw }}
+	{% if report.getMainReport %}
+		{{ ( 'report.loc.event' )|trans }}:	{{ link(report.getMainReport) }}
 	{% else %}
-		{{ 'report.loc.settlement'|trans({'%location%':link(settlement)})|raw }}
+		{% if place %}
+			{{ 'report.loc.place'|trans({'%location%':link(place)})|raw }}
+		{% elseif not inside %}
+			{{ 'report.loc.near'|trans({'%location%':link(settlement)})|raw }}
+		{% else %}
+			{{ 'report.loc.settlement'|trans({'%location%':link(settlement)})|raw }}
+		{% endif %}
 	{% endif %}
 	-
 	{{ report.cycle|gametime('long') }}
@@ -26,125 +30,189 @@
 {% endif %}
 {% if access %}
 	<a href="{{path('maf_journal_write_activity', {"report":report.id}) }}">{{ 'report.journalwrite'|trans }}</a>
-	<table class="battlereport" >
-	{% if report.type.name == 'melee tournament' %}
-		<tr>
-			<th colspan="3"><h3>{{ 'report.tournament.participants'|trans|title }}</h3></th>
-		</tr>
-		<tr>
-			{% set characters = report.findCharacters %}
-			<td class="reportcolumn" colspan="3"><ul class="shortlist">
-			{% for character in characters %}
-					{% if character.crest %}
-						{{ character_link(character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.crest.id})~'" width="60px" height="60px"/>') }}
-					{% else %}
-						{# {{ character_link(character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
-					{% endif %}
-					{{ link(character) }},
-			{% endfor %}
-			</ul></td>
-		</tr>
-		{% for i in 1 .. roundcount %}
-			{% if i != roundcount %}
+	<table class="activityreport" >
+		{% if main %}
+			{# Dealing with a subreport. #}
 			<tr>
-				<th colspan="3"><h4>{{ 'report.tournament.round'|trans({'%i%':i})|title }}</h4></th>
+				<th colspan="2"><h3>{{ 'report.tournament.participants'|trans|title }}</h3></th>
 			</tr>
-			{% else %}
-				<tr>
-					<th colspan="3"><h4>{{ 'report.tournament.final'|trans({'%i%':i})|title }}</h4></th>
-				</tr>
-			{% endif %}
-			{% for stage in report.stages %}
-				{% if stage.round == i and stage.round != roundcount %}
-					<tr>
-					{% set data = stage.data %}
-					<td>
-						{% for winner in stage.data.winners %}
-							{% if stage.data.default %}
-								<li>{{ 'report.tournament.default'|trans({'%name%':character_link(winner)})|raw }}</li>
+			<tr>
+				{% for character in report.characters %}
+					<td class="reportcolumn"><ul class="shortlist">
+							{% if character.character.crest %}
+								{{ character_link(character.character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.character.crest.id})~'" width="60px" height="60px"/>') }}
 							{% else %}
-								<li>{{ 'report.tournament.advance'|trans({'%name%':character_link(winner)})|raw }}</li>
+								{# {{ character_link(character.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
 							{% endif %}
-						{% endfor %}
-					</td><td>
-						{% if stage.data.subReport %}
-							<li><a href="{{ path('maf_activity_report', {"report":stage.data.subReport}) }}">{{ 'report.tournament.link'|trans }}</a></li>
-						{% endif %}
-					</td><td>
-						{% for loser in stage.data.losers %}
-							<li>{{ 'report.tournament.loss'|trans({'%name%':character_link(loser)})|raw }}</li>
-						{% endfor %}
-					</td>
-					</tr>
-				{% elseif stage.round == i and stage.round == roundcount %}
-					<tr><td colspan="3">
-						{% for victor in stage.data.victors %}
-							<li>{{ 'report.tournament.winner'|trans({'%name%':character_link(victor)})|raw }}</li>
-						{% endfor %}
-					</td></tr>
-				{% endif %}
+							{{ link(character.character) }}{% if not loop.last %},{% endif %}
+						</ul></td>
+				{% endfor %}
+			</tr>
+			{% for i in 1 .. roundcount %}
+				<tr>
+					<th colspan="2"><h4>{{ 'report.tournament.round'|trans({'%i%':i})|title }}</h4></th>
+				</tr>
+				<tr>
+					{% set info = report.buildCharArray %}
+					{% for group in report.groups %}
+						<td>
+							{% set wpns = group.buildWeaponArray %}
+							{% for stage in group.stages %}
+								{% if stage.round == i %}
+									{% for each in stage.data.results %}
+										<li>{{ ('report.combat.'~each~'2')|trans({'%name%':info[stage.data.char], '%target%':info[stage.data.target], '%weapon%':wpns[stage.data.char]})|raw }}</li>
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						</td>
+					{% endfor %}
+				</tr>
 			{% endfor %}
-		{% endfor %}
-	{% elseif report.type.name is same as 'duel' %}
-		<tr>
-			<th colspan="2"><h3>{{ 'report.duel.participants'|trans|title }}</h3></th>
-		</tr>
-		<tr>
-			{% for character in report.characters %}
-				<td class="reportcolumn"><ul class="shortlist">
-					{% if character.character.crest %}
-						{{ character_link(character.character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.character.crest.id})~'" width="60px" height="60px"/>') }}
-					{% else %}
-						{# {{ character_link(character.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
-					{% endif %}
-					{{ link(character.character) }}
-				</ul></td>
-			{% endfor %}
-		</tr>
-		{% for i in 1 .. roundcount %}
 			<tr>
-				<th colspan="2"><h4>{{ 'report.duel.round.title'|trans({'%i%':i})|title }}</h4></th>
+				<th colspan="2"><h3>{{ 'report.tournament.finish'|trans|title }}</h3></th>
 			</tr>
 			<tr>
-			{% for character in report.characters %}
-				<td>
-				{% set wpn = character.weapon.name %}
-				{% for stage in character.stages %}
-					{% if stage.round == i and stage.round != 32767 %}
-						{%  if stage.data.result %}
-						<li>{{ ('report.combat.'~stage.data.result)|trans({'%name%':character.character.name, '%weapon%':wpn})|raw }}</li>
-						{% endif %}{% if stage.data.results is defined %}
-							{% for each in stage.data.results %}
-								<li>{{ ('report.combat.'~each)|trans({'%name%':character.character.name, '%weapon%':wpn})|raw }}</li>
-							{% endfor %}
+				{% for group in report.groups %}
+					<td valign="top">
+						<ul>
+							{% if group.finish.victory %}
+								{% for char in group.characters %}
+									<li>{{ 'report.tournament.advance'|trans({'%name%':character_link(char.character.id)})|raw }}</li>
+								{% endfor %}
+							{% else %}
+								{% for char in group.characters %}
+									<li>{{ 'report.tournament.loss'|trans({'%name%':character_link(char.character.id)})|raw }}</li>
+								{% endfor %}
+							{% endif %}
+						</ul>
+					</td>
+				{% endfor %}
+				{#
+				{% for character in report.characters %}
+					<td valign="top">
+						<ul>
+							<li>{{ link(character.character) }}</li>
+							<li>{{ ('report.combat.'~character.finish.result)|trans|raw }}</li>
+							<li>{{ ('report.compare.'~character.finish.skillCheck)|trans|raw }}</li>
+							<li>{{ ('report.acc.'~character.finish.skillAcc)|trans|raw }}</li>
+						</ul>
+					</td>
+				{% endfor %}
+				#}
+			</tr>
+		{% elseif report.type.name == 'melee tournament' %}
+			<tr>
+				<th colspan="3"><h3>{{ 'report.tournament.participants'|trans|title }}</h3></th>
+			</tr>
+			<tr>
+				{% set characters = report.findCharacters %}
+				<td class="reportcolumn" colspan="3"><ul class="shortlist">
+				{% for character in characters %}
+						{% if character.crest %}
+							{{ character_link(character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.crest.id})~'" width="60px" height="60px"/>') }}
+						{% else %}
+							{# {{ character_link(character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
 						{% endif %}
+						{{ link(character) }}{% if not loop.last %},{% endif %}
+				{% endfor %}
+				</ul></td>
+			</tr>
+			{% for i in 1 .. roundcount %}
+				{% if i != roundcount %}
+					<tr>
+						<th colspan="3"><h4>{{ 'report.tournament.round'|trans({'%i%':i})|title }}</h4></th>
+					</tr>
+				{% else %}
+					<tr>
+						<th colspan="3"><h4>{{ 'report.tournament.final'|trans({'%i%':i})|title }}</h4></th>
+					</tr>
+				{% endif %}
+				{% for stage in report.stages %}
+					{% if stage.round == i and stage.round != roundcount %}
+						<tr class="underline">
+						{% set data = stage.data %}
+						<td>
+							{% for winner in stage.data.winners %}
+								{% if stage.data.default %}
+									<li>{{ 'report.tournament.default'|trans({'%name%':character_link(winner)})|raw }}</li>
+								{% else %}
+									<li>{{ 'report.tournament.advance'|trans({'%name%':character_link(winner)})|raw }}</li>
+								{% endif %}
+							{% endfor %}
+						</td><td>
+							{% if stage.data.subReport %}
+								<li><a href="{{ path('maf_activity_report', {"report":stage.data.subReport}) }}">{{ 'report.tournament.link'|trans }}</a></li>
+							{% endif %}
+						</td><td>
+							{% for loser in stage.data.losers %}
+								<li>{{ 'report.tournament.loss'|trans({'%name%':character_link(loser)})|raw }}</li>
+							{% endfor %}
+						</td>
+						</tr>
+					{% elseif stage.round == i and stage.round == roundcount %}
+						<tr class="underline"><td colspan="3">
+							{% for victor in stage.data.victors %}
+								<li>{{ 'report.tournament.winner'|trans({'%name%':character_link(victor)})|raw }}</li>
+							{% endfor %}
+						</td></tr>
 					{% endif %}
 				{% endfor %}
+			{% endfor %}
+		{% elseif report.type.name is same as 'duel' %}
+			<tr>
+				<th colspan="2"><h3>{{ 'report.duel.participants'|trans|title }}</h3></th>
+			</tr>
+			<tr>
+				{% for character in report.characters %}
+					<td class="reportcolumn"><ul class="shortlist">
+						{% if character.character.crest %}
+							{{ character_link(character.character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.character.crest.id})~'" width="60px" height="60px"/>') }}
+						{% else %}
+							{# {{ character_link(character.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
+						{% endif %}
+						{{ link(character.character) }}
+					</ul></td>
+				{% endfor %}
+			</tr>
+			{% for i in 1 .. roundcount %}
+				<tr>
+					<th colspan="2"><h4>{{ 'report.duel.round.title'|trans({'%i%':i})|title }}</h4></th>
+				</tr>
+				<tr>
+				{% for character in report.characters %}
+					<td>
+					{% set wpn = character.weapon.name %}
+					{% for stage in character.stages %}
+						{% if stage.round == i %}
+							{%  if stage.data.result %}
+							<li>{{ ('report.combat.'~stage.data.result)|trans({'%name%':character.character.name, '%weapon%':wpn})|raw }}</li>
+							{% endif %}{% if stage.data.results is defined %}
+								{% for each in stage.data.results %}
+									<li>{{ ('report.combat.'~each)|trans({'%name%':character.character.name, '%weapon%':wpn})|raw }}</li>
+								{% endfor %}
+							{% endif %}
+						{% endif %}
+					{% endfor %}
+					</td>
+				{% endfor %}
+				</tr>
+			{% endfor %}
+			<tr>
+				<th colspan="2"><h3>{{ 'report.duel.finish'|trans|title }}</h3></th>
+			</tr>
+			<tr>
+			{% for character in report.characters %}
+				<td valign="top">
+				<ul>
+					<li>{{ link(character.character) }}</li>
+					<li>{{ ('report.combat.'~character.finish.result)|trans|raw }}</li>
+					<li>{{ ('report.compare.'~character.finish.skillCheck)|trans|raw }}</li>
+					<li>{{ ('report.acc.'~character.finish.skillAcc)|trans|raw }}</li>
+				</ul>
 				</td>
 			{% endfor %}
 			</tr>
-		{% endfor %}
-		<tr>
-			<th colspan="2"><h3>{{ 'report.duel.finish'|trans|title }}</h3></th>
-		</tr>
-		<tr>
-		{% for character in report.characters %}
-			<td valign="top">
-			<ul>
-				<li>{{ link(character.character) }}</li>
-				<li>{{ ('report.combat.'~character.finish.result)|trans|raw }}</li>
-				<li>{{ ('report.compare.'~character.finish.skillCheck)|trans|raw }}</li>
-				<li>{{ ('report.acc.'~character.finish.skillAcc)|trans|raw }}</li>
-			{#{% for result, skillCheck, skillAcc in character.finish %}
-				<li>{{ ('report.combat.'~result)|trans|raw }}</li>
-				<li>{{ ('report.compare.'~skillCheck)|trans|raw }}</li>
-				<li>{{ ('report.acc.'~skillAcc)|trans|raw }}</li>
-			{% endfor %}#}
-			</ul>
-			</td>
-		{% endfor %}
-		</tr>
-	{% endif %}
+		{% endif %}
 	</table>
 {% endif %}
 

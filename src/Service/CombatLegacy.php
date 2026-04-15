@@ -430,7 +430,7 @@ class CombatLegacy extends CombatAbstract {
 			}
 			$type = 'battle';
 		} elseif ($act) {
-			$type = $me->getActivity()->getType()->getName();
+			$type = $act->getType()->getName();
 		}
 		$logs = [];
 

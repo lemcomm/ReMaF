@@ -16,12 +16,25 @@ class ActivityReportGroup {
 	private Collection $characters;
 	private ?ActivityReport $activity_report = null;
 
+	private ?array $weapons = null;
+
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		$this->stages = new ArrayCollection();
 		$this->characters = new ArrayCollection();
+	}
+
+	public function buildWeaponArray(): array {
+		if ($this->weapons !== null) return $this->weapons;
+		$arr = [];
+		/** @var ActivityReportCharacter $char */
+		foreach ($this->characters as $char) {
+			$arr[$char->getCharacter()->getId()] = $char->getWeapon()->getName();
+		}
+		$this->weapons = $arr;
+		return $arr;
 	}
 
 	/**

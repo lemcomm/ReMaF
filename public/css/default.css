@@ -1278,6 +1278,39 @@ table.battlejoin td:not(:first-of-type), table.battlejoin th:not(:first-of-type)
     padding: 0.2em 3em;
 }
 
+table.activityreport {
+    border-spacing: 5em 0.1em;
+    border-collapse: collapse;
+}
+table.activityreport th {
+    border-top: 1px solid silver;
+    background: rgb(255,255,255,0.3);
+}
+table.activityreport td.reportcolumn {
+    min-width: 20em;
+    padding-left: 4em;
+    padding-right: 4em;
+}
+table.activityreport h2, table.activityreport h3, table.activityreport h4 {
+    margin: 0.25em;
+}
+
+table.activityreport ul {
+    padding: 0;
+    margin: 0;
+}
+table.activityreport li {
+    list-style: none;
+}
+
+tr.outline {
+    border-top: 3px solid goldenrod;
+    border-bottom: 3px solid goldenrod;
+}
+tr.underline {
+    border-bottom: 2px dotted gray;
+}
+
 .eventlog .prio_0 {
     color: #666;
 }

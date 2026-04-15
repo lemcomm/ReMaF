@@ -440,35 +440,59 @@ class ActivityController extends AbstractController {
 			$check = true;
 		}
 
-		if ($report->getPlace()) {
-			$place = $report->getPlace();
-			$settlement = $place->getSettlement();
-			$inside = true;
-		} elseif ($report->getSettlement()) {
-			$place = false;
-			$settlement = $report->getSettlement();
-			$inside = true;
+		if (!$report->getMainReport()) {
+			if ($report->getPlace()) {
+				$place = $report->getPlace();
+				$settlement = $place->getSettlement();
+				$inside = true;
+			} elseif ($report->getSettlement()) {
+				$place = false;
+				$settlement = $report->getSettlement();
+				$inside = true;
+			} else {
+				$place = false;
+				$settlement = $report->getGeoData()->getSettlement();
+				$inside = false;
+			}
+			$main = false;
 		} else {
-			$place = false;
-			$settlement = $report->getGeoData()->getSettlement();
+			$main = $report->getMainReport();
+			$place = null;
+			$settlement = null;
 			$inside = false;
 		}
-		$stages = $report->getStages();
+
+		$stages = $report->getStages()->count();
+		$totalRounds = 0;
 		if ($stages) {
-			$totalRounds = 0;
 			foreach ($report->getStages() as $each) {
 				if ($each->getRound() > $totalRounds) {
 					$totalRounds = $each->getRound();
 				}
 			}
 		} else {
-			foreach ($report->getCharacters() as $group) {
+			foreach ($report->getGroups() as $group) {
 				$totalRounds = $group->getStages()->count();
 				break;
 			}
+			if (!$totalRounds) {
+				foreach ($report->getCharacters() as $group) {
+					$totalRounds = $group->getStages()->count();
+					break;
+				}
+			}
 		}
 
-		return $this->render('Activity/viewReport.html.twig', ['report'=>$report, 'place'=>$place, 'settlement'=>$settlement, 'inside'=>$inside, 'access'=>$check, 'admin'=>$admin, 'roundcount'=>$totalRounds]);
+		return $this->render('Activity/viewReport.html.twig', [
+			'report'=>$report,
+			'place'=>$place,
+			'settlement'=>$settlement,
+			'inside'=>$inside,
+			'access'=>$check,
+			'admin'=>$admin,
+			'roundcount'=>$totalRounds,
+			'main'=>$main
+		]);
         }
 
 	#[Route ('/activity/train/{skill}', name:'maf_train_skill', requirements:['skill'=>'[A-Za-z_\- ]*'])]

@@ -391,11 +391,19 @@ class ActivityRunner {
 		$limit = $this->getActivityLimit($act);
 		if ($this->ruleset === 'legacy') {
 			foreach ($participants as $each) {
-				$id = $each->getCharacter()->getId();
+				$char = $each->getCharacter();
+				$id = $char->getId();
 				$info[$id]['score'] = $this->findSkillScore($each);
-				$myWounds = $each->getCharacter()->getWounded();
-				$myLimit = floor(($each->getCharacter()->getRace()->getHp() - $myWounds) * $limit);
+				$myWounds = $char->getWounded();
+				$myLimit = floor(($char->getRace()->getHp() - $myWounds) * $limit);
 				$info[$id]['limit'] = $myLimit;
+				$meRanged = $this->legacy->RangedPower($char, false, $each->getWeapon());
+				$meMelee = $this->legacy->MeleePower($char, false, $each->getWeapon());
+				if ($meRanged > $meMelee) {
+					$info[$id]['useRanged'] = true;
+				} else {
+					$info[$id]['useRanged'] = false;
+				}
 				$this->log(10, '$myLimit of '.$myLimit.'. $myWounds of '.$myWounds.' vs limit of '.$limit, $boutReport);
 			}
 		} else {
@@ -439,9 +447,9 @@ class ActivityRunner {
 					}
 					$each->setTarget(null);
 					if (in_array($each, $teamA)) {
-						$TAResults[$id][] = ['fallen'];
+						$TAResults['fallen'][] = $id;
 					} else {
-						$TBResults[$id][] = ['fallen'];
+						$TBResults['fallen'][] = $id;
 					}
 				}
 			}
@@ -473,9 +481,29 @@ class ActivityRunner {
 			$round++;
 		}
 		if ($cta > 0) {
+			$TAR->setFinish(['victory'=>true, 'loss'=>false]);
+			$TBR->setFinish(['victory'=>false, 'loss'=>true]);
+			$this->em->flush();
 			return [$teamAOriginal, $teamBOriginal, $boutReport];
-		} else {
+		} elseif ($ctb > 0) {
+			$TBR->setFinish(['victory'=>true, 'loss'=>false]);
+			$TAR->setFinish(['victory'=>false, 'loss'=>true]);
+			$this->em->flush();
 			return [$teamBOriginal, $teamAOriginal, $boutReport];
+		} else {
+			# Somehow they knocked each other out at the same time. Rare, but possible.
+			# Coinflip it and return it.
+			if (rand(0,1)) {
+				$TAR->setFinish(['victory'=>true, 'loss'=>false]);
+				$TBR->setFinish(['victory'=>false, 'loss'=>true]);
+				$this->em->flush();
+				return [$teamAOriginal, $teamBOriginal, $boutReport];
+			} else {
+				$TBR->setFinish(['victory'=>true, 'loss'=>false]);
+				$TAR->setFinish(['victory'=>false, 'loss'=>true]);
+				$this->em->flush();
+				return [$teamBOriginal, $teamAOriginal, $boutReport];
+			}
 		}
 	}
 
@@ -495,18 +523,20 @@ class ActivityRunner {
 			$tc = $target->getCharacter();
 			$fid = $fc->getId();
 			$tid = $tc->getId();
-			$results[$fid]['target'] = $tid;
+			$results['result'] = false;
+			$results['char'] = $fid;
+			$results['target'] = $tid;
 			if ($this->ruleset === 'legacy') {
-				$results[$fid][] = $this->duelLegacyAttack(
+				$results[] = $this->duelLegacyAttack(
 					$act, null, null, $fighter, $fc, $tc, $round,
 					$this->legacy->RangedPower($fc, false, $fighter->getWeapon()),
 					$this->legacy->MeleePower($fc, false, $fighter->getWeapon()),
 					$info[$fid]['score'], $info[$tid]['score'], $info[$tid]['limit'],
-					$tc->getWounded(), true, false, true,
+					$tc->getWounded(), $info[$fid]['useRanged'], false, true,
 					$report
 				);
 			} else {
-				$results[$fid][] = $this->duelMasteryAttack(
+				$results['results'] = $this->duelMasteryAttack(
 					$fc, $tc, null, null,
 					$fighter->getWeapon(), $target->getWeapon(),
 					$round, $limit,

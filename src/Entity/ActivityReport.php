@@ -23,6 +23,8 @@ class ActivityReport extends AbstractReport {
 	private Collection $stages;
 	private ?string $name = null;
 
+	private ?array $info = null;
+
 	/**
 	 * Constructor
 	 */
@@ -32,6 +34,20 @@ class ActivityReport extends AbstractReport {
 		$this->groups = new ArrayCollection();
 		$this->subReports = new ArrayCollection();
 		$this->stages = new ArrayCollection();
+	}
+
+	public function buildCharArray(): array {
+		if ($this->info) return $this->info;
+		$info = [];
+		/** @var ActivityReportGroup $each */
+		foreach ($this->groups as $each) {
+			/** @var ActivityReportCharacter $char */
+			foreach ($each->getCharacters() as $char) {
+				$info[$char->getCharacter()->getId()] = $char->getCharacter()->getName();
+			}
+		}
+		$this->info = $info;
+		return $info;
 	}
 
 	/**
