@@ -64,18 +64,16 @@ class ActivityController extends AbstractController {
 			$deepwater = true;
 			$coast = true;
 		} else {
+			$inland = true;
 			$here = $geo->findMyRegion($char);
 			if ($here?->getRiver()) {
 				$river = true;
-				$inland = true;
 			}
 			if ($here?->getCoast()) {
 				$coast = true;
-				$inland = true;
 			}
 			if ($here?->getLake()) {
 				$lake = true;
-				$inland = true;
 			}
 		}
 		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'fishing', 'subselect'=>['inland' => $inland, 'deepwater' => $deepwater, 'river' => $river, 'lake' => $lake, 'coast' => $coast]]);
