@@ -262,7 +262,12 @@ class ActionResolution {
 			$score = 75;
 		}
 		$rand = rand($score, 100);
-		switch ($action->getStringValue()) {
+		$locale = $action->getStringValue();
+		if (!$locale) {
+			# Apparently this is possible somehow?
+			$locale = 'inland';
+		}
+		switch ($locale) {
 			case 'deepwater':
 				$chance = 80;
 				break;
@@ -273,7 +278,7 @@ class ActionResolution {
 				$chance = 50;
 		}
 		if ($rand > $chance) {
-			$all = $this->em->getRepository(FishType::class)->findBy(['locale'=>$action->getStringValue()]);
+			$all = $this->em->getRepository(FishType::class)->findBy(['locale'=>$locale]);
 			$which = rand(0, count($all)-1);
 			$catch = $all[$which];
 			$weighting = rand(1,10);
