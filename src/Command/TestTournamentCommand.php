@@ -45,9 +45,13 @@ class TestTournamentCommand extends AbstractTestCommand {
 		$charArr = [];
 		$set = $input->getOption('set');
 		switch ($set) {
-			case '2':
+			case 2:
 				$ruleset = 'legacy';
 				$set = 1;
+				break;
+			case 4:
+				$ruleset = 'legacy';
+				$set = 3;
 				break;
 			default:
 				$ruleset = 'mastery';
@@ -55,7 +59,7 @@ class TestTournamentCommand extends AbstractTestCommand {
 		$i = 0;
 		switch ($set) {
 			case 1:
-				while ($i < 7) {
+				while ($i < 5) {
 					$i++;
 					$charGen = new ArrayInput([
 						'command' => 'maf:char:create',
@@ -80,19 +84,7 @@ class TestTournamentCommand extends AbstractTestCommand {
 				$em->clear();
 				$ar->output = $output;
 				$loop = 1;
-				$max = 5;
-				while (true) {
-					$output->writeln("Starting tournament run loop #$loop!");
-					$tourn = $em->getRepository(Activity::class)->find($tournID);
-					$tourn = $ar->run($tourn, $ruleset);
-					if ($tourn !== true) {
-						$this->healFighters($tourn->getParticipants());
-						$this->em->clear();
-					} elseif ($tourn === true || $loop > $max) {
-						break;
-					}
-					$loop++;
-				}
+				$max = 3;
 				break;
 			case 3:
 				while ($i < 9) {
@@ -111,7 +103,7 @@ class TestTournamentCommand extends AbstractTestCommand {
 				$where = $em->getRepository(Settlement::class)->findOneBy(['id'=>1249]);
 				$am->output = $output;
 				$tourn = $am->createTournament($charArr[0], $where, 1, 'Testing 2v2 Tournament', $subType, null, null, null, false);
-				$weapon = $this->findWeapon('sword');
+				$weapon = $this->findWeapon('broadsword');
 				foreach ($charArr as $char) {
 					$am->createParticipant($tourn, $char, null, $weapon, null, true);
 				}
@@ -120,20 +112,30 @@ class TestTournamentCommand extends AbstractTestCommand {
 				$em->clear();
 				$ar->output = $output;
 				$loop = 1;
-				$max = 5;
-				while (true) {
-					$output->writeln("Starting tournament run loop #$loop!");
-					$tourn = $em->getRepository(Activity::class)->find($tournID);
-					$tourn = $ar->run($tourn, $ruleset);
-					if ($tourn !== true) {
-						$this->healFighters($tourn->getParticipants());
-						$this->em->clear();
-					} elseif ($tourn === true || $loop > $max) {
-						break;
-					}
-					$loop++;
-				}
+				$max = 4;
 				break;
+			default:
+				$output->writeln("Set $set is too high. Failing out.");
+				return Command::INVALID;
+		}
+		while (true) {
+			$this->em->clear();
+			$output->writeln("Starting tournament run loop #$loop!");
+			$tourn = $em->getRepository(Activity::class)->find($tournID);
+			$tourn = $ar->run($tourn, $ruleset);
+			if ($tourn !== true) {
+				$output->writeln("Healing and clearing EM.");
+				$this->healFighters($tourn->getParticipants());
+			} else {
+				break;
+			}
+			if ($loop > $max) {
+				$output->writeln("Breaking out after loop #$loop!");
+				break;
+			} else {
+				$loop++;
+				$tourn = null;
+			}
 		}
 		$report = $this->em->createQuery('SELECT r FROM App\Entity\ActivityReport r WHERE r.mainReport is null ORDER BY r.id DESC')->setMaxResults(1)->getResult();
 		$output->writeln("Report available at: ".$this->url->generate('maf_activity_report', ['report' => $report[0]->getId()]));

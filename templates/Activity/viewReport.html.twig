@@ -39,13 +39,13 @@
 			<tr>
 				{% for character in report.characters %}
 					<td class="reportcolumn"><ul class="shortlist">
-							{% if character.character.crest %}
-								{{ character_link(character.character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.character.crest.id})~'" width="60px" height="60px"/>') }}
-							{% else %}
-								{# {{ character_link(character.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
-							{% endif %}
-							{{ link(character.character) }}{% if not loop.last %},{% endif %}
-						</ul></td>
+						{% if character.character.crest %}
+							{{ character_link(character.character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.character.crest.id})~'" width="60px" height="60px"/>') }}
+						{% else %}
+							{# {{ character_link(character.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
+						{% endif %}
+						{{ link(character.character) }}{% if not loop.last %},{% endif %}
+					</ul></td>
 				{% endfor %}
 			</tr>
 			{% for i in 1 .. roundcount %}
@@ -59,8 +59,16 @@
 							{% set wpns = group.buildWeaponArray %}
 							{% for stage in group.stages %}
 								{% if stage.round == i %}
-									{% for each in stage.data.results %}
-										<li>{{ ('report.combat.'~each~'2')|trans({'%name%':info[stage.data.char], '%target%':info[stage.data.target], '%weapon%':wpns[stage.data.char]})|raw }}</li>
+									{% for key, fighter in stage.data %}
+										{% if key != 'fallen' %}
+											{% for each in fighter.results %}
+												<li>{{ ('report.combat.'~each~'2')|trans({'%name%':info[fighter.char], '%target%':info[fighter.target], '%weapon%':wpns[fighter.char]})|raw }}</li>
+											{% endfor %}
+										{% else %}
+											{% for each in fighter %}
+												<li>{{ ('report.combat.fallen')|trans({'%name%':info[each]})|raw }}</li>
+											{% endfor %}
+										{% endif %}
 									{% endfor %}
 								{% endif %}
 							{% endfor %}

@@ -140,6 +140,10 @@ class ActivityRunner {
 		} else {
 			$round = $stages->last()->getRound()+1;
 		}
+		foreach ($act->getParticipants() as $part) {
+			# This is largely for testing, to make sure memory actually gets refreshed so we don't get stale objects polluting bulk runs.
+			$this->output->writeln($part->getCharacter()->getName());
+		}
 		$fighters = clone $act->getParticipants();
 		if ($round === 1) {
 			foreach ($fighters as $fighter) {
@@ -178,13 +182,14 @@ class ActivityRunner {
 		$default = false;
 		$roundWinners = [];
 		while ($currentBouts <= $neededBouts) {
-			$this->log(10, "Round #$currentBouts starting!");
+			$winners = [];
+			$losers = [];
+			$this->log(10, "Round #$currentBouts starting of $neededBouts needed!");
 			$stageReport = $this->createStageReport($this->report, $round, []);
 			if ($remaining < $boutSize) {
 				$mySize = $remaining;
 				$this->log(10, "MySize: $mySize, BoutSize: $boutSize. Insufficient fighters. Bypassing!");
 				if ($mySize <= $boutSize / 2) {
-					$winners = [];
 					$default = true;
 					foreach ($fighters as $each) {
 						$winners[] = $each;
@@ -197,7 +202,6 @@ class ActivityRunner {
 				$participants = new ArrayCollection;
 				$have = 0;
 				$who = null;
-				$already = [];
 				while ($have < $mySize) {
 					$this->log(10, "Have $have, want $mySize, of remaining ".$fighters->count());
 					if ($who === null) {
@@ -226,11 +230,11 @@ class ActivityRunner {
 					[$winners, $losers, $subReport] = $this->runMeleeTeamBout($act, $participants, $mySize);
 				}
 			} else {
-				$losers = [];
 				$subReport = false;
 			}
 			$winData = [];
 			$lossData = [];
+			/** @var ActivityParticipant $winner */
 			foreach ($winners as $winner) {
 				$this->log(10, "Winner: ".$winner->getCharacter()->getName());
 				$this->log(10, "Winner: ".$winner->getCharacter()->getName(), $subReport);
@@ -275,12 +279,15 @@ class ActivityRunner {
 				}
 
 			}
+			$this->em->flush();
+			/** @var ActivityParticipant $loser */
 			foreach ($losers as $loser) {
 				$this->log(10, "Loser: ".$loser->getCharacter()->getName());
 				$this->log(10, "Loser: ".$loser->getCharacter()->getName(), $subReport);
 				$loser->setTarget(null)->resetTargetedBy();
 				$lossData[] = $loser->getCharacter()->getId();
 				$loser->setActivity(null);
+				$act->removeParticipant($loser);
 				/** @var ActivityParticipant $loser */
 				if ($mainReport) {
 					$this->history->logEvent(
@@ -299,6 +306,7 @@ class ActivityRunner {
 					false
 				);
 			}
+			$this->em->flush();
 			# We attach the subReport ID here just so we can link it easier in the report view.
 			$allData = [
 				'winners' => $winData,
@@ -414,6 +422,7 @@ class ActivityRunner {
 			}
 		}
 
+		$allFallen = [];
 		while (true) {
 			$this->log(10, "Running combat round $round", $boutReport);
 			/** @var ActivityParticipant[] $remove */
@@ -429,6 +438,7 @@ class ActivityRunner {
 				$id = $ec->getId();
 				$out = false;
 				if ($this->ruleset === 'legacy') {
+					$this->log(10, $ec->getName()." wounded at ".$ec->getWounded()." vs limit of ".$info[$id]['limit'], $boutReport);
 					if ($ec->getWounded() > $info[$id]['limit']) {
 						$out = true;
 					}
@@ -441,15 +451,18 @@ class ActivityRunner {
 					}
 				}
 				if ($out) {
-					$remove[] = $each;
-					foreach ($each->getTargetedBy() as $attacker) {
-						$attacker->setTarget(null);
-					}
-					$each->setTarget(null);
-					if (in_array($each, $teamA)) {
-						$TAResults['fallen'][] = $id;
-					} else {
-						$TBResults['fallen'][] = $id;
+					if (!in_array($id, $allFallen)) {
+						$remove[] = $each;
+						foreach ($each->getTargetedBy() as $attacker) {
+							$attacker->setTarget(null);
+						}
+						$each->setTarget(null);
+						if (in_array($each, $teamA)) {
+							$TAResults['fallen'][] = $id;
+						} else {
+							$TBResults['fallen'][] = $id;
+						}
+						$allFallen[] = $id;
 					}
 				}
 			}
@@ -494,11 +507,13 @@ class ActivityRunner {
 			# Somehow they knocked each other out at the same time. Rare, but possible.
 			# Coinflip it and return it.
 			if (rand(0,1)) {
+				$this->log(10, "Coinflip! Favors TeamA.", $boutReport);
 				$TAR->setFinish(['victory'=>true, 'loss'=>false]);
 				$TBR->setFinish(['victory'=>false, 'loss'=>true]);
 				$this->em->flush();
 				return [$teamAOriginal, $teamBOriginal, $boutReport];
 			} else {
+				$this->log(10, "Coinflip! Favors TeamB.", $boutReport);
 				$TBR->setFinish(['victory'=>true, 'loss'=>false]);
 				$TAR->setFinish(['victory'=>false, 'loss'=>true]);
 				$this->em->flush();
@@ -513,7 +528,7 @@ class ActivityRunner {
 		}
 		$enemyCount = count($enemies);
 		$results = [];
-		$this->log(10, "Looping through team fighters", $report);
+		$i = 0;
 		/** @var ActivityParticipant $fighter */
 		foreach ($team as $fighter) {
 			$target = $this->getRandomEnemy($fighter, $enemies, $enemyCount);
@@ -523,20 +538,22 @@ class ActivityRunner {
 			$tc = $target->getCharacter();
 			$fid = $fc->getId();
 			$tid = $tc->getId();
-			$results['result'] = false;
-			$results['char'] = $fid;
-			$results['target'] = $tid;
+			$results[$i]['result'] = false;
+			$results[$i]['char'] = $fid;
+			$results[$i]['target'] = $tid;
 			if ($this->ruleset === 'legacy') {
-				$results[] = $this->duelLegacyAttack(
-					$act, null, null, $fighter, $fc, $tc, $round,
+				# We only need parts of this, and it's simpler if we just reformat it here.
+				$arr = $this->duelLegacyAttack(
+					$act,null, null, $fighter, $fc, $tc, $round,
 					$this->legacy->RangedPower($fc, false, $fighter->getWeapon()),
 					$this->legacy->MeleePower($fc, false, $fighter->getWeapon()),
 					$info[$fid]['score'], $info[$tid]['score'], $info[$tid]['limit'],
 					$tc->getWounded(), $info[$fid]['useRanged'], false, true,
 					$report
 				);
+				$results[$i]['results'] = [$arr['data']['result']];
 			} else {
-				$results['results'] = $this->duelMasteryAttack(
+				$results[$i]['results'] = $this->duelMasteryAttack(
 					$fc, $tc, null, null,
 					$fighter->getWeapon(), $target->getWeapon(),
 					$round, $limit,
@@ -545,6 +562,7 @@ class ActivityRunner {
 					$report
 				);
 			}
+			$i++;
 		}
 		return $results;
 	}
@@ -872,10 +890,10 @@ class ActivityRunner {
 		$data = [];
 		$continue = true;
 		$result = $this->legacyAttack($mePart, $meC, $meRanged, $meMelee, $meScore, $themC, $themScore, $act, $meUseRanged, $report);
-		$data['result'] = $this->duelCalculateLegacyReportString($result, $themC);
+		$data['result'] = $this->duelCalculateLegacyReportString($result, $themC, $report);
 		$newWounds = $this->duelCalculateResult($result);
 		$data['new'] = $newWounds;
-		$this->log(10, $themC->getName()." takes ".$newWounds." damage from the attack.\n", $report);
+		$this->log(10, $themC->getName()." takes ".$newWounds." ($result) damage from the attack.\n", $report);
 		$themWounds = $themWounds + $newWounds;
 		$data['wounds'] = $themWounds;
 		if ($themC->healthValue() < $themLimit) {
@@ -930,15 +948,16 @@ class ActivityRunner {
 		return $result;
 	}
 
-	private function duelCalculateLegacyReportString($result, Character $char): string {
-		$this->log(10, "Result: $result");
+	private function duelCalculateLegacyReportString($result, Character $char, ?ActivityReport $report = null): string {
+		$this->log(10, "Result: $result", $report);
 		if (is_string($result)) return $result;
 		# This generates the report text stings.
 		$max = $char->getRace()->getHp();
-		if ($result > $max * 0.3) return 'kill';
-		if ($result > $max * 0.6) return 'wound';
-		if ($result > $max * 0.9) return 'light';
-		return 'fail';
+		$this->log(10, "Max: $max", $report);
+		if ($result < $max * 0.1) return 'fail';
+		if ($result < $max * 0.3) return 'light';
+		if ($result < $max * 0.6) return 'wound';
+		return 'kill';
 	}
 
 	private function createStageReport($main, $round, $data, $extra = null): false|ActivityReportStage {
@@ -1297,7 +1316,16 @@ class ActivityRunner {
 			return $who->getTarget(); # Already focusing on someone.
 		}
 		if ($who->getTargetedBy()->count() > 0) return $who->getTargetedBy()->first(); # Attack my attacker.
-		return $enemies[rand(0, $eCount-1)];
+		$rand = rand(0, $eCount);
+		while ($rand < $eCount) {
+			next($enemies);
+			if (!key($enemies)) {
+				reset($enemies);
+			}
+			$rand++;
+		}
+		$key = key($enemies);
+		return $enemies[$key];
 	}
 
 	private function findSkillScore(ActivityParticipant $me) {

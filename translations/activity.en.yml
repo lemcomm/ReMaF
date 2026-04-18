@@ -569,8 +569,8 @@ report:
   miss2:     "%name% attacks %target% with their %weapon% but misses."
   missed:    "%name% attacks with their %weapon% but misses."
   missed2:    "%name% attacks %target% with their %weapon% but misses."
-  fail:      "%name% fails to do damage with their %weapon%."
-  fail2:      "%name% fails to do damage to %target% with their %weapon%."
+  fail:      "%name% fails to do noticeable damage with their %weapon%."
+  fail2:      "%name% fails to do noticeable damage to %target% with their %weapon%."
   light:     "%name% deals some damage with their %weapon%."
   light2:     "%name% deals some damage to %target% with their %weapon%."
   wound:     "%name% does signifcant damage with their %weapon%."
@@ -583,6 +583,7 @@ report:
   countered2:   "%name% suffered a counterattack from %target%."
   stumble:   "%name% took advantage of an enemy stumble."
   stumble2:   "%name% took advantage of %target%'s stumble."
+  fallen:    "%name% has fallen."
   victory:   Is Declared Victorious
   loss:      Has Lost This Duel
   draw:      Was Not Clearly The Winner
