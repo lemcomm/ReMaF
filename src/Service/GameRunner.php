@@ -232,6 +232,7 @@ class GameRunner {
 			$this->output("  Sorting $deadcount dead and $slumbercount slumbering");
 		}
 		foreach ($dead as $charArray) {
+			/** @var Character $character */
 			$character = $charArray['obj'];
 			$heir = $charArray['heir'];
 			$via = $charArray['via'];
@@ -246,7 +247,7 @@ class GameRunner {
 					$captor->removePrisoner($character);
 				}
 				$this->debug("    Heir: ".($heir?$heir->getName():"(nobody)"));
-				if ($character->getPositions()) {
+				if ($character->getPositions()->count() > 0) {
 					$this->debug("    Positions detected");
 					foreach ($character->getPositions() as $position) {
 						if ($position->getRuler()) {
@@ -296,13 +297,14 @@ class GameRunner {
 			$this->em->flush();
 		}
 		foreach ($slumbered as $charArray) {
+			/** @var Character $character */
 			$character = $charArray['obj'];
 			$heir = $charArray['heir'];
 			$via = $charArray['via'];
 			if ($character->getSystem() != 'procd_inactive') {
 				$this->debug("  ".$character->getName().", ".$character->getId()." is under review, as slumbering.");
 				$this->debug("    Heir: ".($heir?$heir->getName():"(nobody)"));
-				if ($character->getPositions()) {
+				if ($character->getPositions()->count() > 0) {
 					foreach ($character->getPositions() as $position) {
 						if ($position->getRuler()) {
 							$this->debug("    ".$position->getName().", ".$position->getId().", is detected as ruler position.");
@@ -378,10 +380,6 @@ class GameRunner {
 		/** @var Character $char */
 		foreach ($iterableResult as $char) {
 			[$result, $ignored, $ignored1]= $char->HealOrDie();
-			if (($i++ % $this->batchsize) == 0) {
-				$this->em->flush();
-				$this->em->clear();
-			}
 			if (is_int($result)) {
 				if ($result < 0) {
 					$worse++;
@@ -402,6 +400,10 @@ class GameRunner {
 				}
 			} elseif ($result === false) {
 				$deaths++;
+			}
+			if (($i++ % $this->batchsize) == 0) {
+				$this->em->flush();
+				$this->em->clear();
 			}
 		}
 		$this->output("  $better have had their condition improve, $worse saw it worsen, and $deaths died from their wounds.");

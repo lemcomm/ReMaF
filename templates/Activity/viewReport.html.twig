@@ -2,7 +2,11 @@
 
 {% trans_default_domain 'activity' %}
 {% block content %}
-<h2>{{ 'report.title'|trans|title }}</h2>
+	{% if report.name %}
+		<h2>{{ report.name }}</h2>
+	{% else %}
+		<h2>{{ 'report.title'|trans|title }}</h2>
+	{% endif %}
 <p>
 	{% if report.getMainReport %}
 		{{ ( 'report.loc.event' )|trans }}:	{{ link(report.getMainReport) }}

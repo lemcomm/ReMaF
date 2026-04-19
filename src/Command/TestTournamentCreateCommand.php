@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Action;
 use App\Entity\Activity;
 use App\Entity\ActivityParticipant;
 use App\Entity\ActivitySubType;
@@ -86,7 +87,37 @@ class TestTournamentCreateCommand extends AbstractTestCommand {
 				$charArr = $this->createCharacters(39, $output);
 				$subType = $em->getRepository(ActivitySubType::class)->findOneBy(['name'=>Activities::fightsFFA->value]);
 				$where = $em->getRepository(Settlement::class)->findOneBy(['id'=>1249]);
-				$tournID = $this->createTournament($charArr[0], $where, 1, 'Testing 5v5 Tournament', $subType, null, null, null, false, $charArr, 'broadsword', $ruleset);
+				$tournID = $this->createTournament($charArr[0], $where, 1, 'Testing FFA Tournament', $subType, null, null, null, false, $charArr, 'broadsword', $ruleset);
+				$em->flush();
+				break;
+			case 11:
+				$charArr = $this->createCharacters(57, $output);
+				$em->flush();
+				$subType = $em->getRepository(ActivitySubType::class)->findOneBy(['name'=>Activities::fightsSolo->value]);
+				$where = $em->getRepository(Settlement::class)->findOneBy(['id'=>1249]);
+				$am->output = $output;
+				$tournID = $this->createTournament($charArr[0], $where, 1, 'Testing 1v1 Tournament', $subType, null, null, null, 'lamellar armour', $charArr, 'broadsword', $ruleset);
+				$em->flush();
+				break;
+			case 13:
+				$charArr = $this->createCharacters(119, $output);
+				$subType = $em->getRepository(ActivitySubType::class)->findOneBy(['name'=>Activities::fightsDuo->value]);
+				$where = $em->getRepository(Settlement::class)->findOneBy(['id'=>1249]);
+				$tournID = $this->createTournament($charArr[0], $where, 1, 'Testing 2v2 Tournament', $subType, null, null, null, 'lamellar armour', $charArr, 'broadsword', $ruleset);
+				$em->flush();
+				break;
+			case 15:
+				$charArr = $this->createCharacters(151, $output);
+				$subType = $em->getRepository(ActivitySubType::class)->findOneBy(['name'=>Activities::fightsTeam->value]);
+				$where = $em->getRepository(Settlement::class)->findOneBy(['id'=>1249]);
+				$tournID = $this->createTournament($charArr[0], $where, 1, 'Testing 5v5 Tournament', $subType, null, null, null, 'lamellar armour', $charArr, 'broadsword', $ruleset);
+				$em->flush();
+				break;
+			case 17:
+				$charArr = $this->createCharacters(78, $output);
+				$subType = $em->getRepository(ActivitySubType::class)->findOneBy(['name'=>Activities::fightsFFA->value]);
+				$where = $em->getRepository(Settlement::class)->findOneBy(['id'=>1249]);
+				$tournID = $this->createTournament($charArr[0], $where, 1, 'Testing FFA Tournament', $subType, null, null, null, 'lamellar armour', $charArr, 'broadsword', $ruleset);
 				$em->flush();
 				break;
 			default:
@@ -126,9 +157,18 @@ class TestTournamentCreateCommand extends AbstractTestCommand {
 			$armor = null;
 		}
 		foreach ($chars as $char) {
-			$this->am->createParticipant($tourn, $char, null, $weapon, $armor, true);
+			$part = $this->am->createParticipant($tourn, $char, null, $weapon, $armor, true);
 			$charIds[] = $char->getId();
+			$action = new Action();
+			$action->setCharacter($char)
+				->setType('tournament')
+				->setBlockTravel(true)
+				->setTargetActivityParticipant($part)
+				->setStarted(new \DateTime())
+				->setCanCancel(true);
+			$this->em->persist($action);
 		}
+		$this->em->flush();
 		$tournID = $tourn->getId();
 		$tourn->setDebugChars($charIds);
 		$tourn->setRuleset($ruleset);

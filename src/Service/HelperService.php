@@ -66,13 +66,17 @@ class HelperService {
 				}
 			}
 		} else {
-			$added = new ArrayCollection;
+			if ($resuming) {
+				$added = $report->getObservers();
+			} else {
+				$added = new ArrayCollection;
+			}
 			foreach ($thing->getParticipants() as $part) {
 				$char = $part->getCharacter();
 				if (!$someone) {
 					$someone = $char;
 				}
-				if (!$added->contains($char)) {
+				if ((!$resuming && !$added->contains($char)) || ($resuming && !$report->checkForObserver($char))) {
 					$obs = $this->newObserver($type);
 					$this->em->persist($obs);
 					$obs->setReport($report);

@@ -84,9 +84,12 @@ class LinksExtension extends AbstractExtension {
 				case 'g':
 					$type = 'Association';
 					break;
+				case 'ar':
 				case 'act':
+				case 'actreport':
 				case 'activity':
-					$type = 'Activity';
+				case 'activityreport':
+					$type = 'ActivityReport';
 					break;
 				case 'p':
 				case 'poi':
@@ -213,7 +216,6 @@ class LinksExtension extends AbstractExtension {
 
 	private function getLink($name): string {
 		return match (strtolower($name)) {
-			'activity' => 'maf_activity',
 			'activityreport' => 'maf_activity_report',
 			'character' => 'maf_char_view',
 			'settlement' => 'maf_settlement',

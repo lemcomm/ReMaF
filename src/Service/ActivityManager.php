@@ -288,6 +288,9 @@ class ActivityManager {
 			$this->cleanupAct($sub);
 		}
 		foreach ($act->getParticipants() as $each) {
+			if ($each->getRelatedAction()) {
+				$this->em->remove($each->getRelatedAction());
+			}
 			$this->em->remove($each);
 		}
 		foreach ($act->getGroups() as $group) {

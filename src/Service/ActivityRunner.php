@@ -141,12 +141,14 @@ class ActivityRunner {
 				$mainReport->addSubReport($this->report);
 			} else {
 				if ($this->report->getObservers()->count() === 0) {
+					$this->log(10, "Adding observers...");
 					$this->helper->addObservers($act, $this->report);
-					$this->em->flush();
 				}
 			}
 		} else {
 			$this->log(10, "Using report ID: ".$this->report->getId());
+			$this->log(10, "Checking for new observers...");
+			$this->helper->addObservers($act, $this->report, true);
 		}
 		$this->em->flush();
 		$stages = $this->report->getStages();
@@ -268,7 +270,7 @@ class ActivityRunner {
 						$this->history->logEvent(
 							$winner->getCharacter(),
 							$eventType.'.win',
-							['%link-activity%'=>$mainReport->getId(), '%round%'=>$round+1],
+							['%link-activityreport%'=>$mainReport->getId(), '%round%'=>$round+1],
 							History::LOW,
 							false
 						);
@@ -276,7 +278,7 @@ class ActivityRunner {
 						$this->history->logEvent(
 							$winner->getCharacter(),
 							$eventType.'.default',
-							['%link-activity%'=>$mainReport->getId(), '%round%'=>$round+1],
+							['%link-activityreport%'=>$mainReport->getId(), '%round%'=>$round+1],
 							History::LOW,
 							false
 						);
@@ -286,7 +288,7 @@ class ActivityRunner {
 					$this->history->logEvent(
 						$winner->getCharacter(),
 						$eventType.'.win',
-						['%link-activity%'=>$this->report->getId(), '%round%'=>$round+1],
+						['%link-activityreport%'=>$this->report->getId(), '%round%'=>$round+1],
 						History::LOW,
 						false
 					);
@@ -294,7 +296,7 @@ class ActivityRunner {
 					$this->history->logEvent(
 						$winner->getCharacter(),
 						$eventType.'.default',
-						['%link-activity%'=>$this->report->getId(), '%round%'=>$round+1],
+						['%link-activityreport%'=>$this->report->getId(), '%round%'=>$round+1],
 						History::LOW,
 						false
 					);
@@ -304,10 +306,14 @@ class ActivityRunner {
 			$this->em->flush();
 			/** @var ActivityParticipant $loser */
 			foreach ($losers as $loser) {
+				#TODO: Accolades.
 				$this->log(10, "Loser: ".$loser->getCharacter()->getName());
 				$this->log(10, "Loser: ".$loser->getCharacter()->getName(), $subReport);
 				$loser->setTarget(null)->resetTargetedBy();
 				$lossData[] = $loser->getCharacter()->getId();
+				if ($loser->getRelatedAction()) {
+					$this->em->remove($loser->getRelatedAction());
+				}
 				$this->em->remove($loser);
 				/** @var ActivityParticipant $loser */
 				if ($mainReport) {
@@ -349,12 +355,13 @@ class ActivityRunner {
 			$round++;
 			$final = [];
 			foreach ($roundWinners as $winner) {
+				#TODO: Accolades.
 				$this->log(10, $winner->getCharacter()->getName()." is proclaimed victor!");
 				$char = $winner->getCharacter();
 				$this->history->logEvent(
 					$char,
 					$eventType.'.win2',
-					['%link-activity%'=>$this->report->getId(), '%name%'=>$act->getName()],
+					['%link-activityreport%'=>$this->report->getId(), '%name%'=>$act->getName()],
 					History::HIGH,
 					true
 				);
@@ -362,6 +369,15 @@ class ActivityRunner {
 				$final['victors'][] = $winner->getCharacter()->getId();
 			}
 			$this->createStageReport($this->report, $round, $final);
+			foreach ($this->report->getObservers() as $observer) {
+				$this->history->logEvent(
+					$observer->getCharacter(),
+					'event.character.tournament.melee.conclusion',
+					['%link-activityreport%'=>$this->report->getId()],
+					History::MEDIUM,
+					false,
+				);
+			}
 			$this->em->flush();
 			$id = $act->getId();
 			$this->em->clear();
@@ -369,6 +385,16 @@ class ActivityRunner {
 			$this->am->cleanupAct($act);
 			return true;
 		} else {
+			foreach ($this->report->getObservers() as $observer) {
+				$this->history->logEvent(
+					$observer->getCharacter(),
+					'event.character.tournament.melee.observer',
+					['%link-activityreport%'=>$this->report->getId()],
+					History::LOW,
+					false,
+					4
+				);
+			}
 			$this->log(10, "Tournament has more to go!");
 			$act->setCycle($act->getCycle() + 4);
 			$this->em->flush();

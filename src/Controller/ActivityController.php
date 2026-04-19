@@ -247,6 +247,7 @@ class ActivityController extends AbstractController {
 		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'tourn', 'subselect'=>$options]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
+			# TODO: Some logic for opening the gates.
 			$data = $form->getData();
 			$hasFight = false;
 			$hasRace = false;
@@ -304,7 +305,7 @@ class ActivityController extends AbstractController {
 						'key' => 'system.tourn.announce',
 						'data' => [
 							'{who}' => '[c:'.$char->getId().']',
-							'{what}' => '[act:'.$act->getId().']',
+							'{what}' => $act->getName(),
 							'{when}' =>  $gameTime->gametimeFilter($date, 'long'),
 							'{where}' => '[s:'.$settlement->getId().']',
 						]
