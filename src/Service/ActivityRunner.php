@@ -14,7 +14,6 @@ use App\Enum\Activities;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /*
@@ -35,7 +34,6 @@ class ActivityRunner {
 		private CommonService          $common,
 		private EntityManagerInterface $em,
 		private HelperService          $helper,
-		private LoggerInterface        $logger,
 		private CombatLegacy           $legacy,
 		private CombatMastery	       $mastery,
 		private CharacterManager       $charMan,
@@ -55,6 +53,9 @@ class ActivityRunner {
 		$query = $em->createQuery('SELECT a FROM App\Entity\Activity a WHERE a.ready = true');
 		$all = $query->getResult();
 		foreach ($all as $act) {
+			if ($act->getRuleset()) {
+				$this->ruleset = $act->getRuleset();
+			}
 			$this->reset(); #Ensure known state.
 			$this->findAndRun($act);
 		}
@@ -62,24 +63,38 @@ class ActivityRunner {
 	}
 
 	public function run(Activity $act, string $ruleset): Activity|true|string {
-		$this->reset();
-		$this->ruleset = $ruleset;
 		$this->reset(); #Ensure known state.
+		$this->ruleset = $ruleset;
 		return $this->findAndRun($act);
 	}
 
 	public function findAndRun(Activity $act): Activity|bool {
 		$type = $act->getType()->getName();
+		$cycle = $this->common->getCycle();
+		$valid = false;
 		if ($type === 'duel') {
 			return $this->runDuel($act);
 		}
 		if (in_array($type, Activity::competitionTypes)) {
-			return $this->runCompetition($act);
+			if ($act->getCycle() <= $cycle) {
+				return $this->runCompetition($act);
+			} else {
+				$valid = true;
+				$this->output->writeln("Skipping ".$act->getId()." with cycle ".$act->getCycle()." as it is cycle #$cycle");
+			}
 		}
 		if (in_array($type, Activity::tournamentTypes)) {
-			return $this->runTournament($act);
+			if ($act->getCycle() <= $cycle) {
+				return $this->runTournament($act);
+			} else {
+				$valid = true;
+				$this->output->writeln("Skipping ".$act->getId()." with cycle ".$act->getCycle()." as it is cycle #$cycle");
+			}
 		}
-		$this->log(10, 'Activity type '.$type.' not found!');
+		if (!$valid) {
+			$this->log(10, 'Activity type '.$type.' not found!');
+			return true;
+		}
 		return false;
 	}
 
@@ -140,15 +155,18 @@ class ActivityRunner {
 		} else {
 			$round = $stages->last()->getRound()+1;
 		}
+		$this->log(10, "Recording participants:");
 		foreach ($act->getParticipants() as $part) {
 			# This is largely for testing, to make sure memory actually gets refreshed so we don't get stale objects polluting bulk runs.
-			$this->output->writeln($part->getCharacter()->getName());
+			$this->log(10, $part->getCharacter()->getName());
 		}
 		$fighters = clone $act->getParticipants();
 		if ($round === 1) {
+			/** @var ActivityParticipant $fighter */
 			foreach ($fighters as $fighter) {
 				#TODO: Add translation string for achievements and events.
 				$this->common->addAchievement($fighter->getCharacter(), 'attendTournament', 1);
+				$fighter->setFallen(false);
 			}
 		}
 		$total = $fighters->count();
@@ -186,7 +204,7 @@ class ActivityRunner {
 			$losers = [];
 			$this->log(10, "Round #$currentBouts starting of $neededBouts needed!");
 			$stageReport = $this->createStageReport($this->report, $round, []);
-			if ($remaining < $boutSize) {
+			if ((!$ffa && $remaining < $boutSize) || ($ffa && $remaining < 2)) {
 				$mySize = $remaining;
 				$this->log(10, "MySize: $mySize, BoutSize: $boutSize. Insufficient fighters. Bypassing!");
 				if ($mySize <= $boutSize / 2) {
@@ -196,7 +214,11 @@ class ActivityRunner {
 					}
 				}
 			} else {
-				$mySize = $boutSize;
+				if ($ffa) {
+					$mySize = min($boutSize, $remaining);
+				} else {
+					$mySize = $boutSize;
+				}
 			}
 			if (!$default) {
 				$participants = new ArrayCollection;
@@ -224,7 +246,7 @@ class ActivityRunner {
 				if ($ffa) {
 					$this->log(10, "Handing off to runMeleeFFABout");
 					#TODO: The below function.
-					[$winners, $losers, $subReport] = $this->runMeleeFFABout($act, $participants, $mySize);
+					[$winners, $losers, $subReport] = $this->runMeleeFFABout($act, $participants);
 				} else {
 					$this->log(10, "Handing off to runMeleeTeamBout");
 					[$winners, $losers, $subReport] = $this->runMeleeTeamBout($act, $participants, $mySize);
@@ -286,8 +308,7 @@ class ActivityRunner {
 				$this->log(10, "Loser: ".$loser->getCharacter()->getName(), $subReport);
 				$loser->setTarget(null)->resetTargetedBy();
 				$lossData[] = $loser->getCharacter()->getId();
-				$loser->setActivity(null);
-				$act->removeParticipant($loser);
+				$this->em->remove($loser);
 				/** @var ActivityParticipant $loser */
 				if ($mainReport) {
 					$this->history->logEvent(
@@ -313,6 +334,7 @@ class ActivityRunner {
 				'losers' => $lossData,
 				'subReport' => $subReport?$subReport->getId():false,
 				'default' => $default,
+				'ffa' => $ffa,
 			];
 			$stageReport->setData($allData);
 			$this->em->flush();
@@ -348,9 +370,149 @@ class ActivityRunner {
 			return true;
 		} else {
 			$this->log(10, "Tournament has more to go!");
+			$act->setCycle($act->getCycle() + 4);
 			$this->em->flush();
 			return $act;
 		}
+	}
+
+	public function runMeleeFFABout(Activity $act, ArrayCollection $participants): array {
+		$round = 1;
+		$boutReport = $this->newReport($act, $this->report);
+		$this->em->flush();
+
+		$allFighters = [];
+		foreach ($participants as $fighter) {
+			$allFighters[] = $fighter;
+		}
+		$groupReport = $this->newActivityReportGroup($boutReport, $allFighters, true);
+		$info = [];
+		$limit = $this->getActivityLimit($act);
+		if ($this->ruleset === 'legacy') {
+			foreach ($participants as $each) {
+				$char = $each->getCharacter();
+				$id = $char->getId();
+				$info[$id]['score'] = $this->findSkillScore($each);
+				$myWounds = $char->getWounded();
+				$myLimit = floor(($char->getRace()->getHp() - $myWounds) * $limit);
+				$info[$id]['limit'] = $myLimit;
+				$meRanged = $this->legacy->RangedPower($char, false, $each->getWeapon());
+				$meMelee = $this->legacy->MeleePower($char, false, $each->getWeapon());
+				if ($meRanged > $meMelee) {
+					$info[$id]['useRanged'] = true;
+				} else {
+					$info[$id]['useRanged'] = false;
+				}
+				$this->log(10, '$myLimit of '.$myLimit.'. $myWounds of '.$myWounds.' vs limit of '.$limit, $boutReport);
+			}
+		} else {
+			foreach ($participants as $each) {
+				$char = $each->getCharacter();
+				$id = $char->getId();
+				$info[$id]['origWounds'] = $char->getInjuries();
+			}
+		}
+
+		$allFallen = [];
+		while (true) {
+			$this->log(10, "Running combat round $round", $boutReport);
+			/** @var ActivityParticipant[] $remove */
+			$remove = [];
+			# Start team combat.
+			$groupResults = $this->runMeleeCombat($act, $info, $allFighters, $allFighters, $round, $limit, $boutReport, true);
+			$this->em->flush();
+
+			# Parse combat results.
+			foreach ($participants as $each) {
+				$ec = $each->getCharacter();
+				$id = $ec->getId();
+				if (!in_array($id, $allFallen)) {
+					$out = false;
+					if ($this->ruleset === 'legacy') {
+						$this->log(10, $ec->getName()." wounded at ".$ec->getWounded()." vs limit of ".$info[$id]['limit'], $boutReport);
+						if ($ec->getWounded() > $info[$id]['limit']) {
+							$this->log(10, "Flagged for removal", $boutReport);
+							$out = true;
+							$each->setFallen(true);
+						}
+					} else {
+						$ec->applyModifier();
+						$ec->applyInjuries();
+						$this->log(10, $ec->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($ec->getInjuries(), true)), $boutReport);
+						if (!$this->evaluateHealth($info[$id]['origWounds'], $ec->getInjuries(), $limit)) {
+							$this->log(10, "Flagged for removal", $boutReport);
+							$out = true;
+							$each->setFallen(true);
+						}
+					}
+					if ($out) {
+						$this->log(10, "Removing $id...", $boutReport);
+						if (!in_array($id, $allFallen)) {
+							$this->log(10, "$id is not already in allFallen...", $boutReport);
+							$remove[] = $each;
+							foreach ($each->getTargetedBy() as $attacker) {
+								$attacker->setTarget(null);
+							}
+							$each->setTarget(null);
+							if (in_array($each, $allFighters)) {
+								$groupResults['fallen'][] = $id;
+							}
+							$allFallen[] = $id;
+						} else {
+							$this->log(10, "$id is already in allFallen...", $boutReport);
+							$this->log(10, print_r($allFallen, true), $boutReport);
+						}
+					}
+				}
+			}
+
+			# Create report.
+			$this->createStageReport($groupReport, $round, $groupResults);
+			$this->em->flush();
+
+			# Remove fallen combatants
+			foreach ($allFighters as $key=>$each) {
+				if (in_array($each, $remove)) {
+					$this->log(10, "Removing ".$each->getCharacter()->getName(), $boutReport);
+					unset($allFighters[$key]);
+				}
+			}
+
+			# Check if we can keep going.
+			$cta = count($allFighters);
+			$this->log(10, "Fighter count at $cta", $boutReport);
+			$this->em->flush();
+			if ($cta <= 1) {
+				break;
+			}
+			$round++;
+		}
+		$losers = [];
+		$loserIds = [];
+		foreach ($participants as $each) {
+			$id = $each->getCharacter()->getId();
+			if (in_array($id, $allFallen)) {
+				$losers[] = $each;
+				$loserIds[] = $each->getCharacter()->getId();
+			}
+		}
+		if ($cta > 0) {
+			$last = array_pop($allFighters);
+		} else {
+			# Somehow they knocked each other out at the same time. Rare, but possible.
+			# Coinflip it and return it.
+			if (rand(0,1)) {
+				$last = $losers[count($losers)-1];
+			} else{
+				$last = $losers[count($losers)-2];
+			}
+			$this->log(10, "Coinflip! Favors ".$last->getCharacter()->getId(), $boutReport);
+			$key = array_search($last, $losers);
+			unset($losers[$key]);
+		}
+		$groupReport->setFinish(['victory'=>$last->getCharacter()->getId(), 'loss'=>$loserIds, 'ffa'=>true]);
+		$this->em->flush();
+		return [[$last], $losers, $boutReport];
 	}
 
 	public function runMeleeTeamBout(Activity $act, ArrayCollection $participants, int $boutSize): array {
@@ -436,33 +598,44 @@ class ActivityRunner {
 			foreach ($participants as $each) {
 				$ec = $each->getCharacter();
 				$id = $ec->getId();
-				$out = false;
-				if ($this->ruleset === 'legacy') {
-					$this->log(10, $ec->getName()." wounded at ".$ec->getWounded()." vs limit of ".$info[$id]['limit'], $boutReport);
-					if ($ec->getWounded() > $info[$id]['limit']) {
-						$out = true;
-					}
-				} else {
-					$ec->applyModifier();
-					$ec->applyInjuries();
-					$this->log(10, $ec->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($ec->getInjuries(), true)), $boutReport);
-					if (!$this->evaluateHealth($info[$id]['origWounds'], $ec->getInjuries(), $limit)) {
-						$out = true;
-					}
-				}
-				if ($out) {
-					if (!in_array($id, $allFallen)) {
-						$remove[] = $each;
-						foreach ($each->getTargetedBy() as $attacker) {
-							$attacker->setTarget(null);
+				if (!in_array($id, $allFallen)) {
+					$out = false;
+					if ($this->ruleset === 'legacy') {
+						$this->log(10, $ec->getName()." wounded at ".$ec->getWounded()." vs limit of ".$info[$id]['limit'], $boutReport);
+						if ($ec->getWounded() > $info[$id]['limit']) {
+							$this->log(10, "Flagged for removal", $boutReport);
+							$out = true;
+							$each->setFallen(true);
 						}
-						$each->setTarget(null);
-						if (in_array($each, $teamA)) {
-							$TAResults['fallen'][] = $id;
+					} else {
+						$ec->applyModifier();
+						$ec->applyInjuries();
+						$this->log(10, $ec->getName()." has injuries: ".str_replace(["\n", "\r"], '', print_r($ec->getInjuries(), true)), $boutReport);
+						if (!$this->evaluateHealth($info[$id]['origWounds'], $ec->getInjuries(), $limit)) {
+							$this->log(10, "Flagged for removal", $boutReport);
+							$out = true;
+							$each->setFallen(true);
+						}
+					}
+					if ($out) {
+						$this->log(10, "Removing $id...", $boutReport);
+						if (!in_array($id, $allFallen)) {
+							$this->log(10, "$id is not already in allFallen...", $boutReport);
+							$remove[] = $each;
+							foreach ($each->getTargetedBy() as $attacker) {
+								$attacker->setTarget(null);
+							}
+							$each->setTarget(null);
+							if (in_array($each, $teamA)) {
+								$TAResults['fallen'][] = $id;
+							} else {
+								$TBResults['fallen'][] = $id;
+							}
+							$allFallen[] = $id;
 						} else {
-							$TBResults['fallen'][] = $id;
+							$this->log(10, "$id is already in allFallen...", $boutReport);
+							$this->log(10, print_r($allFallen, true), $boutReport);
 						}
-						$allFallen[] = $id;
 					}
 				}
 			}
@@ -475,11 +648,13 @@ class ActivityRunner {
 			# Remove fallen combatants
 			foreach ($teamA as $key=>$each) {
 				if (in_array($each, $remove)) {
+					$this->log(10, "Removing ".$each->getCharacter()->getName(), $boutReport);
 					unset($teamA[$key]);
 				}
 			}
 			foreach ($teamB as $key=>$each) {
 				if (in_array($each, $remove)) {
+					$this->log(10, "Removing ".$each->getCharacter()->getName(), $boutReport);
 					unset($teamB[$key]);
 				}
 			}
@@ -487,6 +662,7 @@ class ActivityRunner {
 			# Check if we can keep going.
 			$cta = count($teamA);
 			$ctb = count($teamB);
+			$this->log(10, "Team A at $cta, Team B at $ctb", $boutReport);
 			$this->em->flush();
 			if ($cta <= 0 || $ctb <= 0) {
 				break;
@@ -494,13 +670,13 @@ class ActivityRunner {
 			$round++;
 		}
 		if ($cta > 0) {
-			$TAR->setFinish(['victory'=>true, 'loss'=>false]);
-			$TBR->setFinish(['victory'=>false, 'loss'=>true]);
+			$TAR->setFinish(['victory'=>true, 'loss'=>false, 'ffa'=>false]);
+			$TBR->setFinish(['victory'=>false, 'loss'=>true, 'ffa'=>false]);
 			$this->em->flush();
 			return [$teamAOriginal, $teamBOriginal, $boutReport];
 		} elseif ($ctb > 0) {
-			$TBR->setFinish(['victory'=>true, 'loss'=>false]);
-			$TAR->setFinish(['victory'=>false, 'loss'=>true]);
+			$TBR->setFinish(['victory'=>true, 'loss'=>false, 'ffa'=>false]);
+			$TAR->setFinish(['victory'=>false, 'loss'=>true, 'ffa'=>false]);
 			$this->em->flush();
 			return [$teamBOriginal, $teamAOriginal, $boutReport];
 		} else {
@@ -508,21 +684,21 @@ class ActivityRunner {
 			# Coinflip it and return it.
 			if (rand(0,1)) {
 				$this->log(10, "Coinflip! Favors TeamA.", $boutReport);
-				$TAR->setFinish(['victory'=>true, 'loss'=>false]);
-				$TBR->setFinish(['victory'=>false, 'loss'=>true]);
+				$TAR->setFinish(['victory'=>true, 'loss'=>false, 'ffa'=>false]);
+				$TBR->setFinish(['victory'=>false, 'loss'=>true, 'ffa'=>false]);
 				$this->em->flush();
 				return [$teamAOriginal, $teamBOriginal, $boutReport];
 			} else {
 				$this->log(10, "Coinflip! Favors TeamB.", $boutReport);
-				$TBR->setFinish(['victory'=>true, 'loss'=>false]);
-				$TAR->setFinish(['victory'=>false, 'loss'=>true]);
+				$TBR->setFinish(['victory'=>true, 'loss'=>false, 'ffa'=>false]);
+				$TAR->setFinish(['victory'=>false, 'loss'=>true, 'ffa'=>false]);
 				$this->em->flush();
 				return [$teamBOriginal, $teamAOriginal, $boutReport];
 			}
 		}
 	}
 
-	private function runMeleeCombat($act, $info, $team, $enemies, $round, $limit, $report): array {
+	private function runMeleeCombat($act, $info, $team, $enemies, $round, $limit, $report, $ffa = false): array {
 		if ($this->ruleset === 'mastery') {
 			$this->mastery->prepare(true);
 		}
@@ -531,38 +707,41 @@ class ActivityRunner {
 		$i = 0;
 		/** @var ActivityParticipant $fighter */
 		foreach ($team as $fighter) {
-			$target = $this->getRandomEnemy($fighter, $enemies, $enemyCount);
-			$fighter->setTarget($target);
-			$target->addTargetedBy($fighter);
-			$fc = $fighter->getCharacter();
-			$tc = $target->getCharacter();
-			$fid = $fc->getId();
-			$tid = $tc->getId();
-			$results[$i]['result'] = false;
-			$results[$i]['char'] = $fid;
-			$results[$i]['target'] = $tid;
-			if ($this->ruleset === 'legacy') {
-				# We only need parts of this, and it's simpler if we just reformat it here.
-				$arr = $this->duelLegacyAttack(
-					$act,null, null, $fighter, $fc, $tc, $round,
-					$this->legacy->RangedPower($fc, false, $fighter->getWeapon()),
-					$this->legacy->MeleePower($fc, false, $fighter->getWeapon()),
-					$info[$fid]['score'], $info[$tid]['score'], $info[$tid]['limit'],
-					$tc->getWounded(), $info[$fid]['useRanged'], false, true,
-					$report
-				);
-				$results[$i]['results'] = [$arr['data']['result']];
-			} else {
-				$results[$i]['results'] = $this->duelMasteryAttack(
-					$fc, $tc, null, null,
-					$fighter->getWeapon(), $target->getWeapon(),
-					$round, $limit,
-					[$fighter->getArmor(), $target->getArmor()],
-					false, true,
-					$report
-				);
+			$this->log(10, "Current fighter is ".$fighter->getCharacter()->getName()." (".$fighter->getcharacter()->getId().")", $report);
+			if (!$fighter->getFallen()) {
+				$target = $this->getRandomEnemy($fighter, $enemies, $enemyCount, $ffa);
+				$fighter->setTarget($target);
+				$target->addTargetedBy($fighter);
+				$fc = $fighter->getCharacter();
+				$tc = $target->getCharacter();
+				$fid = $fc->getId();
+				$tid = $tc->getId();
+				$results[$i]['result'] = false;
+				$results[$i]['char'] = $fid;
+				$results[$i]['target'] = $tid;
+				if ($this->ruleset === 'legacy') {
+					# We only need parts of this, and it's simpler if we just reformat it here.
+					$arr = $this->duelLegacyAttack(
+						$act,null, null, $fighter, $fc, $tc, $round,
+						$this->legacy->RangedPower($fc, false, $fighter->getWeapon()),
+						$this->legacy->MeleePower($fc, false, $fighter->getWeapon()),
+						$info[$fid]['score'], $info[$tid]['score'], $info[$tid]['limit'],
+						$tc->getWounded(), $info[$fid]['useRanged'], false, true,
+						$report
+					);
+					$results[$i]['results'] = [$arr['data']['result']];
+				} else {
+					$results[$i]['results'] = $this->duelMasteryAttack(
+						$fc, $tc, null, null,
+						$fighter->getWeapon(), $target->getWeapon(),
+						$round, $limit,
+						[$fighter->getArmor(), $target->getArmor()],
+						false, true,
+						$report
+					);
+				}
+				$i++;
 			}
-			$i++;
 		}
 		return $results;
 	}
@@ -862,7 +1041,21 @@ class ActivityRunner {
 			}
 			return null;
 		} else {
-			return $results;
+			if (count($results) > 1) {
+				$last = null;
+				foreach ($results as $key => $var) {
+					if ($last) {
+						if ($var === $last) {
+							$results[$key] = $var.'Adv';
+						}
+					} else {
+						$last = $var;
+					}
+				}
+				return $results;
+			} else {
+				return $results;
+			}
 		}
 	}
 
@@ -1311,21 +1504,47 @@ class ActivityRunner {
 		}
 		return false;
 	}
-	public function getRandomEnemy(ActivityParticipant $who, array $enemies, int $eCount) {
+	public function getRandomEnemy(ActivityParticipant $who, array $enemies, int $eCount, $ffa = false) {
 		if ($who->getTarget() and in_array($who->getTarget(), $enemies)) {
-			return $who->getTarget(); # Already focusing on someone.
-		}
-		if ($who->getTargetedBy()->count() > 0) return $who->getTargetedBy()->first(); # Attack my attacker.
-		$rand = rand(0, $eCount);
-		while ($rand < $eCount) {
-			next($enemies);
-			if (!key($enemies)) {
-				reset($enemies);
+			$target = $who->getTarget(); # Already focusing on someone.
+			if (!$target->getFallen()) {
+				return $target;
 			}
-			$rand++;
 		}
-		$key = key($enemies);
-		return $enemies[$key];
+		if ($who->getTargetedBy()->count() > 0) {
+			$target = $who->getTargetedBy()->first(); # Attack my attacker.
+			if (!$target->getFallen()) {
+				return $target;
+			}
+		}
+		# Either we have no target or our target is invalid. Find a new one!
+		if ($ffa) {
+			$rand = rand(0, $eCount - 1);
+			while ($rand < $eCount) {
+				next($enemies);
+				if (!key($enemies)) {
+					reset($enemies);
+				}
+				if (current($enemies) === $who) {
+					continue;
+				}
+				$rand++;
+			}
+			$key = key($enemies);
+			return $enemies[$key];
+		} else {
+			$rand = rand(0, $eCount);
+			while ($rand < $eCount) {
+				next($enemies);
+				if (!key($enemies)) {
+					reset($enemies);
+				}
+				$rand++;
+			}
+			$key = key($enemies);
+			return $enemies[$key];
+		}
+
 	}
 
 	private function findSkillScore(ActivityParticipant $me) {

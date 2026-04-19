@@ -12,7 +12,6 @@ class ActivityGroup {
 	private ?int $id = null;
 	private string $name;
 	private Collection $participants;
-	private Collection $bout_participation;
 	private ?Activity $activity = null;
 
 	/**
@@ -20,7 +19,6 @@ class ActivityGroup {
 	 */
 	public function __construct() {
 		$this->participants = new ArrayCollection();
-		$this->bout_participation = new ArrayCollection();
 	}
 
 	/**
@@ -83,37 +81,6 @@ class ActivityGroup {
 	 */
 	public function getParticipants(): ArrayCollection|Collection {
 		return $this->participants;
-	}
-
-	/**
-	 * Add bout_participation
-	 *
-	 * @param ActivityBoutGroup $boutParticipation
-	 *
-	 * @return ActivityGroup
-	 */
-	public function addBoutParticipation(ActivityBoutGroup $boutParticipation): static {
-		$this->bout_participation[] = $boutParticipation;
-
-		return $this;
-	}
-
-	/**
-	 * Remove bout_participation
-	 *
-	 * @param ActivityBoutGroup $boutParticipation
-	 */
-	public function removeBoutParticipation(ActivityBoutGroup $boutParticipation): void {
-		$this->bout_participation->removeElement($boutParticipation);
-	}
-
-	/**
-	 * Get bout_participation
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getBoutParticipation(): ArrayCollection|Collection {
-		return $this->bout_participation;
 	}
 
 	/**

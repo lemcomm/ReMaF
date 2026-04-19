@@ -242,7 +242,7 @@ class UpdateDatabaseCommand extends  Command {
 			$which = $em->getRepository(ActivityType::class)->findOneBy(['name' => 'hunt']);
 			$em->createQuery("DELETE FROM App\Entity\ActivityRequirement a WHERE a.type = :activity")->setParameters(['activity'=>$which])->execute();
 			$ball = $em->getRepository(ActivityType::class)->findOneBy(['name' => 'ball']);
-			$em->createQuery("DELETE FROM App\Entity\ActivityRequirement a WHERE a.place is not null and a.type != :ball")->setParameters(['ball', $ball])->execute();
+			$em->createQuery("DELETE FROM App\Entity\ActivityRequirement a WHERE a.place is not null and a.type != :ball")->setParameters(['ball'=>$ball])->execute();
 			$output->writeln('Loading new activty data...');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',

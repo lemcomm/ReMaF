@@ -1023,13 +1023,8 @@ class Character extends AbstractCharacter {
 	}
 
 	public function hasNewMessages(): bool {
-		$permissions = $this->getConvPermissions()->filter(function ($entry) {
-			return $entry->getUnread() > 0;
-		});
-		if ($permissions->count() > 0) {
-			return true;
-		}
-		return false;
+		$status = $this->getStatus();
+		return $status[CharacterStatus::messages->value]?true:false;
 	}
 
 	/**
@@ -3945,7 +3940,7 @@ class Character extends AbstractCharacter {
 		return $this;
 	}
 
-	public function getStatus(): ?array {
+	public function getStatus(): array {
 		if (!$this->status) {
 			$this->status = $this->defaultStatus;
 		}

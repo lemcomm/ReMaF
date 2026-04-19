@@ -145,17 +145,19 @@ class ActivityController extends AbstractController {
 		if (! $char instanceof Character) {
 			return $this->redirectToRoute($char);
 		}
+		$singleWeapon = false;
 		$weapons = $act->getWeapons();
 		if (count($weapons) === 0) {
-			$weapons = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon']);
+			$weapons = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon', 'restricted'=>false]);
 		} elseif (count($weapons) === 1) {
-			$weapons = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon', 'id'=>$weapons[0]]);
+			$weapons = $this->em->getRepository(EquipmentType::class)->findOneBy(['type'=>'weapon', 'id'=>$weapons[0]]);
+			$singleWeapon = true;
 		} else {
-			$weapons = $this->em->getRepository(EquipmentType::class)->findBy(['id'=>$weapons]);
+			$weapons = $this->em->getRepository(EquipmentType::class)->findBy(['id'=>$weapons, 'restricted'=>false]);
 		}
 		$armor = $act->getArmor();
 		if ($armor) {
-			$armor = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'armour']);
+			$armor = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'armour', 'restricted'=>false]);
 		}
 		$form = $this->createForm(ActivityJoinType::class, null, ['activity'=>$act, 'weapons'=>$weapons, 'armor'=>$armor]);
 		$form->handleRequest($request);
@@ -170,7 +172,12 @@ class ActivityController extends AbstractController {
 			$which = $form->getData()['which'];
 			$part = false;
 			$myArmor = $form->getData()['armor'];
-			$myWeapon = $form->getData()['weapon'];
+			if (!$singleWeapon) {
+				$myWeapon = $form->getData()['weapon'];
+			} else {
+				$myWeapon = $weapons;
+			}
+
 			foreach ($events as $event) {
 				foreach ($which as $mine) {
 					if ($mine === $event->getSubType()?->getName() || $mine === $event->getType()->getName()) {
@@ -225,6 +232,7 @@ class ActivityController extends AbstractController {
 			if ($settlement->hasBuildingNamed('Arena')) {
 				$options['types']['fights'] = true;
 			}
+			/* TODO: The rest of these. And competitions.
 			if ($settlement->hasBuildingNamed('List Field')) $options['types']['jousts'] = true;
 			if ($settlement->hasBuildingNamed('Race Track')) $options['types']['races'] = true;
 			if ($options['types']['fights'] && $options['types']['races'] && $options['types']['jousts']) {
@@ -232,6 +240,7 @@ class ActivityController extends AbstractController {
 					$options['types']['grand'] = true;
 				}
 			}
+			*/
 		}
 		$options['weapons'] = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon', 'restricted'=>false]);
 

@@ -24,7 +24,7 @@ class ActivityJoinType extends AbstractType {
 			'maxdistance' => null,
 			'me' => null,
 		));
-		$resolver->setRequired(['activity', 'weapons']);
+		$resolver->setRequired(['activity', 'weapons', 'armor']);
 	}
 	public function buildForm(FormBuilderInterface $builder, array $options): void {
 		/** @var Activity $act */
@@ -36,6 +36,7 @@ class ActivityJoinType extends AbstractType {
 			'choices' => $act->getEventOptions(),
 			'expanded' => true,
 			'multiple' => true,
+			'required' => true,
 			'label' => 'activity.join.form.which',
 			'choice_label' => function ($choice) {
 				if ($choice === Activities::fightsSolo->value) {
@@ -57,10 +58,11 @@ class ActivityJoinType extends AbstractType {
 				}
 			}
 		]);
-		if (count($weapons) > 1) {
+		if (is_array($weapons) && count($weapons) > 1) {
 			$builder->add('weapon', EntityType::class, array(
-				'label'=>'loadout.weapon',
-				'placeholder'=>'loadout.none',
+				'label'=>'meta.loadout.weapon',
+				'placeholder'=>'meta.loadout.none',
+				'translation_domain' => 'actions',
 				'required'=>true,
 				'choice_label'=>'nameTrans',
 				'choice_translation_domain' => 'messages',
@@ -69,13 +71,14 @@ class ActivityJoinType extends AbstractType {
 			));
 		} else {
 			$builder->add('weapon', HiddenType::class, [
-				'data'=>$weapons[0]
+				'data'=>null
 			]);
 		}
 		if ($armor) {
 			$builder->add('armor', EntityType::class, array(
-				'label'=>'loadout.armor',
-				'placeholder'=>'loadout.none',
+				'label'=>'meta.loadout.armor',
+				'placeholder'=>'meta.loadout.none',
+				'translation_domain' => 'actions',
 				'required'=>true,
 				'choice_label'=>'nameTrans',
 				'choice_translation_domain' => 'messages',

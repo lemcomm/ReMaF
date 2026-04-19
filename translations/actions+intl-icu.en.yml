@@ -1196,6 +1196,9 @@ meta:
  loadout:
   name:         Loadout
   description:  Change character loadout
+  none:         (nothing)
+  armor:        "Armor to use:"
+  weapon:       "Weapon to wield:"
  respawn:
   name:         Respawn
   description:  Return character to pool

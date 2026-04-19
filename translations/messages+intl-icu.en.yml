@@ -787,6 +787,8 @@ achievements:
   kills:
    soldiers:  Mortals Slain
    nobles:    First Ones Slain in Battle
+  tournamentWin: Won Tournaments
+  attendTournament: Attended Tournaments
 
 politics:
  hierarchy: hierarchy

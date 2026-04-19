@@ -37,14 +37,16 @@
 				<th colspan="2"><h3>{{ 'report.tournament.participants'|trans|title }}</h3></th>
 			</tr>
 			<tr>
-				{% for character in report.characters %}
+				{% for group in report.groups %}
 					<td class="reportcolumn"><ul class="shortlist">
-						{% if character.character.crest %}
-							{{ character_link(character.character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.character.crest.id})~'" width="60px" height="60px"/>') }}
-						{% else %}
-							{# {{ character_link(character.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
-						{% endif %}
-						{{ link(character.character) }}{% if not loop.last %},{% endif %}
+						{% for character in group.characters %}
+							{% if character.character.crest %}
+							<li>{{ character_link(character.character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.character.crest.id})~'" width="60px" height="60px"/>') }}
+							{% else %}
+								{# {{ character_link(character.character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
+							{% endif %}
+							{{ link(character.character) }}{% if not loop.last %},{% endif %}</li>
+						{% endfor %}
 					</ul></td>
 				{% endfor %}
 			</tr>
@@ -83,14 +85,23 @@
 				{% for group in report.groups %}
 					<td valign="top">
 						<ul>
-							{% if group.finish.victory %}
-								{% for char in group.characters %}
-									<li>{{ 'report.tournament.advance'|trans({'%name%':character_link(char.character.id)})|raw }}</li>
+							{% if group.finish.ffa %}
+								{# FFA logic #}
+								<li>{{ 'report.tournament.advance'|trans({'%name%':character_link(group.finish.victory)})|raw }}</li>
+								{% for id in group.finish.loss %}
+									<li>{{ 'report.tournament.loss'|trans({'%name%':character_link(id)})|raw }}</li>
 								{% endfor %}
 							{% else %}
-								{% for char in group.characters %}
-									<li>{{ 'report.tournament.loss'|trans({'%name%':character_link(char.character.id)})|raw }}</li>
-								{% endfor %}
+								{# Team logic #}
+								{% if group.finish.victory %}
+									{% for char in group.characters %}
+										<li>{{ 'report.tournament.advance'|trans({'%name%':character_link(char.character.id)})|raw }}</li>
+									{% endfor %}
+								{% else %}
+									{% for char in group.characters %}
+										<li>{{ 'report.tournament.loss'|trans({'%name%':character_link(char.character.id)})|raw }}</li>
+									{% endfor %}
+								{% endif %}
 							{% endif %}
 						</ul>
 					</td>
@@ -114,14 +125,15 @@
 			</tr>
 			<tr>
 				{% set characters = report.findCharacters %}
+				{% set i = 0 %}
 				<td class="reportcolumn" colspan="3"><ul class="shortlist">
 				{% for character in characters %}
-						{% if character.crest %}
-							{{ character_link(character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.crest.id})~'" width="60px" height="60px"/>') }}
-						{% else %}
-							{# {{ character_link(character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
-						{% endif %}
-						{{ link(character) }}{% if not loop.last %},{% endif %}
+					{% if character.crest %}
+						{{ character_link(character.id, '<img src="'~path("maf_heraldry_crest", {"id":character.crest.id})~'" width="60px" height="60px"/>') }}
+					{% else %}
+						{# {{ character_link(character.id, '<img src="'~asset("heraldry-svg/empty.svg")~'" width="60px" height="60px"/>') }} #}
+					{% endif %}
+					{{ link(character) }}{% if not loop.last %},{% endif %}
 				{% endfor %}
 				</ul></td>
 			</tr>
@@ -159,9 +171,13 @@
 						</tr>
 					{% elseif stage.round == i and stage.round == roundcount %}
 						<tr class="underline"><td colspan="3">
-							{% for victor in stage.data.victors %}
-								<li>{{ 'report.tournament.winner'|trans({'%name%':character_link(victor)})|raw }}</li>
-							{% endfor %}
+							{% if stage.data.victors is defined %}
+								{% for victor in stage.data.victors %}
+									<li>{{ 'report.tournament.winner'|trans({'%name%':character_link(victor)})|raw }}</li>
+								{% endfor %}
+							{% else %}
+								<li>{{ 'report.tournament.ongoing'|trans|raw }}</li>
+							{% endif %}
 						</td></tr>
 					{% endif %}
 				{% endfor %}

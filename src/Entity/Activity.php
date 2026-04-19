@@ -22,12 +22,12 @@ class Activity {
 	private ?bool $ready;
 	private ?array $weapons = [];
 	private ?bool $armor = false;
+	private ?array $debugChars = null;
 	private Point $location;
 	private ?ActivityReport $report = null;
 	private Collection $events;
 	private Collection $participants;
 	private Collection $groups;
-	private Collection $bouts;
 	private ?ActivityType $type = null;
 	private ?ActivitySubType $subtype = null;
 	private ?Activity $main_event = null;
@@ -37,6 +37,7 @@ class Activity {
 	private ?Settlement $settlement = null;
 	private ?Place $place = null;
 	private ?Character $organizer = null;
+	private ?string $ruleset = null;
 
 	const array tournamentTypes = ['melee tournament', 'grand tournament', 'race', 'joust'];
 	const array competitionTypes = ['archery', 'fishing', 'hunting'];
@@ -45,7 +46,6 @@ class Activity {
 		$this->events = new ArrayCollection();
 		$this->participants = new ArrayCollection();
 		$this->groups = new ArrayCollection();
-		$this->bouts = new ArrayCollection();
 	}
 
 	public function getEventOptions(): array {
@@ -435,37 +435,6 @@ class Activity {
 	}
 
 	/**
-	 * Add bouts
-	 *
-	 * @param ActivityBout $bouts
-	 *
-	 * @return Activity
-	 */
-	public function addBout(ActivityBout $bouts): static {
-		$this->bouts[] = $bouts;
-
-		return $this;
-	}
-
-	/**
-	 * Remove bouts
-	 *
-	 * @param ActivityBout $bouts
-	 */
-	public function removeBout(ActivityBout $bouts): void {
-		$this->bouts->removeElement($bouts);
-	}
-
-	/**
-	 * Get bouts
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getBouts(): ArrayCollection|Collection {
-		return $this->bouts;
-	}
-
-	/**
 	 * Get type
 	 *
 	 * @return ActivityType|null
@@ -663,6 +632,24 @@ class Activity {
 
 	public function setOrganizer(?Character $organizer): static {
 		$this->organizer = $organizer;
+		return $this;
+	}
+
+	public function getDebugChars(): ?array {
+		return $this->debugChars;
+	}
+
+	public function setDebugChars(?array $debugChars): static {
+		$this->debugChars = $debugChars;
+		return $this;
+	}
+
+	public function getRuleset(): ?string {
+		return $this->ruleset;
+	}
+
+	public function setRuleset(?string $ruleset): static {
+		$this->ruleset = $ruleset;
 		return $this;
 	}
 }

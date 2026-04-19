@@ -7,10 +7,7 @@ use App\Entity\ActivityRequirement;
 use App\Entity\ActivityType;
 use App\Entity\ActivitySubType;
 use App\Entity\ActivityParticipant;
-use App\Entity\ActivityBout;
 use App\Entity\ActivityGroup;
-use App\Entity\ActivityBoutGroup;
-use App\Entity\ActivityBoutParticipant;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Entity\GeoData;
@@ -131,14 +128,6 @@ class ActivityManager {
 		}
         }
 
-	public function createBout(Activity $act, ActivitySubType $type): ActivityBout {
-		$bout = new ActivityBout();
-		$this->em->persist($bout);
-		$bout->setActivity($act);
-		$bout->setType($type);
-		return $bout;
-	}
-
 	public function createParticipant(Activity $act, Character $char, ?Style $style=null, $weapon=null, $armor=null, $same=false, $organizer=false): ActivityParticipant {
 		$part = new ActivityParticipant();
 		$this->em->persist($part);
@@ -165,22 +154,6 @@ class ActivityManager {
 			$part->setGroup($group);
 		}
 		return $group;
-	}
-
-	public function createBoutParticipant(ActivityBout $bout, ActivityParticipant $part): ActivityBoutParticipant {
-		$boutPart = new ActivityBoutParticipant();
-		$this->em->persist($boutPart);
-		$boutPart->setBout($bout);
-		$boutPart->setParticipant($part);
-		return $boutPart;
-	}
-
-	public function createBoutGroup(ActivityBout $bout, ActivityGroup $group): ActivityBoutGroup {
-		$boutGroup = new ActivityBoutGroup();
-		$this->em->persist($boutGroup);
-		$boutGroup->setBout($bout);
-		$boutGroup->setGroup($group);
-		return $boutGroup;
 	}
 
 	private function setLocationByChar(Activity $act, Character $char): void {
@@ -314,21 +287,18 @@ class ActivityManager {
 		foreach ($act->getEvents() as $sub) {
 			$this->cleanupAct($sub);
 		}
-		$this->em->remove($act);
 		foreach ($act->getParticipants() as $each) {
-			foreach($each->getBoutParticipation() as $bout) {
-				$this->em->remove($bout);
-			}
 			$this->em->remove($each);
 		}
 		foreach ($act->getGroups() as $group) {
 			$this->em->remove($group);
 		}
-		foreach ($act->getBouts() as $bout) {
-			$this->em->remove($bout);
-		}
-		$this->em->remove($act);
-		$this->em->flush();
+		/*
+		# This used to rely on $em->remove() but that kept breaking for some reason, so we do it manually.
+		$this->em->createQuery('DELETE from App\Entity\ActivityParticipant a WHERE a.activity = :act')->setParameters(['act'=>$act])->execute();
+		$this->em->createQuery('DELETE from App\Entity\ActivityGroup g WHERE g.activity = :act')->setParameters(['act'=>$act])->execute();
+		$this->em->createQuery('DELETE from App\Entity\Activity a WHERE a = :act')->setParameters(['act'=>$act])->execute();
+		*/
 		return true;
 	}
 

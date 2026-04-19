@@ -13,7 +13,6 @@ class ActivityParticipant {
 	private string $role;
 	private bool $accepted;
 	private bool $organizer;
-	private Collection $bout_participation;
 	private ?Activity $activity = null;
 	private ?Character $character = null;
 	private ?Style $style = null;
@@ -25,12 +24,12 @@ class ActivityParticipant {
 	# Not backed properties.
 	private ?ActivityParticipant $target = null;
 	private ?Collection $targetedBy = null;
+	private bool $fallen = false;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->bout_participation = new ArrayCollection();
 		$this->targetedBy = new ArrayCollection();
 	}
 
@@ -103,37 +102,6 @@ class ActivityParticipant {
 	 */
 	public function getId(): ?int {
 		return $this->id;
-	}
-
-	/**
-	 * Add bout_participation
-	 *
-	 * @param ActivityBoutParticipant $boutParticipation
-	 *
-	 * @return ActivityParticipant
-	 */
-	public function addBoutParticipation(ActivityBoutParticipant $boutParticipation): static {
-		$this->bout_participation[] = $boutParticipation;
-
-		return $this;
-	}
-
-	/**
-	 * Remove bout_participation
-	 *
-	 * @param ActivityBoutParticipant $boutParticipation
-	 */
-	public function removeBoutParticipation(ActivityBoutParticipant $boutParticipation): void {
-		$this->bout_participation->removeElement($boutParticipation);
-	}
-
-	/**
-	 * Get bout_participation
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getBoutParticipation(): ArrayCollection|Collection {
-		return $this->bout_participation;
 	}
 
 	/**
@@ -331,6 +299,15 @@ class ActivityParticipant {
 
 	public function resetTargetedBy(): static {
 		$this->targetedBy = new ArrayCollection();
+		return $this;
+	}
+
+	public function getFallen(): bool {
+		return $this->fallen;
+	}
+
+	public function setFallen(bool $fallen): static {
+		$this->fallen = $fallen;
 		return $this;
 	}
 }

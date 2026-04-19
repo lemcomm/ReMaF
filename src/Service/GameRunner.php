@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Activity;
 use App\Entity\Character;
 use App\Entity\Election;
 use App\Entity\Realm;
@@ -11,6 +12,7 @@ use App\Entity\Siege;
 use App\Entity\Soldier;
 use App\Entity\Supply;
 use App\Entity\Unit;
+use App\Service\ActivityRunner;
 use App\Service\RealmManager;
 use DateInterval;
 use DateTime;
@@ -46,7 +48,8 @@ class GameRunner {
 		private ConversationManager $convman,
 		private PermissionManager   $pm,
 		private CharacterManager    $cm,
-		private WarManager          $wm) {
+		private WarManager          $wm,
+		private ActivityRunner      $activityRunner) {
 		$this->cycle = $this->common->getCycle();
 	}
 
@@ -2002,6 +2005,38 @@ class GameRunner {
 		$this->em->flush();
 		$this->em->clear();
 		$this->common->setGlobal('cycle.seafood', 'complete');
+		return 1;
+	}
+
+	public function runActivitiesCycle(): int {
+		$last = $this->common->getGlobal('cycle.activities', 0);
+		if ($last==='complete') return 1;
+		$em = $this->em;
+		$ar = $this->activityRunner;
+		$this->output("Activities Cycle...");
+		$iterable = $em->createQuery('SELECT a FROM App\Entity\Activity a')->toIterable();
+		$i = 1;
+		foreach ($iterable as $act) {
+			$type = $act->getType()->getName();
+			# These have their own handler.
+			if ($type === 'duel') continue;
+			# These aren't ready yet.
+			if ($act->getCycle() > $this->cycle) {
+
+				$this->output("  Skipping Activity #".$act->getId()." as cycle is further out.");
+			}
+			if (in_array($type, Activity::competitionTypes) || in_array($type, Activity::tournamentTypes)) {
+				$ar->reset();
+				$ar->output = $this->outInt;
+				$ar->findAndRun($act);
+			}
+			# These are heavy so we do this every time.
+			$this->common->setGlobal('cycle.activities', $act->getId());
+			$this->em->flush();
+			$this->em->clear();
+		}
+
+
 		return 1;
 	}
 
