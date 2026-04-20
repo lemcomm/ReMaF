@@ -10,85 +10,93 @@
 
         <div class="cmsg_conversation">
         {% for message in messages %}
-                {% set convType = message.conversation.findType %}
-                <div class="cmsg_message" data-id="{{ message.id }}" data-conv="{{ message.conversation.id }}" data-conv_type="{{ convType }}" data-topic="{{message.topic}}" data-target="{{message.target}}">
-                        <div class="cmsg_message_wrapper_{{message.type}}">
-                                <div class="cmsg_message_header_{{message.type}}">
-                                        {% if message.sender %}
-                                                {% set sender = link(message.sender) %}
-                                        {% else %}
-                                                {% set sender = "<i>The System</i>" %}
-                                        {% endif %}
+            {% set convType = message.conversation.findType %}
+            {% if message.data %}
+                {% set data = message.data %}
+            {% else %}
+                {% set data = message %}
+            {% endif %}
+            <div class="cmsg_message" data-id="{{ message.id }}" data-conv="{{ message.conversation.id }}" data-conv_type="{{ convType }}" data-topic="{{data.topic}}" data-target="{{data.target}}">
+                <div class="cmsg_message_wrapper_{{data.type}}">
+                    <div class="cmsg_message_header_{{data.type}}">
+                        {% if message.sender %}
+                                {% set sender = link(data.sender) %}
+                        {% else %}
+                                {% set sender = "<i>The System</i>" %}
+                        {% endif %}
 
-                                        <a id="{{message.id}}"></a>
-                                        {% if message.target %}
-                                                {{ 'index.localpre' |trans({}, "conversations")|raw }}
-                                        {% endif %}
-                                        {{ "index.#{message.type}" |trans({"%sender%":sender, "%day%":message.cycle|gametime("short"), "%ts%":message.sent|date}, "conversations")|raw  }}
-                                        --
-                                        {% if message.recipientCount %}
-                                                {% set recips = message.recipientCount %}
-                                        {% else %}
-                                                {% set recips = '???' %}
-                                        {% endif %}
-                                        {% if not message.target %}
-                                                {{ 'index.conversation' |trans({"%conv%":message.conversation.topic, "%i%":recips}, "conversations")|raw }}
-                                        {% else %}
-                                                {{ 'index.local' |trans({"%topic%":message.topic, "%i%":recips}, "conversations")|raw }}
-                                        {% endif %}
-                                        {% if message.replyTo %}
-                                                 --
-                                                <a href="#{{message.replyTo.id}}">
-                                                        {% if message.replyTo.sender %}
-                                                                {{ 'index.reply' |trans({"%sender%":message.replyTo.sender.name, "%day%":message.replyTo.cycle|gametime("short"), "%ts%":message.replyTo.sent|date}, "conversations")|raw }}
-                                                        {% else %}
-                                                                {{ 'index.reply' |trans({"%sender%":'<i>The System</i>', "%day%":message.replyTo.cycle|gametime("short"), "%ts%":message.replyTo.sent|date}, "conversations")|raw }}
-                                                        {% endif %}
-                                                </a>
-                                        {% endif %}
-                                </div>
-
-                                <div class="cmsg_content_{{message.type}}">
-                                {{ message.content|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
-                                </div>
-
-                                {% if message.type != 'system' and archive == false %}
-                                        <div class="cmsg_message_meta_{{message.type}}">
-                                                <ul class="cmsg_actions">
-                                                        {% if convType != 'local' %}
-                                                                <button class="recent_reply cmsg_button">{{ 'button.reply'|trans({}, "conversations") }}</button> |
-                                                                <li><a href="{{ path('maf_conv_read', {"conv":message.conversation.id}) }}#{{message.id}}"><button class="cmsg_button" id="view_conv">{{ 'index.viewlocal'|trans({},"conversations") }}</button></a></li>
-                                                        {% else %}
-                                                                <button class="recent_reply cmsg_button">{{ 'button.reply'|trans({}, "conversations") }}</button> |
-                                                                <li><a href="{{ path('maf_conv_local') }}#{{message.id}}"><button class="cmsg_button" id="view_local">{{ 'index.viewlocal'|trans({},"conversations") }}</button></a></li> |
-                                                                <li><a href="{{ path('maf_conv_local_remove', {"msg":message.id, "source":'2'}) }}"><button class="cmsg_button" id="remove_local">{{ 'button.remove'|trans({},"conversations") }}</button></a></li>
-                                                        {% endif %}
-                                                </ul>
-                                                {% if message.replies and message.replies.count > 0 %}<br>
-                                                        <br>{{ 'index.replies' |trans({}, "conversations")|raw }}
-                                                        <ul>
-                                                                {% for msg in message.replies %}
-                                                                        <a href="#{{msg.id}}">
-                                                                                {% if msg.sender %}
-                                                                                        <li>{{ 'index.repliedto' |trans({"%sender%":msg.sender.name, "%ts%":msg.sent|date}, "conversations")|raw }}, </li>
-                                                                                {% else %}
-                                                                                        <li>{{ 'index.repliedto' |trans({"%sender%":'<i>The System</i>', "%ts%":msg.sent|date}, "conversations")|raw }}, </li>
-                                                                                {% endif %}
-                                                                        </a>
-                                                                {% endfor %}
-                                                        </ul>
-                                                {% endif %}
-                                                <ul class="cmsg_flags">
-                                                    <li><button class="cmsg_icon icon-star3{% if message.findTag(char, "important") %} active{% endif %}" title="{{ 'flag.important'|trans({}, "conversations") }}" data-msg="{{ message.id }}" data-flag="important"></button></li>
-                                                    <li><button class="cmsg_icon icon-lightning{% if message.findTag(char, "act") %} active{% endif %}" title="{{ 'flag.act'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="act"></button></li>
-                                                    <li><button class="cmsg_icon icon-history{% if message.findTag(char, "remind") %} active{% endif %}" title="{{ 'flag.remind'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="remind"></button></li>
-                                                    <li><button class="cmsg_icon icon-drawer2{% if message.findTag(char, "keep") %} active{% endif %}" title="{{ 'flag.keep'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="keep"></button></li>
-                                                </ul>
-                                        </div>
+                        <a id="{{message.id}}"></a>
+                        {% if data.target %}
+                                {{ 'index.localpre' |trans({}, "conversations")|raw }}
+                        {% endif %}
+                        {{ "index.#{message.type}" |trans({"%sender%":sender, "%day%":message.cycle|gametime("short"), "%ts%":message.sent|date}, "conversations")|raw  }}
+                        --
+                        {% if message.recipientCount %}
+                                {% set recips = message.recipientCount %}
+                        {% else %}
+                                {% set recips = '???' %}
+                        {% endif %}
+                        {% if not data.target %}
+                                {{ 'index.conversation' |trans({"%conv%":message.conversation.topic, "%i%":recips}, "conversations")|raw }}
+                        {% else %}
+                                {{ 'index.local' |trans({"%topic%":message.topic, "%i%":recips}, "conversations")|raw }}
+                        {% endif %}
+                        {% if message.replyTo %}
+                             --
+                            <a href="#{{message.replyTo.id}}">
+                                {% if message.replyTo.sender %}
+                                    {{ 'index.reply' |trans({"%sender%":message.replyTo.sender.name, "%day%":message.replyTo.cycle|gametime("short"), "%ts%":message.replyTo.sent|date}, "conversations")|raw }}
+                                {% else %}
+                                    {{ 'index.reply' |trans({"%sender%":'<i>The System</i>', "%day%":message.replyTo.cycle|gametime("short"), "%ts%":message.replyTo.sent|date}, "conversations")|raw }}
                                 {% endif %}
-                        </div>
-                </div>
+                            </a>
+                        {% endif %}
+                    </div>
 
+                    <div class="cmsg_content_{{data.type}}">
+                        {% if data.content %}
+                            {{ data.content|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}
+                        {% elseif data.systemContent %}
+                            <i>{{ npctrans(data.systemContent)|markdown_to_html|striptags('<strong><em><b><i><p><br><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><del><table><thead><tr><th><tbody><td><a><dl><dt><dd>')|wikilinks }}</i>
+                        {% endif %}
+                    </div>
+
+                    {% if data.type != 'system' and archive == false %}
+                        <div class="cmsg_message_meta_{{data.type}}">
+                            <ul class="cmsg_actions">
+                                {% if convType != 'local' %}
+                                    <button class="recent_reply cmsg_button">{{ 'button.reply'|trans({}, "conversations") }}</button> |
+                                    <li><a href="{{ path('maf_conv_read', {"conv":message.conversation.id}) }}#{{message.id}}"><button class="cmsg_button" id="view_conv">{{ 'index.viewlocal'|trans({},"conversations") }}</button></a></li>
+                                {% else %}
+                                    <button class="recent_reply cmsg_button">{{ 'button.reply'|trans({}, "conversations") }}</button> |
+                                    <li><a href="{{ path('maf_conv_local') }}#{{message.id}}"><button class="cmsg_button" id="view_local">{{ 'index.viewlocal'|trans({},"conversations") }}</button></a></li> |
+                                    <li><a href="{{ path('maf_conv_local_remove', {"msg":message.id, "source":'2'}) }}"><button class="cmsg_button" id="remove_local">{{ 'button.remove'|trans({},"conversations") }}</button></a></li>
+                                {% endif %}
+                            </ul>
+                            {% if message.replies and message.replies.count > 0 %}<br>
+                                <br>{{ 'index.replies' |trans({}, "conversations")|raw }}
+                                <ul>
+                                    {% for msg in message.replies %}
+                                        <a href="#{{msg.id}}">
+                                            {% if msg.sender %}
+                                                <li>{{ 'index.repliedto' |trans({"%sender%":msg.sender.name, "%ts%":msg.sent|date}, "conversations")|raw }}, </li>
+                                            {% else %}
+                                                <li>{{ 'index.repliedto' |trans({"%sender%":'<i>The System</i>', "%ts%":msg.sent|date}, "conversations")|raw }}, </li>
+                                            {% endif %}
+                                        </a>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                            <ul class="cmsg_flags">
+                                <li><button class="cmsg_icon icon-star3{% if message.findTag(char, "important") %} active{% endif %}" title="{{ 'flag.important'|trans({}, "conversations") }}" data-msg="{{ message.id }}" data-flag="important"></button></li>
+                                <li><button class="cmsg_icon icon-lightning{% if message.findTag(char, "act") %} active{% endif %}" title="{{ 'flag.act'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="act"></button></li>
+                                <li><button class="cmsg_icon icon-history{% if message.findTag(char, "remind") %} active{% endif %}" title="{{ 'flag.remind'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="remind"></button></li>
+                                <li><button class="cmsg_icon icon-drawer2{% if message.findTag(char, "keep") %} active{% endif %}" title="{{ 'flag.keep'|trans({},"conversations") }}" data-msg="{{ message.id }}" data-flag="keep"></button></li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         {% endfor %}
         </div>
 	<div id="replydialog" title="{{ 'message.reply.title'|trans({}, "conversations")|title }}">
