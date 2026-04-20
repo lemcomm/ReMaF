@@ -34,6 +34,7 @@ class Action {
 	private ?SkillType $target_skill = null;
 	private ?Action $supported_action = null;
 	private ?Action $opposed_action = null;
+	private ?ActivityParticipant $target_activity_participant = null;
 
 	public function __construct() {
 		$this->assigned_entourage = new ArrayCollection();
@@ -325,6 +326,15 @@ class Action {
 	public function setOpposedAction(?Action $opposedAction = null): static {
 		$this->opposed_action = $opposedAction;
 
+		return $this;
+	}
+
+	public function getTargetActivityParticipant(): ?ActivityParticipant {
+		return $this->target_activity_participant;
+	}
+
+	public function setTargetActivityParticipant(?ActivityParticipant $target_activity_participant): static {
+		$this->target_activity_participant = $target_activity_participant;
 		return $this;
 	}
 }

@@ -27,10 +27,14 @@ class ActivityDispatcher extends Dispatcher {
 			return array("name"=>"activity.title", "elements"=>array(array("name"=>"activity.all", "description"=>"unavailable.$check")));
 		}
 		$char = $this->getCharacter();
+		$settlement = $char->getInsideSettlement();
 		$actions = [];
 		$actions[] = $this->activityFishTest();
-		if ($char && $char->getInsideSettlement() && $char->getInsideSettlement()->isOwnerEquivalent($char)) {
+		$act = $settlement?->isPreparingTournament();
+		if ($char && $settlement && $settlement->isOwnerEquivalent($char) && !$act) {
 			$actions[] = $this->activityTournamentCreateTest();
+		} elseif ($settlement && $act) {
+			$actions[] = $this->activityJoinTest(null, $act);
 		}
 		$actions[] = $this->activityDuelChallengeTest();
 		$actions[] = $this->activityDuelAnswerTest();
@@ -41,8 +45,6 @@ class ActivityDispatcher extends Dispatcher {
 	/* ========== Activity Dispatchers ========== */
 
 	public function activityTournamentCreateTest(): array {
-		#TODO: Finish this.
-		return array("name"=>"tourn.create.name", "description"=>"unavailable.notimplemented");
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"tourn.create.name", "description"=>"unavailable.$check");
 		}
@@ -53,6 +55,14 @@ class ActivityDispatcher extends Dispatcher {
 		}
 		if (!$settlement->isOwnerEquivalent($char)) {
 			return ["name"=>"tourn.create.name", "description"=>"unavailable.notowner"];
+		}
+		foreach ($settlement->getActivities() as $activity) {
+			if ($activity->isTournament()) {
+				return ["name"=>"tourn.create.name", "description"=>"unavailable.alreadytournament"];
+			}
+			if ($activity->isCompetition()) {
+				return ["name"=>"tourn.create.name", "description"=>"unavailable.alreadycompetition"];
+			}
 		}
 		$any = $settlement->hasBuildingNamed('Arena');
 		if (!$any) {
@@ -65,6 +75,40 @@ class ActivityDispatcher extends Dispatcher {
 			return ["name"=>"tourn.create.name", "description"=>"unavailable.notournbuilding"];
 		}
 		return $this->action("tourn.create", "maf_activity_tourn_create");
+	}
+
+	public function activityJoinTest($ignored, $act): array {
+		if (($check = $this->veryGenericTests()) !== true) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.$check"];
+		}
+		$char = $this->getCharacter();
+		$settlement = $char->getInsideSettlement();
+		if (!$settlement) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.notinside"];
+		}
+		if ($act->getSettlement() !== $settlement) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.actnothere"];
+		}
+		$foundAct = false;
+		$foundComp = false;
+		foreach ($settlement->getActivities() as $activity) {
+			if (!$foundAct && $activity->isTournament()) {
+				$foundAct = true;
+			}
+			if (!$foundComp && $activity->isCompetition()) {
+				$foundComp = true;
+			}
+		}
+		if (!$foundAct && !$foundComp) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.noactivityhere"];
+		}
+		if ($char->isInBattle()) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.inbattle"];
+		}
+		if ($char->isDoingAction('tournament')) {
+			return ["name"=>"activity.join.name", "description"=>"unavailable.alreadyjoined"];
+		}
+		return $this->action("activity.join", "maf_activity_join", false, ['act' => $act->getId()]);
 	}
 
 	public function activityFishTest(): array {

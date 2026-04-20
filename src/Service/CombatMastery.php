@@ -232,11 +232,14 @@ class CombatMastery extends CombatAbstract {
 				} else {
 					$retResult = 'kill';
 					$strResult = 'Killing Blow';
+					$target->prepModifier('Physical', $damResult[0], $me, $hitLoc, $hitData);
 				}
 			} else {
 				if (!$this->activity) {
 					$target->kill();
 					$me->addKill();
+				} else {
+					$target->prepModifier('Physical', $damResult[0], $me, $hitLoc, $hitData);
 				}
 				$strResult = "Kill (Fatal Blow)";
 				$retResult = 'kill';

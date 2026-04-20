@@ -84,9 +84,12 @@ class LinksExtension extends AbstractExtension {
 				case 'g':
 					$type = 'Association';
 					break;
+				case 'ar':
 				case 'act':
+				case 'actreport':
 				case 'activity':
-					$type = 'Activity';
+				case 'activityreport':
+					$type = 'ActivityReport';
 					break;
 				case 'p':
 				case 'poi':
@@ -213,7 +216,6 @@ class LinksExtension extends AbstractExtension {
 
 	private function getLink($name): string {
 		return match (strtolower($name)) {
-			'activity' => 'maf_activity',
 			'activityreport' => 'maf_activity_report',
 			'character' => 'maf_char_view',
 			'settlement' => 'maf_settlement',
@@ -252,7 +254,7 @@ class LinksExtension extends AbstractExtension {
 	public function ObjectLink($entity, $raw=false, $absolute=false, $number=1, $extra=null): string {
 		if (!is_object($entity)) {
 			$this->logger->error("link() called without object - $entity"); // fuck, it's impossible to get a backtrace! - out of memory
-			$this->logger->error("dump: ".\Doctrine\Common\Util\Debug::dump($entity, 1, true, false));
+			$this->logger->error("dump: ".dump($entity));
 
 			if ($this->request_stack->getCurrentRequest()) {
 				$this->logger->error("request: ".$this->request_stack->getCurrentRequest()->getRequestUri());
@@ -295,7 +297,10 @@ class LinksExtension extends AbstractExtension {
 				break;
 			case 'ActivityReport':
 				$id = $entity->getId();
-				$name = $this->translator->trans('activity.'.$entity->getType()->getName().'.'.$entity->getSubType()->getName());
+				$name = $entity->getName();
+				if (!$name) {
+					$name = $this->translator->trans('activity.'.$entity->getType()->getName().'.'.$entity->getSubType()->getName());
+				}
 				$linktype = 'report';
 				break;
 			case 'Building':

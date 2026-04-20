@@ -18,7 +18,7 @@ class LoadActivityData extends Fixture implements DependentFixtureInterface {
 
 	private array $types = array(
 		'duel'	=> [
-			'enabled' => True,
+			'enabled' => true,
 			'buildings'=> null,
 			'places'=>null,
 			'subtypes'=>[
@@ -27,6 +27,11 @@ class LoadActivityData extends Fixture implements DependentFixtureInterface {
 				'surrender',
 				'death'
 				],
+		],
+		'fishing' => [
+			'enabled' => true,
+			'buildings'=> null,
+			'places'=>null,
 		],
 		'arena'			=> ['enabled' => False, 'buildings' => ['Arena']],
 		'melee tournament'	=> ['enabled' => True, 'buildings' => ['Arena'], 'subtypes'=>[
@@ -39,8 +44,8 @@ class LoadActivityData extends Fixture implements DependentFixtureInterface {
 		'joust'			=> ['enabled' => True, 'buildings'=>  ['List Field']],
 		'grand tournament'	=> ['enabled' => True, 'buildings' => ['Tournament Grounds']],
 		'race'			=> ['enabled' => True, 'buildings' => ['Race Track']],
-		'hunt'			=> ['enabled' => False, 'buildings' => ['Hunters Lodge'],	'places' => ['home', 'capital', 'castle', 'embassy']],
-		'ball'			=> ['enabled' => False, 'buildings'=> null,			'places' => ['home', 'capital', 'castle', 'embassy']],
+		'hunt'			=> ['enabled' => False, 'buildings' => null,	'places'=>null],
+		'ball'			=> ['enabled' => False, 'buildings'=> null,	'places' => ['home', 'capital', 'castle', 'embassy']],
 	);
 
 	public function getDependencies(): array {

@@ -574,10 +574,6 @@ class CharacterManager {
 					}
 				}
 			}
-			# TODO: De-duplicate this from ActivityManager.
-			foreach($part->getBoutParticipation() as $bout) {
-				$this->em->remove($bout);
-			}
 			$this->em->remove($part);
 		}
 

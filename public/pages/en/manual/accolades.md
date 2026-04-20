@@ -11,3 +11,5 @@ Some, will be things noted by the Gods, while others will be things noted by you
 Related Articles
 ----------------
 * [characters]
+* [activities]
+* [tournaments]

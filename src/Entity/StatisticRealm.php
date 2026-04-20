@@ -14,6 +14,8 @@ class StatisticRealm {
 	private ?int $id = null;
 	private ?Realm $realm = null;
 	private ?Realm $superior = null;
+	private int $new_messages = 0;
+	private int $new_conversations = 0;
 
 	/**
 	 * Get cycle
@@ -242,5 +244,23 @@ class StatisticRealm {
 		$this->superior = $superior;
 
 		return $this;
+	}
+
+	public function setNewMessages(int $new): static {
+		$this->new_messages = $new;
+		return $this;
+	}
+
+	public function getNewMessages(): int {
+		return $this->new_messages;
+	}
+
+	public function setNewConversations(int $new): static {
+		$this->new_conversations = $new;
+		return $this;
+	}
+
+	public function getNewConversations(): int {
+		return $this->new_conversations;
 	}
 }

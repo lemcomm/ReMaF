@@ -675,6 +675,7 @@ character:
  history: Character history
  inactive:  This character has not been played in a while
  banned:    This user has been banned.
+ accolades: Recent Accolades
  newplayer: This character is being played by a player who is new to the game. Please act accordingly.
  notstarted:
   title:    Rumours
@@ -787,6 +788,8 @@ achievements:
   kills:
    soldiers:  Mortals Slain
    nobles:    First Ones Slain in Battle
+  tournamentWin: Won Tournaments
+  attendTournament: Attended Tournaments
 
 politics:
  hierarchy: hierarchy
@@ -1035,11 +1038,12 @@ charstatus:
  training:     training
  researching:  researching
  escaping:     escaping
- sieging:     sieging
- assinging:   assigning
- damaging:    damaging
- siegeLead:   siege leading
- fishing:     fishing
+ sieging:      sieging
+ assinging:    assigning
+ damaging:     damaging
+ siegeLead:    siege leading
+ fishing:      fishing
+ tournament:   competing
 newevents:    "{number} event{count, plural, =1 {} other {s}}"
 newmessages:  "{number} message{count, plural, =1 {} other {s}}"
 newfish:      "{number} fish"
@@ -1913,6 +1917,11 @@ unavailable:
  notactive: This character isn't active in the game.
  nopositions: "You don't hold any positions."
  notyourposition: "This position isn't one you hold."
+ alreadytournament: You already have a tournament scheduled here.
+ alreadycompetition: You already have a competition scheduled here.
+ alreadyjoined: You've already joined a tournament or competition.
+ noactivityhere: Nothing seems to be happening here.
+ actnothere: This activity isn't taking place here.
 
 marker:
  name:      Marker name

@@ -140,6 +140,8 @@ class Character extends AbstractCharacter {
 	private ?array $status = null;
 	private ?array $familiarity = null;
 	private Collection $fishLogs;
+	private Collection $organizedActivities;
+	private Collection $accolades;
 
 	protected bool $isChar = true;
 
@@ -244,6 +246,8 @@ class Character extends AbstractCharacter {
 		$this->battlegroups = new ArrayCollection();
 		$this->chat_messages = new ArrayCollection();
 		$this->fishLogs = new ArrayCollection();
+		$this->organizedActivities = new ArrayCollection();
+		$this->accolades = new ArrayCollection();
 	}
 
 	public function __toString() {
@@ -1021,13 +1025,8 @@ class Character extends AbstractCharacter {
 	}
 
 	public function hasNewMessages(): bool {
-		$permissions = $this->getConvPermissions()->filter(function ($entry) {
-			return $entry->getUnread() > 0;
-		});
-		if ($permissions->count() > 0) {
-			return true;
-		}
-		return false;
+		$status = $this->getStatus();
+		return $status[CharacterStatus::messages->value]?true:false;
 	}
 
 	/**
@@ -3943,7 +3942,7 @@ class Character extends AbstractCharacter {
 		return $this;
 	}
 
-	public function getStatus(): ?array {
+	public function getStatus(): array {
 		if (!$this->status) {
 			$this->status = $this->defaultStatus;
 		}
@@ -4036,5 +4035,33 @@ class Character extends AbstractCharacter {
 
 	public function feed($var = 1): static {
 		return $this; # Player characters don't worry about this.
+	}
+
+	public function addOrganizedActivity(Activity $act): static {
+		$this->organizedActivities[] = $act;
+
+		return $this;
+	}
+
+	public function removeOrganizedActivity(Activity $act): void {
+		$this->organizedActivities->removeElement($act);
+	}
+
+	public function getOrganizedActivities(): ArrayCollection|Collection {
+		return $this->organizedActivities;
+	}
+
+	public function addAccolade(Accolade $acc): static {
+		$this->accolades[] = $acc;
+
+		return $this;
+	}
+
+	public function removeAccolade(Accolade $acc): void {
+		$this->accolades->removeElement($acc);
+	}
+
+	public function getAccolades(): ArrayCollection|Collection {
+		return $this->accolades;
 	}
 }

@@ -12,6 +12,7 @@ class ActivityReportStage {
 	private ?array $extra = null;
 	private ?ActivityReportGroup $group = null;
 	private ?ActivityReportCharacter $character = null;
+	private ?ActivityReport $activity_report = null;
 
 	/**
 	 * Get round
@@ -128,6 +129,28 @@ class ActivityReportStage {
 	 */
 	public function setCharacter(?ActivityReportCharacter $character = null): static {
 		$this->character = $character;
+
+		return $this;
+	}
+
+	/**
+	 * Get activity_report
+	 *
+	 * @return ActivityReport|null
+	 */
+	public function getActivityReport(): ?ActivityReport {
+		return $this->activity_report;
+	}
+
+	/**
+	 * Set activity_report
+	 *
+	 * @param ActivityReport|null $activityReport
+	 *
+	 * @return ActivityReportStage
+	 */
+	public function setActivityReport(?ActivityReport $activityReport = null): static {
+		$this->activity_report = $activityReport;
 
 		return $this;
 	}

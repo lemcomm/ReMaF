@@ -91,6 +91,8 @@ Table headers are handled as translation strings from the character.list databas
 				{{ 'charstatus.newOccupant'|trans }}
 			{% elseif currently == charStatus.fishing.value %}
 				{{ 'charstatus.fishing'|trans }}
+			{% elseif currently == charStatus.tournament.value %}
+				{{ 'charstatus.tournament'|trans }}
 			{% elseif currently == charStatus.travelling.value %}
 				{{ 'charstatus.travelling'|trans({'%turn%':status[charStatus.travelling.value]|round(1, 'ceil')}) }}
 			{% endif %}

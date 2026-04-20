@@ -2,8 +2,10 @@
 
 namespace App\Service;
 
+use App\Entity\Accolade;
 use App\Entity\Achievement;
 use App\Entity\Action;
+use App\Entity\ActivityReport;
 use App\Entity\ActivityReportObserver;
 use App\Entity\BattleReportObserver;
 use App\Entity\Character;
@@ -11,6 +13,8 @@ use App\Entity\Setting;
 use App\Entity\Skill;
 use App\Entity\SkillCategory;
 use App\Entity\SkillType;
+use App\Entity\Unit;
+use App\Entity\World;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -167,5 +171,18 @@ class CommonService {
 			$this->em->persist($a);
 			$character->addAchievement($a);
 		}
+	}
+
+	public function addAccolade(?Character $char, ?Unit $unit, $type, $cycle, ?World $world, ?Character $relChar, ?ActivityReport $report): Accolade {
+		$a = new Accolade;
+		$a->setCharacter($char);
+		$a->setUnit($unit);
+		$a->setType($type);
+		$a->setCycle($cycle);
+		$a->setRelatedWorld($world);
+		$a->setRelatedCharacter($relChar);
+		$a->setRelatedActivity($report);
+		$this->em->persist($a);
+		return $a;
 	}
 }

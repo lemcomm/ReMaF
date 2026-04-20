@@ -7,6 +7,14 @@ activity:
  form:
   name:      "Name"
  title:      Activities Menu
+ join:
+  name:      "Join Tournament/Competition"
+  description: Test your skills!
+  intro:     While tournaments aren't inalienable rights, they are something you do find yourself able to do from time to time. Why not join in and test your skills?
+  flash:     You've signed your name on the line of participants. Maybe send a message to those around as well?
+  form:
+   which:    Join which events?
+   submit:   Register
 
 duel:
  versus:     "<i>vs.</i>"
@@ -60,6 +68,7 @@ fishing:
   description: Find inner peace.
   desc: Have you found the daily toil a bit too much? Has it driven you to want to scream in frustration? Take a break, then. Try fishing. Maybe you'll catch something, maybe you won't, but the time to yourself will be invaluable.
   flash: You grab your pole and set out for some peace, quiet, and fish.
+ join: Fishing Competition
  form:
   where: Where to cast?
   inland: A nearby pond
@@ -547,6 +556,7 @@ report:
   place: Inside %location%
   near: Near %location%
   settlement: Inside %location%
+  event: An individual bout as part of
  journals:  "It seems that people have shared stories about this. You could read one if you'd like."
  journalwrite: "You're always welcome to write your own words about this, perhaps even publicly if you'd like."
  duel:
@@ -556,14 +566,28 @@ report:
   finish:    Duel Finish
  combat:
   miss:      "%name% attacks with their %weapon% but misses."
+  miss2:     "%name% attacks %target% with their %weapon% but misses."
   missed:    "%name% attacks with their %weapon% but misses."
-  fail:      "%name% fails to do damage with their %weapon%."
+  missed2:    "%name% attacks %target% with their %weapon% but misses."
+  fail:      "%name% fails to do noticeable damage with their %weapon%."
+  fail2:      "%name% fails to do noticeable damage to %target% with their %weapon%."
   light:     "%name% deals some damage with their %weapon%."
+  light2:     "%name% deals some damage to %target% with their %weapon%."
   wound:     "%name% does signifcant damage with their %weapon%."
+  woundAdv:  "%name% takes advantage of a stumble to do significant damage with their %weapon%"
+  wound2:     "%name% does signifcant damage to %target% with their %weapon%."
+  woundAdv2:  "%name% uses %target%'s stumble to do significant damage with their %weapon%"
   amputate:  "%name% pulls off an amputating blow."
+  amputate2:  "%name% pulls off an amputating blow against %target%."
   kill:      "%name% delivers a major blow with their %weapon%."
+  kill2:      "%name% delivers a major blow to %target% with their %weapon%."
   countered:   "%name% suffered a counterattack."
+  countered2:   "%name% suffered a counterattack from %target%."
   stumble:   "%name% took advantage of an enemy stumble."
+  stumble2:   "%name% took advantage of %target%'s stumble while attacking."
+  shock:     "%name% does so much damage with their %weapon% that their target goes into shock."
+  shock2:     "%name% does so much damage with their %weapon% that %target% goes into shock."
+  fallen:    "%name% has fallen."
   victory:   Is Declared Victorious
   loss:      Has Lost This Duel
   draw:      Was Not Clearly The Winner
@@ -575,18 +599,38 @@ report:
   minor low: Onlookers found their skill a little inferior,
   low:       Onlookers found their skill inferior,
   very low:  Onlookers found their skill quite inferior,
-
+ tournament:
+  participants: Contenders
+  round:     Round %i%
+  final:     Final Results
+  default:   "%name% wins by default"
+  advance:   "%name% advances"
+  loss:      "%name% is defeated"
+  link:      View Report
+  winner:    "%name% is declared the winner!"
+  finish:    Bout Conclusion
+  ongoing:   <i>This tournament is still ongoing...</i>
  acc:
   none:      but they had zero confidence in this opinion.
   low:       but they were not very confident in this opinion.
   medium:    though they had mixed thoughts on it.
   high:      and were nearly unanimous in this view.
 
+accolade:
+ duel: "Won a duel to the death against:"
+ tournament:
+  melee:
+   free for all: "Won a free for all tournament:"
+   team fights: "Won a team fight tournament:"
+   duo fights: "Won a duo fight tournament:"
+   solo fights: "Won a solo fight tournament:"
+
 tourn:
  create:
   name:       Announce a Tournament
   description: Why not hold a competition?
   intro:      The ultimate proving ground of your capabilities, be it your skill in combat or your mastery of wealth in hosting one. From this page you can determine the type of tournament you wish to hold. Be advised, if you wish to hold more than a single type, you'll need a Tournament Grounds and the infrastructure it provides.
+  warning:    "Warning: if you are hosting a tournament, the gates will stay open until the tournament concludes."
  announce:
   meleetournament:
    flash:     A Melee Tournament has been scheduled.
@@ -596,7 +640,7 @@ tourn:
    flash:     A Race has been scheduled.
   grandtournament:
    flash:     A Grand Tournament has been scheduled.
-  delay:      The a far reaching message announcing it will go out in a few minutes.
+  delay:      A far reaching message announcing it will go out in a few minutes.
   failed:     Tournament creation failed. Please report this to the admins, as it shouldn't be possible to get this message.
  form:
   name:       Tournament Name
@@ -619,9 +663,11 @@ tourn:
    notGrand:  To hold multiple fight types, you must be able to host a Grand Tournament (able to do fights, races, and jousts, and have a Tournament Grounds).
   joustTypes:
    label:     Include a joust?
+   joust:     Jousts
   notGrand:   Only a settlement with a dedicated Tournament Grounds has the facilities to host multiple tournaments at once.
   racesTypes:
    label:     Include races?
+   races:      Races
   submit:     Announce Tournament!
 
 train:

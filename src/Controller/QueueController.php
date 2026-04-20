@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Action;
+use App\Entity\Activity;
 use App\Entity\Battle;
 use App\Entity\BattleGroup;
 use App\Entity\Character;
@@ -203,6 +204,22 @@ class QueueController extends AbstractController {
 								$npc->setAction(null);
 							}
 							break;
+						case 'tournament':
+						case 'competition':
+							foreach ($action->getTargetActivityParticipant() as $part) {
+								/** @var Activity $act */
+								$act = $part->getActivity()->getMainEvent();
+								foreach ($act->getEvents() as $event) {
+									foreach ($event->getParticipants() as $participant) {
+										$em->remove($participant);
+									}
+								}
+								foreach ($act->getParticipants() as $participant) {
+									$em->remove($participant);
+								}
+							}
+							break;
+
 					}
 					// TODO: notify supporting and opposing actions (they get deleted automatically, but a notice would be nice)
 					$em->remove($action);

@@ -22,12 +22,12 @@ class Activity {
 	private ?bool $ready;
 	private ?array $weapons = [];
 	private ?bool $armor = false;
+	private ?array $debugChars = null;
 	private Point $location;
 	private ?ActivityReport $report = null;
 	private Collection $events;
 	private Collection $participants;
 	private Collection $groups;
-	private Collection $bouts;
 	private ?ActivityType $type = null;
 	private ?ActivitySubType $subtype = null;
 	private ?Activity $main_event = null;
@@ -36,12 +36,53 @@ class Activity {
 	private ?World $world = null;
 	private ?Settlement $settlement = null;
 	private ?Place $place = null;
+	private ?Character $organizer = null;
+	private ?string $ruleset = null;
+
+	const array tournamentTypes = ['melee tournament', 'grand tournament', 'race', 'joust'];
+	const array competitionTypes = ['archery', 'fishing', 'hunting'];
 
 	public function __construct() {
 		$this->events = new ArrayCollection();
 		$this->participants = new ArrayCollection();
 		$this->groups = new ArrayCollection();
-		$this->bouts = new ArrayCollection();
+	}
+
+	public function getEventOptions(): array {
+		$all = [];
+		if ($this->events->count() > 0) {
+			/** @var Activity $event */
+			foreach ($this->events as $event) {
+				foreach ($event->getType() as $type) {
+					if ($type->getSubtype()) {
+						$all[] = $this->getSubtype()->getName();
+					} else {
+						$all[] = $this->getType()->getName();
+					}
+				}
+			}
+		} else {
+			if ($this->getSubtype()) {
+				$all[] = $this->getSubtype()->getName();
+			} else {
+				$all[] = $this->getType()->getName();
+			}
+		}
+		return $all;
+	}
+
+	public function isTournament(): bool {
+		if (in_array($this->type->getName(), $this::tournamentTypes)) {
+			return true;
+		}
+		return false;
+	}
+
+	public function isCompetition(): bool {
+		if (in_array($this->type->getName(), $this::competitionTypes)) {
+			return true;
+		}
+		return false;
 	}
 
 	public function findChallenger() {
@@ -394,37 +435,6 @@ class Activity {
 	}
 
 	/**
-	 * Add bouts
-	 *
-	 * @param ActivityBout $bouts
-	 *
-	 * @return Activity
-	 */
-	public function addBout(ActivityBout $bouts): static {
-		$this->bouts[] = $bouts;
-
-		return $this;
-	}
-
-	/**
-	 * Remove bouts
-	 *
-	 * @param ActivityBout $bouts
-	 */
-	public function removeBout(ActivityBout $bouts): void {
-		$this->bouts->removeElement($bouts);
-	}
-
-	/**
-	 * Get bouts
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getBouts(): ArrayCollection|Collection {
-		return $this->bouts;
-	}
-
-	/**
 	 * Get type
 	 *
 	 * @return ActivityType|null
@@ -473,8 +483,14 @@ class Activity {
 	 *
 	 * @return Activity|null
 	 */
-	public function getMainEvent(): ?Activity {
-		return $this->main_event;
+	public function getMainEvent($returnSelf = true): ?Activity {
+		if ($this->main_event) {
+			return $this->main_event;
+		} elseif ($returnSelf) {
+			return $this;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -607,6 +623,33 @@ class Activity {
 
 	public function setCycle(?int $cycle): static {
 		$this->cycle = $cycle;
+		return $this;
+	}
+
+	public function getOrganizer(): ?Character {
+		return $this->organizer;
+	}
+
+	public function setOrganizer(?Character $organizer): static {
+		$this->organizer = $organizer;
+		return $this;
+	}
+
+	public function getDebugChars(): ?array {
+		return $this->debugChars;
+	}
+
+	public function setDebugChars(?array $debugChars): static {
+		$this->debugChars = $debugChars;
+		return $this;
+	}
+
+	public function getRuleset(): ?string {
+		return $this->ruleset;
+	}
+
+	public function setRuleset(?string $ruleset): static {
+		$this->ruleset = $ruleset;
 		return $this;
 	}
 }

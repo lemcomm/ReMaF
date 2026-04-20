@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping>
+	<entity name="App\Entity\Accolade">
+		<id name="id" type="integer">
+			<generator strategy="IDENTITY"/>
+		</id>
+		<field name="type" type="string"/>
+		<field name="cycle" type="integer"/>
+		<many-to-one field="relatedActivity" target-entity="ActivityReport"/>
+		<many-to-one field="relatedWorld" target-entity="World"/>
+		<many-to-one field="relatedCharacter" target-entity="Character"/>
+
+		<many-to-one field="character" target-entity="Character" inversed-by="achievements"/>
+		<many-to-one field="unit" target-entity="Unit" inversed-by="achievements"/>
+	</entity>
+</doctrine-mapping>

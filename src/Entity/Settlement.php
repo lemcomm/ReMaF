@@ -20,6 +20,7 @@ class Settlement {
 	private ?int $abduction_cooldown = null;
 	private bool $allow_thralls;
 	private ?bool $feed_soldiers = null;
+	private ?bool $open_ports = null;
 	private ?int $id = null;
 	private ?Description $description;
 	private ?GeoData $geo_data = null;
@@ -237,6 +238,19 @@ class Settlement {
 		$time_to_take *= $ratio;
 
 		return round($time_to_take);
+	}
+
+	public function isPreparingTournament(): Activity|false {
+		/** @var Activity $act */
+		foreach ($this->activities as $act) {
+			if ($act->isTournament()) {
+				return $act;
+			}
+			if ($act->isCompetition()) {
+				return $act;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1879,6 +1893,15 @@ class Settlement {
 	public function updateLocalLaws(SettlementLaw $which, mixed $value): static {
 		$this->local_laws?:$this->local_laws = $this->defaultLaws;
 		$this->local_laws[$which->value] = $value;
+		return $this;
+	}
+
+	public function getOpenPorts(): ?bool {
+		return $this->open_ports;
+	}
+
+	public function setOpenPorts(?bool $open_ports): static {
+		$this->open_ports = $open_ports;
 		return $this;
 	}
 }

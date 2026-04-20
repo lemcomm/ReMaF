@@ -290,6 +290,30 @@ event:
    stopped:     The takeover of {settlement} by {character} has been stopped.
   isolated:     With the taking of {settlement}, {unit} has been isolated.
   duel:         Participated in a {activityreport} against {character}.
+  tournament:
+   melee:
+    observer:  Witnessed a round of fights in the {activityreport}.
+    conclusion: Witnessed the conclusion of the {activityreport}.
+    free for all:
+     win:       Advances to round {round} of the free-for-all in the {activityreport}.
+     win2:      Is declared the victor of the {activityreport}.
+     default:   Automatically moves on to round {round} of the free-for-all in the {activityreport}.
+     loss:      Loses in round {round} of the free-for-all in the {activityreport}.
+    team fights:
+     win:       Advances to round {round} of the team fights in the {activityreport}.
+     win2:      Is declared a victor of the {activityreport}.
+     default:   Automatically moves on to round {round} of the team fights in the {activityreport}.
+     loss:      Loses in round {round} of the team fights in the {activityreport}.
+    duo fights:
+     win:       Advances to round {round} of the duo fights in the {activityreport}.
+     win2:      Is declared a victor of the {activityreport}.
+     default:   Automatically moves on to round {round} of the duo fights in the {activityreport}.
+     loss:      Loses in round {round} of the duo fights in the {activityreport}.
+    solo fights:
+     win:       Advances to round {round} of the solo fights in the {activityreport}.
+     win2:      Is declared the victor of the {activityreport}.
+     default:   Automatically moves on to round {round} of the solo fights in the {activityreport}.
+     loss:      Loses in round {round} of the solo fights in the {activityreport}.
  military:
   assigned:     You were assigned {count} soldiers by {character}. They have been added as group {group}.
   assigned2:    You were assigned {count} entourage by {character}.

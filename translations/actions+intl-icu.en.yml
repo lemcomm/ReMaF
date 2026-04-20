@@ -120,6 +120,8 @@ queue:
  character:
   escape:       Escape
  fishing:       Fishing
+ tournament:    In a Tournament
+ competition:   In a Competition
 
 chat:
   settlement:
@@ -437,6 +439,7 @@ control:
   thralls:      Allow slavery (thralls) ?
   feedsoldiers: Allow knights to pull food for their soldiers?
   foodlimit:    How much food can supplied units request?
+  openports:    Open the ports for everyone?
   submit:       Set new permissions
   success:      Your new permissions have been saved.
  quests:
@@ -1194,6 +1197,9 @@ meta:
  loadout:
   name:         Loadout
   description:  Change character loadout
+  none:         (nothing)
+  armor:        "Armor to use:"
+  weapon:       "Weapon to wield:"
  respawn:
   name:         Respawn
   description:  Return character to pool

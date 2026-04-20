@@ -13,18 +13,24 @@ class ActivityParticipant {
 	private string $role;
 	private bool $accepted;
 	private bool $organizer;
-	private Collection $bout_participation;
 	private ?Activity $activity = null;
 	private ?Character $character = null;
 	private ?Style $style = null;
 	private ?EquipmentType $weapon = null;
+	private ?EquipmentType $armor = null;
 	private ?ActivityGroup $group = null;
+	private ?Action $related_action = null;
+
+	# Not backed properties.
+	private ?ActivityParticipant $target = null;
+	private ?Collection $targetedBy = null;
+	private bool $fallen = false;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->bout_participation = new ArrayCollection();
+		$this->targetedBy = new ArrayCollection();
 	}
 
 	public function isChallenger(): bool {
@@ -96,37 +102,6 @@ class ActivityParticipant {
 	 */
 	public function getId(): ?int {
 		return $this->id;
-	}
-
-	/**
-	 * Add bout_participation
-	 *
-	 * @param ActivityBoutParticipant $boutParticipation
-	 *
-	 * @return ActivityParticipant
-	 */
-	public function addBoutParticipation(ActivityBoutParticipant $boutParticipation): static {
-		$this->bout_participation[] = $boutParticipation;
-
-		return $this;
-	}
-
-	/**
-	 * Remove bout_participation
-	 *
-	 * @param ActivityBoutParticipant $boutParticipation
-	 */
-	public function removeBoutParticipation(ActivityBoutParticipant $boutParticipation): void {
-		$this->bout_participation->removeElement($boutParticipation);
-	}
-
-	/**
-	 * Get bout_participation
-	 *
-	 * @return ArrayCollection|Collection
-	 */
-	public function getBoutParticipation(): ArrayCollection|Collection {
-		return $this->bout_participation;
 	}
 
 	/**
@@ -218,6 +193,28 @@ class ActivityParticipant {
 	}
 
 	/**
+	 * Get weapon
+	 *
+	 * @return EquipmentType|null
+	 */
+	public function getArmor(): ?EquipmentType {
+		return $this->armor;
+	}
+
+	/**
+	 * Set weapon
+	 *
+	 * @param EquipmentType|null $armor
+	 *
+	 * @return ActivityParticipant
+	 */
+	public function setArmor(?EquipmentType $armor = null): static {
+		$this->armor = $armor;
+
+		return $this;
+	}
+
+	/**
 	 * Get group
 	 *
 	 * @return ActivityGroup|null
@@ -262,6 +259,55 @@ class ActivityParticipant {
 	public function setAccepted(?bool $accepted = null): static {
 		$this->accepted = $accepted;
 
+		return $this;
+	}
+
+	public function getRelatedAction(): ?Action {
+		return $this->related_action;
+	}
+
+	public function setRelatedAction(?Action $related_action): static {
+		$this->related_action = $related_action;
+		return $this;
+	}
+
+	public function getTarget(): ?ActivityParticipant {
+		return $this->target;
+	}
+
+	public function setTarget(?ActivityParticipant $target): static {
+		$this->target = $target;
+		return $this;
+	}
+
+	public function addTargetedBy(ActivityParticipant $target): static {
+		$this->getTargetedBy()->add($target);
+		return $this;
+	}
+
+	public function removeTargetedBy(ActivityParticipant $target): static {
+		$this->getTargetedBy()->removeElement($target);
+		return $this;
+	}
+
+	public function getTargetedBy(): Collection {
+		if ($this->targetedBy === null) {
+			$this->targetedBy = new ArrayCollection();
+		}
+		return $this->targetedBy;
+	}
+
+	public function resetTargetedBy(): static {
+		$this->targetedBy = new ArrayCollection();
+		return $this;
+	}
+
+	public function getFallen(): bool {
+		return $this->fallen;
+	}
+
+	public function setFallen(bool $fallen): static {
+		$this->fallen = $fallen;
 		return $this;
 	}
 }

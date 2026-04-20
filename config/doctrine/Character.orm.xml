@@ -64,6 +64,11 @@
 		<many-to-one field="race" target-entity="Race" fetch="EAGER"/>
 
 		<one-to-many field="achievements" target-entity="Achievement" mapped-by="character"/>
+		<one-to-many field="accolades" target-entity="Accolade" mapped-by="character" fetch="EXTRA_LAZY">
+			<order-by>
+				<order-by-field name="id" direction="DESC"/>
+			</order-by>
+		</one-to-many>
 		<one-to-many field="fame" target-entity="Fame" mapped-by="character"/>
 		<one-to-many field="journals" target-entity="Journal" mapped-by="character" fetch="EXTRA_LAZY">
 			<order-by>
@@ -83,8 +88,8 @@
 		<one-to-many field="newspapers_reader" target-entity="NewsReader" mapped-by="character" fetch="EXTRA_LAZY"/>
 
 		<one-to-many field="artifacts" target-entity="Artifact" mapped-by="owner" fetch="EXTRA_LAZY"/>
-		<one-to-many field="quests_owned" target-entity="Quest" mapped-by="owner"/>
-		<one-to-many field="questings" target-entity="Quester" mapped-by="character"/>
+		<one-to-many field="quests_owned" target-entity="Quest" mapped-by="owner" fetch="EXTRA_LAZY"/>
+		<one-to-many field="questings" target-entity="Quester" mapped-by="character" fetch="EXTRA_LAZY"/>
 
 		<one-to-many field="actions" target-entity="Action" mapped-by="character">
 			<order-by>
@@ -167,13 +172,14 @@
 		<field name="oath_time" type="datetime" nullable="true"/>
 
 		<one-to-many field="activity_participation" target-entity="ActivityParticipant" mapped-by="character"/>
+		<one-to-many field="organizedActivities" target-entity="Activity" mapped-by="organizer"/>
 
 		<one-to-many field="skills" target-entity="Skill" mapped-by="character"/>
 		<one-to-many field="styles" target-entity="CharacterStyle" mapped-by="character"/>
 		<one-to-many field="created_styles" target-entity="Style" mapped-by="creator"/>
 		<one-to-many field="founded_associations" target-entity="Association" mapped-by="founder"/>
 		<one-to-many field="association_memberships" target-entity="AssociationMember" mapped-by="character"/>
-		<many-to-one field="faith" target-entity="Association" inversed-by="followers"/>
+		<many-to-one field="faith" target-entity="Association" inversed-by="followers" fetch="EXTRA_LAZY"/>
 		<one-to-many field="chat_messages" target-entity="ChatMessage" mapped-by="sender" fetch="EXTRA_LAZY"/>
 		<one-to-many field="fishLogs" target-entity="FishLog" mapped-by="character" fetch="EXTRA_LAZY"/>
 	</entity>

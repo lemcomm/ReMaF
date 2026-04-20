@@ -16,6 +16,8 @@
 		<field name="ready" type="boolean" nullable="true"/>
 		<field name="weapons" type="array" nullable="true"/>
 		<field name="armor" type="boolean" nullable="true"/>
+		<field name="debugChars" type="array" nullable="true"/>
+		<field name="ruleset" type="string" nullable="true"/>
 
 		<one-to-one field="report" target-entity="ActivityReport" inversed-by="activity"/>
 
@@ -30,8 +32,6 @@
 		<many-to-one field="settlement" target-entity="Settlement" inversed-by="activities"/>
 		<many-to-one field="place" target-entity="Place" inversed-by="activities"/>
 		<many-to-one field="world" target-entity="World" inversed-by="activities"/>
-
-		<one-to-many field="bouts" target-entity="ActivityBout" mapped-by="activity"/>
-
+		<many-to-one field="organizer" target-entity="Character" inversed-by="organizedActivities"/>
 	</entity>
 </doctrine-mapping>

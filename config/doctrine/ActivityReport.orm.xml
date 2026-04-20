@@ -11,9 +11,10 @@
 		<field name="count" type="integer" nullable="true"/>
 		<field name="debug" type="text" nullable="true"/>
 		<field name="ts" type="datetime"/>
+		<field name="name" type="string" nullable="true"/>
 
 		<one-to-one field="activity" target-entity="Activity" mapped-by="report"/>
-                <many-to-one field="type" target-entity="ActivityType"/>
+		<many-to-one field="type" target-entity="ActivityType"/>
 		<many-to-one field="subtype" target-entity="ActivitySubType"/>
 
 		<many-to-one field="settlement" target-entity="Settlement"/>
@@ -26,6 +27,13 @@
 		<one-to-many field="groups" target-entity="ActivityReportGroup" mapped-by="activity_report"/>
 		<one-to-many field="observers" target-entity="ActivityReportObserver" mapped-by="activity_report"/>
 		<one-to-many field="journals" target-entity="Journal" mapped-by="activity_report"/>
+		<one-to-many field="subReports" target-entity="ActivityReport" mapped-by="mainReport" fetch="EAGER"/>
+		<many-to-one field="mainReport" target-entity="ActivityReport" inversed-by="subReports"/>
+		<one-to-many field="stages" target-entity="ActivityReportStage" mapped-by="activity_report">
+			<order-by>
+				<order-by-field name="round" direction="ASC"/>
+			</order-by>
+		</one-to-many>
 
 	</entity>
 </doctrine-mapping>

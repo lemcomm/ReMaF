@@ -29,6 +29,7 @@ enum CharacterStatus: int {
 	case siegeLead = 22;
 	case travelling = 23;
 	case fishing = 24;
+	case tournament = 25;
 
 	case location = 50; # Pointer value for the below.
 	case inWorld = 51;
@@ -47,5 +48,4 @@ enum CharacterStatus: int {
 	#Military stuffs
 	case soldiers = 200;
 	case entourage = 201;
-
 }

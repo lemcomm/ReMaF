@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Activity;
 use App\Entity\Character;
 use App\Entity\Listing;
 use App\Entity\Permission;
@@ -171,6 +172,27 @@ class PermissionManager {
 				return array(true, null, 'owner', null);
 			} else {
 				return true;
+			}
+		}
+		if ($permission === 'visit') {
+			/** @var Activity $act */
+			foreach ($settlement->getActivities() as $act) {
+				if ($act->isTournament() || $act->isCompetition()) {
+					if ($return_details) {
+						return array(true, null, 'tournament', null);
+					} else {
+						return true;
+					}
+				}
+			}
+		}
+		if ($permission === 'docks') {
+			if ($settlement->getOpenPorts()) {
+				if ($return_details) {
+					return array(true, null, 'openports', null);
+				} else {
+					return true;
+				}
 			}
 		}
 

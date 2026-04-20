@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Action;
 use App\Entity\Activity;
+use App\Entity\ActivityParticipant;
 use App\Entity\ActivityReport;
 use App\Entity\Character;
 
@@ -12,6 +13,7 @@ use App\Entity\FishLog;
 use App\Entity\FishType;
 use App\Entity\SkillType;
 use App\Enum\CharacterStatus;
+use App\Form\ActivityJoinType;
 use App\Form\ActivitySelectType;
 use App\Form\EquipmentLoadoutType;
 
@@ -23,6 +25,7 @@ use App\Service\AppState;
 use App\Service\Geography;
 use App\Service\StatusUpdater;
 use App\Twig\GameTimeExtension;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -134,6 +137,88 @@ class ActivityController extends AbstractController {
 		]);
 	}
 
+	#[Route ('/activity/join/{act}', name:'maf_activity_join', requirements:['act'=>'\d+'])]
+	public function joinAction(Request $request, Activity $act): Response|RedirectResponse {
+		$char = $this->gateway('activityJoinTest', $act);
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+		$singleWeapon = false;
+		$weapons = $act->getWeapons();
+		if (count($weapons) === 0) {
+			$weapons = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon', 'restricted'=>false]);
+		} elseif (count($weapons) === 1) {
+			$weapons = $this->em->getRepository(EquipmentType::class)->findOneBy(['type'=>'weapon', 'id'=>$weapons[0]]);
+			$singleWeapon = true;
+		} else {
+			$weapons = $this->em->getRepository(EquipmentType::class)->findBy(['id'=>$weapons, 'restricted'=>false]);
+		}
+		$armor = $act->getArmor();
+		if ($armor) {
+			$armor = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'armour', 'restricted'=>false]);
+		}
+		$form = $this->createForm(ActivityJoinType::class, null, ['activity'=>$act, 'weapons'=>$weapons, 'armor'=>$armor]);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$events = $act->getEvents();
+			if ($events->count() === 0) {
+				# This is just so we can reuse the code below for all joinable activities more easily.
+				$events = new ArrayCollection();
+				$events->add($act);
+			}
+			$em = $this->em;
+			$which = $form->getData()['which'];
+			$part = false;
+			$myArmor = $form->getData()['armor'];
+			if (!$singleWeapon) {
+				$myWeapon = $form->getData()['weapon'];
+			} else {
+				$myWeapon = $weapons;
+			}
+
+			foreach ($events as $event) {
+				foreach ($which as $mine) {
+					if ($mine === $event->getSubType()?->getName() || $mine === $event->getType()->getName()) {
+						# Melee uses these.
+						$part = $this->actman->createParticipant($event, $char, null, $myWeapon, $myArmor, true);
+					}
+				}
+			}
+			if ($part) {
+				if ($act->isTournament()) {
+					$action = new Action();
+					$action->setCharacter($char)
+						->setType('tournament')
+						->setBlockTravel(true)
+						->setTargetActivityParticipant($part)
+						->setStarted(new \DateTime())
+						->setCanCancel(true);
+					$this->em->persist($action);
+				} elseif ($act->isCompetition()) {
+					$action = new Action();
+					$action->setCharacter($char)
+						->setType('competition')
+						->setBlockTravel(true)
+						->setTargetActivityParticipant($part)
+						->setStarted(new \DateTime())
+						->setCanCancel(true);
+					$this->em->persist($action);
+				}
+				$this->statusUpdater->character($char, CharacterStatus::tournament, true);
+				$this->em->flush();
+				$this->addFlash('notice', $this->trans->trans('activity.join.flash', [], 'activity'));
+				return $this->redirectToRoute('maf_actions');
+			} else {
+				echo 'Andrew you broke it.';
+			}
+		}
+
+		return $this->render('Activity/join.html.twig', [
+			'act' => $act,
+			'form' => $form,
+		]);
+	}
+
 	#[Route ('/activity/tourn/create', name:'maf_activity_tourn_create')]
 	public function tournamentCreateAction(ConversationManager $conv, CommonService $common, GameTimeExtension $gameTime, Request $request): Response|RedirectResponse {
 		$char = $this->gateway('activityTournamentCreateTest');
@@ -146,6 +231,7 @@ class ActivityController extends AbstractController {
 			if ($settlement->hasBuildingNamed('Arena')) {
 				$options['types']['fights'] = true;
 			}
+			/* TODO: The rest of these. And competitions.
 			if ($settlement->hasBuildingNamed('List Field')) $options['types']['jousts'] = true;
 			if ($settlement->hasBuildingNamed('Race Track')) $options['types']['races'] = true;
 			if ($options['types']['fights'] && $options['types']['races'] && $options['types']['jousts']) {
@@ -153,12 +239,14 @@ class ActivityController extends AbstractController {
 					$options['types']['grand'] = true;
 				}
 			}
+			*/
 		}
 		$options['weapons'] = $this->em->getRepository(EquipmentType::class)->findBy(['type'=>'weapon', 'restricted'=>false]);
 
 		$form = $this->createForm(ActivitySelectType::class, null, ['activityType'=>'tourn', 'subselect'=>$options]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
+			# TODO: Some logic for opening the gates.
 			$data = $form->getData();
 			$hasFight = false;
 			$hasRace = false;
@@ -216,7 +304,7 @@ class ActivityController extends AbstractController {
 						'key' => 'system.tourn.announce',
 						'data' => [
 							'{who}' => '[c:'.$char->getId().']',
-							'{what}' => '[act:'.$act->getId().']',
+							'{what}' => $act->getName(),
 							'{when}' =>  $gameTime->gametimeFilter($date, 'long'),
 							'{where}' => '[s:'.$settlement->getId().']',
 						]
@@ -358,27 +446,62 @@ class ActivityController extends AbstractController {
 			$admin = false;
 		} else {
 			$admin = true;
+			$check = true;
 		}
 
-		if ($report->getPlace()) {
-			$place = $report->getPlace();
-			$settlement = $place->getSettlement();
-			$inside = true;
-		} elseif ($report->getSettlement()) {
-			$place = false;
-			$settlement = $report->getSettlement();
-			$inside = true;
+		if (!$report->getMainReport()) {
+			if ($report->getPlace()) {
+				$place = $report->getPlace();
+				$settlement = $place->getSettlement();
+				$inside = true;
+			} elseif ($report->getSettlement()) {
+				$place = false;
+				$settlement = $report->getSettlement();
+				$inside = true;
+			} else {
+				$place = false;
+				$settlement = $report->getGeoData()->getSettlement();
+				$inside = false;
+			}
+			$main = false;
 		} else {
-			$place = false;
-			$settlement = $report->getGeoData()->getSettlement();
+			$main = $report->getMainReport();
+			$place = null;
+			$settlement = null;
 			$inside = false;
 		}
-		foreach ($report->getCharacters() as $group) {
-			$totalRounds = $group->getStages()->count();
-			break;
+
+		$stages = $report->getStages()->count();
+		$totalRounds = 0;
+		if ($stages) {
+			foreach ($report->getStages() as $each) {
+				if ($each->getRound() > $totalRounds) {
+					$totalRounds = $each->getRound();
+				}
+			}
+		} else {
+			foreach ($report->getGroups() as $group) {
+				$totalRounds = $group->getStages()->count();
+				break;
+			}
+			if (!$totalRounds) {
+				foreach ($report->getCharacters() as $group) {
+					$totalRounds = $group->getStages()->count();
+					break;
+				}
+			}
 		}
 
-		return $this->render('Activity/viewReport.html.twig', ['report'=>$report, 'place'=>$place, 'settlement'=>$settlement, 'inside'=>$inside, 'access'=>$check, 'admin'=>$admin, 'roundcount'=>$totalRounds]);
+		return $this->render('Activity/viewReport.html.twig', [
+			'report'=>$report,
+			'place'=>$place,
+			'settlement'=>$settlement,
+			'inside'=>$inside,
+			'access'=>$check,
+			'admin'=>$admin,
+			'roundcount'=>$totalRounds,
+			'main'=>$main
+		]);
         }
 
 	#[Route ('/activity/train/{skill}', name:'maf_train_skill', requirements:['skill'=>'[A-Za-z_\- ]*'])]

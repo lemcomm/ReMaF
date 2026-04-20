@@ -15,8 +15,6 @@ class Soldier extends NPC {
 	protected int $charge = -1;
 	protected bool $isNoble = false;
 	protected bool $isFighting = false;
-	protected int $hitsTaken = 0;
-	protected int $casualties = 0;
 	protected int $kills = 0;
 	protected int $xp_gained = 0;
 	private float $training;
@@ -322,32 +320,8 @@ class Soldier extends NPC {
 		return $this->isFighting;
 	}
 
-	public function getHitsTaken(): int {
-		return $this->hitsTaken;
-	}
-
-	public function addHitsTaken($value = 1): void {
-		$this->hitsTaken += $value;
-	}
-
-	public function resetHitsTaken(): void {
-		$this->hitsTaken = 0;
-	}
-
 	public function addXP($xp) {
 		$this->xp_gained += $xp;
-	}
-
-	public function addCasualty() {
-		$this->casualties++;
-	}
-
-	public function getCasualties(): int {
-		return $this->casualties;
-	}
-
-	public function resetCasualties() {
-		$this->casualties = 0;
 	}
 
 	public function getAllInUnit(): ArrayCollection|Collection|static {

@@ -2,9 +2,8 @@
 
 {% trans_default_domain 'activity' %}
 {% block content %}
-	<h2>{{ "tourn.create.name"|trans|title }}</h2>
-	<p>{{ "tourn.create.intro"|trans|raw}}</p>
-	<p><b>{{ "tourn.create.warning"|trans|raw}}</b></p>
+	<h2>{{ "activity.join.name"|trans|title }}</h2>
+	<p>{{ "activity.join.intro"|trans|raw}}</p>
 	{{ form(form, {'attr': {'class':'wide'}}) }}
 
 {% endblock %}

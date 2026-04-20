@@ -4,7 +4,12 @@ Activities in Might & Fealty are the umbrella term for referring to any multi-ch
 
 At the time of this writing the following activities are planned or in some stage of development, and may appear in upcoming updates.
 
-[Duels](tournaments) (Partially Implemented)
+Fishing
+-----
+Fishing is a peaceful activity where it's just you, the water, and hopefully something on the end of the line. There is talks that someone is trying to turn this tranquil activity into a Competition though.
+
+
+[Duels](tournaments) (Implemented)
 -----
 Duels are a catch-all term for any one versus one combat or sparring. They can be used to test skills against one another or to settle a blood feud. Or anything in between.
 

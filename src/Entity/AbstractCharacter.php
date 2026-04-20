@@ -12,6 +12,8 @@ abstract class AbstractCharacter {
 	protected string $name;
 	protected int $attacks = 0;
 	protected ?int $mastery = null;
+	protected int $hitsTaken = 0;
+	protected int $casualties = 0;
 	protected int $effMastery = 0;
 	protected int $toughness = 12;
 	protected int $willpower = 12;
@@ -814,5 +816,29 @@ abstract class AbstractCharacter {
 		$this->hungry = $hungry;
 
 		return $this;
+	}
+
+	public function getHitsTaken(): int {
+		return $this->hitsTaken;
+	}
+
+	public function addHitsTaken($value = 1): void {
+		$this->hitsTaken += $value;
+	}
+
+	public function resetHitsTaken(): void {
+		$this->hitsTaken = 0;
+	}
+
+	public function addCasualty() {
+		$this->casualties++;
+	}
+
+	public function getCasualties(): int {
+		return $this->casualties;
+	}
+
+	public function resetCasualties() {
+		$this->casualties = 0;
 	}
 }
