@@ -156,6 +156,24 @@ class PermissionManager {
 	public function checkSettlementPermission(?Settlement $settlement, Character $character, $permission, $return_details=false): bool|array {
 		// settlement owner always has all permissions without limits
 		if (!$settlement) { return false; }
+		if ($settlement->getOccupier() || $settlement->getOccupant()) {
+			$occupied = true;
+		} else {
+			$occupied = false;
+		}
+		if (!$occupied && ($settlement->getOwner() === $character || $settlement->getSteward() === $character)) {
+			if ($return_details) {
+				return array(true, null, 'owner', null);
+			} else {
+				return true;
+			}
+		} elseif ($occupied && $settlement->getOccupant() === $character) {
+			if ($return_details) {
+				return array(true, null, 'owner', null);
+			} else {
+				return true;
+			}
+		}
 		if ($permission === 'visit') {
 			/** @var Activity $act */
 			foreach ($settlement->getActivities() as $act) {
@@ -175,24 +193,6 @@ class PermissionManager {
 				} else {
 					return true;
 				}
-			}
-		}
-		if ($settlement->getOccupier() || $settlement->getOccupant()) {
-			$occupied = true;
-		} else {
-			$occupied = false;
-		}
-		if (!$occupied && ($settlement->getOwner() === $character || $settlement->getSteward() === $character)) {
-			if ($return_details) {
-				return array(true, null, 'owner', null);
-			} else {
-				return true;
-			}
-		} elseif ($occupied && $settlement->getOccupant() === $character) {
-			if ($return_details) {
-				return array(true, null, 'owner', null);
-			} else {
-				return true;
 			}
 		}
 
