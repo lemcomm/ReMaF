@@ -160,6 +160,8 @@ message:
  responses: responses
  from:      message from
  fromshort: from
+ unknown:   Someone Secretive
+ readPrivate: Read in Private
 
 participants:
  title:     Conversation Participants

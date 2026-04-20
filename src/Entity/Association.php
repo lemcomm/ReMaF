@@ -143,9 +143,15 @@ class Association extends Faction {
 		}
 		return $all_members;
 	}
+	public function isSecretive(): bool {
+		if ($this->findActiveLaw('rankVisibility', false)?->getValue() === 'direct') {
+			return true;
+		}
+		return false;
+	}
 
 	public function findPubliclyVisibleRanks(): ArrayCollection|Collection {
-		if ($this->isPublic() && $this->findActiveLaw('rankVisibility', false)->getValue() === 'all') {
+		if ($this->isPublic() && $this->findActiveLaw('rankVisibility', false)?->getValue() === 'all') {
 			$all = $this->ranks;
 		} else {
 			$all = new ArrayCollection();

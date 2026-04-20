@@ -4,7 +4,7 @@
 	{% set archive = false %}
 	{# Not ruling out an export of this just yet, but I'm not accomodating it yet #}
 
-        <h2>{{ 'conversation.recent'|trans({}, "conversations")|title }}</h2>
+    <h2>{{ 'conversation.recent'|trans({}, "conversations")|title }}</h2>
 
 	{% include 'Conversation/recent_menu.html.twig' %}
 
@@ -19,17 +19,23 @@
             <div class="cmsg_message" data-id="{{ message.id }}" data-conv="{{ message.conversation.id }}" data-conv_type="{{ convType }}" data-topic="{{data.topic}}" data-target="{{data.target}}">
                 <div class="cmsg_message_wrapper_{{data.type}}">
                     <div class="cmsg_message_header_{{data.type}}">
+                        {% set secretive = false %}
                         {% if message.sender %}
+                            {% if message.conversation.association and message.conversation.association.isSecretive %}
+                                {% set sender = ('message.unknown'|trans({}, 'conversations')) %}
+                                {% set secretive = true %}
+                            {% else %}
                                 {% set sender = link(data.sender) %}
+                            {% endif %}
                         {% else %}
-                                {% set sender = "<i>The System</i>" %}
+                            {% set sender = "<i>The System</i>" %}
                         {% endif %}
 
                         <a id="{{message.id}}"></a>
                         {% if data.target %}
                                 {{ 'index.localpre' |trans({}, "conversations")|raw }}
                         {% endif %}
-                        {{ "index.#{message.type}" |trans({"%sender%":sender, "%day%":message.cycle|gametime("short"), "%ts%":message.sent|date}, "conversations")|raw  }}
+                        {{ "index.#{message.type}" |trans({"%sender%":sender, "%day%":message.cycle|gametime("short"), "%ts%":message.sent|date}, "conversations")|raw  }} {% if secretive %}<a href="{{ path('maf_conv_read', {"conv":message.conversation.id}) }}#{{ message.id }}" target="_blank">{{ 'message.readPrivate'|trans({}, 'conversations') }}</a>{% endif %}
                         --
                         {% if message.recipientCount %}
                                 {% set recips = message.recipientCount %}
