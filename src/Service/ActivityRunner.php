@@ -11,6 +11,7 @@ use App\Entity\ActivityReportStage;
 use App\Entity\Character;
 use App\Entity\EquipmentType;
 use App\Enum\Activities;
+use App\Enum\CharacterStatus;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,7 +30,6 @@ class ActivityRunner {
 	public ?OutputInterface $output = null;
 
 	const array rulesets = ['legacy', 'mastery'];
-
 	public function __construct(
 		private CommonService          $common,
 		private EntityManagerInterface $em,
@@ -40,6 +40,7 @@ class ActivityRunner {
 		private History                $history,
 		private SkillManager           $skills,
 		private ActivityManager        $am,
+		private StatusUpdater          $statusUpdater,
 	) {
 	}
 
@@ -332,6 +333,7 @@ class ActivityRunner {
 					History::LOW,
 					false
 				);
+				$this->statusUpdater->character($loser->getCharacter(), CharacterStatus::tournament, false);
 			}
 			$this->em->flush();
 			# We attach the subReport ID here just so we can link it easier in the report view.
@@ -367,6 +369,7 @@ class ActivityRunner {
 				$this->common->addAchievement($char, 'tournamentWin', 1);
 				$this->common->addAccolade($char, null, 'accolade.tournament.melee.'.$subType, $this->common->getCycle(), null, null, $this->report);
 				$final['victors'][] = $winner->getCharacter()->getId();
+				$this->statusUpdater->character($char, CharacterStatus::tournament, false);
 			}
 			$this->createStageReport($this->report, $round, $final);
 			foreach ($this->report->getObservers() as $observer) {

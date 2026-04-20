@@ -206,6 +206,7 @@ class ActivityController extends AbstractController {
 						->setCanCancel(true);
 					$this->em->persist($action);
 				}
+				$this->statusUpdater->character($char, CharacterStatus::tournament, true);
 				$this->em->flush();
 				$this->addFlash('notice', $this->trans->trans('activity.join.flash', [], 'activity'));
 				return $this->redirectToRoute('maf_actions');

@@ -1038,11 +1038,12 @@ charstatus:
  training:     training
  researching:  researching
  escaping:     escaping
- sieging:     sieging
- assinging:   assigning
- damaging:    damaging
- siegeLead:   siege leading
- fishing:     fishing
+ sieging:      sieging
+ assinging:    assigning
+ damaging:     damaging
+ siegeLead:    siege leading
+ fishing:      fishing
+ tournament:   competing
 newevents:    "{number} event{count, plural, =1 {} other {s}}"
 newmessages:  "{number} message{count, plural, =1 {} other {s}}"
 newfish:      "{number} fish"
