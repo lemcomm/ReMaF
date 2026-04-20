@@ -15,6 +15,7 @@
 
 		<field name="allow_thralls" type="boolean"/>
 		<field name="feed_soldiers" type="boolean" nullable="true"/>
+		<field name="open_ports" type="boolean" nullable="true"/>
 		<field name="food_provision_limit" type="float" scale="2">
 			<options>
 				<option name="default">1</option>

@@ -610,18 +610,27 @@ report:
   winner:    "%name% is declared the winner!"
   finish:    Bout Conclusion
   ongoing:   <i>This tournament is still ongoing...</i>
-
  acc:
   none:      but they had zero confidence in this opinion.
   low:       but they were not very confident in this opinion.
   medium:    though they had mixed thoughts on it.
   high:      and were nearly unanimous in this view.
 
+accolade:
+ duel: "Won a duel to the death against:"
+ tournament:
+  melee:
+   free for all: "Won a free for all tournament:"
+   team fights: "Won a team fight tournament:"
+   duo fights: "Won a duo fight tournament:"
+   solo fights: "Won a solo fight tournament:"
+
 tourn:
  create:
   name:       Announce a Tournament
   description: Why not hold a competition?
   intro:      The ultimate proving ground of your capabilities, be it your skill in combat or your mastery of wealth in hosting one. From this page you can determine the type of tournament you wish to hold. Be advised, if you wish to hold more than a single type, you'll need a Tournament Grounds and the infrastructure it provides.
+  warning:    "Warning: if you are hosting a tournament, the gates will stay open until the tournament starts."
  announce:
   meleetournament:
    flash:     A Melee Tournament has been scheduled.

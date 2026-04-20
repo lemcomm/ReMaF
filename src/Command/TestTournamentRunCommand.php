@@ -63,6 +63,7 @@ class TestTournamentRunCommand extends AbstractTestCommand {
 					$charKill = new ArrayInput([
 						'command' => 'maf:char:kill',
 						'c' => $char,
+						'm' => 'lightningbolt'
 					]);
 					$this->getApplication()->doRun($charKill, $output);
 				}

@@ -47,6 +47,11 @@ class SettlementPermissionsSetType extends AbstractType {
 			'required' => false,
 			'data'=>$settlement->getFeedSoldiers(),
 		));
+		$builder->add('open_ports', CheckboxType::class, array(
+			'label' => "control.permissions.openports",
+			'required' => false,
+			'data'=>$settlement->getOpenPorts(),
+		));
 		$builder->add('food_provision_limit', PercentType::class, [
 			'label'=>'control.permissions.foodlimit',
 			'required' => false,

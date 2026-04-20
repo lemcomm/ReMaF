@@ -164,6 +164,15 @@
 	<a href="{{ path("maf_char_family", {"id":char.id}) }}">{{ 'account.familytree'|trans|title }}</a>
 {% endif %}
 
+	{% if char.accolades|length > 0 %}
+		<h3>{{ 'character.accolades'|trans }}</h3>
+		<ul>
+			{% for acc in char.accolades|slice(0, 5) %}
+				<li>{{ acc.type|trans({}, "activity") }} {{ link(acc.related) }}</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
+
 {% if char.retired or char.alive == false %}
 	{% if char.retired and char.background.retirement is defined and char.background.retirement %}
 		<h2>{{ 'meta.background.retirement.name'|trans({},"actions")|title }}</h2>
@@ -177,6 +186,7 @@
 	<h2>{{ 'character.notstarted.title'|trans|title }}</h2>
 	{{ 'character.notstarted.text'|trans }}
 {% else %}
+
 
 	{% if char.npc %}
 		<h3>{{ 'npc.is'|trans|title }}</h3>

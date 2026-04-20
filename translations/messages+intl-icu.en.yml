@@ -675,6 +675,7 @@ character:
  history: Character history
  inactive:  This character has not been played in a while
  banned:    This user has been banned.
+ accolades: Recent Accolades
  newplayer: This character is being played by a player who is new to the game. Please act accordingly.
  notstarted:
   title:    Rumours

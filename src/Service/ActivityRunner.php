@@ -355,7 +355,6 @@ class ActivityRunner {
 			$round++;
 			$final = [];
 			foreach ($roundWinners as $winner) {
-				#TODO: Accolades.
 				$this->log(10, $winner->getCharacter()->getName()." is proclaimed victor!");
 				$char = $winner->getCharacter();
 				$this->history->logEvent(
@@ -366,6 +365,7 @@ class ActivityRunner {
 					true
 				);
 				$this->common->addAchievement($char, 'tournamentWin', 1);
+				$this->common->addAccolade($char, null, 'accolade.tournament.melee.'.$subType, $this->common->getCycle(), null, null, $this->report);
 				$final['victors'][] = $winner->getCharacter()->getId();
 			}
 			$this->createStageReport($this->report, $round, $final);
@@ -1278,7 +1278,7 @@ class ActivityRunner {
 		$themReport->setFinish($themData);
 		$this->em->flush();
 		$duelLimit = $this->getActivityLimit($act);
-		if ($duelLimit < 0.9) {
+		if ($duelLimit == 0) {
 			# No deaths on duels till first blood.
 			if (
 				($this->ruleset === 'legacy' && $themC->healthValue() <= 0.0 && $meC->healthValue() <= 0.0) ||
@@ -1304,6 +1304,7 @@ class ActivityRunner {
 				$themReport->setKilled(true);
 				$themReport->setWounded(false);
 				$themReport->setSurrender(false);
+				$this->common->addAccolade($meC, null, 'accolade.duel', $this->common->getCycle(), null, $themC, null);
 			} elseif (
 				($this->ruleset === 'legacy' && $themC->healthValue() > 0.0 && $meC->healthValue() <= 0.0) ||
 				($this->ruleset === 'mastery' && !$this->hasKillingInjury($themC) && $this->hasKillingInjury($meC))
@@ -1313,6 +1314,7 @@ class ActivityRunner {
 				$meReport->setKilled(true);
 				$meReport->setWounded(false);
 				$meReport->setSurrender(false);
+				$this->common->addAccolade($themC, null, 'accolade.duel', $this->common->getCycle(), null, $meC, null);
 			}
 		}
 		$meReport->getActivityReport()->setCompleted(true);

@@ -141,6 +141,7 @@ class Character extends AbstractCharacter {
 	private ?array $familiarity = null;
 	private Collection $fishLogs;
 	private Collection $organizedActivities;
+	private Collection $accolades;
 
 	protected bool $isChar = true;
 
@@ -246,6 +247,7 @@ class Character extends AbstractCharacter {
 		$this->chat_messages = new ArrayCollection();
 		$this->fishLogs = new ArrayCollection();
 		$this->organizedActivities = new ArrayCollection();
+		$this->accolades = new ArrayCollection();
 	}
 
 	public function __toString() {
@@ -4045,7 +4047,21 @@ class Character extends AbstractCharacter {
 		$this->organizedActivities->removeElement($act);
 	}
 
-	public function getOrganizedActivity(): ArrayCollection|Collection {
+	public function getOrganizedActivities(): ArrayCollection|Collection {
 		return $this->organizedActivities;
+	}
+
+	public function addAccolade(Accolade $acc): static {
+		$this->accolades[] = $acc;
+
+		return $this;
+	}
+
+	public function removeAccolade(Accolade $acc): void {
+		$this->accolades->removeElement($acc);
+	}
+
+	public function getAccolades(): ArrayCollection|Collection {
+		return $this->accolades;
 	}
 }

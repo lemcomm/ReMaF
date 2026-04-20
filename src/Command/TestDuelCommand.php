@@ -120,11 +120,13 @@ class TestDuelCommand extends AbstractTestCommand {
 			$charKill = new ArrayInput([
 				'command' => 'maf:char:kill',
 				'c' => $char1->getId(),
+				'm' => 'lightningbolt'
 			]);
 			$this->getApplication()->doRun($charKill, $output);
 			$charKill = new ArrayInput([
 				'command' => 'maf:char:kill',
 				'c' => $char2->getId(),
+				'm' => 'lightningbolt'
 			]);
 			$this->getApplication()->doRun($charKill, $output);
 			$this->finish('cleanup');
