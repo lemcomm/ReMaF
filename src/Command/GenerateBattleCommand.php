@@ -4,19 +4,10 @@ namespace App\Command;
 
 use App\Entity\Battle;
 use App\Entity\BattleGroup;
-use App\Entity\Character;
-use App\Entity\GeoData;
-use App\Entity\MapRegion;
-use App\Entity\Place;
-use App\Entity\Settlement;
-use App\Entity\Unit;
-use App\Entity\World;
 use App\Service\BattleRunner;
 use App\Service\CommonService;
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -54,7 +45,7 @@ class GenerateBattleCommand extends AbstractGenerateCommand {
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$battle = new Battle();
-		$battle = $this->findWhere($input->getArgument('where'), $battle);
+		$battle = $this->findWhereForBattle($input->getArgument('where'), $battle);
 		$output->writeln('<info>Battle location detected as '.$this->whereString.'</info>');
 		$attackers = $this->findCharacters($input->getArgument('attackers'));
 		$output->writeln('<info>Attackers: '.$attackers->count().'</info>');

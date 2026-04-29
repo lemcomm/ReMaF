@@ -359,6 +359,7 @@ class LinksExtension extends AbstractExtension {
 			case 'FishType':
 				$id = $entity->getId();
 				$name = $entity->getName();
+				break;
 			default:
 				$id = $entity->getId();
 				$name = ucwords($entity->getName());

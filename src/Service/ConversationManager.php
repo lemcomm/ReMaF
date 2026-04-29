@@ -371,7 +371,7 @@ class ConversationManager {
 					$stats->setNewMessages($stats->getNewMessages()+1);
 				}
 				if ($org === 'realm') {
-					$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticRealm r WHERE r.realm = :realm ORDER BY r.id DESC')->setParameters(['realm'=>$conv->getRealm()])->setMaxResults(1)->getOneOrNullResult();
+					$stats = $this->em->createQuery('SELECT r FROM App\Entity\StatisticRealm r WHERE r.realm = :realm ORDER BY r.id DESC')->setParameters(['realm'=>$conv->getRealm()])->setMaxResults(1)->getOneOrNullResult();
 					if ($stats) {
 						/** @var StatisticGlobal $stats */
 						$stats->setNewMessages($stats->getNewMessages()+1);
@@ -564,7 +564,7 @@ class ConversationManager {
 			$stats->setNewConversations($stats->getNewConversations()+1);
 		}
 		if ($realm) {
-			$stats = $this->em->createQuery('SELECT s FROM App\Entity\StatisticRealm r WHERE r.realm = :realm ORDER BY r.id DESC')->setParameters(['realm'=>$realm])->setMaxResults(1)->getOneOrNullResult();
+			$stats = $this->em->createQuery('SELECT r FROM App\Entity\StatisticRealm r WHERE r.realm = :realm ORDER BY r.id DESC')->setParameters(['realm'=>$realm])->setMaxResults(1)->getOneOrNullResult();
 			if ($stats) {
 				/** @var StatisticGlobal $stats */
 				$stats->setNewMessages($stats->getNewMessages()+1);

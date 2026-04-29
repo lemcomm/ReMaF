@@ -208,7 +208,7 @@ class ActivityManager {
 			$act->setSame($same);
 			$act->setWeaponOnly($weaponOnly);
 
-			$this->createParticipant($act, $me, $meStyle, $weapon, $same, true);
+			$this->createParticipant($act, $me, $meStyle, $weapon, null, $same, true);
 			$this->createParticipant($act, $them, $themStyle, $same?$weapon:null);
 
 			$this->em->flush();

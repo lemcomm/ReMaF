@@ -8,7 +8,9 @@ use App\Entity\EquipmentType;
 use App\Entity\GeoData;
 use App\Entity\MapRegion;
 use App\Entity\Place;
+use App\Entity\Race;
 use App\Entity\Settlement;
+use App\Entity\User;
 use App\Entity\World;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -52,6 +54,15 @@ class AbstractGenerateCommand extends Command {
 		return false;
 	}
 
+	protected function findRace($string): false|Race {
+		$race = $this->em->getRepository(Race::class)->findOneBy(['name' => strtolower($string)]);
+		if ($race) {
+			return $race;
+		} else {
+			return false;
+		}
+	}
+
 	protected function findCharacters($string): ArrayCollection {
 		$all = new ArrayCollection();
 		$string = explode(',', $string);
@@ -63,8 +74,44 @@ class AbstractGenerateCommand extends Command {
 		}
 		return $all;
 	}
+	protected function findWhere(string $where): false|GeoData|MapRegion|Place|Settlement {
+		$set = explode(':', $where);
+		if (array_key_exists(1, $set)) {
+			switch ($set[0]) {
+				case 'G':
+				case 'GeoData':
+					$here = $this->em->getRepository(GeoData::class)->findOneBy(['id' => $set[1]]);
+					if ($here) {
+						return $here;
+					}
+					break;
+				case 'M':
+				case 'MapRegion':
+					$here = $this->em->getRepository(MapRegion::class)->findOneBy(['id' => $set[1]]);
+					if ($here) {
+						return $here;
+					}
+					break;
+				case 'P':
+				case 'Place':
+					$here = $this->em->getRepository(Place::class)->findOneBy(['id' => $set[1]]);
+					if ($here) {
+						return $here;
+					}
+					break;
+				case 'S':
+				case 'Settlement':
+					$here = $this->em->getRepository(Settlement::class)->findOneBy(['id' => $set[1]]);
+					if ($here) {
+						return $here;
+					}
+					break;
+			}
+		}
+		return false;
+	}
 
-	protected function findWhere(string $where, Battle $battle): Battle {
+	protected function findWhereForBattle(string $where, Battle $battle): Battle {
 		$set = explode(':', $where);
 		if (!array_key_exists(1, $set)) {
 			$battle->setLocation(null);
@@ -126,6 +173,16 @@ class AbstractGenerateCommand extends Command {
 			}
 		}
 		return $battle;
+	}
+
+	protected function findUser($string): null|false|User {
+		if ($string === null) return null;
+		$user = $this->em->getRepository(User::class)->findOneBy(['id' => $string]);
+		if ($user) {
+			return $user;
+		} else {
+			return false;
+		}
 	}
 
 }

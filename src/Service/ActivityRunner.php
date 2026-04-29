@@ -1064,9 +1064,9 @@ class ActivityRunner {
 		#TODO: Read injuries and logs and build them into some players can see.
 		$this->fatigueRoll($meC, $round);
 		if (!$tournament) {
-			$this->createStageReport(null, $meReport, $round, ['result' => false, 'results' => $results]);
+			$this->createStageReport($meReport, $round, ['result' => false, 'results' => $results]);
 			if ($freehit) {
-				$this->createStageReport(null, $themReport, $round, ['result'=>'freehit']);
+				$this->createStageReport($themReport, $round, ['result'=>'freehit']);
 			}
 			return null;
 		} else {
@@ -1335,6 +1335,7 @@ class ActivityRunner {
 			History::HIGH,
 			false
 		);
+		$this->em->flush();
 		$this->am->cleanupAct($act);
 	}
 

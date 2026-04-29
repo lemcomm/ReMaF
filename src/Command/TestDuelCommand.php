@@ -24,14 +24,23 @@ class TestDuelCommand extends AbstractTestCommand {
 			->setName('maf:duel:test')
 			->setDescription('Run a test duel set.')
 			->addOption('set', 's', InputOption::VALUE_OPTIONAL, 'Which duel set to run?', 1)
+			->addOption('user', 'u', InputOption::VALUE_OPTIONAL, 'Which user, if any, should characters be created under?', 0)
 			->addOption('cleanup', 'c', InputOption::VALUE_OPTIONAL, 'Cleanup characters afterwards? Defaults to false. 0 for false, 1 for true.', 0)
 		;
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int {
+		$this->output = $output;
 		$this->start('duelTest');
 		$char1 = null;
 		$char2 = null;
+		$output->writeln("Looking for user ".$input->getOption('user'));
+		$user = $this->findUser($input->getOption('user'));
+		if ($user) {
+			$output->writeln("Found user ".$user->getUsername()." (".$user->getId().")");
+		} else {
+			$output->writeln("No user");
+		}
 		$set = $input->getOption('set');
 		switch ($set) {
 			case 2:
@@ -50,11 +59,16 @@ class TestDuelCommand extends AbstractTestCommand {
 				$i = 0;
 				while ($i < 2) {
 					$i++;
-					$charGen = new ArrayInput([
+					$cmdInput = [
 						'command' => 'maf:char:create',
 						'name' => 'Tester '.$i,
 						'where' => 'Settlement:1249',
-					]);
+					];
+					if ($user) {
+						$cmdInput['-u'] = $user->getId();
+					}
+					echo print_r($cmdInput, true);
+					$charGen = new ArrayInput($cmdInput);
 					$this->getApplication()->doRun($charGen, $output);
 					$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c ORDER BY c.id DESC')->setMaxResults(1);
 					if (!$char1) {
@@ -64,7 +78,7 @@ class TestDuelCommand extends AbstractTestCommand {
 					}
 				}
 				$battleGen = new ArrayInput([
-					'command' => 'maf:duel:generate',
+					'command' => 'maf:generate:duel',
 					'issuer' => $char1->getId(),
 					'recipient' => $char2->getId(),
 					'weapon' => 'broadsword',
@@ -79,11 +93,15 @@ class TestDuelCommand extends AbstractTestCommand {
 				$armor = $this->em->getRepository(EquipmentType::class)->findOneBy(['name'=>'chainmail']);
 				while ($i < 2) {
 					$i++;
-					$charGen = new ArrayInput([
+					$cmdInput = [
 						'command' => 'maf:char:create',
 						'name' => 'Tester '.$i,
 						'where' => 'Settlement:1249',
-					]);
+					];
+					if ($user) {
+						$cmdInput['-u'] = $user->getId();
+					}
+					$charGen = new ArrayInput($cmdInput);
 					$this->getApplication()->doRun($charGen, $output);
 					$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c ORDER BY c.id DESC')->setMaxResults(1);
 					if (!$char1) {

@@ -362,8 +362,10 @@ abstract class AbstractCharacter {
 	 * @return void
 	 */
 	public function translateInjuryToModifiers(): void {
-		foreach ($this->injuries as $amount) {
-			$this->modifiers['Physical'] = $this->modifiers['Physical'] + $amount;
+		if ($this->injuries) {
+			foreach ($this->injuries as $amount) {
+				$this->modifiers['Physical'] = $this->modifiers['Physical'] + $amount;
+			}
 		}
 	}
 

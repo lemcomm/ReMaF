@@ -2,13 +2,6 @@
 
 namespace App\Command;
 
-use App\Entity\Character;
-use App\Entity\GeoData;
-use App\Entity\MapRegion;
-use App\Entity\Place;
-use App\Entity\Race;
-use App\Entity\Settlement;
-use App\Entity\User;
 use App\Service\CharacterManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -16,12 +9,12 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CharacterCreateCommand extends Command {
+class CharacterCreateCommand extends AbstractGenerateCommand {
 	public function __construct(
-		private EntityManagerInterface $em,
-		private CharacterManager $cm
+		protected EntityManagerInterface $em,
+		protected CharacterManager $cm
 	) {
-		parent::__construct();
+		parent::__construct($em);
 	}
 
 	protected function configure(): void {
@@ -85,68 +78,4 @@ class CharacterCreateCommand extends Command {
 		}
 	}
 
-	private function findRace($string): false|Race {
-		$race = $this->em->getRepository(Race::class)->findOneBy(['name' => strtolower($string)]);
-		if ($race) {
-			return $race;
-		} else {
-			return false;
-		}
-	}
-
-	private function findCharacter($string): false|Character {
-		$char = $this->em->getRepository(Character::class)->findOneBy(['id' => $string]);
-		if ($char) {
-			return $char;
-		} else {
-			return false;
-		}
-	}
-
-	private function findUser($string): null|false|User {
-		if ($string === null) return null;
-		$user = $this->em->getRepository(User::class)->findOneBy(['id' => $string]);
-		if ($user) {
-			return $user;
-		} else {
-			return false;
-		}
-	}
-
-	private function findWhere(string $where): false|GeoData|MapRegion|Place|Settlement {
-		$set = explode(':', $where);
-		if (array_key_exists(1, $set)) {
-			switch ($set[0]) {
-				case 'G':
-				case 'GeoData':
-					$here = $this->em->getRepository(GeoData::class)->findOneBy(['id' => $set[1]]);
-					if ($here) {
-						return $here;
-					}
-					break;
-				case 'M':
-				case 'MapRegion':
-					$here = $this->em->getRepository(MapRegion::class)->findOneBy(['id' => $set[1]]);
-					if ($here) {
-						return $here;
-					}
-					break;
-				case 'P':
-				case 'Place':
-					$here = $this->em->getRepository(Place::class)->findOneBy(['id' => $set[1]]);
-					if ($here) {
-						return $here;
-					}
-					break;
-				case 'S':
-				case 'Settlement':
-					$here = $this->em->getRepository(Settlement::class)->findOneBy(['id' => $set[1]]);
-					if ($here) {
-						return $here;
-					}
-					break;
-			}
-		}
-		return false;
-	}
 }

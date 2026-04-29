@@ -42,10 +42,8 @@ class AbstractTestCommand extends AbstractGenerateCommand {
 	protected function finish($topic): void {
 		$this->output->writeln($topic.': ...flushing...');
 		$this->em->flush();
-		if ($this->opt_time) {
-			$event = $this->stopwatch->stop($topic);
-			$this->output->writeln($topic.": timing ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
-		}
+		$event = $this->stopwatch->stop($topic);
+		$this->output->writeln($topic.": timing ".date("g:i:s").", ".($event->getDuration()/1000)." s, ".(round($event->getMemory()/1024)/1024)." MB");
 		$this->output->writeln($topic.": ...complete");
 	}
 

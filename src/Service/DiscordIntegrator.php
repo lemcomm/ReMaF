@@ -87,15 +87,26 @@ class DiscordIntegrator {
 
 	public function pushToErrors($text): void {
 		if ($this->errorsHook) {
-			$texts = str_split($text, 1000);
-			if (strlen($text) < 1000) {
+			$texts = str_split($text, 990);
+			if (strlen($text) < 990) {
 				$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($text)]), $this->errorsHook);
 			} else {
-				$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($texts[0])]), $this->errorsHook);
+				if (!str_contains($texts[0], '```')) {
+					$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($texts[0]).'```']), $this->errorsHook);
+				} else {
+					$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($texts[0])]), $this->errorsHook);
+				}
 				unset($texts[0]);
+				$total = count($texts);
+				$i = 1;
 				foreach ($texts as $each) {
 					sleep(0.1);
-					$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($each)]), $this->errorsHook);
+					if ($i < $total) {
+						$this->curlToDiscord(json_encode(['content' => '```'.$this->convertToMarkdown($each).'```']), $this->errorsHook);
+					} else {
+						$this->curlToDiscord(json_encode(['content' => '```'.$this->convertToMarkdown($each)]), $this->errorsHook);
+					}
+					$i++;
 				}
 			}
 		}

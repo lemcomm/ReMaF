@@ -2,14 +2,12 @@
 
 namespace App\Controller;
 
-use App\Service\AppState;
+use App\Entity\User;
 use App\Service\DiscordIntegrator;
-use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,8 +16,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ExceptionController extends AbstractController {
 	public function __construct(
 		private DiscordIntegrator $discord,
-		private AppState $app,
-		private EntityManagerInterface $em,
 		private TranslatorInterface $trans
 	) {
 	}
@@ -41,15 +37,19 @@ class ExceptionController extends AbstractController {
 		$code = $exception->getStatusCode();
 		$error = $exception->getMessage();
 		$trace = $exception->getTraceAsString();
+		$file = $exception->getFile();
 		$line = $exception->getLine();
 		$data = [
 			'status_code' => $code,
 			'exception' => $error,
 		];
+		/** @var User $user */
+		$user = $this->getUser();
 		$uri = $request->getRequestUri();
 		$type = $request->headers->get('accept');
 		$ref = $request->server->get('HTTP_REFERER');
-		$userId = $this->getUser()?->getId()?:'(none)';
+		$userId = $user?->getId()?:'(none)';
+		$char = $user?->getCurrentCharacter()?:'(unknown)';
 		$agent = $request->headers->get('User-Agent');
 		$bits = explode("::", $error);
 		if ($code !== 404) {
@@ -66,7 +66,7 @@ class ExceptionController extends AbstractController {
 			}
 			if ($forward) {
 				try {
-					$text = "Status Code: $code \nError: `$error`\nOn Line: $line\nRequestUri:$uri\nReferer:$ref\nUser: ".$userId."\nAgent: $agent\nTrace:\n```$trace```";
+					$text = "Status Code: $code \nError: `$error`\nIn file: `$file($line)`\nRequestUri:$uri\nReferer:$ref\nUser $userId playing $char\nAgent: $agent\nTrace:\n```$trace```";
 					$this->discord->pushToErrors($text);
 				} catch (Exception $e) {
 					// Do nothing.
