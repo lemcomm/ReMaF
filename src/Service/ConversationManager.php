@@ -357,7 +357,9 @@ class ConversationManager {
                         } elseif (!$total && !$char) {
 				$all = $conv->findActivePermissions();
 				$count = $all->count();
-				$this->updateUnread($all, $org);
+				if (!$antiTickUp) {
+					$this->updateUnread($all, $org);
+				}
 			} else {
                                 $count = $total;
                         }

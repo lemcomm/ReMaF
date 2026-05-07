@@ -798,7 +798,7 @@ class PoliticsController extends AbstractController {
 							);
 							$this->addFlash(
 								'notice',
-								$this->trans->trans('diplomacy.prisoners.done.execute', ['%prisoner%'=>$prisoner->getName()], 'politics')
+								$this->trans->trans('diplomacy.prisoners.done.assign', ['%prisoner%'=>$prisoner->getName(), '%target%'=>$data['assignto']->getName()], 'politics')
 							);
 							$i++;
 						}
