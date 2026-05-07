@@ -93,18 +93,18 @@ class HelperService {
 			} else {
 				$nearby = $someone->getInsideRegion()->getCharacters();
 			}
-		}
-
-		foreach ($nearby as $each) {
-			$char = $each['character'];
-			if ((!$resuming && !$added->contains($char)) || ($resuming && !$report->checkForObserver($char))) {
-				$obs = $this->common->newObserver($type);
-				$this->em->persist($obs);
-				$obs->setReport($report);
-				$obs->setCharacter($char);
-				$added->add($char);
+			foreach ($nearby as $each) {
+				$char = $each['character'];
+				if ((!$resuming && !$added->contains($char)) || ($resuming && !$report->checkForObserver($char))) {
+					$obs = $this->common->newObserver($type);
+					$this->em->persist($obs);
+					$obs->setReport($report);
+					$obs->setCharacter($char);
+					$added->add($char);
+				}
 			}
 		}
+
 		if ($thing->getPlace()) {
 			foreach ($thing->getPlace()->getCharactersPresent() as $char) {
 				if ((!$resuming && !$added->contains($char)) || ($resuming && !$report->checkForObserver($char))) {
