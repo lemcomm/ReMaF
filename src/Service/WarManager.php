@@ -778,7 +778,7 @@ class WarManager {
 		}
 	}
 
-	public function lootSettlement(Settlement $settlement, Settlement $destination, ?Character $character, string $method, bool $inside) {
+	public function lootSettlement(Settlement $settlement, ?Settlement $destination, ?Character $character, string $method, bool $inside) {
 		// FIXME: shouldn't militia defend against looting?
 		$my_soldiers = 0;
 		$result = [];
@@ -796,13 +796,13 @@ class WarManager {
 					$ratio *= 0.25;
 				}
 			}
-		} else {
+		} elseif ($destination) {
 			# Settlement self-looting (taxes)
 			$my_soldiers = $destination->countDefenders(true);
 			$ratio = 0.1;
 		}
 
-		if ($method === 'thralls') {
+		if ($method === 'thralls' && $destination) {
 			if ($character) {
 				$cycle = $this->common->getCycle();
 				if ($settlement->getAbductionCooldown() && !$inside) {
@@ -954,7 +954,7 @@ class WarManager {
 					}
 				}
 			}
-		} elseif ($method === 'resources') {
+		} elseif ($method === 'resources' && $destination) {
 			$result['resources'] = [];
 			$notice_target = false;
 			$notice_victim = false;
