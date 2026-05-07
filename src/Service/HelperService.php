@@ -86,11 +86,13 @@ class HelperService {
 			}
 		}
 		/** @var Character $someone */
-		if ($someone->getWorld()?->getTravelType() === 'realtime') {
-			$dist = $this->geo->calculateInteractionDistance($someone);
-			$nearby = $this->geo->findCharactersNearMe($someone, $dist, false, false, false, true);
-		} else {
-			$nearby = $someone->getInsideRegion()->getCharacters();
+		if ($someone) {
+			if ($someone->getWorld()?->getTravelType() === 'realtime') {
+				$dist = $this->geo->calculateInteractionDistance($someone);
+				$nearby = $this->geo->findCharactersNearMe($someone, $dist, false, false, false, true);
+			} else {
+				$nearby = $someone->getInsideRegion()->getCharacters();
+			}
 		}
 
 		foreach ($nearby as $each) {
