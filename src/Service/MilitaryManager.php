@@ -26,11 +26,11 @@ class MilitaryManager {
 
 	public function __construct(
 		private EntityManagerInterface $em,
-		private LoggerInterface $logger,
-		private CommonService $common,
-		private History $history,
-		private Geography $geo,
-		private PermissionManager $pm
+		private LoggerInterface        $logger,
+		private CommonService          $common,
+		private History                $history,
+		private Geography              $geo,
+		private PermissionManager      $pm
 	) {
 	}
 
@@ -784,6 +784,53 @@ class MilitaryManager {
 		$speed = $this->geo->getbaseSpeed() / exp(sqrt(1/200)); #This is the regular travel speed for M&F.
 		$days = $distance / $speed;
 		return $days*0.925*1.33; #Average travel speed of all region types.
+	}
+
+	public function orphanUnit(Unit $unit, Settlement $from, $reason='destroyed', $bulk = false): void {
+		if ($unit->isDisbanded()) return;
+		$char = $unit->getCharacter();
+		if ($unit->getCharacter()) {
+			if ($char) {
+				$this->history->logEvent(
+					$unit->getCharacter(),
+					'event.character.isolated2',
+					array("%link-settlement%"=>$from->getId(), "%link-unit%"=>$unit->getId()),
+					History::HIGH
+				);
+			} else {
+				$this->disbandUnit($unit);
+			}
+		} elseif ($unit->getSupplier()) {
+			$dest = $unit->getSupplier();
+			$distance = $this->geo->calculateDistanceBetweenSettlements($from, $dest);
+			$count = $unit->getSoldiers()->count();
+			$speed = $this->geo->getbaseSpeed() / exp(sqrt($count/200)); #This is the regular travel speed for M&F.
+			$days = $distance / $speed;
+			$final = $days*0.925*1.33; #Average travel speed of all region types mulitiplied by 1.33 so it deliberately moves slower than everything else.
+			if ($final < 0.16) {
+				$final = 0; #Less than an hour travel, just set to 0.
+			}
+
+			$unit->setTravelDays(ceil($final));
+			$unit->setCharacter(null);
+			$unit->setDefendingSettlement(null);
+			$unit->setPlace(null);
+			$unit->setSettlement($dest);$this->history->logEvent(
+				$unit,
+				'event.military.'.$reason,
+				array('%link-settlement%'=>$from->getId()),
+				History::MEDIUM, false, 30
+			);
+		} else {
+			# Nowhere else to own them. Pity.
+			foreach ($unit->getSoldiers() as $soldier) {
+				$this->disband($soldier);
+			}
+			$this->disbandUnit($unit);
+		}
+		if (!$bulk) {
+			$this->em->flush();
+		}
 	}
 
 	public function returnUnitHome (Unit $unit, $reason='recalled', $origin = null, $bulk = false): true {

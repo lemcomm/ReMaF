@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Action;
 use App\Entity\Battle;
 use App\Entity\BattleGroup;
+use App\Entity\Building;
 use App\Entity\Character;
 use App\Entity\Place;
 use App\Entity\ResourceType;
@@ -1023,10 +1024,7 @@ class WarManager {
 				$pick = array_rand($buildings);
 				$target = $buildings[$pick];
 				$type = $target->getType()->getName();
-				[
-					,
-					$damage
-				] = $this->lootValue(round($my_soldiers * 32 / $targets)); #Drop first return -- yes, it looks weird.
+				[,$damage] = $this->lootValue(round($my_soldiers * 32 / $targets)); #Drop first value.
 				if (!isset($result['burn'][$type])) {
 					$result['burn'][$type] = 0;
 				}
@@ -1036,6 +1034,53 @@ class WarManager {
 					$workers = $target->getEmployees();
 					$target->abandon($damage);
 					$target->setWorkers($workers / $settlement->getPopulation());
+					$this->history->logEvent($settlement, 'event.settlement.burned', ['%link-buildingtype%' => $target->getType()->getId()], History::MEDIUM, false, 30);
+				} else {
+					$target->setCondition($target->getCondition() - $damage);
+					if (abs($target->getCondition()) > $target->getType()->getBuildHours()) {
+						// destroyed
+						$this->history->logEvent($settlement, 'event.settlement.burned2', ['%link-buildingtype%' => $target->getType()->getId()], History::HIGH, false, 30);
+						$this->em->remove($target);
+						$settlement->removeBuilding($target);
+					} else {
+						// damaged
+						$this->history->logEvent($settlement, 'event.settlement.burned', ['%link-buildingtype%' => $target->getType()->getId()], History::MEDIUM, false, 30);
+					}
+				}
+			}
+		} elseif ($method === 'destroy') {
+			$targets = min(5, floor(sqrt($my_soldiers / 5)));
+			/** @var Building[] $buildings */
+			$buildings = $settlement->getBuildings()->toArray();
+			$bldgCount = count($buildings);
+			for ($i = 0; $i < $targets; $i++) {
+				$pick = array_rand($buildings);
+				$target = $buildings[$pick];
+				$type = $target->getType()->getName();
+				[, $damage] = $this->lootValue(round($my_soldiers * 32 / $targets)); #Deliberate drop of first return value.
+				$pop = $settlement->getPopulation();
+				if ($pop > 100) {
+					[$kills,] = $this->lootValue(floor($settlement->getPopulation() * $ratio * 1.5)); # Deliberate drop of second return value.
+					$left = $pop - floor($kills);
+				} else {
+					$kills = $pop;
+					$left = 0;
+				}
+				$result['killed'] = $kills;
+				$settlement->setPopulation($left);
+				if (!isset($result['burn'][$type])) {
+					$result['burn'][$type] = 0;
+				}
+				$result['burn'][$type] += $damage;
+				if ($target->isActive()) {
+					// damaged, inoperative now, but keep current workers as repair crew
+					$workers = $target->getEmployees();
+					$target->abandon($damage);
+					if ($left > $bldgCount) {
+						$target->setWorkers($workers / $left);
+					} else {
+						$target->setWorkers(0);
+					}
 					$this->history->logEvent($settlement, 'event.settlement.burned', ['%link-buildingtype%' => $target->getType()->getId()], History::MEDIUM, false, 30);
 				} else {
 					$target->setCondition($target->getCondition() - $damage);

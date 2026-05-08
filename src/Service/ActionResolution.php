@@ -13,6 +13,8 @@ use App\Entity\GeoData;
 use App\Entity\MapRegion;
 use App\Entity\Settlement;
 use App\Entity\SkillType;
+use App\Entity\Trade;
+use App\Entity\Unit;
 use App\Enum\CharacterStatus;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\StatusUpdater;
@@ -240,6 +242,54 @@ class ActionResolution {
 		$now = new DateTime("now");
 		if ($action->getComplete() <= $now) {
 			$this->em->remove($action);
+		} elseif ($action->getStringValue() === 'destroy') {
+			$here = $action->getTargetSettlement();
+			$total = $here->getBuildings()->count();
+			if ($total > 0) {
+				$this->warman->lootSettlement($here, null, $action->getCharacter(), 'burn', true);
+				$action->setComplete(new DateTime("tomorrow"));
+			} else {
+				$here->setAbandoned(true);
+				$here->setDestroyed(true);
+				$this->em->remove($action);
+			}
+			if ($here->getDestroyed()) {
+				$this->history->logEvent($here, 'event.settlement.destroyed', History::ULTRA, true);
+				/** @var Trade $trade */
+				$realm = $here->getRealm();
+				foreach ($here->getTradesInbound() as $trade) {
+					$source = $trade->getSource();
+					$this->history->logEvent($source, 'event.settlement.tradedestroy',
+						[
+							'%amount%'=>$trade->getAmount(),
+							'%resource%'=>$trade->getResourceType()->getName(),
+							'%link-settlement%'=>$here->getId()
+						],
+						History::MEDIUM, false, 20
+					);
+					$this->em->remove($trade);
+				}
+				foreach ($here->getTradesOutbound() as $trade) {
+					$source = $trade->getSource();
+					$this->history->logEvent($source, 'event.settlement.tradedestroy2',
+						[
+							'%amount%'=>$trade->getAmount(),
+							'%resource%'=>$trade->getResourceType()->getName(),
+							'%link-settlement%'=>$here->getId()
+						],
+						History::MEDIUM, false, 20
+					);
+					$this->em->remove($trade);
+				}
+				/** @var Unit $unit */
+				foreach ($here->getUnits() as $unit) {
+					$unit->setMarshal(NULL);
+					$unit->setSettlement(NULL);
+					$this->milman->orphanUnit($unit, $here, 'destroyed', true);
+				}
+				#TODO: Undo the rest of the connections settlements have, like vassals.
+			}
+			$this->em->flush();
 		}
 	}
 

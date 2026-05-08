@@ -37,6 +37,7 @@ class LootType extends AbstractType {
 				'military.settlement.loot.option.resources' => 'resources',
 				'military.settlement.loot.option.wealth' => 'wealth',
 				'military.settlement.loot.option.burn' => 'burn',
+				'military.settlement.loot.option.destroy' => 'destroy',
 			);
 		} else {
 			$choices = array(

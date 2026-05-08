@@ -74,6 +74,8 @@ class Settlement {
 		0 => false, # allowThralls
 		1 => 0.0, # wealthTax %
 	];
+	private ?bool $destroyed = null;
+	private ?bool $abandoned = null;
 
 	/**
 	 * Constructor
@@ -251,6 +253,13 @@ class Settlement {
 			}
 		}
 		return false;
+	}
+
+	public function isActive(): bool {
+		if ($this->abandoned || $this->destroyed) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -1902,6 +1911,24 @@ class Settlement {
 
 	public function setOpenPorts(?bool $open_ports): static {
 		$this->open_ports = $open_ports;
+		return $this;
+	}
+
+	public function getDestroyed(): ?bool {
+		return $this->destroyed;
+	}
+
+	public function setDestroyed(?bool $destroyed): static {
+		$this->destroyed = $destroyed;
+		return $this;
+	}
+
+	public function getAbandoned(): ?bool {
+		return $this->abandoned;
+	}
+
+	public function setAbandoned(?bool $abandoned): static {
+		$this->abandoned = $abandoned;
 		return $this;
 	}
 }

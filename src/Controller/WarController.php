@@ -809,6 +809,10 @@ class WarController extends AbstractController {
 			$act->setType('settlement.loot')->setCharacter($character);
 			$act->setTargetSettlement($settlement);
 			$act->setBlockTravel(true)->setCanCancel(false);
+			if ($data['method'] === 'destroy') {
+				$act->setStringValue('destroy');
+				$time = 24; # This gets updated and pushed out until canceled or total destruction.
+			}
 			$complete = new DateTime("now");
 			$complete->add(new DateInterval("PT".$time."H"));
 			$act->setComplete($complete);
@@ -829,7 +833,9 @@ class WarController extends AbstractController {
 
 			$result = array();
 			foreach ($data['method'] as $method) {
-				$war->lootSettlement($settlement, $destination, $character, $method, $inside);
+				if ($method !== 'destroy') {
+					$war->lootSettlement($settlement, $destination, $character, $method, $inside);
+				}
 			}
 			$em->flush();
 

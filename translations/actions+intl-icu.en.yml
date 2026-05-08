@@ -609,7 +609,8 @@ military:
      You can also loot for personal profit or raid the workshops for supply, or simply burn the place down.<br />
      The more options you select, the longer everything will take and the more distributed the effects will be. To maximize the efficiency of specific goals,
      you should focus on one or two options.<br />
-     Like battles, looting commits you - once you have initiated a looting action, you cannot cancel it or travel elsewhere, until it is complete.
+     Like battles, looting commits you - once you have initiated a looting action, you cannot cancel it or travel elsewhere, until it is complete.<br>
+     Looting to destroy works a little differently from the rest, as it will continue to take longer until the entire settlement is destroyed. The action completion time will reset every 24 hours until completed.
    owner:       As you are the lord of this settlement, you can <i>steal wealth</i> very effectively with no negative effects. You will call this an unscheduled tax collection.
    outside:     As you are outside the settlement, you can only loot the countryside, which offers fewer targets. Fight, bribe or trick your way inside the settlement for more effective looting.
    time:        The selected looting options will take <span id="time">4</span> hours to complete.
@@ -621,7 +622,8 @@ military:
     supply:     Steal supply
     food:       Steal food
     wealth:     Steal wealth
-    burn:       Burn down buildings
+    burn:       Set buildings alight
+    destroy:    Destroy the settlement
    submit:      Begin looting
   food:
    supplied:    You have authorized {character} to pull from {settlement}'s food stores.

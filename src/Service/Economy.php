@@ -561,6 +561,15 @@ class Economy {
 		//			we could code this by checking for the surplus storage
 		$growth = sqrt(1-exp(-pow($shortage,2)))*$sign;
 		$popchange = $sign*round(pow(abs($growth) * $settlement->getPopulation(),0.666));
+		if ($popchange > 0) {
+			# No pop growth where settlements are actively being destroyed.
+			foreach ($settlement->getRelatedActions() as $action) {
+				if ($action->getStringValue() === 'destroy') {
+					$popchange = 0;
+					break;
+				}
+			}
+		}
 		$settlement->setPopulation($settlement->getPopulation() + $popchange);
 
 		// thralls drop faster and rise slower

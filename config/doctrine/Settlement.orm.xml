@@ -12,6 +12,8 @@
 		<field name="gold" type="integer"/>
 		<field name="war_fatigue" type="integer"/>
 		<field name="abduction_cooldown" type="integer" nullable="true"/>
+		<field name="destroyed" type="boolean" nullable="true"/>
+		<field name="abandoned" type="boolean" nullable="true"/>
 
 		<field name="allow_thralls" type="boolean"/>
 		<field name="feed_soldiers" type="boolean" nullable="true"/>

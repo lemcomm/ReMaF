@@ -76,6 +76,8 @@ event:
   tradereduce:  The outgoing trade of {resource} to {settlement} has been reduced from {amount} to {newamount} due to a lack of resources.
   tradestop:    The trade of {amount} {resource} from {settlement} has ceased.
   tradereduced: The trade of {resource} from {settlement} has dropped in volume. Instead of the previous {amount} units, it is now {newamount} units.
+  tradedestroy: "The trade of {resource} to {settlement} has canceled due to it's destruction."
+  tradedestroy2: "The trade of {resource} from {settlement} has canceled due to it's destruction."
   setback:      Due to ongoing food shortages, workers are leaving construction projects to take care of their families instead.
   hunger:       Food shortages and hunger are becoming a problem.
   starvation:   Starvation has reached serious levels.
@@ -289,6 +291,7 @@ event:
    start3:      Your liege's land of {settlement} is being taken over by {character}.
    stopped:     The takeover of {settlement} by {character} has been stopped.
   isolated:     With the taking of {settlement}, {unit} has been isolated.
+  isolated2:     With the destruction of {settlement}, {unit} has been isolated.
   duel:         Participated in a {activityreport} against {character}.
   tournament:
    melee:
@@ -337,6 +340,7 @@ event:
   returned2:    "{unit} has been returned to {settlement}."
   rebased:      Unit has been rebased from {settlement_1} to {settlement_2}.
   disbanded:    Unit has been retired.
+  destroyed:     "{unit} has chosen to serve this settlement after the destruction of {settlement}"
   starvation:
    light:       Light starvation is effecting {unit}.
    medium:      Moderate starvation is effecting {unit}.

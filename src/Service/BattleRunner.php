@@ -1777,7 +1777,14 @@ class BattleRunner {
 					// defeated losers could be forced out
 					if ($nobleGroup[$id]!='victory') {
 						if ($this->battle->getType()=='urban' && $soldier->getCharacter()->getInsideSettlement()) {
-							$this->interactions->characterLeaveSettlement($soldier->getCharacter(), true);
+							$who = $soldier->getCharacter();
+							$this->interactions->characterLeaveSettlement($who, true);
+							foreach ($who->getActions() as $action) {
+								if ($action->getStringValue() === 'destroy') {
+									# Remove destroy actions.
+									$this->em->remove($action);
+								}
+							}
 						}
 					}
 					$this->log(2, $soldier->getCharacter()->getName().': '.$nobleGroup[$id]." (".$soldier->getWounded()."/".$soldier->getCharacter()->getWounded()." wounds)\n");
