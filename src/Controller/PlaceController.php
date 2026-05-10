@@ -470,7 +470,7 @@ class PlaceController extends AbstractController {
 						History::HIGH, true
 					);
 				}
-				$this->addFlash('notice', $this->trans->trans('control.placetransfer.success', ["%name%"=>$data['target']->getName()], 'actions'));
+				$this->addFlash('notice', $this->trans->trans('place.transfer.success', ["%name%"=>$data['target']->getName()], 'places'));
 				$this->em->flush();
 				return $this->redirectToRoute('maf_place_actionable');
 			}
@@ -572,11 +572,11 @@ class PlaceController extends AbstractController {
 		foreach ($allplaces as $other) {
 			if ($other == $me || $other->getDestroyed()) continue;
 			if (levenshtein($name, $other->getName()) < min(3, min(strlen($name), strlen($other->getName()))*0.75)) {
-				$form->addError(new FormError($this->trans->trans("place.new.toosimilar.name"), null, array('%other%'=>$other->getName())));
+				$form->addError(new FormError($this->trans->trans("place.new.toosimilar.name", [], 'validators'), null, array('%other%'=>$other->getName())));
 				$fail=true;
 			}
 			if (levenshtein($formalname, $other->getFormalName()) <  min(5, min(strlen($formalname), strlen($other->getFormalName()))*0.75)) {
-				$form->addError(new FormError($this->trans->trans("place.new.toosimilar.formalname"), null, array('%other%'=>$other->getFormalName())));
+				$form->addError(new FormError($this->trans->trans("place.new.toosimilar.formalname", [], 'validators'), null, array('%other%'=>$other->getFormalName())));
 				$fail=true;
 			}
 		}
@@ -610,7 +610,7 @@ class PlaceController extends AbstractController {
 				$act->setComplete($complete);
 				$common->queueAction($act);
 				$this->statusUpdater->character($character, CharacterStatus::newOccupant, true);
-				$this->addFlash('notice', $this->trans->trans('event.settlement.occupant.start', ["%time%"=>$complete->format('Y-M-d H:i:s')], 'communication'));
+				$this->addFlash('notice', $this->trans->trans('control.occupationstart.flash', ["%time%"=>$complete->format('Y-M-d H:i:s')], 'actions'));
 				return $this->redirectToRoute('maf_actions');
 			}
 		}
@@ -662,7 +662,7 @@ class PlaceController extends AbstractController {
                 if ($form->isSubmitted() && $form->isValid()) {
                         $pol->endOccupation($place, 'manual');
 			$this->em->flush();
-                        $this->addFlash('notice', $this->trans->trans('control.occupation.ended', array(), 'actions'));
+                        $this->addFlash('notice', $this->trans->trans('control.occupationend.flash', array(), 'actions'));
                         return $this->redirectToRoute('maf_actions');
                 }
 		return $this->render('Place/occupationend.html.twig', [
@@ -729,7 +729,7 @@ class PlaceController extends AbstractController {
 	}
 
 	#[Route ('/place/{id}/destroy', name:'maf_place_destroy', requirements:['id'=>'\d+'])]
-	public function destroyAction(History $history, WarManager $war, Place $id, Request $request): RedirectResponse|Response {
+	public function destroyAction(Place $id, Request $request): RedirectResponse|Response {
 		$place = $id;
 		if ($place->getType()->getName() == 'capital') {
 			$character = $this->dispatcher->gateway('placeManageRulersTest', false, true, false, $place);
@@ -744,24 +744,8 @@ class PlaceController extends AbstractController {
 		$form = $this->createForm(AreYouSureType::class);
 		$form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
-			$em = $this->em;
-                        $place->setDestroyed(true);
-			if ($spawn = $place->getSpawn()) {
-				$em->remove($spawn);
-				$place->setSpawn();
-			}
-			$em->flush();
-			if ($siege = $place->getSiege()) {
-				$war->disbandSiege($siege, null, true);
-			}
-			$history->logEvent(
-				$place,
-				'event.place.destroyed',
-				array('%link-character%'=>$character->getId()),
-				History::HIGH, true
-			);
-
-			$em->flush();
+			$this->poi->destroy($place, 'manual', $character);
+			$this->em->flush();
 			if (array_key_exists('url', $this->dispatcher->placeListTest())) {
 				return $this->redirectToRoute('maf_place_actionable');
 			} else {

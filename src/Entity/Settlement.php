@@ -76,6 +76,8 @@ class Settlement {
 	];
 	private ?bool $destroyed = null;
 	private ?bool $abandoned = null;
+	private ?bool $startAbandoning = null;
+	private ?bool $beingDestroyed = null;
 
 	/**
 	 * Constructor
@@ -256,7 +258,7 @@ class Settlement {
 	}
 
 	public function isActive(): bool {
-		if ($this->abandoned || $this->destroyed) {
+		if ($this->startAbandoning || $this->beingDestroyed || $this->abandoned || $this->destroyed) {
 			return false;
 		}
 		return true;
@@ -303,6 +305,7 @@ class Settlement {
 	}
 
 	public function isOwnerEquivalent(Character $char, $checkOccupancy = false): bool {
+		if ($this->destroyed) return false;
 		if ($this->isOccupied() && $checkOccupancy) {
 			if ($this->getOccupant() === $char) return true;
 		} else {
@@ -310,6 +313,14 @@ class Settlement {
 			if ($this->getSteward() === $char) return true;
 		}
 		return false;
+	}
+
+	public function findOwnerEquivalent(): ?Character {
+		if ($this->destroyed) return null;
+		if ($this->isOccupied() && $this->getOccupant()) {
+			return $this->getOccupant();
+		}
+		return $this->getOwner() ?: $this->getSteward();
 	}
 
 	/**
@@ -1929,6 +1940,24 @@ class Settlement {
 
 	public function setAbandoned(?bool $abandoned): static {
 		$this->abandoned = $abandoned;
+		return $this;
+	}
+
+	public function getStartAbandoning(): ?bool {
+		return $this->startAbandoning;
+	}
+
+	public function setStartAbandoning(?bool $startAbandoning): static {
+		$this->startAbandoning = $startAbandoning;
+		return $this;
+	}
+
+	public function getBeingDestroyed(): ?bool {
+		return $this->beingDestroyed;
+	}
+
+	public function setBeingDestroyed(?bool $beingDestroyed): static {
+		$this->beingDestroyed = $beingDestroyed;
 		return $this;
 	}
 }

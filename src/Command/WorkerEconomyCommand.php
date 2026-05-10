@@ -100,33 +100,15 @@ class WorkerEconomyCommand extends Command {
 					}
 				}
 			} else {
-				if ($settlement->getAbandoned() && !$settlement->getDestroyed()) {
-					$pop = $settlement->getPopulation();
-					if ($pop > 100) {
-						floor($leaving = $pop * rand(1,5)/100);
-					} elseif ($pop > 10) {
-						$leaving = 10;
-					} else {
-						$leaving = $pop;
+				if (!$settlement->getBeingDestroyed() && !$settlement->getDestroyed() && (
+					$settlement->getStartAbandoning() || $settlement->getAbandoned())
+				) {
+					# Settlements being destroyed are handled by ActionResolution.
+					if ($settlement->getStartAbandoning()) {
+						$settlement->setStartAbandoning(null);
+						$settlement->setAbandoned(true);
 					}
-					$settlement->setPopulation($pop - $leaving);
-
-					$howMany = rand(1,3);
-					$bldgs = $settlement->getBuildings();
-					$total = $bldgs->count();
-					/** @var Building[] $bldgArr */
-					$bldgArr = $bldgs->toArray();
-					for ($i = 0; $i < $howMany; $i++) {
-						$percent = rand(1,15)/100;
-						$target = $bldgArr[array_rand($bldgArr)];
-						$damage = $target->getType()->getBuildHours() * $percent;
-						if ($target->isActive()) {
-							$target->abandon($damage);
-						} else {
-							$target->setCondition($target->getCondition() - $damage);
-						}
-					}
-					#TODO: Undo the connections settlements have, like vassals, trades, units, etc.
+					$this->economy->breakDownSettlement($settlement);
 				}
 			}
 

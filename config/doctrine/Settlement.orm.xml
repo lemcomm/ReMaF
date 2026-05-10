@@ -14,6 +14,8 @@
 		<field name="abduction_cooldown" type="integer" nullable="true"/>
 		<field name="destroyed" type="boolean" nullable="true"/>
 		<field name="abandoned" type="boolean" nullable="true"/>
+		<field name="startAbandoning" type="boolean" nullable="true"/>
+		<field name="beingDestroyed" type="boolean" nullable="true"/>
 
 		<field name="allow_thralls" type="boolean"/>
 		<field name="feed_soldiers" type="boolean" nullable="true"/>

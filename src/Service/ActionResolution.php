@@ -34,12 +34,13 @@ class ActionResolution {
 		private Dispatcher             $dispatcher,
 		private Geography              $geography,
 		private Interactions           $interactions,
-		private MilitaryManager        $milman,
 		private Politics               $politics,
 		private PermissionManager      $permissions,
 		private WarManager             $warman,
 		private StatusUpdater 		$statusUpdater,
 		private SkillManager            $skills,
+		private Economy			$econ,
+		private MilitaryManager        $military,
 	) {
 		$this->characters = new ArrayCollection();
 	}
@@ -218,7 +219,7 @@ class ActionResolution {
 			$result = $this->politics->changeSettlementOwner($settlement, $action->getCharacter(), 'take');
 			if ($result['orphans']) {
 				foreach ($result['orphans'] as $unit) {
-					$this->milman->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
+					$this->military->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
 				}
 			}
 			$this->politics->changeSettlementRealm($settlement, $action->getTargetRealm(), 'take');
@@ -240,63 +241,20 @@ class ActionResolution {
 
 	private function update_settlement_loot(Action $action): void {
 		$now = new DateTime("now");
-		if ($action->getComplete() <= $now) {
-			$this->em->remove($action);
-		} elseif ($action->getStringValue() === 'destroy') {
-			$here = $action->getTargetSettlement();
-			$total = $here->getBuildings()->count();
-			if ($total > 0) {
-				$this->warman->lootSettlement($here, null, $action->getCharacter(), 'burn', true);
-				$action->setComplete(new DateTime("tomorrow"));
-			} else {
-				$here->setAbandoned(true);
-				$here->setDestroyed(true);
-				$this->em->remove($action);
-			}
-			if ($here->getDestroyed()) {
-				$this->history->logEvent($here, 'event.settlement.destroyed', History::ULTRA, true);
-				/** @var Trade $trade */
-				$realm = $here->getRealm();
-				foreach ($here->getTradesInbound() as $trade) {
-					$source = $trade->getSource();
-					$this->history->logEvent($source, 'event.settlement.tradedestroy',
-						[
-							'%amount%'=>$trade->getAmount(),
-							'%resource%'=>$trade->getResourceType()->getName(),
-							'%link-settlement%'=>$here->getId()
-						],
-						History::MEDIUM, false, 20
-					);
-					$this->em->remove($trade);
-				}
-				foreach ($here->getTradesOutbound() as $trade) {
-					$source = $trade->getSource();
-					$this->history->logEvent($source, 'event.settlement.tradedestroy2',
-						[
-							'%amount%'=>$trade->getAmount(),
-							'%resource%'=>$trade->getResourceType()->getName(),
-							'%link-settlement%'=>$here->getId()
-						],
-						History::MEDIUM, false, 20
-					);
-					$this->em->remove($trade);
-				}
-				/** @var Unit $unit */
-				foreach ($here->getUnits() as $unit) {
-					$unit->setMarshal(NULL);
-					$unit->setSettlement(NULL);
-					$this->milman->orphanUnit($unit, $here, 'destroyed', true);
-				}
-				#TODO: Undo the rest of the connections settlements have, like vassals.
-			}
-			$this->em->flush();
-		}
+		$this->em->remove($action);
 	}
 
 	private function settlement_loot(Action $action): void {
-		// just remove this, damage and all has already been applied, we just needed the action to stop travel
-		$this->statusUpdater->character($action->getCharacter(), CharacterStatus::looting, false);
-		$this->em->remove($action);
+		if ($action->getStringValue() === 'destroy') {
+			$here = $action->getTargetSettlement();
+			$this->econ->breakDownSettlement($here, true, $action->getCharacter());
+			$action->setComplete(new DateTime("tomorrow"));
+			$this->em->flush();
+		} else {
+			// just remove this, damage and all has already been applied, we just needed the action to stop travel
+			$this->statusUpdater->character($action->getCharacter(), CharacterStatus::looting, false);
+			$this->em->remove($action);
+		}
 	}
 
 	private function fishing(Action $action): void {
@@ -553,9 +511,9 @@ class ActionResolution {
 				$reason = 'grant_fief';
 			}
 			$result = $this->politics->changeSettlementOwner($settlement, $to, $reason);
-			if ($result['orphans']) {
+			if (count($result['orphans'])) {
 				foreach ($result['orphans'] as $unit) {
-					$this->milman->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
+					$this->military->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
 				}
 			}
 

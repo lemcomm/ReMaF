@@ -291,9 +291,16 @@ event:
    start3:      Your liege's land of {settlement} is being taken over by {character}.
    stopped:     The takeover of {settlement} by {character} has been stopped.
   isolated:     With the taking of {settlement}, {unit} has been isolated.
-  isolated2:     With the destruction of {settlement}, {unit} has been isolated.
+  destroy:      With the destruction of {settlement}, {unit} has been isolated.
+  destroy2:     With the destruction of {settlement}, {unit} has been activated under your command.
+  destroy3:     With the destruction of {settlement}, {unit} has been chosen to join {settlement-2}.
+  abandon:      With the abandonment of {settlement}, {unit} has been isolated.
+  abandon2:     With the abandonment of {settlement}, {unit} has been activated under your command.
+  abandon3:     With the abandonment of {settlement}, {unit} has been chosen to join {settlement-2}.
   duel:         Participated in a {activityreport} against {character}.
   tournament:
+   abandon:   Your participation in the tournament at {settlement} has been canceled as the settlement is being abandoned.
+   destroy:   Your participation in the tournament at {settlement} has been canceled as the settlement has been destroyed.
    melee:
     observer:  Witnessed a round of fights in the {activityreport}.
     conclusion: Witnessed the conclusion of the {activityreport}.
@@ -356,6 +363,8 @@ event:
   basetaken:    "{settlement} has been taken by {realm}, leaving this unit to your direct command."
   basetaken2:   "{settlement} has been taken by an unaligned first one, leaving this unit to your direct command."
   supplierlost: "{settlement} has been taken by an occupation force, cutting the unit off from supplies."
+  supplierdestroy: "{settlement} has been destroyed, cutting the {unit} off from supplies."
+  supplierabandon: "{settlement} has been abandoned, cutting the {unit} off from supplies."
   defenselost:  The defense of {settlement} has failed, so the unit has returned home.
   defenselost2:  The defense of {place} has failed, so the unit has returned home.
   recalled:     "{character} has recalled {unit} from your command."
@@ -495,6 +504,8 @@ event:
   formalized:   Foramlized by {character} in the lands of {settlement}.
   attacked:     The place is being attacked by troops of {character}.
   destroyed:    Place has been demolished by {character}.
+  destroyed2:    Place has been demolished by {character} during the destruction of {settlement}.
+  destroyed3:    Place has been demolished by {character} during the abandonment of {settlement}.
   battle:       "{battle} was fought."
   entered:      "{character} has entered the place."
   entered2:     "{character} has entered the place with {soldiers} soldiers."
@@ -590,6 +601,14 @@ politics:
   lost2:       Has become a knight of {realm} after the taking of {place}.
   lost3:       Is no longer a knight of anywhere after the taking of {settlement}.
   lost4:       Is no longer a knight of anywhere after the taking of {place}.
+  destroy:       Has become a knight of {realm} after the destruction of {settlement}.
+  destroy2:       Has become a knight of {realm} after the destruction of {place}.
+  destroy3:       Is no longer a knight of anywhere after the destruction of {settlement}.
+  destroy4:       Is no longer a knight of anywhere after the destruction of {place}.
+  abandonment:       Has become a knight of {realm} after the abandonment of {settlement}.
+  abandonment2:       Has become a knight of {realm} after the abandonment of {place}.
+  abandonment3:       Is no longer a knight of anywhere after the abandonment of {settlement}.
+  abandonment4:       Is no longer a knight of anywhere after the abandonment of {place}.
   notcurrent: With the change in lordship of {settlement}, your oath to it is no longer considered current.
   notcurrent2: With the change in ownership of {place}, your oath to it is no longer considered current.
   abandon:    As the lordship of {settlement} has been abandoned, your oath is no longer considered current and you have gained a claim over it.

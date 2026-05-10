@@ -26,6 +26,7 @@ class Interactions {
 		if ($character->getInsideSettlement() === $settlement) {
 			return true; // we are already inside
 		}
+		if ($settlement->getDestroyed()) return true; # No one guards ruins.
 
 		#TODO: The entire if below this line might be redundant now that dispatcher also has all this logic.
 		if (!$force) {

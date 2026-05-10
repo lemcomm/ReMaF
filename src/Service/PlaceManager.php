@@ -23,6 +23,8 @@ class PlaceManager {
 		private PermissionManager $pm,
 		private History $hist,
 		private DescriptionManager $desc,
+		private WarManager $war,
+		private History $history,
 	) {}
 
 	public function create(
@@ -97,6 +99,45 @@ class PlaceManager {
 
 		$this->desc->newDescription($place, $longDesc, $char);
 		return $place;
+	}
+
+	public function destroy(Place $place, $why, $who): void {
+		$place->setDestroyed(true);
+		if ($spawn = $place->getSpawn()) {
+			$this->em->remove($spawn);
+			$place->setSpawn();
+		}
+		$this->em->flush();
+		if ($siege = $place->getSiege()) {
+			$this->war->disbandSiege($siege, null, true);
+		}
+		switch ($why) {
+			case 'manual':
+				$this->history->logEvent(
+					$place,
+					'event.place.destroyed',
+					array('%link-character%'=>$who->getId()),
+					History::HIGH, true
+				);
+				break;
+			case 'destroy':
+				$this->history->logEvent(
+					$place,
+					'event.place.destroyed2',
+					array('%link-character%'=>$who->getId(), '%link-settlement%'=>$place->getSettlement()->getId()),
+					History::HIGH, true
+				);
+				break;
+			case 'abandon':
+				$this->history->logEvent(
+					$place,
+					'event.place.destroyed3',
+					array('%link-character%'=>$who->getId()),
+					History::HIGH, true
+				);
+				break;
+		}
+
 	}
 
 	public function findPlacesInSpotRange(Character $character): ?array {

@@ -1198,7 +1198,7 @@ class Character extends AbstractCharacter {
 		$lieges = $this->findLiege();
 		if ($lieges && !$lieges instanceof Collection) {
 			$lieges = new ArrayCollection([$lieges]);
-		} else {
+		} elseif (!$lieges) {
 			$lieges = new ArrayCollection();
 		}
 		return $lieges;
