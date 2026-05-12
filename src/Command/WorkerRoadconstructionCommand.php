@@ -32,31 +32,11 @@ class WorkerRoadconstructionCommand extends  Command {
 		$history = $this->hist;
 		$offset = $input->getArgument('offset');
 		$batch = $input->getArgument('batch');
-
-		// NOTICE: with no roads on the map, this errors out somewhere, but I can't spot the problem
-
-// use this when we enable deterioration
-//		$query = $this->em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App\Entity\Road r JOIN r.geo_data g JOIN g.biome b WHERE r.workers>0 OR r.quality>0 ORDER BY r.id ASC')->setMaxresults($batch)->setFirstResult($offset);
 		$query = $em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App\Entity\Road r JOIN r.geo_data g JOIN g.biome b WHERE r.workers>0')->setMaxresults($batch)->setFirstResult($offset);
 		foreach ($query->getResult() as $row) {
 			$road = $row['road'];
 			$length = $row['length'];
 			$mod = $row['mod'];
-
-/*
-			// workaround for known doctrine issue - different result formats :-(
-			if (isset($row[0]["length"])) {
-				$road = $row[0]["road"];
-				$length = $row[0]["length"];
-				$mod = $row[0]["mod"];
-			} else {
-				$road = $row[0]["road"];
-				$data = array_pop($row);
-				$length=$data["length"];
-				$mod=$data["mod"];
-			}
-*/
-
 			if ($road->getWorkers()>0) {
 				if ($economy->RoadConstruction($road, (float)$length, (float)$mod)) {
 					// construction finished
@@ -71,7 +51,16 @@ class WorkerRoadconstructionCommand extends  Command {
 				// TODO: check for deterioration
 			}
 		}
-		$em->flush();
+		$this->em->flush();
+		$this->em->clear();
+		$query = $em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App\Entity\Road r JOIN r.geo_data g JOIN g.biome b WHERE r.beingDestroyed = true or r.beingRemoved = true')->setMaxresults($batch)->setFirstResult($offset);
+		foreach ($query->getResult() as $row) {
+			$road = $row['road'];
+			$length = $row['length'];
+			$mod = $row['mod'];
+			$economy->RoadDegradation($road, (float)$length, (float)$mod);
+		}
+		$this->em->flush();
 		return Command::SUCCESS;
 	}
 

@@ -1801,6 +1801,8 @@ unavailable:
  outside:       You are not currently inside a settlement.
  outsideplace:  You are not currently inside a place.
  outsideall:    You are not inside either a place or settlement.
+ abandoning:    The settlement is being abandoned.
+ ruined:        The settlement is in ruins. Rebuild it first.
  noregion:      You are not in an inhabited area.
  nodock:        There are no docks nearby.
  noship:        You do not have a ship nearby.

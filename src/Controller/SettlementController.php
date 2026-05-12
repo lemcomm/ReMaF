@@ -7,6 +7,7 @@ use App\Entity\Permission;
 use App\Entity\ResourceType;
 use App\Entity\Settlement;
 use App\Entity\Unit;
+use App\Form\AreYouSureType;
 use App\Form\AssocSelectType;
 use App\Form\SettlementAbandonType;
 use App\Form\SettlementPermissionsSetType;
@@ -69,18 +70,18 @@ class SettlementController extends AbstractController {
 		$militia = [];
 		$recruits = 0;
 		if ($details['spy'] || ($settlement->getOwner() == $character || $settlement->getSteward() == $character)) {
-			foreach ($settlement->getUnits() as $unit) {
-				if ($unit->isLocal()) {
-					foreach ($unit->getActiveSoldiersByType() as $key=>$type) {
-						if (array_key_exists($key, $militia)) {
-							$militia[$key] += $type;
-						} else {
-							$militia[$key] = $type;
-						}
+			foreach ($settlement->getLocalUnits() as $unit) {
+				foreach ($unit->getActiveSoldiersByType() as $key=>$type) {
+					if (array_key_exists($key, $militia)) {
+						$militia[$key] += $type;
+					} else {
+						$militia[$key] = $type;
 					}
 				}
-				$recruits += $unit->getRecruits()->count();
-				#$militia = $settlement->getActiveMilitiaByType();
+				if ($unit->getSettlement() === $settlement) {
+					# Can only see local recruits in training with spies.
+					$recruits += $unit->getRecruits()->count();
+				}
 			}
 		} else {
 			$militia = null;
@@ -275,6 +276,28 @@ class SettlementController extends AbstractController {
                         'form' => $form->createView(),
 			'settlement' => $settlement
                 ]);
+	}
+
+	#[Route('/settlement/{settlement}/evacuate', name:'maf_settlement_evacuate', requirements:['settlement'=>'\d+'])]
+	public function evacuateAction(Settlement $settlement, Request $request): RedirectResponse|Response {
+		$char = $this->disp->gateway('controlEvacuateTest', false, true, false, $settlement);
+		if (! $char instanceof Character) {
+			return $this->redirectToRoute($char);
+		}
+
+		$form = $this->createForm(AreYouSureType::class);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			# AreYouSureType is only valid if the checkbox is checked so this is a valid submission.
+			$settlement->setStartAbandoning(true);
+			$this->em->flush();
+			$this->addFlash('notice', $this->trans->trans('control.evacuate.success', array(), 'actions'));
+			return $this->redirectToRoute('maf_char_recent');
+		}
+		return $this->render('Settlement/evacuate.html.twig', [
+			'form' => $form->createView(),
+			'settlement' => $settlement
+		]);
 	}
 
 	#[Route('/settlement/{id}/abandon', name:'maf_settlement_abandon', requirements:['id'=>'\d+'])]

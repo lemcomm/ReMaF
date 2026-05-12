@@ -264,6 +264,19 @@ class Settlement {
 		return true;
 	}
 
+	public function getLocalUnits(): ArrayCollection|Collection {
+		$all = new ArrayCollection();
+		foreach ($this->units as $unit) {
+			if ($unit->isLocal()) {
+				$all->add($unit);
+			}
+		}
+		foreach ($this->defending_units as $unit) {
+			$all->add($unit);
+		}
+		return $all;
+	}
+
 	/**
 	 * Get units
 	 *

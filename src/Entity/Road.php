@@ -15,6 +15,9 @@ class Road {
 	private ?GeoData $geo_data = null;
 	private ?World $world = null;
 	private Collection $waypoints;
+	private int $damage = 0;
+	private ?bool $beingDestroyed = null;
+	private ?bool $beingRemoved = null;
 
 	/**
 	 * Constructor
@@ -179,6 +182,33 @@ class Road {
 
 	public function setWorld(?World $world): static {
 		$this->world = $world;
+		return $this;
+	}
+
+	public function getDamage(): int {
+		return $this->damage;
+	}
+
+	public function setDamage(int $damage): static {
+		$this->damage = $damage;
+		return $this;
+	}
+
+	public function getBeingDestroyed(): ?bool {
+		return $this->beingDestroyed;
+	}
+
+	public function setBeingDestroyed(?bool $beingDestroyed): static {
+		$this->beingDestroyed = $beingDestroyed;
+		return $this;
+	}
+
+	public function getBeingRemoved(): ?bool {
+		return $this->beingRemoved;
+	}
+
+	public function setBeingRemoved(?bool $beingRemoved): static {
+		$this->beingRemoved = $beingRemoved;
 		return $this;
 	}
 }

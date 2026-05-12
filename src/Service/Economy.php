@@ -1012,6 +1012,26 @@ class Economy {
 		}
 	}
 
+	public function RoadDegradation(Road $road, $length, $mod) {
+		$required = $this->RoadHoursRequired($road, $length, $mod);
+		if ($road->getBeingRemoved()) {
+			$damage = $this->calculateWorkHours($road);
+		} else {
+			$damage = rand(0,50);
+		}
+
+		if ($road->getDamage() + $damage >= $required) {
+			if ($road->getQuality() > 0) {
+				$road->setQuality($road->getQuality()-1);
+				$road->setDamage($required - $road->getDamage() - $damage);
+			} else {
+				$this->em->remove($road);
+			}
+		} else {
+			$road->setDamage($road->getDamage()+$damage);
+		}
+	}
+
 	public function RoadHoursRequired(Road $road, $length, $mod) {
 		$required = ($road->getQuality()*2+1) * $length * $mod;
 		return $required;
@@ -1228,6 +1248,23 @@ class Economy {
 		foreach ($here->getRelatedRequests() as $rel) {
 			$this->em->remove($rel);
 		}
+		/** @var Building $bldg */
+		foreach ($here->getBuildings() as $bldg) {
+			$bldg->setWorkers(0);
+		}
+		$features = $here->getGeoData()?->getFeatures();
+		/** @var GeoFeature $feature */
+		if ($features) {
+			foreach ($features as $feature) {
+				$feature->setWorkers(0);
+			}
+		}
+		$roads = $here->getGeoData()?->getRoads();
+		if ($roads) {
+			foreach ($roads as $road) {
+				$road->setWorkers(0);
+			}
+		}
 		$this->em->flush();
 	}
 
@@ -1319,6 +1356,22 @@ class Economy {
 			$this->destroySettlement($settlement);
 		}
 		return $results;
+	}
+
+	public function breakDownFeatures(Settlement $settlement): void {
+		$all = $settlement->getGeoData()?->getFeatures();
+		if ($all->count() > 0) {
+			/** @var GeoFeature $each */
+			foreach ($all as $each) {
+				$takes = $each->getType()->getBuildHours();
+				$loss = rand(10, $takes/100) + rand(0, $takes/200);
+				if ($each->getDamage() >= $takes) {
+					$this->em->remove($each);
+				} else {
+					$each->setDamage($loss); # Yes, this will take a while.
+				}
+			}
+		}
 	}
 
 	public function destroySettlement(Settlement $settlement, $byLooting = false, ?Character $char = null): void {

@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Entity\Building;
 use App\Entity\Settlement;
 use App\Service\Economy;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,9 +40,9 @@ class WorkerEconomyCommand extends Command {
 		$count = 0;
 		/** @var Settlement $settlement */
 		foreach ($iterableResult as $settlement) {
+			$count++;
 			if ($settlement->isActive()) {
 				$bypass = false;
-				$count++;
 				if ($settlement->getThralls() != 0 && !$settlement->getAllowThralls()) {
 					$this->economy->freeThralls($settlement);
 				}
@@ -56,7 +55,7 @@ class WorkerEconomyCommand extends Command {
 					// check and update trades, food and wealth production
 					$WealthProduction = 0;
 					foreach ($this->economy->getResources() as $resource) {
-						if (!$settlement->getSiege() || ($settlement->getSiege() && !$settlement->getSiege()->getEncircled())) {
+						if (!$settlement->getSiege() || !$settlement->getSiege()->getEncircled()) {
 							$production = $this->economy->ResourceProduction($settlement, $resource, false, true); // with forced recalculation to update building effects
 							$WealthProduction += $production * $resource->getGoldValue();
 							$tradebalance = $this->economy->TradeBalance($settlement, $resource);
@@ -99,17 +98,18 @@ class WorkerEconomyCommand extends Command {
 						$this->economy->checkWorkforce($settlement);
 					}
 				}
-			} else {
-				if (!$settlement->getBeingDestroyed() && !$settlement->getDestroyed() && (
+			} elseif (!$settlement->getBeingDestroyed() && !$settlement->getDestroyed() && (
 					$settlement->getStartAbandoning() || $settlement->getAbandoned())
 				) {
-					# Settlements being destroyed are handled by ActionResolution.
-					if ($settlement->getStartAbandoning()) {
-						$settlement->setStartAbandoning(null);
-						$settlement->setAbandoned(true);
-					}
-					$this->economy->breakDownSettlement($settlement);
+				# Settlements being destroyed are handled by ActionResolution.
+				if ($settlement->getStartAbandoning()) {
+					$settlement->setStartAbandoning(null);
+					$settlement->setAbandoned(true);
 				}
+				$this->economy->breakDownSettlement($settlement);
+			} elseif ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+				$this->economy->breakDownFeatures($settlement);
+				# Roads are handled by the road worker.
 			}
 
 			if ($count > 24) {

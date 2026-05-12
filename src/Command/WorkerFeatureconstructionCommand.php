@@ -33,7 +33,8 @@ class WorkerFeatureconstructionCommand extends  Command {
 		$offset = $input->getArgument('offset');
 		$batch = $input->getArgument('batch');
 
-		$query = $em->createQuery('SELECT f FROM App\Entity\GeoFeature f JOIN f.type t JOIN f.geo_data g WHERE f.workers > 0 OR (f.workers = 0 AND f.condition < 0 AND f.condition > -t.build_hours)')->setMaxresults($batch)->setFirstResult($offset);
+		# this handles regular building and deterioration, not settlement abandonment/destruction based. That's handled by economy as part of the abandon/destruction code.
+		$query = $em->createQuery('SELECT f FROM App\Entity\GeoFeature f JOIN f.type t JOIN f.geo_data g WHERE (f.workers > 0 OR (f.workers = 0 AND f.condition < 0 AND f.condition > -t.build_hours)) AND (f.beingDestroyed is null or f.beingDestroyed is false) AND (f.beingRemoved is null or f.beingRemoved is null)')->setMaxresults($batch)->setFirstResult($offset);
 		foreach ($query->getResult() as $feature) {
 			if ($feature->getWorkers() > 0) {
 				// construction
