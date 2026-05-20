@@ -463,7 +463,7 @@ control:
     such as evidence of conclusion, or time limits.
  abandon:
   name:         Abandon Lordship
-  description:  Reliquish control of this settlement.
+  description:  Relinquish control of this settlement.
   help: >
     As the rightful owner or occupant of {settlement}, you can always decide that you simply don't want to be in control any longer.<br><br>
     If you're the owner, you can also decide if you simply wish to be rid of the region, or for you AND your realm to be rid of the region.<br><br>
@@ -473,6 +473,16 @@ control:
   sure:         Are you sure?
   success:      Settlement has been abandoned.
   submit:       Dispatch the order!
+ evacuate:
+   name:         Evacuate Settlement
+   description:  Order the abandonment of these lands.
+   help: >
+     As the rightful owner of {settlement}, you can instruct the locals that to evacuate it and abandon it back to nature.<br><br>
+     Such an action will see it complete lose realm affiliation and it will continue to be reduced into ruins and eventually nothingness until such time as someone resettles theselands.<br><br>
+     Please be aware, this action is IRREVERSIBLE.
+   sure:         Are you sure?
+   success:      Settlement evacuation has begun. Depending on the size of the settlement it could take quite a while for it to be completely reduced to ruins. You won't see any progress on this until tomorrow, though, as people need time to move on.
+   submit:       Dispatch the order!
  description:
   settlement:
    name:        Update Description

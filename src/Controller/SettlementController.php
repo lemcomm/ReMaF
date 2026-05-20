@@ -285,7 +285,11 @@ class SettlementController extends AbstractController {
 			return $this->redirectToRoute($char);
 		}
 
-		$form = $this->createForm(AreYouSureType::class);
+		$form = $this->createForm(AreYouSureType::class, null, [
+			'translation_domain' => 'actions',
+			'submit' => 'control.evacuate.submit',
+			'label' => 'control.evacuate.sure'
+		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			# AreYouSureType is only valid if the checkbox is checked so this is a valid submission.
