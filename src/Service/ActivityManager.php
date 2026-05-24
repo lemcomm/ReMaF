@@ -296,6 +296,7 @@ class ActivityManager {
 		foreach ($act->getGroups() as $group) {
 			$this->em->remove($group);
 		}
+		$this->em->remove($act);
 		/*
 		# This used to rely on $em->remove() but that kept breaking for some reason, so we do it manually.
 		$this->em->createQuery('DELETE from App\Entity\ActivityParticipant a WHERE a.activity = :act')->setParameters(['act'=>$act])->execute();
