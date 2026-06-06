@@ -60,9 +60,9 @@
         "symfony/var-dumper": "6.4.*",
         "symfony/web-link": "6.4.*",
         "symfony/yaml": "6.4.*",
-        "twig/extra-bundle": "^2.12|^3.0",
+        "twig/extra-bundle": "^3.0",
         "twig/markdown-extra": "^3.4",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^3.26"
     },
     "config": {
         "allow-plugins": {

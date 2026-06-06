@@ -708,11 +708,13 @@ class CharacterManager {
 				History::MEDIUM, true, 30
 			);
 			$character->setPrisonerOf(null);
+			$this->statusUpdater->character($character, CharacterStatus::prisoner, null);
 		}
 
 		foreach ($character->getPrisoners() as $prisoner) {
 			$prisoner->setPrisonerOf(null);
 			$character->removePrisoner($prisoner);
+			$this->statusUpdater->character($prisoner, CharacterStatus::prisoner, null);
 			$this->history->logEvent(
 				$prisoner,
 				'event.character.prison.free4',

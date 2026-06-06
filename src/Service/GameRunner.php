@@ -12,6 +12,7 @@ use App\Entity\Siege;
 use App\Entity\Soldier;
 use App\Entity\Supply;
 use App\Entity\Unit;
+use App\Enum\CharacterStatus;
 use App\Service\ActivityRunner;
 use App\Service\RealmManager;
 use DateInterval;
@@ -49,7 +50,9 @@ class GameRunner {
 		private PermissionManager   $pm,
 		private CharacterManager    $cm,
 		private WarManager          $wm,
-		private ActivityRunner      $activityRunner) {
+		private ActivityRunner      $activityRunner,
+		private StatusUpdater       $statusUpdater,
+	) {
 		$this->cycle = $this->common->getCycle();
 	}
 
@@ -245,6 +248,7 @@ class GameRunner {
 					$this->debug("    Captive. The dead are captive no more.");
 					$character->setPrisonerOf(null);
 					$captor->removePrisoner($character);
+					$this->statusUpdater->character($character, CharacterStatus::prisoner, null);
 				}
 				$this->debug("    Heir: ".($heir?$heir->getName():"(nobody)"));
 				if ($character->getPositions()->count() > 0) {
