@@ -317,7 +317,9 @@ class ActivityReport extends AbstractReport {
 	 * @return string
 	 */
 	public function getName(): string {
-		return $this->name;
+		if ($this->name) return $this->name;
+		# Only old duels don't have a name, so if there isn't a name, it was a duel.
+		return 'a duel';
 	}
 
 	/**
