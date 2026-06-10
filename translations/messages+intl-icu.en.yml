@@ -1392,6 +1392,9 @@ interaction:
  placetransfer:
   name:     New Owner
   submit:   Transfer
+ occupier:
+  name:     New Occupier
+  submit:   Transfer
 
 activity:
  duel:
