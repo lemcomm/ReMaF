@@ -89,11 +89,16 @@ class ConstructionController extends AbstractController {
 					foreach ($existing as $id=>$amount) {
 						// we are also setting 0 values here because they might currently be > 0
 						$road = $em->getRepository(Road::class)->find($id);
-						if ($road->getQuality()>=5) {
-							// max road level: 5
-							$amount = 0.0;
+						if ($amount < 0) {
+							# deconstruction.
+							$road->setWorkers(min(0, floatval($amount)));
+						} else {
+							if ($road->getQuality()>=5) {
+								// max road level: 5
+								$amount = 0.0;
+							}
+							$road->setWorkers(max(0,floatval($amount)));
 						}
-						$road->setWorkers(max(0,floatval($amount)));
 					}
 					$em->flush();
 				}

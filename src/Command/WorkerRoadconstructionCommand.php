@@ -53,7 +53,7 @@ class WorkerRoadconstructionCommand extends  Command {
 		}
 		$this->em->flush();
 		$this->em->clear();
-		$query = $em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App\Entity\Road r JOIN r.geo_data g JOIN g.biome b WHERE r.beingDestroyed = true or r.beingRemoved = true')->setMaxresults($batch)->setFirstResult($offset);
+		$query = $em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App\Entity\Road r JOIN r.geo_data g JOIN g.biome b WHERE r.workers<0')->setMaxresults($batch)->setFirstResult($offset);
 		foreach ($query->getResult() as $row) {
 			$road = $row['road'];
 			$length = $row['length'];

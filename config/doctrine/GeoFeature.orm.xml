@@ -14,8 +14,6 @@
 				<option name="default">0</option>
 			</options>
 		</field>
-		<field name="beingDestroyed" type="boolean" nullable="true"/>
-		<field name="beingRemoved" type="boolean" nullable="true"/>
 
 		<many-to-one field="type" target-entity="FeatureType"/>
 		<many-to-one field="geo_data" target-entity="GeoData" inversed-by="features"/>

@@ -624,6 +624,9 @@ class Settlement {
 				if ($road->getWorkers() > 0) {
 					$this->assignedRoads += $road->getWorkers();
 				}
+				if ($road->getWorkers() < 0) {
+					$this->assignedRoads = abs($road->getWorkers());
+				}
 			}
 		}
 

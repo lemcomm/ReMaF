@@ -696,6 +696,17 @@ class Geography {
 		return array('key'=>$key, 'entity'=>$settlement);
 	}
 
+	/**
+	 * @param Character $char
+	 *
+	 * @return float|int|mixed|string
+	 */
+	public function findRoadsNearCharacter(Character $char) {
+		$distance = $this->calculateInteractionDistance($char);
+		$query = $this->em->createQuery('SELECT r, ST_Distance(r.path, :loc) as distance AS distance FROM App\Entity\Road r WHERE ST_Distance(r.path, :loc) <= :maxdistance ORDER BY distance ASC')->setParameters(['loc'=>$char->getLocation(), 'maxdistance'=>$distance]);
+		return $query->getResult();
+	}
+
 
 	public function checkTravelSea(Character $character, $invalid) {
 		$query = $this->em->createQuery('SELECT ST_AsGeoJSON(ST_Intersection(c.travel, g.poly)) as intersections FROM App\Entity\Character c, App\Entity\GeoData g WHERE c = :me AND g.biome not in (:water) AND ST_Intersects(c.travel, g.poly)=true');

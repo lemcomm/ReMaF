@@ -248,8 +248,11 @@ class ActionResolution {
 		if ($action->getStringValue() === 'destroy') {
 			$here = $action->getTargetSettlement();
 			$this->econ->breakDownSettlement($here, true, $action->getCharacter());
-			$action->setComplete(new DateTime("tomorrow"));
+			$action->setComplete(new DateTime("+6 hours"));
 			$this->em->flush();
+		} elseif ($action->getStringValue() === 'roads') {
+			$road = $action->getTargetRoad();
+			$this->econ->RoadDegradation($road, $road->getPath(), $road->getGeoData()->getBiome()->getRoadConstruction(), $action->getCharacter());
 		} else {
 			// just remove this, damage and all has already been applied, we just needed the action to stop travel
 			$this->statusUpdater->character($action->getCharacter(), CharacterStatus::looting, false);

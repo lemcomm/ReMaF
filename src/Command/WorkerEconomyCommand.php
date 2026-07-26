@@ -107,9 +107,10 @@ class WorkerEconomyCommand extends Command {
 					$settlement->setAbandoned(true);
 				}
 				$this->economy->breakDownSettlement($settlement);
-			} elseif ($settlement->getAbandoned() || $settlement->getDestroyed()) {
 				$this->economy->breakDownFeatures($settlement);
+			} elseif ($settlement->getDestroyed()) {
 				# Roads are handled by the road worker.
+				$this->economy->breakDownFeatures($settlement);
 			}
 
 			if ($count > 24) {

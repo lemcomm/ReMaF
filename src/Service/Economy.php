@@ -997,7 +997,7 @@ class Economy {
 	}
 
 
-	public function RoadConstruction(Road $road, $length, $mod) {
+	public function RoadConstruction(Road $road, $length, $mod): bool {
 		$required = $this->RoadHoursRequired($road, $length, $mod);
 		$workhours = $this->calculateWorkHours($road);
 
@@ -1012,11 +1012,22 @@ class Economy {
 		}
 	}
 
-	public function RoadDegradation(Road $road, $length, $mod) {
+	public function RoadDegradation(Road $road, $length, $mod, ?Character $char = null): void {
 		$required = $this->RoadHoursRequired($road, $length, $mod);
-		if ($road->getBeingRemoved()) {
-			$damage = $this->calculateWorkHours($road);
-		} else {
+		$damage = 0;
+		if ($char) {
+			$workers = 0;
+			/** @var Unit $unit */
+			foreach ($char->getUnits() as $unit) {
+				$workers += $unit->getActiveSoldiers();
+			}
+			$damage = pow($workers, 0.975) * ($this->hours_per_day-2); # Same logic as calculate work hours, but with soldiers that have other things to do.
+		}
+		if ($road->getWorkers() < 0) {
+			# Negative workers === being removed by settlement
+			$damage += $this->calculateWorkHours($road);
+		}
+		if (!$damage) {
 			$damage = rand(0,50);
 		}
 
@@ -1142,7 +1153,7 @@ class Economy {
 			return pow($workers, 0.95) * $this->hours_per_day;
 		} elseif ($entity instanceof Road) {
 			if (!$settlement) { $settlement = $entity->getGeoData()->getSettlement(); }
-			$workers = round($entity->getWorkers() * $settlement->getPopulation());
+			$workers = round(abs($entity->getWorkers()) * $settlement->getPopulation());
 			return pow($workers, 0.975) * $this->hours_per_day;
 		} elseif ($entity instanceof GeoFeature) {
 			if (!$settlement) { $settlement = $entity->getGeoData()->getSettlement(); }

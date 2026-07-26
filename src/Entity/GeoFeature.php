@@ -17,8 +17,6 @@ class GeoFeature {
 	private ?GeoData $geo_data = null;
 	private ?World $world = null;
 	private int $damage = 0;
-	private ?bool $beingDestroyed = null;
-	private ?bool $beingRemoved = null;
 
 	public function ApplyDamage($damage): string {
 		$this->condition -= $damage;
@@ -270,24 +268,6 @@ class GeoFeature {
 
 	public function setDamage(int $damage): static {
 		$this->damage = $damage;
-		return $this;
-	}
-
-	public function getBeingDestroyed(): ?bool {
-		return $this->beingDestroyed;
-	}
-
-	public function setBeingDestroyed(?bool $beingDestroyed): static {
-		$this->beingDestroyed = $beingDestroyed;
-		return $this;
-	}
-
-	public function getBeingRemoved(): ?bool {
-		return $this->beingRemoved;
-	}
-
-	public function setBeingRemoved(?bool $beingRemoved): static {
-		$this->beingRemoved = $beingRemoved;
 		return $this;
 	}
 }
