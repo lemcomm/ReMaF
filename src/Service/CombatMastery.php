@@ -270,7 +270,7 @@ class CombatMastery extends CombatAbstract {
 			}
 			if ($shockRoll > $target->getToughness()) {
 				// Technically, this is a KO, but we assume that we kill the soldiers until a better function replaces post-battle recovery
-				if ($target->isNoble()) {
+				if ($target->isNoble() && $myNoble && $random < $surrender) {
 					if (!$this->activity) {
 						$this->captureInCombat($myNoble, $target->getCharacter());
 						$this->history->logEvent($target->getCharacter(), 'event.character.capture', ['%link-character%' => $myNoble->getId()], History::HIGH, true);
