@@ -8,6 +8,7 @@ use App\Entity\Building;
 use App\Entity\Character;
 use App\Entity\GeoFeature;
 use App\Entity\GeoResource;
+use App\Entity\Place;
 use App\Entity\ResourceType;
 use App\Entity\Road;
 use App\Entity\Settlement;
@@ -17,6 +18,7 @@ use App\Entity\Supply;
 use App\Entity\Resupply;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StLength;
 use Psr\Log\LoggerInterface;
 
 /*
@@ -1014,6 +1016,7 @@ class Economy {
 
 	public function RoadDegradation(Road $road, $length, $mod, ?Character $char = null): void {
 		$required = $this->RoadHoursRequired($road, $length, $mod);
+		echo ($road->getId()." needs ".$required."\n");
 		$damage = 0;
 		if ($char) {
 			$workers = 0;
@@ -1028,13 +1031,16 @@ class Economy {
 			$damage += $this->calculateWorkHours($road);
 		}
 		if (!$damage) {
-			$damage = rand(0,50);
+			$damage = rand(
+				rand(0, max(1, $required/1000)),
+				rand($required/1000, $required/50)
+			);
 		}
-
+		$damage = $damage * $mod; # Harsher biomes take more road damage.
 		if ($road->getDamage() + $damage >= $required) {
 			if ($road->getQuality() > 0) {
 				$road->setQuality($road->getQuality()-1);
-				$road->setDamage($required - $road->getDamage() - $damage);
+				$road->setDamage(abs($required - $road->getDamage() - $damage));
 			} else {
 				$this->em->remove($road);
 			}
@@ -1242,9 +1248,9 @@ class Economy {
 		}
 		foreach ($here->getSuppliedUnits() as $unit) {
 			$unit->setSupplier(null);
-			$char = $unit->getCharacter() ?: $unit->getSettlement()?->findOwnerEquivalent();
-			if ($char) {
-				$this->history->logEvent($char, 'event.unit.supplier'.$msg,
+			$who = $unit->getCharacter() ?: $unit->getSettlement()?->findOwnerEquivalent();
+			if ($who) {
+				$this->history->logEvent($who, 'event.unit.supplier'.$msg,
 					[
 						'%link-settlement%'=>$here->getId(),
 						'%link-unit%'=>$unit->getId()
@@ -1280,12 +1286,15 @@ class Economy {
 	}
 
 	public function breakDownSettlement(Settlement $settlement, $byLooting = false, ?Character $char = null): array {
+		$results = [];
+		if ($settlement->getDestroyed()) {
+			return $results;
+		}
 		$pop = $settlement->getPopulation();
 		$bldgs = $settlement->getBuildings();
 		$bldgCount = $bldgs->count();
 		/** @var Building[] $bldgArr */
 		$bldgArr = $bldgs->toArray();
-		$results = [];
 		if ($byLooting) {
 			# Character looting.
 			$my_soldiers = 0;
@@ -1303,7 +1312,7 @@ class Economy {
 				$kills = $pop;
 				$left = 0;
 			}
-			$result['killed'] = $kills;
+			$results['killed'] = $kills;
 			$settlement->setPopulation($left);
 		} else {
 			if ($pop > 100) {
@@ -1317,11 +1326,14 @@ class Economy {
 			$settlement->setPopulation($pop - $leaving);
 		}
 
-		$howMany = rand(1, 3);
+		if ($bldgCount === 1) {
+			$howMany = 1;
+		} else {
+			$howMany = rand(1, max($bldgCount/4, 2));
+		}
 		if ($bldgCount > 0) {
 			for ($i = 0; $i < $howMany; $i++) {
 				$target = $bldgArr[array_rand($bldgArr)];
-				$damage = $target->getType()->getBuildHours() * $percent;
 				$type = $target->getType()->getName();
 				if ($byLooting) {
 					[
@@ -1330,6 +1342,7 @@ class Economy {
 					] = $this->war->lootValue(round($my_soldiers * 32 / $bldgCount)); #Deliberate drop of first return value.
 				} else {
 					$percent = rand(1, 15) / 100;
+					$damage = $target->getType()->getBuildHours() * $percent;
 				}
 				if (!isset($results['burn'][$type])) {
 					$results['burn'][$type] = 0;
@@ -1371,21 +1384,39 @@ class Economy {
 
 	public function breakDownFeatures(Settlement $settlement): void {
 		$all = $settlement->getGeoData()?->getFeatures();
-		if ($all->count() > 0) {
+		if ($all && $all->count() > 0) {
 			/** @var GeoFeature $each */
 			foreach ($all as $each) {
-				$takes = $each->getType()->getBuildHours();
-				$loss = rand(10, $takes/100) + rand(0, $takes/200);
-				if ($each->getDamage() >= $takes) {
-					$this->em->remove($each);
-				} else {
-					$each->setDamage($loss); # Yes, this will take a while.
+				if (!$each->getType()->getHidden()) {
+					$takes = $each->getType()->getBuildHours();
+					$loss = rand(10, $takes/100) + rand(0, $takes/200);
+					if ($each->getDamage() >= $takes) {
+						$this->em->remove($each);
+					} else {
+						$each->setDamage($each->getDamage()+$loss); # Yes, this will take a while.
+					}
 				}
 			}
 		}
 	}
 
+	public function breakDownRoads(Settlement $settlement): void {
+		$where = $settlement->getGeoData();
+		if ($where) {
+			$query = $this->em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App\Entity\Road r JOIN r.geo_data g JOIN g.biome b WHERE g.id = :geoData')->setParameters(['geoData'=>$where]);
+			foreach ($query->getResult() as $each) {
+				$road = $each['road'];
+				$length = $each['length'];
+				$mod = $each['mod'];
+				$this->RoadDegradation($road, (float)$length, (float)$mod);
+			}
+		}
+	}
+
 	public function destroySettlement(Settlement $settlement, $byLooting = false, ?Character $char = null): void {
+		if ($settlement->getDestroyed()) {
+			return;
+		}
 		if (!$settlement->getAbandoned()) {
 			# Done through force. Call the blow to break the trades n stuff.
 			$this->startAbandoningSettlement($settlement, $byLooting, $char);
@@ -1428,7 +1459,7 @@ class Economy {
 		$settlement->setOpenPorts(false);
 		$settlement->setFoodProvisionLimit(1);
 		$settlement->setCulture(null);
-		$this->history->logEvent($settlement, 'event.settlement.destroyed', History::ULTRA, true);
+		$this->history->logEvent($settlement, 'event.settlement.destroyed', [], History::ULTRA, true);
 	}
 
 }

@@ -101,7 +101,7 @@ class PlaceManager {
 		return $place;
 	}
 
-	public function destroy(Place $place, $why, $who): void {
+	public function destroy(Place $place, $why, $who = null): void {
 		$place->setDestroyed(true);
 		if ($spawn = $place->getSpawn()) {
 			$this->em->remove($spawn);
@@ -129,12 +129,22 @@ class PlaceManager {
 				);
 				break;
 			case 'abandon':
-				$this->history->logEvent(
-					$place,
-					'event.place.destroyed3',
-					array('%link-character%'=>$who->getId()),
-					History::HIGH, true
-				);
+				if (!$who) {
+					$this->history->logEvent(
+						$place,
+						'event.place.destroyed4',
+						array(),
+						History::HIGH, true
+					);
+				} else {
+					$this->history->logEvent(
+						$place,
+						'event.place.destroyed3',
+						array('%link-character%'=>$who->getId()),
+						History::HIGH, true
+					);
+				}
+
 				break;
 		}
 

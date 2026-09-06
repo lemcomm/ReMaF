@@ -506,6 +506,7 @@ event:
   destroyed:    Place has been demolished by {character}.
   destroyed2:    Place has been demolished by {character} during the destruction of {settlement}.
   destroyed3:    Place has been demolished by {character} during the abandonment of {settlement}.
+  destroyed4:    Place has been demolished by the harsh mistress of time after the abandonment of {settlement}.
   battle:       "{battle} was fought."
   entered:      "{character} has entered the place."
   entered2:     "{character} has entered the place with {soldiers} soldiers."

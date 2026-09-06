@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use LongitudeOne\Spatial\PHP\Types\Geometry\Point;
 
 class GeoFeature {
@@ -17,6 +19,11 @@ class GeoFeature {
 	private ?GeoData $geo_data = null;
 	private ?World $world = null;
 	private int $damage = 0;
+	private Collection $roads;
+
+	public function __construct() {
+		$this->roads = new ArrayCollection();
+	}
 
 	public function ApplyDamage($damage): string {
 		$this->condition -= $damage;
@@ -269,5 +276,9 @@ class GeoFeature {
 	public function setDamage(int $damage): static {
 		$this->damage = $damage;
 		return $this;
+	}
+
+	public function getRoads(): Collection {
+		return $this->roads;
 	}
 }
