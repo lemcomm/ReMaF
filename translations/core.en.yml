@@ -125,6 +125,8 @@ security:
  delete:
   title: Delete Your Account
   link: Delete Account
+  success: Account succesfully deleted.
+  emailmistmatch: "Error: Provided email does not match the email on the account."
   info: |
    <p>You can request deletion of your account at any time, but this is a permanent action on your part that cannot be recovered from. To have an account again you would be required to make a brand new account.</p>
    <p>The details of your account, such as username, email, etc., will be removed permanently. Credits you own will be voided and removed. Things you've created in game such as characters, artifacts, places of interest, will remain but may pass into an unowned status.</p>

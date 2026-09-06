@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Service\ArmorCalculator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 

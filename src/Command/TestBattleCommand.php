@@ -44,6 +44,8 @@ class TestBattleCommand extends  Command {
 			case 4:
 				$ruleset = 'mastery';
 				break;
+			case 5:
+				$set = 4;
 			default:
 				$ruleset = 'legacy';
 		}
@@ -86,7 +88,7 @@ class TestBattleCommand extends  Command {
 				$attackers = rtrim($attackers, ",");
 				$defenders = rtrim($defenders, ",");
 				$battleGen = new ArrayInput([
-					'command' => 'maf:battle:generate',
+					'command' => 'maf:generate:battle',
 					'where' => 'Settlement:1249',
 					'attackers' => $attackers,
 					'defenders' => $defenders,
@@ -193,7 +195,7 @@ class TestBattleCommand extends  Command {
 				$attackers = rtrim($attackers, ",");
 				$defenders = rtrim($defenders, ",");
 				$battleGen = new ArrayInput([
-					'command' => 'maf:battle:generate',
+					'command' => 'maf:generate:battle',
 					'where' => 'Settlement:1249',
 					'attackers' => $attackers,
 					'defenders' => $defenders,
@@ -241,7 +243,7 @@ class TestBattleCommand extends  Command {
 				$attackers = rtrim($attackers, ",");
 				$defenders = rtrim($defenders, ",");
 				$battleGen = new ArrayInput([
-					'command' => 'maf:battle:generate',
+					'command' => 'maf:generate:battle',
 					'where' => 'Settlement:1249',
 					'attackers' => $attackers,
 					'defenders' => $defenders,

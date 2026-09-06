@@ -736,6 +736,7 @@ class PoliticsController extends AbstractController {
 					case 'free':
 						$prisoner->setPrisonerOf(null);
 						$character->removePrisoner($prisoner);
+						$this->statusUpdater->character($prisoner, CharacterStatus::prisoner, null);
 						$this->hist->logEvent(
 							$prisoner,
 							'event.character.prison.free',
@@ -753,6 +754,7 @@ class PoliticsController extends AbstractController {
 						if ($do['method']) {
 							$prisoner->setPrisonerOf(null);
 							$character->removePrisoner($prisoner);
+							$this->statusUpdater->character($prisoner, CharacterStatus::prisoner, null);
 							$this->hist->logEvent(
 								$character,
 								'event.character.prison.killer.'.$do['method'],

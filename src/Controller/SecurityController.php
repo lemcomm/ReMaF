@@ -32,6 +32,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -424,7 +425,7 @@ class SecurityController extends AbstractController {
 	}
 
 	#[Route ('/security/delete', name:'maf_account_delete')]
-	public function delete(EntityManagerInterface $em, TranslatorInterface $trans, NotificationManager $note, Request $request): RedirectResponse|Response {
+	public function delete(EntityManagerInterface $em, TranslatorInterface $trans, NotificationManager $note, Request $request, Security $security): RedirectResponse|Response {
 		/** @var User $user */
 		$user = $this->getUser();
 		if ($user->isBanned()) {
@@ -437,7 +438,7 @@ class SecurityController extends AbstractController {
 			$data = $form->getData();
 			if (strtolower($data['email']) === strtolower($user->getEmail())) {
 				$id = $user->getId();
-				$note->spoolError('Initiating deletion of account #'.$id.' at user request.');
+				$note->spoolAdminMsg('Initiating deletion of account #'.$id.' at user request.');
 				foreach ($user->getLogs() as $each) {
 					# Keep old logs, as if they're being logged, they're probably a multi (or otherwise cheating).
 					$each->setOldUserId($id);
@@ -500,13 +501,19 @@ class SecurityController extends AbstractController {
 				foreach ($user->getKeys() as $each) {
 					$em->remove($each);
 				}
+				$em->createQuery('UPDATE App\Entity\Code c SET c.old_sender = :id WHERE c.sender = :id')->setParameters(['id'=>$id])->execute();
+				$em->createQuery('UPDATE App\Entity\Code c SET c.old_used_by = :id WHERE c.used_by = :id')->setParameters(['id'=>$id])->execute();
+				$em->createQuery('UPDATE App\Entity\Code c SET c.sender = null WHERE c.sender = :id')->setParameters(['id'=>$id])->execute();
+				$em->createQuery('UPDATE App\Entity\Code c SET c.used_by = null WHERE c.used_by = :id')->setParameters(['id'=>$id])->execute();
 				$em->flush();
 				$em->remove($user);
-				$note->spoolError('Account deleted successfully.');
-				$this->addFlash('notice', $trans->trans('user.delete.success', [], 'core'));
-				return new RedirectResponse($this->generateUrl('maf_account'));
+				$em->flush();
+
+				$note->spoolAdminMsg('Account deleted successfully.');
+				$this->addFlash('notice', $trans->trans('security.delete.success', [], 'core'));
+				return $security->logout(false);
 			} else {
-				$form->addError(new FormError($trans->trans('user.delete.emailmistmatch', [], 'core')));
+				$form->addError(new FormError($trans->trans('security.delete.emailmistmatch', [], 'core')));
 			}
 		}
 		return $this->render('Account/delete.html.twig', [

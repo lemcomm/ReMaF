@@ -42,7 +42,7 @@ class PlacePermissionsSetType extends AbstractType {
 				'constraints' => new Valid(),
 			));
 		} else {
-			$builder->add('permissions', CollectionType::class, array(
+			$builder->add('occupation_permissions', CollectionType::class, array(
 				'entry_type'		=> PlaceOccupationPermissionsType::class,
 				'entry_options' => [
 					'me' => $me,

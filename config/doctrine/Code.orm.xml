@@ -14,7 +14,9 @@
 		<field name="used_on" type="datetime" nullable="true"/>
 
 		<many-to-one field="sender" target-entity="User"/>
+		<field name="old_sender" type="integer" nullable="true"/>
 		<many-to-one field="used_by" target-entity="User"/>
+		<field name="old_used_by" type="integer" nullable="true"/>
 
 		<unique-constraints>
 			<unique-constraint columns="code" />

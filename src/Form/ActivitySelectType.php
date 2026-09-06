@@ -185,7 +185,7 @@ class ActivitySelectType extends AbstractType {
 		$subselect = $options['subselect'];
 		$builder->add('name', TextType::class, array(
 			'label'=>'duel.form.name',
-			'required'=>false
+			'required'=>true
 		));
 
 		$builder->add('target', EntityType::class,[

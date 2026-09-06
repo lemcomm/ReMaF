@@ -465,11 +465,11 @@ class PlaceDispatcher extends WarDispatcher {
 		return $this->action("place.occupationstart", "maf_place_occupation_start");
 	}
 
-	public function placeOccupationEndTest($check_duplicate, $place): array {
+	public function placeOccupationEndTest($check_duplicate, Place $place): array {
 		if ($this->getCharacter()->isPrisoner()) {
 			return array("name"=>"place.occupationend.name", "description"=>"unavailable.prisoner");
 		}
-		if (!$place->getOccupant()) {
+		if (!$place->getOccupant() && !$place->getOccupier()) {
 			return array("name"=>"place.occupationend.name", "description"=>"unavailable.notoccupied");
 		}
 		if ($place->getOccupant() != $this->getCharacter()) {
@@ -484,7 +484,7 @@ class PlaceDispatcher extends WarDispatcher {
 		if ($this->getCharacter()->isDoingAction('military.regroup')) {
 			return array("name"=>"place.occupationend.name", "description"=>"unavailable.regrouping");
 		}
-		return $this->action("place.occupationend", "maf_settlement_occupation_end");
+		return $this->action("place.occupationend", "maf_place_occupation_end", false, array('id'=>$place->getId()));
 	}
 
 	public function placeChangeOccupierTest($check_duplicate, $place): array {
@@ -505,7 +505,7 @@ class PlaceDispatcher extends WarDispatcher {
 		if ($myrealms->isEmpty()) {
 			return array("name"=>"place.changeoccupier.name", "description"=>"unavailable.norealms");
 		}
-		return $this->action("place.changeoccupier", "maf_settlement_occupier", false, array('id'=>$place->getId()));
+		return $this->action("place.changeoccupier", "maf_place_occupier", false, array('id'=>$place->getId()));
 	}
 
 	public function placeChangeOccupantTest($check_duplicate, $place): array {
@@ -521,6 +521,6 @@ class PlaceDispatcher extends WarDispatcher {
 		if (!$this->getActionableCharacters()) {
 			return array("name"=>"place.changeoccupant.name", "description"=>"unavailable.nobody");
 		}
-		return $this->action("place.changeoccupant", "maf_settlement_occupant");
+		return $this->action("place.changeoccupant", "maf_place_occupant", false, array('id'=>$place->getId()));
 	}
 }

@@ -842,7 +842,7 @@ class WarManager {
 				$mod = 1;
 			}
 			$max = floor($settlement->getPopulation() * $ratio * 1.5 * $mod);
-			[$taken] = $this->lootValue($max);
+			[$taken,] = $this->lootValue($max);
 			if ($character) {
 				# Settlements looting themselves handle this in Economy and don't have cooldowns.
 				if ($taken > 0) {

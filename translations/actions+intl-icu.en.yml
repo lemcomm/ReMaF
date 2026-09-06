@@ -521,8 +521,8 @@ control:
  changeoccupant:
   name:         Change Occupant
   description:  Someone else can manage this
-  intro:        As the occupant of {settlement} you can always pass off this responsibiity to someone else.
-  intro2:       As the occupant of %place% you can always pass off this responsibiity to someone else.
+  intro:        As the occupant of {settlement} you can always pass off this responsibility to someone else.
+  intro2:       As the occupant of {place} you can always pass off this responsibility to someone else.
  changeoccupier:
   name:         Change Occupying Realm
   description:  Replace the flag of the occupation
@@ -530,6 +530,8 @@ control:
   intro2:       As the occupant of {settlement} you can always erect a different flag over this settlement. It is best if this matches the realm in charge of any ongoing wars against the previous controller of this settlement. It is currently occupied by a first one without a realm's backing.
   intro3:       As the occupant of {place} you can always erect a different flag over this place of interest. It is best if this matches the realm in charge of any ongoing wars against the previous controller of this settlement. It is currently occupied by %realm%.
   intro4:       As the occupant of {place} you can always erect a different flag over this place of interest. It is best if this matches the realm in charge of any ongoing wars against the previous controller of this settlement. It is currently occupied by a first one without a realm's backing.
+  realm:        "Transfer to Realm:"
+  submit:       Transfer
 
  spawn:
   success:

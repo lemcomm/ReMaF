@@ -15,7 +15,9 @@ class Code {
 	private DateTime $used_on;
 	private ?int $id = null;
 	private ?User $sender = null;
+	private ?int $old_sender = null;
 	private ?User $used_by = null;
+	private ?int $old_used_by = null;
 
 	/**
 	 * Get code
@@ -251,6 +253,24 @@ class Code {
 	public function setUsed(bool $used): static {
 		$this->used = $used;
 
+		return $this;
+	}
+
+	public function getOldSender(): ?int {
+		return $this->old_sender;
+	}
+
+	public function setOldSender(?int $old_sender): static {
+		$this->old_sender = $old_sender;
+		return $this;
+	}
+
+	public function getOldUsedBy(): ?int {
+		return $this->old_used_by;
+	}
+
+	public function setOldUsedBy(?int $old_used_by): static {
+		$this->old_used_by = $old_used_by;
 		return $this;
 	}
 }

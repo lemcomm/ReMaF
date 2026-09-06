@@ -108,6 +108,10 @@ class BattleRunner {
 	private int $lightShieldCapture = 0;
 	private int $lightShieldKill = 0;
 	private int $countered = 0;
+	private int $counterwound = 0;
+	private int $counterkill = 0;
+	private int $counterfail = 0;
+	private int $countercapture;
 	private int $stumble = 0;
 
 	public function __construct(
@@ -981,6 +985,7 @@ class BattleRunner {
 		}
 		/** @var Soldier $soldier */
 		foreach ($soldiers as $soldier) {
+			$this->log(10, $soldier->getName()."\n");
 			$myPerspective = $perspective;
 			$counter = null;
 			$result=false;
@@ -1028,17 +1033,7 @@ class BattleRunner {
 								$enemyCollection->removeElement($target);
 								// special results for nobles
 								if ($target->isNoble()) {
-									$noble = $this->legacy->findNobleFromSoldier($soldier);
-									if ($result=='capture') {
-										$extra = array(
-											'what' => 'ranged.'.$result,
-											'by' => $noble->getId()
-										);
-									} else {
-										$extra = array('what'=>'ranged.'.$result);
-									}
-									$extra['who'] = $target->getCharacter()->getId();
-									$extras[] = $extra;
+									$extras[] = $this->rangedCapture($soldier, $target, $result);
 								}
 							}
 						} else {
@@ -1140,6 +1135,7 @@ class BattleRunner {
 			$cavNoTargets = true;
 		}
 		foreach ($soldiers as $soldier) {
+			$this->log(10, $soldier->getName()."\n");
 			$result = false;
 			$counter = null;
 			$target = null;
@@ -1231,6 +1227,36 @@ class BattleRunner {
 					$soldier->setEngaged(true);
 					$target->setEngaged(true);
 				}
+				if ($counter && strpos($result, ' ') !== false) {
+					# Legacy specific. Mastery doesn't set $counter
+					$results = explode(' ', $result);
+					$result = $results[0];
+					$result2 = $counter . $results[1];
+				} else {
+					$result2 = false;
+				}
+				if ($result) {
+					if ($result=='kill'||$result=='capture') {
+						$enemies--;
+						$enemyCollection->removeElement($target);
+						// special results for nobles
+						if ($target->isNoble()) {
+							$extras[] = $this->meleeCapture($soldier, $target, $result);
+						}
+					}
+				} else {
+					$noMeleeTargets++;
+					/*
+					if ($battle->getType() == 'siegeassault' && $usedContacts >= $currentContacts) {
+						$crowded++; #Frontline is too crowded in the siege.
+					} else {
+						$noTargets++; #Just couldn't hit the target :(
+					}
+					*/
+				}
+				if ($result2) {
+					$this->addresult($result2);
+				}
 			} elseif ($this->masteryRuleset) {
 				$target = $this->getRandomSoldier($enemyCollection);
 				if ($target) {
@@ -1257,53 +1283,43 @@ class BattleRunner {
 					[$results, $logs] = $this->mastery->resolveAttack($soldier, $target, $hit, $soldier->getWeapon(), $target->getWeapon(), $soldier->getArmour(), $target->getArmour(), $myPerspective);
 					$this->logAttack($results, $logs);
 					$this->fatigueRoll($soldier, $phase);
+					$me = $soldier;
+					$them = $target;
+					if (str_contains($results, ' ')) {
+						foreach (explode(' ', $results) as $result) {
+							$this->log(10, $result."\n");
+							if ($me === $soldier && $result == 'countered') {
+								$me = $target;
+								$them = $soldier;
+								$this->log(10, 'flipping me/them'."\n");
+							} elseif ($me === $target && $result == 'countered') {
+								$me = $soldier;
+								$them = $target;
+								$this->log(10, 'flipping them/me'."\n");
+							}
+							if ($me === $soldier) {
+								$enemies--;
+								$enemyCollection->removeElement($target);
+							}
+							if (($result=='kill'||$result=='capture') && $them->isNoble()) {
+								$this->log(10, $me->getName().' is $me, '.$them->getName().' is $them'."\n");
+								$extras[] = $this->meleeCapture($me, $them, $result);
+							}
+						}
+					} else {
+						if ($results=='kill'||$results=='capture') {
+							$enemies--;
+							$enemyCollection->removeElement($target);
+							// special results for nobles
+							if ($target->isNoble()) {
+								$extras[] = $this->meleeCapture($me, $them, $results);
+							}
+						}
+					}
 				} else {
 					$this->log(10, "no more targets\n");
 					$noMeleeTargets++;
 				}
-			}
-			if ($counter && strpos($result, ' ') !== false) {
-				$results = explode(' ', $result);
-				$result = $results[0];
-				$result2 = $counter . $results[1];
-			} else {
-				$result2 = false;
-			}
-			if ($result) {
-				$this->addResult($result);
-				if ($result=='kill'||$result=='capture') {
-					$enemies--;
-					$enemyCollection->removeElement($target);
-					// special results for nobles
-					if ($target->isNoble()) {
-						# This can be called through mastery or legacy, both extend it from CombatBase
-						$noble = $this->mastery->findNobleFromSoldier($soldier);
-						if ($result=='capture' || $soldier->isNoble()) {
-							$extra = array(
-								'what' => 'noble.'.$result,
-								'by' => $noble->getId()
-							);
-						} else {
-							$extra = array('what'=>'mortal.'.$result);
-						}
-
-						$extra['who'] = $target->getCharacter()->getId();
-						$extras[] = $extra;
-					}
-				}
-
-			} else {
-				$noMeleeTargets++;
-				/*
-				if ($battle->getType() == 'siegeassault' && $usedContacts >= $currentContacts) {
-					$crowded++; #Frontline is too crowded in the siege.
-				} else {
-					$noTargets++; #Just couldn't hit the target :(
-				}
-				*/
-			}
-			if ($result2) {
-				$this->addresult($result2);
 			}
 			if (!$cavNoTargets && $noCavTargets > 4) {
 				$this->log(10, "Unable to locate viable charge targets\n");
@@ -2051,13 +2067,52 @@ class BattleRunner {
 
 	public function logAttack($results, $logs): void {
 		foreach ($logs as $each) {
-			$this->log(10, $each);
+			$this->log(10, '  '.$each);
 		}
 		if (str_contains($results, ' ')) {
+			$flip = false;
 			foreach (explode(' ', $results) as $each) {
+				if ($flip) {
+					$each = 'cntr'.$each;
+				}
 				$this->addResult($each);
+				if ($each === 'countered') {
+					$flip = true;
+				}
 			}
+		} else {
+			$this->addResult($results);
 		}
+	}
+
+	public function rangedCapture(Soldier $me, Soldier $them, string $result): array {
+		$noble = $this->legacy->findNobleFromSoldier($me);
+		if ($result=='capture') {
+			$extra = array(
+				'what' => 'ranged.'.$result,
+				'by' => $noble->getId()
+			);
+		} else {
+			$extra = array('what'=>'ranged.'.$result);
+		}
+		$extra['who'] = $them->getCharacter()->getId();
+		return $extra;
+	}
+
+	public function meleeCapture(Soldier $me, Soldier $them, string $result): array {
+		# This can be called through mastery or legacy, both extend it from CombatBase
+		$noble = $this->mastery->findNobleFromSoldier($me);
+		if ($result=='capture' || $me->isNoble()) {
+			$extra = array(
+				'what' => 'noble.'.$result,
+				'by' => $noble->getId()
+			);
+		} else {
+			$extra = array('what'=>'mortal.'.$result);
+		}
+
+		$extra['who'] = $them->getCharacter()->getId();
+		return $extra;
 	}
 
 	public function prelog($text): void {
@@ -2136,6 +2191,18 @@ class BattleRunner {
 			case 'countered':
 				$this->countered++;
 				break;
+			case 'cntrwound':
+				$this->counterwound++;
+				break;
+			case 'cntrkill':
+				$this->counterkill++;
+				break;
+			case 'cntrcapture':
+				$this->countercapture++;
+				break;
+			case 'cntrfail':
+				$this->counterfail++;
+				break;
 			case 'chargefail':
 				$this->chargeFail++;
 				break;
@@ -2188,6 +2255,10 @@ class BattleRunner {
 		if ($this->lightShieldWound) $stageResult['lightShieldWound'] = $this->lightShieldWound;
 		if ($this->lightShieldCapture) $stageResult['lightShieldCapture'] = $this->lightShieldCapture;
 		if ($this->lightShieldKill) $stageResult['lightShieldKill'] = $this->lightShieldKill;
+		if ($this->countercapture) $stageResult['counterCapture'] = $this->countercapture;
+		if ($this->counterkill) $stageResult['counterKill'] = $this->counterkill;
+		if ($this->counterwound) $stageResult['counterWound'] = $this->counterwound;
+		if ($this->counterfail) $stageResult['counterFail'] = $this->counterfail;
 		return $stageResult;
 	}
 
@@ -2213,6 +2284,10 @@ class BattleRunner {
 		$this->lightShieldCapture = 0;
 		$this->lightShieldKill = 0;
 		$this->countered = 0;
+		$this->counterwound = 0;
+		$this->countercapture = 0;
+		$this->counterkill = 0;
+		$this->counterfail = 0;
 	}
 
 	private function legacyUpdateRangedMorale($group, $enemies, $shots, $rangedHits, $stageResult) {

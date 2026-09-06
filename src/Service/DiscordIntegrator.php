@@ -91,7 +91,7 @@ class DiscordIntegrator {
 			if (strlen($text) < 990) {
 				$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($text)]), $this->errorsHook);
 			} else {
-				if (!str_contains($texts[0], '```')) {
+				if (substr_count($texts[0], '```') === 1) {
 					$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($texts[0]).'```']), $this->errorsHook);
 				} else {
 					$this->curlToDiscord(json_encode(['content' => $this->convertToMarkdown($texts[0])]), $this->errorsHook);
@@ -115,8 +115,8 @@ class DiscordIntegrator {
 	private function convertToMarkdown($text): string {
 		$text = str_replace(["<i>", "</i>"], "*", $text); # Replace <i> and </i>
 		$text = str_replace(["<b>", "</b>"], "**", $text); # Replace <b> and </b>
-		$text = str_replace(["<u>", "</u>"], "", $text); # Remove <u> and </u>, not that I think we use it anywhere.
-		return $text;
+		# Remove <u> and </u>, not that I think we use it anywhere.
+		return str_replace(["<u>", "</u>"], "", $text);
 	}
 
 }

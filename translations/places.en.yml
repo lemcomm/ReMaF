@@ -118,6 +118,15 @@ place:
   longdesc: Associations can be quite extensive. And you're well within your abilities to remedy that problem.
   intro: >
     If you've found the %name% to be troublesome, it's a fairly simple matter to evict them.
+ occupationend:
+  name:         End Occupation
+  description:  Declare an end to the occupation?
+ changeoccupant:
+  name:         Change Occupant
+  description:  Someone else can manage this
+ changeoccupier:
+  name:         Change Occupying Realm
+  description:  Replace the flag of the occupation
 
 house:
  cadet:
