@@ -37,6 +37,7 @@ class LootType extends AbstractType {
 				'military.settlement.loot.option.resources' => 'resources',
 				'military.settlement.loot.option.wealth' => 'wealth',
 				'military.settlement.loot.option.burn' => 'burn',
+				'military.settlement.loot.option.destroy' => 'destroy',
 			);
 		} else {
 			$choices = array(
@@ -44,7 +45,10 @@ class LootType extends AbstractType {
 				'military.settlement.loot.option.food' => 'supply',
 				'military.settlement.loot.option.resources' => 'resources',
 				'military.settlement.loot.option.wealth' => 'wealth',
-			);
+				);
+			if ($options['roads']) {
+				$choices[] = ['military.settlement.loot.option.roads' => 'roads'];
+			}
 		}
 		$builder->add('method', ChoiceType::class, array(
 			'label'=>'military.settlement.loot.options',

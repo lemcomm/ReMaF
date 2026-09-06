@@ -4,13 +4,12 @@ namespace App\Controller;
 
 use App\DataTransformer\CharacterTransformer;
 use App\Entity\Action;
-use App\Entity\Battle;
 use App\Entity\BattleGroup;
 use App\Entity\Character;
 use App\Entity\Listing;
 use App\Entity\Place;
 use App\Entity\Realm;
-use App\Entity\ResourceType;
+use App\Entity\Road;
 use App\Entity\Siege;
 use App\Entity\War;
 use App\Entity\WarTarget;
@@ -24,7 +23,6 @@ use App\Form\SiegeType;
 use App\Form\SiegeStartType;
 use App\Form\WarType;
 
-use App\Service\ActionResolution;
 use App\Service\CharacterManager;
 use App\Service\CommonService;
 use App\Service\Dispatcher\PlaceDispatcher;
@@ -765,10 +763,15 @@ class WarController extends AbstractController {
 		if ($character->getInsideSettlement()) {
 			$inside = true;
 			$settlement = $character->getInsideSettlement();
+			$roads = false;
 		} else {
 			$inside = false;
 			$geo = $this->geo->findMyRegion($character);
 			$settlement = $geo->getSettlement();
+			$nearbyRoads = $this->geo->findRoadsNearCharacter($character);
+			if ($nearbyRoads[0] instanceof Road) {
+				$roads = true;
+			}
 		}
 		if (!$settlement) {
 			// strange, we can't find a settlement. What's going on?
@@ -776,7 +779,7 @@ class WarController extends AbstractController {
 		}
 
 		# TODO: Check if we can autowire services in transformers. This would mean no more passing the EM around.
-		$form = $this->createForm(LootType::class, null, ['settlement'=>$settlement, 'em'=>$em, 'inside'=>$inside]);
+		$form = $this->createForm(LootType::class, null, ['settlement'=>$settlement, 'em'=>$em, 'inside'=>$inside, 'roads'=>$roads]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();
@@ -803,12 +806,20 @@ class WarController extends AbstractController {
 			// or we resolve it immediately the way we do with wealth already and don't bother about it
 			$methods = count($data['method']);
 			$destination = $data['target'];
-			$time = max(4,$methods * $methods + $methods);
 
 			$act = new Action;
 			$act->setType('settlement.loot')->setCharacter($character);
 			$act->setTargetSettlement($settlement);
 			$act->setBlockTravel(true)->setCanCancel(false);
+			if ($data['method'] === 'destroy') {
+				$act->setStringValue('destroy');
+				$time = 6; # This gets updated and pushed out until canceled or total destruction.
+			} elseif ($data['method'] === 'roads') {
+				$act->setStringValue('roads');
+				$time = 6; # This gets updated and pushed out until canceled or total destruction.
+			} else {
+				$time = max(4,$methods * $methods + $methods);
+			}
 			$complete = new DateTime("now");
 			$complete->add(new DateInterval("PT".$time."H"));
 			$act->setComplete($complete);
@@ -829,7 +840,9 @@ class WarController extends AbstractController {
 
 			$result = array();
 			foreach ($data['method'] as $method) {
-				$war->lootSettlement($settlement, $destination, $character, $method, $inside);
+				if ($method !== 'destroy') {
+					$war->lootSettlement($settlement, $destination, $character, $method, $inside);
+				}
 			}
 			$em->flush();
 

@@ -35,6 +35,12 @@ class UnitDispatcher extends Dispatcher {
 		if (!$settlement) {
 			return 'notinside';
 		}
+		if ($settlement->getStartAbandoning()) {
+			return 'abandoning';
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return 'ruined';
+		}
 		if (!$this->pm->checkSettlementPermission($settlement, $this->getCharacter(), $test)) {
 			if ($test == 'recruit' && $this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'units')) {
 				return $this->veryGenericTests();
@@ -60,6 +66,12 @@ class UnitDispatcher extends Dispatcher {
 		if (!$settlement) {
 			$actions[] = array("name"=>"recruit.all", "description"=>"unavailable.notinside");
 		} else {
+			if ($settlement->getStartAbandoning()) {
+				return array("name"=>"recruit.name", "description"=>"unavailable.abandoning");
+			}
+			if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+				return array("name"=>"recruit.name", "description"=>"unavailable.ruined");
+			}
 			if ($this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'units', false)) {
 				$actions[] = $this->unitNewTest();
 				$actions[] = $this->personalEntourageTest();
@@ -136,6 +148,12 @@ class UnitDispatcher extends Dispatcher {
 		$character = $this->getCharacter();
 		$settlement = $unit->getSettlement();
 		if (!$character->getUnits()->contains($unit)) {
+			if ($settlement->getStartAbandoning()) {
+				return array("name"=>"unit.manage.name", "description"=>"unavailable.abandoning");
+			}
+			if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+				return array("name"=>"unit.manage.name", "description"=>"unavailable.ruined");
+			}
 			if($settlement && (!$this->pm->checkSettlementPermission($settlement, $character, 'units') && $unit->getMarshal() != $character)) {
 				if($unit->getSettlement() !== $character->getInsideSettlement()) {
 					return array("name"=>"unit.manage.name", "description"=>"unavailable.notinside");
@@ -160,6 +178,12 @@ class UnitDispatcher extends Dispatcher {
 		if(!$settlement) {
 			return array("name"=>"unit.rebase.name", "description"=>"unavailable.notinside");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"unit.rebase.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"unit.rebase.name", "description"=>"unavailable.ruined");
+		}
 		if ($unit->getTravelDays() > 0) {
 			return array("name"=>"unit.rebase.name", "description"=>"unavailable.rebasing");
 		}
@@ -174,6 +198,12 @@ class UnitDispatcher extends Dispatcher {
 			return array("name"=>"unit.appoint.name", "description"=>"unavailable.notlord");
 		} elseif(!$settlement) {
 			return array("name"=>"unit.appoint.name", "description"=>"unavailable.notinside");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"unit.appoint.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"unit.appoint.name", "description"=>"unavailable.ruined");
 		}
 		return $this->action("unit.appoint.name", "maf_unit_appoint");
 	}
@@ -221,6 +251,12 @@ class UnitDispatcher extends Dispatcher {
 		$character = $this->getCharacter();
 		$settlement = $unit->getSettlement();
 		if ($settlement) {
+			if ($settlement->getStartAbandoning()) {
+				return array("name"=>"unit.disband.name", "description"=>"unavailable.abandoning");
+			}
+			if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+				return array("name"=>"unit.disband.name", "description"=>"unavailable.ruined");
+			}
 			$permission = $this->pm->checkSettlementPermission($settlement, $character, 'units');
 			if ($unit->getCharacter()) {
 				return array("name"=>"unit.disband.name", "description"=>"unavailable.recallfirst");

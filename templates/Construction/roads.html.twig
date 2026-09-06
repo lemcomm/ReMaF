@@ -49,7 +49,7 @@
 				<td class="progress_column"><div class="progressbar" value="{{progress}}"><span class="progress_value_dummy">{{ progress }} %</span></div></td>
 				{# FIXME: should not be possible anymore beyond a certain quality #}
 				<td align="center">{{ form_widget(form.existing[data.road.id]) }}</td>
-				<td align="right" id="r_{{data.road.id}}">{% if data.road.workers > 0 %}{{ (data.road.workers*settlement.population)|number_format }} {{ 'road.workers'|trans }}{% endif %}</td>
+				<td align="right" id="r_{{data.road.id}}">{% if data.road.workers > 0 %}{{ (data.road.workers*settlement.population)|number_format }} {{ 'road.workers'|trans }}{% elseif data.road.workers < 0 %}{{ ((data.road.workers)|abs*settlement.population)|number_format }}{% endif %}</td>
 			</tr>
 		{% endfor %}
 		</tbody>

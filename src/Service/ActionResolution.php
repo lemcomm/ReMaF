@@ -13,6 +13,8 @@ use App\Entity\GeoData;
 use App\Entity\MapRegion;
 use App\Entity\Settlement;
 use App\Entity\SkillType;
+use App\Entity\Trade;
+use App\Entity\Unit;
 use App\Enum\CharacterStatus;
 use App\Service\Dispatcher\Dispatcher;
 use App\Service\StatusUpdater;
@@ -32,12 +34,13 @@ class ActionResolution {
 		private Dispatcher             $dispatcher,
 		private Geography              $geography,
 		private Interactions           $interactions,
-		private MilitaryManager        $milman,
 		private Politics               $politics,
 		private PermissionManager      $permissions,
 		private WarManager             $warman,
 		private StatusUpdater 		$statusUpdater,
 		private SkillManager            $skills,
+		private Economy			$econ,
+		private MilitaryManager        $military,
 	) {
 		$this->characters = new ArrayCollection();
 	}
@@ -216,7 +219,7 @@ class ActionResolution {
 			$result = $this->politics->changeSettlementOwner($settlement, $action->getCharacter(), 'take');
 			if ($result['orphans']) {
 				foreach ($result['orphans'] as $unit) {
-					$this->milman->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
+					$this->military->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
 				}
 			}
 			$this->politics->changeSettlementRealm($settlement, $action->getTargetRealm(), 'take');
@@ -238,15 +241,23 @@ class ActionResolution {
 
 	private function update_settlement_loot(Action $action): void {
 		$now = new DateTime("now");
-		if ($action->getComplete() <= $now) {
-			$this->em->remove($action);
-		}
+		$this->em->remove($action);
 	}
 
 	private function settlement_loot(Action $action): void {
-		// just remove this, damage and all has already been applied, we just needed the action to stop travel
-		$this->statusUpdater->character($action->getCharacter(), CharacterStatus::looting, false);
-		$this->em->remove($action);
+		if ($action->getStringValue() === 'destroy') {
+			$here = $action->getTargetSettlement();
+			$this->econ->breakDownSettlement($here, true, $action->getCharacter());
+			$action->setComplete(new DateTime("+6 hours"));
+			$this->em->flush();
+		} elseif ($action->getStringValue() === 'roads') {
+			$road = $action->getTargetRoad();
+			$this->econ->RoadDegradation($road, $road->getPath(), $road->getGeoData()->getBiome()->getRoadConstruction(), $action->getCharacter());
+		} else {
+			// just remove this, damage and all has already been applied, we just needed the action to stop travel
+			$this->statusUpdater->character($action->getCharacter(), CharacterStatus::looting, false);
+			$this->em->remove($action);
+		}
 	}
 
 	private function fishing(Action $action): void {
@@ -503,9 +514,9 @@ class ActionResolution {
 				$reason = 'grant_fief';
 			}
 			$result = $this->politics->changeSettlementOwner($settlement, $to, $reason);
-			if ($result['orphans']) {
+			if (count($result['orphans'])) {
 				foreach ($result['orphans'] as $unit) {
-					$this->milman->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
+					$this->military->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
 				}
 			}
 

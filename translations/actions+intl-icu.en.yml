@@ -462,8 +462,8 @@ control:
     including whether the quest reward will be given only to the first to complete it, or to multiple people, and on which conditions,
     such as evidence of conclusion, or time limits.
  abandon:
-  name:         Abandon Settlement
-  description:  Reliquish control of this settlement.
+  name:         Abandon Lordship
+  description:  Relinquish control of this settlement.
   help: >
     As the rightful owner or occupant of {settlement}, you can always decide that you simply don't want to be in control any longer.<br><br>
     If you're the owner, you can also decide if you simply wish to be rid of the region, or for you AND your realm to be rid of the region.<br><br>
@@ -473,6 +473,16 @@ control:
   sure:         Are you sure?
   success:      Settlement has been abandoned.
   submit:       Dispatch the order!
+ evacuate:
+   name:         Evacuate Settlement
+   description:  Order the abandonment of these lands.
+   help: >
+     As the rightful owner of {settlement}, you can instruct the locals that to evacuate it and abandon it back to nature.<br><br>
+     Such an action will see it complete lose realm affiliation and it will continue to be reduced into ruins and eventually nothingness until such time as someone resettles theselands.<br><br>
+     Please be aware, this action is IRREVERSIBLE.
+   sure:         Are you sure?
+   success:      Settlement evacuation has begun. Depending on the size of the settlement it could take quite a while for it to be completely reduced to ruins. You won't see any progress on this until tomorrow, though, as people need time to move on.
+   submit:       Dispatch the order!
  description:
   settlement:
    name:        Update Description
@@ -497,8 +507,9 @@ control:
   name:         Occupy Settlement
   description:  Declare an occupation of this settlement?
   intro: >
-    Now that you're inside {settlement} you're in a good position to declare an occupation.<br /><br />
-    By declaring an occupation, you will be effectively be making yourself pseudo-owner, and the regular owner will have his own privileges revoked.
+    Now that you're inside {settlement} you're in a good position to delcare an occupation.<br /><br />
+    By declaring an occupation, you will be effectively be making yourself psuedo-owner, and the regular owner will have his own privileges revoked.
+  flash:        You've begun the process of occupying this location. It'll formalize at %time%.
  occupationend:
   name:         End Occupation
   description:  Declare an end to the occupation?
@@ -506,6 +517,7 @@ control:
     As either the occupant of {settlement}, or any first one in an undefended but occupied settlement, you are well within your capabilities to declare an end to the occupation of this settlement. If they aren't here to defend their claim, that's their problem.
   intro2: >
     As either the occupant of {place}, or any first one in an undefended but occupied place of interest, you are well within your capabilities to declare an end to the occupation of this location. If they aren't here to defend their claim, that's their problem.
+  flash:        You've ended the occupation.
  changeoccupant:
   name:         Change Occupant
   description:  Someone else can manage this
@@ -611,19 +623,22 @@ military:
      You can also loot for personal profit or raid the workshops for supply, or simply burn the place down.<br />
      The more options you select, the longer everything will take and the more distributed the effects will be. To maximize the efficiency of specific goals,
      you should focus on one or two options.<br />
-     Like battles, looting commits you - once you have initiated a looting action, you cannot cancel it or travel elsewhere, until it is complete.
+     Like battles, looting commits you - once you have initiated a looting action, you cannot cancel it or travel elsewhere, until it is complete.<br>
+     Looting to destroy works a little differently from the rest, as it will continue to take longer until the entire settlement is destroyed. The action completion time will reset every 24 hours until completed.
    owner:       As you are the lord of this settlement, you can <i>steal wealth</i> very effectively with no negative effects. You will call this an unscheduled tax collection.
    outside:     As you are outside the settlement, you can only loot the countryside, which offers fewer targets. Fight, bribe or trick your way inside the settlement for more effective looting.
    time:        The selected looting options will take <span id="time">4</span> hours to complete.
    target:      Send plunder to
    options:     Loot actions
+   destroying:  Your soldiers start the process of killing the residents and burning the settlement to the ground. You won't know their progress until the day completes.
    option:
     thralls:    Take thralls
     resources:  Take resources
     supply:     Steal supply
     food:       Steal food
     wealth:     Steal wealth
-    burn:       Burn down buildings
+    burn:       Set buildings alight
+    destroy:    Destroy the settlement
    submit:      Begin looting
   food:
    supplied:    You have authorized {character} to pull from {settlement}'s food stores.

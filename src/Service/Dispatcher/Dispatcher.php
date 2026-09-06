@@ -906,6 +906,12 @@ class Dispatcher {
 		if (!$settlement = $this->getActionableSettlement()) {
 			return array("name"=>"control.take.name", "description"=>"unavailable.nosettlement");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.take.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.take.name", "description"=>"unavailable.ruined");
+		}
 		if ($settlement->isFortified() && $this->getCharacter()->getInsideSettlement()!=$settlement) {
 			return array("name"=>"control.take.name", "description"=>"unavailable.location.fortified");
 		}
@@ -956,6 +962,12 @@ class Dispatcher {
 		if (!$settlement = $this->getCharacter()->getInsideSettlement()) {
 			return array("name"=>"control.occupationstart.name", "description"=>"unavailable.notinside");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.occupationstart.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.occupationstart.name", "description"=>"unavailable.ruined");
+		}
 		if ($this->getCharacter()->hasNoSoldiers()) {
 			return array("name"=>"control.occupationstart.name", "description"=>"unavailable.nosoldiers");
 		}
@@ -981,6 +993,12 @@ class Dispatcher {
 		if (!$settlement = $this->getCharacter()->getInsideSettlement()) {
 			return array("name"=>"control.occupationend.name", "description"=>"unavailable.notinside");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.occupationend.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.occupationend.name", "description"=>"unavailable.ruined");
+		}
 		if ($settlement->isFortified() && $this->getCharacter()->getInsideSettlement() !== $settlement) {
 			return array("name"=>"control.occupationend.name", "description"=>"unavailable.location.fortified");
 		}
@@ -1003,6 +1021,12 @@ class Dispatcher {
 		}
 		if (!$settlement) {
 			return array("name"=>"control.changerealm.name", "description"=>"unavailable.notsettlement");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.changerealm.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.changerealm.name", "description"=>"unavailable.ruined");
 		}
 		if ($settlement->getOccupier() || $settlement->getOccupant()) {
 			return array("name"=>"control.changerealm.name", "description"=>"unavailable.occupied");
@@ -1034,6 +1058,12 @@ class Dispatcher {
 		if (!$settlement) {
 			return array("name"=>"control.changeoccupier.name", "description"=>"unavailable.notsettlement");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.changeoccupier.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.changeoccupier.name", "description"=>"unavailable.ruined");
+		}
 		if (!$settlement->getOccupier() && !$settlement->getOccupant()) {
 			return array("name"=>"control.changeoccupier.name", "description"=>"unavailable.notoccupied");
 		}
@@ -1058,6 +1088,12 @@ class Dispatcher {
 		if (!$settlement = $this->getCharacter()->getInsideSettlement()) {
 			return array("name"=>"control.grant.name", "description"=>"unavailable.nosettlement");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.grant.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.grant.name", "description"=>"unavailable.ruined");
+		}
 		if ($settlement->getOccupier() || $settlement->getOccupant()) {
 			return array("name"=>"control.grant.name", "description"=>"unavailable.occupied");
 		}
@@ -1080,6 +1116,12 @@ class Dispatcher {
 		if (!$settlement = $this->getCharacter()->getInsideSettlement()) {
 			return array("name"=>"control.steward.name", "description"=>"unavailable.nosettlement");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.abandon.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.abandon.name", "description"=>"unavailable.ruined");
+		}
 		if ($settlement->getOccupier() || $settlement->getOccupant()) {
 			return array("name"=>"control.steward.name", "description"=>"unavailable.occupied");
 		}
@@ -1096,15 +1138,43 @@ class Dispatcher {
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"control.abandon.name", "description"=>"unavailable.$check");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.abandon.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.abandon.name", "description"=>"unavailable.ruined");
+		}
 		if ($settlement->getOwner() != $this->getCharacter() && $settlement->getOccupant() != $this->getCharacter()) {
 			return array("name"=>"control.abandon.name", "description"=>"unavailable.notyours2");
 		}
 		return $this->action("control.abandon", "maf_settlement_abandon");
 	}
 
+	public function controlEvacuateTest($check_duplicate, $settlement): array {
+		if (($check = $this->veryGenericTests()) !== true) {
+			return array("name"=>"control.evacuate.name", "description"=>"unavailable.$check");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.evacuate.name", "description"=>"unavailable.already");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.evacuate.name", "description"=>"unavailable.ruined");
+		}
+		if ($settlement->getOwner() != $this->getCharacter() && $settlement->getOccupant() != $this->getCharacter()) {
+			return array("name"=>"control.evacuate.name", "description"=>"unavailable.notyours2");
+		}
+		return $this->action("control.evacuate", "maf_settlement_evacuate");
+	}
+
 	public function controlFaithTest($check_duplicate, $settlement): array {
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"control.faith.name", "description"=>"unavailable.$check");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.faith.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.faith.name", "description"=>"unavailable.ruined");
 		}
 		if ($settlement->getOwner() != $this->getCharacter() && $settlement->getOccupant() != $this->getCharacter()) {
 			return array("name"=>"control.faith.name", "description"=>"unavailable.notyours2");
@@ -1115,6 +1185,12 @@ class Dispatcher {
 	public function controlSuppliedTest($check_duplicate, $settlement): array {
 		if (($check = $this->veryGenericTests()) !== true) {
 			return array("name"=>"control.supplied.name", "description"=>"unavailable.$check");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.supplied.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.supplied.name", "description"=>"unavailable.ruined");
 		}
 		$char = $this->getCharacter();
 		if (
@@ -1137,6 +1213,12 @@ class Dispatcher {
 		if (!$settlement = $this->getCharacter()->getInsideSettlement()) {
 			return array("name"=>"control.changeoccupant.name", "description"=>"unavailable.nosettlement");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.changeoccupant.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.changeoccupant.name", "description"=>"unavailable.ruined");
+		}
 		if (!$settlement->getOccupier() && !$settlement->getOccupant()) {
 			return array("name"=>"control.changeoccupant.name", "description"=>"unavailable.notoccupied");
 		}
@@ -1155,6 +1237,12 @@ class Dispatcher {
 		}
 		if (!$settlement = $this->getCharacter()->getInsideSettlement()) {
 			return array("name"=>"control.rename.name", "description"=>"unavailable.nosettlement");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.rename.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.rename.name", "description"=>"unavailable.ruined");
 		}
 		if ($settlement->getOccupier() || $settlement->getOccupant()) {
 			return array("name"=>"control.rename.name", "description"=>"unavailable.occupied");
@@ -1177,6 +1265,12 @@ class Dispatcher {
 		if (!$settlement) {
 			return array("name"=>"control.description.settlement.name", "description"=>"unavailable.nosettlement");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.description.settlement.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.description.settlement.name", "description"=>"unavailable.ruined");
+		}
 		if ($settlement->getOccupier() || $settlement->getOccupant()) {
 			return array("name"=>"control.description.settlement.name", "description"=>"unavailable.occupied");
 		}
@@ -1194,6 +1288,12 @@ class Dispatcher {
 		if (!$settlement = $this->getCharacter()->getInsideSettlement()) {
 			return array("name"=>"control.namepack.name", "description"=>"unavailable.nosettlement");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.namepack.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.namepack.name", "description"=>"unavailable.ruined");
+		}
 		$char = $this->getCharacter();
 		if ($settlement->getOwner() == $char || $settlement->getSteward() == $char) {
 			return $this->action("control.namepack", "maf_actions_changeculture");
@@ -1205,6 +1305,12 @@ class Dispatcher {
 	public function controlPermissionsTest($ignored, $settlement): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.permissions.name", "description"=>"unavailable.$check");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.permissions.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.permissions.name", "description"=>"unavailable.ruined");
 		}
 		$char = $this->getCharacter();
 		$occ = $settlement->getOccupant();
@@ -1226,6 +1332,12 @@ class Dispatcher {
 	public function controlQuestsTest($ignored, $settlement): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {
 			return array("name"=>"control.quests.name", "description"=>"unavailable.$check");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"control.quests.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"control.quests.name", "description"=>"unavailable.ruined");
 		}
 		if ($settlement->getOccupier() || $settlement->getOccupant()) {
 			return array("name"=>"control.quests.name", "description"=>"unavailable.occupied");
@@ -1353,7 +1465,7 @@ class Dispatcher {
 			$possible = true;
 		} elseif ($char->findrealms()->count() >= 0) {
 			$possible = true;
-		} elseif ($char->getInsideSettlement()) {
+		} elseif ($char->getInsideSettlement() && $char->getInsideSettlement()->isActive()) {
 			$possible = true;
 		}
 		if ($possible) {
@@ -1372,6 +1484,12 @@ class Dispatcher {
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.trade.name", "description"=>"unavailable.$check");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"economy.trade.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"economy.trade.name", "description"=>"unavailable.ruined");
+		}
 
 		// TODO: need a merchant in your entourage for trade options? or just foreign trade?
 		if ($this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'trade', false)) {
@@ -1389,6 +1507,12 @@ class Dispatcher {
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.roads.name", "description"=>"unavailable.$check");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"economy.roads.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"economy.roads.name", "description"=>"unavailable.ruined");
+		}
 		if ( ! $this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'construct', false)) {
 			return array("name"=>"economy.roads.name", "description"=>"unavailable.notyours");
 		}
@@ -1401,6 +1525,12 @@ class Dispatcher {
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.features.name", "description"=>"unavailable.$check");
 		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"economy.features.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"economy.features.name", "description"=>"unavailable.ruined");
+		}
 		if ( ! $this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'construct', false)) {
 			return array("name"=>"economy.features.name", "description"=>"unavailable.notyours");
 		}
@@ -1412,6 +1542,12 @@ class Dispatcher {
 		$settlement = $this->getCharacter()->getInsideSettlement();
 		if (($check = $this->economyActionsGenericTests($settlement)) !== true) {
 			return array("name"=>"economy.build.name", "description"=>"unavailable.$check");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"economy.build.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"economy.build.name", "description"=>"unavailable.ruined");
 		}
 		if ( ! $this->pm->checkSettlementPermission($settlement, $this->getCharacter(), 'construct', false)) {
 			return array("name"=>"economy.build.name", "description"=>"unavailable.notyours");

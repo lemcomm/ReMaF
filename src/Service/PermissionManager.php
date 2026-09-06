@@ -18,12 +18,11 @@ class PermissionManager {
 	private int $recursion_limit = 20; // prevent infinite recursion
 
 	public function __construct(
-		private Politics $politics,
 		private EntityManagerInterface $em,
 	) {
 	}
 
-	private function findPermissionType (string $class, string $type) {
+	private function findPermissionType(string $class, string $type): ?Permission {
 		return $this->em->getRepository(Permission::class)->findOneBy(['class' => $class, 'name' => $type]);
 	}
 
@@ -154,8 +153,10 @@ class PermissionManager {
 	}
 
 	public function checkSettlementPermission(?Settlement $settlement, Character $character, $permission, $return_details=false): bool|array {
+		if (!$settlement) return false;
+		# Ruins have no permissions and default to false.
+		if ($settlement->getDestroyed()) return false;
 		// settlement owner always has all permissions without limits
-		if (!$settlement) { return false; }
 		if ($settlement->getOccupier() || $settlement->getOccupant()) {
 			$occupied = true;
 		} else {
@@ -276,7 +277,7 @@ class PermissionManager {
 					// he's on the list, so return his allowed status
 					return array($member->getAllowed(), $list, 'character');
 				}
-				if ($member->getIncludeSubs() && $this->politics->isSuperior($who, $member->getTargetCharacter())) {
+				if ($member->getIncludeSubs() && $who->findLieges()->contains($member->getTargetCharacter())) {
 					// he's not on the list he is a vassal of this guy, who is - so, same story
 					return array($member->getAllowed(), $list, 'character');
 				}

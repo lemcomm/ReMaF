@@ -22,7 +22,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class CommonService {
 
 	/*
-	This service exists purely to prevent code duplication and circlic service requiremenets.
+	This service exists purely to prevent code duplication and circlic service requirements.
 	Things that provide core game functions (besides security), that are not handled in a more concise service should be here.
 	Security is handled by AppState.
 	*/
@@ -68,6 +68,7 @@ class CommonService {
 			return array('%year%'=>$year, '%week%'=>$week, '%day%'=>$day);
 		}
 	}
+
 	public function getGlobal($name, $default=false) {
 		$setting = $this->em->getRepository(Setting::class)->findOneBy(['name'=>$name]);
 		if (!$setting) return $default;

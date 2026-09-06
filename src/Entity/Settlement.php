@@ -74,6 +74,10 @@ class Settlement {
 		0 => false, # allowThralls
 		1 => 0.0, # wealthTax %
 	];
+	private ?bool $destroyed = null;
+	private ?bool $abandoned = null;
+	private ?bool $startAbandoning = null;
+	private ?bool $beingDestroyed = null;
 
 	/**
 	 * Constructor
@@ -253,6 +257,26 @@ class Settlement {
 		return false;
 	}
 
+	public function isActive(): bool {
+		if ($this->startAbandoning || $this->beingDestroyed || $this->abandoned || $this->destroyed) {
+			return false;
+		}
+		return true;
+	}
+
+	public function getLocalUnits(): ArrayCollection|Collection {
+		$all = new ArrayCollection();
+		foreach ($this->units as $unit) {
+			if ($unit->isLocal()) {
+				$all->add($unit);
+			}
+		}
+		foreach ($this->defending_units as $unit) {
+			$all->add($unit);
+		}
+		return $all;
+	}
+
 	/**
 	 * Get units
 	 *
@@ -294,6 +318,7 @@ class Settlement {
 	}
 
 	public function isOwnerEquivalent(Character $char, $checkOccupancy = false): bool {
+		if ($this->destroyed) return false;
 		if ($this->isOccupied() && $checkOccupancy) {
 			if ($this->getOccupant() === $char) return true;
 		} else {
@@ -301,6 +326,14 @@ class Settlement {
 			if ($this->getSteward() === $char) return true;
 		}
 		return false;
+	}
+
+	public function findOwnerEquivalent(): ?Character {
+		if ($this->destroyed) return null;
+		if ($this->isOccupied() && $this->getOccupant()) {
+			return $this->getOccupant();
+		}
+		return $this->getOwner() ?: $this->getSteward();
 	}
 
 	/**
@@ -590,6 +623,9 @@ class Settlement {
 			foreach ($this->getGeoData()->getRoads() as $road) {
 				if ($road->getWorkers() > 0) {
 					$this->assignedRoads += $road->getWorkers();
+				}
+				if ($road->getWorkers() < 0) {
+					$this->assignedRoads = abs($road->getWorkers());
 				}
 			}
 		}
@@ -1902,6 +1938,42 @@ class Settlement {
 
 	public function setOpenPorts(?bool $open_ports): static {
 		$this->open_ports = $open_ports;
+		return $this;
+	}
+
+	public function getDestroyed(): ?bool {
+		return $this->destroyed;
+	}
+
+	public function setDestroyed(?bool $destroyed): static {
+		$this->destroyed = $destroyed;
+		return $this;
+	}
+
+	public function getAbandoned(): ?bool {
+		return $this->abandoned;
+	}
+
+	public function setAbandoned(?bool $abandoned): static {
+		$this->abandoned = $abandoned;
+		return $this;
+	}
+
+	public function getStartAbandoning(): ?bool {
+		return $this->startAbandoning;
+	}
+
+	public function setStartAbandoning(?bool $startAbandoning): static {
+		$this->startAbandoning = $startAbandoning;
+		return $this;
+	}
+
+	public function getBeingDestroyed(): ?bool {
+		return $this->beingDestroyed;
+	}
+
+	public function setBeingDestroyed(?bool $beingDestroyed): static {
+		$this->beingDestroyed = $beingDestroyed;
 		return $this;
 	}
 }

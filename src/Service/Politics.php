@@ -16,19 +16,9 @@ class Politics {
 	public function __construct(
 		private CommonService $common,
 		private EntityManagerInterface $em,
-		private History $history) {
-	}
-
-
-	public function isSuperior(Character $char, Character $lord): bool {
-		// test if $lord is anywhere in the hierarchy above $char
-		$next = $char;
-		while ($next = $next->getLiege()) {
-			if ($next === $lord) {
-				return true;
-			}
-		}
-		return false;
+		private History $history,
+		private MilitaryManager $milman,
+	) {
 	}
 
 	public function breakoath(Character $character, $alleg = null, $to = null, ?string $thing = null): void {
@@ -311,73 +301,8 @@ class Politics {
 					$this->addClaim($oldowner, $settlement, true);
 				}
 				$realm = $settlement->getRealm();
-				foreach ($settlement->getVassals() as $vassal) {
-					$vassal->setLiegeLand(null);
-					$vassal->setOathCurrent(false);
-					$vassal->setOathTime(null);
-					$vassal->setRealm($settlement->getRealm());
-					if ($realm) {
-						$this->history->logEvent(
-							$vassal,
-							'politics.oath.lost',
-							array('%link-realm%'=>$realm->getId(), '%link-settlement%'=>$settlement->getId()),
-							History::HIGH, true
-						);
-					} else {
-						$this->history->logEvent(
-							$vassal,
-							'politics.oath.lost3',
-							array('%link-settlement%'=>$settlement->getId()),
-							History::HIGH, true
-						);
-					}
-				}
-				foreach ($settlement->getUnits() as $unit) {
-					$unit->setMarshal(NULL);
-					if ($unit->getCharacter() && $unit->getCharacter() != $character) {
-						if ($realm) {
-							$this->history->logEvent(
-								$unit,
-								'event.unit.basetaken',
-								array("%link-realm%"=>$realm->getId(), "%link-settlement%"=>$settlement->getId()),
-								History::HIGH
-							);
-						} else {
-							$this->history->logEvent(
-								$unit,
-								'event.unit.basetaken2',
-								array("%link-settlement%"=>$settlement->getId()),
-								History::HIGH
-							);
-						}
-						$this->history->logEvent(
-							$unit->getCharacter(),
-							'event.character.isolated',
-							array("%link-settlement%"=>$settlement->getId(), "%link-unit%"=>$unit->getId()),
-							History::HIGH
-						);
-						$unit->setSettlement(NULL);
-					}
-				}
-				$i = 0;
-				foreach ($settlement->getDefendingUnits() as $unit) {
-					$orphans[] = $i;
-					if (!$character) {
-						$here = $settlement;
-					} else {
-						$here = $character;
-					}
-					$orphans[$i]['unit'] = $unit;
-					$orphans[$i]['why'] = 'defenselost';
-					$orphans[$i]['from'] = $here;
-					$this->history->logEvent(
-						$unit,
-						'event.unit.defenselost',
-						array("%link-settlement%"=>$settlement->getId()),
-						History::HIGH, true
-					);
-					$i++;
-				}
+				$this->breakVassals($settlement, 'lost');
+				$orphans = $this->orphanSettlementUnits($settlement, $character, $realm);
 				break;
 			case 'grant':
 				$this->history->logEvent(
@@ -505,6 +430,34 @@ class Politics {
 				break;
 		}
 		return ['orphans'=>$orphans];
+	}
+
+	public function breakVassals(Settlement $settlement, $msg) {
+		$realm = $settlement->getRealm();
+		if ($msg === 'abandon') {
+			$msg = 'abandonment'; #Trans string politics.oath.abandon was already in use.
+		}
+		foreach ($settlement->getVassals() as $vassal) {
+			$vassal->setLiegeLand(null);
+			$vassal->setOathCurrent(false);
+			$vassal->setOathTime(null);
+			$vassal->setRealm($settlement->getRealm());
+			if ($realm) {
+				$this->history->logEvent(
+					$vassal,
+					'politics.oath.'.$msg,
+					array('%link-realm%'=>$realm->getId(), '%link-settlement%'=>$settlement->getId()),
+					History::HIGH, true
+				);
+			} else {
+				$this->history->logEvent(
+					$vassal,
+					'politics.oath.'.$msg.'3',
+					array('%link-settlement%'=>$settlement->getId()),
+					History::HIGH, true
+				);
+			}
+		}
 	}
 
 	public function addClaim(Character $character, Settlement $settlement, $enforceable=false, $priority=false): void {
@@ -818,6 +771,51 @@ class Politics {
 				);
 			}
 		}
+		$result = $this->orphanSettlementUnits($settlement, $char, $realm);
+		if (count($result['orphans'])) {
+			foreach ($result['orphans'] as $unit) {
+				$this->milman->returnUnitHome($unit['unit'], $unit['why'], $unit['from']);
+			}
+		}
+		if ($char) {
+			if ($realm) {
+				if ($new) {
+					$this->history->logEvent(
+						$settlement,
+						'event.settlement.occupied',
+						array("%link-realm%"=>$realm->getId(), "%link-character%"=>$char->getId()),
+						History::HIGH, true
+					);
+				} else {
+					$this->history->logEvent(
+						$settlement,
+						'event.settlement.occupied2',
+						array("%link-realm%"=>$realm->getId(), "%link-character%"=>$char->getId()),
+						History::MEDIUM, true
+					);
+				}
+			} else {
+				if ($new) {
+					$this->history->logEvent(
+						$settlement,
+						'event.settlement.occupied3',
+						array("%link-character%"=>$char->getId()),
+						History::HIGH, true
+					);
+				} else {
+					$this->history->logEvent(
+						$settlement,
+						'event.settlement.occupied4',
+						array("%link-character%"=>$char->getId()),
+						History::MEDIUM, true
+					);
+				}
+			}
+		}
+	}
+
+	public function orphanSettlementUnits(Settlement $settlement, ?Character $char, ?Realm $realm): array {
+		$orphans = [];
 		foreach ($settlement->getUnits() as $unit) {
 			$unit->setMarshal(NULL);
 			if ($unit->getCharacter() && $unit->getCharacter() != $char) {
@@ -864,41 +862,7 @@ class Politics {
 			);
 			$i++;
 		}
-		if ($char) {
-			if ($realm) {
-				if ($new) {
-					$this->history->logEvent(
-						$settlement,
-						'event.settlement.occupied',
-						array("%link-realm%"=>$realm->getId(), "%link-character%"=>$char->getId()),
-						History::HIGH, true
-					);
-				} else {
-					$this->history->logEvent(
-						$settlement,
-						'event.settlement.occupied2',
-						array("%link-realm%"=>$realm->getId(), "%link-character%"=>$char->getId()),
-						History::MEDIUM, true
-					);
-				}
-			} else {
-				if ($new) {
-					$this->history->logEvent(
-						$settlement,
-						'event.settlement.occupied3',
-						array("%link-character%"=>$char->getId()),
-						History::HIGH, true
-					);
-				} else {
-					$this->history->logEvent(
-						$settlement,
-						'event.settlement.occupied4',
-						array("%link-character%"=>$char->getId()),
-						History::MEDIUM, true
-					);
-				}
-			}
-		}
+		return $orphans;
 	}
 
 

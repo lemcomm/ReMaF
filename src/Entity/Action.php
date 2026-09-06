@@ -32,6 +32,7 @@ class Action {
 	private ?BattleGroup $target_battlegroup = null;
 	private ?Listing $target_listing = null;
 	private ?SkillType $target_skill = null;
+	private ?Road $target_road = null;
 	private ?Action $supported_action = null;
 	private ?Action $opposed_action = null;
 	private ?ActivityParticipant $target_activity_participant = null;
@@ -335,6 +336,15 @@ class Action {
 
 	public function setTargetActivityParticipant(?ActivityParticipant $target_activity_participant): static {
 		$this->target_activity_participant = $target_activity_participant;
+		return $this;
+	}
+
+	public function getTargetRoad(): ?Road {
+		return $this->target_road;
+	}
+
+	public function setTargetRoad(?Road $target_road): static {
+		$this->target_road = $target_road;
 		return $this;
 	}
 }

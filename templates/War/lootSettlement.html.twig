@@ -47,6 +47,9 @@
 			</ul>
 		</li>
 	{% endif %}
+	{% if result.destroy is defined %}
+		Your troops start the process of burning the settlement to the ground.
+	{% endif %}
 	</ul>
 {% else %}
 	<p>{{ "military.settlement.loot.intro"|trans({},"actions")|raw }}</p>

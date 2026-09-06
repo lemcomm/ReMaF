@@ -18,6 +18,12 @@ realm:
    name:				Your realm name is too similar to another realm, %other%.
    formalname:		Your formal realm name is too similar to another realm, %other%.
 
+place:
+ new:
+  toosimilar:
+   name:        Your place name is too similar to another place, %other%.
+   formalname:  Your formal place name is too similar to another place, $other%.
+
 settlement:
  grant:
   free2:        Free accounts can only have 3 estates per character, and this character belongs to a free account.

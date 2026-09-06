@@ -8,6 +8,11 @@
 		<field name="path" type="linestring"/>
 		<field name="workers" type="float"/>
 		<field name="condition" type="integer"/>
+		<field name="damage" type="integer">
+			<options>
+				<option name="default">0</option>
+			</options>
+		</field>
 
 		<many-to-one field="geo_data" target-entity="GeoData" inversed-by="roads"/>
 		<many-to-one field="world" target-entity="World" inversed-by="roads"/>

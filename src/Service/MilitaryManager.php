@@ -26,11 +26,11 @@ class MilitaryManager {
 
 	public function __construct(
 		private EntityManagerInterface $em,
-		private LoggerInterface $logger,
-		private CommonService $common,
-		private History $history,
-		private Geography $geo,
-		private PermissionManager $pm
+		private LoggerInterface        $logger,
+		private CommonService          $common,
+		private History                $history,
+		private Geography              $geo,
+		private PermissionManager      $pm
 	) {
 	}
 
@@ -784,6 +784,76 @@ class MilitaryManager {
 		$speed = $this->geo->getbaseSpeed() / exp(sqrt(1/200)); #This is the regular travel speed for M&F.
 		$days = $distance / $speed;
 		return $days*0.925*1.33; #Average travel speed of all region types.
+	}
+
+	public function orphanUnit(Unit $unit, Settlement $from, $reason='destroy', $bulk = false): void {
+		if ($unit->isDisbanded()) return;
+		$count = $unit->getLivingSoldiers()->count();
+		if ($count < 1) {
+			# No living soldiers, disband it all.
+			foreach ($unit->getSoldiers() as $soldier) {
+				$this->disband($soldier);
+			}
+			$this->disbandUnit($unit);
+			return;
+		}
+		$char = $unit->getCharacter();
+		if (!$char) {
+			$char = $from->findOwnerEquivalent();
+		}
+		$unit->setMarshal(null);
+		$unit->setSettlement(null);
+		if ($unit->getCharacter()) {
+			if ($char) {
+				$this->history->logEvent(
+					$unit->getCharacter(),
+					'event.character.'.$reason,
+					array("%link-settlement%"=>$from->getId(), "%link-unit%"=>$unit->getId()),
+					History::HIGH
+				);
+			} else {
+				$this->disbandUnit($unit);
+			}
+		} elseif ($char->getInsideSettlement() === $from) {
+			# Char is OwnerEquiv since Unit->getCharacter failed.
+			$this->history->logEvent(
+				$unit->getCharacter(),
+				'event.character.'.$reason.'2',
+				array("%link-settlement%"=>$from->getId(), "%link-unit%"=>$unit->getId()),
+				History::HIGH
+			);
+			$unit->setCharacter($char);
+		} elseif ($unit->getSupplier()) {
+			$dest = $unit->getSupplier();
+			$distance = $this->geo->calculateDistanceBetweenSettlements($from, $dest);
+			$speed = $this->geo->getbaseSpeed() / exp(sqrt($count/200)); #This is the regular travel speed for M&F.
+			$days = $distance / $speed;
+			$final = $days*0.925*1.33; #Average travel speed of all region types mulitiplied by 1.33 so it deliberately moves slower than everything else.
+			if ($final < 0.16) {
+				$final = 0; #Less than an hour travel, just set to 0.
+			}
+
+			$unit->setTravelDays(ceil($final));
+			$unit->setCharacter(null);
+			$unit->setDefendingSettlement(null);
+			$unit->setPlace(null);
+			$unit->setSettlement($dest);
+			$this->history->logEvent(
+				$unit,
+				'event.military.'.$reason.'3',
+				array('%link-settlement%'=>$from->getId()),
+				History::MEDIUM, false, 30
+			);
+		} else {
+			# Nowhere else to own them. Pity.
+			foreach ($unit->getSoldiers() as $soldier) {
+				$this->disband($soldier);
+			}
+			$this->disbandUnit($unit);
+		}
+		if (!$bulk) {
+			$this->em->flush();
+		}
 	}
 
 	public function returnUnitHome (Unit $unit, $reason='recalled', $origin = null, $bulk = false): true {

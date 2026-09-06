@@ -16,6 +16,7 @@ class GeoFeature {
 	private ?FeatureType $type = null;
 	private ?GeoData $geo_data = null;
 	private ?World $world = null;
+	private int $damage = 0;
 
 	public function ApplyDamage($damage): string {
 		$this->condition -= $damage;
@@ -258,6 +259,15 @@ class GeoFeature {
 	 */
 	public function setWorld(?World $world): static {
 		$this->world = $world;
+		return $this;
+	}
+
+	public function getDamage(): int {
+		return $this->damage;
+	}
+
+	public function setDamage(int $damage): static {
+		$this->damage = $damage;
 		return $this;
 	}
 }

@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Action;
 use App\Entity\Battle;
 use App\Entity\BattleGroup;
+use App\Entity\Building;
 use App\Entity\Character;
 use App\Entity\Place;
 use App\Entity\ResourceType;
@@ -1023,10 +1024,7 @@ class WarManager {
 				$pick = array_rand($buildings);
 				$target = $buildings[$pick];
 				$type = $target->getType()->getName();
-				[
-					,
-					$damage
-				] = $this->lootValue(round($my_soldiers * 32 / $targets)); #Drop first return -- yes, it looks weird.
+				[,$damage] = $this->lootValue(round($my_soldiers * 32 / $targets)); #Drop first value.
 				if (!isset($result['burn'][$type])) {
 					$result['burn'][$type] = 0;
 				}
@@ -1050,11 +1048,15 @@ class WarManager {
 					}
 				}
 			}
+		} elseif ($method === 'destroy') {
+			$settlement->setBeingDestroyed(true);
+			# The heavy lifting is done on turn by ActionResolution which calls Economy->breakDownSettlement().
+			$result['destroy'] = 'Pending';
 		}
 		return $result;
 	}
 
-	private function lootValue($max): array {
+	public function lootValue($max): array {
 		$a = max(rand(0, $max), rand(0, $max));
 		$b = max(rand(0, $max), rand(0, $max));
 

@@ -28,6 +28,7 @@
 		<many-to-one field="target_battlegroup" target-entity="BattleGroup" inversed-by="related_actions"/>
 		<many-to-one field="target_listing" target-entity="Listing"/>
 		<many-to-one field="target_skill" target-entity="SkillType"/>
+		<many-to-one field="target_road" target-entity="Road"/>
 		<one-to-one field="target_activity_participant" target-entity="ActivityParticipant" inversed-by="related_action"/>
 
 		<many-to-one field="supported_action" target-entity="Action" inversed-by="supporting_actions">

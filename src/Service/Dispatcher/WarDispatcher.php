@@ -88,6 +88,12 @@ class WarDispatcher extends Dispatcher {
 		}
 		$settlement = $this->getActionableSettlement();
 		if ($settlement) {
+			if ($settlement->getStartAbandoning()) {
+				return array("name"=>"military.siege.name", "description"=>"unavailable.abandoning");
+			}
+			if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+				return array("name"=>"military.siege.name", "description"=>"unavailable.ruined");
+			}
 			$siege = $settlement->getSiege();
 			if (!$siege || !$siege->getCharacters()->contains($char)) {
 				# If we're already in a siege, we can access the menu. Otherwise deny.
@@ -210,8 +216,14 @@ class WarDispatcher extends Dispatcher {
 		if ($check_duplicate && $this->getCharacter()->isDoingAction('settlement.defend')) {
 			return array("name"=>"military.settlement.defend.name", "description"=>"unavailable.already");
 		}
-		if ( ! $estate = $this->getCharacter()->getInsideSettlement()) {
+		if ( ! $settlement = $this->getCharacter()->getInsideSettlement()) {
 			return array("name"=>"military.settlement.defend.name", "description"=>"unavailable.notinside");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"military.settlement.defend.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"military.settlement.defend.name", "description"=>"unavailable.ruined");
 		}
 		if ($this->getCharacter()->isDoingAction('settlement.attack')) {
 			return array("name"=>"military.settlement.defend.name", "description"=>"unavailable.both");
@@ -272,6 +284,12 @@ class WarDispatcher extends Dispatcher {
 		if (!$settlement) {
 			# Can't attack nothing or empty places.
 			return array("name"=>"military.siege.start.name", "description"=>"unavailable.nosiegable");
+		}
+		if ($settlement->getStartAbandoning()) {
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.abandoning");
+		}
+		if ($settlement->getAbandoned() || $settlement->getDestroyed()) {
+			return array("name"=>"military.siege.start.name", "description"=>"unavailable.ruined");
 		}
 		if ($char->isDoingAction('military.regroup')) {
 			# Busy regrouping.

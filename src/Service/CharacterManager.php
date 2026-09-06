@@ -57,7 +57,9 @@ class CharacterManager {
 		private DungeonMaster          $dm,
 		private WarManager             $warman,
 		private AssociationManager     $assocman,
-		private StatusUpdater          $statusUpdater, private readonly UserManager $userManager) {
+		private StatusUpdater          $statusUpdater, 
+		private UserManager            $userManager
+	) {
 		self::$raceGroups[RaceName::firstOne->value] = 'firstWorld';
 	}
 
