@@ -88,7 +88,7 @@ class ActionsController extends AbstractController {
 		$siege = (bool)$settlement->getSiege();
 		return $this->render('Actions/actions.html.twig', [
 			'pagetitle'=>$pagetitle,
-			'siege'=>$siege
+			'siege'=>$siege,
 		]);
 	}
 
@@ -144,8 +144,8 @@ class ActionsController extends AbstractController {
 				'action'=>null,
 				'result'=>[
 					'success'=>false,
-					'message'=>'either.invalid.noid'
-				]
+					'message'=>'either.invalid.noid',
+				],
 			]);
 		}
 	}
@@ -198,8 +198,8 @@ class ActionsController extends AbstractController {
 				'action'=>null,
 				'result'=>[
 					'success'=>false,
-					'message'=>'either.invalid.noid'
-				]
+					'message'=>'either.invalid.noid',
+				],
 			]);
 		}
 	}
@@ -279,11 +279,11 @@ class ActionsController extends AbstractController {
 
 		if ($embark_ship) {
 			return $this->render('Actions/embark.html.twig', [
-				'ships'=>true
+				'ships'=>true,
 			]);
 		} else {
 			return $this->render('Actions/embark.html.twig', [
-				'dockname'=>$dock->getName()
+				'dockname'=>$dock->getName(),
 			]);
 		}
 	}
@@ -298,7 +298,7 @@ class ActionsController extends AbstractController {
 		$form = $this->createForm(InteractionType::class, null, [
 			'subaction'=>'givegold',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character), 
-			'me'=>$character
+			'me'=>$character,
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -324,13 +324,13 @@ class ActionsController extends AbstractController {
 				);
 				$em->flush();
 				return $this->render('Actions/giveGold.html.twig', [
-					'success'=>true, 'amount'=>$data['amount'], 'target'=>$data['target']
+					'success'=>true, 'amount'=>$data['amount'], 'target'=>$data['target'],
 				]);
 			}
 		}
 
 		return $this->render('Actions/giveGold.html.twig', [
-			'form'=>$form->createView(), 'gold'=>$character->getGold()
+			'form'=>$form->createView(), 'gold'=>$character->getGold(),
 		]);
 	}
 
@@ -344,7 +344,7 @@ class ActionsController extends AbstractController {
 		$form = $this->createForm(InteractionType::class, null, [
 			'subaction'=>'giveship',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
-			'me'=>$character
+			'me'=>$character,
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -370,17 +370,27 @@ class ActionsController extends AbstractController {
 				$em->flush();
 
 				return $this->render('Actions/giveShip.html.twig', [
-					'success'=>true
+					'success'=>true,
 				]);
 			}
 		}
 
 		return $this->render('Actions/giveShip.html.twig', [
-			'form'=>$form->createView()
+			'form'=>$form->createView(),
 		]);
 	}
 
-	#[Route ('/actions/spy', name:'maf_actions_spy')]
+	#[Route("/actions/settle", name: 'maf_actions_settle')]
+	public function settleAction(CommonService $common, Request $request): RedirectResponse|Response {
+		$character = $this->dispatcher->gateway('controlSettleTest');
+		if (! $character instanceof Character) {
+			return $this->redirectToRoute($character);
+		}
+
+		#TODO: The rest of this route, and the twig,
+		return $this->render('Actions/settle.html.twig', []);
+	}
+	#[Route ('/actions/spy', name: 'maf_actions_spy')]
 	public function spyAction(): RedirectResponse|Response {
 		[$character, $settlement] = $this->dispatcher->gateway('nearbySpyTest', true, true);
 		if (! $character instanceof Character) {
@@ -388,7 +398,7 @@ class ActionsController extends AbstractController {
 		}
 
 		return $this->render('Actions/spy.html.twig', [
-			'settlement'=>$settlement
+			'settlement'=>$settlement,
 		]);
 	}
 
@@ -410,7 +420,7 @@ class ActionsController extends AbstractController {
 				'char' => $character,
 				'settlement' => $settlement,
 				'place'=> $place,
-				'morale' => rand(0,25)
+				'morale' => rand(0,25),
 			]);
 
 		}
@@ -497,7 +507,7 @@ class ActionsController extends AbstractController {
 			'others' => $others,
 			'timetotake' => $time_to_take,
 			'limit' => -1,
-			'form' => $form->createView()
+			'form' => $form->createView(),
 		]);
 	}
 
@@ -521,11 +531,11 @@ class ActionsController extends AbstractController {
 			if ($settlement->getRealm() == $targetrealm) {
 				$result = array(
 					'success'=>false,
-					'message'=>'control.changerealm.fail.same'
+					'message'=>'control.changerealm.fail.same',
 				);
 			} else {
 				$result = array(
-					'success'=>true
+					'success'=>true,
 				);
 
 				$oldrealm = $settlement->getRealm();
@@ -543,13 +553,13 @@ class ActionsController extends AbstractController {
 			return $this->render('Actions/changeRealm.html.twig', [
 				'settlement'=>$settlement,
 				'result'=>$result,
-				'newrealm'=>$targetrealm
+				'newrealm'=>$targetrealm,
 			]);
 		}
 
 		return $this->render('Actions/changeRealm.html.twig', [
 			'settlement'=>$settlement,
-			'form'=>$form->createView()
+			'form'=>$form->createView(),
 		]);
 	}
 
@@ -563,7 +573,7 @@ class ActionsController extends AbstractController {
 		$form = $this->createForm(InteractionType::class, null, [
 			'subaction'=>$settlement->getRealm()?'grant':'grant2',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
-			'me'=>$character
+			'me'=>$character,
 		]);
 
 		$form->handleRequest($request);
@@ -599,7 +609,7 @@ class ActionsController extends AbstractController {
 					return $this->render('Actions/grant.html.twig', [
 						'settlement'=>$settlement,
 						'result'=>$result,
-						'newowner'=>$data['target']
+						'newowner'=>$data['target'],
 					]);
 				}
 			}
@@ -608,7 +618,7 @@ class ActionsController extends AbstractController {
 
 		return $this->render('Actions/grant.html.twig', [
 			'settlement'=>$settlement,
-			'form'=>$form->createView()
+			'form'=>$form->createView(),
 		]);
 	}
 
@@ -623,7 +633,7 @@ class ActionsController extends AbstractController {
 			'subaction'=>'steward',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
 			'me'=>$character,
-			'required'=>false
+			'required'=>false,
 		]);
 
 		$form->handleRequest($request);
@@ -664,7 +674,7 @@ class ActionsController extends AbstractController {
 
 		return $this->render('Actions/steward.html.twig', [
 			'settlement'=>$settlement,
-			'form'=>$form->createView()
+			'form'=>$form->createView(),
 		]);
 	}
 
@@ -706,14 +716,14 @@ class ActionsController extends AbstractController {
 				return $this->render('Actions/rename.html.twig', [
 					'settlement'=>$settlement,
 					'result'=>$result,
-					'newname'=>$newname
+					'newname'=>$newname,
 				]);
 			}
 		}
 
 		return $this->render('Actions/rename.html.twig', [
 			'settlement'=>$settlement,
-			'form'=>$form->createView()
+			'form'=>$form->createView(),
 		]);
 	}
 
@@ -727,7 +737,7 @@ class ActionsController extends AbstractController {
 		$form = $this->createForm(CultureType::class, null, [
 			'user' => $character->getUser(),
 			'available' => true,
-			'old_culture' => $settlement->getCulture()
+			'old_culture' => $settlement->getCulture(),
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -740,15 +750,15 @@ class ActionsController extends AbstractController {
 				'settlement'=>$settlement,
 				'result'=>[
 					'success'=>true,
-					'immediate'=>true
+					'immediate'=>true,
 				],
-				'culture'=>$culture->getName()
+				'culture'=>$culture->getName(),
 			]);
 		}
 
 		return $this->render('Actions/changenames.html.twig', [
 			'settlement'=>$settlement,
-			'form'=>$form->createView()
+			'form'=>$form->createView(),
 		]);
 	}
 	
@@ -917,13 +927,13 @@ class ActionsController extends AbstractController {
 						'production' => $production,
 						'demand' => $demand,
 						'trade' => $trade,
-						'cost' => 0
+						'cost' => 0,
 					);
 				}
 			}
 			$settlementsdata[] = array(
 				'settlement' => $other,
-				'resources' => $settlement_resources
+				'resources' => $settlement_resources,
 			);
 		}
 
@@ -941,7 +951,7 @@ class ActionsController extends AbstractController {
 						'production' => $production,
 						'demand' => $demand,
 						'trade' => $trade,
-						'cost' => 0
+						'cost' => 0,
 					);
 				}
 			}
@@ -955,7 +965,7 @@ class ActionsController extends AbstractController {
 			'local' => $local_resources,
 			'trades' => $trades,
 			'form' => $form->createView(),
-			'cancelform' => $cancelform->createView()
+			'cancelform' => $cancelform->createView(),
 		]);
 	}
 
@@ -987,7 +997,7 @@ class ActionsController extends AbstractController {
 				return $this->render('Actions/entourage.html.twig', [
 					'settlement'=>$settlement,
 					'entourage'=>$entourage,
-					'form'=>$form->createView()
+					'form'=>$form->createView(),
 				]);
 			}
 			if ($total > $settlement->getRecruitLimit()) {
@@ -995,7 +1005,7 @@ class ActionsController extends AbstractController {
 				return $this->render('Actions/entourage.html.twig', [
 					'settlement'=>$settlement,
 					'entourage'=>$entourage,
-					'form'=>$form->createView()
+					'form'=>$form->createView(),
 				]);
 			}
 			$secondOneRace = $this->em->getRepository(Race::class)->findOneBy(['name'=>'second one']);
@@ -1041,7 +1051,7 @@ class ActionsController extends AbstractController {
 		return $this->render('Actions/entourage.html.twig', [
 			'settlement'=>$settlement,
 			'entourage'=>$entourage,
-			'form'=>$form->createView()
+			'form'=>$form->createView(),
 		]);
 	}
 
@@ -1053,7 +1063,7 @@ class ActionsController extends AbstractController {
 		}
 
 		return $this->render('Actions/dungeons.html.twig', [
-			'dungeons'=>$this->geo->findDungeonsInActionRange($character)
+			'dungeons'=>$this->geo->findDungeonsInActionRange($character),
 		]);
 	}
 
@@ -1067,7 +1077,7 @@ class ActionsController extends AbstractController {
 		$form = $this->createForm(InteractionType::class, null, [
 			'subaction'=>'occupier',
 			'maxdistance'=>$this->geo->calculateInteractionDistance($character),
-			'me'=>$character
+			'me'=>$character,
 		]);
 
 		$form->handleRequest($request);
@@ -1089,7 +1099,7 @@ class ActionsController extends AbstractController {
 		}
 
 		return $this->render('Settlement/occupant.html.twig', [
-			'settlement'=>$settlement, 'form'=>$form->createView()
+			'settlement'=>$settlement, 'form'=>$form->createView(),
 		]);
 	}
 	
@@ -1106,7 +1116,7 @@ class ActionsController extends AbstractController {
 
 		$form = $this->createForm(RealmSelectType::class, null, [
 			'realms' => $realms,
-			'type' => 'changeoccupier'
+			'type' => 'changeoccupier',
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -1127,7 +1137,7 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute('maf_actions');
 		}
 		return $this->render('Settlement/occupier.html.twig', [
-			'settlement'=>$settlement, 'form'=>$form->createView()
+			'settlement'=>$settlement, 'form'=>$form->createView(),
 		]);
 	}
 
@@ -1140,7 +1150,7 @@ class ActionsController extends AbstractController {
 		$realms = $character->findrealms();
 		$form = $this->createForm(RealmSelectType::class, null, [
 			'realms' => $realms,
-			'type' => 'occupy'
+			'type' => 'occupy',
 		]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
@@ -1156,7 +1166,7 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute('maf_actions');
 		}
 		return $this->render('Settlement/occupationstart.html.twig', [
-			'settlement'=>$settlement, 'form'=>$form->createView()
+			'settlement'=>$settlement, 'form'=>$form->createView(),
 		]);
 	}
 
@@ -1180,7 +1190,7 @@ class ActionsController extends AbstractController {
                         return $this->redirectToRoute('maf_actions');
                 }
 		return $this->render('Settlement/occupationend.html.twig', [
-			'settlement'=>$settlement, 'form'=>$form->createView()
+			'settlement'=>$settlement, 'form'=>$form->createView(),
 		]);
 	}
 }

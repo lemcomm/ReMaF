@@ -8,6 +8,7 @@ use App\Entity\Race;
 use App\Entity\RealmDesignation;
 use App\Entity\World;
 use App\Enum\RaceName;
+use App\Enum\RegionFlags;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -208,6 +209,7 @@ class UpdateDatabaseCommand extends  Command {
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading corrected data...done');
 			$output->writeln('Loading new entourage types...');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
@@ -215,6 +217,7 @@ class UpdateDatabaseCommand extends  Command {
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading new entourage types...done');
 			$output->writeln('Loading fish data...');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
@@ -222,6 +225,7 @@ class UpdateDatabaseCommand extends  Command {
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading new fish data...done');
 			$output->writeln('Loading law data...');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
@@ -229,6 +233,7 @@ class UpdateDatabaseCommand extends  Command {
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading new law data...done');
 			$output->writeln('Loading skill data...');
 			$fixtureInput = new ArrayInput([
 				'command' => 'doctrine:fixtures:load',
@@ -236,6 +241,7 @@ class UpdateDatabaseCommand extends  Command {
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading skill data...done');
 		}
 		if (in_array('A10', $versions)) {
 			$output->writeln('Correcting ActivtyTypes...');
@@ -250,6 +256,36 @@ class UpdateDatabaseCommand extends  Command {
 				'--append' => true,
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading new activty data...done');
+		}
+		if (in_array('A11', $versions)) {
+			$output->writeln('Updating Region Flags to prevent settling in inaccessible lands...');
+			$regions = $em->createQuery('SELECT r FROM App\Entity\Region r WHERE r.id IN :regions')
+				->setParameters([
+					'regions'=>[/*TODO: Region IDs*/]
+				])
+				->getResult();
+			foreach ($regions as $region) {
+				$region->addModifier(RegionFlags::noSettling->value);
+			}
+			$em->flush();
+			$output->writeln('Updating Region Flags to prevent settling in inaccessible lands...done');
+			$output->writeln('Updating biome data...');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadBiomeData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Updating biome data...done');
+			$output->write('Loading entourage data...');
+			$fixtureInput = new ArrayInput([
+				'command' => 'doctrine:fixtures:load',
+				'--group' => ['LoadEntourageData'],
+				'--append' => true,
+			]);
+			$this->getApplication()->doRun($fixtureInput, $output);
+			$output->writeln('Loading entourage data...done');
 		}
 
 		return Command::SUCCESS;

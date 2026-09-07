@@ -2,6 +2,7 @@
 
 namespace App\Service\Dispatcher;
 
+use App\Entity\AbstractRegion;
 use App\Entity\ActivityReport;
 use App\Entity\Association;
 use App\Entity\BattleReport;
@@ -11,12 +12,14 @@ use App\Entity\GeoData;
 use App\Entity\GeoFeature;
 use App\Entity\House;
 use App\Entity\Law;
+use App\Entity\MapRegion;
 use App\Entity\Message;
 use App\Entity\Place;
 use App\Entity\Realm;
 use App\Entity\RealmPosition;
 use App\Entity\Settlement;
 use App\Entity\Ship;
+use App\Enum\RegionFlags;
 use App\Service\AppState;
 use App\Service\CommonService;
 use App\Service\Geography;
@@ -895,6 +898,27 @@ class Dispatcher {
 
 
 	/* ========== Control Actions ========== */
+
+	public function controlSettleTest($check_duplicate=false): array {
+		if (($check = $this->controlActionsGenericTests()) !== true) {
+			return array("name"=>"control.settle.name", "description"=>"unavailable.$check");
+		}
+		$char = $this->getCharacter();
+		$region = $this->geo->findMyRegion($char);
+		if (!$region) {
+			return ["name"=>"control.settle.name", "description"=>"unavailable.noregion"];
+		}
+		$settlement = $region->getSettlement();
+		if ($settlement && !$settlement->isRuined()) {
+			return ["name"=>"control.settle.name", "description"=>"unavailable.alreadysettled"];
+		}
+		if (!$region->getBiome()->isInhabitable() || in_array(RegionFlags::noSettling->value, $region->getModifiers())) {
+			return ["name"=>"control.settle.name", "description"=>"unavailable.uninhabitable"];
+		}
+
+
+		return $this->action("control.settle", "maf_actions_settle");
+	}
 
 	public function controlTakeTest($check_duplicate=false, $check_regroup=true): array {
 		if (($check = $this->controlActionsGenericTests()) !== true) {

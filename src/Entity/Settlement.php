@@ -264,6 +264,11 @@ class Settlement {
 		return true;
 	}
 
+	public function isRuined(): bool {
+		if ($this->destroyed) return true;
+		return false;
+	}
+
 	public function getLocalUnits(): ArrayCollection|Collection {
 		$all = new ArrayCollection();
 		foreach ($this->units as $unit) {

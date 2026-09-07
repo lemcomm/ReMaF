@@ -15,6 +15,7 @@ class Biome {
 	private float $road_construction;
 	private float $feature_construction;
 	private ?int $id = null;
+	private ?bool $inhabitable = false;
 	private Collection $geo_data;
 	private Collection $mapRegions;
 
@@ -223,5 +224,18 @@ class Biome {
 		}
 
 		return $this;
+	}
+
+	public function getInhabitable(): ?bool {
+		return $this->inhabitable;
+	}
+
+	public function setInhabitable(?bool $inhabitable): static {
+		$this->inhabitable = $inhabitable;
+		return $this;
+	}
+
+	public function isInhabitable(): bool {
+		return $this->inhabitable;
 	}
 }

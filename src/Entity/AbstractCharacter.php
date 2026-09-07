@@ -206,6 +206,7 @@ abstract class AbstractCharacter {
 					return [false, 0, 1];
 				} else {
 					if ($rand < 10 && $amount >= 4) {
+						# No recovery, slim death chance.
 						if (!$physician || rand(1, 100) < 21) {
 							# Dies from injuries.
 							$this->kill();
@@ -216,6 +217,7 @@ abstract class AbstractCharacter {
 							return [0+$legacyResult, $healerUse+0, $physUse];
 						}
 					} elseif ((!$healer && $rand >= 20) || ($healer && $rand >= 15) || ($physician && $amount >=4)) {
+						# Recovery! Slim double recovery chance.
 						$heal = 1;
 						if ($physician && $amount >= 4 && rand(1, 100) < 21) {
 							$heal = 2;

@@ -460,7 +460,7 @@ class Geography {
 		return $this->findCharactersNearMe($character, $this->calculateInteractionDistance($character), $only_outside_settlement, true, $match_battle, null, $only_outside_place);
 	}
 
-	public function findCharactersInArea($geo) {
+	public function findCharactersInArea(GeoData $geo) {
 		$query = $this->em->createQuery('SELECT c FROM App\Entity\Character c, App\Entity\GeoData g WHERE g.id = :here AND ST_Contains(g.poly, c.location) = true');
 		$query->setParameter('here', $geo);
 		return $query->getResult();

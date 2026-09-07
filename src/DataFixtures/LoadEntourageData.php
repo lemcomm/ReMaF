@@ -22,6 +22,7 @@ class LoadEntourageData extends Fixture implements DependentFixtureInterface {
 		'prospector'	=> ['train' =>200, 'provider' =>'Library'],
 		'scholar'	=> ['train' =>300, 'provider' =>'University'],
 		'scout'		=> ['train' => 65, 'provider' =>'Inn'],
+		'settler'	=> ['train' => 50, 'provider' =>'Guild District'],
 		'spy'		=> ['train' =>500, 'provider' =>'Academy'],
 		'translator'	=> ['train' =>125, 'provider' =>'School'],
 	);

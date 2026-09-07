@@ -1219,6 +1219,7 @@ npc:
  healer:       healer{count, plural, =1 {} other {s}}
  physician:    physician{count, plural, =1 {} other {s}}
  translator:   translator{count, plural, =1 {} other {s}}
+ settler:      settler{count, plural, =1 {} other {s}}
  scholar:      scholar{count, plural, =1 {} other {s}}
  soldier:      soldier{count, plural, =1 {} other {s}}
  soldiers:     Soldiers of {name}

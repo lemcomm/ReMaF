@@ -8,7 +8,8 @@
 		<field name="spot" type="float"/>
 		<field name="travel" type="float"/>
 		<field name="road_construction" type="float"/>
-		<field name="feature_construction" type="float"/>	
+		<field name="feature_construction" type="float"/>
+		<field name="inhabitable" type="boolean" nullable="true"/>
 
 		<one-to-many field="geo_data" target-entity="GeoData" mapped-by="biome"/>
 		<one-to-many field="mapRegions" target-entity="MapRegion" mapped-by="biome"/>
