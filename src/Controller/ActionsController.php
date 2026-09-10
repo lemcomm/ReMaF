@@ -32,6 +32,7 @@ use App\Service\PermissionManager;
 use App\Service\Politics;
 use App\Service\Dispatcher\UnitDispatcher;
 use App\Service\StatusUpdater;
+use App\Service\WorldBuilder;
 use App\Twig\LinksExtension;
 use DateInterval;
 use DateTime;
@@ -381,14 +382,23 @@ class ActionsController extends AbstractController {
 	}
 
 	#[Route("/actions/settle", name: 'maf_actions_settle')]
-	public function settleAction(CommonService $common, Request $request): RedirectResponse|Response {
+	public function settleAction(WorldBuilder $worldBuilder, Request $request): RedirectResponse|Response {
 		$character = $this->dispatcher->gateway('controlSettleTest');
 		if (! $character instanceof Character) {
 			return $this->redirectToRoute($character);
 		}
+		#TODO: Convert renameAction's form to something we can use for this as well.
+		#TODO: Make this do something to Places that are too close.
+		$form = $this->createForm(AreYouSureType::class);
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$worldBuilder->createSettlement($this->geo->findMyRegion($character), $character, $name);
+			$this->addFlash('notice', $this->trans->trans('actions.settle.success'));
+		}
 
-		#TODO: The rest of this route, and the twig,
-		return $this->render('Actions/settle.html.twig', []);
+		return $this->render('Actions/settle.html.twig', [
+			'form'=>$form->createView(),
+		]);
 	}
 	#[Route ('/actions/spy', name: 'maf_actions_spy')]
 	public function spyAction(): RedirectResponse|Response {

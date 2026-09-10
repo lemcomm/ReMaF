@@ -5,11 +5,12 @@ namespace App\Entity;
 use App\Enum\SettlementLaw;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Exception;
 
 
 class Settlement {
 	protected bool|Collection $defenders = false;
-	public bool $corruption = false;
+	public bool|float $corruption = false;
 	private ?string $name = null;
 	private int $population;
 	private int $thralls;
@@ -111,6 +112,17 @@ class Settlement {
 		$this->activities = new ArrayCollection();
 		$this->laws = new ArrayCollection();
 		$this->chat_messages = new ArrayCollection();
+	}
+
+	/**
+	 * This saves you having to check for MapRegion or GeoData and just returns whichever.
+	 * @return MapRegion|GeoData
+	 * @throws Exception
+	 */
+	public function getRegion(): MapRegion|GeoData {
+		if ($this->mapRegion) return $this->mapRegion;
+		if ($this->geo_data) return $this->geo_data;
+		throw new Exception("Settlement ".$this->name." (".$this->id.") has no region!");
 	}
 
 	public function getPic(): string {
@@ -425,7 +437,7 @@ class Settlement {
 	}
 
 	public function findResource(ResourceType $type) {
-		$resource = $this->getResources()->filter(function ($entry) use ($type) {
+		$resource = $this->getRegion()->getResources()->filter(function ($entry) use ($type) {
 			return ($entry->getType()->getId() == $type->getId());
 		});
 		return $resource->first();
@@ -433,7 +445,7 @@ class Settlement {
 
 	/**
 	 * Get resources
-	 *
+	 * @deprecated After A11: This should be removed. Use getRegion()->getResources() instead.
 	 * @return ArrayCollection|Collection
 	 */
 	public function getResources(): ArrayCollection|Collection {

@@ -2,29 +2,23 @@
 
 namespace App\Command;
 
-use App\Entity\Activity;
-use App\Entity\ActivityParticipant;
 use App\Entity\Building;
 use App\Entity\GeoFeature;
 use App\Entity\Road;
 use App\Entity\Settlement;
-use App\Service\ActivityRunner;
-use App\Service\Economy;
-use Doctrine\Common\Collections\Collection;
+use App\Service\WorldBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class TestSettlementAbandonCommand extends AbstractTestCommand {
 
 	public function __construct(
 		protected EntityManagerInterface $em,
-		private Economy $economy,
+		private WorldBuilder $builder,
 	) {
 		parent::__construct($em);
 	}
@@ -63,7 +57,7 @@ class TestSettlementAbandonCommand extends AbstractTestCommand {
 		$destroyed = $here->getDestroyed();
 		if (!$here->getAbandoned()) {
 			$output->writeln("Starting abandoning of ".$here->getName()." (".$here->getId().")");
-			$this->economy->startAbandoningSettlement($here, false);
+			$this->builder->startAbandoningSettlement($here, false);
 		}
 		if ($here->getStartAbandoning()) {
 			$here->setStartAbandoning(null);
@@ -79,7 +73,7 @@ class TestSettlementAbandonCommand extends AbstractTestCommand {
 			foreach ($here->getBuildings() as $bldg) {
 				$bldgs[$bldg->getType()->getName()]['before'] = $bldg->getCondition();
 			}
-			$this->economy->breakDownSettlement($here);
+			$this->builder->breakDownSettlement($here);
 			foreach ($here->getBuildings() as $bldg) {
 				$bldgs[$bldg->getType()->getName()]['after'] = $bldg->getCondition();
 			}
@@ -88,7 +82,7 @@ class TestSettlementAbandonCommand extends AbstractTestCommand {
 		foreach ($here->getGeoData()?->getFeatures() ?? [] as $feature) {
 			$feats[$feature->getName()]['before'] = $feature->getDamage();
 		}
-		$this->economy->breakDownFeatures($here);
+		$this->builder->breakDownFeatures($here);
 		foreach ($here->getGeoData()?->getFeatures() ?? [] as $feature) {
 			$feats[$feature->getName()]['after'] = $feature->getDamage();
 		}
@@ -97,7 +91,7 @@ class TestSettlementAbandonCommand extends AbstractTestCommand {
 			$roads[$road->getId()]['before'] = $road->getDamage();
 			$roads[$road->getId()]['oldQuality'] = $road->getQuality();
 		}
-		$this->economy->breakDownRoads($here);
+		$this->builder->breakDownRoads($here);
 		foreach ($here->getGeoData()?->getRoads() ?? [] as $road) {
 			$roads[$road->getId()]['after'] = $road->getDamage();
 			$roads[$road->getId()]['newQuality'] = $road->getQuality();

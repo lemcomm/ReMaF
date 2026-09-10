@@ -310,6 +310,13 @@ nearby:
 control:
  name:          Local control actions
  all:           All control actions
+ settle:
+  name:         Settle
+  description:  Establish a new settlement in this region.
+  intro: >
+    You can settle in this region and establish a new settlement. This will take some time, but once completed, you will have a new
+    settlement to manage.
+  success:      You have begun settling in this region.
  take:
   name:         Take control
   description:  Declare your lordship over these people and make this settlement yours.

@@ -6,6 +6,7 @@ use App\Entity\ActivityType;
 use App\Entity\Permission;
 use App\Entity\Race;
 use App\Entity\RealmDesignation;
+use App\Entity\Settlement;
 use App\Entity\World;
 use App\Enum\RaceName;
 use App\Enum\RegionFlags;
@@ -286,6 +287,31 @@ class UpdateDatabaseCommand extends  Command {
 			]);
 			$this->getApplication()->doRun($fixtureInput, $output);
 			$output->writeln('Loading entourage data...done');
+			$output->writeln('Reconnecting resources from Settlements to Regions...');
+			$all = $em->createQuery('SELECT s FROM App\Entity\Settlement s')->toIterable();
+			$count = 0;
+			/** @var Settlement $each */
+			foreach ($all as $each) {
+				if ($each->getMapRegion()) {
+					$here = $each->getMapRegion();
+					$func = 'setMapRegion';
+				} else {
+					$here = $each->getGeoData();
+					$func = 'setGeoData';
+				}
+				foreach ($each->getResources() as $resource) {
+					# Equivalent to $resource->setMapRegion($here) or $resource->setGeoData($here)
+					$resource->$func($here);
+					$resource->setSettlement(null);
+				}
+				if ($count++ % 25 === 0) {
+					$em->flush();
+					$em->clear();
+				}
+			}
+			$output->writeln("Reconnected $count resources from Settlements to Regions");
+			#TODO: Add noSettle flags to inaccessible map regions.
+			#TODO: Add resource values to currently unsettled but accessible regions.
 		}
 
 		return Command::SUCCESS;

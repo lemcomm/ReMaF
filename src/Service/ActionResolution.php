@@ -4,20 +4,14 @@ namespace App\Service;
 
 use App\Entity\Action;
 
-use App\Entity\Character;
-use App\Entity\EquipmentType;
 use App\Entity\EventMetadata;
 use App\Entity\FishLog;
 use App\Entity\FishType;
 use App\Entity\GeoData;
 use App\Entity\MapRegion;
-use App\Entity\Settlement;
 use App\Entity\SkillType;
-use App\Entity\Trade;
-use App\Entity\Unit;
 use App\Enum\CharacterStatus;
 use App\Service\Dispatcher\Dispatcher;
-use App\Service\StatusUpdater;
 use DateInterval;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -41,6 +35,7 @@ class ActionResolution {
 		private SkillManager            $skills,
 		private Economy			$econ,
 		private MilitaryManager        $military,
+		private WorldBuilder            $builder
 	) {
 		$this->characters = new ArrayCollection();
 	}
@@ -247,7 +242,7 @@ class ActionResolution {
 	private function settlement_loot(Action $action): void {
 		if ($action->getStringValue() === 'destroy') {
 			$here = $action->getTargetSettlement();
-			$this->econ->breakDownSettlement($here, true, $action->getCharacter());
+			$this->builder->breakDownSettlement($here, true, $action->getCharacter());
 			$action->setComplete(new DateTime("+6 hours"));
 			$this->em->flush();
 		} elseif ($action->getStringValue() === 'roads') {
@@ -508,7 +503,7 @@ class ActionResolution {
 				$this->history->closeLog($settlement, $settlement->getOwner());
 			}
 			$this->history->openLog($settlement, $to);
-			if (strpos($action->getStringValue(), 'keep_claim') === false) {
+			if (!str_contains($action->getStringValue(), 'keep_claim')) {
 				$reason = 'grant';
 			} else {
 				$reason = 'grant_fief';
@@ -520,7 +515,7 @@ class ActionResolution {
 				}
 			}
 
-			if (strpos($action->getStringValue(), 'clear_realm') !== false && $settlement->getRealm()) {
+			if (str_contains($action->getStringValue(), 'clear_realm') && $settlement->getRealm()) {
 				$this->politics->changeSettlementRealm($settlement, null, 'grant');
 			}
 			$this->statusUpdater->character($action->getCharacter(), CharacterStatus::granting, false);

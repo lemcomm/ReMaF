@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\Settlement;
 use App\Service\Economy;
+use App\Service\WorldBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,10 +13,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 
 class WorkerEconomyCommand extends Command {
-	private Economy $economy;
 
-	public function __construct(private EntityManagerInterface $em, Economy $econ) {
-		$this->economy = $econ;
+	public function __construct(
+		private EntityManagerInterface $em,
+		private Economy $economy,
+		private WorldBuilder $builder
+	) {
 		parent::__construct();
 	}
 
@@ -106,12 +109,12 @@ class WorkerEconomyCommand extends Command {
 					$settlement->setStartAbandoning(null);
 					$settlement->setAbandoned(true);
 				}
-				$this->economy->breakDownSettlement($settlement);
-				$this->economy->breakDownFeatures($settlement);
-				$this->economy->breakDownRoads($settlement);
+				$this->builder->breakDownSettlement($settlement);
+				$this->builder->breakDownFeatures($settlement);
+				$this->builder->breakDownRoads($settlement);
 			} elseif ($settlement->getDestroyed()) {
-				$this->economy->breakDownFeatures($settlement);
-				$this->economy->breakDownRoads($settlement);
+				$this->builder->breakDownFeatures($settlement);
+				$this->builder->breakDownRoads($settlement);
 			}
 
 			if ($count > 24) {
@@ -147,7 +150,7 @@ class WorkerEconomyCommand extends Command {
 		$last = strtolower($val[strlen($val)-1]);
 		$val = substr($val, 0, -1);
 		switch($last) {
-		// The 'G' modifier is available since PHP 5.1.0
+		// The 'G' modifier has been available since PHP 5.1.0
 		case 'g':
 		    $val *= 1024;
 		case 'm':

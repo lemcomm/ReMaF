@@ -2,7 +2,6 @@
 
 namespace App\Service\Dispatcher;
 
-use App\Entity\AbstractRegion;
 use App\Entity\ActivityReport;
 use App\Entity\Association;
 use App\Entity\BattleReport;
@@ -12,7 +11,6 @@ use App\Entity\GeoData;
 use App\Entity\GeoFeature;
 use App\Entity\House;
 use App\Entity\Law;
-use App\Entity\MapRegion;
 use App\Entity\Message;
 use App\Entity\Place;
 use App\Entity\Realm;
@@ -23,7 +21,6 @@ use App\Enum\RegionFlags;
 use App\Service\AppState;
 use App\Service\CommonService;
 use App\Service\Geography;
-use App\Service\Interactions;
 use App\Service\PermissionManager;
 use App\Service\PlaceManager;
 use DateTime;
@@ -330,8 +327,10 @@ class Dispatcher {
 		$char = $this->getCharacter();
 		$settlement = $char->getInsideSettlement();
 		$actions=array();
-
-		if (!$settlement) {
+		$region = $this->geo->findMyRegion($char);
+		if ($region->isInhabitable() && !$region->getSettlement()) {
+			$actions[] = $this->controlSettleTest(true);
+		} elseif (!$settlement) {
 			$actions[] = array("name"=>"control.all", "description"=>"unavailable.notinside");
 		} else {
 			$actions[] = $this->controlTakeTest(true);

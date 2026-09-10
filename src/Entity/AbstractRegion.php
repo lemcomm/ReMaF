@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\RegionFlags;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -66,6 +67,13 @@ abstract class AbstractRegion {
 		if (in_array($mod, $this->modifiers)) {
 			unset($this->modifiers[array_search($mod, $this->modifiers)]);
 		}
+	}
+
+	public function isInhabitable(): bool {
+		if ($this->getBiome()?->isInhabitable() && !in_array(RegionFlags::noSettling->value, $this->modifiers)) {
+			return true;
+		}
+		return false;
 	}
 
 	/**

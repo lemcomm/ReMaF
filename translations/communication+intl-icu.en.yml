@@ -37,6 +37,8 @@ event:
   disabled:     The {featuretype} {name} has become inoperative due to deterioration. Workers should be assigned for repair.
   destroyed:    The {featuretype} {name} has broken down completely and must be considered lost.
  settlement:
+  created:      Has been founded by {character}.
+  recreated:    Has been re-established by {character}.
   ownership:
    gained:			Has taken control of {settlement}.
    lost:				Has lost control of {settlement}, because it has been taken by {character}.

@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Entity\Action;
 use App\Entity\Battle;
 use App\Entity\BattleGroup;
-use App\Entity\Building;
 use App\Entity\Character;
 use App\Entity\Place;
 use App\Entity\ResourceType;
@@ -13,6 +12,8 @@ use App\Entity\Settlement;
 use App\Entity\Siege;
 
 use App\Enum\CharacterStatus;
+use DateInterval;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Twig\GameTimeExtension;
@@ -314,7 +315,7 @@ class WarManager {
 			$battle->setType('field');
 		}
 		$battle->setLocation($location);
-		$battle->setStarted(new \DateTime('now'));
+		$battle->setStarted(new DateTime('now'));
 
 		// setup attacker (i.e. me)
 		if (!$attackers) {
@@ -348,8 +349,8 @@ class WarManager {
 
 		// now we have all involved set up we can calculate the preparation timer
 		$time = $this->calculatePreparationTime($battle);
-		$complete = new \DateTime('now');
-		$complete->add(new \DateInterval('PT'.$time.'S'));
+		$complete = new DateTime('now');
+		$complete->add(new DateInterval('PT'.$time.'S'));
 		$battle->setInitialComplete($complete)->setComplete($complete);
 		$this->em->flush();
 
@@ -502,7 +503,7 @@ class WarManager {
 	public function recalculateBattleTimer(Battle $battle): void {
 		$time = $this->calculatePreparationTime($battle);
 		$complete = clone $battle->getStarted();
-		$complete->add(new \DateInterval("PT".$time."S"));
+		$complete->add(new DateInterval("PT".$time."S"));
 		// it can't be less than the initial timer, but otherwise, update the time calculation
 		if ($complete > $battle->getInitialComplete()) {
 			$battle->setComplete($complete);
@@ -555,8 +556,8 @@ class WarManager {
 
 	public function createDisengage(Character $character, BattleGroup $bg, Action $attack): array {
 		$takes = $this->calculateDisengageTime($character);
-		$complete = new \DateTime("now");
-		$complete->add(new \DateInterval("PT".round($takes)."S"));
+		$complete = new DateTime("now");
+		$complete->add(new DateInterval("PT".round($takes)."S"));
 		// TODO: at most until just before the battle!
 
 		$act = new Action;
@@ -587,8 +588,8 @@ class WarManager {
 		$act->setType('military.regroup')->setCharacter($character);
 		$act->setBlockTravel(false);
 		$act->setCanCancel(false);
-		$complete = new \DateTime('now');
-		$complete->add(new \DateInterval('PT'.ceil($regroup_time).'M'));
+		$complete = new DateTime('now');
+		$complete->add(new DateInterval('PT'.ceil($regroup_time).'M'));
 		$act->setComplete($complete);
 		$this->common->queueAction($act);
 	}
@@ -959,7 +960,7 @@ class WarManager {
 			$result['resources'] = [];
 			$notice_target = false;
 			$notice_victim = false;
-			foreach ($settlement->getResources() as $resource) {
+			foreach ($settlement->getRegion()->getResources() as $resource) {
 				$available = round($resource->getStorage() * $ratio);
 				if ($resource->getType()->getName() == 'food') {
 					$can_carry = $my_soldiers * 5;

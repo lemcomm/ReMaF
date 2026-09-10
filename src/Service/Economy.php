@@ -2,13 +2,10 @@
 
 namespace App\Service;
 
-use App\Entity\Action;
-use App\Entity\Activity;
 use App\Entity\Building;
 use App\Entity\Character;
 use App\Entity\GeoFeature;
 use App\Entity\GeoResource;
-use App\Entity\Place;
 use App\Entity\ResourceType;
 use App\Entity\Road;
 use App\Entity\Settlement;
@@ -18,21 +15,7 @@ use App\Entity\Supply;
 use App\Entity\Resupply;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use LongitudeOne\Spatial\ORM\Query\AST\Functions\Standard\StLength;
 use Psr\Log\LoggerInterface;
-
-/*
-	FIXME:
-	This should somehow be split into smaller work packages also to support multi-threading
-
-	maybe with the commented-out changes in GeoResource.orm.xml we can multi-thread pre-calculate the resource
-	demand and production values and store them in the DB. This would remove a lot from the main turn calculations
-	(run the recalc before async, wait for completion, to make sure everything is updated)
-
-	other things that can run in parallel are soldier training, supply production, building construction, etc.
-
-	==> this requires a new structure in the game runner
-*/
 
 class Economy {
 	private int $hours_per_day = 10;
@@ -49,12 +32,7 @@ class Economy {
 		private Geography $geo,
 		private History $history,
 		private LoggerInterface $logger,
-		private MilitaryManager $military,
 		private WarManager $war,
-		private ActivityManager $actman,
-		private Politics $pol,
-		private PlaceManager $poi,
-		private CommonService $common,
 	) {
 	}
 
@@ -141,7 +119,7 @@ class Economy {
 		return $reduction;
 	}
 
-	public function checkWorkforce(Settlement $settlement) {
+	public function checkWorkforce(Settlement $settlement): void {
 		$workforce = $settlement->getAvailableWorkforce();
 		if ($workforce < 0) {
 			// this can happen if the settlement has become very small and employees > population
@@ -204,7 +182,7 @@ class Economy {
 	}
 
 
-	public function checkSpecialConditions(Settlement $settlement, $building_name) {
+	public function checkSpecialConditions(Settlement $settlement, $building_name): bool {
 		// special conditions - these are hardcoded because they can be complex
 		switch (strtolower($building_name)) {
 			case 'mine':	// only in hills and mountains with metal
@@ -421,19 +399,19 @@ class Economy {
 		}
 	}
 
-	public function getSupply(Settlement $settlement) {
+	public function getSupply(Settlement $settlement): array {
 		// TODO: now that we store mod in georesource - do we even need this anymore?
 		$supply_data = array();
 		foreach ($this->getResources() as $resource) {
 			$supply_data[$resource->getId()] = 0;
 		}
-		foreach ($settlement->getResources() as $resource) {
+		foreach ($settlement->getRegion()->getResources() as $resource) {
 			$supply_data[$resource->getType()->getId()] = $resource->getMod();
 		}
 		return $supply_data;
 	}
 
-	public function freeThralls(Settlement $settlement) {
+	public function freeThralls(Settlement $settlement): void {
 		$thralls = $settlement->getThralls();
 		if ($thralls > 0) {
 			$rand = mt_rand(1, 50)/10;
@@ -455,7 +433,7 @@ class Economy {
 
 	}
 
-	public function addThralls(Settlement $settlement) {
+	public function addThralls(Settlement $settlement): void {
 		$militia = $settlement->countDefenders(true);
 		if ($militia * 10 > $settlement->getThralls()) {
 			$amount = $this->war->lootSettlement($settlement, $settlement, null, 'thralls', true)['thralls'];
@@ -468,7 +446,7 @@ class Economy {
 		}
 	}
 
-	public function FoodSupply(Settlement $settlement, $shortage) {
+	public function FoodSupply(Settlement $settlement, $shortage): void {
 		$real_shortage = $shortage;
 		// this is mostly arrived at via visual inspection of graphs and some number tests, it works out as follows:
 		// - population growth/shrinkage depends on how well-fed the population is
@@ -603,7 +581,7 @@ class Economy {
 		$this->em->flush();
 	}
 
-	public function getSupplyTravelTime(Settlement $start, Unit $unit) {
+	public function getSupplyTravelTime(Settlement $start, Unit $unit): float|int {
 		if ($unit->getCharacter()) {
 			$distance = $this->geo->calculateDistanceToSettlement($unit->getCharacter(), $start);
 		} elseif ($unit->getDefendingSettlement()) {
@@ -678,7 +656,7 @@ class Economy {
 		return;
 	}
 
-	public function ResourceProduction(Settlement $settlement, ResourceType $resource, $ignore_buildings=false, $force_recalc=false) {
+	public function ResourceProduction(Settlement $settlement, ResourceType $resource, $ignore_buildings=false, $force_recalc=false): float|int {
 		$georesource = $settlement->findResource($resource);
 		if ($georesource) {
 			$baseresource = $georesource->getAmount();
@@ -747,12 +725,10 @@ class Economy {
 			because of it (or rather, which have an equilibrium point with surplus food).
 		*/
 
-		$total_production = round($production*$baseresource*$building_bonus);
-
-		return $total_production;
+		return round($production*$baseresource*$building_bonus);
 	}
 
-	public function ResourceFromBuildings(Settlement $settlement, ResourceType $resource) {
+	public function ResourceFromBuildings(Settlement $settlement, ResourceType $resource): array {
 		$query = $this->em->createQuery('SELECT r FROM App\Entity\BuildingResource r JOIN r.resource_type t JOIN r.building_type bt JOIN bt.buildings b JOIN b.settlement s WHERE s=:here AND t=:resource AND b.active=true AND (r.provides_operation>0 OR r.provides_operation_bonus>0)');
 		$query->setParameters(array('here'=>$settlement, 'resource'=>$resource));
 		$base = 0; $bonus = 0;
@@ -763,7 +739,7 @@ class Economy {
 		return array($base, 1.0+($bonus/100));
 	}
 
-	public function FindFeedableUnits(Settlement $settlement) {
+	public function FindFeedableUnits(Settlement $settlement): ArrayCollection {
 		$units = new ArrayCollection();
 		foreach ($settlement->getSuppliedUnits() as $unit) {
 			if (!$units->contains($unit)) {
@@ -778,7 +754,7 @@ class Economy {
 		return $units;
 	}
 
-	public function ResourceDemand(Settlement $settlement, ResourceType $resource, $split_results=false, $regenerate=false) {
+	public function ResourceDemand(Settlement $settlement, ResourceType $resource, $split_results=false, $regenerate=false): float|array {
 		// this is the population used for all resources except food, which has its own calculation
 		$population = $settlement->getPopulation() + $settlement->getThralls()/2;
 		$buildings_operation = $this->ResourceForBuildingOperation($settlement, $resource);
@@ -797,14 +773,14 @@ class Economy {
 							$suppliedNPCs += ($unit->getLivingSoldiers()->count()*$foodLimit);
 						}
 					}
-					foreach ($settlement->getResources() as $geoRes) {
+					foreach ($settlement->getRegion()->getResources() as $geoRes) {
 						if ($geoRes->getType() === $resource) {
 							$geoRes->setUnitDemand($suppliedNPCs);
 							break;
 						}
 					}
 				} else {
-					foreach ($settlement->getResources() as $geoRes) {
+					foreach ($settlement->getRegion()->getResources() as $geoRes) {
 						if ($geoRes->getType() === $resource) {
 							$suppliedNPCs = $geoRes->getUnitDemand();
 							break;
@@ -845,7 +821,7 @@ class Economy {
 		}
 	}
 
-	public function ResourceForBuildingOperation(Settlement $settlement, ResourceType $resource) {
+	public function ResourceForBuildingOperation(Settlement $settlement, ResourceType $resource): float|int {
 		$query = $this->em->createQuery('SELECT r, b.focus FROM App\Entity\BuildingResource r JOIN r.resource_type t JOIN r.building_type bt JOIN bt.buildings b JOIN b.settlement s WHERE s=:here AND t=:resource AND b.active=true and r.requires_operation > 0');
 		$query->setParameters(array('here'=>$settlement, 'resource'=>$resource));
 		$amount = 0;
@@ -865,7 +841,7 @@ class Economy {
 		return round($amount);
 	}
 
-	public function ResourceForBuildingConstruction(Settlement $settlement, ResourceType $resource) {
+	public function ResourceForBuildingConstruction(Settlement $settlement, ResourceType $resource): float|int {
 		$query = $this->em->createQuery('SELECT b as building, r.requires_construction as required, bt.build_hours as buildHours FROM App\Entity\Building b JOIN b.type bt JOIN bt.resources r JOIN r.resource_type rt JOIN b.settlement s WHERE s=:here AND rt=:resource AND b.active=false');
 		$query->setParameters(array('here'=>$settlement, 'resource'=>$resource));
 
@@ -879,7 +855,7 @@ class Economy {
 		return $total;
 	}
 
-	public function EconomicSecurity(Settlement $settlement) {
+	public function EconomicSecurity(Settlement $settlement): float {
 		$security = 1.0;
 
 		# Originally this just counted militia. Since we no longer really have "militia", it just counts defenders.
@@ -947,7 +923,7 @@ class Economy {
 		return max(1.0, $security);
 	}
 
-	public function TradeBalance(Settlement $settlement, ResourceType $resource) {
+	public function TradeBalance(Settlement $settlement, ResourceType $resource): int {
 		$amount = 0;
 
 		if ($settlement->getSiege() && $settlement->getSiege()->getEncircled()) {
@@ -957,6 +933,7 @@ class Economy {
 		$query = $this->em->createQuery('SELECT t FROM App\Entity\Trade t WHERE t.resource_type = :resource AND (t.source = :here OR t.destination = :here)');
 		$query->setParameters(array('resource'=>$resource, 'here'=>$settlement));
 
+		/** @var Trade $trade */
 		foreach ($query->getResult() as $trade) {
 			$source = $trade->getSource();
 			$dest = $trade->getDestination();
@@ -977,7 +954,7 @@ class Economy {
 		return $amount;
 	}
 
-	public function TradeCostBetween(Settlement $a, Settlement $b, $have_merchant = false) {
+	public function TradeCostBetween(Settlement $a, Settlement $b, $have_merchant = false): float|int {
 		$distance = $this->geo->calculateDistanceBetweenSettlements($a, $b);
 
 		if ($have_merchant) {
@@ -994,7 +971,7 @@ class Economy {
 		return $cost/100;
 	}
 
-	public function ResourceAvailable(Settlement $settlement, ResourceType $resource) {
+	public function ResourceAvailable(Settlement $settlement, ResourceType $resource): float|int {
 		return $this->ResourceProduction($settlement, $resource) + $this->TradeBalance($settlement, $resource);
 	}
 
@@ -1049,12 +1026,11 @@ class Economy {
 		}
 	}
 
-	public function RoadHoursRequired(Road $road, $length, $mod) {
-		$required = ($road->getQuality()*2+1) * $length * $mod;
-		return $required;
+	public function RoadHoursRequired(Road $road, $length, $mod): float|int {
+		return ($road->getQuality()*2+1) * $length * $mod;
 	}
 
-	public function BuildingProduction(Building $building, $supply) {
+	public function BuildingProduction(Building $building, $supply): void {
 		$employees = $building->getEmployees();
 		$max = $employees * 500; // 100 work days max storage
 		$gain = $employees * 5; // add half a work day (10 hours), because we assume that they spend time on overhead and non-military work, too
@@ -1089,7 +1065,7 @@ class Economy {
 		$building->setResupply(max($building->getResupply(),min($max,$building->getResupply()+$gain)));
 	}
 
-	public function BuildingConstruction(Building $building, $supply) {
+	public function BuildingConstruction(Building $building, $supply): bool {
 		if ($building->getWorkers()<=0) {
 			// abandoned - fall into disrepair
 			$takes = $building->getType()->getBuildHours();
@@ -1132,10 +1108,10 @@ class Economy {
 				$building->setCondition($building->getCondition()+round($workhours));
 			}
 		}
-        return false;
+        	return false;
 	}
 
-	public function FeatureConstruction(GeoFeature $feature) {
+	public function FeatureConstruction(GeoFeature $feature): bool {
 		$workhours = $this->calculateWorkHours($feature);
 
 		if ($feature->getCondition() + $workhours >= 0) {
@@ -1150,7 +1126,7 @@ class Economy {
 	}
 
 
-	public function calculateWorkHours($entity, $settlement=null) {
+	public function calculateWorkHours($entity, $settlement=null): float|int {
 		if ($entity->getWorkers()<=0) return 0;
 		if ($entity instanceof Building) {
 			if (!$settlement) { $settlement = $entity->getSettlement(); }
@@ -1173,7 +1149,7 @@ class Economy {
 	}
 
 
-	public function calculateCorruption(Settlement $settlement) {
+	public function calculateCorruption(Settlement $settlement): float|bool|int {
 		if (false === $settlement->corruption) {
 			$settlements = 0;
 			if ($settlement->getOwner()) {
@@ -1185,281 +1161,6 @@ class Economy {
 			$settlement->corruption = $settlements/500;
 		}
 		return $settlement->corruption;
-	}
-
-	public function startAbandoningSettlement(Settlement $here, $byDestruction = false, ?Character $char = null): void {
-		$here->setAbandoned(true);
-		/** @var Trade $trade */
-		$realm = $here->getRealm();
-		if ($byDestruction) {
-			$msg = 'destroy';
-		} else {
-			$msg = 'abandon';
-		}
-		foreach ($here->getTradesInbound() as $trade) {
-			$source = $trade->getSource();
-			$this->history->logEvent($source, 'event.settlement.trade'.$msg,
-				[
-					'%amount%'=>$trade->getAmount(),
-					'%resource%'=>$trade->getResourceType()->getName(),
-					'%link-settlement%'=>$here->getId()
-				],
-				History::MEDIUM, false, 20
-			);
-			$this->em->remove($trade);
-		}
-		foreach ($here->getTradesOutbound() as $trade) {
-			$source = $trade->getSource();
-			$this->history->logEvent($source, 'event.settlement.trade'.$msg.'2',
-				[
-					'%amount%'=>$trade->getAmount(),
-					'%resource%'=>$trade->getResourceType()->getName(),
-					'%link-settlement%'=>$here->getId()
-				],
-				History::MEDIUM, false, 20
-			);
-			$this->em->remove($trade);
-		}
-		foreach ($here->getActivities() as $activity) {
-			/** @var Activity $activity */
-			if ($activity->isTournament()) {
-				foreach ($activity->getParticipants() as $part) {
-					$char = $part->getCharacter();
-					$this->history->logEvent($char, 'event.character.tournament.'.$msg,
-						[
-							'%link-settlement%'=>$here->getId()
-						],
-						History::MEDIUM, false, 20
-					);
-				}
-				$this->actman->cleanupAct($activity);
-			}
-		}
-		foreach ($here->getPlaces() as $place) {
-			if ($place->getInsideSettlement() === $here) {
-				$this->poi->destroy($place, $msg, $char);
-			}
-		}
-		foreach ($here->getPermissions() as $perm) {
-			$this->em->remove($perm);
-		}
-		foreach ($here->getOccupationPermissions() as $occ) {
-			$this->em->remove($occ);
-		}
-		foreach ($here->getSuppliedUnits() as $unit) {
-			$unit->setSupplier(null);
-			$who = $unit->getCharacter() ?: $unit->getSettlement()?->findOwnerEquivalent();
-			if ($who) {
-				$this->history->logEvent($who, 'event.unit.supplier'.$msg,
-					[
-						'%link-settlement%'=>$here->getId(),
-						'%link-unit%'=>$unit->getId()
-					],
-					History::MEDIUM, false, 20
-				);
-			}
-		}
-		foreach ($here->getRequests() as $req) {
-			$this->em->remove($req);
-		}
-		foreach ($here->getRelatedRequests() as $rel) {
-			$this->em->remove($rel);
-		}
-		/** @var Building $bldg */
-		foreach ($here->getBuildings() as $bldg) {
-			$bldg->setWorkers(0);
-		}
-		$features = $here->getGeoData()?->getFeatures();
-		/** @var GeoFeature $feature */
-		if ($features) {
-			foreach ($features as $feature) {
-				$feature->setWorkers(0);
-			}
-		}
-		$roads = $here->getGeoData()?->getRoads();
-		if ($roads) {
-			foreach ($roads as $road) {
-				$road->setWorkers(0);
-			}
-		}
-		$this->em->flush();
-	}
-
-	public function breakDownSettlement(Settlement $settlement, $byLooting = false, ?Character $char = null): array {
-		$results = [];
-		if ($settlement->getDestroyed()) {
-			return $results;
-		}
-		$pop = $settlement->getPopulation();
-		$bldgs = $settlement->getBuildings();
-		$bldgCount = $bldgs->count();
-		/** @var Building[] $bldgArr */
-		$bldgArr = $bldgs->toArray();
-		if ($byLooting) {
-			# Character looting.
-			$my_soldiers = 0;
-			foreach ($char->getUnits() as $unit) {
-				$my_soldiers += $unit->getActiveSoldiers()->count();
-			}
-			$ratio = $my_soldiers / (100 + $settlement->getFullPopulation());
-			if ($ratio > 0.25) {
-				$ratio = 0.25;
-			}
-			if ($pop > 100) {
-				[$kills,] = $this->war->lootValue(floor($pop * $ratio * 1.5)); # Deliberate drop of second return value.
-				$left = $pop - floor($kills);
-			} else {
-				$kills = $pop;
-				$left = 0;
-			}
-			$results['killed'] = $kills;
-			$settlement->setPopulation($left);
-		} else {
-			if ($pop > 100) {
-				floor($leaving = $pop * rand(1, 5) / 100);
-			} elseif ($pop > 10) {
-				$leaving = 10;
-			} else {
-				$leaving = $pop;
-			}
-			$results['left'] = $leaving;
-			$settlement->setPopulation($pop - $leaving);
-		}
-
-		if ($bldgCount === 1) {
-			$howMany = 1;
-		} else {
-			$howMany = rand(1, max($bldgCount/4, 2));
-		}
-		if ($bldgCount > 0) {
-			for ($i = 0; $i < $howMany; $i++) {
-				$target = $bldgArr[array_rand($bldgArr)];
-				$type = $target->getType()->getName();
-				if ($byLooting) {
-					[
-						,
-						$damage
-					] = $this->war->lootValue(round($my_soldiers * 32 / $bldgCount)); #Deliberate drop of first return value.
-				} else {
-					$percent = rand(1, 15) / 100;
-					$damage = $target->getType()->getBuildHours() * $percent;
-				}
-				if (!isset($results['burn'][$type])) {
-					$results['burn'][$type] = 0;
-				}
-				$results['burn'][$type] += $damage;
-				if ($target->isActive()) {
-					$target->abandon($damage);
-					if ($byLooting) {
-						$workers = $target->getEmployees();
-						if ($left > $bldgCount) {
-							$target->setWorkers($workers / $left);
-						} else {
-							$target->setWorkers(0);
-						}
-						$this->history->logEvent($settlement, 'event.settlement.burned', ['%link-buildingtype%' => $target->getType()->getId()], History::MEDIUM, false, 30);
-					}
-				} else {
-					$target->setCondition($target->getCondition() - $damage);
-					if (abs($target->getCondition()) > $target->getType()->getBuildHours()) {
-						// destroyed
-						if ($byLooting) {
-							$this->history->logEvent($settlement, 'event.settlement.burned2', ['%link-buildingtype%' => $target->getType()->getId()], History::HIGH, false, 30);
-						}
-						$settlement->removeBuilding($target);
-						$this->em->remove($target);
-					} else {
-						// damaged
-						if ($byLooting) {
-							$this->history->logEvent($settlement, 'event.settlement.burned', ['%link-buildingtype%' => $target->getType()->getId()], History::MEDIUM, false, 30);
-						}
-					}
-				}
-			}
-		} else {
-			$this->destroySettlement($settlement);
-		}
-		return $results;
-	}
-
-	public function breakDownFeatures(Settlement $settlement): void {
-		$all = $settlement->getGeoData()?->getFeatures();
-		if ($all && $all->count() > 0) {
-			/** @var GeoFeature $each */
-			foreach ($all as $each) {
-				if (!$each->getType()->getHidden()) {
-					$takes = $each->getType()->getBuildHours();
-					$loss = rand(10, $takes/100) + rand(0, $takes/200);
-					if ($each->getDamage() >= $takes) {
-						$this->em->remove($each);
-					} else {
-						$each->setDamage($each->getDamage()+$loss); # Yes, this will take a while.
-					}
-				}
-			}
-		}
-	}
-
-	public function breakDownRoads(Settlement $settlement): void {
-		$where = $settlement->getGeoData();
-		if ($where) {
-			$query = $this->em->createQuery('SELECT r as road, ST_LENGTH(r.path) as length, b.road_construction as mod FROM App\Entity\Road r JOIN r.geo_data g JOIN g.biome b WHERE g.id = :geoData')->setParameters(['geoData'=>$where]);
-			foreach ($query->getResult() as $each) {
-				$road = $each['road'];
-				$length = $each['length'];
-				$mod = $each['mod'];
-				$this->RoadDegradation($road, (float)$length, (float)$mod);
-			}
-		}
-	}
-
-	public function destroySettlement(Settlement $settlement, $byLooting = false, ?Character $char = null): void {
-		if ($settlement->getDestroyed()) {
-			return;
-		}
-		if (!$settlement->getAbandoned()) {
-			# Done through force. Call the blow to break the trades n stuff.
-			$this->startAbandoningSettlement($settlement, $byLooting, $char);
-		}
-		if ($byLooting) {
-			$msg = 'destroy';
-		} else {
-			$msg = 'abandon';
-		}
-		/** @var Unit $unit */
-		foreach ($settlement->getUnits() as $unit) {
-			$this->military->orphanUnit($unit, $settlement, $msg, true);
-		}
-		foreach ($settlement->getDefendingUnits() as $unit) {
-			$this->military->returnUnitHome($unit, $msg, $settlement, true);
-		}
-		$this->pol->breakVassals($settlement, $msg);
-		if ($settlement->getSiege()) {
-			$this->war->disbandSiege($settlement->getSiege());
-		}
-		foreach ($settlement->getRelatedActions() as $act) {
-			/** @var Action $act */
-			if ($act->getStringValue() === 'destroy') {
-				$this->common->addAchievement($act->getCharacter(), 'destruction');
-			}
-			$this->em->remove($act);
-		}
-		$settlement->setDestroyed(true);
-		$settlement->setFaith(null);
-		$settlement->setOccupant(null);
-		$settlement->setOccupier(null);
-		$settlement->setOwner(null);
-		$settlement->setSteward(null);
-		$settlement->setStarvation(0);
-		$settlement->setGold(0);
-		$settlement->setWarFatigue(0);
-		$settlement->setAbductionCooldown(0);
-		$settlement->setAlloWthralls(false);
-		$settlement->setFeedSoldiers(false);
-		$settlement->setOpenPorts(false);
-		$settlement->setFoodProvisionLimit(1);
-		$settlement->setCulture(null);
-		$this->history->logEvent($settlement, 'event.settlement.destroyed', [], History::ULTRA, true);
 	}
 
 }
