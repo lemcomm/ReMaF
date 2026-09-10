@@ -16,6 +16,7 @@ use App\Form\CultureType;
 use App\Form\EntourageRecruitType;
 use App\Form\InteractionType;
 use App\Form\RealmSelectType;
+use App\Form\SettlementNameType;
 use App\Form\TradeCancelType;
 use App\Form\TradeType;
 use App\Service\ActionResolution;
@@ -306,13 +307,12 @@ class ActionsController extends AbstractController {
 			$data = $form->getData();
 			$data['target'] = $form->get('target')->getData();
 			$em = $this->em;
-			# TODO: Translate these error strings.
 			if ($data['amount'] > $character->getGold()) {
-				$form->addError(new FormError($this->trans->trans('You cannot give more gold than you have.')));
+				$form->addError(new FormError($this->trans->trans('location.givegold.notenough', [], 'actions')));
 			} elseif ($data['amount'] < 0) {
-				$form->addError(new FormError($this->trans->trans('You cannot give negative gold.')));
+				$form->addError(new FormError($this->trans->trans('location.givegold.negative', [], 'actions')));
 			} elseif (!$data['target']) {
-				$form->addError(new FormError($this->trans->trans('As much as you may not want it, you cannot give gold to no one... yet.')));
+				$form->addError(new FormError($this->trans->trans('location.givegold.notarget', [], 'actions')));
 			} else {
 				$character->setGold($character->getGold() - $data['amount']);
 				$data['target']->setGold($data['target']->getGold() + $data['amount']);
@@ -389,11 +389,12 @@ class ActionsController extends AbstractController {
 		}
 		#TODO: Convert renameAction's form to something we can use for this as well.
 		#TODO: Make this do something to Places that are too close.
-		$form = $this->createForm(AreYouSureType::class);
+		$form = $this->createForm(SettlementNameType::class, null, ['submit'=>'control.settle.submit']);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$worldBuilder->createSettlement($this->geo->findMyRegion($character), $character, $name);
-			$this->addFlash('notice', $this->trans->trans('actions.settle.success'));
+			$data = $form->getData();
+			$worldBuilder->createSettlement($this->geo->findMyRegion($character), $character, $data['name']);
+			$this->addFlash('notice', $this->trans->trans('control.settle.success', [], 'actions'));
 		}
 
 		return $this->render('Actions/settle.html.twig', [
@@ -695,15 +696,11 @@ class ActionsController extends AbstractController {
 			return $this->redirectToRoute($character);
 		}
 
-		$form = $this->createFormBuilder(null, array('translation_domain'=>'actions', 'attr'=>array('class'=>'wide')))
-			->add('name', TextType::class, array(
-				'required'=>true,
-				'label'=>'control.rename.newname',
-				))
-			->add('submit', SubmitType::class, array(
-				'label'=>'control.rename.submit',
-				))
-			->getForm();
+		$form = $this->createForm(
+			SettlementNameType::class,
+			null,
+			['name'=>$settlement->getName()]
+		);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
 			$data = $form->getData();

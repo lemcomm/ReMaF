@@ -7,6 +7,7 @@ use App\Entity\Activity;
 use App\Entity\Building;
 use App\Entity\Character;
 use App\Entity\Culture;
+use App\Entity\Entourage;
 use App\Entity\FeatureType;
 use App\Entity\GeoData;
 use App\Entity\GeoFeature;
@@ -74,6 +75,10 @@ class WorldBuilder {
 		$town->setCulture($culture);
 		$this->em->persist($town);
 		$this->em->flush();
+		/** @var Entourage $settler */
+		foreach ($settlers as $settler) {
+			$this->em->remove($settler);
+		}
 		if ($geo) {
 			$feat = new GeoFeature();
 			$type = $this->em->getRepository(FeatureType::class)->findOneBy(['name'=>'settlement']);

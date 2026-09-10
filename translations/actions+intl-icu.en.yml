@@ -203,6 +203,9 @@ location:
     with a sack of gold.<br />
     You currently have {gold} gold.
   success:      You have given {amount} gold to {target}.
+  notenough:    You cannot give more gold than you have.
+  negative:     You cannot give negative amounts of gold.
+  notarget:     As much as you may not want it, you cannot give gold to no one... yet.
  giveartifact:
   name:         Give Artifact
   description:  Give an artifact to someone else.
@@ -317,6 +320,7 @@ control:
     You can settle in this region and establish a new settlement. This will take some time, but once completed, you will have a new
     settlement to manage.
   success:      You have begun settling in this region.
+  submit:       Found Settlement
  take:
   name:         Take control
   description:  Declare your lordship over these people and make this settlement yours.

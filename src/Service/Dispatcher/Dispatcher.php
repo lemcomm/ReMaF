@@ -903,6 +903,9 @@ class Dispatcher {
 			return array("name"=>"control.settle.name", "description"=>"unavailable.$check");
 		}
 		$char = $this->getCharacter();
+		if ($this->getCharacter()->isPrisoner()) {
+			return array("name"=>"control.settle.name", "description"=>"unavailable.prisoner");
+		}
 		$region = $this->geo->findMyRegion($char);
 		if (!$region) {
 			return ["name"=>"control.settle.name", "description"=>"unavailable.noregion"];
@@ -913,6 +916,9 @@ class Dispatcher {
 		}
 		if (!$region->getBiome()->isInhabitable() || in_array(RegionFlags::noSettling->value, $region->getModifiers())) {
 			return ["name"=>"control.settle.name", "description"=>"unavailable.uninhabitable"];
+		}
+		if ($this->getCharacter()->isDoingAction('military.evade')) {
+			return array("name"=>"control.settle.name", "description"=>"unavailable.evading");
 		}
 
 
