@@ -95,7 +95,17 @@ class MailManager {
 		$users = $query->getResult();
 		$twoMonths = new DateTime("-2 months");
 
+		/** @var User $user */
 		foreach ($users as $user) {
+			if (!$user->getNotifications()) {
+				# User changed notification setting after these were made. Delete them.
+				# Alternatively, an admin disabled it for them for reasons.
+				foreach ($user->getMailEntries() as $each) {
+					$em->remove($each);
+				}
+				$em->flush();
+				continue;
+			}
 			$remove = [];
 			$bypass = false;
 			if ($user->getLastLogin() > $twoMonths) {
@@ -111,26 +121,28 @@ class MailManager {
 				$text .= $each->getContent()."<br>\n";
 				$remove[] = $each;
 			}
-			$text .= "<br>\n";
-			$token = $this->um->findEmailOptOutToken($user);
-			$link = $this->optOut.'/'.$user->getId().'/'.$token;
-			$footer = $this->trans->trans('mail.event.footer', ['%link%'=>$link], "communication");
+			if (!$bypass) {
+				$text .= "<br>\n";
+				$token = $this->um->findEmailOptOutToken($user);
+				$link = $this->optOut.'/'.$user->getId().'/'.$token;
+				$footer = $this->trans->trans('mail.event.footer', ['%link%'=>$link], "communication");
 
-			$intro = "Hello ".$user->getUsername().",<br><br>\n\n";
-			$msg = $intro.$header.$text.$footer;
+				$intro = "Hello ".$user->getUsername().",<br><br>\n\n";
+				$msg = $intro.$header.$text.$footer;
 
-			try {
-				$this->sendEmail($user->getEmail(), $this->trans->trans('mail.event.subject', array(), "communication"), $msg);
-			} catch (\Exception $e) {
-				$toDomain = explode('@', $user->getEmail())[1];
-				$txt = 'Received error sending to '.$toDomain.'. Full error follows: \n'.$e->getMessage();
-				$this->discord->pushToErrors($txt);
+				try {
+					$this->sendEmail($user->getEmail(), $this->trans->trans('mail.event.subject', array(), "communication"), $msg);
+				} catch (\Exception $e) {
+					$toDomain = explode('@', $user->getEmail())[1];
+					$txt = 'Received error sending to '.$toDomain.'. Full error follows: \n'.$e->getMessage();
+					$this->discord->pushToErrors($txt);
+				}
+
+				foreach ($remove as $each) {
+					$em->remove($each);
+				}
+				$em->flush();
 			}
-
-			foreach ($remove as $each) {
-				$em->remove($each);
-			}
-			$em->flush();
 		}
 	}
 
