@@ -877,7 +877,7 @@ class WarController extends AbstractController {
 				'multiple'=>true,
 				'expanded'=>true,
 				'class'=>BattleGroup::class,
-				'property'=>'battle.name',
+				'choice_label'=>'battle.name',
 				'query_builder'=>function(EntityRepository $er) use ($engagements) {
 					return $er->createQueryBuilder('g')->where('g in (:battles)')->setParameter('battles', $engagements);
 				}
