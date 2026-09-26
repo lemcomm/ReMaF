@@ -731,12 +731,18 @@ class PoliticsController extends AbstractController {
 			$change_others = false;
 			$i = 0;
 			foreach ($data['prisoners'] as $id=>$do) {
+				/** @var Character $prisoner */
 				$prisoner = $prisoners[$id];
 				switch ($do['action']) {
 					case 'free':
 						$prisoner->setPrisonerOf(null);
 						$character->removePrisoner($prisoner);
 						$this->statusUpdater->character($prisoner, CharacterStatus::prisoner, null);
+						$related = $prisoner->findActions('character.escape');
+						/** @var Action $action */
+						foreach ($related as $action) {
+							$this->em->remove($action);
+						}
 						$this->hist->logEvent(
 							$prisoner,
 							'event.character.prison.free',
